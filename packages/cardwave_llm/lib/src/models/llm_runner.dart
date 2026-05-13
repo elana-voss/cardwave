@@ -305,7 +305,7 @@ class LlmRunner {
       // Duck-typed toJson() for telemetry — provider configs each define their
       // own serialization but share no interface. Falls back to toString() if
       // the object can't be encoded.
-      // ignore: qcheck/avoid_dynamic, qcheck/avoid_dynamic_calls
+      // ignore: qcheck/avoid_dynamic
       final json = (cfg as dynamic).toJson();
       return const JsonEncoder.withIndent('  ').convert(json);
     } on Exception {
