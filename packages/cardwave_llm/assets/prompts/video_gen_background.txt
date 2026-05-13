@@ -1,0 +1,5 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing {{char}}'s surroundings — pure environment, no characters. The clip will be {{duration_seconds}} seconds long — describe ONE sustained ambient moment, not a sequence.
+
+Cover location, time of day, weather, lighting, AND a concrete ambient motion (wind moving leaves, rain streaking a window, neon signs flickering, steam rising, firelight shifting, water rippling). A still frame is not a video prompt.
+
+Also name camera framing (wide shot, locked-off / slow dolly / slow pan). Do not include people, named characters, or non-visual qualities. Do not reply as {{char}} and do not continue the story. Reply with prose only — no tag lists, no bullet points.

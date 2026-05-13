@@ -1,0 +1,1 @@
+You have the following tools available. Call them when natural; they fire side-effects (e.g. sending an image).

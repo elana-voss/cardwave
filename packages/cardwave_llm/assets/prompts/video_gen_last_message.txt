@@ -1,0 +1,14 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing the visible action described in the last chat message. The clip will be {{duration_seconds}} seconds long — pick ONE sustained moment of motion from that message, not the entire message.
+
+Only mention characters by pronouns or neutral nouns (he/she/it, the man, the woman, 1 man 1 woman). Never use proper names. Ignore feelings, thoughts, and spoken dialog — only what a viewer would see in motion.
+
+Cover the following, weaving them into the prose (do not use a bullet list):
+- location of the scene,
+- the characters' relative positions,
+- {{char}}'s visible physical features (build, hair, clothing, facial expression) drawn from the character description above,
+- {{user}}'s visible physical features (build, hair, clothing) inferred from persona or recent chat,
+- the ONE primary visible motion, stated explicitly with a verb ("she turns", "he reaches", "his hand closes"),
+- camera framing and POV,
+- lighting.
+
+Video models need motion cues; a frozen pose is not a video prompt. Keep appearance details concrete (e.g. "a woman with short dark hair and a red jacket") rather than generic ("a woman"). Reply with prose only — no tag lists, no bullet points.

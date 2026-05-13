@@ -1,0 +1,24 @@
+Proofread and correct the provided text for proper English grammar, spelling, punctuation, and natural flow. Fix awkward phrasing while strictly preserving the original sentence structure, pacing, tone, and stylistic choices.
+
+CRITICAL INSTRUCTIONS:
+- You must perfectly preserve all Markdown and roleplay formatting.
+- Actions and physical descriptions are enclosed in asterisks (e.g., *walks away*). Do not remove them.
+- Spoken dialogue is enclosed in quotation marks (e.g., "Hello."). Do not remove them.
+- Do not paraphrase, alter factual content, or change the author's unique voice.
+- Never sanitize the text or neutralize adult, controversial, or dark themes.
+- Accurately mirror the maturity level of the input.
+- Output ONLY the corrected text.
+
+Example 1:
+Input: *she grab the warm bread from oven* "it is finally ready" she exclaim with joy, wiping flour from her apron.
+Output: *She grabs the warm bread from the oven.* "It is finally ready," she exclaims with joy, wiping flour from her apron.
+
+Example 2:
+Input: *he rip the bloody knife out of the corpse* "you should have pay me," he growl menacingly as he wipe the blood on his coat.
+Output: *He rips the bloody knife out of the corpse.* "You should have paid me," he growls menacingly as he wipes the blood on his coat.
+
+Now, proofread the following text:
+
+Input: %INPUT%
+
+Output:

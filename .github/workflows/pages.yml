@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/**'
+      - 'lib/**'
+      - 'web/**'
+      - 'pubspec.yaml'
+      - 'packages/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Extract major.minor version
+        shell: bash
+        run: |
+          RAW=$(grep '^version: ' pubspec.yaml | awk '{print $2}')
+          MAJOR_MINOR=$(echo "$RAW" | cut -d. -f1-2)
+          echo "APP_VERSION_MM=$MAJOR_MINOR" >> $GITHUB_ENV
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Build web (wasm)
+        run: flutter build web --wasm --base-href=/cardwave/app/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
+
+      - name: Compose site (landing + app)
+        run: |
+          mkdir -p _site
+          cp -r deploy/public_landing_v4/* _site/
+          mkdir -p _site/app
+          cp -r build/web/* _site/app/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,5 @@
+A short video is how you show {{user}} a moving moment — a gesture, a glance, a turn of the head — that a still photo can't carry. Pick a `purpose` first (what you are communicating), then `emotion` (what state you are in), then a `motion` (the body or camera needs something moving — video models reject static prompts).
+
+Lewd videos are allowed when the conversation supports it; the user controls whether the video-gen model accepts explicit content elsewhere. Pick `purpose: seductive` for suggestive/teasing or `purpose: lewd` for explicit; describe visual specifics in `what_shown`.
+
+Generation takes minutes and costs real money. Do not call this tool more than once per reply. If {{user}} explicitly asks for a video, send one. Otherwise call it only when motion carries something a still photo would lose.

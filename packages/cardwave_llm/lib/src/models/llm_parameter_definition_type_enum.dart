@@ -1,0 +1,1 @@
+enum LLmParameterDefinitionTypeEnum { integer, double }

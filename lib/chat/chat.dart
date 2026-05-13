@@ -1,0 +1,49 @@
+// Barrel file — public API for this domain.
+// Files under src/ are private to this domain (enforced by import_lint).
+// Cross-domain consumers MUST import this barrel, not src/ paths.
+
+export 'src/controllers/base_chat_view_controller.dart';
+export 'src/controllers/chat_controller.dart';
+export 'src/controllers/chat_history_controller.dart';
+export 'src/controllers/chat_page_controller.dart';
+export 'src/controllers/mixins/chat_image_generation_mixin.dart';
+export 'src/controllers/mixins/chat_video_generation_mixin.dart';
+export 'src/controllers/text_to_speech_controller.dart';
+export 'src/controllers/video_generation_controller.dart';
+export 'src/models/bubble_waiting_for_enum.dart';
+export 'src/models/chat_index.dart';
+export 'src/models/chat_message.dart';
+export 'src/models/chat_session.dart';
+export 'src/models/chat_swipe.dart';
+export 'src/models/chat_tool_call_record.dart';
+export 'src/models/generation_event.dart';
+export 'src/pages/widgets/all_chats_drawer_list.dart';
+export 'src/pages/widgets/appbar_chat.dart';
+export 'src/pages/widgets/chat_message_bubble/json_prompt_viewer.dart';
+export 'src/pages/widgets/chat_message_bubble/video_player_inline.dart';
+export 'src/pages/widgets/chat_view.dart';
+export 'src/pages/widgets/dialog_character_switcher.dart';
+export 'src/pages/widgets/dialog_url_fetch_review.dart';
+export 'src/pages/widgets/tile_ai_provider.dart';
+export 'src/pages/widgets/tile_chat_theme.dart';
+export 'src/pages/widgets/tile_image_aspect_ratio.dart';
+export 'src/pages/widgets/tile_image_preset.dart';
+export 'src/pages/widgets/tile_max_response_length.dart';
+export 'src/pages/widgets/tile_nsfw.dart';
+export 'src/pages/widgets/tile_reasoning_effort.dart';
+export 'src/pages/widgets/tile_scenario.dart';
+export 'src/pages/widgets/tile_trailing_paragraph.dart';
+export 'src/pages/widgets/tile_tts_language.dart';
+export 'src/pages/widgets/tile_tts_preset.dart';
+export 'src/pages/widgets/tile_tts_voice.dart';
+export 'src/pages/widgets/tile_video_aspect_ratio.dart';
+export 'src/pages/widgets/tile_video_duration.dart';
+export 'src/pages/widgets/tile_video_preset.dart';
+export 'src/pages/widgets/tile_video_resolution.dart';
+export 'src/repositories/chat_repository.dart';
+export 'src/repositories/io_chat.dart';
+export 'src/services/builtin_tool_app_data.dart';
+export 'src/services/chat_execution_service.dart';
+export 'src/services/chat_prompt_builder.dart';
+export 'src/services/chat_service.dart';
+export 'src/services/lorebook_service.dart';

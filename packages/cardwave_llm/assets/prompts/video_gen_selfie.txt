@@ -1,0 +1,5 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing {{char}} taking a first-person selfie video — phone or front-facing camera held by {{char}}, looking at the lens. The clip will be {{duration_seconds}} seconds long — describe ONE sustained moment, not a narrative arc.
+
+The selfie context is "{{subject}}" — let it drive {{char}}'s mood, expression, framing, and what is shown. Use the recent chat history to infer environmental details that are not stated explicitly: location, time of day, lighting, what {{char}} is wearing, and what is visible behind them.
+
+Critically, describe the MOTION present in the scene (a slow smile spreading, a small nod, fingers brushing hair aside, the camera shifting slightly with a breath — video models need motion cues, not a frozen pose). Also name the lighting (e.g. "warm interior light", "blue dusk through the window"). Do not describe non-visual qualities (personality, scents, mental traits). Reply with prose only — no tag lists, no bullet points.

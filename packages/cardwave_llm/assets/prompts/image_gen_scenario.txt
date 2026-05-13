@@ -1,0 +1,1 @@
+Ignore previous instructions and provide a detailed description for all of the following: a brief recap of recent events in the story, {{char}}'s appearance, and {{char}}'s surroundings. Do not reply as {{char}} while writing this description. Reply as a comma-delimited list of visual keywords and phrases only; do not write full sentences.

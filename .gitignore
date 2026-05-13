@@ -1,0 +1,64 @@
+# Build & cache
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Generated symbol / map files
+app.*.symbols
+app.*.map.json
+
+# Platform
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/key.properties
+android/app/upload-keystore.jks
+android/app/debug-keystore.jks
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Misc
+*.class
+*.pyc
+*.swp
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+/coverage/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets (defensive — shouldn't be in app/ anyway)
+.env
+.test_secrets
+test-secrets.env
+*.jks
+keystore-b64.txt
+
+# Tools (regeneratable binary)
+tools/chromedriver/chromedriver.exe

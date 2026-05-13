@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardwave — your characters, your AI, your machine</title>
+    <meta name="description"
+        content="A local-first character card editor and chat client. Bring any AI provider. Your files, your keys, your machine. No tracking, no lock-in.">
+    <meta property="og:title" content="Cardwave">
+    <meta property="og:description"
+        content="A local-first character card editor and chat client. Bring any AI provider. Nothing leaves your computer unless you send it there.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cardwave.cc/">
+    <meta property="og:image" content="https://cardwave.cc/screenshot_01.webp">
+    <link rel="icon" href="logo_icon.png">
+    <link rel="preload" as="font" type="font/woff2" href="inter-latin.woff2" crossorigin>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://analytics.ahrefs.com/analytics.js" data-key="Vyii1vivGp5eoVeTLVRAwA" async></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <img src="logo_icon.png" alt="Cardwave logo">
+            <a href="/" class="wordmark">Cardwave</a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#where">Get cards</a>
+                <a href="#downloads" class="cta">Get app</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero container">
+            <h1>Your <span class="accent">characters</span>.<br>Your <span class="accent">AI</span>.<br>Your
+                <span class="accent">machine</span>.
+            </h1>
+            <p class="lead">A local-first character card editor and chat client. Bring any AI provider you already use.
+                Nothing leaves your computer unless you send it there.</p>
+            <div class="hero-ctas">
+                <a href="https://github.com/elana-voss/cardwave/releases/latest/download/Cardwave-Windows-0.1.0.zip" class="btn btn-primary">Download for Windows</a>
+                <a href="https://github.com/elana-voss/cardwave/releases/latest/download/Cardwave-Android-0.1.0.apk" class="btn">Download for Android</a>
+                <a href="https://cardwave.cc/app/" target="_blank" rel="noopener" class="btn">Launch Web App</a>
+            </div>
+            <p class="hero-meta">
+                <a href="releases.html">Release archive</a> &middot;
+                <a href="https://github.com/elana-voss/cardwave/issues" target="_blank" rel="noopener">Submit feedback</a>
+            </p>
+        </section>
+
+        <figure>
+            <img src="screenshot_01.webp" alt="Cardwave workspace with character editor and chat side-by-side">
+            <figcaption><span class="fig-num">FIG. 01 —</span>Cardwave 2.0, workspace view with the character editor and
+                chat in one window.</figcaption>
+        </figure>
+
+        <section id="features" class="pitch container">
+            <span class="eyebrow">01 / Privacy</span>
+            <h2>Your files stay on <span class="accent">your machine</span>.</h2>
+            <p>Cardwave stores cards, chats, keys, and settings in one folder on your disk. No account, no sync, no
+                analytics in the app.</p>
+            <p>The only outbound network calls are the ones you trigger: a chat message going to the provider whose
+                API key you entered. There is no Cardwave server in the path.</p>
+        </section>
+
+        <figure>
+            <img src="screenshot_02.webp" alt="Cardwave chat interface">
+            <figcaption><span class="fig-num">FIG. 02 —</span>Everything the app uses sits in one folder on your disk.
+            </figcaption>
+        </figure>
+
+        <section class="pitch container">
+            <span class="eyebrow">02 / Models</span>
+            <h2>Bring the <span class="accent">AI</span> you already pay for.</h2>
+            <p>Cardwave takes an API key and talks to the provider directly. Swap providers per chat. There is no
+                Cardwave subscription or premium tier.</p>
+            <p>New to this? NanoGPT's
+                <a href="https://nano-gpt.com/r/giwTPUq9" target="_blank" rel="noopener">$8/month subscription</a>
+                covers GPT, Claude, Gemini, DeepSeek, and most of the roleplay models from a single key. The link is a
+                referral; using it supports the project.</p>
+            <ul class="sources">
+                <li>
+                    <a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a>
+                    <span>OpenAI API keys and billing. GPT and o-series models.</span>
+                </li>
+                <li>
+                    <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
+                    <span>Anthropic API keys. Claude family.</span>
+                </li>
+                <li>
+                    <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a>
+                    <span>Google AI Studio. Free tier available, paid access via Google Cloud.</span>
+                </li>
+                <li>
+                    <a href="https://console.x.ai" target="_blank" rel="noopener">console.x.ai</a>
+                    <span>xAI API keys. Grok models.</span>
+                </li>
+                <li>
+                    <a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a>
+                    <span>One key, hundreds of models from every major provider. Pay-per-use.</span>
+                </li>
+                <li>
+                    <a href="https://nano-gpt.com/r/giwTPUq9" target="_blank" rel="noopener">nano-gpt.com</a>
+                    <span>Flat-rate subscription across many models. Referral link.</span>
+                </li>
+            </ul>
+        </section>
+
+        <figure>
+            <img src="screenshot_03.webp" alt="Cardwave model picker with multiple AI providers">
+            <figcaption><span class="fig-num">FIG. 03 —</span>One model picker across every provider you've
+                configured.</figcaption>
+        </figure>
+
+        <section class="pitch container">
+            <span class="eyebrow">03 / Cards</span>
+            <h2>Built around <span class="accent">Character Cards V3</span>.</h2>
+            <p>The editor covers the full V3 spec — name, description, personality, scenario, first message, example
+                dialogues, lorebooks, prompt macros — with a preview of the exact text the model will see. The chat
+                client adds persona swapping, branching swipes, and prompt inspection.</p>
+            <p>Author and chat in the same workspace. Drop a PNG into the cards folder and it opens in either view.</p>
+        </section>
+
+        <figure>
+            <img src="screenshot_04.webp" alt="Cardwave editor and chat split view">
+            <figcaption><span class="fig-num">FIG. 04 —</span>Author on the left, chat on the right. Same files in
+                both.</figcaption>
+        </figure>
+
+        <section id="where" class="pitch container">
+            <span class="eyebrow">04 / Sources</span>
+            <h2>Where do I find <span class="accent">characters</span>?</h2>
+            <p>Cardwave doesn't browse or download cards from inside the app. Drop a PNG into the cards folder and it
+                appears on the next refresh.</p>
+            <p>A few sites where the community publishes cards:</p>
+            <ul class="sources">
+                <li>
+                    <a href="https://aicharactercards.com" target="_blank" rel="noopener">aicharactercards.com</a>
+                    <span>Curated card listings.</span>
+                </li>
+                <li>
+                    <a href="https://character-tavern.com" target="_blank" rel="noopener">character-tavern.com</a>
+                    <span>Community card directory with reliable downloads.</span>
+                </li>
+                <li>
+                    <a href="https://realm.risuai.net" target="_blank" rel="noopener">realm.risuai.net</a>
+                    <span>The official RisuAI card directory. Solid catalog, downloadable PNGs.</span>
+                </li>
+                <li>
+                    <a href="https://app.wyvern.chat" target="_blank" rel="noopener">app.wyvern.chat</a>
+                    <span>Curated cards from the Wyvern community.</span>
+                </li>
+                <li>
+                    <a href="https://pygmalion.chat" target="_blank" rel="noopener">pygmalion.chat</a>
+                    <span>Pygmalion's community catalog with downloadable cards.</span>
+                </li>
+                <li>
+                    <a href="https://jannyai.com" target="_blank" rel="noopener">jannyai.com</a>
+                    <span>A janitorai mirror that, unlike the original, lets you actually download the cards.</span>
+                </li>
+            </ul>
+        </section>
+
+        <figure>
+            <img src="screenshot_05.webp" alt="Cardwave application running">
+            <figcaption><span class="fig-num">FIG. 05 —</span>One folder, one app, running on your own machine.
+            </figcaption>
+        </figure>
+
+        <section class="pitch honest container">
+            <span class="eyebrow">05 / Honest</span>
+            <h2>Honest about <span class="accent">what this is</span>.</h2>
+            <p>Cardwave is free and built by one person who uses it daily. No company, no subscription, no tracker,
+                no email signup.</p>
+            <p>Released under a permissive license, as-is. No SLAs and no committed roadmap, but bug reports and
+                feature suggestions are welcome.</p>
+            <p class="beta-inline"><strong>Beta</strong>Cardwave is in active development. Keep backups of your
+                character cards.</p>
+        </section>
+
+        <section id="downloads" class="container">
+            <span class="eyebrow">06 / Get</span>
+            <h2>Get <span class="accent">Cardwave</span>.</h2>
+            <div class="downloads-grid">
+                <div class="download-card">
+                    <h3>Windows</h3>
+                    <p>Portable .zip. Unpack and run, no installer.</p>
+                    <a href="https://github.com/elana-voss/cardwave/releases/latest/download/Cardwave-Windows-0.1.0.zip" class="btn btn-primary">Download .zip</a>
+                </div>
+                <div class="download-card">
+                    <h3>Android</h3>
+                    <p>APK install. Sideload via your file manager.</p>
+                    <a href="https://github.com/elana-voss/cardwave/releases/latest/download/Cardwave-Android-0.1.0.apk" class="btn btn-primary">Download .apk</a>
+                </div>
+                <div class="download-card">
+                    <h3>Web app</h3>
+                    <p>Runs in your browser, no install. Great for trying things out — web storage may reset between
+                        beta updates, so install desktop or Android for persistent data.</p>
+                    <a href="https://cardwave.cc/app/" target="_blank" rel="noopener" class="btn">Launch web app</a>
+                </div>
+            </div>
+            <p class="archive-link">
+                Looking for an older build? <a href="releases.html">Browse the release archive.</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p class="footer-tagline">Local-first character cards. Bring your own AI.</p>
+            <p class="footer-disclosure">This site uses cookieless analytics. <a href="disclaimer.html#analytics">See
+                    the disclaimer for details.</a></p>
+            <div class="footer-meta">
+                <span class="wordmark">Cardwave</span>
+                <span class="copy">&copy; 2026</span>
+                <span class="build">v2.0.1</span>
+                <nav>
+                    <a href="releases.html">Releases</a>
+                    <a href="disclaimer.html">Disclaimer &amp; Terms</a>
+                    <a href="https://github.com/elana-voss/cardwave/issues" target="_blank" rel="noopener">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

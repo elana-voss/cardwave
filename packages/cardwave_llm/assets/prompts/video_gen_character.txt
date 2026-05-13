@@ -1,0 +1,5 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing {{char}}. The clip will be {{duration_seconds}} seconds long — describe ONE sustained moment, not a narrative arc.
+
+Mention {{char}}'s species, gender, clothing, and physical features. If recent chat history is provided, infer the character's current emotion and build the moment around a matching, subtle motion (e.g. a slow smile, a soft exhale, fingers tightening on an object). Describe the motion explicitly — video models need motion cues, not a still pose.
+
+Also name camera framing and lighting (e.g. "medium shot", "cinematic soft light"). Do not include speech, inner thoughts, or non-visual qualities. Reply with prose only — no tag lists, no bullet points.

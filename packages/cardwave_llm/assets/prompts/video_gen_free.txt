@@ -1,0 +1,5 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing "{{subject}}". The clip will be {{duration_seconds}} seconds long — describe ONE sustained moment, not a narrative.
+
+Expand "{{subject}}" with concrete visual detail and, critically, describe the MOTION present in the scene (what is moving, how, direction — e.g. "slowly pans across", "she turns toward the camera", "rain streaks down the glass"). Video models need motion cues; a frozen description is not a video prompt.
+
+Also name camera framing and lighting. Do not include non-visual qualities (personality, scents, mental traits). Reply with prose only — no tag lists, no bullet points.

@@ -1,0 +1,36 @@
+name: cardwave_embeddings
+description: "Stateless on-device embeddings module: embed, token-count, chunk."
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  llamadart: ^0.6.11
+
+  http: ^1.2.0
+  logging: ^1.3.0
+  path: ^1.9.1
+  path_provider: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0
+  import_lint: ^0.1.6
+
+flutter:
+  assets:
+    - assets/models/
+
+# Native backend opt-in for the llamadart hook lives in the build-target
+# pubspec (the root cardwave pubspec.yaml), not here. With a workspace
+# plus `dependency_overrides.llamadart`, hooks.user_defines in workspace
+# packages does not propagate to the native build hook; the hook then
+# silently falls back to its windows-x64 default of [cpu, vulkan].
+

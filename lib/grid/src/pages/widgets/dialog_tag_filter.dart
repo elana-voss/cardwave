@@ -1,0 +1,102 @@
+import 'package:cardwave/common/common.dart';
+import 'package:cardwave/grid/src/pages/widgets/tag_wrap.dart';
+import 'package:flutter/material.dart';
+
+class DialogTagFilter extends StatefulWidget {
+  const DialogTagFilter({
+    required this.availableTags,
+    required this.selectedTags,
+    super.key,
+  });
+  final Map<String, int> availableTags;
+  final Set<String> selectedTags;
+
+  @override
+  State<DialogTagFilter> createState() => _DialogTagFilterState();
+}
+
+class _DialogTagFilterState extends State<DialogTagFilter> {
+  late Set<String> _currentSelection;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _currentSelection = Set<String>.of(widget.selectedTags);
+    _searchController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _searchController.text.toLowerCase();
+    final filteredTags = widget.availableTags.entries.where((e) {
+      return e.key.contains(query);
+    }).toList();
+
+    filteredTags.sort((a, b) {
+      final aSelected = _currentSelection.contains(a.key);
+      final bSelected = _currentSelection.contains(b.key);
+      if (aSelected != bSelected) return aSelected ? -1 : 1;
+
+      final countCmp = b.value.compareTo(a.value);
+      if (countCmp != 0) return countCmp;
+      return a.key.compareTo(b.key);
+    });
+
+    return AppDialog(
+      isScrollable: false,
+      actions: [
+        TextButton(
+          onPressed: _currentSelection.isEmpty
+              ? null
+              : () => setState(() => _currentSelection.clear()),
+          child: const Text('Clear All'),
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _currentSelection),
+          child: const Text('Apply'),
+        ),
+      ],
+      builder: (context, isMobile) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Filter Tags',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          AppSearchField(
+            controller: _searchController,
+            hintText: 'Search tags...',
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: SingleChildScrollView(
+              child: TagWrap(
+                tags: filteredTags,
+                currentSelection: _currentSelection,
+                onToggle: (tag, selected) {
+                  setState(() {
+                    if (selected) {
+                      _currentSelection.add(tag);
+                    } else {
+                      _currentSelection.remove(tag);
+                    }
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

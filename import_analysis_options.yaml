@@ -1,0 +1,65 @@
+# Cross-domain src/ privacy enforcement.
+#
+# Each domain's lib/<domain>/src/ is private. Files outside that domain
+# must import via the barrel (package:cardwave/<domain>/<domain>.dart).
+#
+# Run via:  dart pub run import_lint
+# Or:       scripts\check_imports.bat
+#
+# Pattern:
+#   search_file_path_reg_exp matches files OUTSIDE the domain (negative
+#       lookahead on the domain folder name; supports both `/` and `\`
+#       separators for Windows paths)
+#   not_allow_import_reg_exps lists the forbidden import shape
+#   ignore_import_reg_exps documents accepted exceptions (deferred refactors)
+
+rules:
+  chat_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!chat[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/chat/src/.*"]
+    ignore_import_reg_exps: []
+
+  group_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!group[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/group/src/.*"]
+    ignore_import_reg_exps: []
+
+  character_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!character[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/character/src/.*"]
+    ignore_import_reg_exps: []
+
+  llm_app_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!llm_app[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/llm_app/src/.*"]
+    ignore_import_reg_exps: []
+
+  settings_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!settings[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/settings/src/.*"]
+    ignore_import_reg_exps: []
+
+  workspace_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!workspace[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/workspace/src/.*"]
+    ignore_import_reg_exps: []
+
+  editor_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!editor[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/editor/src/.*"]
+    ignore_import_reg_exps: []
+
+  grid_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!grid[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/grid/src/.*"]
+    ignore_import_reg_exps: []
+
+  onboarding_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!onboarding[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/onboarding/src/.*"]
+    ignore_import_reg_exps: []
+
+  common_internals_private:
+    search_file_path_reg_exp: 'lib[\\/](?!common[\\/]).*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/common/src/.*"]
+    ignore_import_reg_exps: []

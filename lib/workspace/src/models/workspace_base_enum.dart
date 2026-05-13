@@ -1,0 +1,1 @@
+enum WorkspaceBaseEnum { chat, editor }

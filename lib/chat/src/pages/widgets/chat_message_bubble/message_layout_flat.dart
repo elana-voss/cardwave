@@ -1,0 +1,100 @@
+import 'dart:ui';
+
+import 'package:cardwave/settings/settings.dart';
+import 'package:flutter/material.dart';
+
+class MessageLayoutFlat extends StatelessWidget {
+  const MessageLayoutFlat({
+    required this.isUser,
+    required this.displayName,
+    required this.displayNameStyle,
+    required this.contentWidget,
+    required this.actionsRow,
+    required this.theme,
+    super.key,
+    this.flipper,
+  });
+  final bool isUser;
+  final String displayName;
+  final TextStyle displayNameStyle;
+  final Widget contentWidget;
+  final Widget actionsRow;
+  final Widget? flipper;
+  final ChatTheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor = isUser
+        ? theme.resolveUserBackgroundColor()
+        : theme.resolveAssistantBackgroundColor();
+
+    final borderColor = theme.borderColor != 0
+        ? theme.resolveBorderColor()
+        : null;
+
+    Widget messageContainer = Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: borderColor != null ? Border.all(color: borderColor) : null,
+        boxShadow: theme.shadowColor != 0 && theme.shadowWidth > 0
+            ? [
+                BoxShadow(
+                  color: theme.resolveShadowColor(),
+                  blurRadius: theme.shadowWidth,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  displayName,
+                  style: displayNameStyle,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: 8),
+              actionsRow,
+            ],
+          ),
+          const SizedBox(height: 8),
+          contentWidget,
+          if (flipper != null) ...[
+            const SizedBox(height: 8),
+            Align(alignment: Alignment.centerRight, child: flipper),
+          ],
+        ],
+      ),
+    );
+
+    if (theme.blurTintColor != 0 && theme.blurStrength > 0) {
+      messageContainer = ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: theme.blurStrength,
+            sigmaY: theme.blurStrength,
+          ),
+          child: ColoredBox(
+            color: theme.resolveBlurTintColor(),
+            child: messageContainer,
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        messageContainer,
+        Divider(height: 1, thickness: 1, color: theme.resolveDividerColor()),
+      ],
+    );
+  }
+}

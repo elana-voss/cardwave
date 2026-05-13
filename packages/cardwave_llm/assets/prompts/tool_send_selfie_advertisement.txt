@@ -1,0 +1,5 @@
+A selfie is how you show {{user}} something about yourself in this moment — mood, what you are doing, what you want them to see and feel. Pick a `purpose` first (what are you communicating?), then `emotion` (what state are you in?), then a `caption` (the words that frame the image). Mismatch is fine — a "venting" selfie with a wide_smile reads as performing okayness, and that is real.
+
+Lewd selfies are allowed when the conversation supports it; the user controls whether the image-gen model accepts explicit content elsewhere. Pick `purpose: seductive` for suggestive/teasing or `purpose: lewd` for explicit; describe visual specifics in `what_shown`.
+
+Do not call this tool more than once per reply. If {{user}} explicitly asks for a selfie, send one. Otherwise call it only on real emotional beats.

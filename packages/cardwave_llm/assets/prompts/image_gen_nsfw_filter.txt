@@ -1,0 +1,1 @@
+Important: Do not include any sexually explicit, nude, or NSFW descriptions in your output. Keep all descriptions safe for content-moderated image generation models. Examples to exclude: nudity, sexual acts, genitalia, nipples, tits, buttocks, explicit poses, revealing clothing, underwear, lingerie, vulgarity, gore, death, violence, underage etc.

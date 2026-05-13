@@ -1,0 +1,157 @@
+name: cardwave
+description: "AI Character Cards Manager."
+publish_to: 'none'
+version: 0.1.0
+
+workspace:
+  - packages/cardwave_llm
+  - packages/cardwave_embeddings
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  image_picker: ^1.1.2
+  file_selector: ^1.0.3
+  crclib: ^3.0.0
+  png_chunks_extract: ^1.0.2
+  json_annotation: ^4.10.0
+
+  # The cardwave_llm package owns chat/image/video/TTS generation.
+  # Genkit + html/html2md moved into the package; root keeps only what the
+  # app code (outside the LLM module) consumes directly.
+  cardwave_llm:
+    path: packages/cardwave_llm
+
+  # The cardwave_embeddings package owns the on-device embedder, the GGUF
+  # model asset, and the chunking helper. The app's SearchService consumes
+  # it via Provider.
+  cardwave_embeddings:
+    path: packages/cardwave_embeddings
+
+  # Schema-validated tools — used both by the LLM module and by the
+  # taxonomy editor in lib/character/, so it stays as a root dep too.
+  schemantic: ^0.1.1
+
+  http: ^1.2.0
+  intl: ^0.20.2
+  logging: ^1.3.0
+  path: ^1.9.1
+  markdown_widget: ^2.3.2+8
+  markdown: ^7.3.0
+  idb_shim: ^2.8.4+1
+  fs_shim: ^2.5.1
+  url_launcher: ^6.3.2
+  path_provider: ^2.1.2
+  package_info_plus: ^10.0.0
+  pub_semver: ^2.1.4
+  diff_match_patch: ^0.4.1
+  provider: ^6.1.5+1
+  flutter_native_splash: ^2.4.1
+  flutter_speed_dial: ^7.0.0
+  # Discontinued upstream (replaced-by → two_dimensional_scrollables, but
+  # the replacement has no drag-drop reparenting / TreeIndentation, which
+  # the taxonomy editor depends on). Pinned so a careless `pub upgrade`
+  # doesn't surface the discontinuation noise; revisit when the official
+  # TreeView grows reorder support or a maintained alternative emerges.
+  flutter_fancy_tree_view: ^1.6.0
+  share_plus: ^13.0.0
+  audioplayers: ^6.6.0
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
+  media_kit_libs_video: ^1.0.7
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  build_runner: ^2.4.6
+  json_serializable: ^6.7.1
+  very_good_analysis: ^10.2.0
+  import_lint: ^0.1.6
+  # qcheck is wired as an analysis_server_plugin via the top-level `plugins:`
+  # block in analysis_options.yaml; it resolves its own deps separately and
+  # does NOT need to be a dev_dependency here.
+
+# Tracks llamadart PRs #113 (Blackwell sm_120 + main_gpu Dart field) and
+# #121 (WebGPU n_batch=n_ctx cascade so BERT encoders don't abort on web).
+# Drop this block and bump the version constraint when v0.6.12 ships.
+dependency_overrides:
+  llamadart:
+    git:
+      url: https://github.com/leehack/llamadart.git
+      ref: fc98c90bc260a26f0aa32fa816a5de989f1191ea
+
+# Native backend opt-in for the llamadart hook. Lives in the build-target
+# pubspec (this one) because workspace packages don't propagate
+# `hooks.user_defines` to native build hooks. Without this, llamadart
+# falls back to its default windows-x64 backends ([cpu, vulkan]).
+hooks:
+  user_defines:
+    llamadart:
+      llamadart_native_backends:
+        platforms:
+          windows-x64: [cpu, cuda]
+
+  # flutter_launcher_icons removed from regular deps to free up cli_util/analyzer
+  # constraints that block import_lint. It now runs as a globally activated tool
+  # via scripts\runner_ICON_and_SPLASH.bat (which also regenerates splash screens).
+
+  # dependency_validator: ^5.0.5
+  # unused_assets_removal: ^0.0.6
+
+# llamadart's `hooks.user_defines` lives in `packages/cardwave_embeddings/`
+# (the consuming pubspec) — Dart's native-asset hook system reads
+# user-defines from the package that declares the dependency.
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/default_character.png
+    - assets/tags/taxonomy.json
+    - branding/logo_icon.png
+    - assets/cards/Cass_Assistant.png
+    - assets/test_cards/Test_Character.png
+    - assets/test_cards/Vietnamese_Desc_Character.png
+
+  fonts:
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-VariableFont_wdth,wght.ttf
+        - asset: assets/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf
+          style: italic
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  web:
+    generate: true
+    image_path: "branding/logo_icon.png"
+  windows:
+    generate: true
+    image_path: "branding/logo_icon.png"
+    icon_size: 256 # Windows requires the ico file to be max 256x256
+  image_path: "branding/logo_icon.png"
+  # You can also set a specific background color if your icon has transparency
+  # adaptive_icon_background: "#ffffff" 
+  # adaptive_icon_foreground: "assets/icon_foreground.png"
+
+flutter_native_splash:
+  color: "#111418"
+  color_dark: "#111418"
+  image: "branding/logo_splash.png"
+  fullscreen: true
+  android_12:
+    image: "branding/logo_splash.png"
+    icon_background_color: "#111418"
+    icon_background_color_dark: "#111418"
+  android: true
+  ios: false
+  web: true

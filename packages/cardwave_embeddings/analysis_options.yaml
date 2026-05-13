@@ -1,0 +1,38 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+# Mirrors the root project's `analysis_options.yaml` ignore list so the
+# package and the app share one lint posture. Update both files together
+# when the project's stance on a rule changes.
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+  errors:
+    unused_element: ignore
+    public_member_api_docs: ignore
+    cascade_invocations: ignore
+    specify_nonobvious_property_types: ignore
+    sort_constructors_first: ignore
+    document_ignores: ignore
+    comment_references: ignore
+    parameter_assignments: ignore
+    lines_longer_than_80_chars: ignore
+    cast_nullable_to_non_nullable: ignore
+    avoid_positional_boolean_parameters: ignore
+    inference_failure_on_instance_creation: ignore
+    inference_failure_on_function_invocation: ignore
+    inference_failure_on_function_return_type: ignore
+    prefer_constructors_over_static_methods: ignore
+    sort_pub_dependencies: ignore
+    no_default_cases: ignore
+    omit_local_variable_types: ignore
+    avoid_field_initializers_in_const_classes: ignore
+    one_member_abstracts: ignore
+    use_setters_to_change_properties: ignore
+
+linter:
+  rules:
+    - avoid_print
+    - unawaited_futures
+    - prefer_const_constructors
+    - cancel_subscriptions
+    - close_sinks

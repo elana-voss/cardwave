@@ -1,0 +1,85 @@
+import 'package:cardwave/character/character.dart';
+import 'package:cardwave/common/common.dart';
+import 'package:flutter/material.dart';
+
+class EditorAppData extends StatefulWidget {
+  const EditorAppData({
+    required this.characterFile,
+    required this.onChanged,
+    super.key,
+  });
+  final CharacterFile characterFile;
+  final VoidCallback onChanged;
+
+  @override
+  State<EditorAppData> createState() => EditorAppDataState();
+}
+
+class EditorAppDataState extends State<EditorAppData> {
+  late final TextEditingController _notesController;
+  late final TextEditingController _previewDescriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _notesController = TextEditingController(
+      text: widget.characterFile.appCardVariantNotes,
+    );
+    _notesController.onTextChanged(() {
+      widget.characterFile.appCardVariantNotes = _notesController.text;
+      widget.onChanged();
+    });
+
+    _previewDescriptionController = TextEditingController(
+      text: widget.characterFile.card.cardwaveData.previewDescription,
+    );
+    _previewDescriptionController.onTextChanged(() {
+      final cwData = widget.characterFile.card.cardwaveData;
+      cwData.previewDescription = _previewDescriptionController.text;
+      widget.characterFile.card.cardwaveData = cwData;
+      widget.onChanged();
+    });
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    _previewDescriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFieldCard.multiLine(
+          controller: _notesController,
+          label: 'Variant Notes',
+          showTokenCount: true,
+          trailing: AiActionTextfieldPopup(
+            currentText: () => _notesController.text,
+            onApply: aiPopupApply(this, _notesController, 'Variant Notes'),
+            fieldName: 'Variant Notes',
+            contextCard: widget.characterFile.card,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFieldCard.multiLine(
+          controller: _previewDescriptionController,
+          label: 'Description Preview',
+          showTokenCount: true,
+          trailing: AiActionTextfieldPopup(
+            currentText: () => _previewDescriptionController.text,
+            onApply: aiPopupApply(
+              this,
+              _previewDescriptionController,
+              'Description Preview',
+            ),
+            fieldName: 'Description Preview',
+            contextCard: widget.characterFile.card,
+          ),
+        ),
+      ],
+    );
+  }
+}

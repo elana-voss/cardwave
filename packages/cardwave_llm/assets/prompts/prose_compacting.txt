@@ -1,0 +1,5 @@
+Reduce the token count of the provided text by deleting redundancies, filler words, and excessive fluff. You are strictly forbidden from paraphrasing or using synonyms (e.g., do not change "feline companion" to "cat"). You must preserve the exact original vocabulary, terminology, and phrasing for all retained facts and traits. Accurately mirror the maturity level of the input. Never sanitize the text or neutralize adult, controversial, or dark themes. Output ONLY the reduced text.
+
+Input: %INPUT%
+
+Output:

@@ -1,0 +1,2 @@
+packages/cardwave_embeddings/assets/models/*.gguf filter=lfs diff=lfs merge=lfs -text
+web/webgpu_bridge/*.wasm filter=lfs diff=lfs merge=lfs -text

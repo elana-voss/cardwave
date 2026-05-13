@@ -1,0 +1,5 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing {{char}}'s face in close-up. The clip will be {{duration_seconds}} seconds long — describe ONE sustained micro-motion, not a sequence of expressions.
+
+Mention {{char}}'s species, gender, hair, and facial features visible above the neck. If recent chat history is provided, infer the character's current emotion and pick ONE subtle motion that fits (a slow blink, a faint smile forming, eyes tracking sideways, a soft exhale parting the lips). Describe the motion explicitly; a frozen expression is not a video prompt.
+
+Also name camera framing ("extreme close-up" / "tight close-up") and lighting. Do not describe anything below the neck. Do not include speech, inner thoughts, or non-visual qualities. Reply with prose only — no tag lists, no bullet points.

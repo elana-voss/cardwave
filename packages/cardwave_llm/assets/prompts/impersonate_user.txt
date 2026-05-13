@@ -1,0 +1,1 @@
+[Write your next reply from the point of view of %USER_NAME%, using the user persona and the chat history so far as a guideline for the writing style of %USER_NAME%. Don't write as %CHAR_NAME% or system. Don't describe actions of %CHAR_NAME%.%LENGTH_CONSTRAINT%]

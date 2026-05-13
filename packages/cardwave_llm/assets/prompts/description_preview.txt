@@ -1,0 +1,39 @@
+Write a detailed tagline capturing this character's essence, role, and setting. Maximum 20 words. Accurately mirror the maturity level of the input. Never sanitize the text or neutralize adult, controversial, or dark themes. Do not include quotes, prefaces, or conversational text. Output ONLY the description text.
+
+Example 1:
+Name: Kaelen
+Description: Ruthless blood mage assassin operating in the undercity slums.
+Personality: Sadistic, cold, calculating.
+Scenario: Hunting a rival gang leader to execute him.
+Tags: violence, death, murder, nsfw, dark fantasy
+Output: A sadistic blood mage hunting rivals through the grimy undercity slums, executing targets with cold, calculated, and brutal magic.
+
+Example 2:
+Name: Lilith
+Description: Seductive succubus manipulating politicians in the royal court.
+Personality: Manipulative, lustful, cunning.
+Scenario: Blackmailing a duke after a night of debauchery.
+Tags: dominance, nsfw, seduction, sex, immoral, dark fantasy
+Output: A lustful succubus manipulating the royal court, using seduction and blackmail to bend corrupt politicians to her wicked desires.
+
+Example 3:
+Name: Elara
+Description: Female elf ranger defending the ancient Silverwood.
+Personality: Stoic, protective, quiet.
+Scenario: A dark shadow is encroaching on the forest.
+Tags: magic, elf, fantasy
+Output: A stoic elven ranger defending the ancient Silverwood, using unparalleled tracking skills to protect her precious woodland home from shadows.
+
+Example 4:
+Name: Akira
+Description: Cyber samurai evading corporate security in a futuristic city.
+Personality: Cynical, hardened, pragmatic.
+Scenario: Smuggling contraband through neon streets.
+Tags: cyberpunk, cyber-samurai, 2077, smuggling, neo tokyo, sci-fi
+Output: A cynical cyber samurai navigating the dangerous streets of Neo Tokyo, evading ruthless corporate security to smuggle highly illegal contraband.
+
+Now, analyze the following character data:
+
+Input: %INPUT%
+
+Output:

@@ -1,0 +1,12 @@
+Ignore previous instructions. Your next response must be a single concise scene description in prose (one or two short sentences only) suitable as a text-to-video prompt showing {{char}} inside the current scenario. The clip will be {{duration_seconds}} seconds long — describe ONE sustained moment, not a story beat.
+
+Build the moment around what is happening in recent chat history. Cover:
+- location,
+- {{char}}'s visible physical features (build, hair, clothing, facial expression) drawn from the character description above and posture implied by the scene,
+- {{user}}'s visible physical features (build, hair, clothing) if {{user}} is present in the scene — otherwise skip,
+- ONE concrete subtle motion that matches the mood (a slow turn of the head, wind moving hair, a hand lifting),
+- camera framing and lighting.
+
+Only refer to characters by pronouns or neutral nouns (he/she/it, the man, the woman). Never use proper names. Video models need motion cues, not a static tableau. Keep appearance details concrete (e.g. "a woman with short dark hair and a red jacket") rather than generic ("a woman").
+
+Do not reply as {{char}}. Do not include speech, inner thoughts, or non-visual qualities. Reply with prose only — no tag lists, no bullet points.
