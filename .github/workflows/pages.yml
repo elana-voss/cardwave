@@ -54,7 +54,12 @@ jobs:
       - name: Compose site (landing + app)
         run: |
           mkdir -p _site
-          cp -r deploy/public_landing_v4/* _site/
+          cp -r deploy/public_landing_v5/* _site/
+          # Substitute the current pubspec version into version.json so the
+          # in-app updater detects new releases. release_notes ships with
+          # whatever the source file declares (edit manually per release).
+          RAW=$(grep '^version: ' pubspec.yaml | awk '{print $2}')
+          sed -i "s/\"latest_version\": \"[^\"]*\"/\"latest_version\": \"$RAW\"/" _site/version.json
           mkdir -p _site/app
           cp -r build/web/* _site/app/
           echo cardwave.cc > _site/CNAME
