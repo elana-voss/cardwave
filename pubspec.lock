@@ -771,9 +771,9 @@ packages:
     dependency: "direct overridden"
     description:
       path: "."
-      ref: fc98c90bc260a26f0aa32fa816a5de989f1191ea
-      resolved-ref: fc98c90bc260a26f0aa32fa816a5de989f1191ea
-      url: "https://github.com/leehack/llamadart.git"
+      ref: af4cbce20d54235dedf00dd741794cec2632a712
+      resolved-ref: af4cbce20d54235dedf00dd741794cec2632a712
+      url: "https://github.com/elana-voss/llamadart.git"
     source: git
     version: "0.6.12"
   logging:

@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.1.0
+version: 0.1.1
 
 workspace:
   - packages/cardwave_llm
@@ -79,14 +79,17 @@ dev_dependencies:
   # block in analysis_options.yaml; it resolves its own deps separately and
   # does NOT need to be a dev_dependency here.
 
-# Tracks llamadart PRs #113 (Blackwell sm_120 + main_gpu Dart field) and
-# #121 (WebGPU n_batch=n_ctx cascade so BERT encoders don't abort on web).
-# Drop this block and bump the version constraint when v0.6.12 ships.
+# Pinned to a cardwave fork of llamadart at b9016 (upstream commit
+# fc98c90b, PR #121 merge). The fork redirects the windows-x64 native
+# bundle to elana-voss/llamadart-native-overrides, which ships a
+# rebuilt ggml-vulkan.dll without cooperative-matrix property queries
+# (works around NVIDIA Blackwell + AMD AMDVLK iGPU driver crashes).
+# See app/README.md "Windows: GPU compatibility".
 dependency_overrides:
   llamadart:
     git:
-      url: https://github.com/leehack/llamadart.git
-      ref: fc98c90bc260a26f0aa32fa816a5de989f1191ea
+      url: https://github.com/elana-voss/llamadart.git
+      ref: af4cbce20d54235dedf00dd741794cec2632a712
 
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate
@@ -97,7 +100,7 @@ hooks:
     llamadart:
       llamadart_native_backends:
         platforms:
-          windows-x64: [cpu, cuda]
+          windows-x64: [cpu, vulkan]
 
   # flutter_launcher_icons removed from regular deps to free up cli_util/analyzer
   # constraints that block import_lint. It now runs as a globally activated tool

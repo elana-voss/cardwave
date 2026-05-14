@@ -25,6 +25,17 @@ AI character cards editor + chat. Author SillyTavern-compatible cards, chat with
 3. Import a character card (PNG with embedded JSON) or create one
 4. Start chatting
 
+## Windows: GPU compatibility
+
+A bug in some recent laptop GPU drivers can crash Cardwave on startup. Cardwave already includes a workaround — no action needed from you.
+
+Affected hardware reported so far:
+
+- NVIDIA GeForce RTX 50-series (Blackwell) laptop GPUs
+- AMD Strix Point laptops with integrated Radeon graphics (e.g. Radeon 860M in Ryzen AI 9 HX 370)
+
+If you crash on launch on a different GPU, please open an issue. Driver-bug trackers (for reference): [NVIDIA forum](https://forums.developer.nvidia.com/t/blackwell-rtx-5050-laptop-sm-120-vulkan-driver-crashes-in-cooperative-matrix-property-queries/369162), [AMDVLK #422](https://github.com/GPUOpen-Drivers/AMDVLK/issues/422).
+
 ## License & commercial restrictions
 
 This project is **source-available**, not OSI open source.
