@@ -55,6 +55,13 @@ jobs:
         run: |
           mkdir -p _site
           cp -r deploy/public_landing_v4/* _site/
+          # Substitute the current pubspec version into the landing-page
+          # download URLs so they always resolve against the latest release.
+          # Without this, the four /releases/latest/download/<filename> links
+          # in index.html silently 404 after each version bump.
+          RAW=$(grep '^version: ' pubspec.yaml | awk '{print $2}')
+          sed -i "s/Cardwave-Windows-[0-9][0-9.]*\.zip/Cardwave-Windows-$RAW.zip/g" _site/index.html
+          sed -i "s/Cardwave-Android-[0-9][0-9.]*\.apk/Cardwave-Android-$RAW.apk/g" _site/index.html
           mkdir -p _site/app
           cp -r build/web/* _site/app/
           echo cardwave.cc > _site/CNAME
