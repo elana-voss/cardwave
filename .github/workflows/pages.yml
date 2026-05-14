@@ -39,16 +39,30 @@ jobs:
           MAJOR_MINOR=$(echo "$RAW" | cut -d. -f1-2)
           echo "APP_VERSION_MM=$MAJOR_MINOR" >> $GITHUB_ENV
 
+      # On a landing-only push (only deploy/** changed), the cache key
+      # matches the previous build, build/web/ is restored, and the
+      # Flutter SDK setup + pub get + wasm build are all skipped. On
+      # any app change the hash differs and the full build runs.
+      - name: Cache Flutter web build
+        id: cache-web
+        uses: actions/cache@v4
+        with:
+          path: build/web
+          key: web-${{ env.APP_VERSION_MM }}-${{ hashFiles('lib/**', 'web/**', 'pubspec.yaml', 'pubspec.lock', 'packages/**') }}
+
       - name: Setup Flutter
+        if: steps.cache-web.outputs.cache-hit != 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Pub get
+        if: steps.cache-web.outputs.cache-hit != 'true'
         run: flutter pub get
 
       - name: Build web (wasm)
+        if: steps.cache-web.outputs.cache-hit != 'true'
         run: flutter build web --wasm --base-href=/cardwave/app/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
 
       - name: Compose site (landing + app)
