@@ -57,6 +57,7 @@ jobs:
           cp -r deploy/public_landing_v4/* _site/
           mkdir -p _site/app
           cp -r build/web/* _site/app/
+          echo cardwave.cc > _site/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
