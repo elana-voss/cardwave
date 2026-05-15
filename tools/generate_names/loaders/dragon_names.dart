@@ -12,6 +12,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'candidate_record.dart';
 import 'local_taxonomy.dart';
 
@@ -27,7 +29,7 @@ LoaderResult loadDragonNames() {
   final firstNames = <CandidateFirstName>[];
 
   for (final entity in dir.listSync().whereType<File>()) {
-    final filename = entity.uri.pathSegments.last;
+    final filename = p.basename(entity.path);
     if (!filename.endsWith('-dragon-names.json')) continue;
 
     final entries = jsonDecode(entity.readAsStringSync()) as List<dynamic>;

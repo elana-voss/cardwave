@@ -10,6 +10,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'candidate_record.dart';
 import 'country_map.dart';
 import 'local_taxonomy.dart';
@@ -29,7 +31,7 @@ LoaderResult loadPhilipperemy() {
   final lastNames = <CandidateLastName>[];
 
   for (final entity in dir.listSync().whereType<File>()) {
-    final filename = entity.uri.pathSegments.last;
+    final filename = p.basename(entity.path);
     if (!filename.endsWith('.json')) continue;
 
     final match = _filenameRe.firstMatch(filename);

@@ -350,13 +350,6 @@ class ChatController extends BaseChatViewController
   Future<void> impersonateUser() async {
     if (isDisposed || isGenerating) return;
 
-    final userName = chatSession.personaName.isNotEmpty
-        ? chatSession.personaName
-        : settingsService.settings.activePersona.name;
-    final charName = characterFile.card.nickname?.isNotEmpty == true
-        ? characterFile.card.nickname!
-        : characterFile.card.name;
-
     final lengthConstraint = _calculateUserLengthConstraint();
     var prompt = promptRepository.impersonateUser;
     prompt = prompt.replaceAll('%USER_NAME%', userName);

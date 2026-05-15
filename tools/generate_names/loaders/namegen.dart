@@ -12,6 +12,8 @@
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'candidate_record.dart';
 import 'local_taxonomy.dart';
 
@@ -75,7 +77,7 @@ LoaderResult loadNamegen() {
   final lastNames = <CandidateLastName>[];
 
   for (final file in dir.listSync().whereType<File>()) {
-    final filename = file.uri.pathSegments.last;
+    final filename = p.basename(file.path);
     if (!filename.endsWith('_names.go')) continue;
     if (filename == 'namegen.go') continue; // package-level, not data
 
@@ -87,7 +89,7 @@ LoaderResult loadNamegen() {
       if (meta == null) continue;
 
       for (final m in _stringRe.allMatches(body)) {
-        final name = m.group(1)!.trim();
+        final name = (m.group(1) ?? '').trim();
         if (name.isEmpty) continue;
         if (meta.isLast) {
           lastNames.add(

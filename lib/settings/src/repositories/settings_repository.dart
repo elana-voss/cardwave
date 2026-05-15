@@ -10,8 +10,8 @@ class SettingsRepository {
 
   String get appDataPath => _appDataPath;
 
-  void init(String appDataPath) {
-    _appDataPath = appDataPath;
+  void init(String path) {
+    _appDataPath = path;
   }
 
   String? pathResolver(StorageDomainEnum domain) {

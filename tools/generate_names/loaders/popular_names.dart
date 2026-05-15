@@ -43,7 +43,7 @@ List<CandidateFirstName> _loadForenames() {
   for (var i = 1; i < lines.length; i++) {
     final cols = _splitCsv(lines[i]);
     if (cols.length < 12) continue;
-    final country = cols[0].trim();
+    final country = cols.first.trim();
     final genderCode = cols[9].trim();
     final romanizedName = cols[11].trim();
     if (romanizedName.isEmpty || country.isEmpty) continue;
@@ -74,7 +74,7 @@ List<CandidateLastName> _loadSurnames() {
   for (var i = 1; i < lines.length; i++) {
     final cols = _splitCsv(lines[i]);
     if (cols.length < 6) continue;
-    final country = cols[0].trim();
+    final country = cols.first.trim();
     final romanizedName = cols[5].trim();
     if (romanizedName.isEmpty || country.isEmpty) continue;
     final ethnicity = isoCountryToEthnicity[country];

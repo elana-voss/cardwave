@@ -137,12 +137,12 @@ class LoggingService {
   }
 
   /// Logs a warning
-  void warning(String message, [Object? error, StackTrace? stackTrace]) {
+  void warning(String message, [Object? exception, StackTrace? stackTrace]) {
     _addLog(
       LogEntry(
         level: LogLevelEnum.warning,
         message: _sanitize(message),
-        error: error,
+        error: exception,
         stackTrace: stackTrace,
       ),
     );
@@ -151,7 +151,7 @@ class LoggingService {
   /// Logs an error with optional exception and stack trace
   void error(
     String message, [
-    Object? error,
+    Object? exception,
     StackTrace? stackTrace,
     String? dataContext,
   ]) {
@@ -159,7 +159,7 @@ class LoggingService {
       LogEntry(
         level: LogLevelEnum.error,
         message: _sanitize(message),
-        error: error,
+        error: exception,
         stackTrace: stackTrace,
         dataContext: dataContext,
       ),

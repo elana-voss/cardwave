@@ -19,6 +19,8 @@
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'candidate_record.dart';
 import 'local_taxonomy.dart';
 
@@ -42,7 +44,7 @@ LoaderResult loadSsaBabyNames() {
   final byName = <String, _NameStats>{};
 
   for (final entity in dir.listSync().whereType<File>()) {
-    final filename = entity.uri.pathSegments.last;
+    final filename = p.basename(entity.path);
     final match = _yobFilenameRe.firstMatch(filename);
     if (match == null) continue;
     final year = int.parse(match.group(1)!);
@@ -51,7 +53,7 @@ LoaderResult loadSsaBabyNames() {
       if (line.isEmpty) continue;
       final parts = line.split(',');
       if (parts.length < 3) continue;
-      final name = parts[0].trim();
+      final name = parts.first.trim();
       final genderCode = parts[1].trim();
       final count = int.tryParse(parts[2].trim()) ?? 0;
       if (name.isEmpty || count <= 0) continue;
