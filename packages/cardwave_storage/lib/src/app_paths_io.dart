@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:cardwave/common/src/utils/app_constants.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<String> getNativeAppDataPath() async {
+Future<String> getNativeAppDataPath(String appName) async {
   if (Platform.isWindows) {
     final appData = Platform.environment['APPDATA'];
     if (appData != null) {
-      return '$appData${Platform.pathSeparator}${AppConstants.appPackageName}_Editor';
+      return '$appData${Platform.pathSeparator}${appName}_Editor';
     }
   } else if (Platform.isAndroid || Platform.isIOS) {
     final dir = await getApplicationDocumentsDirectory();
@@ -17,7 +16,7 @@ Future<String> getNativeAppDataPath() async {
   return Directory.current.path;
 }
 
-Future<String> getNativeDefaultCharacterPath() async {
+Future<String> getNativeDefaultCharacterPath(String appName) async {
   String? docPath;
   if (Platform.isWindows) {
     final userProfile = Platform.environment['USERPROFILE'];
@@ -36,5 +35,5 @@ Future<String> getNativeDefaultCharacterPath() async {
 
   if (docPath == null) return Directory.current.path;
 
-  return '$docPath${Platform.pathSeparator}${AppConstants.appPackageName}';
+  return '$docPath${Platform.pathSeparator}$appName';
 }

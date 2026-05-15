@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:cardwave/common/common.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 
 /// Raw bytes IO for the per-card sidecar file. No domain types; the
 /// repository layer above wraps these in `CardSearchData` decode/encode.

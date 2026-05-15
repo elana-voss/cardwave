@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:path/path.dart' as p;
 
 /// Raw IO for [GroupFile]s.

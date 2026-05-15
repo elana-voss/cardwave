@@ -6,6 +6,7 @@ version: 0.1.1
 workspace:
   - packages/cardwave_llm
   - packages/cardwave_embeddings
+  - packages/cardwave_storage
 
 environment:
   sdk: ^3.10.8
@@ -33,6 +34,12 @@ dependencies:
   cardwave_embeddings:
     path: packages/cardwave_embeddings
 
+  # The cardwave_storage package owns the cross-platform storage shim:
+  # IndexedDB on web (via fs_shim + idb_shim), dart:io on native. Owns
+  # the AppStorage facade, StorageDomainEnum, and the native-path helpers.
+  cardwave_storage:
+    path: packages/cardwave_storage
+
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.
   schemantic: ^0.1.1
@@ -43,8 +50,6 @@ dependencies:
   path: ^1.9.1
   markdown_widget: ^2.3.2+8
   markdown: ^7.3.0
-  idb_shim: ^2.8.4+1
-  fs_shim: ^2.5.1
   url_launcher: ^6.3.2
   path_provider: ^2.1.2
   package_info_plus: ^10.0.0

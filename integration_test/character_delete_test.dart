@@ -1,7 +1,7 @@
 import 'package:cardwave/character/character.dart';
-import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/grid.dart';
 import 'package:cardwave/main.dart' as app;
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

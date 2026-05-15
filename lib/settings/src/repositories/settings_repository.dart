@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/settings/src/models/llm_providers_recovery.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 
 class SettingsRepository {
   late final String _appDataPath;

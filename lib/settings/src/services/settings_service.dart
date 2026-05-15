@@ -4,6 +4,7 @@ import 'package:cardwave/settings/src/models/llm_providers_recovery.dart';
 import 'package:cardwave/settings/src/repositories/settings_repository.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class SettingsService extends ChangeNotifier {
@@ -72,7 +73,8 @@ class SettingsService extends ChangeNotifier {
       }
     }
 
-    _settings.characterPath ??= await getNativeDefaultCharacterPath();
+    _settings.characterPath ??=
+        await getNativeDefaultCharacterPath(AppConstants.appPackageName);
     _settingsRepository.setCardsPath(_settings.characterPath);
     notifyListeners();
   }

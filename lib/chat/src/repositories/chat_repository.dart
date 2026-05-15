@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/repositories/io_chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 

@@ -478,7 +478,7 @@ packages:
     source: sdk
     version: "0.0.0"
   fs_shim:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: fs_shim
       sha256: "4f73b6e3ba964f2580727c3cc5cffe10a807b0bae534c9ad979b95472ffce551"
@@ -595,7 +595,7 @@ packages:
     source: hosted
     version: "4.1.2"
   idb_shim:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: idb_shim
       sha256: d46b09e116508e817f5ea2d8e1f6f55fb98bf7966175152809fd29791bfba3b8

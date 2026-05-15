@@ -4,6 +4,7 @@ import 'package:cardwave/character/src/models/taxonomy_data.dart';
 import 'package:cardwave/character/src/models/taxonomy_group.dart';
 import 'package:cardwave/character/src/models/taxonomy_tag.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:schemantic/schemantic.dart';
 

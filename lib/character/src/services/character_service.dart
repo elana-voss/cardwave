@@ -8,6 +8,7 @@ import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/settings/settings.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show PlatformException;

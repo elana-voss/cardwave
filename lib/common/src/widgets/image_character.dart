@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:cardwave/common/src/storage/app_storage.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

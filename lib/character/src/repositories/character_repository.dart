@@ -4,6 +4,7 @@ import 'package:cardwave/character/src/models/character_card_v3.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/repositories/io_character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/services.dart';
 
 class CharacterRepository {

@@ -1,6 +1,7 @@
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/repositories/io_group.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 
 class GroupRepository {
   GroupRepository({required this.loggingService, required this.appStorage})

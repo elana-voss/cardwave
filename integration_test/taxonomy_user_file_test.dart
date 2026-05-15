@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/main.dart' as app;
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

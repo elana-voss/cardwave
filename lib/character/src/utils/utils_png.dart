@@ -6,6 +6,7 @@ import 'package:cardwave/character/src/models/character_card_v2.dart';
 import 'package:cardwave/character/src/models/character_card_v3.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:crclib/catalog.dart' as cat;
 import 'package:crclib/crclib.dart' as crc;
 import 'package:file_selector/file_selector.dart';

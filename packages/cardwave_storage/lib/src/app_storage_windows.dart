@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io' as io; // Imported specifically for the native watcher
 import 'dart:typed_data';
 
-import 'package:cardwave/common/src/storage/app_storage.dart';
-import 'package:cardwave/common/src/storage/storage_exception.dart';
+import 'package:cardwave_storage/src/app_storage.dart';
+import 'package:cardwave_storage/src/storage_exception.dart';
 import 'package:fs_shim/fs_io.dart';
 import 'package:path/path.dart' as p;
 

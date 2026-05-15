@@ -1,0 +1,23 @@
+name: cardwave_storage
+description: "Cross-platform storage shim: IndexedDB on web, dart:io on native."
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  fs_shim: ^2.5.1
+  idb_shim: ^2.8.4+1
+  path: ^1.9.1
+  path_provider: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0
+  import_lint: ^0.1.6

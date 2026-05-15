@@ -13,6 +13,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 
 /// Adds image-generation orchestration plus the tool-dispatch closure
 /// builder to any chat controller.

@@ -2,6 +2,8 @@
 /// since the Web uses IndexedDB domains instead of absolute paths. The
 /// `Future<String>` return type matches the desktop implementations
 /// (which do real filesystem I/O) so callers share one signature.
-Future<String> getNativeAppDataPath() => Future.value('');
+/// `appName` is unused here (web has no app-data folder concept) but
+/// accepted to match the native signature.
+Future<String> getNativeAppDataPath(String appName) => Future.value('');
 
-Future<String> getNativeDefaultCharacterPath() => Future.value('');
+Future<String> getNativeDefaultCharacterPath(String appName) => Future.value('');

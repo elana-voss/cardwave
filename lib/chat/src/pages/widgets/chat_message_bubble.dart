@@ -19,6 +19,7 @@ import 'package:cardwave/chat/src/pages/widgets/chat_message_bubble/video_player
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';

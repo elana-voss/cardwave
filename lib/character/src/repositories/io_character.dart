@@ -5,6 +5,7 @@ import 'package:cardwave/character/src/models/character_card_v3.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/utils/utils_png.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:path/path.dart' as p;

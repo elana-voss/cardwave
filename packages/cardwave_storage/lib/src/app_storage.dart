@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 // Conditional exports: routes to the correct file at compile time
-import 'package:cardwave/common/src/storage/app_storage_stub.dart'
+import 'package:cardwave_storage/src/app_storage_stub.dart'
     if (dart.library.io) 'app_storage_windows.dart'
     if (dart.library.js_interop) 'app_storage_web.dart'
     if (dart.library.html) 'app_storage_web.dart';
-import 'package:cardwave/common/src/storage/storage_exception.dart';
+import 'package:cardwave_storage/src/storage_exception.dart';
 
 enum StorageDomainEnum { settings, cards }
 

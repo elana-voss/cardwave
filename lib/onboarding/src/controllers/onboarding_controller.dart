@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 
@@ -190,12 +191,12 @@ class OnboardingController extends ChangeNotifier {
   Future<void> finishOnboarding() async {
     if (skipStorageStep) {
       settingsService.settings.characterPath =
-          await getNativeDefaultCharacterPath();
+          await getNativeDefaultCharacterPath(AppConstants.appPackageName);
     } else if (selectedPath != null) {
       settingsService.settings.characterPath = selectedPath;
     } else if (useDefaultPath) {
       settingsService.settings.characterPath =
-          await getNativeDefaultCharacterPath();
+          await getNativeDefaultCharacterPath(AppConstants.appPackageName);
     }
 
     if (hasAiConnected) {

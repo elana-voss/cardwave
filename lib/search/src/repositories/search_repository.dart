@@ -1,8 +1,8 @@
-import 'package:cardwave/common/common.dart';
 import 'package:cardwave/search/src/models/card_search_data.dart';
 import 'package:cardwave/search/src/observability/embeddings_loggers.dart';
 import 'package:cardwave/search/src/repositories/io_search.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 
 /// Typed read/write of `CardSearchData` against the per-card sidecar.
 /// Returns `null` from [read] when the file is missing or fails to decode

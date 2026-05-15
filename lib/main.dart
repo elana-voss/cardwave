@@ -14,6 +14,7 @@ import 'package:cardwave/search/src/repositories/search_repository.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -170,7 +171,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         }
       });
 
-      final nativeDataPath = await getNativeAppDataPath();
+      final nativeDataPath =
+          await getNativeAppDataPath(AppConstants.appPackageName);
 
       await _maybeFreshReset(nativeDataPath);
 
