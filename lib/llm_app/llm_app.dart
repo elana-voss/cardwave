@@ -9,9 +9,9 @@
 // `lib/settings/`).
 
 export 'src/media/media_resolver.dart';
+export 'src/media/media_settings_grid_body.dart'
+    show MediaSettingsGridBody;
 export 'src/media/media_validator.dart';
 export 'src/media/widgets/media_settings_grid_field_enum.dart'
     show MediaSettingsGridFocus;
-export 'src/media/widgets/media_settings_grid_page.dart'
-    show MediaSettingsGridBody;
 export 'src/models/config_media.dart';
