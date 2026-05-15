@@ -257,7 +257,9 @@ class _PrimaryChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settingsService = context.watch<SettingsService>();
+    final chatTheme = context.select<SettingsService, ChatTheme>(
+      (s) => s.settings.chatTheme,
+    );
 
     if (primaryChatController.isLoading) {
       return Center(
@@ -296,7 +298,7 @@ class _PrimaryChat extends StatelessWidget {
       ),
       child: ChatView(
         characterFile: characterFile,
-        theme: settingsService.settings.chatTheme,
+        theme: chatTheme,
         onNewChat: () => primaryChatController.promptNewChat(context),
       ),
     );
@@ -334,7 +336,9 @@ class _AssistantChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final settingsService = context.watch<SettingsService>();
+    final chatTheme = context.select<SettingsService, ChatTheme>(
+      (s) => s.settings.chatTheme,
+    );
 
     return ListenableBuilder(
       listenable: assistantChatController,
@@ -372,7 +376,7 @@ class _AssistantChat extends StatelessWidget {
           ),
           child: ChatView(
             characterFile: assistantChatController.characterFile,
-            theme: settingsService.settings.chatTheme,
+            theme: chatTheme,
             onNewChat: () => assistantChatController.promptNewChat(context),
           ),
         );

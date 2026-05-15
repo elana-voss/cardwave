@@ -523,11 +523,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsService = context.watch<SettingsService>();
+    final onboardingComplete = context.select<SettingsService, bool>(
+      (s) => s.settings.onboardingComplete,
+    );
     final navigationService = context.watch<NavigationService>();
     final settingsDisplay = context.watch<ThemeNotifier>();
 
-    final isFirstLaunch = !settingsService.settings.onboardingComplete;
+    final isFirstLaunch = !onboardingComplete;
 
     return MaterialApp(
       navigatorKey: navigationService.navigatorKey,

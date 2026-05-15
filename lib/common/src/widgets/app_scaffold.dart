@@ -34,14 +34,12 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Check if the provider is missing globally
-    final settingsService = context.watch<SettingsService>();
-    final hasProvider = settingsService.settings.providerConfigs.isNotEmpty;
+    final hasProvider = context.select<SettingsService, bool>(
+      (s) => s.settings.providerConfigs.isNotEmpty,
+    );
 
-    // 2. Prepare the main content
     var content = body;
 
-    // 3. If missing, inject the banner at the TOP of the page layout
     if (!hasProvider) {
       content = Column(
         children: [
@@ -75,10 +73,10 @@ class _MissingProviderBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Watching means the banner re-checks (and hides itself) as soon as a
-    // provider is configured — e.g. when the user finishes onboarding.
-    final profiles = context.watch<SettingsService>().settings.providerConfigs;
-    if (profiles.isNotEmpty) {
+    final hasProvider = context.select<SettingsService, bool>(
+      (s) => s.settings.providerConfigs.isNotEmpty,
+    );
+    if (hasProvider) {
       return const SizedBox.shrink();
     }
 
@@ -110,8 +108,6 @@ class _MissingProviderBanner extends StatelessWidget {
                   ).colorScheme.onErrorContainer,
                   foregroundColor: Theme.of(context).colorScheme.errorContainer,
                 ),
-                // No post-return work needed — `context.watch` above rebuilds
-                // (and hides) the banner once onboarding adds a provider.
                 onPressed: () => Navigator.of(
                   context,
                 ).pushNamed(AppRoutesEnum.onboarding.name),

@@ -285,7 +285,9 @@ class _NarrowChatBody extends StatelessWidget {
       );
     }
     final firstChar = controller.characters.first;
-    final theme = context.watch<SettingsService>().settings.chatTheme;
+    final theme = context.select<SettingsService, ChatTheme>(
+      (s) => s.settings.chatTheme,
+    );
 
     return Stack(
       fit: StackFit.expand,
@@ -308,7 +310,9 @@ class _WideLayout extends StatelessWidget {
     // ignore: qcheck/avoid_unsafe_collection_methods
     final firstChar = isEmpty ? null : controller.characters.first;
     final lastSpeaker = controller.lastSpeaker;
-    final theme = context.watch<SettingsService>().settings.chatTheme;
+    final theme = context.select<SettingsService, ChatTheme>(
+      (s) => s.settings.chatTheme,
+    );
 
     return Stack(
       fit: StackFit.expand,
