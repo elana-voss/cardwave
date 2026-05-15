@@ -17,6 +17,9 @@ sentinel fields each loader couldn't fill from source metadata.
 
 - A working `dart` / `flutter` toolchain (uses the app's pubspec).
 - `git` on PATH (the fetch step clones the corpus repos).
+- Python 3 on PATH (one corpus, `philipperemy`, ships Python pickles
+  that need a one-shot conversion to JSON before the Dart loader can
+  read them — see step 2 below).
 - An Anthropic API key (Phase 2 only).
 
 ## Usage
@@ -24,6 +27,7 @@ sentinel fields each loader couldn't fill from source metadata.
 ```
 # From the app/ folder:
 dart run tools/generate_names/dataset_fetch.dart
+python tools/generate_names/philipperemy_to_json.py
 dart run tools/generate_names/build_candidate.dart
 dart run --define=ANTHROPIC_API_KEY=sk-ant-... tools/generate_names/classify.dart
 ```
@@ -31,6 +35,12 @@ dart run --define=ANTHROPIC_API_KEY=sk-ant-... tools/generate_names/classify.dar
 `dataset_fetch.dart` is idempotent: re-running is a no-op once
 `../memory-bank/name_datasets/.fetched` exists. To force a refresh,
 delete that marker file and re-run.
+
+`philipperemy_to_json.py` reads the two pickles
+(`philipperemy/names_dataset/v3/{first,last}_names.pkl.gz`) and pivots
+them into per-country JSON files at
+`philipperemy/converted/<COUNTRY>_{first,last}.json`. Top 2000 names per
+country by rank. Idempotent — skips if `converted/.done` exists.
 
 `build_candidate.dart` (Phase 1, no API cost) runs the 11 per-corpus
 loaders, dedupes case-insensitive across sources, fills source-deducible
@@ -46,8 +56,8 @@ re-billing.
 
 > `build_candidate.dart`, `classify.dart`, and `inspect.dart` are pending
 > implementation. The README documents the intended flow so consumers
-> know what to run once the scripts ship. `dataset_fetch.dart` is in
-> place today.
+> know what to run once the scripts ship. `dataset_fetch.dart` and
+> `philipperemy_to_json.py` are in place today.
 
 ### Useful flags
 
