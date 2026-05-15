@@ -92,14 +92,9 @@ class GroupChatController extends BaseChatViewController
   final ChatSession _session;
 
   bool _isAutoChatActive = false;
-  bool _isImproving = false;
 
-  @override
-  bool isGenerating = false;
   String? _lastSpeakerId;
-  bool _isDisposed = false;
   bool _userDetached = false;
-  ValueNotifier<bool>? _cancelToken;
 
   @override
   bool get userDetached => _userDetached;
@@ -184,17 +179,17 @@ class GroupChatController extends BaseChatViewController
   /// fields directly (e.g. TTS voice/language) and need a save trigger.
   void persistSession() {
     _saveSession();
-    if (_isDisposed) return;
+    if (isDisposed) return;
     notifyListeners();
   }
 
   void _saveSession() {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     unawaited(_groupChatService.updateChat(_groupFile.id, _session));
   }
 
   Future<void> _saveGroupFile() async {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     await _groupFileService.saveGroup(_groupFile);
   }
 
@@ -208,7 +203,7 @@ class GroupChatController extends BaseChatViewController
   bool get supportsImproveInput => true;
 
   @override
-  bool get isProcessingInput => _isImproving;
+  bool get isProcessingInput => isImproving;
 
   // --- Public accessors ---
 
@@ -259,7 +254,7 @@ class GroupChatController extends BaseChatViewController
     bool? videoToolSendAllowed,
     bool? videoPromptReview,
   }) {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     if (isNsfw != null) _session.isNsfw = isNsfw;
     if (isScenario != null) _session.isScenario = isScenario;
     if (removeTrailingSentences != null) {
@@ -290,7 +285,7 @@ class GroupChatController extends BaseChatViewController
     String? overrideSystemPrompt,
     String? overrideMesExample,
   }) {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     final data = _session.groupData ??= GroupData();
     data.overrideScenario = _normalizeOverride(overrideScenario);
     data.overrideSystemPrompt = _normalizeOverride(overrideSystemPrompt);
@@ -306,7 +301,7 @@ class GroupChatController extends BaseChatViewController
   }
 
   void refresh() {
-    if (!_isDisposed) notifyListeners();
+    if (!isDisposed) notifyListeners();
   }
 
   // --- Display name / character resolution ---
@@ -356,7 +351,7 @@ class GroupChatController extends BaseChatViewController
   bool isMuted(String appCardId) => _mutedIds.contains(appCardId);
 
   void toggleMute(String appCardId) {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     if (_mutedIds.contains(appCardId)) {
       _mutedIds.remove(appCardId);
     } else {
@@ -369,7 +364,7 @@ class GroupChatController extends BaseChatViewController
   // --- Member management ---
 
   void addCharacter(CharacterFile character) {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     if (_groupFile.group.memberAppCardIds.contains(character.appCardId)) return;
     _groupFile.group.memberAppCardIds.add(character.appCardId);
     unawaited(_saveGroupFile());
@@ -377,7 +372,7 @@ class GroupChatController extends BaseChatViewController
   }
 
   void removeCharacter(String appCardId) {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     _groupFile.group.memberAppCardIds.remove(appCardId);
     _mutedIds.remove(appCardId);
     unawaited(_saveGroupFile());
@@ -389,7 +384,7 @@ class GroupChatController extends BaseChatViewController
 
   @override
   void dispose() {
-    _isDisposed = true;
+    isDisposed = true;
     stopGeneration();
     // Flush any pending debounced save so nothing is lost on close.
     unawaited(_groupChatService.flushChat(_groupFile.id, _session));
@@ -419,10 +414,10 @@ class GroupChatController extends BaseChatViewController
     _isAutoChatActive = true;
     notifyListeners();
 
-    while (_isAutoChatActive && !_isDisposed) {
+    while (_isAutoChatActive && !isDisposed) {
       await _generateNextCharacterTurn();
       final delay = autoChatDelay;
-      if (_isAutoChatActive && !_isDisposed && delay > Duration.zero) {
+      if (_isAutoChatActive && !isDisposed && delay > Duration.zero) {
         await Future.delayed(delay);
       }
     }
@@ -438,7 +433,7 @@ class GroupChatController extends BaseChatViewController
 
   @override
   void stopGeneration() {
-    _cancelToken?.value = true;
+    cancelToken?.value = true;
   }
 
   // --- Speaker selection ---
@@ -527,7 +522,7 @@ class GroupChatController extends BaseChatViewController
   }
 
   Future<void> _generateNextCharacterTurn() async {
-    if (isGenerating || _isDisposed) return;
+    if (isGenerating || isDisposed) return;
     final targetCharacter = _selectNextCharacter();
     if (targetCharacter == null) return;
     await _generateCharacterTurn(targetCharacter);
@@ -539,7 +534,7 @@ class GroupChatController extends BaseChatViewController
     ChatMessage? injectedMessage,
     String contentPrefix = '',
   }) async {
-    if (isGenerating || _isDisposed) return;
+    if (isGenerating || isDisposed) return;
 
     // First turn: use the character's greeting directly (no LLM call needed).
     if (existingMessage == null && _session.messages.isEmpty) {
@@ -558,7 +553,7 @@ class GroupChatController extends BaseChatViewController
 
     isGenerating = true;
     streamingContent.value = '';
-    _cancelToken = ValueNotifier(false);
+    cancelToken = ValueNotifier(false);
     notifyListeners();
 
     try {
@@ -644,7 +639,7 @@ class GroupChatController extends BaseChatViewController
       final stream = _executionService.generateChatReply(
         executionSession,
         effectiveSpeaker,
-        cancelToken: _cancelToken!,
+        cancelToken: cancelToken!,
         injectedMessage: effectiveInjected,
         dataContext: groupMembersLine,
         dispatchToolCalls: buildToolDispatch(targetMessage: replyMessage),
@@ -652,7 +647,7 @@ class GroupChatController extends BaseChatViewController
 
       List<ChatToolCallRecord> capturedRecords = const [];
       await for (final event in stream) {
-        if (_isDisposed || _cancelToken?.value == true) break;
+        if (isDisposed || cancelToken?.value == true) break;
         if (event is GenerationTokenEvent) {
           bufferedText += event.token;
           replyMessage.waitingFor = BubbleWaitingForEnum.streamingText;
@@ -705,7 +700,7 @@ class GroupChatController extends BaseChatViewController
       }
       _saveSession();
     } on Exception catch (e, stackTrace) {
-      if (_cancelToken?.value != true) {
+      if (cancelToken?.value != true) {
         LoggingService().error(
           'group chat: generateReplyFor failed',
           e,
@@ -715,10 +710,10 @@ class GroupChatController extends BaseChatViewController
         stopAutoChat();
       }
     } finally {
-      _cancelToken?.dispose();
-      _cancelToken = null;
+      cancelToken?.dispose();
+      cancelToken = null;
       isGenerating = false;
-      if (!_isDisposed) notifyListeners();
+      if (!isDisposed) notifyListeners();
     }
   }
 
@@ -830,102 +825,30 @@ class GroupChatController extends BaseChatViewController
   }
 
   @override
-  Future<void> improveInput() async {
-    final rawInput = inputController.text.trim();
-    if (rawInput.isEmpty || _isDisposed || isGenerating) return;
+  @protected
+  String get userName => _userName;
 
-    final userName = _userName;
-    final charName = lastSpeaker?.card.name ?? 'the group';
+  @override
+  @protected
+  String get charName => lastSpeaker?.card.name ?? 'the group';
 
-    var prompt = _promptRepository.improveUserMessagePostHistory;
-    prompt = prompt.replaceAll('%CURRENT_USER_MESSAGE%', rawInput);
-    prompt = prompt.replaceAll('%USER_NAME%', userName);
-    prompt = prompt.replaceAll('%CHAR_NAME%', charName);
+  @override
+  @protected
+  ChatExecutionService get executionService => _executionService;
 
-    final originalInput = rawInput;
-    _cancelToken = ValueNotifier(false);
-    isGenerating = true;
-    _isImproving = true;
-    inputController.clear();
-    notifyListeners();
+  @override
+  @protected
+  PromptRepository get promptRepository => _promptRepository;
 
-    var bufferedText = '';
-    var lastUpdateMs = 0;
+  @override
+  @protected
+  String get logTag => 'group chat';
 
-    try {
-      final stream = _executionService.generateUtilityResponseWithHistory(
-        _session,
-        cancelToken: _cancelToken!,
-        systemPrompt: _promptRepository.improveUserMessagePreHistory,
-        postHistoryPrompt: prompt,
-      );
-
-      await for (final event in stream) {
-        if (_isDisposed || _cancelToken?.value == true) break;
-        if (event is GenerationTokenEvent) {
-          bufferedText += event.token;
-          if (bufferedText.trimLeft().isEmpty) {
-            bufferedText = '';
-            continue;
-          }
-          final now = DateTime.now().millisecondsSinceEpoch;
-          if (now - lastUpdateMs > 250) {
-            inputController.value = TextEditingValue(
-              text: bufferedText,
-              selection: TextSelection.collapsed(offset: bufferedText.length),
-            );
-            lastUpdateMs = now;
-          }
-        } else if (event is GenerationCompleteEvent) {
-          bufferedText = event.finalContent;
-        }
-      }
-    } on Exception catch (e, stackTrace) {
-      if (_cancelToken?.value != true) {
-        LoggingService().error(
-          'group chat: generation stream failed',
-          e,
-          stackTrace,
-        );
-        NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
-      }
-    } finally {
-      if (_cancelToken?.value == true) {
-        if (!_isDisposed) {
-          inputController.value = TextEditingValue(
-            text: originalInput,
-            selection: TextSelection.collapsed(offset: originalInput.length),
-          );
-        }
-      } else {
-        var finalContent = bufferedText.trim();
-        finalContent = finalContent.replaceAll(RegExp(r'^"|"$'), '').trim();
-        finalContent = finalContent
-            .replaceAll(
-              RegExp(
-                r'^(Here is the improved message|Improved message|Improved):?\s*',
-                caseSensitive: false,
-              ),
-              '',
-            )
-            .trim();
-        if (!_isDisposed) {
-          inputController.value = TextEditingValue(
-            text: finalContent,
-            selection: TextSelection.collapsed(offset: finalContent.length),
-          );
-        }
-      }
-      _cancelToken?.dispose();
-      _cancelToken = null;
-      isGenerating = false;
-      _isImproving = false;
-      if (!_isDisposed) notifyListeners();
-    }
-  }
+  @override
+  ChatSession get chatSession => _session;
 
   void clearChat() {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     stopAutoChat();
     _session.messages.clear();
     _lastSpeakerId = null;
@@ -984,10 +907,10 @@ class GroupChatController extends BaseChatViewController
 
   @override
   void scrollToBottom({bool animated = true, bool force = false}) {
-    if (_isDisposed || !scrollController.hasClients) return;
+    if (isDisposed || !scrollController.hasClients) return;
     if (!force && _userDetached) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_isDisposed || !scrollController.hasClients) return;
+      if (isDisposed || !scrollController.hasClients) return;
       if (animated) {
         unawaited(
           scrollController.animateTo(
@@ -1013,6 +936,6 @@ class GroupChatController extends BaseChatViewController
     if (wasDetached && !nowDetached && isGenerating) {
       jumpToBottom();
     }
-    if (!_isDisposed) notifyListeners();
+    if (!isDisposed) notifyListeners();
   }
 }

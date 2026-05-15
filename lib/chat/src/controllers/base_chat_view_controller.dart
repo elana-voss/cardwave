@@ -1,6 +1,12 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_message.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
+import 'package:cardwave/chat/src/models/generation_event.dart';
+import 'package:cardwave/chat/src/services/chat_execution_service.dart';
+import 'package:cardwave/common/common.dart';
+import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 
 /// Shared contract for 1:1 and group chat controllers.
@@ -20,7 +26,20 @@ abstract class BaseChatViewController extends ChangeNotifier {
   // --- State ---
 
   List<ChatMessage> get messages;
-  bool get isGenerating;
+  bool isGenerating = false;
+  bool isImproving = false;
+
+  /// Subclass-mutable cancellation flag for the in-flight generation /
+  /// improvement stream. Null between runs; subclasses set it before
+  /// starting a stream and clear it in the finally block.
+  @protected
+  ValueNotifier<bool>? cancelToken;
+
+  /// Set true by the concrete `dispose()` before `super.dispose()` so any
+  /// async `await` gap can detect a disposed controller and skip writes
+  /// that would race against the now-disposed UI controllers.
+  @protected
+  bool isDisposed = false;
 
   /// The session this controller owns, or null for controllers that
   /// aggregate across sessions (none today — reserved for future multi-
@@ -70,6 +89,31 @@ abstract class BaseChatViewController extends ChangeNotifier {
   bool get supportsContinue => false;
   bool get supportsImproveInput => false;
 
+  // --- Subclass hooks read by the shared improveInput body ---
+
+  /// The user-side display name to substitute into improvement prompts
+  /// (e.g. the active persona's name in 1:1 chat, the group's user name
+  /// in group chat).
+  @protected
+  String get userName;
+
+  /// The character-side display name to substitute into improvement
+  /// prompts. 1:1 uses the chat character; group uses the last speaker
+  /// (or a generic fallback when no one has spoken yet).
+  @protected
+  String get charName;
+
+  @protected
+  ChatExecutionService get executionService;
+
+  @protected
+  PromptRepository get promptRepository;
+
+  /// Short prefix prepended to error logs from this controller's
+  /// generation paths, so log lines stay greppable per chat flavour.
+  @protected
+  String get logTag;
+
   // --- Core actions (both controllers implement these) ---
 
   Future<void> sendMessage();
@@ -84,7 +128,99 @@ abstract class BaseChatViewController extends ChangeNotifier {
   Future<void> changeSwipe(ChatMessage message) async {}
   Future<void> continueChat() async {}
   Future<void> impersonateUser() async {}
-  Future<void> improveInput() async {}
+
+  /// Improves the user's input by streaming an LLM rewrite back into
+  /// [inputController]. Cancellation restores the original text; success
+  /// applies the cleaned response (quote-strip + "Improved message:"-
+  /// prefix strip). Shared body for 1:1 and group chats; subclass hooks
+  /// [userName], [charName], [chatSession], [executionService],
+  /// [promptRepository], and [logTag] cover the per-flavour differences.
+  Future<void> improveInput() async {
+    final rawInput = inputController.text.trim();
+    if (rawInput.isEmpty || isDisposed || isGenerating) return;
+
+    var prompt = promptRepository.improveUserMessagePostHistory;
+    prompt = prompt.replaceAll('%CURRENT_USER_MESSAGE%', rawInput);
+    prompt = prompt.replaceAll('%USER_NAME%', userName);
+    prompt = prompt.replaceAll('%CHAR_NAME%', charName);
+
+    final originalInput = rawInput;
+    cancelToken = ValueNotifier(false);
+    isGenerating = true;
+    isImproving = true;
+    inputController.clear();
+    if (!isDisposed) notifyListeners();
+
+    var bufferedText = '';
+    var lastUpdateMs = 0;
+
+    try {
+      final stream = executionService.generateUtilityResponseWithHistory(
+        chatSession!,
+        cancelToken: cancelToken!,
+        systemPrompt: promptRepository.improveUserMessagePreHistory,
+        postHistoryPrompt: prompt,
+      );
+
+      await for (final event in stream) {
+        if (isDisposed || cancelToken?.value == true) break;
+        if (event is GenerationTokenEvent) {
+          bufferedText += event.token;
+          if (bufferedText.trimLeft().isEmpty) {
+            bufferedText = '';
+            continue;
+          }
+          final now = DateTime.now().millisecondsSinceEpoch;
+          if (now - lastUpdateMs > 250) {
+            inputController.value = TextEditingValue(
+              text: bufferedText,
+              selection: TextSelection.collapsed(offset: bufferedText.length),
+            );
+            lastUpdateMs = now;
+          }
+        } else if (event is GenerationCompleteEvent) {
+          bufferedText = event.finalContent;
+        }
+      }
+    } on Exception catch (e, stackTrace) {
+      if (cancelToken?.value != true) {
+        LoggingService().error('$logTag: improveInput failed', e, stackTrace);
+        NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
+      }
+    } finally {
+      if (cancelToken?.value == true) {
+        if (!isDisposed) {
+          inputController.value = TextEditingValue(
+            text: originalInput,
+            selection: TextSelection.collapsed(offset: originalInput.length),
+          );
+        }
+      } else {
+        var finalContent = bufferedText.trim();
+        finalContent = finalContent.replaceAll(RegExp(r'^"|"$'), '').trim();
+        finalContent = finalContent
+            .replaceAll(
+              RegExp(
+                r'^(Here is the improved message|Improved message|Improved):?\s*',
+                caseSensitive: false,
+              ),
+              '',
+            )
+            .trim();
+        if (!isDisposed) {
+          inputController.value = TextEditingValue(
+            text: finalContent,
+            selection: TextSelection.collapsed(offset: finalContent.length),
+          );
+        }
+      }
+      cancelToken?.dispose();
+      cancelToken = null;
+      isGenerating = false;
+      isImproving = false;
+      if (!isDisposed) notifyListeners();
+    }
+  }
 
   /// Storage domain-relative folder that holds this chat's persistent
   /// sidecars (session JSON, TTS audio cache, generated video files, etc.).

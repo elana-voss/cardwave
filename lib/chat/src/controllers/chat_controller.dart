@@ -62,6 +62,7 @@ class ChatController extends BaseChatViewController
   final CharacterService characterService;
   final SettingsService settingsService;
   final LlmPureHelpers pureHelpers;
+  @override
   final PromptRepository promptRepository;
   final ChatExecutionService chatExecutionService;
   final TextToSpeechController textToSpeechService;
@@ -86,12 +87,7 @@ class ChatController extends BaseChatViewController
 
   String? Function()? dataContextProvider;
 
-  @override
-  bool isGenerating = false;
   bool isImpersonating = false;
-  bool isImproving = false;
-  ValueNotifier<bool>? _cancelToken;
-  bool _isDisposed = false;
   bool _userDetached = false;
   @override
   bool get userDetached => _userDetached;
@@ -202,7 +198,7 @@ class ChatController extends BaseChatViewController
 
   @override
   void dispose() {
-    _isDisposed = true;
+    isDisposed = true;
     stopGeneration();
     scrollController.removeListener(_onScroll);
     scrollController.dispose();
@@ -221,10 +217,10 @@ class ChatController extends BaseChatViewController
 
   @override
   void scrollToBottom({bool animated = true, bool force = false}) {
-    if (_isDisposed || !scrollController.hasClients) return;
+    if (isDisposed || !scrollController.hasClients) return;
     if (!force && _userDetached) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_isDisposed || !scrollController.hasClients) return;
+      if (isDisposed || !scrollController.hasClients) return;
       if (animated) {
         unawaited(
           scrollController.animateTo(
@@ -277,7 +273,7 @@ class ChatController extends BaseChatViewController
       timestamp: DateTime.now().millisecondsSinceEpoch,
     );
 
-    if (_isDisposed) return;
+    if (isDisposed) return;
 
     chatSession.messages.add(userMessage);
     inputController.clear();
@@ -286,7 +282,7 @@ class ChatController extends BaseChatViewController
 
     unawaited(chatService.updateChat(characterFile, chatSession));
 
-    if (_isDisposed) return;
+    if (isDisposed) return;
     await _generateReply(dataContext: dataContextProvider?.call());
   }
 
@@ -304,7 +300,7 @@ class ChatController extends BaseChatViewController
 
     unawaited(chatService.updateChat(characterFile, chatSession));
 
-    if (_isDisposed) return;
+    if (isDisposed) return;
     await _generateReply(
       existingMessage: lastMsg,
       dataContext: dataContextProvider?.call(),
@@ -314,14 +310,14 @@ class ChatController extends BaseChatViewController
   /// Forces the LLM to generate a reply to the current chat state.
   @override
   Future<void> generateReply() async {
-    if (_isDisposed || isGenerating) return;
+    if (isDisposed || isGenerating) return;
     await _generateReply(dataContext: dataContextProvider?.call());
   }
 
   /// Forces the LLM to continue its last message.
   @override
   Future<void> continueChat() async {
-    if (_isDisposed || isGenerating || chatSession.messages.isEmpty) return;
+    if (isDisposed || isGenerating || chatSession.messages.isEmpty) return;
 
     final lastAssistantIndex = chatSession.messages.lastIndexWhere(
       (m) => m.role == ChatRoleEnum.assistant,
@@ -352,7 +348,7 @@ class ChatController extends BaseChatViewController
   /// Forces the LLM to generate a message acting as the user.
   @override
   Future<void> impersonateUser() async {
-    if (_isDisposed || isGenerating) return;
+    if (isDisposed || isGenerating) return;
 
     final userName = chatSession.personaName.isNotEmpty
         ? chatSession.personaName
@@ -373,7 +369,7 @@ class ChatController extends BaseChatViewController
       timestamp: DateTime.now().millisecondsSinceEpoch,
     );
 
-    _cancelToken = ValueNotifier(false);
+    cancelToken = ValueNotifier(false);
     isGenerating = true;
     isImpersonating = true;
     inputController.clear();
@@ -387,14 +383,14 @@ class ChatController extends BaseChatViewController
       final stream = chatExecutionService.generateChatReply(
         chatSession,
         characterFile,
-        cancelToken: _cancelToken!,
+        cancelToken: cancelToken!,
         injectedMessage: tempUserMsg,
         isImpersonating: true,
         dataContext: dataContextProvider?.call(),
       );
 
       await for (final event in stream) {
-        if (_isDisposed) break;
+        if (isDisposed) break;
         if (event is GenerationTokenEvent) {
           bufferedText += event.token;
           if (bufferedText.trimLeft().isEmpty) {
@@ -414,7 +410,7 @@ class ChatController extends BaseChatViewController
         }
       }
     } on Exception catch (e, stackTrace) {
-      if (_cancelToken?.value != true) {
+      if (cancelToken?.value != true) {
         LoggingService().error(
           '1:1 chat: impersonateUser failed',
           e,
@@ -429,15 +425,15 @@ class ChatController extends BaseChatViewController
         finalContent = chatService.trimTrailingParagraph(finalContent);
       }
 
-      if (!_isDisposed) {
+      if (!isDisposed) {
         inputController.value = TextEditingValue(
           text: finalContent,
           selection: TextSelection.collapsed(offset: finalContent.length),
         );
       }
 
-      _cancelToken?.dispose();
-      _cancelToken = null;
+      cancelToken?.dispose();
+      cancelToken = null;
       isGenerating = false;
       isImpersonating = false;
       _notify();
@@ -488,104 +484,25 @@ class ChatController extends BaseChatViewController
     return ' Limit your response to approximately $avgSentences $unit.';
   }
 
-  /// Analyzes and improves the current user input via LLM.
   @override
-  Future<void> improveInput() async {
-    final rawInput = inputController.text.trim();
-    if (rawInput.isEmpty || _isDisposed || isGenerating) return;
+  @protected
+  String get userName => chatSession.personaName.isNotEmpty
+      ? chatSession.personaName
+      : settingsService.settings.activePersona.name;
 
-    final userName = chatSession.personaName.isNotEmpty
-        ? chatSession.personaName
-        : settingsService.settings.activePersona.name;
-    final charName = characterFile.card.nickname?.isNotEmpty == true
-        ? characterFile.card.nickname!
-        : characterFile.card.name;
+  @override
+  @protected
+  String get charName => characterFile.card.nickname?.isNotEmpty == true
+      ? characterFile.card.nickname!
+      : characterFile.card.name;
 
-    var prompt = promptRepository.improveUserMessagePostHistory;
-    prompt = prompt.replaceAll('%CURRENT_USER_MESSAGE%', rawInput);
-    prompt = prompt.replaceAll('%USER_NAME%', userName);
-    prompt = prompt.replaceAll('%CHAR_NAME%', charName);
+  @override
+  @protected
+  ChatExecutionService get executionService => chatExecutionService;
 
-    final originalInput = rawInput;
-    _cancelToken = ValueNotifier(false);
-    isGenerating = true;
-    isImproving = true;
-    inputController.clear();
-    _notify();
-
-    var bufferedText = '';
-    var lastUpdateMs = 0;
-
-    try {
-      final stream = chatExecutionService.generateUtilityResponseWithHistory(
-        chatSession,
-        cancelToken: _cancelToken!,
-        systemPrompt: promptRepository.improveUserMessagePreHistory,
-        postHistoryPrompt: prompt,
-      );
-
-      await for (final event in stream) {
-        if (_isDisposed || _cancelToken?.value == true) break;
-        if (event is GenerationTokenEvent) {
-          bufferedText += event.token;
-          if (bufferedText.trimLeft().isEmpty) {
-            bufferedText = '';
-            continue;
-          }
-          final now = DateTime.now().millisecondsSinceEpoch;
-          if (now - lastUpdateMs > 250) {
-            inputController.value = TextEditingValue(
-              text: bufferedText,
-              selection: TextSelection.collapsed(offset: bufferedText.length),
-            );
-            lastUpdateMs = now;
-          }
-        } else if (event is GenerationCompleteEvent) {
-          bufferedText = event.finalContent;
-        }
-      }
-    } on Exception catch (e, stackTrace) {
-      if (_cancelToken?.value != true) {
-        LoggingService().error('1:1 chat: improveInput failed', e, stackTrace);
-        NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
-      }
-    } finally {
-      if (_cancelToken?.value == true) {
-        if (!_isDisposed) {
-          inputController.value = TextEditingValue(
-            text: originalInput,
-            selection: TextSelection.collapsed(offset: originalInput.length),
-          );
-        }
-      } else {
-        var finalContent = bufferedText.trim();
-
-        finalContent = finalContent.replaceAll(RegExp(r'^"|"$'), '').trim();
-        finalContent = finalContent
-            .replaceAll(
-              RegExp(
-                r'^(Here is the improved message|Improved message|Improved):?\s*',
-                caseSensitive: false,
-              ),
-              '',
-            )
-            .trim();
-
-        if (!_isDisposed) {
-          inputController.value = TextEditingValue(
-            text: finalContent,
-            selection: TextSelection.collapsed(offset: finalContent.length),
-          );
-        }
-      }
-
-      _cancelToken?.dispose();
-      _cancelToken = null;
-      isGenerating = false;
-      isImproving = false;
-      _notify();
-    }
-  }
+  @override
+  @protected
+  String get logTag => '1:1 chat';
 
   /// Core method for AI response generation.
   Future<void> _generateReply({
@@ -593,7 +510,7 @@ class ChatController extends BaseChatViewController
     ChatMessage? injectedMessage,
     String? dataContext,
   }) async {
-    _cancelToken = ValueNotifier(false);
+    cancelToken = ValueNotifier(false);
     isGenerating = true;
     streamingContent.value = '';
 
@@ -620,7 +537,7 @@ class ChatController extends BaseChatViewController
       final stream = chatExecutionService.generateChatReply(
         chatSession,
         characterFile,
-        cancelToken: _cancelToken!,
+        cancelToken: cancelToken!,
         injectedMessage: injectedMessage,
         dataContext: dataContext,
         dispatchToolCalls: buildToolDispatch(
@@ -629,7 +546,7 @@ class ChatController extends BaseChatViewController
       );
 
       await for (final event in stream) {
-        if (_isDisposed) break;
+        if (isDisposed) break;
         if (event is GenerationTokenEvent) {
           bufferedText += event.token;
           assistantMessageToBeFilled.waitingFor =
@@ -683,7 +600,7 @@ class ChatController extends BaseChatViewController
       _notify();
       scrollToBottom();
     } on Exception catch (e, stackTrace) {
-      if (_cancelToken?.value != true) {
+      if (cancelToken?.value != true) {
         LoggingService().error('1:1 chat: generateReply failed', e, stackTrace);
         NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
       }
@@ -697,7 +614,7 @@ class ChatController extends BaseChatViewController
         assistantMessageToBeFilled.content = finalContent;
       }
 
-      if (!_isDisposed) {
+      if (!isDisposed) {
         streamingContent.value = assistantMessageToBeFilled.content;
       }
 
@@ -724,8 +641,8 @@ class ChatController extends BaseChatViewController
 
       unawaited(chatService.updateChat(characterFile, chatSession));
 
-      _cancelToken?.dispose();
-      _cancelToken = null;
+      cancelToken?.dispose();
+      cancelToken = null;
       isGenerating = false;
       _notify();
     }
@@ -733,7 +650,7 @@ class ChatController extends BaseChatViewController
 
   @override
   void stopGeneration() {
-    _cancelToken?.value = true;
+    cancelToken?.value = true;
   }
 
   @override
@@ -799,7 +716,7 @@ class ChatController extends BaseChatViewController
   }
 
   void _notify() {
-    if (!_isDisposed) {
+    if (!isDisposed) {
       notifyListeners();
     }
   }
