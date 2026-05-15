@@ -42,11 +42,13 @@ them into per-country JSON files at
 `philipperemy/converted/<COUNTRY>_{first,last}.json`. Top 2000 names per
 country by rank. Idempotent — skips if `converted/.done` exists.
 
-`build_candidate.dart` (Phase 1, no API cost) runs the 11 per-corpus
+`build_candidate.dart` (Phase 1, no API cost) runs the per-corpus
 loaders, dedupes case-insensitive across sources, fills source-deducible
 tags (gender / language_ethnicity / race per corpus), marks the rest as
 sentinels, and writes
-`packages/cardwave_names/assets/name_database.candidate.json`.
+`tools/generate_names/.cache/name_database.candidate.json`. The candidate
+sits outside the package's `assets/` directory on purpose — it's an
+intermediate build artifact, not something to ship in the app bundle.
 
 `classify.dart` (Phase 2) reads the candidate file, batches ~25 entries
 to Claude per request to fill the sentinel fields, and writes the final

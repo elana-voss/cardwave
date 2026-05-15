@@ -62,3 +62,7 @@ keystore-b64.txt
 
 # Tools (regeneratable binary)
 tools/chromedriver/chromedriver.exe
+
+# Name-database build artifacts — reproducible from corpora + scripts.
+tools/generate_names/.cache/
+tools/generate_names/.progress
