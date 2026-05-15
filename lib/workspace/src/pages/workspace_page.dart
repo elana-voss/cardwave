@@ -20,6 +20,16 @@ import 'package:provider/provider.dart';
 
 part 'widgets/workspace_page/workspace_body.dart';
 part 'widgets/workspace_page/workspace_end_drawer.dart';
+part 'widgets/workspace_page/workspace_end_drawer_ai.dart';
+part 'widgets/workspace_page/workspace_end_drawer_chat.dart';
+part 'widgets/workspace_page/workspace_end_drawer_chat_theme.dart';
+part 'widgets/workspace_page/workspace_end_drawer_display.dart';
+part 'widgets/workspace_page/workspace_end_drawer_editing.dart';
+part 'widgets/workspace_page/workspace_end_drawer_export.dart';
+part 'widgets/workspace_page/workspace_end_drawer_image.dart';
+part 'widgets/workspace_page/workspace_end_drawer_speech.dart';
+part 'widgets/workspace_page/workspace_end_drawer_video.dart';
+part 'widgets/workspace_page/workspace_end_drawer_web.dart';
 
 class WorkspacePage extends StatefulWidget {
   const WorkspacePage({

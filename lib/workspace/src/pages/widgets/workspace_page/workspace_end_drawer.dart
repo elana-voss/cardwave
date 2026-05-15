@@ -162,346 +162,44 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                       },
                     ),
                     // ── Chat Behavior ──
-                    const DrawerSectionHeader('Chat'),
-                    TileNsfw(
-                      chatSession: visibleChatController.selectedChat,
-                      onChanged: (value) => visibleChatController
-                          .updateSelectedChatSettings(isNsfw: value),
+                    _WorkspaceEndDrawerChat(
+                      visibleChatController: visibleChatController,
+                      activeCharacterFile: activeCharacterFile,
+                      isAdvanced: isAdv(_DrawerSectionEnum.chat),
+                      onToggleAdvanced: () =>
+                          toggleAdv(_DrawerSectionEnum.chat),
                     ),
-                    TileScenario(
-                      chatSession: visibleChatController.selectedChat,
-                      onChanged: (value) => visibleChatController
-                          .updateSelectedChatSettings(isScenario: value),
+                    _WorkspaceEndDrawerChatTheme(
+                      visibleChatController: visibleChatController,
+                      activeCharacterFile: activeCharacterFile,
+                      settingsService: settingsService,
+                      characterService: characterService,
                     ),
-                    TileAiProvider(
-                      chatSession: visibleChatController.selectedChat,
-                      characterFile: activeCharacterFile,
-                      onChanged: visibleChatController.refresh,
+                    _WorkspaceEndDrawerSpeech(
+                      visibleChatController: visibleChatController,
+                      activeCharacterFile: activeCharacterFile,
+                      isAdvanced: isAdv(_DrawerSectionEnum.speech),
+                      onToggleAdvanced: () =>
+                          toggleAdv(_DrawerSectionEnum.speech),
                     ),
-                    if (isAdv(_DrawerSectionEnum.chat)) ...[
-                      TileTrailingParagraph(
-                        chatSession: visibleChatController.selectedChat,
-                        onChanged: (value) async {
-                          await visibleChatController
-                              .updateSelectedChatSettings(
-                                removeTrailingSentences: value,
-                              );
-                          if (value) {
-                            await visibleChatController.trimTrailingParagraph();
-                          }
-                        },
-                      ),
-                      TileMaxResponseLength(
-                        chatSession: visibleChatController.selectedChat,
-                      ),
-                      TileReasoningEffort(
-                        chatSession: visibleChatController.selectedChat,
-                      ),
-                    ],
-                    DrawerShowAdvanced(
-                      expanded: isAdv(_DrawerSectionEnum.chat),
-                      onToggle: () => toggleAdv(_DrawerSectionEnum.chat),
+                    _WorkspaceEndDrawerVideo(
+                      visibleChatController: visibleChatController,
+                      activeCharacterFile: activeCharacterFile,
+                      characterService: characterService,
+                      isAdvanced: isAdv(_DrawerSectionEnum.video),
+                      onToggleAdvanced: () =>
+                          toggleAdv(_DrawerSectionEnum.video),
                     ),
-                    // ── Chat Appearance ──
-                    const DrawerSectionHeader('Chat Theme'),
-                    ChatThemeTile(
-                      settings: settings,
-                      onThemeChanged: (theme) {
-                        settings.chatTheme = theme;
-                        unawaited(settingsService.saveSettings());
-                      },
+                    _WorkspaceEndDrawerImage(
+                      visibleChatController: visibleChatController,
+                      activeCharacterFile: activeCharacterFile,
+                      characterService: characterService,
+                      isAdvanced: isAdv(_DrawerSectionEnum.image),
+                      onToggleAdvanced: () =>
+                          toggleAdv(_DrawerSectionEnum.image),
                     ),
-                    ListenableBuilder(
-                      listenable: Listenable.merge([
-                        visibleChatController,
-                        characterService,
-                      ]),
-                      builder: (context, _) {
-                        final theme = Theme.of(context);
-                        final disabledColor = theme.colorScheme.onSurface
-                            .withValues(alpha: kDisabledAlpha);
-                        final hasBg =
-                            visibleChatController
-                                .selectedChat
-                                ?.backgroundImage !=
-                            null;
-                        final hasAvatar =
-                            activeCharacterFile
-                                .card
-                                .cardwaveData
-                                .customAvatar !=
-                            null;
-                        return ListTile(
-                          leading: const Icon(Icons.restart_alt),
-                          title: const Text('Reset Images'),
-                          trailing: SizedBox(
-                            width: 160,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  InkWell(
-                                    onTap: hasBg
-                                        ? () => visibleChatController
-                                              .setBackgroundImage(null)
-                                        : null,
-                                    child: Icon(
-                                      Icons.wallpaper,
-                                      size: 18,
-                                      color: hasBg ? null : disabledColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  InkWell(
-                                    onTap: hasAvatar
-                                        ? () {
-                                            activeCharacterFile
-                                                    .card
-                                                    .cardwaveData
-                                                    .customAvatar =
-                                                null;
-                                            unawaited(
-                                              characterService
-                                                  .saveJsonInCacheAndPngNow(
-                                                    activeCharacterFile,
-                                                  ),
-                                            );
-                                          }
-                                        : null,
-                                    child: Icon(
-                                      Icons.face,
-                                      size: 18,
-                                      color: hasAvatar ? null : disabledColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    // ── Text-to-Speech ──
-                    const DrawerSectionHeader('Speech'),
-                    TileTtsPreset(
-                      chatSession: visibleChatController.selectedChat,
-                      characterFile: activeCharacterFile,
-                      onChanged: visibleChatController.persistActiveChat,
-                    ),
-                    TileTtsVoice(
-                      chatSession: visibleChatController.selectedChat,
-                      characterFile: activeCharacterFile,
-                      onChanged: visibleChatController.persistActiveChat,
-                    ),
-                    if (isAdv(_DrawerSectionEnum.speech))
-                      TileTtsLanguage(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                    DrawerShowAdvanced(
-                      expanded: isAdv(_DrawerSectionEnum.speech),
-                      onToggle: () => toggleAdv(_DrawerSectionEnum.speech),
-                    ),
-                    // ── Video Generation ──
-                    const DrawerSectionHeader('Video'),
-                    _sessionSwitchTile(
-                      icon: Icons.shield,
-                      title: 'Unrestricted Videos',
-                      subtitle: 'Allow NSFW video prompts',
-                      read: (s) => s.configMedia?.videoNsfwAllowed ?? false,
-                      write: (v) => visibleChatController
-                          .updateSelectedChatSettings(videoNsfwAllowed: v),
-                    ),
-                    _sessionSwitchTile(
-                      icon: Icons.movie_creation,
-                      title: 'Character Can Send Videos',
-                      subtitle: 'Attach a short video when natural',
-                      read: (s) => s.configMedia?.videoToolSendAllowed ?? false,
-                      write: (v) => visibleChatController
-                          .updateSelectedChatSettings(videoToolSendAllowed: v),
-                    ),
-                    ListenableBuilder(
-                      listenable: characterService,
-                      builder: (context, _) {
-                        final prefix =
-                            activeCharacterFile.configMedia?.videoPromptPrefix;
-                        return ListTile(
-                          leading: const Icon(Icons.movie_filter),
-                          title: const Text('Video Style'),
-                          trailing: DrawerTrailingValue(
-                            prefix?.isNotEmpty == true ? prefix! : 'None',
-                          ),
-                          onTap: () {
-                            Navigator.of(
-                              navContext,
-                              rootNavigator: true,
-                            ).pop();
-                            unawaited(
-                              _showVideoPrefixDialog(
-                                context,
-                                activeCharacterFile,
-                                characterService,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    if (isAdv(_DrawerSectionEnum.video)) ...[
-                      _sessionSwitchTile(
-                        icon: Icons.rate_review,
-                        title: 'Review Video Prompt',
-                        subtitle: 'Edit before generating',
-                        read: (s) => s.configMedia?.videoPromptReview ?? false,
-                        write: (v) => visibleChatController
-                            .updateSelectedChatSettings(videoPromptReview: v),
-                      ),
-                      TileVideoPreset(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                      TileVideoResolution(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                      TileVideoAspectRatio(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                      TileVideoDuration(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                    ],
-                    DrawerShowAdvanced(
-                      expanded: isAdv(_DrawerSectionEnum.video),
-                      onToggle: () => toggleAdv(_DrawerSectionEnum.video),
-                    ),
-                    // ── Image Generation ──
-                    const DrawerSectionHeader('Image'),
-                    _sessionSwitchTile(
-                      icon: Icons.shield,
-                      title: 'Unrestricted Images',
-                      subtitle: 'Allow NSFW image prompts',
-                      read: (s) => s.configMedia?.imageNsfwAllowed ?? false,
-                      write: (v) => visibleChatController
-                          .updateSelectedChatSettings(imageNsfwAllowed: v),
-                    ),
-                    _sessionSwitchTile(
-                      icon: Icons.camera_alt,
-                      title: 'Character Can Send Selfies',
-                      subtitle: 'Attach a selfie when natural',
-                      read: (s) =>
-                          s.configMedia?.imageToolSelfieAllowed ?? false,
-                      write: (v) =>
-                          visibleChatController.updateSelectedChatSettings(
-                            imageToolSelfieAllowed: v,
-                          ),
-                    ),
-                    ListenableBuilder(
-                      listenable: characterService,
-                      builder: (context, _) {
-                        final prefix =
-                            activeCharacterFile.configMedia?.imagePromptPrefix;
-                        return ListTile(
-                          leading: const Icon(Icons.auto_fix_high),
-                          title: const Text('Image Style'),
-                          trailing: DrawerTrailingValue(
-                            prefix?.isNotEmpty == true ? prefix! : 'None',
-                            suffix: InkWell(
-                              onTap: () => _showStylePresetsDialog(
-                                activeCharacterFile,
-                                characterService,
-                              ),
-                              child: const Icon(Icons.style, size: 18),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(
-                              navContext,
-                              rootNavigator: true,
-                            ).pop();
-                            unawaited(
-                              _showImagePrefixDialog(
-                                context,
-                                activeCharacterFile,
-                                characterService,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    if (isAdv(_DrawerSectionEnum.image)) ...[
-                      _sessionSwitchTile(
-                        icon: Icons.rate_review,
-                        title: 'Review Image Prompt',
-                        subtitle: 'Edit before generating',
-                        read: (s) => s.configMedia?.imagePromptReview ?? false,
-                        write: (v) => visibleChatController
-                            .updateSelectedChatSettings(imagePromptReview: v),
-                      ),
-                      _sessionSwitchTile(
-                        icon: Icons.rate_review_outlined,
-                        title: 'Review Tool Image Prompts',
-                        subtitle: 'Edit tool-triggered prompts',
-                        read: (s) =>
-                            s.configMedia?.imageToolPromptReview ?? false,
-                        write: (v) =>
-                            visibleChatController.updateSelectedChatSettings(
-                              imageToolPromptReview: v,
-                            ),
-                      ),
-                      _sessionSwitchTile(
-                        icon: Icons.text_fields,
-                        title: 'Allow Selfie Captions',
-                        subtitle: 'Caption rendered on the image',
-                        read: (s) =>
-                            s.configMedia?.imageToolSelfieCaptionsAllowed ??
-                            false,
-                        write: (v) =>
-                            visibleChatController.updateSelectedChatSettings(
-                              imageToolSelfieCaptionsAllowed: v,
-                            ),
-                      ),
-                      TileImagePreset(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                      TileImageAspectRatio(
-                        chatSession: visibleChatController.selectedChat,
-                        characterFile: activeCharacterFile,
-                        onChanged: visibleChatController.persistActiveChat,
-                      ),
-                    ],
-                    DrawerShowAdvanced(
-                      expanded: isAdv(_DrawerSectionEnum.image),
-                      onToggle: () => toggleAdv(_DrawerSectionEnum.image),
-                    ),
-                    // ── Web ──
-                    const DrawerSectionHeader('Web'),
-                    _sessionSwitchTile(
-                      icon: Icons.cloud_download,
-                      title: 'Allow Web Fetch',
-                      subtitle: 'Read public web pages when relevant',
-                      read: (s) => s.configMedia?.webToolFetchAllowed ?? false,
-                      write: (v) => visibleChatController
-                          .updateSelectedChatSettings(webToolFetchAllowed: v),
-                    ),
-                    _sessionSwitchTile(
-                      icon: Icons.rate_review,
-                      title: 'Review URL Before Fetching',
-                      subtitle: 'Confirm each fetch',
-                      read: (s) => s.configMedia?.webToolFetchReview ?? false,
-                      write: (v) => visibleChatController
-                          .updateSelectedChatSettings(webToolFetchReview: v),
+                    _WorkspaceEndDrawerWeb(
+                      visibleChatController: visibleChatController,
                     ),
                   ]
                   // ------------------------------------------------------------------
@@ -530,125 +228,17 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                         );
                       },
                     ),
-                    const DrawerSectionHeader('Display'),
-                    DrawerSwitchTile(
-                      leading: const Icon(Icons.image),
-                      title: const Text('Show Character Image'),
-                      subtitle: const Text('Wide-screen editor only'),
-                      value: settings.editorImageVisible,
-                      onChanged: (value) {
-                        settings.editorImageVisible = value;
-                        unawaited(settingsService.saveSettings());
-                        Navigator.of(navContext, rootNavigator: true).pop();
-                      },
+                    _WorkspaceEndDrawerDisplay(
+                      settingsService: settingsService,
                     ),
-                    if (onGlobalAiAction != null) ...[
-                      const DrawerSectionHeader('AI'),
-                      for (final action in AiActionEnum.values)
-                        ListTile(
-                          leading: Icon(action.icon),
-                          title: Text(action.label),
-                          onTap: () {
-                            Navigator.of(
-                              navContext,
-                              rootNavigator: true,
-                            ).pop();
-                            onGlobalAiAction!(action);
-                          },
-                        ),
-                    ],
-                    const DrawerSectionHeader('Editing'),
-                    ListTile(
-                      leading: const Icon(Icons.cleaning_services),
-                      title: const Text('Content Cleaner'),
-                      onTap: () async {
-                        Navigator.of(
-                          navContext,
-                          rootNavigator: true,
-                        ).pop();
-                        if (onApplyCleaner != null) {
-                          await NavigationService().showContentCleanerDialog(
-                            onApply: onApplyCleaner!,
-                          );
-                        }
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.find_replace),
-                      title: const Text('Find & Replace'),
-                      onTap: () async {
-                        Navigator.of(
-                          navContext,
-                          rootNavigator: true,
-                        ).pop();
-                        if (onApplyCleaner != null) {
-                          await NavigationService().showFindReplaceDialog(
-                            onApply: onApplyCleaner!,
-                          );
-                        }
-                      },
-                    ),
-                    const DrawerSectionHeader('Export'),
-                    ListTile(
-                      leading: const Icon(Icons.image),
-                      title: const Text('Export as PNG (V2/V3)'),
-                      onTap: () async {
-                        Navigator.of(
-                          navContext,
-                          rootNavigator: true,
-                        ).pop();
-                        try {
-                          await characterService.exportAsPng(
-                            activeCharacterFile,
-                          );
-                        } on Exception catch (e, st) {
-                          LoggingService().error('PNG export failed', e, st);
-                          NavigationService().showSnackBar(
-                            AppConstants.exportFailedMessage,
-                          );
-                        }
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.data_object),
-                      title: const Text('Export as JSON (V3)'),
-                      onTap: () async {
-                        Navigator.of(
-                          navContext,
-                          rootNavigator: true,
-                        ).pop();
-                        try {
-                          await characterService.exportAsJson(
-                            activeCharacterFile,
-                          );
-                        } on Exception catch (e, st) {
-                          LoggingService().error('JSON V3 export failed', e, st);
-                          NavigationService().showSnackBar(
-                            AppConstants.exportFailedMessage,
-                          );
-                        }
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.data_object),
-                      title: const Text('Export as JSON (V2)'),
-                      onTap: () async {
-                        Navigator.of(
-                          navContext,
-                          rootNavigator: true,
-                        ).pop();
-                        try {
-                          await characterService.exportAsJson(
-                            activeCharacterFile,
-                            asV2: true,
-                          );
-                        } on Exception catch (e, st) {
-                          LoggingService().error('JSON V2 export failed', e, st);
-                          NavigationService().showSnackBar(
-                            AppConstants.exportFailedMessage,
-                          );
-                        }
-                      },
+                    if (onGlobalAiAction != null)
+                      _WorkspaceEndDrawerAi(
+                        onGlobalAiAction: onGlobalAiAction!,
+                      ),
+                    _WorkspaceEndDrawerEditing(onApplyCleaner: onApplyCleaner),
+                    _WorkspaceEndDrawerExport(
+                      activeCharacterFile: activeCharacterFile,
+                      characterService: characterService,
                     ),
                   ],
                 ],
@@ -667,98 +257,100 @@ class _WorkspaceEndDrawer extends StatelessWidget {
     );
   }
 
-  /// Shared shape for the Video / Image / Web boolean rows: each one wraps
-  /// a [DrawerSwitchTile] in a [ListenableBuilder] for the chat controller,
-  /// reads the current value off the active session, and writes back via
-  /// `updateSelectedChatSettings`. The 10 inline copies of this pattern
-  /// differ only in icon, label, and which `configMedia` field they touch.
-  // Small per-drawer tile builder; a shared widget would need ~10 call
-  // sites here re-routed through an explicit controller param.
-  // ignore: qcheck/avoid_returning_widgets
-  Widget _sessionSwitchTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool Function(ChatSession) read,
-    required void Function(bool) write,
-  }) {
-    return ListenableBuilder(
-      listenable: visibleChatController,
-      builder: (context, _) {
-        final session = visibleChatController.selectedChat;
-        return DrawerSwitchTile(
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(subtitle),
-          value: session != null && read(session),
-          onChanged: session != null ? write : null,
-        );
-      },
-    );
-  }
+}
 
-  Future<void> _showImagePrefixDialog(
-    BuildContext context,
-    CharacterFile characterFile,
-    CharacterService characterService,
-  ) => _showPromptPrefixDialog(
-    context,
-    characterFile,
-    characterService,
-    PromptPrefixDomain.image,
+/// Shared shape for the Video / Image / Web boolean rows: each one wraps
+/// a [DrawerSwitchTile] in a [ListenableBuilder] for the chat controller,
+/// reads the current value off the active session, and writes back via
+/// `updateSelectedChatSettings`. The 10 inline copies of this pattern
+/// differ only in icon, label, and which `configMedia` field they touch.
+// Small per-drawer tile builder; a shared widget would need ~10 call
+// sites here re-routed through an explicit controller param.
+// ignore: qcheck/avoid_returning_widgets
+Widget _sessionSwitchTile({
+  required ChatPageController visibleChatController,
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required bool Function(ChatSession) read,
+  required void Function(bool) write,
+}) {
+  return ListenableBuilder(
+    listenable: visibleChatController,
+    builder: (context, _) {
+      final session = visibleChatController.selectedChat;
+      return DrawerSwitchTile(
+        leading: Icon(icon),
+        title: Text(title),
+        subtitle: Text(subtitle),
+        value: session != null && read(session),
+        onChanged: session != null ? write : null,
+      );
+    },
   );
+}
 
-  Future<void> _showVideoPrefixDialog(
-    BuildContext context,
-    CharacterFile characterFile,
-    CharacterService characterService,
-  ) => _showPromptPrefixDialog(
+Future<void> _showImagePrefixDialog(
+  BuildContext context,
+  CharacterFile characterFile,
+  CharacterService characterService,
+) => _showPromptPrefixDialog(
+  context,
+  characterFile,
+  characterService,
+  PromptPrefixDomain.image,
+);
+
+Future<void> _showVideoPrefixDialog(
+  BuildContext context,
+  CharacterFile characterFile,
+  CharacterService characterService,
+) => _showPromptPrefixDialog(
+  context,
+  characterFile,
+  characterService,
+  PromptPrefixDomain.video,
+);
+
+Future<void> _showPromptPrefixDialog(
+  BuildContext context,
+  CharacterFile characterFile,
+  CharacterService characterService,
+  PromptPrefixDomain domain,
+) async {
+  final currentValue = switch (domain) {
+    PromptPrefixDomain.image => characterFile.configMedia?.imagePromptPrefix,
+    PromptPrefixDomain.video => characterFile.configMedia?.videoPromptPrefix,
+  };
+  final result = await showCharacterPromptPrefixDialog(
     context,
-    characterFile,
-    characterService,
-    PromptPrefixDomain.video,
+    domain: domain,
+    currentValue: currentValue,
   );
-
-  Future<void> _showPromptPrefixDialog(
-    BuildContext context,
-    CharacterFile characterFile,
-    CharacterService characterService,
-    PromptPrefixDomain domain,
-  ) async {
-    final currentValue = switch (domain) {
-      PromptPrefixDomain.image => characterFile.configMedia?.imagePromptPrefix,
-      PromptPrefixDomain.video => characterFile.configMedia?.videoPromptPrefix,
-    };
-    final result = await showCharacterPromptPrefixDialog(
-      context,
-      domain: domain,
-      currentValue: currentValue,
-    );
-    if (result == null) return;
-    final cm = characterFile.configMedia ??= ConfigMediaCharacter();
-    final stored = result.isEmpty ? null : result;
-    switch (domain) {
-      case PromptPrefixDomain.image:
-        cm.imagePromptPrefix = stored;
-      case PromptPrefixDomain.video:
-        cm.videoPromptPrefix = stored;
-    }
-    await characterService.flushJsonInCacheAndPngIfDirtyOrPending(
-      characterFile,
-    );
+  if (result == null) return;
+  final cm = characterFile.configMedia ??= ConfigMediaCharacter();
+  final stored = result.isEmpty ? null : result;
+  switch (domain) {
+    case PromptPrefixDomain.image:
+      cm.imagePromptPrefix = stored;
+    case PromptPrefixDomain.video:
+      cm.videoPromptPrefix = stored;
   }
+  await characterService.flushJsonInCacheAndPngIfDirtyOrPending(
+    characterFile,
+  );
+}
 
-  void _showStylePresetsDialog(
-    CharacterFile characterFile,
-    CharacterService characterService,
-  ) {
-    unawaited(
-      NavigationService().showStylePresetsDialog(
-        characterFile: characterFile,
-        characterService: characterService,
-      ),
-    );
-  }
+void _showStylePresetsDialog(
+  CharacterFile characterFile,
+  CharacterService characterService,
+) {
+  unawaited(
+    NavigationService().showStylePresetsDialog(
+      characterFile: characterFile,
+      characterService: characterService,
+    ),
+  );
 }
 
 /// Sections in the chat drawer that have an expandable "advanced" group.
