@@ -20,9 +20,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'loaders/candidate_record.dart';
+import 'loaders/corpora.dart';
 import 'loaders/cyberpunk_names.dart';
 import 'loaders/dragon_names.dart';
+import 'loaders/mythology_names.dart';
+import 'loaders/namegen.dart';
 import 'loaders/philipperemy.dart';
+import 'loaders/popular_names.dart';
+import 'loaders/ssa_baby_names.dart';
 
 const _outputPath =
     'tools/generate_names/.cache/name_database.candidate.json';
@@ -33,8 +38,22 @@ const _loaders = <_Loader>[
   // Order matters for the first-wins merge rule: discriminative sources
   // first so a name's primary tags come from the most authoritative
   // corpus. Country-fuzzy sources (philipperemy) land later.
+  //
+  // Specialised buckets first.
   (tag: 'dragon-names', run: loadDragonNames),
   (tag: 'cyberpunk-names', run: loadCyberpunkNames),
+  // Mythology-tagged names — fixed pantheons.
+  (tag: 'mythology-names', run: loadMythologyNames),
+  (tag: 'corpora', run: loadCorpora),
+  // Era-locked English names. Drops names that span eras — only the
+  // era-pure ones land here.
+  (tag: 'ssa-baby-names', run: loadSsaBabyNames),
+  // Per-culture curated lists.
+  (tag: 'namegen', run: loadNamegen),
+  // Country-tagged top names (broad but well-sourced).
+  (tag: 'popular-names-by-country', run: loadPopularNames),
+  // Largest source, country-fuzzy — lands last so its country mapping
+  // doesn't overwrite better tags from the specialised sources.
   (tag: 'philipperemy', run: loadPhilipperemy),
 ];
 
