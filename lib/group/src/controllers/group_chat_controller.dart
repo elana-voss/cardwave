@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
-import 'package:cardwave/group/src/models/group_activation_strategy_enum.dart';
 import 'package:cardwave/group/src/models/group_data.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/services/group_chat_service.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
 import 'package:cardwave/group/src/services/group_prompt_service.dart';
+import 'package:cardwave/group/src/utils/group_speaker_selection.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -86,7 +85,6 @@ class GroupChatController extends BaseChatViewController
   @override
   final VideoPromptBuilder videoPromptBuilder;
   final String _userName;
-  final Random _random = Random();
 
   final GroupFile _groupFile;
   final ChatSession _session;
@@ -438,92 +436,15 @@ class GroupChatController extends BaseChatViewController
 
   // --- Speaker selection ---
 
-  /// Picks the next character based on the active activation strategy.
-  /// Muted characters are always excluded.
-  CharacterFile? _selectNextCharacter() {
-    final unmuted = characters
-        .where((c) => !_mutedIds.contains(c.appCardId))
-        .toList();
-    if (unmuted.isEmpty) return null;
-
-    final strategy = _settingsService.settings.groupActivationStrategy;
-    switch (strategy) {
-      case GroupActivationStrategyEnum.natural:
-        final mentioned = _findMentionedCharacter(unmuted);
-        if (mentioned != null) return mentioned;
-        return _selectWeightedRandom(unmuted);
-      case GroupActivationStrategyEnum.list:
-        return _selectRoundRobin(unmuted);
-      case GroupActivationStrategyEnum.random:
-        return _selectWeightedRandom(unmuted);
-    }
-  }
-
-  /// NATURAL strategy: scans the last 2 messages (from any speaker) for a
-  /// candidate's name as a whole word (not substring). The last speaker is
-  /// excluded so characters take turns.
-  CharacterFile? _findMentionedCharacter(List<CharacterFile> candidates) {
-    if (_session.messages.isEmpty) return null;
-    final tail = _session.messages.reversed.take(2).toList();
-    for (final msg in tail) {
-      for (final c in candidates) {
-        if (c.appCardId == _lastSpeakerId) continue;
-        if (_mentionsName(msg.content, c.card.name)) return c;
-      }
-    }
-    return null;
-  }
-
-  /// Whole-word, case-insensitive name match. Avoids false positives where
-  /// a short character name ("Al") would match inside an unrelated word
-  /// ("Alice", "although").
-  bool _mentionsName(String text, String name) {
-    if (name.trim().isEmpty) return false;
-    final escaped = RegExp.escape(name);
-    final pattern = RegExp(
-      '(?<![A-Za-z0-9_])$escaped(?![A-Za-z0-9_])',
-      caseSensitive: false,
-    );
-    return pattern.hasMatch(text);
-  }
-
-  /// LIST strategy: round-robin in the order characters were added.
-  CharacterFile _selectRoundRobin(List<CharacterFile> candidates) {
-    // `candidates` is the non-empty unmuted-character list.
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    if (_lastSpeakerId == null) return candidates.first;
-    final lastIdx = candidates.indexWhere((c) => c.appCardId == _lastSpeakerId);
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    if (lastIdx == -1) return candidates.first;
-    return candidates[(lastIdx + 1) % candidates.length];
-  }
-
-  /// RANDOM strategy: talkativeness-weighted, excluding the last speaker.
-  CharacterFile _selectWeightedRandom(List<CharacterFile> unmuted) {
-    final candidates = unmuted.length > 1
-        ? unmuted.where((c) => c.appCardId != _lastSpeakerId).toList()
-        : unmuted;
-
-    final totalWeight = candidates.fold<double>(
-      0,
-      (sum, c) => sum + c.card.cardwaveData.talkativeness,
-    );
-    if (totalWeight <= 0) {
-      return candidates[_random.nextInt(candidates.length)];
-    }
-    var pick = _random.nextDouble() * totalWeight;
-    for (final char in candidates) {
-      pick -= char.card.cardwaveData.talkativeness;
-      if (pick <= 0) return char;
-    }
-    // `candidates` is non-empty (it derives from the non-empty unmuted list).
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    return candidates.last;
-  }
-
   Future<void> _generateNextCharacterTurn() async {
     if (isGenerating || isDisposed) return;
-    final targetCharacter = _selectNextCharacter();
+    final targetCharacter = selectNextSpeaker(
+      characters: characters,
+      mutedIds: groupData.mutedMemberAppCardIds,
+      strategy: _settingsService.settings.groupActivationStrategy,
+      lastSpeakerId: _lastSpeakerId,
+      sessionMessages: _session.messages,
+    );
     if (targetCharacter == null) return;
     await _generateCharacterTurn(targetCharacter);
   }
