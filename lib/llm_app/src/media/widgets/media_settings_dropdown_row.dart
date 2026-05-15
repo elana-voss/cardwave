@@ -267,7 +267,6 @@ class _MediaSettingsDropdownRowState extends State<MediaSettingsDropdownRow> {
       case MediaSettingsGridField.ttsVoice:
       case MediaSettingsGridField.ttsLanguage:
         return resolved.ttsPreset;
-      // ignore: no_default_cases
       default:
         return null;
     }
@@ -287,7 +286,6 @@ class _MediaSettingsDropdownRowState extends State<MediaSettingsDropdownRow> {
         return resolved.ttsVoiceId;
       case MediaSettingsGridField.ttsLanguage:
         return resolved.ttsLanguageCode;
-      // ignore: no_default_cases
       default:
         return null;
     }
@@ -335,7 +333,6 @@ class _MediaSettingsDropdownRowState extends State<MediaSettingsDropdownRow> {
           for (final l in languages)
             SelectionOption(value: l.code, label: l.label, subtitle: l.code),
         ];
-      // ignore: no_default_cases
       default:
         return const [];
     }

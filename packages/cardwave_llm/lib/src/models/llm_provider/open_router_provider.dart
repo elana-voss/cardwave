@@ -251,7 +251,6 @@ class OpenRouterProvider extends LlmProvider {
       await for (final raw in streamed.stream.transform(utf8.decoder)) {
         // SSE parser needs random-access slicing (indexOf/substring) — a
         // StringBuffer would force a toString() round-trip on every chunk.
-        // ignore: use_string_buffers
         buffer += raw;
         // SSE events are delimited by blank lines; process whole lines only.
         int newline;

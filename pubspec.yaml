@@ -78,7 +78,6 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.4.6
   json_serializable: ^6.7.1
-  very_good_analysis: ^10.2.0
   import_lint: ^0.1.6
   # qcheck is wired as an analysis_server_plugin via the top-level `plugins:`
   # block in analysis_options.yaml; it resolves its own deps separately and

@@ -56,7 +56,6 @@ class MediaSettingsController {
             final opts = firstTtsOptions(model);
             if (opts == null) return;
             cm.setTtsPreset(presetId, opts.voiceId, opts.languageCode);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -81,7 +80,6 @@ class MediaSettingsController {
             final opts = firstTtsOptions(model);
             if (opts == null) return;
             cm.setTtsPreset(presetId, opts.voiceId, opts.languageCode);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -113,7 +111,6 @@ class MediaSettingsController {
             cm.setVideoPreset(null, null, null, null);
           case MediaSettingsGridField.ttsModel:
             cm.setTtsPreset(null, null, null);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -130,7 +127,6 @@ class MediaSettingsController {
             cm.setVideoPreset(null, null, null, null);
           case MediaSettingsGridField.ttsModel:
             cm.setTtsPreset(null, null, null);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -180,7 +176,6 @@ class MediaSettingsController {
             cm.setTtsPreset(cm.ttsPresetId, value, cm.ttsLanguageCode);
           case MediaSettingsGridField.ttsLanguage:
             cm.setTtsPreset(cm.ttsPresetId, cm.ttsVoiceId, value);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -217,7 +212,6 @@ class MediaSettingsController {
             cm.setTtsPreset(cm.ttsPresetId, value, cm.ttsLanguageCode);
           case MediaSettingsGridField.ttsLanguage:
             cm.setTtsPreset(cm.ttsPresetId, cm.ttsVoiceId, value);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -268,7 +262,6 @@ class MediaSettingsController {
             cm.setTtsPreset(cm.ttsPresetId, null, cm.ttsLanguageCode);
           case MediaSettingsGridField.ttsLanguage:
             cm.setTtsPreset(cm.ttsPresetId, cm.ttsVoiceId, null);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -306,7 +299,6 @@ class MediaSettingsController {
             cm.setTtsPreset(cm.ttsPresetId, null, cm.ttsLanguageCode);
           case MediaSettingsGridField.ttsLanguage:
             cm.setTtsPreset(cm.ttsPresetId, cm.ttsVoiceId, null);
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -343,7 +335,6 @@ class MediaSettingsController {
             cm.videoToolSendAllowed = value;
           case MediaSettingsGridField.webToolFetchAllowed:
             cm.webToolFetchAllowed = value;
-          // ignore: no_default_cases
           default:
             return;
         }
@@ -365,7 +356,6 @@ class MediaSettingsController {
             cm.videoToolSendAllowed = value;
           case MediaSettingsGridField.webToolFetchAllowed:
             cm.webToolFetchAllowed = value;
-          // ignore: no_default_cases
           default:
             return;
         }

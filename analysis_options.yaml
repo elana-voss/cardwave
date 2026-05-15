@@ -1,42 +1,6 @@
-# This file configures the analyzer, which statically analyzes Dart code to
-# check for errors, warnings, and lints.
-#
-# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
-# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
-
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
 analyzer:
   exclude:
     - "**/*.g.dart"
-  errors:
-    unused_element: ignore
-    public_member_api_docs: ignore
-    cascade_invocations: ignore
-    specify_nonobvious_property_types: ignore
-    sort_constructors_first: ignore
-    document_ignores: ignore
-    comment_references: ignore
-    parameter_assignments: ignore
-    lines_longer_than_80_chars: ignore
-    cast_nullable_to_non_nullable: ignore
-    avoid_positional_boolean_parameters: ignore
-    inference_failure_on_instance_creation: ignore
-    inference_failure_on_function_invocation: ignore
-    inference_failure_on_function_return_type: ignore
-    prefer_constructors_over_static_methods: ignore
-    sort_pub_dependencies: ignore
-    no_default_cases: ignore
-    omit_local_variable_types: ignore
-    avoid_field_initializers_in_const_classes: ignore
-    one_member_abstracts: ignore
-    use_setters_to_change_properties: ignore
-  # language:
-  #   strict-casts: true
-  #   strict-inference: true
-  #   strict-raw-types: true
-include: package:very_good_analysis/analysis_options.yaml
 
 # Cross-domain src/ privacy is enforced by import_lint, which uses a
 # separate config file (import_analysis_options.yaml at the repo root)
@@ -44,27 +8,12 @@ include: package:very_good_analysis/analysis_options.yaml
 # It is NOT an analyzer plugin in the v0.1.6 line we use here.
 
 linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
   rules:
     - avoid_print # No more console logs in production
     - unawaited_futures # Catches async bugs
     - prefer_const_constructors # Keeps the UI snappy
     - cancel_subscriptions # Prevents memory leaks
     - close_sinks # Prevents memory leaks
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
 
 # qcheck — Flutter/Dart code-quality analyzer (third-party).
 # CLI: `..\..\qcheck\build\qcheck.exe analyze --preset recommended lib/`
@@ -103,4 +52,3 @@ qcheck:
     # Convention conflicts — project uses different naming/file conventions on purpose.
     - prefer-match-file-name        # idiomatic multi-class files (enums + helpers + widget) are intentional here
     - prefer-prefixed-global-constants # shared values live in AppConstants; the few top-level consts are local-scope
-

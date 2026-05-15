@@ -494,7 +494,6 @@ class CharacterService extends ChangeNotifier {
     _loadingStatus = 'Scanning for characters...';
     notifyListeners();
 
-    // ignore: prefer_function_declarations_over_variables
     final onProgressCallback =
         (CharacterLoadingPhaseEnum phase, int current, int total) {
           if (current % 10 == 0 || current == total) {
