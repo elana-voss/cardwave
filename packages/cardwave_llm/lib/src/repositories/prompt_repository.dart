@@ -32,6 +32,7 @@ class PromptRepository {
     'tool_send_selfie_advertisement': 'tool_send_selfie_advertisement.txt',
     'tool_send_video_advertisement': 'tool_send_video_advertisement.txt',
     'tool_fetch_website_advertisement': 'tool_fetch_website_advertisement.txt',
+    'tool_suggest_name_advertisement': 'tool_suggest_name_advertisement.txt',
     'audio_gen_music': 'audio_gen_music.txt',
     'video_test': 'video_test.txt',
     'video_gen_character': 'video_gen_character.txt',
@@ -92,6 +93,8 @@ class PromptRepository {
       _get('tool_send_video_advertisement');
   String get toolFetchWebsiteAdvertisement =>
       _get('tool_fetch_website_advertisement');
+  String get toolSuggestNameAdvertisement =>
+      _get('tool_suggest_name_advertisement');
   String get audioGenMusic => _get('audio_gen_music');
   String get videoTest => _get('video_test');
   String get videoGenCharacter => _get('video_gen_character');

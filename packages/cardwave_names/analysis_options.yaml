@@ -1,0 +1,11 @@
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    - avoid_print
+    - unawaited_futures
+    - prefer_const_constructors
+    - cancel_subscriptions
+    - close_sinks

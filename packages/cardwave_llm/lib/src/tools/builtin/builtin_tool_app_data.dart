@@ -28,6 +28,13 @@ abstract class BuiltinToolAppData implements BuiltinToolSchemaContext {
   });
 
   Future<bool> confirmFetch(String url, {String? purpose});
+
+  /// Names already returned by `suggest_name` in the active chat. The
+  /// package treats these as opaque accessors so it doesn't need to know
+  /// about ChatSession; the app side reads them off the active session.
+  /// The `suggest_name` tool reads and mutates these sets directly.
+  Set<String> get usedFirstNames;
+  Set<String> get usedLastNames;
 }
 
 /// State-only impl for the `toGenkitTools` schema-gen path. Built before

@@ -122,6 +122,11 @@ class AppConstants {
   /// it an unbounded research budget.
   static const int toolFetchWebsiteMaxPerTurn = 3;
 
+  /// Per-turn cap on `suggest_name` calls. A few introductions in one
+  /// turn is fine; an unbounded budget would let a misbehaving model
+  /// exhaust the per-chat pool in one reply.
+  static const int toolSuggestNameMaxPerTurn = 5;
+
   /// Hard ceiling on rounds in the manual tool loop (chat → tool → chat
   /// → tool → …). Caps cost when a misbehaving model keeps emitting tool
   /// calls; the loop bails after this many model invocations.

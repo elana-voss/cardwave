@@ -68,4 +68,10 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
   @override
   Future<bool> confirmFetch(String url, {String? purpose}) =>
       _confirmFetchImpl(url, purpose: purpose);
+
+  @override
+  Set<String> get usedFirstNames => session.usedFirstNames;
+
+  @override
+  Set<String> get usedLastNames => session.usedLastNames;
 }

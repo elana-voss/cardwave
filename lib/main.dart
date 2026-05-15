@@ -9,6 +9,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
+import 'package:cardwave_names/cardwave_names.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
 import 'package:cardwave/settings/settings.dart';
@@ -54,6 +55,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
   late final ChatExecutionService _chatExecutionService;
   late final ToolRegistry _toolRegistry;
   late final ToolDispatcher _toolDispatcher;
+  late final NameDatabase _nameDatabase;
   late final ImageGenerationService _imageGenerationService;
   late final CharacterAiService _characterAiService;
   late final LlmPureHelpers _pureHelpers;
@@ -196,7 +198,11 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         appStorage: _appStorage,
       );
       _promptRepository = PromptRepository();
-      await _promptRepository.init();
+      _nameDatabase = NameDatabase();
+      await Future.wait([
+        _promptRepository.init(),
+        _nameDatabase.init(),
+      ]);
 
       _navigationService = NavigationService();
 
@@ -278,6 +284,14 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             requestTimeout: AppConstants.toolFetchWebsiteTimeout,
             maxBodyBytes: AppConstants.toolFetchWebsiteMaxBodyBytes,
             maxResponseChars: AppConstants.toolFetchWebsiteMaxResponseChars,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          SuggestNameTool(
+            promptRepository: _promptRepository,
+            maxCallsPerTurn: AppConstants.toolSuggestNameMaxPerTurn,
+            nameDatabase: _nameDatabase,
           ),
         );
       _toolDispatcher = ToolDispatcher(registry: _toolRegistry);

@@ -29,7 +29,11 @@ class ChatSession {
     this.isAssistant = false,
     this.configMedia,
     List<ChatMessage>? messages,
-  }) : messages = messages ?? [];
+    Set<String>? usedFirstNames,
+    Set<String>? usedLastNames,
+  }) : messages = messages ?? [],
+       usedFirstNames = usedFirstNames ?? <String>{},
+       usedLastNames = usedLastNames ?? <String>{};
 
   factory ChatSession.fromJson(Map<String, dynamic> json) =>
       _$ChatSessionFromJson(json);
@@ -95,6 +99,15 @@ class ChatSession {
   /// recently active assistant chat instead.
   @JsonKey(defaultValue: false)
   bool isAssistant;
+
+  /// Names already returned by the `suggest_name` tool in this chat.
+  /// Excluded from subsequent picks until the pool is exhausted within
+  /// the active filter slice, at which point that slice is reset.
+  @JsonKey(defaultValue: <String>{})
+  Set<String> usedFirstNames;
+
+  @JsonKey(defaultValue: <String>{})
+  Set<String> usedLastNames;
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool get isGroup => groupData != null;

@@ -6,6 +6,7 @@ version: 0.1.1
 workspace:
   - packages/cardwave_llm
   - packages/cardwave_embeddings
+  - packages/cardwave_names
   - packages/cardwave_storage
 
 environment:
@@ -39,6 +40,13 @@ dependencies:
   # the AppStorage facade, StorageDomainEnum, and the native-path helpers.
   cardwave_storage:
     path: packages/cardwave_storage
+
+  # The cardwave_names package owns the tagged NPC name database + filter
+  # logic backing the `suggest_name` LLM tool. The bundled JSON ships
+  # inside the package; the offline generator at tools/generate_names/
+  # writes back to it.
+  cardwave_names:
+    path: packages/cardwave_names
 
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.

@@ -47,6 +47,16 @@ ChatSession _$ChatSessionFromJson(Map<String, dynamic> json) => ChatSession(
   messages: (json['messages'] as List<dynamic>?)
       ?.map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
       .toList(),
+  usedFirstNames:
+      (json['used_first_names'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toSet() ??
+      {},
+  usedLastNames:
+      (json['used_last_names'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toSet() ??
+      {},
 );
 
 Map<String, dynamic> _$ChatSessionToJson(ChatSession instance) =>
@@ -71,4 +81,6 @@ Map<String, dynamic> _$ChatSessionToJson(ChatSession instance) =>
       'group_data': ?instance.groupData?.toJson(),
       'background_image': ?instance.backgroundImage,
       'is_assistant': instance.isAssistant,
+      'used_first_names': instance.usedFirstNames.toList(),
+      'used_last_names': instance.usedLastNames.toList(),
     };

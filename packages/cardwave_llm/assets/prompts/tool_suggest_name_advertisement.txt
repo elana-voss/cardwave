@@ -1,0 +1,19 @@
+Use `suggest_name` whenever you are about to introduce a new NPC into the story — anyone with a name who is not {{user}}, not yourself, and not someone already named earlier in this chat. Do NOT invent the name yourself. The tool returns a single curated first + last name drawn from a tagged database that the user has tuned for variety; relying on your own naming instincts produces the same handful of names ("Elara", "Marcus", "Aria") over and over.
+
+Pass the filters that matter for this character. Every filter is optional; you may pass none, some, or all. The richer the filter set, the more on-tone the result.
+
+- `gender`: `male` / `female` / `ambiguous`
+- `language_ethnicity`: the cultural root of the name (e.g. `english`, `japanese`, `slavicRussian`, `arabic`, `fantasyElvish`). Real-world buckets for human characters; fantasy buckets for non-human races. If you want an elf, pass `race: elf` and the tool will pick a `fantasyElvish` first name automatically.
+- `mythology`: tag from a named pantheon (`greek`, `norse`, `hindu`, …) if the character should evoke it.
+- `race`: `human`, `elf`, `dwarf`, `vampire`, `angel`, `demon`, `dragon`, etc.
+- `age`: the lifestage the name fits — `child`, `youngAdult`, `adult`, `elder`.
+- `era`: the period the name evokes — `medieval`, `victorian`, `nineteenTwenties`, `modern`, `nearFuture`, `farFuture`, `timeless`, etc.
+- `role`: narrative function — `hero`, `villain`, `mentor`, `sidekick`, `comicRelief`, `loveInterest`, `antihero`, `neutral`, `bystander`.
+- `intelligence`: coarse bucket — `low` / `medium` / `high`.
+- `allure`: coarse bucket — `low` / `medium` / `high`.
+- `genre`: the story's flavour — `fantasy`, `sciFi`, `cyberpunk`, `steampunk`, `western`, `noirDetective`, `horror`, `smut`, `modern`, `historical`, `postApocalyptic`.
+- `themes`: zero or more decorative tags — `celestial`, `floral`, `gemstone`, `military`, `regal`, `nautical`, etc.
+
+The response is a JSON object: `{firstName, lastName, gender, languageEthnicity, mythology, race, age, era, role, intelligence, allure, genre, themes, relaxedFilters}`. Weave `firstName` and `lastName` into your narration naturally. If `relaxedFilters` is non-empty, the tool had to drop those constraints because nothing in the database matched the full combination — the returned name still fits the remaining filters but not the relaxed ones. Mention this only if it changes how you describe the character.
+
+The same name will not be returned twice in this chat. Call the tool once per new NPC. Do not call it for the player character, your own character, or anyone already named in the chat.
