@@ -67,12 +67,13 @@ linter:
 # https://dart.dev/guides/language/analysis-options
 
 # qcheck — Flutter/Dart code-quality analyzer (third-party).
-# CLI: `..\qcheck\build\qcheck.exe analyze --preset recommended lib/`
+# CLI: `..\..\qcheck\build\qcheck.exe analyze --preset recommended lib/`
 # In-editor: loaded as an analysis_server_plugin via the top-level `plugins:`
 # block below (NOT `analyzer: plugins:` — that's the legacy mechanism).
+# qcheck lives at `..\..\qcheck` (sibling of `own_card_editor/`), not inside this repo.
 plugins:
   qcheck:
-    path: ../qcheck/packages/qcheck
+    path: ../../qcheck/packages/qcheck
 
 qcheck:
   exclude:
