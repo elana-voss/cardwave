@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/group/src/models/group_data.dart';
 
 class GroupPromptService {
   final Random _random = Random();
@@ -53,5 +54,34 @@ class GroupPromptService {
       charName: character.name,
       userName: userName,
     );
+  }
+
+  /// Returns a JSON-cloned copy of [speaker] with the group's override fields
+  /// applied to the card when present. The shared instance is not mutated.
+  /// Non-serialized fields (e.g. `appCardImagePath`) are restored post-clone.
+  CharacterFile applyGroupOverrides(CharacterFile speaker, GroupData? data) {
+    if (data == null) return speaker;
+    final hasOverride =
+        (data.overrideScenario?.trim().isNotEmpty ?? false) ||
+        (data.overrideSystemPrompt?.trim().isNotEmpty ?? false) ||
+        (data.overrideMesExample?.trim().isNotEmpty ?? false);
+    if (!hasOverride) return speaker;
+
+    final clone = CharacterFile.fromJson(speaker.toJson())
+      ..appCardImagePath = speaker.appCardImagePath;
+
+    final scenario = data.overrideScenario;
+    if (scenario != null && scenario.trim().isNotEmpty) {
+      clone.card.scenario = scenario;
+    }
+    final sysPrompt = data.overrideSystemPrompt;
+    if (sysPrompt != null && sysPrompt.trim().isNotEmpty) {
+      clone.card.systemPrompt = sysPrompt;
+    }
+    final mesExample = data.overrideMesExample;
+    if (mesExample != null && mesExample.trim().isNotEmpty) {
+      clone.card.mesExample = mesExample;
+    }
+    return clone;
   }
 }

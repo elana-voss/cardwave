@@ -499,11 +499,10 @@ class GroupChatController extends BaseChatViewController
         },
       );
 
-      // Apply group overrides (scenario / system_prompt / mes_example) to a
-      // JSON-cloned copy of the speaker's CharacterFile. Leaves the shared
-      // instance untouched. Non-JSON fields like appCardImagePath are
-      // restored post-clone because they're excluded from serialization.
-      final effectiveSpeaker = _applyGroupOverrides(targetCharacter);
+      final effectiveSpeaker = _groupPromptService.applyGroupOverrides(
+        targetCharacter,
+        _session.groupData,
+      );
 
       // Per-turn ChatSession copy: inherits all user-facing flags from
       // _session, but swaps in the prefixed history and the speaker's id.
@@ -784,35 +783,6 @@ class GroupChatController extends BaseChatViewController
     await _generateNextCharacterTurn();
   }
 
-  /// Returns a JSON-cloned copy of [speaker] with the group's override fields
-  /// applied to the card when present. The shared instance is not mutated.
-  /// Non-serialized fields (e.g. `appCardImagePath`) are restored post-clone.
-  CharacterFile _applyGroupOverrides(CharacterFile speaker) {
-    final data = _session.groupData;
-    if (data == null) return speaker;
-    final hasOverride =
-        (data.overrideScenario?.trim().isNotEmpty ?? false) ||
-        (data.overrideSystemPrompt?.trim().isNotEmpty ?? false) ||
-        (data.overrideMesExample?.trim().isNotEmpty ?? false);
-    if (!hasOverride) return speaker;
-
-    final clone = CharacterFile.fromJson(speaker.toJson())
-      ..appCardImagePath = speaker.appCardImagePath;
-
-    final scenario = data.overrideScenario;
-    if (scenario != null && scenario.trim().isNotEmpty) {
-      clone.card.scenario = scenario;
-    }
-    final sysPrompt = data.overrideSystemPrompt;
-    if (sysPrompt != null && sysPrompt.trim().isNotEmpty) {
-      clone.card.systemPrompt = sysPrompt;
-    }
-    final mesExample = data.overrideMesExample;
-    if (mesExample != null && mesExample.trim().isNotEmpty) {
-      clone.card.mesExample = mesExample;
-    }
-    return clone;
-  }
 
   /// Forces a specific character to speak next, bypassing the random picker.
   Future<void> generateReplyFor(CharacterFile character) async {
