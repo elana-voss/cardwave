@@ -1,0 +1,37 @@
+import 'dart:convert';
+
+import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/common/src/widgets/app_dialog.dart';
+import 'package:flutter/material.dart';
+
+class DialogJsonPrompt extends StatelessWidget {
+  const DialogJsonPrompt({required this.rawContent, super.key});
+  final String rawContent;
+
+  @override
+  Widget build(BuildContext context) {
+    var content = rawContent;
+    try {
+      if (content.isNotEmpty) {
+        final parsed = jsonDecode(content);
+        content = const JsonEncoder.withIndent('  ').convert(parsed);
+      }
+    } on Exception {
+      // ignore — show raw text
+    }
+    return AppDialog(
+      builder: (context, isMobile) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Generation Prompt',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 16),
+          SelectionArea(child: JsonPromptViewer(jsonContent: content)),
+        ],
+      ),
+    );
+  }
+}

@@ -1,12 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' show File;
 
 import 'package:cardwave/character/character.dart';
-import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/src/utils/app_constants.dart';
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
-import 'package:cardwave/common/src/widgets/text_field_autotrim.dart';
+import 'package:cardwave/common/src/widgets/dialog_json_prompt.dart';
+import 'package:cardwave/common/src/widgets/dialog_message_edit.dart';
+import 'package:cardwave/common/src/widgets/dialog_progress.dart';
+import 'package:cardwave/common/src/widgets/dialog_text_input.dart';
 import 'package:cardwave/editor/editor.dart';
 import 'package:cardwave/grid/grid.dart';
 import 'package:cardwave/group/group.dart';
@@ -16,31 +17,8 @@ import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProgressDialogHandle {
-  ProgressDialogHandle(this._closeCallback);
-  final ValueNotifier<double?> progress = ValueNotifier<double?>(null);
-  final ValueNotifier<String> message = ValueNotifier<String>('Sending...');
-  final VoidCallback _closeCallback;
-  bool isCancelled = false;
-  bool _isClosed = false;
-
-  void close() {
-    if (_isClosed) return;
-    _isClosed = true;
-    _closeCallback();
-  }
-
-  void update({double? progressValue, String? messageValue}) {
-    if (_isClosed) return;
-    if (progressValue != null) progress.value = progressValue;
-    if (messageValue != null) message.value = messageValue;
-  }
-
-  void dispose() {
-    progress.dispose();
-    message.dispose();
-  }
-}
+export 'package:cardwave/common/src/widgets/dialog_progress.dart'
+    show ProgressDialogHandle;
 
 class NavigationService {
   factory NavigationService() => _instance;
@@ -122,7 +100,7 @@ class NavigationService {
     int maxLines = 3,
   }) {
     return _showAppDialog<String>(
-      builder: (context) => _TextInputDialog(
+      builder: (context) => DialogTextInput(
         title: title,
         initialText: initialText,
         hintText: hintText,
@@ -146,7 +124,7 @@ class NavigationService {
     required String initialContent,
   }) async {
     final newContent = await _showAppDialog<String>(
-      builder: (context) => _MessageEditDialog(initialContent: initialContent),
+      builder: (context) => DialogMessageEdit(initialContent: initialContent),
     );
     return (newContent != null && newContent != initialContent)
         ? newContent
@@ -156,17 +134,8 @@ class NavigationService {
   /// Opens a read-only viewer showing the JSON-formatted [rawPrompt]. Falls
   /// back to displaying the raw text when the input isn't valid JSON.
   Future<void> showJsonPromptDialog({String? rawPrompt}) async {
-    var content = rawPrompt ?? '';
-    try {
-      if (content.isNotEmpty) {
-        final parsed = jsonDecode(content);
-        content = const JsonEncoder.withIndent('  ').convert(parsed);
-      }
-    } on Exception {
-      // ignore — show raw text
-    }
     await _showAppDialog<void>(
-      builder: (context) => _JsonPromptDialog(content: content),
+      builder: (context) => DialogJsonPrompt(rawContent: rawPrompt ?? ''),
     );
   }
 
@@ -395,7 +364,7 @@ class NavigationService {
         context: context,
         barrierDismissible: false,
         builder: (ctx) =>
-            _ProgressDialog(title: title, handle: handle, onCancel: onCancel),
+            DialogProgress(title: title, handle: handle, onCancel: onCancel),
       );
       unawaited(Navigator.of(context, rootNavigator: true).push(dialogRoute));
     }
@@ -579,197 +548,5 @@ class NavigationService {
       ),
     );
     return result ?? false;
-  }
-}
-
-class _TextInputDialog extends StatefulWidget {
-  const _TextInputDialog({
-    required this.title,
-    required this.initialText,
-    required this.hintText,
-    required this.confirmText,
-    required this.cancelText,
-    required this.maxLines,
-  });
-  final String title;
-  final String initialText;
-  final String hintText;
-  final String confirmText;
-  final String cancelText;
-  final int maxLines;
-
-  @override
-  State<_TextInputDialog> createState() => _TextInputDialogState();
-}
-
-class _TextInputDialogState extends State<_TextInputDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialText);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          border: const OutlineInputBorder(),
-        ),
-        maxLines: widget.maxLines,
-      ),
-      actions: [
-        TextButton(
-          key: const Key('dialog-cancel'),
-          onPressed: () => Navigator.pop(context),
-          child: Text(widget.cancelText),
-        ),
-        FilledButton(
-          key: const Key('dialog-save'),
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
-          child: Text(widget.confirmText),
-        ),
-      ],
-    );
-  }
-}
-
-class _MessageEditDialog extends StatefulWidget {
-  const _MessageEditDialog({required this.initialContent});
-  final String initialContent;
-
-  @override
-  State<_MessageEditDialog> createState() => _MessageEditDialogState();
-}
-
-class _MessageEditDialogState extends State<_MessageEditDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialContent);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppDialog(
-      actions: [
-        FilledButton(
-          key: const Key('dialog-save'),
-          onPressed: () => Navigator.pop(context, _controller.text),
-          child: const Text('Save'),
-        ),
-      ],
-      builder: (context, isMobile) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text('Edit Message', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
-          TextFieldAutotrim(
-            controller: _controller,
-            maxLines: null,
-            autofocus: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _JsonPromptDialog extends StatelessWidget {
-  const _JsonPromptDialog({required this.content});
-  final String content;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppDialog(
-      builder: (context, isMobile) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Generation Prompt',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 16),
-          SelectionArea(child: JsonPromptViewer(jsonContent: content)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProgressDialog extends StatefulWidget {
-  const _ProgressDialog({
-    required this.title,
-    required this.handle,
-    this.onCancel,
-  });
-  final String title;
-  final ProgressDialogHandle handle;
-  final VoidCallback? onCancel;
-
-  @override
-  State<_ProgressDialog> createState() => _ProgressDialogState();
-}
-
-class _ProgressDialogState extends State<_ProgressDialog> {
-  @override
-  void dispose() {
-    widget.handle.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: AlertDialog(
-        title: Text(widget.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ValueListenableBuilder<String>(
-              valueListenable: widget.handle.message,
-              builder: (ctx, msg, _) => Text(msg),
-            ),
-            const SizedBox(height: 16),
-            ValueListenableBuilder<double?>(
-              valueListenable: widget.handle.progress,
-              builder: (ctx, prog, _) => LinearProgressIndicator(value: prog),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              widget.handle.isCancelled = true;
-              widget.onCancel?.call();
-              widget.handle.close();
-            },
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
-    );
   }
 }
