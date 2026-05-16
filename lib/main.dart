@@ -199,10 +199,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       );
       _promptRepository = PromptRepository();
       _nameDatabase = NameDatabase();
-      await Future.wait([
-        _promptRepository.init(),
-        _nameDatabase.init(),
-      ]);
+      await _promptRepository.init();
 
       _navigationService = NavigationService();
 

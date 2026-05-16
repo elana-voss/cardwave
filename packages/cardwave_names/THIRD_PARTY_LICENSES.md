@@ -1,11 +1,11 @@
 # Third-Party Licenses
 
-The frozen `assets/name_database.json` in this package is a derivative work
-of the open corpora listed below. Each name in the database was sourced
-from one of these; the LLM only adds the synthetic tags (role,
-intelligence, allure, themes, etc.) at build time. Attribution is
-preserved here so it travels with the package, in line with the
-underlying licenses.
+The frozen name database compiled into `lib/src/services/name_database_data.dart`
+is a derivative work of the open corpora listed below. Each name in
+the database was sourced from one of these; the LLM only adds the
+synthetic tags (role, intelligence, allure, themes, etc.) at build
+time. Attribution is preserved here so it travels with the package,
+in line with the underlying licenses.
 
 ## Source corpora
 

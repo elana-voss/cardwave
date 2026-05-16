@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:cardwave_names/src/models/name_entry.dart';
@@ -7,31 +6,25 @@ import 'package:cardwave_names/src/models/name_filters.dart';
 import 'package:cardwave_names/src/models/name_pick.dart';
 import 'package:cardwave_names/src/models/name_surname.dart';
 import 'package:cardwave_names/src/models/name_taxonomy.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:cardwave_names/src/services/name_database_data.dart';
 
-/// Loads the frozen NPC name database from the bundled asset and serves
-/// filtered picks to the `suggest_name` tool. Singleton; lifetime owned
-/// by the host app's main entry. Filter intersection that produces no
-/// candidates degrades by dropping fields in [_dropOrder] until the
-/// pool is non-empty; per-call used-name sets are reset within the
-/// active filter slice when every candidate is already used.
+/// Serves filtered NPC name picks to the `suggest_name` tool. Entry data
+/// is a const top-level list compiled into the binary (see
+/// [name_database_data.dart]). Filter intersection that produces no
+/// candidates degrades by dropping fields in [_dropOrder] until the pool
+/// is non-empty; per-call used-name sets are reset within the active
+/// filter slice when every candidate is already used.
 class NameDatabase {
-  NameDatabase();
+  NameDatabase() : this._(firstNamesData, lastNamesData);
 
-  /// Test-only factory. Bypasses asset loading so unit tests can drive
-  /// the filter / degradation / reset paths against fixed fixtures.
-  factory NameDatabase.forTesting({
+  /// Test-only entry point. Lets unit tests drive filter / degradation /
+  /// reset paths against fixed fixtures.
+  NameDatabase.forTesting({
     required List<NameEntry> firstNames,
     required List<NameSurname> lastNames,
-  }) =>
-      NameDatabase()
-        .._firstNames = firstNames
-        .._lastNames = lastNames;
+  }) : this._(firstNames, lastNames);
 
-  /// Flutter resolves package-bundled assets at this prefix at runtime.
-  /// The asset lives at `assets/name_database.json` inside the package.
-  static const String _assetPath =
-      'packages/cardwave_names/assets/name_database.json';
+  NameDatabase._(this._firstNames, this._lastNames);
 
   /// Priority order for the degradation loop. Subjective / decorative
   /// fields drop first; identity-defining fields (gender, language,
@@ -52,49 +45,28 @@ class NameDatabase {
   ];
 
   final Random _rng = Random.secure();
-  List<NameEntry>? _firstNames;
-  List<NameSurname>? _lastNames;
-
-  Future<void> init() async {
-    final raw = await rootBundle.loadString(_assetPath);
-    final json = jsonDecode(raw) as Map<String, dynamic>;
-    final firstList = (json['first_names'] as List?) ?? const [];
-    final lastList = (json['last_names'] as List?) ?? const [];
-    _firstNames = firstList
-        .map((e) => NameEntry.fromJson(e as Map<String, dynamic>))
-        .toList(growable: false);
-    _lastNames = lastList
-        .map((e) => NameSurname.fromJson(e as Map<String, dynamic>))
-        .toList(growable: false);
-  }
+  final List<NameEntry> _firstNames;
+  final List<NameSurname> _lastNames;
 
   NamePick pickName(
     NameFilters filters,
     Set<String> usedFirst,
     Set<String> usedLast,
   ) {
-    final firstNames = _firstNames;
-    final lastNames = _lastNames;
-    if (firstNames == null || lastNames == null) {
+    if (_firstNames.isEmpty || _lastNames.isEmpty) {
       throw StateError(
-        'NameDatabase.init() has not been called before pickName.',
-      );
-    }
-    if (firstNames.isEmpty || lastNames.isEmpty) {
-      throw StateError(
-        'NameDatabase is empty — the generation script has not been run '
-        'or the asset is a stub.',
+        'NameDatabase is empty — the generation script has not been run.',
       );
     }
 
     final relaxed = <NameFilterField>[];
     var current = filters;
-    var firstCandidates = _filterFirstNames(firstNames, current);
+    var firstCandidates = _filterFirstNames(_firstNames, current);
     if (firstCandidates.isEmpty) {
       for (final field in _dropOrder) {
         current = current.withoutField(field);
         relaxed.add(field);
-        firstCandidates = _filterFirstNames(firstNames, current);
+        firstCandidates = _filterFirstNames(_firstNames, current);
         if (firstCandidates.isNotEmpty) break;
       }
     }
@@ -102,11 +74,11 @@ class NameDatabase {
         _pickAndMarkUsed(firstCandidates, usedFirst, (e) => e.name);
 
     final lockedCulture = firstPick.languageEthnicity;
-    var lastCandidates = lastNames
+    var lastCandidates = _lastNames
         .where((s) => s.languageEthnicity == lockedCulture)
         .toList();
     if (lastCandidates.isEmpty) {
-      lastCandidates = lastNames;
+      lastCandidates = _lastNames;
     }
     final lastPick =
         _pickAndMarkUsed(lastCandidates, usedLast, (s) => s.name);
@@ -123,7 +95,11 @@ class NameDatabase {
     Set<String> used,
     String Function(T) nameOf,
   ) {
-    var unused = candidates.where((e) => !used.contains(nameOf(e))).toList();
+    // Empty used-set is the common first-pick case in a fresh chat —
+    // skip the redundant filter+copy and pick from `candidates` directly.
+    var unused = used.isEmpty
+        ? candidates
+        : candidates.where((e) => !used.contains(nameOf(e))).toList();
     if (unused.isEmpty) {
       used.removeAll(candidates.map(nameOf));
       unused = candidates;

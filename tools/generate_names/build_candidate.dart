@@ -8,10 +8,13 @@
 // Output:
 //   tools/generate_names/.cache/name_database.candidate.json
 //
-// The candidate is intentionally written OUTSIDE the package's assets/
-// directory so Flutter doesn't bundle the 40+ MB intermediate file with
-// the app. Phase 2 reads it from this build-artifact location and
-// writes the final asset to packages/cardwave_names/assets/.
+// The candidate is intentionally written into .cache/ (not data/) so
+// the 40+ MB intermediate file stays out of git. The pipeline is:
+//   build_candidate.dart  → .cache/name_database.candidate.json
+//   slim_candidate.dart   → data/name_database.slim.json   (committed)
+//   classify.dart         → data/name_database.tagged.json (committed)
+//   emit_dart.dart        → packages/cardwave_names/lib/src/services/
+//                           name_database_data.dart        (committed)
 //
 // No API cost. Re-runnable for free. Inspect the output for "are we
 // ingesting the right names?" before paying for Phase 2 classification.

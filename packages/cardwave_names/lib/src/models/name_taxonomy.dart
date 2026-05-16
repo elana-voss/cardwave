@@ -1,7 +1,8 @@
 /// All 11 taxonomy axes for the NPC name database. Enum value names are
-/// the wire format: they appear in both the bundled `name_database.json`
-/// and the `suggest_name` tool's parameter schema. Renaming any value
-/// requires regenerating the database.
+/// the wire format: they appear in the generated `name_database_data.dart`
+/// (the const-baked dataset) and in the `suggest_name` tool's parameter
+/// schema. Renaming any value requires regenerating the database via
+/// `dart run tools/generate_names/emit_dart.dart`.
 library;
 
 enum GenderEnum {

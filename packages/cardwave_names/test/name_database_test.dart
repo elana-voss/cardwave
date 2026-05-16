@@ -227,13 +227,5 @@ void main() {
       expect(pick.firstNameEntry.languageEthnicity.isFantasy, isTrue);
       expect(pick.lastNameEntry.languageEthnicity.isFantasy, isTrue);
     });
-
-    test('throws when database has not been populated', () {
-      final db = NameDatabase();
-      expect(
-        () => db.pickName(const NameFilters(), <String>{}, <String>{}),
-        throwsStateError,
-      );
-    });
   });
 }
