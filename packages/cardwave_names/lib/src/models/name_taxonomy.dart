@@ -196,8 +196,8 @@ enum EraEnum {
   victorian,
   nineteenTwenties,
   midcentury,
-  modern,
-  contemporary,
+  modern, // Kept: refers to the fixed historical Modernist period (~1880s–1960s).
+  contemporary, // Kept: refers strictly to the present day and very recent past.
   nearFuture,
   farFuture,
   timeless,
@@ -256,8 +256,13 @@ enum GenreEnum {
   noirDetective,
   horror,
   smut,
-  modern,
-  historical,
+  // REMOVED: `modern` — "Modern" is a time period, not a genre. Set EraEnum
+  // to `modern` or `contemporary` instead.
+  // REMOVED: `historical` — redundant with EraEnum (ancient / medieval /
+  // renaissance / victorian / nineteenTwenties / midcentury already cover
+  // "historical").
+  sliceOfLife, // ADDED: grounded, everyday-life stories — the replacement
+  // for the rejected `modern` catch-all.
   postApocalyptic,
 }
 

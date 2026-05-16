@@ -275,8 +275,7 @@ const _$GenreEnumEnumMap = {
   GenreEnum.noirDetective: 'noirDetective',
   GenreEnum.horror: 'horror',
   GenreEnum.smut: 'smut',
-  GenreEnum.modern: 'modern',
-  GenreEnum.historical: 'historical',
+  GenreEnum.sliceOfLife: 'sliceOfLife',
   GenreEnum.postApocalyptic: 'postApocalyptic',
 };
 

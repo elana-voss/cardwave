@@ -4,10 +4,10 @@
 //
 // Usage (from app/):
 //   dart run tools/build_runner.dart                 # build (default)
+//   dart run tools/build_runner.dart build           # explicit build
 //   dart run tools/build_runner.dart watch           # watch the root only;
 //                                                    # for watching a single
 //                                                    # package, cd in instead
-//   dart run tools/build_runner.dart build --delete-conflicting-outputs
 //
 // Update [_members] when a new generator-using package is added to the
 // workspace.

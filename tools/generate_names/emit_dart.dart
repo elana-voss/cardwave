@@ -14,6 +14,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'loaders/local_taxonomy.dart';
+
 const _inputPath = 'tools/generate_names/data/name_database.tagged.json';
 const _outputPath =
     'packages/cardwave_names/lib/src/services/name_database_data.dart';
@@ -62,14 +64,14 @@ String _emitFirst(Map<String, dynamic> e) => [
       if (e['mythology'] != null)
         '    mythology: MythologyEnum.${e['mythology']},',
       '    race: RaceEnum.${e['race']},',
-      '    age: ${_emitEnumList('AgeEnum', e['age'] as List)},',
-      '    era: ${_emitEnumList('EraEnum', e['era'] as List)},',
-      '    role: ${_emitEnumList('RoleEnum', e['role'] as List)},',
+      '    age: ${_emitEnumList(AgeEnum.values, e['age'] as List)},',
+      '    era: ${_emitEnumList(EraEnum.values, e['era'] as List)},',
+      '    role: ${_emitEnumList(RoleEnum.values, e['role'] as List)},',
       '    intelligence: ${e['intelligence']},',
       '    allure: ${e['allure']},',
       '    commonness: CommonnessEnum.${e['commonness']},',
-      '    genre: ${_emitEnumList('GenreEnum', e['genre'] as List)},',
-      '    themes: ${_emitEnumList('ThemeEnum', e['themes'] as List)},',
+      '    genre: ${_emitEnumList(GenreEnum.values, e['genre'] as List)},',
+      '    themes: ${_emitEnumList(ThemeEnum.values, e['themes'] as List)},',
       '  ),',
     ].join('\n');
 
@@ -80,16 +82,22 @@ String _emitLast(Map<String, dynamic> e) => [
       if (e['mythology'] != null)
         '    mythology: MythologyEnum.${e['mythology']},',
       '    race: RaceEnum.${e['race']},',
-      '    era: ${_emitEnumList('EraEnum', e['era'] as List)},',
+      '    era: ${_emitEnumList(EraEnum.values, e['era'] as List)},',
       '    commonness: CommonnessEnum.${e['commonness']},',
-      '    genre: ${_emitEnumList('GenreEnum', e['genre'] as List)},',
-      '    themes: ${_emitEnumList('ThemeEnum', e['themes'] as List)},',
+      '    genre: ${_emitEnumList(GenreEnum.values, e['genre'] as List)},',
+      '    themes: ${_emitEnumList(ThemeEnum.values, e['themes'] as List)},',
       '  ),',
     ].join('\n');
 
-String _emitEnumList(String enumName, List<dynamic> values) {
-  if (values.isEmpty) return '<$enumName>[]';
-  final inner = values.map((v) => '$enumName.$v').join(', ');
+/// Emits `<EnumName>[EnumName.a, EnumName.b]`. Drops any JSON string
+/// that isn't in [enumValues] — protects the emitted Dart from
+/// referencing an enum value that's since been removed.
+String _emitEnumList<T extends Enum>(List<T> enumValues, List<dynamic> raw) {
+  final valid = enumValues.map((e) => e.name).toSet();
+  final filtered = raw.cast<String>().where(valid.contains).toList();
+  final enumName = T.toString();
+  if (filtered.isEmpty) return '<$enumName>[]';
+  final inner = filtered.map((v) => '$enumName.$v').join(', ');
   return '<$enumName>[$inner]';
 }
 

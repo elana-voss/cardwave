@@ -481,8 +481,6 @@ common case for plain names). Available:
 
 `genre` — zero or more story flavours the name fits. Available:
   ${_genreValues.join(', ')}
-Leave empty for plain modern/realistic names like "Sarah" that don't
-need a genre lock — empty means "fits anywhere".
 ''';
 
 final _lastSystemPrompt = '''
@@ -509,7 +507,6 @@ when a strong association exists. Available:
 
 `genre` — zero or more story flavours the surname fits. Available:
   ${_genreValues.join(', ')}
-Leave empty for plain modern/realistic surnames like "Smith".
 ''';
 
 String _buildUserPrompt({

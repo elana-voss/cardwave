@@ -217,8 +217,7 @@ enum GenreEnum {
   noirDetective,
   horror,
   smut,
-  modern,
-  historical,
+  sliceOfLife,
   postApocalyptic,
 }
 
