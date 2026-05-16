@@ -97,9 +97,15 @@ class ToolDispatcher {
     );
   }
 
+  /// Cap on inlining tool-result data into logs. Anything below this
+  /// (name picks, fetched-website summaries) is fully readable; the
+  /// large payloads (base64 selfies, video bytes) keep the size-only
+  /// summary so logs stay scannable.
+  static const _maxLoggedDataChars = 2048;
+
   static void _logToolResult(String toolName, ToolResult result) {
     final body = result.success
-        ? '\nResult: ok\nData: ${result.data == null ? '(none)' : '${result.data!.length} chars'}'
+        ? '\nResult: ok\nData: ${_formatResultData(result.data)}'
         : '\nResult: failure\nError:  ${result.errorMessage ?? '(no message)'}';
     toolsLogger.info(
       LlmStructuredEvent(
@@ -108,5 +114,11 @@ class ToolDispatcher {
         body: body,
       ),
     );
+  }
+
+  static String _formatResultData(String? data) {
+    if (data == null) return '(none)';
+    if (data.length <= _maxLoggedDataChars) return '\n$data';
+    return '${data.length} chars (truncated above ${_maxLoggedDataChars}c)';
   }
 }

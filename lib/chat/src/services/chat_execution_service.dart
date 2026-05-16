@@ -12,6 +12,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_names/cardwave_names.dart';
 import 'package:flutter/foundation.dart';
 
 /// Closure shape the chat controller hands to [ChatExecutionService]
@@ -104,6 +105,7 @@ class ChatExecutionService {
             if (resolvedMedia.imageToolSelfieAllowed) SendSelfieTool.toolName,
             if (resolvedMedia.videoToolSendAllowed) SendVideoTool.toolName,
             if (resolvedMedia.webToolFetchAllowed) FetchWebsiteTool.toolName,
+            SuggestNameTool.toolName,
           ];
           final enabledTools = model.capabilities.toolCalling
               ? toolRegistry.enabledFor(allowedNames)
