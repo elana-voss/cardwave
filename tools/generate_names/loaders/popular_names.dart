@@ -23,6 +23,11 @@ const _forenamesPath =
 const _surnamesPath =
     '$datasetRoot/popular-names-by-country/common-surnames-by-country.csv';
 
+/// Cap per (country, gender) cohort. Country-frequency corpora carry
+/// immigrant names at lower ranks (Abdi-prefix names in Norway start at
+/// rank ~300 in philipperemy); capping at 100 keeps mostly native names.
+const _topNPerCohort = 100;
+
 LoaderResult loadPopularNames() {
   final firstNames = _loadForenames();
   final lastNames = _loadSurnames();
@@ -40,6 +45,8 @@ List<CandidateFirstName> _loadForenames() {
   // Romanized Name
   final lines = file.readAsLinesSync();
   final result = <CandidateFirstName>[];
+  // Track per (country, gender) cohort count so we can stop at the cap.
+  final cohortCount = <String, int>{};
   for (var i = 1; i < lines.length; i++) {
     final cols = _splitCsv(lines[i]);
     if (cols.length < 12) continue;
@@ -49,6 +56,10 @@ List<CandidateFirstName> _loadForenames() {
     if (romanizedName.isEmpty || country.isEmpty) continue;
     final ethnicity = isoCountryToEthnicity[country];
     if (ethnicity == null) continue;
+    final cohortKey = '$country-$genderCode';
+    final taken = cohortCount[cohortKey] ?? 0;
+    if (taken >= _topNPerCohort) continue;
+    cohortCount[cohortKey] = taken + 1;
 
     result.add(
       CandidateFirstName.sentinel(
@@ -71,6 +82,7 @@ List<CandidateLastName> _loadSurnames() {
   // Romanized Name, Count, Percent
   final lines = file.readAsLinesSync();
   final result = <CandidateLastName>[];
+  final cohortCount = <String, int>{};
   for (var i = 1; i < lines.length; i++) {
     final cols = _splitCsv(lines[i]);
     if (cols.length < 6) continue;
@@ -79,6 +91,9 @@ List<CandidateLastName> _loadSurnames() {
     if (romanizedName.isEmpty || country.isEmpty) continue;
     final ethnicity = isoCountryToEthnicity[country];
     if (ethnicity == null) continue;
+    final taken = cohortCount[country] ?? 0;
+    if (taken >= _topNPerCohort) continue;
+    cohortCount[country] = taken + 1;
 
     result.add(
       CandidateLastName.sentinel(

@@ -21,6 +21,12 @@ import 'local_taxonomy.dart';
 const _humansRoot = '$datasetRoot/corpora/data/humans';
 const _mythologyRoot = '$datasetRoot/corpora/data/mythology';
 
+/// Cap per human-name list. Country-frequency lists in corpora (US
+/// Census firstNames, Norway Statistics) carry immigrant names at lower
+/// ranks; capping at 100 keeps mostly native names. Mythology lists are
+/// not capped — they're already small and curated by pantheon.
+const _topNPerHumanList = 100;
+
 LoaderResult loadCorpora() {
   final firstNames = <CandidateFirstName>[];
   final lastNames = <CandidateLastName>[];
@@ -130,7 +136,7 @@ void _readFirstNames(
   required GenderEnum? gender,
   required List<CandidateFirstName> into,
 }) {
-  final names = _readStringList(path, listKey);
+  final names = _readStringList(path, listKey).take(_topNPerHumanList);
   for (final name in names) {
     into.add(
       CandidateFirstName.sentinel(
@@ -148,7 +154,7 @@ void _readLastNames(
   required LanguageEthnicityEnum ethnicity,
   required List<CandidateLastName> into,
 }) {
-  final names = _readStringList(path, listKey);
+  final names = _readStringList(path, listKey).take(_topNPerHumanList);
   for (final name in names) {
     into.add(
       CandidateLastName.sentinel(

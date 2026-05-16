@@ -37,7 +37,7 @@ from collections import defaultdict
 from pathlib import Path
 
 
-TOP_N_PER_COUNTRY = 2000
+TOP_N_PER_COUNTRY = 100
 
 
 def _load_pickle(path):
