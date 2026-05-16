@@ -48,13 +48,11 @@ class NameEntry {
   @JsonKey(defaultValue: <RoleEnum>[])
   final List<RoleEnum> role;
 
-  /// 1 (very dim) .. 5 (very intelligent). LLM-facing tool param uses
-  /// the [IntelligenceBucketEnum] coarse buckets.
-  final int intelligence;
+  /// How cerebral the name sounds, on a 5-level scale.
+  final IntelligenceEnum intelligence;
 
-  /// 1 (very plain) .. 5 (very sexy). Same bucket mapping as
-  /// [intelligence].
-  final int allure;
+  /// How aesthetically attractive the name sounds, on a 5-level scale.
+  final AllureEnum allure;
 
   /// How recognizable / frequent the name is. Common = the LLM's
   /// default-pick territory; rare = distinctive picks for named NPCs.

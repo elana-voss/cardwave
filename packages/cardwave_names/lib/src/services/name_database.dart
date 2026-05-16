@@ -5,7 +5,6 @@ import 'package:cardwave_names/src/models/name_filter_field.dart';
 import 'package:cardwave_names/src/models/name_filters.dart';
 import 'package:cardwave_names/src/models/name_pick.dart';
 import 'package:cardwave_names/src/models/name_surname.dart';
-import 'package:cardwave_names/src/models/name_taxonomy.dart';
 import 'package:cardwave_names/src/services/name_database_data.dart';
 
 /// Serves filtered NPC name picks to the `suggest_name` tool. Entry data
@@ -128,14 +127,10 @@ class NameDatabase {
       if (f.age != null && !e.age.contains(f.age)) return false;
       if (f.era != null && !e.era.contains(f.era)) return false;
       if (f.role != null && !e.role.contains(f.role)) return false;
-      final intelFilter = f.intelligence;
-      if (intelFilter != null && !intelFilter.includes(e.intelligence)) {
+      if (f.intelligence != null && e.intelligence != f.intelligence) {
         return false;
       }
-      final allureFilter = f.allure;
-      if (allureFilter != null && !allureFilter.includes(e.allure)) {
-        return false;
-      }
+      if (f.allure != null && e.allure != f.allure) return false;
       if (f.commonness != null && e.commonness != f.commonness) return false;
       // Empty entry-genre = compatible with any genre filter. Names
       // without a committed genre are "preferred but not exclusive" —

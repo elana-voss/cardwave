@@ -9,11 +9,18 @@ Pass the filters that matter for this character. Every filter is optional; you m
 - `age`: the lifestage the name fits — `child`, `youngAdult`, `adult`, `elder`.
 - `era`: the period the name evokes — `medieval`, `victorian`, `nineteenTwenties`, `modern`, `nearFuture`, `farFuture`, `timeless`, etc.
 - `role`: narrative function — `hero`, `villain`, `mentor`, `sidekick`, `comicRelief`, `loveInterest`, `antihero`, `neutral`, `bystander`.
-- `intelligence`: coarse bucket — `low` / `medium` / `high`.
-- `allure`: coarse bucket — `low` / `medium` / `high`.
+- `intelligence`: how cerebral the name sounds — `blunt` / `plain` / `average` / `thoughtful` / `bookish`.
+- `allure`: how attractive the name sounds — `harsh` / `unremarkable` / `pleasant` / `pretty` / `striking`.
 - `genre`: the story's flavour — `fantasy`, `sciFi`, `cyberpunk`, `steampunk`, `western`, `noirDetective`, `horror`, `smut`, `sliceOfLife`, `postApocalyptic`.
 - `themes`: zero or more decorative tags — `celestial`, `floral`, `gemstone`, `military`, `regal`, `nautical`, etc.
 
-The response is a flat JSON object with snake_case keys: `{first_name, last_name, gender, language_ethnicity, race, age: [...], era: [...], mythology?, relaxed_filters?}`. Weave `first_name` and `last_name` into your narration naturally. The identity fields tell you what the database actually returned — `age` and `era` are arrays because most names plausibly fit multiple lifestages and periods. `mythology` is present only for names tagged to a pantheon. `relaxed_filters` is present only when the tool had to drop some constraints because nothing in the database matched the full combination — the returned name still fits the remaining filters but not the relaxed ones. Mention the relaxation only if it changes how you describe the character.
+The response is a flat JSON object with snake_case keys. First-name flavor: `{first_name, gender, language_ethnicity, race, age: [...], era: [...], role: [...], intelligence, allure, commonness, genre: [...], themes: [...]}`. Surname flavor: `{last_name, last_name_role: [...], last_name_allure, last_name_commonness, last_name_genre: [...], last_name_themes: [...]}`. Plus optional `mythology` and `relaxed_filters`. Weave `first_name` and `last_name` into your narration naturally. The other fields are how the database classified each — they're hints you can use to colour the character's voice, demeanor, and feel:
+
+- `age`, `era`, `role` are arrays because most names plausibly fit multiple lifestages, periods, and archetypes. `last_name_role` is the surname's archetype list (Blackwood reads villain; Ashford reads hero).
+- `intelligence` (5 levels: blunt → bookish) and `allure` (5 levels: harsh → striking) describe how the name itself sounds — phonetics and cultural connotation, not the bearer's actual traits. `last_name_allure` is the surname's level separately (Featherstonehaugh is striking; Smith is unremarkable). Surnames don't carry intelligence — that signal is too weak on a family name.
+- `commonness` says whether the first name is everyday (`common`), somewhat known (`uncommon`), or distinctive (`rare`). `last_name_commonness` is the same for the surname.
+- `genre` / `themes` and `last_name_genre` / `last_name_themes` are zero-or-more arrays. Empty is normal when none of the categorical values fits.
+- `mythology` is present only for names tagged to a pantheon.
+- `relaxed_filters` is present only when the tool had to drop some constraints because nothing in the database matched the full combination — the returned name still fits the remaining filters but not the relaxed ones. Mention the relaxation only if it changes how you describe the character.
 
 The same name will not be returned twice in this chat. Call the tool once per new NPC. Do not call it for the player character, your own character, or anyone already named in the chat.

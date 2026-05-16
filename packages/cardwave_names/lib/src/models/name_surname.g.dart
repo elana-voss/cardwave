@@ -19,6 +19,12 @@ NameSurname _$NameSurnameFromJson(Map<String, dynamic> json) => NameSurname(
           ?.map((e) => $enumDecode(_$EraEnumEnumMap, e))
           .toList() ??
       [],
+  role:
+      (json['role'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$RoleEnumEnumMap, e))
+          .toList() ??
+      [],
+  allure: $enumDecode(_$AllureEnumEnumMap, json['allure']),
   commonness: $enumDecode(_$CommonnessEnumEnumMap, json['commonness']),
   genre:
       (json['genre'] as List<dynamic>?)
@@ -40,6 +46,8 @@ Map<String, dynamic> _$NameSurnameToJson(NameSurname instance) =>
       'mythology': _$MythologyEnumEnumMap[instance.mythology],
       'race': _$RaceEnumEnumMap[instance.race]!,
       'era': instance.era.map((e) => _$EraEnumEnumMap[e]!).toList(),
+      'role': instance.role.map((e) => _$RoleEnumEnumMap[e]!).toList(),
+      'allure': _$AllureEnumEnumMap[instance.allure]!,
       'commonness': _$CommonnessEnumEnumMap[instance.commonness]!,
       'genre': instance.genre.map((e) => _$GenreEnumEnumMap[e]!).toList(),
       'themes': instance.themes.map((e) => _$ThemeEnumEnumMap[e]!).toList(),
@@ -216,6 +224,26 @@ const _$EraEnumEnumMap = {
   EraEnum.nearFuture: 'nearFuture',
   EraEnum.farFuture: 'farFuture',
   EraEnum.timeless: 'timeless',
+};
+
+const _$RoleEnumEnumMap = {
+  RoleEnum.hero: 'hero',
+  RoleEnum.villain: 'villain',
+  RoleEnum.mentor: 'mentor',
+  RoleEnum.sidekick: 'sidekick',
+  RoleEnum.comicRelief: 'comicRelief',
+  RoleEnum.bystander: 'bystander',
+  RoleEnum.loveInterest: 'loveInterest',
+  RoleEnum.antihero: 'antihero',
+  RoleEnum.neutral: 'neutral',
+};
+
+const _$AllureEnumEnumMap = {
+  AllureEnum.harsh: 'harsh',
+  AllureEnum.unremarkable: 'unremarkable',
+  AllureEnum.pleasant: 'pleasant',
+  AllureEnum.pretty: 'pretty',
+  AllureEnum.striking: 'striking',
 };
 
 const _$CommonnessEnumEnumMap = {

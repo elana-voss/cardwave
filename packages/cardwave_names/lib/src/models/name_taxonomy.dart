@@ -215,36 +215,25 @@ enum RoleEnum {
   neutral,
 }
 
-/// Tool-param bucket for the stored 1–5 `intelligence` score. `low` maps
-/// to 1–2, `medium` to 3, `high` to 4–5.
-enum IntelligenceBucketEnum {
-  low,
-  medium,
-  high,
+/// How cerebral / sophisticated a name sounds. Phonetics + cultural
+/// connotation, not the bearer's IQ. Same five-level resolution Grok
+/// classifies at — no bucket layer between storage and filter.
+enum IntelligenceEnum {
+  blunt,       // Bubba, Skip, Hank
+  plain,       // Bob, Mary
+  average,     // no strong signal either way
+  thoughtful,  // Eleanor, Theodore
+  bookish,     // Reginald, Persephone, Cassius
 }
 
-/// Tool-param bucket for the stored 1–5 `allure` score. Same mapping
-/// as [IntelligenceBucketEnum].
-enum AllureBucketEnum {
-  low,
-  medium,
-  high,
-}
-
-extension ScoreBucketRange on IntelligenceBucketEnum {
-  bool includes(int score) => switch (this) {
-    IntelligenceBucketEnum.low => score >= 1 && score <= 2,
-    IntelligenceBucketEnum.medium => score == 3,
-    IntelligenceBucketEnum.high => score >= 4 && score <= 5,
-  };
-}
-
-extension AllureRange on AllureBucketEnum {
-  bool includes(int score) => switch (this) {
-    AllureBucketEnum.low => score >= 1 && score <= 2,
-    AllureBucketEnum.medium => score == 3,
-    AllureBucketEnum.high => score >= 4 && score <= 5,
-  };
+/// How sensually / aesthetically attractive a name sounds. Phonetics +
+/// cultural connotation, not the bearer's looks.
+enum AllureEnum {
+  harsh,        // Mildred, Gary, Bertha
+  unremarkable, // John, Anna
+  pleasant,     // no strong signal either way
+  pretty,       // Lily, Adrian
+  striking,     // Aphrodite, Seraphina, Lysander
 }
 
 enum GenreEnum {

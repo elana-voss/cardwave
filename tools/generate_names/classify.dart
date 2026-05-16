@@ -43,6 +43,8 @@ const _grokKey = String.fromEnvironment('GROK_API_KEY');
 final _ageValues = AgeEnum.values.names;
 final _roleValues = RoleEnum.values.names;
 final _eraValues = EraEnum.values.names;
+final _intelligenceValues = IntelligenceEnum.values.names;
+final _allureValues = AllureEnum.values.names;
 final _commonnessValues = CommonnessEnum.values.names;
 final _genreValues = GenreEnum.values.names;
 final _themeValues = ThemeEnum.values.names;
@@ -400,48 +402,46 @@ Future<String> _postWithRetry({
 
 final _firstSystemPrompt = '''
 You assign tags to character first names for a roleplay name database.
-For each name, fill in age, era, role, intelligence (1-5), allure (1-5),
-commonness, themes, and genre based on the name's cultural, historical,
-and phonetic feel. Tag the name itself — not a hypothetical bearer.
+For each name, fill in age, era, role, intelligence, allure, commonness,
+themes, and genre based on the name's cultural, historical, and
+phonetic feel. Tag the name itself — not a hypothetical bearer.
 
 RULES:
 - NEVER invent names — only tag the names provided.
 - Tag each name in isolation; treat the list as independent items.
 - Same name across batches should get the same tags.
-- Most names land in the middle of subjective scales; extreme tags
-  (intelligence/allure = 1 or 5, roles like "villain", "rare"
-  commonness) only when the name strongly evokes them.
 - Use the known facts (gender, language, race, mythology) as context
-  — an ancient Greek name should not be tagged like a modern English
-  one.
-- `age`, `era`, `role` are ARRAYS. List every value that plausibly
-  fits the name, capped at 3 per field. Most names should have 1-2
-  entries; only very versatile names hit 3. NEVER return an empty
-  array — pick at least one value.
+  — an ancient Greek name should not be tagged like a contemporary
+  English one.
+- `age`, `era`, `role` are ARRAYS. Pick the values that fit the name,
+  capped at 3 per field. NEVER return an empty array for these — pick
+  at least one value.
+- `themes` and `genre` are ARRAYS. Pick the values that fit. Empty is
+  allowed when none of the listed values fits.
 
 FIELD DEFINITIONS:
 
-`age` (array, 1-3 values) — lifestages the name evokes. Most names
-fit one lifestage; "Liam" / "Sam" span two; truly broad names hit
-three. Available values:
+`age` (array, 1-3 values) — lifestages the name evokes. Available:
   child       — names mostly used for young children (Bobby, Tommy)
   youngAdult  — names that feel teen / early-twenties (Tyler, Becky)
-  adult       — names with no strong age signal (Sarah, James)
+  adult       — names with no strong age lock (Sarah, James)
   elder       — names that feel old-fashioned / retired (Ethel, Wilbur)
-Default when no strong signal: ["adult"].
 
-`era` (array, 1-3 values) — periods the name evokes. Most names span
-multiple eras: "Eleanor" reads victorian AND midcentury AND modern;
-"Mildred" peaks victorian but persists midcentury; "Mary" is timeless
-across modern + historical periods. Lock to one era ONLY when the
-name strongly belongs there (a Greek mythology name → ["ancient"];
-a flapper-only fad → ["nineteenTwenties"]). Available values:
-  ${_eraValues.join(', ')}
-Default when no strong signal: ["modern"].
+`era` (array, 1-3 values) — periods the name evokes. Available:
+  ancient          — pre-medieval, classical / mythological (Apollo, Lysander, Diana)
+  medieval         — Anglo-Saxon, Norman, Arthurian (Aldous, Hildegard, Roland)
+  renaissance      — 15th–17th century (Lorenzo, Cosimo, Beatrice)
+  victorian        — 1837–1901 (Edith, Reginald, Florence)
+  nineteenTwenties — flapper era (Mabel, Vivian, Buster)
+  midcentury       — 1940s–1960s (Patricia, Donald, Carol)
+  modern           — Modernist period (~1880s–1960s), broad umbrella over the four above (Eleanor, Theodore)
+  contemporary     — present day / very recent past (Mason, Aiden, Aria)
+  nearFuture       — sci-fi-coded near future (Zephyr, Kael, Nova)
+  farFuture        — alien-coded far future (Xax, Vyn, Korr)
+  timeless         — spans many eras with no period lock (Mary, John, Anna)
 
 `role` (array, 1-3 values) — narrative archetypes the name evokes.
-Most names fit one archetype; "Cassius" fits villain AND antihero;
-"Arthur" fits hero AND mentor. Available values:
+Available values:
   hero          — heroic / protagonist-coded (Arthur, Diana)
   villain       — villain-coded (Maleficent, Lucius)
   mentor        — wise / authoritative (Albus, Gandalf, Persephone)
@@ -451,62 +451,103 @@ Most names fit one archetype; "Cassius" fits villain AND antihero;
   loveInterest  — romantic-lead feel (Romeo, Juliet, Aphrodite)
   antihero      — morally grey / edgy (Wolverine, Vex)
   neutral       — no strong archetype
-Default when no strong signal: ["neutral"].
 
 `intelligence` — how cerebral / sophisticated the NAME sounds (not the
-bearer's actual IQ). Phonetics + cultural connotation. Scale:
-  1 = blunt or unsophisticated (Bubba, Skip, Hank)
-  2 = plain (Bob, Mary)
-  3 = average / no signal. DEFAULT.
-  4 = thoughtful / literate (Eleanor, Theodore)
-  5 = bookish or calculating (Reginald, Persephone, Cassius)
+bearer's actual IQ). Phonetics + cultural connotation. Available:
+  blunt       — unsophisticated (Bubba, Skip, Hank)
+  plain       — simple (Bob, Mary)
+  average     — phonetics carry no strong intelligence signal
+  thoughtful  — literate (Eleanor, Theodore)
+  bookish     — calculating / cerebral (Reginald, Persephone, Cassius)
 
 `allure` — how sensually / aesthetically attractive the NAME sounds
-(not the bearer's looks). Phonetics + cultural connotation. Scale:
-  1 = plain or harsh (Mildred, Gary, Bertha)
-  2 = unremarkable (John, Anna)
-  3 = pleasant but no signal. DEFAULT.
-  4 = soft / pretty (Lily, Adrian)
-  5 = striking or sensual (Aphrodite, Seraphina, Lysander)
+(not the bearer's looks). Phonetics + cultural connotation. Available:
+  harsh         — grating (Mildred, Gary, Bertha)
+  unremarkable  — plain-sounding (John, Anna)
+  pleasant      — phonetics carry no strong allure signal
+  pretty        — soft (Lily, Adrian)
+  striking      — sensual / dramatic (Aphrodite, Seraphina, Lysander)
 
 `commonness` — how recognizable to a general audience. One of:
   common    — household names most readers know (Mary, John)
-  uncommon  — somewhat known but not everyday. DEFAULT.
+  uncommon  — somewhat known but not everyday
   rare      — distinctive / unusual (Polkinghorne, Cthulhu, Sarepta)
 
-`themes` — zero or more decorative tags the name evokes. Pick only
-when a strong association exists; leave empty otherwise (which is the
-common case for plain names). Available:
+`themes` — decorative tags the name evokes. Available:
   ${_themeValues.join(', ')}
 
-`genre` — zero or more story flavours the name fits. Available:
-  ${_genreValues.join(', ')}
+`genre` — story flavours the name fits. Empty is allowed when none of
+the listed values fits. Available:
+  fantasy         — magic / mythic / sword & sorcery (Aelar, Lirien, Galadriel)
+  sciFi           — space / future tech / alien-coded (Zephyr, Korr, Nyx)
+  cyberpunk       — neon / dystopian / hacker handles (Glitch, Razor, Spike)
+  steampunk       — Victorian-mechanical (Aurelius, Cogsworth, Phineas)
+  western         — frontier / cowboy (Wyatt, Jesse, Clementine)
+  noirDetective   — hardboiled / 1920s–50s urban (Cassius, Vince, Lash)
+  horror          — gothic / sinister phonetics (Edgar, Lavinia, Vlad)
+  smut            — sensual / romance-lead (Aphrodite, Seraphina, Lysander)
+  sliceOfLife     — grounded everyday real-world names (Sarah, Yuki, Aiden)
+  postApocalyptic — wasteland / survivor-coded (Raze, Ash, Vex)
 ''';
 
 final _lastSystemPrompt = '''
 You assign tags to character surnames for a roleplay name database.
-For each surname, fill in commonness, themes, and genre based on the
-name's cultural, historical, and phonetic feel.
+For each surname, fill in role, allure, commonness, themes, and genre
+based on the name's cultural, historical, and phonetic feel.
 
 RULES:
 - NEVER invent names — only tag the surnames provided.
 - Tag each name in isolation.
 - Same name across batches should get the same tags.
 - Use the known facts (language, era, race, mythology) as context.
+- `role` is an ARRAY. Pick the archetypes that fit, capped at 3. NEVER
+  return an empty array — pick at least one value.
+- `themes` and `genre` are ARRAYS. Empty is allowed when none of the
+  listed values fits.
 
 FIELD DEFINITIONS:
 
+`role` (array, 1-3 values) — narrative archetypes the surname evokes.
+Available:
+  hero          — heroic / valorous-sounding (Ashford, Pendragon)
+  villain       — villain-coded / sinister-sounding (Blackwood, Ravencrest, Grimshaw)
+  mentor        — wise / scholarly (Pemberton, Aldwych)
+  sidekick      — supporting-cast feel (Brown, Wells, Stubbs)
+  comicRelief   — goofy / clumsy-sounding (Bumble, Pratt)
+  bystander     — background-NPC feel (Smith, Jones, Davis)
+  loveInterest  — romantic / lyrical (Beauregard, Verlaine)
+  antihero      — morally grey / edgy (Steele, Drake, Vex)
+  neutral       — no strong archetype
+
+`allure` — how sensually / aesthetically attractive the SURNAME sounds.
+Phonetics + cultural connotation. Available:
+  harsh         — grating (Gussard, Drupp)
+  unremarkable  — plain-sounding (Smith, Jones)
+  pleasant      — phonetics carry no strong allure signal
+  pretty        — soft (Vega, Ashford)
+  striking      — sophisticated / dramatic (Featherstonehaugh, Silvercrest, Belmonte)
+
 `commonness` — how recognizable to a general audience. One of:
   common    — surnames most readers know (Smith, Garcia, Yamamoto)
-  uncommon  — somewhat known but not everyday. DEFAULT.
+  uncommon  — somewhat known but not everyday
   rare      — distinctive / unusual (Polkinghorne, Featherstonehaugh)
 
-`themes` — zero or more decorative tags the surname evokes. Pick only
-when a strong association exists. Available:
+`themes` — decorative tags the surname evokes. Empty is allowed when
+none of the listed values fits. Available:
   ${_themeValues.join(', ')}
 
-`genre` — zero or more story flavours the surname fits. Available:
-  ${_genreValues.join(', ')}
+`genre` — story flavours the surname fits. Empty is allowed when none
+of the listed values fits. Available:
+  fantasy         — fae / elvish / mythic (Silverleaf, Ravencrest, Stormwind)
+  sciFi           — alien-coded / future (Voss, Stellaris, Korr)
+  cyberpunk       — corp / street / Japanese-loan (Saburo, Kazama, Nakamura)
+  steampunk       — Victorian-mechanical (Aetherson, Cogsworth, Brassington)
+  western         — frontier / homesteader (McCoy, Calhoun, Dalton)
+  noirDetective   — hardboiled / urban (Diamond, Sharpe, Vance)
+  horror          — gothic / sinister (Blackwood, Ashworth, Ravenscroft)
+  smut            — sensual / poetic (Beauregard, Verlaine, Belmonte)
+  sliceOfLife     — grounded everyday surnames (Smith, Tanaka, Garcia)
+  postApocalyptic — wasteland / survivor (Ash, Storm, Crow)
 ''';
 
 String _buildUserPrompt({
@@ -570,8 +611,8 @@ Map<String, dynamic> _firstNameBatchSchema(int count) {
               'maxItems': 3,
               'items': {'type': 'string', 'enum': _roleValues},
             },
-            'intelligence': {'type': 'integer', 'minimum': 1, 'maximum': 5},
-            'allure': {'type': 'integer', 'minimum': 1, 'maximum': 5},
+            'intelligence': {'type': 'string', 'enum': _intelligenceValues},
+            'allure': {'type': 'string', 'enum': _allureValues},
             'commonness': {'type': 'string', 'enum': _commonnessValues},
             'themes': {
               'type': 'array',
@@ -607,6 +648,13 @@ Map<String, dynamic> _lastNameBatchSchema(int count) {
           'type': 'object',
           'properties': {
             'name': {'type': 'string'},
+            'role': {
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'items': {'type': 'string', 'enum': _roleValues},
+            },
+            'allure': {'type': 'string', 'enum': _allureValues},
             'commonness': {'type': 'string', 'enum': _commonnessValues},
             'themes': {
               'type': 'array',
@@ -617,7 +665,7 @@ Map<String, dynamic> _lastNameBatchSchema(int count) {
               'items': {'type': 'string', 'enum': _genreValues},
             },
           },
-          'required': ['name', 'commonness', 'themes', 'genre'],
+          'required': ['name', 'role', 'allure', 'commonness', 'themes', 'genre'],
           'additionalProperties': false,
         },
       },

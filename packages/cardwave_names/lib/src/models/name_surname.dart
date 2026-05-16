@@ -3,10 +3,11 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'name_surname.g.dart';
 
-/// Surname-only record. Carries the culture, mythology, race, era and
-/// genre/theme tags but not the person-level fields (gender, age, role,
-/// intelligence, allure) — those are properties of the bearer, not
-/// the family name.
+/// Surname-only record. Carries the culture, mythology, race, era,
+/// genre, themes, commonness, plus the surname-applicable person-level
+/// tags `role` (Blackwood → villain-coded) and `allure` (Featherstonehaugh
+/// reads sophisticated). Gender / age / intelligence carry too weak a
+/// signal on surnames to be classified.
 @JsonSerializable(explicitToJson: true)
 class NameSurname {
   const NameSurname({
@@ -15,6 +16,8 @@ class NameSurname {
     this.mythology,
     required this.race,
     required this.era,
+    required this.role,
+    required this.allure,
     required this.commonness,
     required this.genre,
     required this.themes,
@@ -33,6 +36,14 @@ class NameSurname {
   /// today (the classifier doesn't expand surname era).
   @JsonKey(defaultValue: <EraEnum>[])
   final List<EraEnum> era;
+
+  /// Narrative archetypes the surname evokes. Multi-value: Blackwood
+  /// fits villain AND antihero; Ashford reads mentor + hero.
+  @JsonKey(defaultValue: <RoleEnum>[])
+  final List<RoleEnum> role;
+
+  /// How aesthetically attractive the surname sounds.
+  final AllureEnum allure;
 
   /// How recognizable / frequent the surname is. Common = Smith, Garcia;
   /// rare = Polkinghorne, Featherstonehaugh.

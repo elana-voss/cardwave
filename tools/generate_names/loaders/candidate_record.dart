@@ -30,16 +30,17 @@ enum SentinelField {
 const _sentinelGender = GenderEnum.ambiguous;
 const _sentinelAge = <AgeEnum>[AgeEnum.adult];
 const _sentinelRole = <RoleEnum>[RoleEnum.neutral];
-const _sentinelIntelligence = 3;
-const _sentinelAllure = 3;
+const _sentinelIntelligence = IntelligenceEnum.average;
+const _sentinelAllure = AllureEnum.pleasant;
 const _sentinelCommonness = CommonnessEnum.uncommon;
 
 /// Era sentinel by race. Non-human entries have no Earth-era binding
-/// so they default to `timeless`; humans default to `modern`. The
-/// human case stays sentinel so Phase 2 can revise it; the non-human
-/// case is locked (era is removed from sentinelFields for non-human).
+/// so they default to `timeless`; humans default to `contemporary`
+/// (present-day). The human case stays sentinel so Phase 2 can revise
+/// it; the non-human case is locked (era is removed from sentinelFields
+/// for non-human).
 List<EraEnum> _defaultEraFor(RaceEnum race) =>
-    race == RaceEnum.human ? const [EraEnum.modern] : const [EraEnum.timeless];
+    race == RaceEnum.human ? const [EraEnum.contemporary] : const [EraEnum.timeless];
 
 /// First-name candidate. Mutable so the merge step can upgrade sentinel
 /// fields when a later corpus contributes a real value.
@@ -114,8 +115,8 @@ class CandidateFirstName {
   List<AgeEnum> age;
   List<EraEnum> era;
   List<RoleEnum> role;
-  int intelligence;
-  int allure;
+  IntelligenceEnum intelligence;
+  AllureEnum allure;
   CommonnessEnum commonness;
   List<GenreEnum> genre;
   List<ThemeEnum> themes;
@@ -130,8 +131,8 @@ class CandidateFirstName {
     'age': age.map((e) => e.name).toList(),
     'era': era.map((e) => e.name).toList(),
     'role': role.map((e) => e.name).toList(),
-    'intelligence': intelligence,
-    'allure': allure,
+    'intelligence': intelligence.name,
+    'allure': allure.name,
     'commonness': commonness.name,
     'genre': genre.map((e) => e.name).toList(),
     'themes': themes.map((e) => e.name).toList(),
@@ -140,7 +141,9 @@ class CandidateFirstName {
 }
 
 /// Surname candidate. Subset of first-name fields — surnames don't carry
-/// person-level axes.
+/// gender, age, or intelligence (those signals are too weak on a family
+/// name) but DO carry role (Blackwood → villain) and allure
+/// (Featherstonehaugh → sophisticated).
 class CandidateLastName {
   CandidateLastName({
     required this.name,
@@ -148,6 +151,8 @@ class CandidateLastName {
     this.mythology,
     required this.race,
     required this.era,
+    required this.role,
+    required this.allure,
     required this.commonness,
     required this.genre,
     required this.themes,
@@ -160,12 +165,15 @@ class CandidateLastName {
     MythologyEnum? mythology,
     RaceEnum race = RaceEnum.human,
     List<EraEnum>? era,
+    List<RoleEnum>? role,
     List<GenreEnum> genre = const [],
     List<ThemeEnum> themes = const [],
   }) {
     final isHuman = race == RaceEnum.human;
     final fields = <SentinelField>{
       if (era == null && isHuman) SentinelField.era,
+      if (role == null) SentinelField.role,
+      SentinelField.allure,
       SentinelField.commonness,
       if (themes.isEmpty) SentinelField.themes,
       if (genre.isEmpty) SentinelField.genre,
@@ -176,6 +184,8 @@ class CandidateLastName {
       mythology: mythology,
       race: race,
       era: era ?? _defaultEraFor(race),
+      role: role ?? _sentinelRole,
+      allure: _sentinelAllure,
       commonness: _sentinelCommonness,
       genre: List.of(genre),
       themes: List.of(themes),
@@ -188,6 +198,8 @@ class CandidateLastName {
   MythologyEnum? mythology;
   RaceEnum race;
   List<EraEnum> era;
+  List<RoleEnum> role;
+  AllureEnum allure;
   CommonnessEnum commonness;
   List<GenreEnum> genre;
   List<ThemeEnum> themes;
@@ -199,6 +211,8 @@ class CandidateLastName {
     'mythology': mythology?.name,
     'race': race.name,
     'era': era.map((e) => e.name).toList(),
+    'role': role.map((e) => e.name).toList(),
+    'allure': allure.name,
     'commonness': commonness.name,
     'genre': genre.map((e) => e.name).toList(),
     'themes': themes.map((e) => e.name).toList(),

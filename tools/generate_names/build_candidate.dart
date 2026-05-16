@@ -197,6 +197,20 @@ void _mergeLast(
     incoming.era,
     (merged) => existing.era = merged,
   );
+  _upgradeOrUnionList<RoleEnum>(
+    existing.sentinelFields,
+    incoming.sentinelFields,
+    SentinelField.role,
+    existing.role,
+    incoming.role,
+    (merged) => existing.role = merged,
+  );
+  _upgradeIfSentinel(
+    existing.sentinelFields,
+    incoming.sentinelFields,
+    SentinelField.allure,
+    () => existing.allure = incoming.allure,
+  );
   _upgradeIfSentinel(
     existing.sentinelFields,
     incoming.sentinelFields,

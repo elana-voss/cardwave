@@ -67,8 +67,8 @@ String _emitFirst(Map<String, dynamic> e) => [
       '    age: ${_emitEnumList(AgeEnum.values, e['age'] as List)},',
       '    era: ${_emitEnumList(EraEnum.values, e['era'] as List)},',
       '    role: ${_emitEnumList(RoleEnum.values, e['role'] as List)},',
-      '    intelligence: ${e['intelligence']},',
-      '    allure: ${e['allure']},',
+      '    intelligence: ${_emitIntelligence(e['intelligence'])},',
+      '    allure: ${_emitAllure(e['allure'])},',
       '    commonness: CommonnessEnum.${e['commonness']},',
       '    genre: ${_emitEnumList(GenreEnum.values, e['genre'] as List)},',
       '    themes: ${_emitEnumList(ThemeEnum.values, e['themes'] as List)},',
@@ -83,11 +83,26 @@ String _emitLast(Map<String, dynamic> e) => [
         '    mythology: MythologyEnum.${e['mythology']},',
       '    race: RaceEnum.${e['race']},',
       '    era: ${_emitEnumList(EraEnum.values, e['era'] as List)},',
+      '    role: ${_emitEnumList(RoleEnum.values, (e['role'] as List?) ?? const [])},',
+      '    allure: ${_emitAllure(e['allure'])},',
       '    commonness: CommonnessEnum.${e['commonness']},',
       '    genre: ${_emitEnumList(GenreEnum.values, e['genre'] as List)},',
       '    themes: ${_emitEnumList(ThemeEnum.values, e['themes'] as List)},',
       '  ),',
     ].join('\n');
+
+/// Reads the enum-name string the classifier wrote. Missing keys fall
+/// back to the enum's default value so transitional pre-classify data
+/// (where surname allure was absent) still emits valid Dart.
+String _emitIntelligence(Object? raw) {
+  final name = raw is String ? raw : IntelligenceEnum.average.name;
+  return 'IntelligenceEnum.$name';
+}
+
+String _emitAllure(Object? raw) {
+  final name = raw is String ? raw : AllureEnum.pleasant.name;
+  return 'AllureEnum.$name';
+}
 
 /// Emits `<EnumName>[EnumName.a, EnumName.b]`. Drops any JSON string
 /// that isn't in [enumValues] — protects the emitted Dart from

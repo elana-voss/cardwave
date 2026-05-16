@@ -10,8 +10,8 @@ NameEntry _entry({
   List<AgeEnum> age = const [AgeEnum.adult],
   List<EraEnum> era = const [EraEnum.modern],
   List<RoleEnum> role = const [RoleEnum.neutral],
-  int intelligence = 3,
-  int allure = 3,
+  IntelligenceEnum intelligence = IntelligenceEnum.average,
+  AllureEnum allure = AllureEnum.pleasant,
   CommonnessEnum commonness = CommonnessEnum.uncommon,
   List<GenreEnum> genre = const [GenreEnum.sliceOfLife],
   List<ThemeEnum> themes = const [],
@@ -37,6 +37,8 @@ NameSurname _surname({
   MythologyEnum? mythology,
   RaceEnum race = RaceEnum.human,
   List<EraEnum> era = const [EraEnum.modern],
+  List<RoleEnum> role = const [RoleEnum.neutral],
+  AllureEnum allure = AllureEnum.pleasant,
   CommonnessEnum commonness = CommonnessEnum.uncommon,
   List<GenreEnum> genre = const [GenreEnum.sliceOfLife],
   List<ThemeEnum> themes = const [],
@@ -46,6 +48,8 @@ NameSurname _surname({
   mythology: mythology,
   race: race,
   era: era,
+  role: role,
+  allure: allure,
   commonness: commonness,
   genre: genre,
   themes: themes,
@@ -89,8 +93,8 @@ void main() {
             gender: GenderEnum.female,
             culture: LanguageEthnicityEnum.slavicRussian,
             role: const [RoleEnum.villain],
-            intelligence: 5,
-            allure: 4,
+            intelligence: IntelligenceEnum.bookish,
+            allure: AllureEnum.pretty,
             genre: const [GenreEnum.horror, GenreEnum.sliceOfLife],
             themes: const [ThemeEnum.regal],
           ),
@@ -107,7 +111,7 @@ void main() {
           age: AgeEnum.child,
           era: EraEnum.nineteenTwenties,
           role: RoleEnum.villain,
-          intelligence: IntelligenceBucketEnum.high,
+          intelligence: IntelligenceEnum.bookish,
           themes: [ThemeEnum.celestial],
         ),
         <String>{},
@@ -169,35 +173,35 @@ void main() {
       expect(pick.lastNameEntry.name, 'Tanaka');
     });
 
-    test('intelligence bucket maps low=1-2, medium=3, high=4-5', () {
+    test('intelligence filter matches the exact 5-level enum value', () {
       final db = NameDatabase.forTesting(
         firstNames: [
-          _entry(name: 'Dim', intelligence: 1),
-          _entry(name: 'Mid', intelligence: 3),
-          _entry(name: 'Sharp', intelligence: 5),
+          _entry(name: 'Dim', intelligence: IntelligenceEnum.blunt),
+          _entry(name: 'Mid', intelligence: IntelligenceEnum.average),
+          _entry(name: 'Sharp', intelligence: IntelligenceEnum.bookish),
         ],
         lastNames: [_surname(name: 'Generic')],
       );
 
-      final low = db.pickName(
-        const NameFilters(intelligence: IntelligenceBucketEnum.low),
+      final blunt = db.pickName(
+        const NameFilters(intelligence: IntelligenceEnum.blunt),
         <String>{},
         <String>{},
       );
-      final mid = db.pickName(
-        const NameFilters(intelligence: IntelligenceBucketEnum.medium),
+      final average = db.pickName(
+        const NameFilters(intelligence: IntelligenceEnum.average),
         <String>{},
         <String>{},
       );
-      final high = db.pickName(
-        const NameFilters(intelligence: IntelligenceBucketEnum.high),
+      final bookish = db.pickName(
+        const NameFilters(intelligence: IntelligenceEnum.bookish),
         <String>{},
         <String>{},
       );
 
-      expect(low.firstNameEntry.name, 'Dim');
-      expect(mid.firstNameEntry.name, 'Mid');
-      expect(high.firstNameEntry.name, 'Sharp');
+      expect(blunt.firstNameEntry.name, 'Dim');
+      expect(average.firstNameEntry.name, 'Mid');
+      expect(bookish.firstNameEntry.name, 'Sharp');
     });
 
     test('fantasy race pairs with fantasy ethnicity (db-level invariant)', () {

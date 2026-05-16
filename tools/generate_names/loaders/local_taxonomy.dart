@@ -182,6 +182,22 @@ enum AgeEnum {
   elder,
 }
 
+enum IntelligenceEnum {
+  blunt,
+  plain,
+  average,
+  thoughtful,
+  bookish,
+}
+
+enum AllureEnum {
+  harsh,
+  unremarkable,
+  pleasant,
+  pretty,
+  striking,
+}
+
 enum EraEnum {
   ancient,
   medieval,

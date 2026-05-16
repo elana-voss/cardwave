@@ -30,8 +30,8 @@ NameEntry _$NameEntryFromJson(Map<String, dynamic> json) => NameEntry(
           ?.map((e) => $enumDecode(_$RoleEnumEnumMap, e))
           .toList() ??
       [],
-  intelligence: (json['intelligence'] as num).toInt(),
-  allure: (json['allure'] as num).toInt(),
+  intelligence: $enumDecode(_$IntelligenceEnumEnumMap, json['intelligence']),
+  allure: $enumDecode(_$AllureEnumEnumMap, json['allure']),
   commonness: $enumDecode(_$CommonnessEnumEnumMap, json['commonness']),
   genre:
       (json['genre'] as List<dynamic>?)
@@ -55,8 +55,8 @@ Map<String, dynamic> _$NameEntryToJson(NameEntry instance) => <String, dynamic>{
   'age': instance.age.map((e) => _$AgeEnumEnumMap[e]!).toList(),
   'era': instance.era.map((e) => _$EraEnumEnumMap[e]!).toList(),
   'role': instance.role.map((e) => _$RoleEnumEnumMap[e]!).toList(),
-  'intelligence': instance.intelligence,
-  'allure': instance.allure,
+  'intelligence': _$IntelligenceEnumEnumMap[instance.intelligence]!,
+  'allure': _$AllureEnumEnumMap[instance.allure]!,
   'commonness': _$CommonnessEnumEnumMap[instance.commonness]!,
   'genre': instance.genre.map((e) => _$GenreEnumEnumMap[e]!).toList(),
   'themes': instance.themes.map((e) => _$ThemeEnumEnumMap[e]!).toList(),
@@ -258,6 +258,22 @@ const _$RoleEnumEnumMap = {
   RoleEnum.loveInterest: 'loveInterest',
   RoleEnum.antihero: 'antihero',
   RoleEnum.neutral: 'neutral',
+};
+
+const _$IntelligenceEnumEnumMap = {
+  IntelligenceEnum.blunt: 'blunt',
+  IntelligenceEnum.plain: 'plain',
+  IntelligenceEnum.average: 'average',
+  IntelligenceEnum.thoughtful: 'thoughtful',
+  IntelligenceEnum.bookish: 'bookish',
+};
+
+const _$AllureEnumEnumMap = {
+  AllureEnum.harsh: 'harsh',
+  AllureEnum.unremarkable: 'unremarkable',
+  AllureEnum.pleasant: 'pleasant',
+  AllureEnum.pretty: 'pretty',
+  AllureEnum.striking: 'striking',
 };
 
 const _$CommonnessEnumEnumMap = {

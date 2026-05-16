@@ -34,8 +34,8 @@ class NameFilters {
   final AgeEnum? age;
   final EraEnum? era;
   final RoleEnum? role;
-  final IntelligenceBucketEnum? intelligence;
-  final AllureBucketEnum? allure;
+  final IntelligenceEnum? intelligence;
+  final AllureEnum? allure;
   final CommonnessEnum? commonness;
   final GenreEnum? genre;
   final List<ThemeEnum>? themes;

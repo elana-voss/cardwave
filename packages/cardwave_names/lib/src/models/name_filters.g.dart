@@ -18,10 +18,10 @@ NameFilters _$NameFiltersFromJson(Map<String, dynamic> json) => NameFilters(
   era: $enumDecodeNullable(_$EraEnumEnumMap, json['era']),
   role: $enumDecodeNullable(_$RoleEnumEnumMap, json['role']),
   intelligence: $enumDecodeNullable(
-    _$IntelligenceBucketEnumEnumMap,
+    _$IntelligenceEnumEnumMap,
     json['intelligence'],
   ),
-  allure: $enumDecodeNullable(_$AllureBucketEnumEnumMap, json['allure']),
+  allure: $enumDecodeNullable(_$AllureEnumEnumMap, json['allure']),
   commonness: $enumDecodeNullable(_$CommonnessEnumEnumMap, json['commonness']),
   genre: $enumDecodeNullable(_$GenreEnumEnumMap, json['genre']),
   themes: (json['themes'] as List<dynamic>?)
@@ -39,8 +39,8 @@ Map<String, dynamic> _$NameFiltersToJson(NameFilters instance) =>
       'age': _$AgeEnumEnumMap[instance.age],
       'era': _$EraEnumEnumMap[instance.era],
       'role': _$RoleEnumEnumMap[instance.role],
-      'intelligence': _$IntelligenceBucketEnumEnumMap[instance.intelligence],
-      'allure': _$AllureBucketEnumEnumMap[instance.allure],
+      'intelligence': _$IntelligenceEnumEnumMap[instance.intelligence],
+      'allure': _$AllureEnumEnumMap[instance.allure],
       'commonness': _$CommonnessEnumEnumMap[instance.commonness],
       'genre': _$GenreEnumEnumMap[instance.genre],
       'themes': instance.themes?.map((e) => _$ThemeEnumEnumMap[e]!).toList(),
@@ -244,16 +244,20 @@ const _$RoleEnumEnumMap = {
   RoleEnum.neutral: 'neutral',
 };
 
-const _$IntelligenceBucketEnumEnumMap = {
-  IntelligenceBucketEnum.low: 'low',
-  IntelligenceBucketEnum.medium: 'medium',
-  IntelligenceBucketEnum.high: 'high',
+const _$IntelligenceEnumEnumMap = {
+  IntelligenceEnum.blunt: 'blunt',
+  IntelligenceEnum.plain: 'plain',
+  IntelligenceEnum.average: 'average',
+  IntelligenceEnum.thoughtful: 'thoughtful',
+  IntelligenceEnum.bookish: 'bookish',
 };
 
-const _$AllureBucketEnumEnumMap = {
-  AllureBucketEnum.low: 'low',
-  AllureBucketEnum.medium: 'medium',
-  AllureBucketEnum.high: 'high',
+const _$AllureEnumEnumMap = {
+  AllureEnum.harsh: 'harsh',
+  AllureEnum.unremarkable: 'unremarkable',
+  AllureEnum.pleasant: 'pleasant',
+  AllureEnum.pretty: 'pretty',
+  AllureEnum.striking: 'striking',
 };
 
 const _$CommonnessEnumEnumMap = {

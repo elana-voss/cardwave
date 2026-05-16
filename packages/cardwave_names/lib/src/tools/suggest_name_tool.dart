@@ -81,12 +81,14 @@ class SuggestNameTool extends ToolDefinition {
           'Narrative function — hero, villain, mentor, sidekick, …',
         ),
         'intelligence': _enumField(
-          IntelligenceBucketEnum.values.names,
-          'Coarse bucket — low / medium / high.',
+          IntelligenceEnum.values.names,
+          'How cerebral the name sounds — blunt / plain / average / '
+              'thoughtful / bookish.',
         ),
         'allure': _enumField(
-          AllureBucketEnum.values.names,
-          'Coarse bucket — low / medium / high.',
+          AllureEnum.values.names,
+          'How attractive the name sounds — harsh / unremarkable / '
+              'pleasant / pretty / striking.',
         ),
         'commonness': _enumField(
           CommonnessEnum.values.names,
