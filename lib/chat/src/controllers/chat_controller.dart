@@ -598,6 +598,13 @@ class ChatController extends BaseChatViewController
         NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
       }
     } finally {
+      // Force terminal state so the spinner hides on every exit path.
+      // Success already sets this in GenerationCompleteEvent; cancel and
+      // exception paths leave it on callingLlm/runningTool and would
+      // otherwise strand the indicator on a placeholder bubble.
+      assistantMessageToBeFilled.waitingFor = BubbleWaitingForEnum.complete;
+      assistantMessageToBeFilled.waitingForLabel = null;
+
       if (assistantMessageToBeFilled.content.isEmpty &&
           bufferedText.isNotEmpty) {
         var finalContent = bufferedText.trimRight();

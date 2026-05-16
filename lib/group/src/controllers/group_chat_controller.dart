@@ -477,6 +477,10 @@ class GroupChatController extends BaseChatViewController
     cancelToken = ValueNotifier(false);
     notifyListeners();
 
+    // Lifted out of try so the catch block can clean up the placeholder
+    // (drop the empty bubble + spinner) on streaming errors.
+    ChatMessage? replyMessage;
+
     try {
       // For regen/continue, exclude the target message from the LLM history;
       // it's the message being (re)generated, not part of the prior context.
@@ -526,7 +530,7 @@ class GroupChatController extends BaseChatViewController
         messages: prefixedHistory,
       );
 
-      final replyMessage =
+      replyMessage =
           existingMessage ??
           _appendMessage(
             text: '',
@@ -628,6 +632,25 @@ class GroupChatController extends BaseChatViewController
         );
         NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
         stopAutoChat();
+      }
+      // Streaming failed mid-flight — clear the loading state so the
+      // spinner hides. Drop the placeholder when it has nothing to show
+      // and we created it this turn (regen targets stay so their original
+      // content is preserved).
+      if (replyMessage != null) {
+        final hasAttachedSideEffect =
+            replyMessage.attachedImages.isNotEmpty ||
+            replyMessage.imageCaption != null ||
+            replyMessage.videoPath != null;
+        if (replyMessage.content.isEmpty &&
+            !hasAttachedSideEffect &&
+            existingMessage == null) {
+          _session.messages.remove(replyMessage);
+        } else {
+          replyMessage.waitingFor = BubbleWaitingForEnum.complete;
+          replyMessage.waitingForLabel = null;
+        }
+        _saveSession();
       }
     } finally {
       cancelToken?.dispose();
