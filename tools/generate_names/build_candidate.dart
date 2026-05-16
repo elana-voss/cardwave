@@ -108,6 +108,7 @@ void _mergeFirst(
   Map<String, CandidateFirstName> acc,
   CandidateFirstName incoming,
 ) {
+  if (!_isValidName(incoming.name)) return;
   final key = incoming.name.toLowerCase();
   final existing = acc[key];
   if (existing == null) {
@@ -171,6 +172,7 @@ void _mergeLast(
   Map<String, CandidateLastName> acc,
   CandidateLastName incoming,
 ) {
+  if (!_isValidName(incoming.name)) return;
   final key = incoming.name.toLowerCase();
   final existing = acc[key];
   if (existing == null) {
@@ -217,3 +219,11 @@ List<T> _unionTags<T>(List<T> existing, List<T> incoming) {
   if (incoming.isEmpty) return existing;
   return {...existing, ...incoming}.toList();
 }
+
+/// Reject transliteration junk before it reaches the merge accumulator:
+/// names must be non-empty and start with a letter. Catches strays like
+/// `'ليا` (leading apostrophe + Arabic script — a transliteration mishap
+/// in the source corpus) that confuse the Phase 2 classifier.
+final _leadsWithLetter = RegExp(r'^\p{L}', unicode: true);
+bool _isValidName(String name) =>
+    name.isNotEmpty && _leadsWithLetter.hasMatch(name);

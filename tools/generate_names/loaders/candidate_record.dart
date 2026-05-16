@@ -68,10 +68,16 @@ class CandidateFirstName {
     List<GenreEnum> genre = const [],
     List<ThemeEnum> themes = const [],
   }) {
+    // Non-human races have no Earth-era binding. Lock era to `timeless`
+    // and DON'T mark it sentinel — otherwise Phase 2 will default fantasy
+    // entries to `modern`. Human entries with no era signal keep
+    // `modern` and stay sentinel so Phase 2 can revise.
+    final isFantasyRace = race != RaceEnum.human;
+    final defaultedEra = era ?? (isFantasyRace ? EraEnum.timeless : _sentinelEra);
     final fields = <SentinelField>{
       if (gender == null) SentinelField.gender,
       SentinelField.age,
-      if (era == null) SentinelField.era,
+      if (era == null && !isFantasyRace) SentinelField.era,
       SentinelField.role,
       SentinelField.intelligence,
       SentinelField.allure,
@@ -86,7 +92,7 @@ class CandidateFirstName {
       mythology: mythology,
       race: race,
       age: _sentinelAge,
-      era: era ?? _sentinelEra,
+      era: defaultedEra,
       role: _sentinelRole,
       intelligence: _sentinelIntelligence,
       allure: _sentinelAllure,
@@ -154,8 +160,10 @@ class CandidateLastName {
     List<GenreEnum> genre = const [],
     List<ThemeEnum> themes = const [],
   }) {
+    final isFantasyRace = race != RaceEnum.human;
+    final defaultedEra = era ?? (isFantasyRace ? EraEnum.timeless : _sentinelEra);
     final fields = <SentinelField>{
-      if (era == null) SentinelField.era,
+      if (era == null && !isFantasyRace) SentinelField.era,
       SentinelField.commonness,
       if (themes.isEmpty) SentinelField.themes,
       if (genre.isEmpty) SentinelField.genre,
@@ -165,7 +173,7 @@ class CandidateLastName {
       languageEthnicity: languageEthnicity,
       mythology: mythology,
       race: race,
-      era: era ?? _sentinelEra,
+      era: defaultedEra,
       commonness: _sentinelCommonness,
       genre: List.of(genre),
       themes: List.of(themes),

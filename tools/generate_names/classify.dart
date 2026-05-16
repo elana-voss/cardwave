@@ -13,7 +13,9 @@
 // Per-batch progress is saved to
 //   tools/generate_names/.cache/.classify_progress.json
 // A failed run resumes from where it stopped without re-billing for
-// completed batches. Delete the progress file to force a full re-run.
+// completed batches. The file is NOT deleted on success — a re-run
+// will detect everything is done and exit immediately. Delete the
+// progress file manually to force a full re-classify.
 //
 // Output: tools/generate_names/data/name_database.tagged.json
 
@@ -129,7 +131,9 @@ Future<void> main(List<String> args) async {
     '= ${totals.total} tokens',
   );
 
-  // Write the final tagged JSON, then delete the progress file.
+  // Write the final tagged JSON. Keep the progress file so re-runs
+  // can detect that work is done and skip re-billing. Delete it
+  // manually to force a clean re-classify.
   final out = File(_outputPath);
   out.parent.createSync(recursive: true);
   out.writeAsStringSync(
@@ -138,8 +142,6 @@ Future<void> main(List<String> args) async {
       'last_names': lastDone,
     }),
   );
-  final progressFile = File(_progressPath);
-  if (progressFile.existsSync()) progressFile.deleteSync();
 
   stdout.writeln(
     '[done] wrote ${firstDone.length} first + ${lastDone.length} last '
@@ -225,30 +227,32 @@ Future<void> _classifyAll({
     );
     totals.add(result.promptTokens, result.completionTokens);
 
-    // Strict JSON schema enforces shape, not order — index by name so
-    // we apply tags correctly even if Grok shuffles the array.
+    // Strict JSON schema enforces shape, not content — Grok can drop or
+    // rename input names in the response. Index by name; for any input
+    // name missing from the response, keep its sentinel tags so the
+    // overall run survives one-off model misses.
     final byName = <String, Map<String, dynamic>>{};
     for (final t in result.tagged) {
       final n = (t['name'] as String).toLowerCase();
       byName[n] = t;
     }
+    var missed = 0;
     for (final orig in batch) {
       final key = (orig['name'] as String).toLowerCase();
       final fill = byName[key];
       if (fill == null) {
-        throw StateError(
-          'Grok response did not include a tag record for "${orig['name']}" '
-          '— aborting batch. Re-run to retry; progress is saved.',
-        );
+        missed += 1;
+        stderr.writeln('[$kind] missed: "${orig['name']}"');
+      } else {
+        _applyTags(orig, fill);
       }
-      _applyTags(orig, fill);
       done.add(orig);
     }
     saveProgress();
 
     stdout.writeln(
       '[$kind] batch ${b + 1}/$runBatches: +${batch.length} '
-      '(${done.length} cumulative; '
+      '(missed $missed; ${done.length} cumulative; '
       '+${result.promptTokens} in / +${result.completionTokens} out; '
       'run ${totals.promptTokens} in / ${totals.completionTokens} out)',
     );
@@ -355,9 +359,11 @@ Future<String> _postWithRetry({
     attempt++;
     try {
       final request = await client.postUrl(Uri.parse(_apiUrl));
-      request.headers.set('Content-Type', 'application/json');
+      request.headers.set('Content-Type', 'application/json; charset=utf-8');
       request.headers.set('Authorization', 'Bearer $_grokKey');
-      request.write(body);
+      // .write() encodes as Latin-1, which fails on non-ASCII names
+      // (Ailín, Akgül, …). Send raw UTF-8 bytes instead.
+      request.add(utf8.encode(body));
       final response = await request.close();
       final text = await response.transform(utf8.decoder).join();
       if (response.statusCode == 200) return text;
