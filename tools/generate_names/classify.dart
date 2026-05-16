@@ -21,6 +21,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'loaders/local_taxonomy.dart';
+
 const _slimPath = 'tools/generate_names/data/name_database.slim.json';
 const _outputPath = 'tools/generate_names/data/name_database.tagged.json';
 const _progressPath =
@@ -29,27 +31,18 @@ const _progressPath =
 const _defaultModel = 'grok-4.3';
 const _defaultBatchSize = 100;
 const _apiUrl = 'https://api.x.ai/v1/chat/completions';
+const _defaultRetryAfterSeconds = 5;
 
 const _grokKey = String.fromEnvironment('GROK_API_KEY');
 
-// Taxonomy enum values — mirror cardwave_names. Must stay in sync.
-const _ageValues = ['child', 'youngAdult', 'adult', 'elder'];
-const _roleValues = [
-  'hero', 'villain', 'mentor', 'sidekick', 'comicRelief',
-  'bystander', 'loveInterest', 'antihero', 'neutral',
-];
-const _commonnessValues = ['rare', 'uncommon', 'common'];
-const _genreValues = [
-  'fantasy', 'sciFi', 'cyberpunk', 'steampunk', 'western',
-  'noirDetective', 'horror', 'smut', 'modern', 'historical',
-  'postApocalyptic',
-];
-const _themeValues = [
-  'celestial', 'floral', 'gemstone', 'military', 'literary',
-  'regal', 'fiery', 'icy', 'watery', 'earthy', 'airy', 'solar',
-  'lunar', 'nautical', 'religious', 'scholarly', 'rustic',
-  'exotic', 'mystical', 'brutish',
-];
+// Taxonomy enum value lists sourced from `local_taxonomy.dart`, which
+// mirrors `cardwave_names`. Single source of truth: an enum value
+// rename or addition flows here automatically.
+final _ageValues = AgeEnum.values.names;
+final _roleValues = RoleEnum.values.names;
+final _commonnessValues = CommonnessEnum.values.names;
+final _genreValues = GenreEnum.values.names;
+final _themeValues = ThemeEnum.values.names;
 
 Future<void> main(List<String> args) async {
   if (_grokKey.isEmpty) {
@@ -87,6 +80,20 @@ Future<void> main(List<String> args) async {
   }
   final firstDone = (progress['first_done'] as List?)?.cast<Map<String, dynamic>>() ?? [];
   final lastDone = (progress['last_done'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+  final totals = _TokenTotals()
+    ..loadFrom(progress['tokens'] as Map<String, dynamic>?);
+  if (totals.batches > 0) {
+    stdout.writeln(
+      '[resume] token totals so far: ${totals.batches} batches, '
+      '${totals.promptTokens} input + ${totals.completionTokens} output',
+    );
+  }
+
+  Map<String, dynamic> progressSnapshot() => {
+    'first_done': firstDone,
+    'last_done': lastDone,
+    'tokens': totals.toJson(),
+  };
 
   final client = HttpClient();
   try {
@@ -98,10 +105,8 @@ Future<void> main(List<String> args) async {
       batchLimit: cli.limit,
       model: cli.model,
       client: client,
-      saveProgress: () => _saveProgress({
-        'first_done': firstDone,
-        'last_done': lastDone,
-      }),
+      totals: totals,
+      saveProgress: () => _saveProgress(progressSnapshot()),
     );
     await _classifyAll(
       kind: 'last',
@@ -111,14 +116,18 @@ Future<void> main(List<String> args) async {
       batchLimit: cli.limit,
       model: cli.model,
       client: client,
-      saveProgress: () => _saveProgress({
-        'first_done': firstDone,
-        'last_done': lastDone,
-      }),
+      totals: totals,
+      saveProgress: () => _saveProgress(progressSnapshot()),
     );
   } finally {
     client.close(force: true);
   }
+
+  stdout.writeln(
+    '[tokens] total: ${totals.batches} batches, '
+    '${totals.promptTokens} input + ${totals.completionTokens} output '
+    '= ${totals.total} tokens',
+  );
 
   // Write the final tagged JSON, then delete the progress file.
   final out = File(_outputPath);
@@ -184,6 +193,7 @@ Future<void> _classifyAll({
   required int? batchLimit,
   required String model,
   required HttpClient client,
+  required _TokenTotals totals,
   required void Function() saveProgress,
 }) async {
   final startIndex = done.length;
@@ -207,20 +217,30 @@ Future<void> _classifyAll({
     final batchEnd = (batchStart + batchSize).clamp(0, remaining.length);
     final batch = remaining.sublist(batchStart, batchEnd);
 
-    final tagged = await _classifyBatch(
+    final result = await _classifyBatch(
       kind: kind,
       batch: batch,
       model: model,
       client: client,
     );
+    totals.add(result.promptTokens, result.completionTokens);
 
-    // Merge each tagged response back into the original entry, applying
-    // only the fields the entry's sentinel_fields list says to fill.
-    // tagged.length == batch.length is verified in _classifyBatch.
-    for (var i = 0; i < batch.length; i++) {
-      final orig = batch[i];
-      // ignore: qcheck/avoid_unsafe_collection_methods
-      final fill = tagged[i];
+    // Strict JSON schema enforces shape, not order — index by name so
+    // we apply tags correctly even if Grok shuffles the array.
+    final byName = <String, Map<String, dynamic>>{};
+    for (final t in result.tagged) {
+      final n = (t['name'] as String).toLowerCase();
+      byName[n] = t;
+    }
+    for (final orig in batch) {
+      final key = (orig['name'] as String).toLowerCase();
+      final fill = byName[key];
+      if (fill == null) {
+        throw StateError(
+          'Grok response did not include a tag record for "${orig['name']}" '
+          '— aborting batch. Re-run to retry; progress is saved.',
+        );
+      }
       _applyTags(orig, fill);
       done.add(orig);
     }
@@ -228,12 +248,47 @@ Future<void> _classifyAll({
 
     stdout.writeln(
       '[$kind] batch ${b + 1}/$runBatches: +${batch.length} '
-      '(${done.length} cumulative)',
+      '(${done.length} cumulative; '
+      '+${result.promptTokens} in / +${result.completionTokens} out; '
+      'run ${totals.promptTokens} in / ${totals.completionTokens} out)',
     );
   }
 }
 
-Future<List<Map<String, dynamic>>> _classifyBatch({
+class _TokenTotals {
+  int promptTokens = 0;
+  int completionTokens = 0;
+  int batches = 0;
+
+  void add(int prompt, int completion) {
+    batches += 1;
+    promptTokens += prompt;
+    completionTokens += completion;
+  }
+
+  int get total => promptTokens + completionTokens;
+
+  Map<String, int> toJson() => {
+    'prompt_tokens': promptTokens,
+    'completion_tokens': completionTokens,
+    'batches': batches,
+  };
+
+  void loadFrom(Map<String, dynamic>? json) {
+    if (json == null) return;
+    promptTokens = (json['prompt_tokens'] as int?) ?? 0;
+    completionTokens = (json['completion_tokens'] as int?) ?? 0;
+    batches = (json['batches'] as int?) ?? 0;
+  }
+}
+
+typedef _BatchResult = ({
+  List<Map<String, dynamic>> tagged,
+  int promptTokens,
+  int completionTokens,
+});
+
+Future<_BatchResult> _classifyBatch({
   required String kind,
   required List<Map<String, dynamic>> batch,
   required String model,
@@ -279,7 +334,15 @@ Future<List<Map<String, dynamic>>> _classifyBatch({
       '${batch.length}. Aborting.',
     );
   }
-  return tagged;
+
+  // Usage block in OpenAI-compatible responses: {prompt_tokens,
+  // completion_tokens, total_tokens}. Defaults to 0 if missing.
+  final usage = (json['usage'] as Map<String, dynamic>?) ?? const {};
+  return (
+    tagged: tagged,
+    promptTokens: (usage['prompt_tokens'] as int?) ?? 0,
+    completionTokens: (usage['completion_tokens'] as int?) ?? 0,
+  );
 }
 
 Future<String> _postWithRetry({
@@ -300,7 +363,8 @@ Future<String> _postWithRetry({
       if (response.statusCode == 200) return text;
       if (response.statusCode == 429) {
         final retryAfter =
-            int.tryParse(response.headers.value('retry-after') ?? '') ?? 5;
+            int.tryParse(response.headers.value('retry-after') ?? '') ??
+                _defaultRetryAfterSeconds;
         stderr.writeln('[retry] 429 — waiting ${retryAfter}s');
         await Future<void>.delayed(Duration(seconds: retryAfter));
         continue;
@@ -327,38 +391,99 @@ Future<String> _postWithRetry({
   }
 }
 
-const _firstSystemPrompt = '''
+final _firstSystemPrompt = '''
 You assign tags to character first names for a roleplay name database.
 For each name, fill in age, role, intelligence (1-5), allure (1-5),
 commonness, themes, and genre based on the name's cultural, historical,
-and recognizability feel.
+and phonetic feel. Tag the name itself — not a hypothetical bearer.
 
-Never invent names — only tag the names provided.
-Tag each name in isolation; treat the list as independent items.
-Be consistent: the same name across batches should get similar tags.
+RULES:
+- NEVER invent names — only tag the names provided.
+- Tag each name in isolation; treat the list as independent items.
+- Same name across batches should get the same tags.
+- Most names land in the middle of subjective scales; extreme tags
+  (intelligence/allure = 1 or 5, roles like "villain", "rare"
+  commonness) only when the name strongly evokes them.
+- Use the known facts (gender, language, era, race, mythology) as
+  context — an ancient Greek name should not be tagged like a modern
+  English one.
 
-`commonness=common` means the name is one most readers recognize
-(Mary, John, Yamato). `rare` means distinctive / unusual (Polkinghorne,
-Cthulhu, Sarepta). `uncommon` is the middle.
+FIELD DEFINITIONS:
 
-`themes` and `genre` are zero-or-more arrays. Pick only tags that
-clearly fit; leave empty if no strong association.
+`age` — the lifestage the name most evokes. One of:
+  child       — names mostly used for young children (Bobby, Tommy)
+  youngAdult  — names that feel teen / early-twenties (Tyler, Becky)
+  adult       — names with no strong age signal (Sarah, James). DEFAULT.
+  elder       — names that feel old-fashioned / retired (Ethel, Wilbur)
+
+`role` — the narrative archetype the name evokes. One of:
+  hero          — heroic / protagonist-coded (Arthur, Diana)
+  villain       — villain-coded (Maleficent, Lucius)
+  mentor        — wise / authoritative (Albus, Gandalf, Persephone)
+  sidekick      — supporting-cast feel (Buck, Robin, Mabel)
+  comicRelief   — comedic / goofy (Bambi, Lumpkin)
+  bystander     — background NPC feel (Bob, Dave, Linda)
+  loveInterest  — romantic-lead feel (Romeo, Juliet, Aphrodite)
+  antihero      — morally grey / edgy (Wolverine, Vex)
+  neutral       — no strong archetype. DEFAULT for most names.
+
+`intelligence` — how cerebral / sophisticated the NAME sounds (not the
+bearer's actual IQ). Phonetics + cultural connotation. Scale:
+  1 = blunt or unsophisticated (Bubba, Skip, Hank)
+  2 = plain (Bob, Mary)
+  3 = average / no signal. DEFAULT.
+  4 = thoughtful / literate (Eleanor, Theodore)
+  5 = bookish or calculating (Reginald, Persephone, Cassius)
+
+`allure` — how sensually / aesthetically attractive the NAME sounds
+(not the bearer's looks). Phonetics + cultural connotation. Scale:
+  1 = plain or harsh (Mildred, Gary, Bertha)
+  2 = unremarkable (John, Anna)
+  3 = pleasant but no signal. DEFAULT.
+  4 = soft / pretty (Lily, Adrian)
+  5 = striking or sensual (Aphrodite, Seraphina, Lysander)
+
+`commonness` — how recognizable to a general audience. One of:
+  common    — household names most readers know (Mary, John)
+  uncommon  — somewhat known but not everyday. DEFAULT.
+  rare      — distinctive / unusual (Polkinghorne, Cthulhu, Sarepta)
+
+`themes` — zero or more decorative tags the name evokes. Pick only
+when a strong association exists; leave empty otherwise (which is the
+common case for plain names). Available:
+  ${_themeValues.join(', ')}
+
+`genre` — zero or more story flavours the name fits. Available:
+  ${_genreValues.join(', ')}
+Leave empty for plain modern/realistic names like "Sarah" that don't
+need a genre lock — empty means "fits anywhere".
 ''';
 
-const _lastSystemPrompt = '''
+final _lastSystemPrompt = '''
 You assign tags to character surnames for a roleplay name database.
 For each surname, fill in commonness, themes, and genre based on the
-name's cultural, historical, and recognizability feel.
+name's cultural, historical, and phonetic feel.
 
-Never invent names — only tag the surnames provided.
-Tag each name in isolation.
+RULES:
+- NEVER invent names — only tag the surnames provided.
+- Tag each name in isolation.
+- Same name across batches should get the same tags.
+- Use the known facts (language, era, race, mythology) as context.
 
-`commonness=common` means a surname most readers recognize (Smith,
-Garcia, Yamamoto). `rare` means distinctive / unusual (Polkinghorne,
-Featherstonehaugh). `uncommon` is the middle.
+FIELD DEFINITIONS:
 
-`themes` and `genre` are zero-or-more arrays. Pick only tags that
-clearly fit; leave empty if no strong association.
+`commonness` — how recognizable to a general audience. One of:
+  common    — surnames most readers know (Smith, Garcia, Yamamoto)
+  uncommon  — somewhat known but not everyday. DEFAULT.
+  rare      — distinctive / unusual (Polkinghorne, Featherstonehaugh)
+
+`themes` — zero or more decorative tags the surname evokes. Pick only
+when a strong association exists. Available:
+  ${_themeValues.join(', ')}
+
+`genre` — zero or more story flavours the surname fits. Available:
+  ${_genreValues.join(', ')}
+Leave empty for plain modern/realistic surnames like "Smith".
 ''';
 
 String _buildUserPrompt({

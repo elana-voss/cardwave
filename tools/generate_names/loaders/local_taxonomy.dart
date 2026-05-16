@@ -250,3 +250,9 @@ enum CommonnessEnum {
   uncommon,
   common,
 }
+
+/// Mirror of `EnumNamesList` in name_taxonomy.dart. Saves writing
+/// `.values.map((e) => e.name).toList()` at every call site.
+extension EnumNamesList on Iterable<Enum> {
+  List<String> get names => map((e) => e.name).toList();
+}
