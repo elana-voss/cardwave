@@ -12,6 +12,7 @@ NameEntry _entry({
   RoleEnum role = RoleEnum.neutral,
   int intelligence = 3,
   int allure = 3,
+  CommonnessEnum commonness = CommonnessEnum.uncommon,
   List<GenreEnum> genre = const [GenreEnum.modern],
   List<ThemeEnum> themes = const [],
 }) => NameEntry(
@@ -25,6 +26,7 @@ NameEntry _entry({
   role: role,
   intelligence: intelligence,
   allure: allure,
+  commonness: commonness,
   genre: genre,
   themes: themes,
 );
@@ -35,6 +37,7 @@ NameSurname _surname({
   MythologyEnum? mythology,
   RaceEnum race = RaceEnum.human,
   EraEnum era = EraEnum.modern,
+  CommonnessEnum commonness = CommonnessEnum.uncommon,
   List<GenreEnum> genre = const [GenreEnum.modern],
   List<ThemeEnum> themes = const [],
 }) => NameSurname(
@@ -43,6 +46,7 @@ NameSurname _surname({
   mythology: mythology,
   race: race,
   era: era,
+  commonness: commonness,
   genre: genre,
   themes: themes,
 );

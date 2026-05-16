@@ -19,6 +19,7 @@ class NameFilters {
     this.role,
     this.intelligence,
     this.allure,
+    this.commonness,
     this.genre,
     this.themes,
   });
@@ -35,6 +36,7 @@ class NameFilters {
   final RoleEnum? role;
   final IntelligenceBucketEnum? intelligence;
   final AllureBucketEnum? allure;
+  final CommonnessEnum? commonness;
   final GenreEnum? genre;
   final List<ThemeEnum>? themes;
 
@@ -54,6 +56,7 @@ class NameFilters {
       role: field == NameFilterField.role ? null : role,
       intelligence: field == NameFilterField.intelligence ? null : intelligence,
       allure: field == NameFilterField.allure ? null : allure,
+      commonness: field == NameFilterField.commonness ? null : commonness,
       genre: field == NameFilterField.genre ? null : genre,
       themes: field == NameFilterField.themes ? null : themes,
     );

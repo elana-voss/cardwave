@@ -15,6 +15,7 @@ NameSurname _$NameSurnameFromJson(Map<String, dynamic> json) => NameSurname(
   mythology: $enumDecodeNullable(_$MythologyEnumEnumMap, json['mythology']),
   race: $enumDecode(_$RaceEnumEnumMap, json['race']),
   era: $enumDecode(_$EraEnumEnumMap, json['era']),
+  commonness: $enumDecode(_$CommonnessEnumEnumMap, json['commonness']),
   genre:
       (json['genre'] as List<dynamic>?)
           ?.map((e) => $enumDecode(_$GenreEnumEnumMap, e))
@@ -35,6 +36,7 @@ Map<String, dynamic> _$NameSurnameToJson(NameSurname instance) =>
       'mythology': _$MythologyEnumEnumMap[instance.mythology],
       'race': _$RaceEnumEnumMap[instance.race]!,
       'era': _$EraEnumEnumMap[instance.era]!,
+      'commonness': _$CommonnessEnumEnumMap[instance.commonness]!,
       'genre': instance.genre.map((e) => _$GenreEnumEnumMap[e]!).toList(),
       'themes': instance.themes.map((e) => _$ThemeEnumEnumMap[e]!).toList(),
     };
@@ -210,6 +212,12 @@ const _$EraEnumEnumMap = {
   EraEnum.nearFuture: 'nearFuture',
   EraEnum.farFuture: 'farFuture',
   EraEnum.timeless: 'timeless',
+};
+
+const _$CommonnessEnumEnumMap = {
+  CommonnessEnum.rare: 'rare',
+  CommonnessEnum.uncommon: 'uncommon',
+  CommonnessEnum.common: 'common',
 };
 
 const _$GenreEnumEnumMap = {

@@ -282,3 +282,14 @@ enum ThemeEnum {
   mystical,
   brutish,
 }
+
+/// How recognizable / frequent a name is. `common` = the LLM's default-pick
+/// territory (Mary, John, Smith) — useful for background NPCs. `rare` =
+/// distinctive picks for named, important characters. Filter axis the
+/// `suggest_name` tool can use to steer between everyday and memorable
+/// names.
+enum CommonnessEnum {
+  rare,
+  uncommon,
+  common,
+}

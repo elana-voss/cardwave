@@ -15,6 +15,7 @@ class NameSurname {
     this.mythology,
     required this.race,
     required this.era,
+    required this.commonness,
     required this.genre,
     required this.themes,
   });
@@ -27,6 +28,10 @@ class NameSurname {
   final MythologyEnum? mythology;
   final RaceEnum race;
   final EraEnum era;
+
+  /// How recognizable / frequent the surname is. Common = Smith, Garcia;
+  /// rare = Polkinghorne, Featherstonehaugh.
+  final CommonnessEnum commonness;
 
   @JsonKey(defaultValue: <GenreEnum>[])
   final List<GenreEnum> genre;

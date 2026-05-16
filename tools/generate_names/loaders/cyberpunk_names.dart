@@ -45,6 +45,7 @@ LoaderResult loadCyberpunkNames() {
         role: role ?? RoleEnum.neutral,
         intelligence: 3,
         allure: 3,
+        commonness: CommonnessEnum.uncommon,
         genre: const [GenreEnum.cyberpunk],
         themes: const [],
         sentinelFields: {
@@ -52,6 +53,7 @@ LoaderResult loadCyberpunkNames() {
           SentinelField.age,
           SentinelField.intelligence,
           SentinelField.allure,
+          SentinelField.commonness,
           SentinelField.themes,
           if (role == null) SentinelField.role,
         },

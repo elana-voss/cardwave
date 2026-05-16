@@ -12,6 +12,7 @@ enum NameFilterField {
   role,
   intelligence,
   allure,
+  commonness,
   genre,
   themes,
 }

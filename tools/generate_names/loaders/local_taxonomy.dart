@@ -244,3 +244,9 @@ enum ThemeEnum {
   mystical,
   brutish,
 }
+
+enum CommonnessEnum {
+  rare,
+  uncommon,
+  common,
+}

@@ -150,6 +150,12 @@ void _mergeFirst(
     SentinelField.allure,
     () => existing.allure = incoming.allure,
   );
+  _upgradeIfSentinel(
+    existing.sentinelFields,
+    incoming.sentinelFields,
+    SentinelField.commonness,
+    () => existing.commonness = incoming.commonness,
+  );
   existing.mythology ??= incoming.mythology;
   existing.genre = _unionTags(existing.genre, incoming.genre);
   existing.themes = _unionTags(existing.themes, incoming.themes);
@@ -176,6 +182,12 @@ void _mergeLast(
     incoming.sentinelFields,
     SentinelField.era,
     () => existing.era = incoming.era,
+  );
+  _upgradeIfSentinel(
+    existing.sentinelFields,
+    incoming.sentinelFields,
+    SentinelField.commonness,
+    () => existing.commonness = incoming.commonness,
   );
   existing.mythology ??= incoming.mythology;
   existing.genre = _unionTags(existing.genre, incoming.genre);

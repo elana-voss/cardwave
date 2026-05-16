@@ -88,6 +88,12 @@ class SuggestNameTool extends ToolDefinition {
           AllureBucketEnum.values.names,
           'Coarse bucket — low / medium / high.',
         ),
+        'commonness': _enumField(
+          CommonnessEnum.values.names,
+          'How recognizable the name should be. `common` = everyday '
+              'names (Mary, John, Smith) for background NPCs; `rare` = '
+              'distinctive names for important characters.',
+        ),
         'genre': _enumField(
           GenreEnum.values.names,
           "The story's flavour (fantasy, sciFi, noirDetective, smut, …).",

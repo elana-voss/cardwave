@@ -22,6 +22,7 @@ enum SentinelField {
   role,
   intelligence,
   allure,
+  commonness,
   genre,
   themes,
 }
@@ -31,6 +32,7 @@ const _sentinelAge = AgeEnum.adult;
 const _sentinelRole = RoleEnum.neutral;
 const _sentinelIntelligence = 3;
 const _sentinelAllure = 3;
+const _sentinelCommonness = CommonnessEnum.uncommon;
 const _sentinelEra = EraEnum.modern;
 
 /// First-name candidate. Mutable so the merge step can upgrade sentinel
@@ -47,6 +49,7 @@ class CandidateFirstName {
     required this.role,
     required this.intelligence,
     required this.allure,
+    required this.commonness,
     required this.genre,
     required this.themes,
     required this.sentinelFields,
@@ -72,6 +75,7 @@ class CandidateFirstName {
       SentinelField.role,
       SentinelField.intelligence,
       SentinelField.allure,
+      SentinelField.commonness,
       if (themes.isEmpty) SentinelField.themes,
       if (genre.isEmpty) SentinelField.genre,
     };
@@ -86,6 +90,7 @@ class CandidateFirstName {
       role: _sentinelRole,
       intelligence: _sentinelIntelligence,
       allure: _sentinelAllure,
+      commonness: _sentinelCommonness,
       genre: List.of(genre),
       themes: List.of(themes),
       sentinelFields: fields,
@@ -102,6 +107,7 @@ class CandidateFirstName {
   RoleEnum role;
   int intelligence;
   int allure;
+  CommonnessEnum commonness;
   List<GenreEnum> genre;
   List<ThemeEnum> themes;
   Set<SentinelField> sentinelFields;
@@ -117,6 +123,7 @@ class CandidateFirstName {
     'role': role.name,
     'intelligence': intelligence,
     'allure': allure,
+    'commonness': commonness.name,
     'genre': genre.map((e) => e.name).toList(),
     'themes': themes.map((e) => e.name).toList(),
     'sentinel_fields': (sentinelFields.map((e) => e.name).toList()..sort()),
@@ -132,6 +139,7 @@ class CandidateLastName {
     this.mythology,
     required this.race,
     required this.era,
+    required this.commonness,
     required this.genre,
     required this.themes,
     required this.sentinelFields,
@@ -148,6 +156,7 @@ class CandidateLastName {
   }) {
     final fields = <SentinelField>{
       if (era == null) SentinelField.era,
+      SentinelField.commonness,
       if (themes.isEmpty) SentinelField.themes,
       if (genre.isEmpty) SentinelField.genre,
     };
@@ -157,6 +166,7 @@ class CandidateLastName {
       mythology: mythology,
       race: race,
       era: era ?? _sentinelEra,
+      commonness: _sentinelCommonness,
       genre: List.of(genre),
       themes: List.of(themes),
       sentinelFields: fields,
@@ -168,6 +178,7 @@ class CandidateLastName {
   MythologyEnum? mythology;
   RaceEnum race;
   EraEnum era;
+  CommonnessEnum commonness;
   List<GenreEnum> genre;
   List<ThemeEnum> themes;
   Set<SentinelField> sentinelFields;
@@ -178,6 +189,7 @@ class CandidateLastName {
     'mythology': mythology?.name,
     'race': race.name,
     'era': era.name,
+    'commonness': commonness.name,
     'genre': genre.map((e) => e.name).toList(),
     'themes': themes.map((e) => e.name).toList(),
     'sentinel_fields': (sentinelFields.map((e) => e.name).toList()..sort()),

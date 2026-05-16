@@ -40,6 +40,7 @@ class NameDatabase {
     NameFilterField.themes,
     NameFilterField.allure,
     NameFilterField.intelligence,
+    NameFilterField.commonness,
     NameFilterField.role,
     NameFilterField.age,
     NameFilterField.era,
@@ -155,6 +156,7 @@ class NameDatabase {
       if (allureFilter != null && !allureFilter.includes(e.allure)) {
         return false;
       }
+      if (f.commonness != null && e.commonness != f.commonness) return false;
       if (f.genre != null && !e.genre.contains(f.genre)) return false;
       final themesFilter = f.themes;
       if (themesFilter != null && themesFilter.isNotEmpty) {

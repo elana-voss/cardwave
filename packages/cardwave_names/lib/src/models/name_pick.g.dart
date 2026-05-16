@@ -36,6 +36,7 @@ const _$NameFilterFieldEnumMap = {
   NameFilterField.role: 'role',
   NameFilterField.intelligence: 'intelligence',
   NameFilterField.allure: 'allure',
+  NameFilterField.commonness: 'commonness',
   NameFilterField.genre: 'genre',
   NameFilterField.themes: 'themes',
 };

@@ -22,6 +22,7 @@ NameFilters _$NameFiltersFromJson(Map<String, dynamic> json) => NameFilters(
     json['intelligence'],
   ),
   allure: $enumDecodeNullable(_$AllureBucketEnumEnumMap, json['allure']),
+  commonness: $enumDecodeNullable(_$CommonnessEnumEnumMap, json['commonness']),
   genre: $enumDecodeNullable(_$GenreEnumEnumMap, json['genre']),
   themes: (json['themes'] as List<dynamic>?)
       ?.map((e) => $enumDecode(_$ThemeEnumEnumMap, e))
@@ -40,6 +41,7 @@ Map<String, dynamic> _$NameFiltersToJson(NameFilters instance) =>
       'role': _$RoleEnumEnumMap[instance.role],
       'intelligence': _$IntelligenceBucketEnumEnumMap[instance.intelligence],
       'allure': _$AllureBucketEnumEnumMap[instance.allure],
+      'commonness': _$CommonnessEnumEnumMap[instance.commonness],
       'genre': _$GenreEnumEnumMap[instance.genre],
       'themes': instance.themes?.map((e) => _$ThemeEnumEnumMap[e]!).toList(),
     };
@@ -252,6 +254,12 @@ const _$AllureBucketEnumEnumMap = {
   AllureBucketEnum.low: 'low',
   AllureBucketEnum.medium: 'medium',
   AllureBucketEnum.high: 'high',
+};
+
+const _$CommonnessEnumEnumMap = {
+  CommonnessEnum.rare: 'rare',
+  CommonnessEnum.uncommon: 'uncommon',
+  CommonnessEnum.common: 'common',
 };
 
 const _$GenreEnumEnumMap = {

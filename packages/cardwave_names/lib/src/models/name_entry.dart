@@ -16,6 +16,7 @@ class NameEntry {
     required this.role,
     required this.intelligence,
     required this.allure,
+    required this.commonness,
     required this.genre,
     required this.themes,
   });
@@ -39,6 +40,10 @@ class NameEntry {
   /// 1 (very plain) .. 5 (very sexy). Same bucket mapping as
   /// [intelligence].
   final int allure;
+
+  /// How recognizable / frequent the name is. Common = the LLM's
+  /// default-pick territory; rare = distinctive picks for named NPCs.
+  final CommonnessEnum commonness;
 
   @JsonKey(defaultValue: <GenreEnum>[])
   final List<GenreEnum> genre;
