@@ -24,6 +24,7 @@ import 'dart:io';
 
 import 'loaders/candidate_record.dart';
 import 'loaders/corpora.dart';
+import 'loaders/local_taxonomy.dart';
 import 'loaders/cyberpunk_names.dart';
 import 'loaders/dragon_names.dart';
 import 'loaders/mythology_names.dart';
@@ -124,23 +125,29 @@ void _mergeFirst(
     SentinelField.gender,
     () => existing.gender = incoming.gender,
   );
-  _upgradeIfSentinel(
+  _upgradeOrUnionList<AgeEnum>(
     existing.sentinelFields,
     incoming.sentinelFields,
     SentinelField.age,
-    () => existing.age = incoming.age,
+    existing.age,
+    incoming.age,
+    (merged) => existing.age = merged,
   );
-  _upgradeIfSentinel(
+  _upgradeOrUnionList<EraEnum>(
     existing.sentinelFields,
     incoming.sentinelFields,
     SentinelField.era,
-    () => existing.era = incoming.era,
+    existing.era,
+    incoming.era,
+    (merged) => existing.era = merged,
   );
-  _upgradeIfSentinel(
+  _upgradeOrUnionList<RoleEnum>(
     existing.sentinelFields,
     incoming.sentinelFields,
     SentinelField.role,
-    () => existing.role = incoming.role,
+    existing.role,
+    incoming.role,
+    (merged) => existing.role = merged,
   );
   _upgradeIfSentinel(
     existing.sentinelFields,
@@ -182,11 +189,13 @@ void _mergeLast(
     acc[key] = incoming;
     return;
   }
-  _upgradeIfSentinel(
+  _upgradeOrUnionList<EraEnum>(
     existing.sentinelFields,
     incoming.sentinelFields,
     SentinelField.era,
-    () => existing.era = incoming.era,
+    existing.era,
+    incoming.era,
+    (merged) => existing.era = merged,
   );
   _upgradeIfSentinel(
     existing.sentinelFields,
@@ -221,6 +230,36 @@ void _upgradeIfSentinel(
 List<T> _unionTags<T>(List<T> existing, List<T> incoming) {
   if (incoming.isEmpty) return existing;
   return {...existing, ...incoming}.toList();
+}
+
+/// Merge a multi-value field (era / role / age) across two candidate
+/// records. Four cases:
+///   - both sentinel: keep existing (sentinel default stands).
+///   - existing sentinel, incoming non-sentinel: REPLACE existing with
+///     incoming, clear the sentinel flag.
+///   - existing non-sentinel, incoming sentinel: keep existing (don't
+///     dilute real data with a default).
+///   - both non-sentinel: UNION the lists, field stays non-sentinel.
+void _upgradeOrUnionList<T>(
+  Set<SentinelField> existingSentinels,
+  Set<SentinelField> incomingSentinels,
+  SentinelField field,
+  List<T> existingList,
+  List<T> incomingList,
+  void Function(List<T>) setList,
+) {
+  final existingIsSentinel = existingSentinels.contains(field);
+  final incomingIsSentinel = incomingSentinels.contains(field);
+  if (existingIsSentinel && !incomingIsSentinel) {
+    setList(List.of(incomingList));
+    existingSentinels.remove(field);
+    return;
+  }
+  if (!existingIsSentinel && !incomingIsSentinel) {
+    setList(_unionTags(existingList, incomingList));
+  }
+  // Other two cases (both sentinel, or incoming sentinel) leave existing
+  // alone.
 }
 
 /// Reject transliteration junk before it reaches the merge accumulator:

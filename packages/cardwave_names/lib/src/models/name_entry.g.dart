@@ -15,9 +15,21 @@ NameEntry _$NameEntryFromJson(Map<String, dynamic> json) => NameEntry(
   ),
   mythology: $enumDecodeNullable(_$MythologyEnumEnumMap, json['mythology']),
   race: $enumDecode(_$RaceEnumEnumMap, json['race']),
-  age: $enumDecode(_$AgeEnumEnumMap, json['age']),
-  era: $enumDecode(_$EraEnumEnumMap, json['era']),
-  role: $enumDecode(_$RoleEnumEnumMap, json['role']),
+  age:
+      (json['age'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$AgeEnumEnumMap, e))
+          .toList() ??
+      [],
+  era:
+      (json['era'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$EraEnumEnumMap, e))
+          .toList() ??
+      [],
+  role:
+      (json['role'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$RoleEnumEnumMap, e))
+          .toList() ??
+      [],
   intelligence: (json['intelligence'] as num).toInt(),
   allure: (json['allure'] as num).toInt(),
   commonness: $enumDecode(_$CommonnessEnumEnumMap, json['commonness']),
@@ -40,9 +52,9 @@ Map<String, dynamic> _$NameEntryToJson(NameEntry instance) => <String, dynamic>{
       _$LanguageEthnicityEnumEnumMap[instance.languageEthnicity]!,
   'mythology': _$MythologyEnumEnumMap[instance.mythology],
   'race': _$RaceEnumEnumMap[instance.race]!,
-  'age': _$AgeEnumEnumMap[instance.age]!,
-  'era': _$EraEnumEnumMap[instance.era]!,
-  'role': _$RoleEnumEnumMap[instance.role]!,
+  'age': instance.age.map((e) => _$AgeEnumEnumMap[e]!).toList(),
+  'era': instance.era.map((e) => _$EraEnumEnumMap[e]!).toList(),
+  'role': instance.role.map((e) => _$RoleEnumEnumMap[e]!).toList(),
   'intelligence': instance.intelligence,
   'allure': instance.allure,
   'commonness': _$CommonnessEnumEnumMap[instance.commonness]!,

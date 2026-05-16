@@ -29,9 +29,24 @@ class NameEntry {
   final LanguageEthnicityEnum languageEthnicity;
   final MythologyEnum? mythology;
   final RaceEnum race;
-  final AgeEnum age;
-  final EraEnum era;
-  final RoleEnum role;
+
+  /// Lifestages the name evokes. Multi-value: a name like "Liam" reads
+  /// youngAdult AND adult; "Eleanor" can read adult AND elder. The
+  /// classify schema caps the list at 3.
+  @JsonKey(defaultValue: <AgeEnum>[])
+  final List<AgeEnum> age;
+
+  /// Eras the name evokes. Multi-value because most period-coded names
+  /// span more than one period — "Mildred" peaks victorian but persists
+  /// midcentury; "Eleanor" reads across victorian / midcentury / modern.
+  @JsonKey(defaultValue: <EraEnum>[])
+  final List<EraEnum> era;
+
+  /// Narrative archetypes the name evokes. Multi-value because the same
+  /// name often fits multiple roles ("Cassius" reads villain OR
+  /// antihero; "Arthur" reads hero OR mentor).
+  @JsonKey(defaultValue: <RoleEnum>[])
+  final List<RoleEnum> role;
 
   /// 1 (very dim) .. 5 (very intelligent). LLM-facing tool param uses
   /// the [IntelligenceBucketEnum] coarse buckets.

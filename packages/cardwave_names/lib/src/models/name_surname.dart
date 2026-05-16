@@ -27,7 +27,12 @@ class NameSurname {
   final LanguageEthnicityEnum languageEthnicity;
   final MythologyEnum? mythology;
   final RaceEnum race;
-  final EraEnum era;
+
+  /// Eras the surname evokes. Multi-value to match the first-name side,
+  /// though in practice surname loaders only assign one era per entry
+  /// today (the classifier doesn't expand surname era).
+  @JsonKey(defaultValue: <EraEnum>[])
+  final List<EraEnum> era;
 
   /// How recognizable / frequent the surname is. Common = Smith, Garcia;
   /// rare = Polkinghorne, Featherstonehaugh.

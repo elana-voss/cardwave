@@ -28,12 +28,18 @@ enum SentinelField {
 }
 
 const _sentinelGender = GenderEnum.ambiguous;
-const _sentinelAge = AgeEnum.adult;
-const _sentinelRole = RoleEnum.neutral;
+const _sentinelAge = <AgeEnum>[AgeEnum.adult];
+const _sentinelRole = <RoleEnum>[RoleEnum.neutral];
 const _sentinelIntelligence = 3;
 const _sentinelAllure = 3;
 const _sentinelCommonness = CommonnessEnum.uncommon;
-const _sentinelEra = EraEnum.modern;
+
+/// Era sentinel by race. Non-human entries have no Earth-era binding
+/// so they default to `timeless`; humans default to `modern`. The
+/// human case stays sentinel so Phase 2 can revise it; the non-human
+/// case is locked (era is removed from sentinelFields for non-human).
+List<EraEnum> _defaultEraFor(RaceEnum race) =>
+    race == RaceEnum.human ? const [EraEnum.modern] : const [EraEnum.timeless];
 
 /// First-name candidate. Mutable so the merge step can upgrade sentinel
 /// fields when a later corpus contributes a real value.
@@ -64,21 +70,18 @@ class CandidateFirstName {
     GenderEnum? gender,
     MythologyEnum? mythology,
     RaceEnum race = RaceEnum.human,
-    EraEnum? era,
+    List<EraEnum>? era,
+    List<AgeEnum>? age,
+    List<RoleEnum>? role,
     List<GenreEnum> genre = const [],
     List<ThemeEnum> themes = const [],
   }) {
-    // Non-human races have no Earth-era binding. Lock era to `timeless`
-    // and DON'T mark it sentinel — otherwise Phase 2 will default fantasy
-    // entries to `modern`. Human entries with no era signal keep
-    // `modern` and stay sentinel so Phase 2 can revise.
-    final isFantasyRace = race != RaceEnum.human;
-    final defaultedEra = era ?? (isFantasyRace ? EraEnum.timeless : _sentinelEra);
+    final isHuman = race == RaceEnum.human;
     final fields = <SentinelField>{
       if (gender == null) SentinelField.gender,
-      SentinelField.age,
-      if (era == null && !isFantasyRace) SentinelField.era,
-      SentinelField.role,
+      if (age == null) SentinelField.age,
+      if (era == null && isHuman) SentinelField.era,
+      if (role == null) SentinelField.role,
       SentinelField.intelligence,
       SentinelField.allure,
       SentinelField.commonness,
@@ -91,9 +94,9 @@ class CandidateFirstName {
       languageEthnicity: languageEthnicity,
       mythology: mythology,
       race: race,
-      age: _sentinelAge,
-      era: defaultedEra,
-      role: _sentinelRole,
+      age: age ?? _sentinelAge,
+      era: era ?? _defaultEraFor(race),
+      role: role ?? _sentinelRole,
       intelligence: _sentinelIntelligence,
       allure: _sentinelAllure,
       commonness: _sentinelCommonness,
@@ -108,9 +111,9 @@ class CandidateFirstName {
   LanguageEthnicityEnum languageEthnicity;
   MythologyEnum? mythology;
   RaceEnum race;
-  AgeEnum age;
-  EraEnum era;
-  RoleEnum role;
+  List<AgeEnum> age;
+  List<EraEnum> era;
+  List<RoleEnum> role;
   int intelligence;
   int allure;
   CommonnessEnum commonness;
@@ -124,9 +127,9 @@ class CandidateFirstName {
     'language_ethnicity': languageEthnicity.name,
     'mythology': mythology?.name,
     'race': race.name,
-    'age': age.name,
-    'era': era.name,
-    'role': role.name,
+    'age': age.map((e) => e.name).toList(),
+    'era': era.map((e) => e.name).toList(),
+    'role': role.map((e) => e.name).toList(),
     'intelligence': intelligence,
     'allure': allure,
     'commonness': commonness.name,
@@ -156,14 +159,13 @@ class CandidateLastName {
     required LanguageEthnicityEnum languageEthnicity,
     MythologyEnum? mythology,
     RaceEnum race = RaceEnum.human,
-    EraEnum? era,
+    List<EraEnum>? era,
     List<GenreEnum> genre = const [],
     List<ThemeEnum> themes = const [],
   }) {
-    final isFantasyRace = race != RaceEnum.human;
-    final defaultedEra = era ?? (isFantasyRace ? EraEnum.timeless : _sentinelEra);
+    final isHuman = race == RaceEnum.human;
     final fields = <SentinelField>{
-      if (era == null && !isFantasyRace) SentinelField.era,
+      if (era == null && isHuman) SentinelField.era,
       SentinelField.commonness,
       if (themes.isEmpty) SentinelField.themes,
       if (genre.isEmpty) SentinelField.genre,
@@ -173,7 +175,7 @@ class CandidateLastName {
       languageEthnicity: languageEthnicity,
       mythology: mythology,
       race: race,
-      era: defaultedEra,
+      era: era ?? _defaultEraFor(race),
       commonness: _sentinelCommonness,
       genre: List.of(genre),
       themes: List.of(themes),
@@ -185,7 +187,7 @@ class CandidateLastName {
   LanguageEthnicityEnum languageEthnicity;
   MythologyEnum? mythology;
   RaceEnum race;
-  EraEnum era;
+  List<EraEnum> era;
   CommonnessEnum commonness;
   List<GenreEnum> genre;
   List<ThemeEnum> themes;
@@ -196,7 +198,7 @@ class CandidateLastName {
     'language_ethnicity': languageEthnicity.name,
     'mythology': mythology?.name,
     'race': race.name,
-    'era': era.name,
+    'era': era.map((e) => e.name).toList(),
     'commonness': commonness.name,
     'genre': genre.map((e) => e.name).toList(),
     'themes': themes.map((e) => e.name).toList(),

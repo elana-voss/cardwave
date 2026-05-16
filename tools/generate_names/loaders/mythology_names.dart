@@ -109,7 +109,7 @@ LoaderResult loadMythologyNames() {
         name: name,
         languageEthnicity: ethnicity,
         mythology: mythology,
-        era: EraEnum.ancient,
+        era: const [EraEnum.ancient],
       ),
     );
   }

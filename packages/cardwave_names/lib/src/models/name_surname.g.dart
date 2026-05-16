@@ -14,7 +14,11 @@ NameSurname _$NameSurnameFromJson(Map<String, dynamic> json) => NameSurname(
   ),
   mythology: $enumDecodeNullable(_$MythologyEnumEnumMap, json['mythology']),
   race: $enumDecode(_$RaceEnumEnumMap, json['race']),
-  era: $enumDecode(_$EraEnumEnumMap, json['era']),
+  era:
+      (json['era'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$EraEnumEnumMap, e))
+          .toList() ??
+      [],
   commonness: $enumDecode(_$CommonnessEnumEnumMap, json['commonness']),
   genre:
       (json['genre'] as List<dynamic>?)
@@ -35,7 +39,7 @@ Map<String, dynamic> _$NameSurnameToJson(NameSurname instance) =>
           _$LanguageEthnicityEnumEnumMap[instance.languageEthnicity]!,
       'mythology': _$MythologyEnumEnumMap[instance.mythology],
       'race': _$RaceEnumEnumMap[instance.race]!,
-      'era': _$EraEnumEnumMap[instance.era]!,
+      'era': instance.era.map((e) => _$EraEnumEnumMap[e]!).toList(),
       'commonness': _$CommonnessEnumEnumMap[instance.commonness]!,
       'genre': instance.genre.map((e) => _$GenreEnumEnumMap[e]!).toList(),
       'themes': instance.themes.map((e) => _$ThemeEnumEnumMap[e]!).toList(),

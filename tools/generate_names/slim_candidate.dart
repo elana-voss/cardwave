@@ -64,17 +64,21 @@ Future<void> main() async {
     lastByPool.putIfAbsent(key, () => []).add(entry);
   }
 
-  // Apply per-sub-pool caps with deterministic selection.
+  // Apply per-sub-pool caps with deterministic selection. Record
+  // raw/kept counts in the same pass so the diagnostic loop doesn't
+  // re-run _takeStable on every key.
+  final firstKept = <String, int>{};
   final slimFirst = <Map<String, dynamic>>[];
   for (final key in firstByPool.keys) {
-    final cap = _capForFirst(key);
-    final selected = _takeStable(firstByPool[key]!, cap);
+    final selected = _takeStable(firstByPool[key]!, _capForFirst(key));
+    firstKept[key] = selected.length;
     slimFirst.addAll(selected);
   }
+  final lastKept = <String, int>{};
   final slimLast = <Map<String, dynamic>>[];
   for (final key in lastByPool.keys) {
-    final cap = _capForLast(key);
-    final selected = _takeStable(lastByPool[key]!, cap);
+    final selected = _takeStable(lastByPool[key]!, _capForLast(key));
+    lastKept[key] = selected.length;
     slimLast.addAll(selected);
   }
 
@@ -86,16 +90,16 @@ Future<void> main() async {
   stdout.writeln('[counts] per first-name sub-pool:');
   final firstKeys = firstByPool.keys.toList()..sort();
   for (final key in firstKeys) {
-    final raw = firstByPool[key]!.length;
-    final kept = _takeStable(firstByPool[key]!, _capForFirst(key)).length;
-    stdout.writeln('         $key: kept $kept of $raw');
+    stdout.writeln(
+      '         $key: kept ${firstKept[key]} of ${firstByPool[key]!.length}',
+    );
   }
   stdout.writeln('[counts] per last-name sub-pool:');
   final lastKeys = lastByPool.keys.toList()..sort();
   for (final key in lastKeys) {
-    final raw = lastByPool[key]!.length;
-    final kept = _takeStable(lastByPool[key]!, _capForLast(key)).length;
-    stdout.writeln('         $key: kept $kept of $raw');
+    stdout.writeln(
+      '         $key: kept ${lastKept[key]} of ${lastByPool[key]!.length}',
+    );
   }
 
   final out = File(_outputPath);
@@ -129,11 +133,20 @@ String _classifyFirst(Map<String, dynamic> entry) {
   if (genre.contains('cyberpunk')) {
     return 'cyberpunk-handle';
   }
-  final era = entry['era'] as String;
+  final eras = (entry['era'] as List).cast<String>();
   final language = entry['language_ethnicity'] as String;
   final gender = entry['gender'] as String;
-  if (_eraLockedEras.contains(era) && language == 'english') {
-    return 'era-locked-first-name / $era-$gender';
+  // First matching era wins so a multi-era English name (e.g. era=
+  // [victorian, midcentury]) lands in ONE era-locked pool, not several
+  // — keeps per-pool caps honest. The entry's era list is emitted in
+  // chronological order by the SSA loader, so the earliest era it
+  // qualifies for is the bucket it lands in.
+  if (language == 'english') {
+    for (final era in eras) {
+      if (_eraLockedEras.contains(era)) {
+        return 'era-locked-first-name / $era-$gender';
+      }
+    }
   }
   return 'human-first-name / $language-$gender';
 }
@@ -180,16 +193,19 @@ int _stableHash(String s) {
   return h;
 }
 
-/// Pick the first `n` entries from `pool` by stable-hash order. If
-/// `pool.length <= n`, returns the whole pool unchanged (still
-/// hash-sorted for output stability).
+/// Pick the first `n` entries from `pool` by stable-hash order. When
+/// `pool.length <= n` we return `pool` unsorted — the slim writer
+/// alphabetises by `name` at the end, so any hash-sort here would be
+/// thrown away. Hash-sort fires only when the cap is binding (the
+/// stable selection comes from picking the lowest-hash N entries).
 List<Map<String, dynamic>> _takeStable(
   List<Map<String, dynamic>> pool,
   int n,
 ) {
+  if (pool.length <= n) return pool;
   final sorted = [...pool]..sort(
       (a, b) => _stableHash(a['name'] as String)
           .compareTo(_stableHash(b['name'] as String)),
     );
-  return sorted.length <= n ? sorted : sorted.sublist(0, n);
+  return sorted.sublist(0, n);
 }

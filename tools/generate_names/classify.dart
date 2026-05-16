@@ -42,6 +42,7 @@ const _grokKey = String.fromEnvironment('GROK_API_KEY');
 // rename or addition flows here automatically.
 final _ageValues = AgeEnum.values.names;
 final _roleValues = RoleEnum.values.names;
+final _eraValues = EraEnum.values.names;
 final _commonnessValues = CommonnessEnum.values.names;
 final _genreValues = GenreEnum.values.names;
 final _themeValues = ThemeEnum.values.names;
@@ -399,7 +400,7 @@ Future<String> _postWithRetry({
 
 final _firstSystemPrompt = '''
 You assign tags to character first names for a roleplay name database.
-For each name, fill in age, role, intelligence (1-5), allure (1-5),
+For each name, fill in age, era, role, intelligence (1-5), allure (1-5),
 commonness, themes, and genre based on the name's cultural, historical,
 and phonetic feel. Tag the name itself — not a hypothetical bearer.
 
@@ -410,19 +411,37 @@ RULES:
 - Most names land in the middle of subjective scales; extreme tags
   (intelligence/allure = 1 or 5, roles like "villain", "rare"
   commonness) only when the name strongly evokes them.
-- Use the known facts (gender, language, era, race, mythology) as
-  context — an ancient Greek name should not be tagged like a modern
-  English one.
+- Use the known facts (gender, language, race, mythology) as context
+  — an ancient Greek name should not be tagged like a modern English
+  one.
+- `age`, `era`, `role` are ARRAYS. List every value that plausibly
+  fits the name, capped at 3 per field. Most names should have 1-2
+  entries; only very versatile names hit 3. NEVER return an empty
+  array — pick at least one value.
 
 FIELD DEFINITIONS:
 
-`age` — the lifestage the name most evokes. One of:
+`age` (array, 1-3 values) — lifestages the name evokes. Most names
+fit one lifestage; "Liam" / "Sam" span two; truly broad names hit
+three. Available values:
   child       — names mostly used for young children (Bobby, Tommy)
   youngAdult  — names that feel teen / early-twenties (Tyler, Becky)
-  adult       — names with no strong age signal (Sarah, James). DEFAULT.
+  adult       — names with no strong age signal (Sarah, James)
   elder       — names that feel old-fashioned / retired (Ethel, Wilbur)
+Default when no strong signal: ["adult"].
 
-`role` — the narrative archetype the name evokes. One of:
+`era` (array, 1-3 values) — periods the name evokes. Most names span
+multiple eras: "Eleanor" reads victorian AND midcentury AND modern;
+"Mildred" peaks victorian but persists midcentury; "Mary" is timeless
+across modern + historical periods. Lock to one era ONLY when the
+name strongly belongs there (a Greek mythology name → ["ancient"];
+a flapper-only fad → ["nineteenTwenties"]). Available values:
+  ${_eraValues.join(', ')}
+Default when no strong signal: ["modern"].
+
+`role` (array, 1-3 values) — narrative archetypes the name evokes.
+Most names fit one archetype; "Cassius" fits villain AND antihero;
+"Arthur" fits hero AND mentor. Available values:
   hero          — heroic / protagonist-coded (Arthur, Diana)
   villain       — villain-coded (Maleficent, Lucius)
   mentor        — wise / authoritative (Albus, Gandalf, Persephone)
@@ -431,7 +450,8 @@ FIELD DEFINITIONS:
   bystander     — background NPC feel (Bob, Dave, Linda)
   loveInterest  — romantic-lead feel (Romeo, Juliet, Aphrodite)
   antihero      — morally grey / edgy (Wolverine, Vex)
-  neutral       — no strong archetype. DEFAULT for most names.
+  neutral       — no strong archetype
+Default when no strong signal: ["neutral"].
 
 `intelligence` — how cerebral / sophisticated the NAME sounds (not the
 bearer's actual IQ). Phonetics + cultural connotation. Scale:
@@ -512,7 +532,8 @@ String _buildUserPrompt({
     knownParts.add('language=${e['language_ethnicity']}');
     if (e['mythology'] != null) knownParts.add('mythology=${e['mythology']}');
     knownParts.add('race=${e['race']}');
-    knownParts.add('era=${e['era']}');
+    final eras = (e['era'] as List).cast<String>();
+    knownParts.add('era=${eras.join('|')}');
     final genre = (e['genre'] as List).cast<String>();
     if (genre.isNotEmpty) knownParts.add('genre=${genre.join('|')}');
     final themes = (e['themes'] as List).cast<String>();
@@ -534,8 +555,24 @@ Map<String, dynamic> _firstNameBatchSchema(int count) {
           'type': 'object',
           'properties': {
             'name': {'type': 'string'},
-            'age': {'type': 'string', 'enum': _ageValues},
-            'role': {'type': 'string', 'enum': _roleValues},
+            'age': {
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'items': {'type': 'string', 'enum': _ageValues},
+            },
+            'era': {
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'items': {'type': 'string', 'enum': _eraValues},
+            },
+            'role': {
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'items': {'type': 'string', 'enum': _roleValues},
+            },
             'intelligence': {'type': 'integer', 'minimum': 1, 'maximum': 5},
             'allure': {'type': 'integer', 'minimum': 1, 'maximum': 5},
             'commonness': {'type': 'string', 'enum': _commonnessValues},
@@ -549,7 +586,7 @@ Map<String, dynamic> _firstNameBatchSchema(int count) {
             },
           },
           'required': [
-            'name', 'age', 'role', 'intelligence', 'allure',
+            'name', 'age', 'era', 'role', 'intelligence', 'allure',
             'commonness', 'themes', 'genre',
           ],
           'additionalProperties': false,
@@ -593,34 +630,26 @@ Map<String, dynamic> _lastNameBatchSchema(int count) {
   };
 }
 
+/// Fields Grok can fill on a sentinel-marked entry. Gender stays off
+/// the list — the loader either knows it or it doesn't, Grok doesn't
+/// classify it. Wire-format strings match the JSON keys and the
+/// SentinelField enum names.
+const _llmFillableFields = <String>[
+  'age', 'era', 'role',
+  'intelligence', 'allure', 'commonness',
+  'themes', 'genre',
+];
+
 /// Merge Grok's tag answer into the entry, but only for fields the
 /// entry's sentinel_fields list says were unfilled. Then drop the
 /// sentinel_fields key from the entry.
 void _applyTags(Map<String, dynamic> entry, Map<String, dynamic> tagged) {
   final sentinels =
       (entry['sentinel_fields'] as List?)?.cast<String>().toSet() ?? const {};
-
-  if (sentinels.contains('age') && tagged.containsKey('age')) {
-    entry['age'] = tagged['age'];
-  }
-  if (sentinels.contains('role') && tagged.containsKey('role')) {
-    entry['role'] = tagged['role'];
-  }
-  if (sentinels.contains('intelligence') &&
-      tagged.containsKey('intelligence')) {
-    entry['intelligence'] = tagged['intelligence'];
-  }
-  if (sentinels.contains('allure') && tagged.containsKey('allure')) {
-    entry['allure'] = tagged['allure'];
-  }
-  if (sentinels.contains('commonness') && tagged.containsKey('commonness')) {
-    entry['commonness'] = tagged['commonness'];
-  }
-  if (sentinels.contains('themes') && tagged.containsKey('themes')) {
-    entry['themes'] = tagged['themes'];
-  }
-  if (sentinels.contains('genre') && tagged.containsKey('genre')) {
-    entry['genre'] = tagged['genre'];
+  for (final field in _llmFillableFields) {
+    if (sentinels.contains(field) && tagged.containsKey(field)) {
+      entry[field] = tagged[field];
+    }
   }
 
   entry.remove('sentinel_fields');

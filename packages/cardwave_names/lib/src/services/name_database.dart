@@ -26,9 +26,13 @@ class NameDatabase {
 
   NameDatabase._(this._firstNames, this._lastNames);
 
-  /// Priority order for the degradation loop. Subjective / decorative
-  /// fields drop first; identity-defining fields (gender, language,
-  /// genre) drop last so the LLM's strongest signals survive longest.
+  /// Priority order for the degradation loop. Decorative / mood fields
+  /// drop first; identity-defining fields (gender, language, race) drop
+  /// last so the LLM's strongest signals survive longest. `genre` drops
+  /// before `era` because era is identity-coloring (a modern name in a
+  /// 1920s scene jars more than a 1920s name without specific noir
+  /// flavor); `age` stays mid-tier since 80%+ of names are tagged
+  /// `adult` anyway and the axis carries little discriminating info.
   static const _dropOrder = [
     NameFilterField.themes,
     NameFilterField.allure,
@@ -36,10 +40,10 @@ class NameDatabase {
     NameFilterField.commonness,
     NameFilterField.role,
     NameFilterField.age,
+    NameFilterField.genre,
     NameFilterField.era,
     NameFilterField.mythology,
     NameFilterField.race,
-    NameFilterField.genre,
     NameFilterField.languageEthnicity,
     NameFilterField.gender,
   ];
@@ -121,9 +125,9 @@ class NameDatabase {
       }
       if (f.mythology != null && e.mythology != f.mythology) return false;
       if (f.race != null && e.race != f.race) return false;
-      if (f.age != null && e.age != f.age) return false;
-      if (f.era != null && e.era != f.era) return false;
-      if (f.role != null && e.role != f.role) return false;
+      if (f.age != null && !e.age.contains(f.age)) return false;
+      if (f.era != null && !e.era.contains(f.era)) return false;
+      if (f.role != null && !e.role.contains(f.role)) return false;
       final intelFilter = f.intelligence;
       if (intelFilter != null && !intelFilter.includes(e.intelligence)) {
         return false;
@@ -133,7 +137,15 @@ class NameDatabase {
         return false;
       }
       if (f.commonness != null && e.commonness != f.commonness) return false;
-      if (f.genre != null && !e.genre.contains(f.genre)) return false;
+      // Empty entry-genre = compatible with any genre filter. Names
+      // without a committed genre are "preferred but not exclusive" —
+      // they join the candidate pool for any genre request instead of
+      // forcing the filter to fail when the strict-match pool is tiny.
+      if (f.genre != null &&
+          e.genre.isNotEmpty &&
+          !e.genre.contains(f.genre)) {
+        return false;
+      }
       final themesFilter = f.themes;
       if (themesFilter != null && themesFilter.isNotEmpty) {
         final overlap = e.themes.any(themesFilter.contains);

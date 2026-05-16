@@ -62,9 +62,9 @@ String _emitFirst(Map<String, dynamic> e) => [
       if (e['mythology'] != null)
         '    mythology: MythologyEnum.${e['mythology']},',
       '    race: RaceEnum.${e['race']},',
-      '    age: AgeEnum.${e['age']},',
-      '    era: EraEnum.${e['era']},',
-      '    role: RoleEnum.${e['role']},',
+      '    age: ${_emitEnumList('AgeEnum', e['age'] as List)},',
+      '    era: ${_emitEnumList('EraEnum', e['era'] as List)},',
+      '    role: ${_emitEnumList('RoleEnum', e['role'] as List)},',
       '    intelligence: ${e['intelligence']},',
       '    allure: ${e['allure']},',
       '    commonness: CommonnessEnum.${e['commonness']},',
@@ -80,7 +80,7 @@ String _emitLast(Map<String, dynamic> e) => [
       if (e['mythology'] != null)
         '    mythology: MythologyEnum.${e['mythology']},',
       '    race: RaceEnum.${e['race']},',
-      '    era: EraEnum.${e['era']},',
+      '    era: ${_emitEnumList('EraEnum', e['era'] as List)},',
       '    commonness: CommonnessEnum.${e['commonness']},',
       '    genre: ${_emitEnumList('GenreEnum', e['genre'] as List)},',
       '    themes: ${_emitEnumList('ThemeEnum', e['themes'] as List)},',

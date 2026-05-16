@@ -7,9 +7,9 @@ NameEntry _entry({
   LanguageEthnicityEnum culture = LanguageEthnicityEnum.english,
   MythologyEnum? mythology,
   RaceEnum race = RaceEnum.human,
-  AgeEnum age = AgeEnum.adult,
-  EraEnum era = EraEnum.modern,
-  RoleEnum role = RoleEnum.neutral,
+  List<AgeEnum> age = const [AgeEnum.adult],
+  List<EraEnum> era = const [EraEnum.modern],
+  List<RoleEnum> role = const [RoleEnum.neutral],
   int intelligence = 3,
   int allure = 3,
   CommonnessEnum commonness = CommonnessEnum.uncommon,
@@ -36,7 +36,7 @@ NameSurname _surname({
   LanguageEthnicityEnum culture = LanguageEthnicityEnum.english,
   MythologyEnum? mythology,
   RaceEnum race = RaceEnum.human,
-  EraEnum era = EraEnum.modern,
+  List<EraEnum> era = const [EraEnum.modern],
   CommonnessEnum commonness = CommonnessEnum.uncommon,
   List<GenreEnum> genre = const [GenreEnum.modern],
   List<ThemeEnum> themes = const [],
@@ -88,7 +88,7 @@ void main() {
             name: 'Mira',
             gender: GenderEnum.female,
             culture: LanguageEthnicityEnum.slavicRussian,
-            role: RoleEnum.villain,
+            role: const [RoleEnum.villain],
             intelligence: 5,
             allure: 4,
             genre: const [GenreEnum.horror, GenreEnum.modern],
@@ -226,6 +226,44 @@ void main() {
 
       expect(pick.firstNameEntry.languageEthnicity.isFantasy, isTrue);
       expect(pick.lastNameEntry.languageEthnicity.isFantasy, isTrue);
+    });
+
+    test('multi-era entry matches each of its eras', () {
+      // Eleanor-style: tagged across victorian and midcentury. A request
+      // for either era should pull this entry; a request for an era NOT
+      // in the list (e.g. ancient) should not.
+      final eleanor = _entry(
+        name: 'Eleanor',
+        era: const [EraEnum.victorian, EraEnum.midcentury],
+      );
+      final beatrice = _entry(
+        name: 'Beatrice',
+        era: const [EraEnum.ancient],
+      );
+      final db = NameDatabase.forTesting(
+        firstNames: [eleanor, beatrice],
+        lastNames: [_surname(name: 'Generic')],
+      );
+
+      final victorianPick = db.pickName(
+        const NameFilters(era: EraEnum.victorian),
+        <String>{},
+        <String>{},
+      );
+      final midcenturyPick = db.pickName(
+        const NameFilters(era: EraEnum.midcentury),
+        <String>{},
+        <String>{},
+      );
+      final ancientPick = db.pickName(
+        const NameFilters(era: EraEnum.ancient),
+        <String>{},
+        <String>{},
+      );
+
+      expect(victorianPick.firstNameEntry.name, 'Eleanor');
+      expect(midcenturyPick.firstNameEntry.name, 'Eleanor');
+      expect(ancientPick.firstNameEntry.name, 'Beatrice');
     });
   });
 }

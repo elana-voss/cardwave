@@ -182,7 +182,7 @@ void _readMythology(
         name: name,
         languageEthnicity: ethnicity,
         mythology: mythology,
-        era: EraEnum.ancient,
+        era: const [EraEnum.ancient],
       ),
     );
   }
@@ -202,7 +202,7 @@ void _readNorseGods({required List<CandidateFirstName> into}) {
           name: name,
           languageEthnicity: LanguageEthnicityEnum.scandinavian,
           mythology: MythologyEnum.norse,
-          era: EraEnum.ancient,
+          era: const [EraEnum.ancient],
           gender: gender,
         ),
       );
@@ -221,7 +221,7 @@ void _readLovecraft({required List<CandidateFirstName> into}) {
         name: name,
         languageEthnicity: LanguageEthnicityEnum.english,
         mythology: MythologyEnum.lovecraft,
-        era: EraEnum.modern,
+        era: const [EraEnum.modern],
         genre: const [GenreEnum.horror],
       ),
     );
