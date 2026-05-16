@@ -205,14 +205,25 @@ class LlmManagementService {
         error: null,
       );
     } on Exception catch (e, st) {
-      modelsLogger.severe(
-        LlmDiagnosticEvent(
-          level: LlmDiagnosticLevel.error,
-          message: 'refreshProviderModels failed — $label',
-          error: e,
-          stackTrace: st,
-        ),
+      // Local backend unreachable (kobold/llama.cpp not started) is a
+      // lifecycle state — log as info so it stays out of the error overlay.
+      final isLocalOffline =
+          profile.providerEnum == LLMProviderEnum.localOpenAi &&
+          e is LlmFetchException &&
+          e.statusCode == null;
+      final event = LlmDiagnosticEvent(
+        level: isLocalOffline
+            ? LlmDiagnosticLevel.info
+            : LlmDiagnosticLevel.error,
+        message: 'refreshProviderModels failed — $label',
+        error: e,
+        stackTrace: st,
       );
+      if (isLocalOffline) {
+        modelsLogger.info(event);
+      } else {
+        modelsLogger.severe(event);
+      }
       return (
         updated: 0,
         rematched: 0,
