@@ -4,7 +4,6 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
-import 'package:cardwave/group/src/models/group_data.dart';
 import 'package:cardwave/group/src/pages/widgets/group_character_drawer.dart';
 import 'package:cardwave/group/src/pages/widgets/group_switch_dialog.dart';
 import 'package:cardwave/group/src/pages/widgets/tile_activation_strategy.dart';
@@ -12,6 +11,7 @@ import 'package:cardwave/group/src/pages/widgets/tile_auto_chat_delay.dart';
 import 'package:cardwave/group/src/services/group_chat_service.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
 import 'package:cardwave/group/src/services/group_prompt_service.dart';
+import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/workspace.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -20,6 +20,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 part 'widgets/group_chat_page_end_drawer.dart';
+part 'widgets/group_chat_page_end_drawer_image.dart';
+part 'widgets/group_chat_page_end_drawer_names.dart';
+part 'widgets/group_chat_page_end_drawer_web.dart';
 
 class GroupChatPage extends StatefulWidget {
   const GroupChatPage({required this.groupId, super.key});
@@ -74,7 +77,13 @@ class _GroupChatPageState extends State<GroupChatPage> {
       // Load the latest chat session for this group; create a fresh one if
       // none exists yet.
       var session = await groupChatService.getLatestChatForGroup(groupFile.id);
-      session ??= _createFreshSession(groupFile.id, userName, settings);
+      final chatPresetId =
+          settings.settings.domainPresetIds[LlmProviderDomainEnum.chat] ?? '';
+      session ??= groupChatService.createChat(
+        groupFile: groupFile,
+        chatPresetId: chatPresetId,
+        userName: userName,
+      );
 
       if (!mounted) return;
 
@@ -102,36 +111,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
     } on Exception catch (e) {
       if (mounted) setState(() => _loadError = e);
     }
-  }
-
-  ChatSession _createFreshSession(
-    String groupId,
-    String userName,
-    SettingsService settings,
-  ) {
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final appSettings = settings.settings;
-    final chatPresetId =
-        appSettings.domainPresetIds[LlmProviderDomainEnum.chat] ?? '';
-    return ChatSession(
-      id: 'group_$now',
-      ownerId: groupId,
-      modelPresetId: chatPresetId,
-      created: now,
-      lastActive: now,
-      name: 'Group Chat',
-      isStreaming: true,
-      isNsfw: false,
-      isScenario: false,
-      removeTrailingSentences: false,
-      personaName: userName,
-      personaDescription: '',
-      activeStickies: {},
-      activeCooldowns: {},
-      localVariables: {},
-      messages: [],
-      groupData: GroupData(),
-    );
   }
 
   @override

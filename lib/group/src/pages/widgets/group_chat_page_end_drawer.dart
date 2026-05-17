@@ -48,6 +48,76 @@ class _GroupChatEndDrawer extends StatelessWidget {
                       );
                     },
                   ),
+                  // Media Defaults link — parallel to 1:1's top-of-drawer
+                  // entry. Opens the per-session media-defaults grid.
+                  ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) {
+                      final selectedChat = controller.selectedChat;
+                      return MediaDefaultsDrawerEntry(
+                        subtitle: 'Chat session',
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                          unawaited(
+                            DialogAiSettings.show(
+                              context,
+                              initialTab: DialogAiSettingsTab.mediaDefaults,
+                              mediaFocus:
+                                  MediaSettingsGridFocus.allColumns,
+                              chatSession: selectedChat,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  const Divider(height: 1, thickness: 0.5),
+                  // Quick actions — three of 1:1's four (no Favorite: group
+                  // has multiple characters and no single favorite target).
+                  ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) {
+                      final imageVisible = settings.chatImageVisible;
+                      return QuickActionRow(
+                        actions: [
+                          QuickAction(
+                            tileKey: const Key('chat-menu-new-chat'),
+                            icon: Icons.add_comment,
+                            label: 'New Chat',
+                            onTap: () {
+                              Navigator.of(
+                                navContext,
+                                rootNavigator: true,
+                              ).pop();
+                              unawaited(controller.promptNewChat(context));
+                            },
+                          ),
+                          QuickAction(
+                            tileKey: const Key('drawer-all-chats'),
+                            icon: Icons.forum,
+                            label: 'All Chats',
+                            onTap: () => Navigator.of(
+                              navContext,
+                            ).pushNamed('/all_chats'),
+                          ),
+                          QuickAction(
+                            icon: Icons.image_not_supported_outlined,
+                            selectedIcon: Icons.image,
+                            isSelected: imageVisible,
+                            label: 'Show Image',
+                            onTap: () {
+                              settings.chatImageVisible = !imageVisible;
+                              unawaited(settingsService.saveSettings());
+                              Navigator.of(
+                                navContext,
+                                rootNavigator: true,
+                              ).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                   // ── Group ──
                   const DrawerSectionHeader('Group'),
                   ListenableBuilder(
@@ -209,6 +279,16 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     expanded: isAdv(_GroupSectionEnum.video),
                     onToggle: () => toggleAdv(_GroupSectionEnum.video),
                   ),
+                  // ── Image ──
+                  _GroupImageSection(
+                    controller: controller,
+                    isAdvanced: isAdv(_GroupSectionEnum.image),
+                    onToggleAdvanced: () => toggleAdv(_GroupSectionEnum.image),
+                  ),
+                  // ── Web ──
+                  _GroupWebSection(controller: controller),
+                  // ── Names ──
+                  _GroupNamesSection(controller: controller),
                 ],
               ),
             ),
@@ -218,33 +298,34 @@ class _GroupChatEndDrawer extends StatelessWidget {
     );
   }
 
-  /// Group-flavor of the chat drawer's `_sessionSwitchTile`. Same shape;
-  /// captures `GroupChatController` instead of `ChatPageController`.
-  // Small per-drawer tile builder; a shared widget would need ~10 call
-  // sites in the workspace drawer re-routed through an explicit controller.
-  // ignore: qcheck/avoid_returning_widgets
-  Widget _sessionSwitchTile({
-    required GroupChatController controller,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool Function(ChatSession) read,
-    required void Function(bool) write,
-  }) {
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) => DrawerSwitchTile(
-        leading: Icon(icon),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: read(controller.selectedChat),
-        onChanged: write,
-      ),
-    );
-  }
+}
+
+/// Group-flavor of the chat drawer's `_sessionSwitchTile`. Same shape;
+/// captures `GroupChatController` instead of `ChatPageController`. Top-level
+/// so every section part (Video, Image, Web, Names) can share it without
+/// each having to redeclare the helper.
+// ignore: qcheck/avoid_returning_widgets
+Widget _sessionSwitchTile({
+  required GroupChatController controller,
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required bool Function(ChatSession) read,
+  required void Function(bool) write,
+}) {
+  return ListenableBuilder(
+    listenable: controller,
+    builder: (context, _) => DrawerSwitchTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: read(controller.selectedChat),
+      onChanged: write,
+    ),
+  );
 }
 
 /// Sections in the group drawer that have an expandable "advanced" group.
 /// Storage keys are prefixed `group_${name}` to avoid sharing expand state
 /// with the 1:1 chat drawer's identically-named sections.
-enum _GroupSectionEnum { chat, speech, video }
+enum _GroupSectionEnum { chat, speech, video, image }

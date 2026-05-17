@@ -87,7 +87,7 @@ class GroupChatController extends BaseChatViewController
   final String _userName;
 
   final GroupFile _groupFile;
-  final ChatSession _session;
+  ChatSession _session;
 
   bool _isAutoChatActive = false;
 
@@ -248,9 +248,17 @@ class GroupChatController extends BaseChatViewController
     bool? isNsfw,
     bool? isScenario,
     bool? removeTrailingSentences,
+    bool? imageNsfwAllowed,
+    bool? imageToolSelfieAllowed,
+    bool? imageToolSelfieCaptionsAllowed,
+    bool? imagePromptReview,
+    bool? imageToolPromptReview,
     bool? videoNsfwAllowed,
     bool? videoToolSendAllowed,
     bool? videoPromptReview,
+    bool? webToolFetchAllowed,
+    bool? webToolFetchReview,
+    bool? nameToolSuggestAllowed,
   }) {
     if (isDisposed) return;
     if (isNsfw != null) _session.isNsfw = isNsfw;
@@ -259,18 +267,124 @@ class GroupChatController extends BaseChatViewController
       _session.removeTrailingSentences = removeTrailingSentences;
     }
     final touchesConfigMedia =
+        imageNsfwAllowed != null ||
+        imageToolSelfieAllowed != null ||
+        imageToolSelfieCaptionsAllowed != null ||
+        imagePromptReview != null ||
+        imageToolPromptReview != null ||
         videoNsfwAllowed != null ||
         videoToolSendAllowed != null ||
-        videoPromptReview != null;
+        videoPromptReview != null ||
+        webToolFetchAllowed != null ||
+        webToolFetchReview != null ||
+        nameToolSuggestAllowed != null;
     if (touchesConfigMedia) {
       final cm = _session.configMedia ??= ConfigMediaSession();
+      if (imageNsfwAllowed != null) cm.imageNsfwAllowed = imageNsfwAllowed;
+      if (imageToolSelfieAllowed != null) {
+        cm.imageToolSelfieAllowed = imageToolSelfieAllowed;
+      }
+      if (imageToolSelfieCaptionsAllowed != null) {
+        cm.imageToolSelfieCaptionsAllowed = imageToolSelfieCaptionsAllowed;
+      }
+      if (imagePromptReview != null) cm.imagePromptReview = imagePromptReview;
+      if (imageToolPromptReview != null) {
+        cm.imageToolPromptReview = imageToolPromptReview;
+      }
       if (videoNsfwAllowed != null) cm.videoNsfwAllowed = videoNsfwAllowed;
       if (videoToolSendAllowed != null) {
         cm.videoToolSendAllowed = videoToolSendAllowed;
       }
       if (videoPromptReview != null) cm.videoPromptReview = videoPromptReview;
+      if (webToolFetchAllowed != null) {
+        cm.webToolFetchAllowed = webToolFetchAllowed;
+      }
+      if (webToolFetchReview != null) {
+        cm.webToolFetchReview = webToolFetchReview;
+      }
+      if (nameToolSuggestAllowed != null) {
+        cm.nameToolSuggestAllowed = nameToolSuggestAllowed;
+      }
     }
     _saveSession();
+    notifyListeners();
+  }
+
+  /// Group flavor of `ChatPageController.promptNewChat`. If the current
+  /// session has any messages, prompts a 3-way dialog (Cancel / Delete
+  /// Current / Keep Current); on Delete, removes the current session via
+  /// the service; then creates a fresh group session, persists it, and
+  /// swaps `_session` to it. No assistant-mode branch — group sessions
+  /// aren't assistant chats.
+  Future<void> promptNewChat(BuildContext context) async {
+    if (_session.messages.isNotEmpty) {
+      final action = await showDialog<NewChatPromptActionEnum>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('New Chat'),
+          content: const Text(
+            'Would you like to delete the current chat or keep it in your history?',
+          ),
+          actions: [
+            TextButton(
+              key: const Key('dialog-cancel'),
+              onPressed: () =>
+                  Navigator.pop(context, NewChatPromptActionEnum.cancel),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              key: const Key('new-chat-delete-current'),
+              onPressed: () => Navigator.pop(
+                context,
+                NewChatPromptActionEnum.deleteCurrent,
+              ),
+              child: Text(
+                'Delete Current',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
+            FilledButton(
+              key: const Key('dialog-confirm'),
+              onPressed: () =>
+                  Navigator.pop(context, NewChatPromptActionEnum.keepCurrent),
+              child: const Text('Keep Current'),
+            ),
+          ],
+        ),
+      );
+
+      if (isDisposed) return;
+
+      switch (action) {
+        case null:
+        case NewChatPromptActionEnum.cancel:
+          return;
+        case NewChatPromptActionEnum.deleteCurrent:
+          await _groupChatService.deleteChat(_groupFile.id, _session.id);
+        case NewChatPromptActionEnum.keepCurrent:
+          break;
+      }
+    }
+
+    final chatPresetId =
+        _settingsService.settings.domainPresetIds[LlmProviderDomainEnum.chat] ??
+        '';
+    final newSession = _groupChatService.createChat(
+      groupFile: _groupFile,
+      chatPresetId: chatPresetId,
+      userName: _userName,
+    );
+    // Reset session-scoped state before swapping — mirrors [clearChat]'s
+    // cleanup. Without this the new empty session inherits the previous
+    // last-speaker (skews image-gen target) and any in-flight auto-chat
+    // loop keeps generating into the fresh session.
+    stopAutoChat();
+    _lastSpeakerId = null;
+    streamingContent.value = '';
+    unawaited(_groupChatService.updateChat(_groupFile.id, newSession));
+    _session = newSession;
     notifyListeners();
   }
 

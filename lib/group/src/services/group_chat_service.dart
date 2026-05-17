@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/models/chat_group.dart' show ChatGroup;
+import 'package:cardwave/group/src/models/group_data.dart' show GroupData;
 import 'package:cardwave/group/src/models/group_file.dart' show GroupFile;
 import 'package:cardwave/group/src/services/group_file_service.dart'
     show GroupFileService;
@@ -34,6 +35,37 @@ class GroupChatService extends ChangeNotifier {
   );
 
   String _folderFor(String groupId) => chatsFolderFor(groupId);
+
+  /// Builds an empty [ChatSession] for a group. Groups have multiple
+  /// characters with no single firstMes to project, so the session starts
+  /// with no messages — first activation fills the conversation.
+  /// Caller persists via [updateChat] or [flushChat].
+  ChatSession createChat({
+    required GroupFile groupFile,
+    required String chatPresetId,
+    required String userName,
+  }) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return ChatSession(
+      id: 'group_$now',
+      ownerId: groupFile.id,
+      modelPresetId: chatPresetId,
+      created: now,
+      lastActive: now,
+      name: 'Group Chat',
+      isStreaming: true,
+      isNsfw: false,
+      isScenario: false,
+      removeTrailingSentences: false,
+      personaName: userName,
+      personaDescription: '',
+      activeStickies: {},
+      activeCooldowns: {},
+      localVariables: {},
+      messages: [],
+      groupData: GroupData(),
+    );
+  }
 
   Future<ChatSession?> getLatestChatForGroup(String groupId) =>
       _ioChat.getLatestChat(_folderFor(groupId));
