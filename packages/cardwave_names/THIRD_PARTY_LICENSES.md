@@ -29,21 +29,6 @@ in line with the underlying licenses.
 - **License**: MIT — Copyright © 2025 Marcus Lane. See the MIT notice at the bottom of this file.
 - **Used for**: cyberpunk handles with affiliation / class metadata.
 
-### bradleynelson/elf-name-generator
-- **URL**: https://github.com/bradleynelson/elf-name-generator
-- **License**: MIT — Copyright © 2025 Brad Nelson. See the MIT notice at the bottom of this file.
-- **Used for**: Elf / Dwarf / Orc / Halfling / Gnome name components.
-
-### FyefoxxM/fantasy-name-generator
-- **URL**: https://github.com/FyefoxxM/fantasy-name-generator
-- **License**: MIT — Copyright © 2025 FyefoxxM. See the MIT notice at the bottom of this file.
-- **Used for**: race-specific syllable pools (Elf / Dwarf / Orc / Human).
-
-### seiyria/fantastical
-- **URL**: https://github.com/seiyria/fantastical
-- **License**: MIT — Copyright © 2017 Kyle J. Kemp. See the MIT notice at the bottom of this file.
-- **Used for**: Goblin / Demon / Angel / Fae / Dragon name pools.
-
 ### kraihn/dragon-names
 - **URL**: https://github.com/kraihn/dragon-names
 - **License**: MIT — Copyright © 2015 Jared Dickson. See the MIT notice at the bottom of this file.
@@ -53,6 +38,16 @@ in line with the underlying licenses.
 - **URL**: https://github.com/repushko/mythology_names_dataset
 - **License**: CC0 1.0 Universal (public domain) — see https://creativecommons.org/publicdomain/zero/1.0/
 - **Used for**: 4096 names by pantheon (Greek / Norse / Egyptian / Hindu / Slavic / etc.).
+
+### ironarachne/namegen
+- **URL**: https://github.com/ironarachne/namegen
+- **License**: Apache-2.0 — see https://www.apache.org/licenses/LICENSE-2.0
+- **Used for**: 38 cultures + dwarf / elf / fantasy first + last names, baked into Go source as `[]string{}` arrays.
+
+### dariusk/corpora
+- **URL**: https://github.com/dariusk/corpora
+- **License**: CC0 1.0 Universal (public domain) — see https://creativecommons.org/publicdomain/zero/1.0/
+- **Used for**: public-domain humans (firstNames, neutralNames, country-specific name lists) + mythology entries (greek_gods, greek_titans, greek_monsters, norse_gods, egyptian_gods, roman_deities, hebrew_god, lovecraft).
 
 ## MIT License notice (applies to all MIT-licensed corpora above)
 
