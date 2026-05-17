@@ -180,6 +180,11 @@ ConfigMediaResolved resolveMedia({
         characterConfig?.webToolFetchAllowed ??
         false,
     webToolFetchReview: sessionConfig?.webToolFetchReview ?? false,
+    // --- Names ---
+    nameToolSuggestAllowed:
+        sessionConfig?.nameToolSuggestAllowed ??
+        characterConfig?.nameToolSuggestAllowed ??
+        false,
   );
 }
 

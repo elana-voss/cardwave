@@ -41,6 +41,7 @@ ConfigMediaCharacter _$ConfigMediaCharacterFromJson(
   ttsVoiceId: json['tts_voice_id'] as String?,
   ttsLanguageCode: json['tts_language_code'] as String?,
   webToolFetchAllowed: json['web_tool_fetch_allowed'] as bool?,
+  nameToolSuggestAllowed: json['name_tool_suggest_allowed'] as bool?,
 );
 
 Map<String, dynamic> _$ConfigMediaCharacterToJson(
@@ -64,6 +65,7 @@ Map<String, dynamic> _$ConfigMediaCharacterToJson(
   'tts_voice_id': ?instance.ttsVoiceId,
   'tts_language_code': ?instance.ttsLanguageCode,
   'web_tool_fetch_allowed': ?instance.webToolFetchAllowed,
+  'name_tool_suggest_allowed': ?instance.nameToolSuggestAllowed,
 };
 
 ConfigMediaSession _$ConfigMediaSessionFromJson(Map<String, dynamic> json) =>
@@ -88,6 +90,7 @@ ConfigMediaSession _$ConfigMediaSessionFromJson(Map<String, dynamic> json) =>
       ttsLanguageCode: json['tts_language_code'] as String?,
       webToolFetchAllowed: json['web_tool_fetch_allowed'] as bool?,
       webToolFetchReview: json['web_tool_fetch_review'] as bool?,
+      nameToolSuggestAllowed: json['name_tool_suggest_allowed'] as bool?,
     );
 
 Map<String, dynamic> _$ConfigMediaSessionToJson(ConfigMediaSession instance) =>
@@ -112,4 +115,5 @@ Map<String, dynamic> _$ConfigMediaSessionToJson(ConfigMediaSession instance) =>
       'tts_language_code': ?instance.ttsLanguageCode,
       'web_tool_fetch_allowed': ?instance.webToolFetchAllowed,
       'web_tool_fetch_review': ?instance.webToolFetchReview,
+      'name_tool_suggest_allowed': ?instance.nameToolSuggestAllowed,
     };

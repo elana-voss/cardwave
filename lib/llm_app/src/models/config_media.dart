@@ -62,6 +62,7 @@ class ConfigMediaCharacter {
     String? ttsVoiceId,
     String? ttsLanguageCode,
     this.webToolFetchAllowed,
+    this.nameToolSuggestAllowed,
   }) : _imagePresetId = imagePresetId,
        _imageAspectRatioId = imageAspectRatioId,
        _videoPresetId = videoPresetId,
@@ -156,6 +157,13 @@ class ConfigMediaCharacter {
   /// resolved flag is true. Mirror of [imageToolSelfieAllowed].
   bool? webToolFetchAllowed;
 
+  // --- Names ---
+
+  /// Lets the chat model call the `suggest_name` tool when the resolved
+  /// flag is true. Mirror of [imageToolSelfieAllowed]; fed into the
+  /// resolved flag with session > character > false.
+  bool? nameToolSuggestAllowed;
+
   Map<String, dynamic> toJson() => _$ConfigMediaCharacterToJson(this);
 }
 
@@ -196,6 +204,7 @@ class ConfigMediaSession {
     String? ttsLanguageCode,
     this.webToolFetchAllowed,
     this.webToolFetchReview,
+    this.nameToolSuggestAllowed,
   }) : _imagePresetId = imagePresetId,
        _imageAspectRatioId = imageAspectRatioId,
        _videoPresetId = videoPresetId,
@@ -288,6 +297,13 @@ class ConfigMediaSession {
   /// fetch is a per-chat trust call.
   bool? webToolFetchReview;
 
+  // --- Names ---
+
+  /// Lets the chat model call the `suggest_name` tool when the resolved
+  /// flag is true. Mirror of [imageToolSelfieAllowed]; fed into the
+  /// resolved flag with session > character > false.
+  bool? nameToolSuggestAllowed;
+
   Map<String, dynamic> toJson() => _$ConfigMediaSessionToJson(this);
 }
 
@@ -338,6 +354,8 @@ class ConfigMediaResolved {
     // --- Web ---
     this.webToolFetchAllowed = false,
     this.webToolFetchReview = false,
+    // --- Names ---
+    this.nameToolSuggestAllowed = false,
   });
 
   // --- Image ---
@@ -368,6 +386,9 @@ class ConfigMediaResolved {
   // --- Web ---
   final bool webToolFetchAllowed;
   final bool webToolFetchReview;
+
+  // --- Names ---
+  final bool nameToolSuggestAllowed;
 
   /// Projects the TTS slice into a `ConfigTts`. Caller must have verified
   /// `ttsPreset != null`; the resolver guarantees the secondary fields are

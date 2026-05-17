@@ -27,6 +27,7 @@ part 'widgets/workspace_page/workspace_end_drawer_display.dart';
 part 'widgets/workspace_page/workspace_end_drawer_editing.dart';
 part 'widgets/workspace_page/workspace_end_drawer_export.dart';
 part 'widgets/workspace_page/workspace_end_drawer_image.dart';
+part 'widgets/workspace_page/workspace_end_drawer_names.dart';
 part 'widgets/workspace_page/workspace_end_drawer_speech.dart';
 part 'widgets/workspace_page/workspace_end_drawer_video.dart';
 part 'widgets/workspace_page/workspace_end_drawer_web.dart';

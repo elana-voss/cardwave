@@ -335,6 +335,8 @@ class MediaSettingsController {
             cm.videoToolSendAllowed = value;
           case MediaSettingsGridField.webToolFetchAllowed:
             cm.webToolFetchAllowed = value;
+          case MediaSettingsGridField.nameToolSuggestAllowed:
+            cm.nameToolSuggestAllowed = value;
           default:
             return;
         }
@@ -356,6 +358,8 @@ class MediaSettingsController {
             cm.videoToolSendAllowed = value;
           case MediaSettingsGridField.webToolFetchAllowed:
             cm.webToolFetchAllowed = value;
+          case MediaSettingsGridField.nameToolSuggestAllowed:
+            cm.nameToolSuggestAllowed = value;
           default:
             return;
         }
@@ -496,6 +500,8 @@ class MediaSettingsController {
         return cm.videoToolSendAllowed;
       case MediaSettingsGridField.webToolFetchAllowed:
         return cm.webToolFetchAllowed;
+      case MediaSettingsGridField.nameToolSuggestAllowed:
+        return cm.nameToolSuggestAllowed;
       // ignore: no_default_cases
       default:
         return null;
@@ -521,6 +527,8 @@ class MediaSettingsController {
         return cm.videoToolSendAllowed;
       case MediaSettingsGridField.webToolFetchAllowed:
         return cm.webToolFetchAllowed;
+      case MediaSettingsGridField.nameToolSuggestAllowed:
+        return cm.nameToolSuggestAllowed;
       // ignore: no_default_cases
       default:
         return null;

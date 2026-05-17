@@ -201,6 +201,9 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                     _WorkspaceEndDrawerWeb(
                       visibleChatController: visibleChatController,
                     ),
+                    _WorkspaceEndDrawerNames(
+                      visibleChatController: visibleChatController,
+                    ),
                   ]
                   // ------------------------------------------------------------------
                   // EDITOR

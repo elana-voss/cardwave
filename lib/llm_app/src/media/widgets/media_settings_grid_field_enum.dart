@@ -1,4 +1,4 @@
-/// Identifies one of the 15 multi-layer media settings rendered in the
+/// Identifies one of the 16 multi-layer media settings rendered in the
 /// grid. Order is the render order. Each row carries its label, cell type,
 /// and whether the App layer participates (only the three model-preset
 /// rows do).
@@ -87,6 +87,11 @@ enum MediaSettingsGridField {
     label: 'Allow web fetch',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
+  ),
+  nameToolSuggestAllowed(
+    label: 'Can suggest NPC names',
+    cellType: MediaSettingsGridCellType.tristate,
+    hasAppLayer: false,
   );
 
   const MediaSettingsGridField({
@@ -107,6 +112,7 @@ enum MediaSettingsGridField {
     if (n.startsWith('video')) return 'Video';
     if (n.startsWith('tts')) return 'TTS';
     if (n.startsWith('web')) return 'Web';
+    if (n.startsWith('nameTool')) return 'Names';
     return n;
   }
 }

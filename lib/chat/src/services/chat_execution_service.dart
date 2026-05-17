@@ -105,7 +105,8 @@ class ChatExecutionService {
             if (resolvedMedia.imageToolSelfieAllowed) SendSelfieTool.toolName,
             if (resolvedMedia.videoToolSendAllowed) SendVideoTool.toolName,
             if (resolvedMedia.webToolFetchAllowed) FetchWebsiteTool.toolName,
-            SuggestNameTool.toolName,
+            if (resolvedMedia.nameToolSuggestAllowed)
+              SuggestNameTool.toolName,
           ];
           final enabledTools = model.capabilities.toolCalling
               ? toolRegistry.enabledFor(allowedNames)

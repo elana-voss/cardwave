@@ -293,6 +293,7 @@ class ChatPageController extends ChangeNotifier {
     bool? videoToolSendAllowed,
     bool? webToolFetchAllowed,
     bool? webToolFetchReview,
+    bool? nameToolSuggestAllowed,
   }) async {
     if (_selectedChat == null || _isDisposed) return;
 
@@ -314,7 +315,8 @@ class ChatPageController extends ChangeNotifier {
         imageToolSelfieCaptionsAllowed != null ||
         videoToolSendAllowed != null ||
         webToolFetchAllowed != null ||
-        webToolFetchReview != null;
+        webToolFetchReview != null ||
+        nameToolSuggestAllowed != null;
     if (touchesConfigMedia) {
       final cm = _selectedChat!.configMedia ??= ConfigMediaSession();
       if (imageNsfwAllowed != null) cm.imageNsfwAllowed = imageNsfwAllowed;
@@ -338,6 +340,9 @@ class ChatPageController extends ChangeNotifier {
       }
       if (webToolFetchReview != null) {
         cm.webToolFetchReview = webToolFetchReview;
+      }
+      if (nameToolSuggestAllowed != null) {
+        cm.nameToolSuggestAllowed = nameToolSuggestAllowed;
       }
     }
 
