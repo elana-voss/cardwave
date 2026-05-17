@@ -7,6 +7,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/grid.dart';
+import 'package:cardwave/main.dart' as app;
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -402,6 +403,115 @@ Future<void> awaitGridReady(
     'Character grid did not render any cards within '
     '${timeout.inSeconds}s',
   );
+}
+
+/// Boots the app into the Cass chat. Wipes app data, seeds the Grok
+/// recovery file, launches `app.main()`, waits for the provider tree
+/// and grid, taps the Cass tile, and waits for the chat to settle.
+/// Caller is responsible for the `markTestSkipped` gate before invoking.
+Future<void> bootCassChat(WidgetTester tester) async {
+  await wipeAppData();
+  await seedGrokRecovery();
+  app.main();
+  await awaitAppReady(tester);
+  await awaitGridReady(tester);
+  await tester.tap(findCharacterTile(kCassName));
+  await tester.pumpAndSettle(const Duration(seconds: 2));
+}
+
+/// Opens the chat end-drawer, drags the named toggle into view, taps it
+/// on, and closes the drawer. The drawer is flat (no section headers
+/// to expand) — toggles are addressed by label only. Closing via
+/// Android system-back so the chat input becomes hit-testable again.
+Future<void> enableToolViaDrawer(
+  WidgetTester tester, {
+  required String toggleLabel,
+}) async {
+  await tester.tap(find.byKey(const Key('appbar-end-drawer')));
+  await tester.pumpAndSettle();
+
+  final toggle = find.text(toggleLabel);
+  await tester.dragUntilVisible(
+    toggle,
+    find.byType(Scrollable).last,
+    const Offset(0, -100),
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(toggle);
+  await tester.pumpAndSettle();
+
+  await tester.binding.handlePopRoute();
+  await tester.pumpAndSettle(const Duration(seconds: 1));
+}
+
+/// Walks the last message's active swipe, filters tool-call records by
+/// name, and asserts the model fired the tool at least once. Returns
+/// the first matching record so callers can chain assertions on
+/// `success` / `resultData` / `errorMessage`.
+///
+/// Callers must guarantee the tool's record lives on the terminal
+/// message; tools that write to non-terminal messages (e.g. those
+/// that spawn a separate placeholder bubble) need
+/// [assertToolFiredOnAnyMessage] instead.
+ChatToolCallRecord assertToolFiredOnLastMessage(
+  BaseChatViewController controller, {
+  required String toolName,
+}) {
+  final lastMessage = controller.messages.last;
+  expect(
+    lastMessage.role == ChatRoleEnum.assistant ||
+        lastMessage.role == ChatRoleEnum.character,
+    isTrue,
+    reason:
+        'last message should be the AI reply, got role=${lastMessage.role}',
+  );
+  final activeSwipe = lastMessage.swipes[lastMessage.swipeIndex];
+  final records = activeSwipe.toolCalls
+      .where((r) => r.toolName == toolName)
+      .toList();
+  expect(
+    records,
+    isNotEmpty,
+    reason:
+        'model should have called $toolName at least once; '
+        'all recorded tool calls: '
+        '${activeSwipe.toolCalls.map((r) => r.toolName).toList()}',
+  );
+  return records.first;
+}
+
+/// Same as [assertToolFiredOnLastMessage] but scans every message's
+/// active swipe — for tools whose record lands on a non-terminal
+/// message (e.g. `send_video` creates a separate video bubble that
+/// follows the assistant reply carrying the record).
+ChatToolCallRecord assertToolFiredOnAnyMessage(
+  BaseChatViewController controller, {
+  required String toolName,
+}) {
+  for (final m in controller.messages) {
+    if (m.swipes.isEmpty) continue;
+    final active = m.swipes[m.swipeIndex];
+    for (final r in active.toolCalls) {
+      if (r.toolName == toolName) return r;
+    }
+  }
+  fail(
+    'model should have called $toolName at least once; '
+    'recorded tool calls across all messages: '
+    '${controller.messages.expand((m) => m.swipes.expand((s) => s.toolCalls.map((r) => r.toolName))).toList()}',
+  );
+}
+
+/// Types the prompt into the chat composer, dismisses the IME so the
+/// send button is hit-testable, taps send, and pumps a frame. The
+/// caller is responsible for awaiting the reply (e.g. via
+/// [awaitChatIdle]).
+Future<void> sendChatPrompt(WidgetTester tester, String prompt) async {
+  await tester.enterText(find.byKey(const Key('chat-input')).first, prompt);
+  await tester.pump();
+  await dismissKeyboard(tester);
+  await tester.tap(find.byKey(const Key('chat-send')));
+  await tester.pump();
 }
 
 /// Waits until the chat controller has stopped generating and the last

@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:cardwave/chat/chat.dart';
-import 'package:cardwave/main.dart' as app;
 import 'package:cardwave_names/cardwave_names.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
@@ -37,41 +35,9 @@ void main() {
         return;
       }
 
-      await wipeAppData();
-      await seedGrokRecovery();
+      await bootCassChat(tester);
+      await enableToolViaDrawer(tester, toggleLabel: 'Suggest NPC Names');
 
-      app.main();
-      await awaitAppReady(tester);
-      await awaitGridReady(tester);
-
-      // Enter Cass chat.
-      await tester.tap(findCharacterTile(kCassName));
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Open the end-drawer.
-      await tester.tap(find.byKey(const Key('appbar-end-drawer')));
-      await tester.pumpAndSettle();
-
-      // 'Names' is the bottom-most section. DrawerSectionHeader is a static
-      // label (no tap-to-expand), so we drag the toggle into view and tap
-      // it directly — no separate header tap is needed.
-      final allowTile = find.text('Suggest NPC Names');
-      await tester.dragUntilVisible(
-        allowTile,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(allowTile);
-      await tester.pumpAndSettle();
-
-      // Close the drawer (Android system-back) so the chat input is
-      // hit-testable again — the drawer overlay would intercept the send
-      // button tap otherwise.
-      await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      // Sanity: the session reflects the toggle.
       final controller = tester
           .element(find.byType(ChatView))
           .read<BaseChatViewController>();
@@ -89,45 +55,17 @@ void main() {
           'Use the suggest_name tool, then introduce one new NPC walking '
           'into the scene right now. Keep the introduction to two sentences '
           'and use the exact name the tool returns.';
-      await tester.enterText(
-        find.byKey(const Key('chat-input')).first,
-        userPrompt,
-      );
-      await tester.pump();
-      await dismissKeyboard(tester);
-      await tester.tap(find.byKey(const Key('chat-send')));
-      await tester.pump();
+      await sendChatPrompt(tester, userPrompt);
 
       // Manual tool loop: iter 1 emits the call, picker runs locally,
       // iter 2 narrates. 90s covers both LLM round-trips with headroom
       // for slow Grok variants.
       await awaitChatIdle(tester, timeout: const Duration(seconds: 90));
 
-      // Last message: assistant reply with the persisted tool-call
-      // record on its active swipe.
-      final lastMessage = controller.messages.last;
-      expect(
-        lastMessage.role == ChatRoleEnum.assistant ||
-            lastMessage.role == ChatRoleEnum.character,
-        isTrue,
-        reason:
-            'last message should be the AI reply, '
-            'got role=${lastMessage.role}',
+      final pick = assertToolFiredOnLastMessage(
+        controller,
+        toolName: SuggestNameTool.toolName,
       );
-      final activeSwipe = lastMessage.swipes[lastMessage.swipeIndex];
-      final pickRecords = activeSwipe.toolCalls
-          .where((r) => r.toolName == SuggestNameTool.toolName)
-          .toList();
-      expect(
-        pickRecords,
-        isNotEmpty,
-        reason:
-            'model should have called suggest_name at least once; '
-            'all recorded tool calls: '
-            '${activeSwipe.toolCalls.map((r) => r.toolName).toList()}',
-      );
-
-      final pick = pickRecords.first;
       expect(
         pick.success,
         isTrue,
@@ -150,6 +88,7 @@ void main() {
 
       // The picker is deterministic per filter slice; if the LLM used the
       // tool result, the chosen name must appear in the reply.
+      final lastMessage = controller.messages.last;
       expect(
         lastMessage.content.toLowerCase(),
         contains(firstName.toLowerCase()),

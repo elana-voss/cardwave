@@ -1,7 +1,5 @@
 import 'package:cardwave/chat/chat.dart';
-import 'package:cardwave/main.dart' as app;
 import 'package:cardwave_llm/cardwave_llm.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
@@ -41,51 +39,12 @@ void main() {
         return;
       }
 
-      await wipeAppData();
-      await seedGrokRecovery();
-
-      app.main();
-      await awaitAppReady(tester);
-      await awaitGridReady(tester);
-
-      // Enter Cass chat.
-      await tester.tap(findCharacterTile(kCassName));
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Open the end-drawer.
-      await tester.tap(find.byKey(const Key('appbar-end-drawer')));
-      await tester.pumpAndSettle();
-
-      // Image is the second-to-last ExpansionTile in the drawer (order:
-      // Chat → Chat Theme → Speech → Video → Image → Web), below the
-      // fold on a phone viewport.
-      final imageHeader = find.text('Image');
-      await tester.dragUntilVisible(
-        imageHeader,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
+      await bootCassChat(tester);
+      await enableToolViaDrawer(
+        tester,
+        toggleLabel: 'Character Can Send Selfies',
       );
-      await tester.pumpAndSettle();
-      await tester.tap(imageHeader);
-      await tester.pumpAndSettle();
 
-      // Toggle "Character Can Send Selfies".
-      final selfieToggle = find.text('Character Can Send Selfies');
-      await tester.dragUntilVisible(
-        selfieToggle,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(selfieToggle);
-      await tester.pumpAndSettle();
-
-      // Close the drawer (Android system-back) so the chat input is
-      // hit-testable again.
-      await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      // Sanity: the session reflects the toggle.
       final controller = tester
           .element(find.byType(ChatView))
           .read<BaseChatViewController>();
@@ -103,44 +62,17 @@ void main() {
       const userPrompt =
           'Please use the send_selfie tool to share a selfie '
           'showing how you feel right now.';
-      await tester.enterText(
-        find.byKey(const Key('chat-input')).first,
-        userPrompt,
-      );
-      await tester.pump();
-      await dismissKeyboard(tester);
-      await tester.tap(find.byKey(const Key('chat-send')));
-      await tester.pump();
+      await sendChatPrompt(tester, userPrompt);
 
       // Manual loop: iter 1 LLM call + image generation in dispatch.
       // Image gen on Grok can take 30-60s; chat is "idle" only after
       // dispatch completes and Complete fires.
       await awaitChatIdle(tester, timeout: const Duration(seconds: 120));
 
-      // Tool-call record on the last assistant message's active swipe.
-      final lastMessage = controller.messages.last;
-      expect(
-        lastMessage.role == ChatRoleEnum.assistant ||
-            lastMessage.role == ChatRoleEnum.character,
-        isTrue,
-        reason:
-            'last message should be the AI reply, '
-            'got role=${lastMessage.role}',
+      final selfie = assertToolFiredOnLastMessage(
+        controller,
+        toolName: SendSelfieTool.toolName,
       );
-      final activeSwipe = lastMessage.swipes[lastMessage.swipeIndex];
-      final selfieRecords = activeSwipe.toolCalls
-          .where((r) => r.toolName == SendSelfieTool.toolName)
-          .toList();
-      expect(
-        selfieRecords,
-        isNotEmpty,
-        reason:
-            'model should have called send_selfie at least once; '
-            'all recorded tool calls: '
-            '${activeSwipe.toolCalls.map((r) => r.toolName).toList()}',
-      );
-
-      final selfie = selfieRecords.first;
       expect(
         selfie.success,
         isTrue,
@@ -161,6 +93,8 @@ void main() {
       // The image must have actually attached to the bubble — proves
       // the dispatch closure drove generateImage end-to-end, not just
       // logged the call.
+      final lastMessage = controller.messages.last;
+      final activeSwipe = lastMessage.swipes[lastMessage.swipeIndex];
       expect(
         activeSwipe.attachedImages,
         isNotEmpty,

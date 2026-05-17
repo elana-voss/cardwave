@@ -1,7 +1,5 @@
 import 'package:cardwave/chat/chat.dart';
-import 'package:cardwave/main.dart' as app;
 import 'package:cardwave_llm/cardwave_llm.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
@@ -41,51 +39,12 @@ void main() {
         return;
       }
 
-      await wipeAppData();
-      await seedGrokRecovery();
-
-      app.main();
-      await awaitAppReady(tester);
-      await awaitGridReady(tester);
-
-      // Enter Cass chat.
-      await tester.tap(findCharacterTile(kCassName));
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Open the end-drawer.
-      await tester.tap(find.byKey(const Key('appbar-end-drawer')));
-      await tester.pumpAndSettle();
-
-      // Video is the third-to-last ExpansionTile (order: Chat → Chat
-      // Theme → Speech → Video → Image → Web), below the fold on a
-      // phone viewport.
-      final videoHeader = find.text('Video');
-      await tester.dragUntilVisible(
-        videoHeader,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
+      await bootCassChat(tester);
+      await enableToolViaDrawer(
+        tester,
+        toggleLabel: 'Character Can Send Videos',
       );
-      await tester.pumpAndSettle();
-      await tester.tap(videoHeader);
-      await tester.pumpAndSettle();
 
-      // Toggle "Character Can Send Videos".
-      final videoToggle = find.text('Character Can Send Videos');
-      await tester.dragUntilVisible(
-        videoToggle,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(videoToggle);
-      await tester.pumpAndSettle();
-
-      // Close the drawer (Android system-back) so the chat input is
-      // hit-testable again.
-      await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      // Sanity: the session reflects the toggle.
       final controller = tester
           .element(find.byType(ChatView))
           .read<BaseChatViewController>();
@@ -103,14 +62,7 @@ void main() {
       const userPrompt =
           'Please use the send_video tool to share a short clip '
           'showing how you feel right now.';
-      await tester.enterText(
-        find.byKey(const Key('chat-input')).first,
-        userPrompt,
-      );
-      await tester.pump();
-      await dismissKeyboard(tester);
-      await tester.tap(find.byKey(const Key('chat-send')));
-      await tester.pump();
+      await sendChatPrompt(tester, userPrompt);
 
       // Video gen runs inside the dispatch loop and can take 2–10 min on
       // Grok. The durable success signal is a videoPath landing on some
@@ -138,32 +90,15 @@ void main() {
             'within 8 minutes',
       );
 
-      // Tool-call record assertion: send_video's record lands on the
-      // assistant text reply's active swipe (the bubble that emitted
-      // the call), NOT on the separate video message that follows.
-      // Search every message's active swipe for the record.
-      ChatToolCallRecord? videoRecord;
-      for (final m in controller.messages) {
-        if (m.swipes.isEmpty) continue;
-        final active = m.swipes[m.swipeIndex];
-        for (final r in active.toolCalls) {
-          if (r.toolName == SendVideoTool.toolName) {
-            videoRecord = r;
-            break;
-          }
-        }
-        if (videoRecord != null) break;
-      }
-      expect(
-        videoRecord,
-        isNotNull,
-        reason:
-            'model should have called send_video at least once; '
-            'recorded tool calls across all messages: '
-            '${controller.messages.expand((m) => m.swipes.expand((s) => s.toolCalls.map((r) => r.toolName))).toList()}',
+      // send_video's record lands on the assistant text reply, NOT on
+      // the separate video bubble that follows — must scan every
+      // message rather than just the last.
+      final videoRecord = assertToolFiredOnAnyMessage(
+        controller,
+        toolName: SendVideoTool.toolName,
       );
       expect(
-        videoRecord!.success,
+        videoRecord.success,
         isTrue,
         reason:
             'send_video call should have succeeded; '
