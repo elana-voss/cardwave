@@ -56,12 +56,12 @@ class _DialogProgressState extends State<DialogProgress> {
         title: Text(widget.title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          spacing: 16,
           children: [
             ValueListenableBuilder<String>(
               valueListenable: widget.handle.message,
               builder: (ctx, msg, _) => Text(msg),
             ),
-            const SizedBox(height: 16),
             ValueListenableBuilder<double?>(
               valueListenable: widget.handle.progress,
               builder: (ctx, prog, _) => LinearProgressIndicator(value: prog),

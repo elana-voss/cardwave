@@ -270,6 +270,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             _EntryTopSection(
               entry: widget.entry,
@@ -279,7 +280,6 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
                 widget.onChanged();
               },
             ),
-            const SizedBox(height: 16),
             _EntryKeywordsSection(
               entry: widget.entry,
               controller: _controllers,
@@ -288,8 +288,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
                 widget.onChanged();
               },
             ),
-            if (_isAdvancedMode) ...[
-              const SizedBox(height: 16),
+            if (_isAdvancedMode)
               _EntryScanRow(
                 entry: widget.entry,
                 controller: _controllers,
@@ -298,8 +297,6 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
                   widget.onChanged();
                 },
               ),
-            ],
-            const SizedBox(height: 16),
             _EntryContentSection(
               content: _controllers.content,
               currentText: () => _controllers.content.text,
@@ -311,7 +308,6 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
               contextCard: widget.contextCard,
             ),
             if (_isAdvancedMode) ...[
-              const SizedBox(height: 16),
               _EntryRecursionRow(
                 entry: widget.entry,
                 onUpdate: () {
@@ -319,7 +315,6 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
                   widget.onChanged();
                 },
               ),
-              const SizedBox(height: 16),
               _EntryInclusionGroupRow(
                 entry: widget.entry,
                 controller: _controllers,
@@ -329,12 +324,9 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
                 },
               ),
             ],
-            const SizedBox(height: 16),
             _EntryTimedEffectsRow(controller: _controllers),
             if (_isAdvancedMode) ...[
-              const SizedBox(height: 16),
               _EntryFilterRow(controller: _controllers),
-              const SizedBox(height: 16),
               _EntryMatchingOptionsRow(
                 entry: widget.entry,
                 onUpdate: () {
@@ -364,12 +356,12 @@ class _EntryKeywordsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         TextFieldCard.singleLine(
           controller: controller.keys,
           label: 'Primary Keywords',
         ),
-        const SizedBox(height: 16),
         DropdownLabeled<int>(
           label: 'Logic',
           value: entry.selectiveLogic ?? 0,
@@ -384,7 +376,6 @@ class _EntryKeywordsSection extends StatelessWidget {
             onUpdate();
           },
         ),
-        const SizedBox(height: 16),
         TextFieldCard.singleLine(
           controller: controller.secondaryKeys,
           label: 'Optional Filter',
@@ -499,6 +490,7 @@ class _EntryInclusionGroupRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 8,
       children: [
         Align(
           alignment: Alignment.centerLeft,
@@ -512,7 +504,6 @@ class _EntryInclusionGroupRow extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
         ),
-        const SizedBox(height: 8),
         Wrap(
           spacing: 16,
           runSpacing: 16,
@@ -586,12 +577,12 @@ class _EntryFilterRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         TextFieldCard.singleLine(
           controller: controller.characterFilter,
           label: 'Filter to Characters or Tags',
         ),
-        const SizedBox(height: 16),
         TextFieldCard.singleLine(
           controller: controller.triggers,
           label: 'Filter to Generation Triggers',
@@ -610,12 +601,12 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         const Text(
           'Additional Matching Sources:',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 4,

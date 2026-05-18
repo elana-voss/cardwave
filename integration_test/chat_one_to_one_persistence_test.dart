@@ -72,7 +72,7 @@ void main() {
       );
 
       // Pop back to the grid via the chat appbar's leading button
-      // (Icons.grid_view_rounded → Navigator.pop, appbar_chat.dart:27-30).
+      // (Icons.grid_view_rounded → Navigator.pop, app_bar_chat.dart:27-30).
       await tester.tap(find.byIcon(Icons.grid_view_rounded));
       await tester.pumpAndSettle(const Duration(seconds: 2));
       expect(

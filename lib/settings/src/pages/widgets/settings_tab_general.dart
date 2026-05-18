@@ -55,6 +55,7 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      spacing: 16,
       children: [
         _MenuGroupCard(
           children: [
@@ -126,7 +127,6 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
         _MenuGroupCard(
           children: [
             ListTile(
@@ -157,7 +157,6 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
         FutureBuilder<PackageInfo>(
           future: _packageInfoFuture,
           builder: (context, snapshot) {

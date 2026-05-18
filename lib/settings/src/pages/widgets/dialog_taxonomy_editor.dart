@@ -328,6 +328,9 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
             // save indicator. On a narrow phone the previous single-row
             // layout squeezed the helper text into a ~80px column that
             // wrapped over 7 lines, pushing the toolbar buttons up.
+            // Single `SizedBox(8)`; other pairs in the Row are flush
+            // and would gain an unwanted gap.
+            // ignore: qcheck/prefer_spacing
             Row(
               children: [
                 Expanded(
@@ -527,6 +530,9 @@ class _GroupRowBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    // Single `SizedBox(6)` among 4 `_CompactIcon` siblings that are
+    // otherwise flush; `spacing:` would gap all of them.
+    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         IconButton(
@@ -660,9 +666,9 @@ class _DragFeedbackChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          spacing: 8,
           children: [
             Icon(icon, size: 16, color: theme.colorScheme.primary),
-            const SizedBox(width: 8),
             Text(label, style: theme.textTheme.bodyMedium),
           ],
         ),
@@ -764,6 +770,7 @@ class _GroupFormDialogState extends State<_GroupFormDialog> {
         width: 360,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          spacing: 12,
           children: [
             TextField(
               controller: _idController,
@@ -773,13 +780,11 @@ class _GroupFormDialogState extends State<_GroupFormDialog> {
               ),
               style: const TextStyle(fontFamily: 'monospace'),
             ),
-            const SizedBox(height: 12),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Display name'),
               autofocus: widget.initial != null,
             ),
-            const SizedBox(height: 12),
             TextField(
               controller: _explainController,
               decoration: const InputDecoration(

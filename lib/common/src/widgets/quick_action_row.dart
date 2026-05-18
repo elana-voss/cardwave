@@ -68,9 +68,9 @@ class _Tile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            spacing: 4,
             children: [
               Icon(icon, size: 20, color: iconColor),
-              const SizedBox(height: 4),
               Text(
                 action.label,
                 textAlign: TextAlign.center,

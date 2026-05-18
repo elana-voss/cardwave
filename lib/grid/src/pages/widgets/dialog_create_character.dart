@@ -86,12 +86,12 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             Text(
               'Create New Character',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 16),
             TextField(
               key: const Key('character-name-field'),
               controller: _nameController,

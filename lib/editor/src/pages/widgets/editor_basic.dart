@@ -91,6 +91,7 @@ class EditorBasicState extends State<EditorBasic> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8,
       children: [
         TextFieldCard.singleLine(
           controller: _nameController,
@@ -103,7 +104,6 @@ class EditorBasicState extends State<EditorBasic> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.singleLine(
           controller: _nicknameController,
           label: 'Nickname (CCv3)',
@@ -115,7 +115,6 @@ class EditorBasicState extends State<EditorBasic> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _descriptionController,
           label: 'Description',
@@ -127,7 +126,6 @@ class EditorBasicState extends State<EditorBasic> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _personalityController,
           label: 'Personality',
@@ -139,7 +137,6 @@ class EditorBasicState extends State<EditorBasic> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _scenarioController,
           label: 'Scenario',
@@ -151,7 +148,6 @@ class EditorBasicState extends State<EditorBasic> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _mesExampleController,
           label: 'Message Example',

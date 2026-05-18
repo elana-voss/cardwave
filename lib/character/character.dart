@@ -15,6 +15,7 @@ export 'src/models/taxonomy_data.dart';
 export 'src/models/taxonomy_group.dart';
 export 'src/models/taxonomy_tag.dart';
 export 'src/pages/widgets/dialog_character_prompt_prefix.dart';
+export 'src/pages/widgets/prompt_prefix_domain.dart';
 export 'src/repositories/character_repository.dart';
 export 'src/repositories/io_character.dart';
 export 'src/repositories/taxonomy_repository.dart';

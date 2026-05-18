@@ -278,9 +278,9 @@ class _ChatViewState extends State<ChatView> {
                                     key: Key('chat-menu-new-chat'),
                                     value: _ChatInputOptionEnum.newChat,
                                     child: Row(
+                                      spacing: 8,
                                       children: [
                                         Icon(Icons.add_comment, size: 20),
-                                        SizedBox(width: 8),
                                         Text('New Chat'),
                                       ],
                                     ),
@@ -291,9 +291,9 @@ class _ChatViewState extends State<ChatView> {
                                     value: _ChatInputOptionEnum.continueChat,
                                     enabled: isLastMessageAI,
                                     child: const Row(
+                                      spacing: 8,
                                       children: [
                                         Icon(Icons.fast_forward, size: 20),
-                                        SizedBox(width: 8),
                                         Text('Continue'),
                                       ],
                                     ),
@@ -304,9 +304,9 @@ class _ChatViewState extends State<ChatView> {
                                     value: _ChatInputOptionEnum.impersonate,
                                     enabled: isLastMessageAI,
                                     child: const Row(
+                                      spacing: 8,
                                       children: [
                                         Icon(Icons.person, size: 20),
-                                        SizedBox(width: 8),
                                         Text('Impersonate'),
                                       ],
                                     ),
@@ -316,9 +316,9 @@ class _ChatViewState extends State<ChatView> {
                                   value: _ChatInputOptionEnum.generateReply,
                                   enabled: isLastMessageUser,
                                   child: const Row(
+                                    spacing: 8,
                                     children: [
                                       Icon(Icons.chat_bubble_outline, size: 20),
-                                      SizedBox(width: 8),
                                       Text('Generate Reply'),
                                     ],
                                   ),
@@ -329,9 +329,9 @@ class _ChatViewState extends State<ChatView> {
                                     value: _ChatInputOptionEnum.improveInput,
                                     enabled: !isInputEmpty,
                                     child: const Row(
+                                      spacing: 8,
                                       children: [
                                         Icon(Icons.auto_fix_high, size: 20),
-                                        SizedBox(width: 8),
                                         Text('Improve Message'),
                                       ],
                                     ),

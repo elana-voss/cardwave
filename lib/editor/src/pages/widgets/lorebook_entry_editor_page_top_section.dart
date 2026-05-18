@@ -75,12 +75,12 @@ class _EntryTopSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         TextFieldCard.singleLine(
           controller: controller.comment,
           label: 'Title/Memo',
         ),
-        const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,
@@ -94,9 +94,9 @@ class _EntryTopSection extends StatelessWidget {
                   const DropdownMenuItem(
                     value: 'Constant',
                     child: Row(
+                      spacing: 8,
                       children: [
                         Icon(Icons.circle, color: Colors.blue),
-                        SizedBox(width: 8),
                         Expanded(child: Text('Constant')),
                       ],
                     ),
@@ -104,12 +104,12 @@ class _EntryTopSection extends StatelessWidget {
                   DropdownMenuItem(
                     value: 'Enabled',
                     child: Row(
+                      spacing: 8,
                       children: [
                         Icon(
                           Icons.circle,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        const SizedBox(width: 8),
                         const Expanded(child: Text('Enabled')),
                       ],
                     ),
@@ -117,12 +117,12 @@ class _EntryTopSection extends StatelessWidget {
                   DropdownMenuItem(
                     value: 'Disabled',
                     child: Row(
+                      spacing: 8,
                       children: [
                         Icon(
                           Icons.circle,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                        const SizedBox(width: 8),
                         const Expanded(child: Text('Disabled')),
                       ],
                     ),
@@ -130,9 +130,9 @@ class _EntryTopSection extends StatelessWidget {
                   const DropdownMenuItem(
                     value: 'Vectorized',
                     child: Row(
+                      spacing: 8,
                       children: [
                         Icon(Icons.link),
-                        SizedBox(width: 8),
                         Expanded(child: Text('Vectorized')),
                       ],
                     ),
@@ -163,7 +163,6 @@ class _EntryTopSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,

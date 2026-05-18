@@ -86,6 +86,9 @@ class _MissingProviderBanner extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          // Only one spacer in the Row; other adjacent child pairs are
+          // flush (0 gap) and would gain an unwanted 16px gap.
+          // ignore: qcheck/prefer_spacing
           child: Row(
             children: [
               Icon(

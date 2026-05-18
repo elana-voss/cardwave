@@ -1,3 +1,4 @@
+import 'package:cardwave/common/src/theme/no_transitions_builder.dart';
 import 'package:flutter/material.dart';
 
 /// Material 3 disabled-state alpha applied to foreground tokens like
@@ -105,17 +106,3 @@ final ThemeData compactDarkTheme = _buildBaseTheme(
   brightness: Brightness.dark,
 );
 
-class NoTransitionsBuilder extends PageTransitionsBuilder {
-  const NoTransitionsBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    return child;
-  }
-}

@@ -137,9 +137,9 @@ class _ChipWidget extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: 4,
         children: [
           Icon(spec.icon, size: 13, color: fg),
-          const SizedBox(width: 4),
           Text(
             spec.label,
             style: theme.textTheme.labelSmall?.copyWith(

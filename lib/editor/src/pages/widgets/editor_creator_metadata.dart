@@ -87,12 +87,12 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         TextFieldCard.singleLine(
           controller: _systemNameController,
           label: 'System Name (CCv3)',
         ),
-        const SizedBox(height: 16),
         Wrap(
           spacing: 16,
           runSpacing: 16,
@@ -113,7 +113,6 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
         TextFieldCard.multiLine(
           controller: _creatorNotesController,
           label: 'Creator Notes',
@@ -129,7 +128,6 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 16),
         TextFieldCard.multiLine(
           controller: _tagsController,
           label: 'Tags (Coma separated)',

@@ -101,15 +101,16 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                     return bTime.compareTo(aTime);
                   });
             return Column(
+              spacing: 8,
               children: [
                 Row(
+                  spacing: 8,
                   children: [
                     Expanded(
                       child: AppSearchField(
                         controller: _filterController.searchController,
                       ),
                     ),
-                    const SizedBox(width: 8),
                     ToggleButtons(
                       isSelected: [
                         _filterController.filterFavorites,
@@ -140,7 +141,6 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
                 Expanded(
                   child: ListView.builder(
                     itemCount: filteredCharacters.length,

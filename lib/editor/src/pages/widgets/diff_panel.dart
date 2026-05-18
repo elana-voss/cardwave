@@ -20,12 +20,12 @@ class DiffPanel extends StatelessWidget {
     final tokenText = tokenCount != null ? ' ($tokenCount Tokens)' : '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Text(
           '$title$tokenText',
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),

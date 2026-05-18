@@ -1,8 +1,8 @@
 import 'package:cardwave_llm/src/image/clients/image_http_client.dart';
-import 'package:cardwave_llm/src/image/clients/openai_compatible_image_client.dart';
-import 'package:cardwave_llm/src/image/clients/openrouter_image_client.dart';
+import 'package:cardwave_llm/src/image/clients/open_ai_compatible_image_client.dart';
+import 'package:cardwave_llm/src/image/clients/open_router_image_client.dart';
 import 'package:cardwave_llm/src/image/image_generation_mode_enum.dart';
-import 'package:cardwave_llm/src/image/image_generation_result.dart';
+import 'package:cardwave_llm/src/image/llm_image_result.dart';
 import 'package:cardwave_llm/src/image/image_options.dart';
 import 'package:cardwave_llm/src/image/llm_image_prompt_request.dart';
 import 'package:cardwave_llm/src/models/llm_provider.dart';

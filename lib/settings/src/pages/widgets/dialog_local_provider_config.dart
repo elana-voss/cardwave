@@ -273,17 +273,18 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 16,
             children: [
               Text(
                 _isEdit ? 'Edit Local Provider' : 'Add Local Provider',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
               Form(
                 key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 12,
                   children: [
                     TextFormField(
                       // Key carried only to give integration tests an
@@ -306,7 +307,6 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
                       validator: (v) =>
                           (v == null || v.trim().isEmpty) ? 'Required' : null,
                     ),
-                    const SizedBox(height: 12),
                     TextFieldAutotrim(
                       controller: _apiKeyController,
                       decoration: const InputDecoration(
@@ -316,15 +316,14 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
                       ),
                       obscureText: true,
                     ),
-                    const SizedBox(height: 12),
                     Row(
+                      spacing: 12,
                       children: [
                         OutlinedButton.icon(
                           onPressed: _isFetching ? null : _connectAndFetch,
                           icon: const Icon(Icons.power_settings_new, size: 18),
                           label: const Text('Connect & Fetch Models'),
                         ),
-                        const SizedBox(width: 12),
                         Expanded(
                           child: _LocalProviderStatusLine(
                             isFetching: _isFetching,
@@ -359,13 +358,13 @@ class _LocalProviderStatusLine extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isFetching) {
       return const Row(
+        spacing: 8,
         children: [
           SizedBox(
             width: 14,
             height: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 8),
           Text('Connecting…', style: TextStyle(fontSize: 12)),
         ],
       );

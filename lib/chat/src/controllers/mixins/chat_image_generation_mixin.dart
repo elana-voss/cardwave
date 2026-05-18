@@ -7,7 +7,7 @@ import 'package:cardwave/chat/src/models/chat_message.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/models/chat_swipe.dart';
 import 'package:cardwave/chat/src/repositories/chat_repository.dart';
-import 'package:cardwave/chat/src/services/builtin_tool_app_data.dart';
+import 'package:cardwave/chat/src/services/chat_builtin_tool_app_data.dart';
 import 'package:cardwave/chat/src/services/chat_execution_service.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';

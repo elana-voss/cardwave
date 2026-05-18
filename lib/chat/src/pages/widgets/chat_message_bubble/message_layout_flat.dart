@@ -49,8 +49,10 @@ class MessageLayoutFlat extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
         children: [
           Row(
+            spacing: 8,
             children: [
               Expanded(
                 child: Text(
@@ -60,16 +62,12 @@ class MessageLayoutFlat extends StatelessWidget {
                   maxLines: 1,
                 ),
               ),
-              const SizedBox(width: 8),
               actionsRow,
             ],
           ),
-          const SizedBox(height: 8),
           contentWidget,
-          if (flipper != null) ...[
-            const SizedBox(height: 8),
+          if (flipper != null)
             Align(alignment: Alignment.centerRight, child: flipper),
-          ],
         ],
       ),
     );

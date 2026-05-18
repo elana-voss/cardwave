@@ -250,12 +250,12 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 16,
           children: [
             Text(
               _isEdit ? 'Edit Provider' : 'Add Provider',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 16),
             Form(
               key: _formKey,
               child: Column(
@@ -357,13 +357,13 @@ class _ProviderStatusLine extends StatelessWidget {
     }
     if (isFetching) {
       return const Row(
+        spacing: 8,
         children: [
           SizedBox(
             width: 14,
             height: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 8),
           Text('Connecting…', style: TextStyle(fontSize: 12)),
         ],
       );

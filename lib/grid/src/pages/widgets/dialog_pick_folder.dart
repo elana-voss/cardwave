@@ -167,6 +167,7 @@ class _FolderRow extends StatelessWidget {
               right: 8,
             ),
             child: Row(
+              spacing: 8,
               children: [
                 Icon(
                   Icons.folder_outlined,
@@ -175,7 +176,6 @@ class _FolderRow extends StatelessWidget {
                       ? theme.disabledColor
                       : (isSelected ? theme.colorScheme.primary : null),
                 ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     displayName,
@@ -193,7 +193,6 @@ class _FolderRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 _CountBadge(
                   count: count,
                   isSelected: isSelected,

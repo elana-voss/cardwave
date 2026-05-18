@@ -385,13 +385,13 @@ class _OnboardingAiStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isFetchingModels) {
       return const Row(
+        spacing: 8,
         children: [
           SizedBox(
             width: 14,
             height: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 8),
           Text('Connecting…', style: TextStyle(fontSize: 12)),
         ],
       );

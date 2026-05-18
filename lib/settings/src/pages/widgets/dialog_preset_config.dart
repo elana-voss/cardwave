@@ -177,12 +177,12 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
             builder: (context, isMobile) => Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16,
               children: [
                 _DialogHeader(
                   isEditing: widget.configuration != null,
                   onReset: controller.resetToDefaults,
                 ),
-                const SizedBox(height: 16),
                 _DialogFormBody(
                   formKey: _formKey,
                   nameController: controller.nameController,

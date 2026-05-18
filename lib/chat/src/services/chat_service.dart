@@ -310,11 +310,10 @@ class ChatService extends ChangeNotifier {
 
     session.messages.clear();
 
-    final activePersona = settingsService.settings.activePersona;
-    final localVariables = session.localVariables;
-    final globalVariables = settingsService.settings.globalVariables;
-
     if (file.card.firstMes.isNotEmpty) {
+      final activePersona = settingsService.settings.activePersona;
+      final localVariables = session.localVariables;
+      final globalVariables = settingsService.settings.globalVariables;
       final processedFirstMes = UtilsPrompt.replacePlaceholders(
         file.card.firstMes,
         charName: (file.card.nickname?.isNotEmpty == true)

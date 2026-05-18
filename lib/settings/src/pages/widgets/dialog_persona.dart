@@ -55,17 +55,18 @@ class _DialogPersonaState extends State<DialogPersona> {
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           Text(
             widget.persona == null ? 'New Persona' : 'Edit Persona',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 16),
           Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16,
               children: [
                 TextFieldAutotrim(
                   controller: _nameController,
@@ -74,7 +75,6 @@ class _DialogPersonaState extends State<DialogPersona> {
                   validator: (v) =>
                       v == null || v.isEmpty ? 'Name is required' : null,
                 ),
-                const SizedBox(height: 16),
                 TextFieldAutotrim(
                   controller: _descriptionController,
                   decoration: const InputDecoration(

@@ -1,4 +1,4 @@
-import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/section_header.dart';
+import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/ai_tab_section_header.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_domain_preset.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';

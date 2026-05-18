@@ -160,6 +160,7 @@ class ChatMessageBubble extends StatelessWidget {
         ? markdownWidget
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
             children: [
               _ReasoningReveal(
                 // ObjectKey on the ChatMessage keeps the expand/collapse
@@ -169,7 +170,6 @@ class ChatMessageBubble extends StatelessWidget {
                 text: reasoningText,
                 metaStyle: metaStyle,
               ),
-              const SizedBox(height: 4),
               markdownWidget,
             ],
           );
@@ -390,13 +390,13 @@ class _ReasoningRevealState extends State<_ReasoningReveal> {
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              spacing: 4,
               children: [
                 Icon(
                   _expanded ? Icons.expand_less : Icons.expand_more,
                   size: 16,
                   color: widget.metaStyle.color,
                 ),
-                const SizedBox(width: 4),
                 Text('Reasoning', style: widget.metaStyle),
               ],
             ),
@@ -452,6 +452,7 @@ class _BubbleWaitingIndicator extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: 8,
         children: [
           SizedBox(
             width: 16,
@@ -461,7 +462,6 @@ class _BubbleWaitingIndicator extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation(metaStyle.color),
             ),
           ),
-          const SizedBox(width: 8),
           Text(label, style: metaStyle),
         ],
       ),

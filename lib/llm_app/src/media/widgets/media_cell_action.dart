@@ -1,0 +1,1 @@
+enum MediaCellAction { change, clear }

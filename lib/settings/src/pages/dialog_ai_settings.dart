@@ -98,9 +98,9 @@ class DialogAiSettings extends StatelessWidget {
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                spacing: 8,
                                 children: [
                                   Icon(tab.icon, size: 18),
-                                  const SizedBox(width: 8),
                                   Text(tab.label),
                                 ],
                               ),

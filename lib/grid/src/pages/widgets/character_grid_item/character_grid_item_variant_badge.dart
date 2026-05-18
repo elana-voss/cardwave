@@ -24,13 +24,13 @@ class CharacterGridItemVariantBadge extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              spacing: 4,
               children: [
                 Icon(
                   Icons.style,
                   size: 16,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
-                const SizedBox(width: 4),
                 Text(
                   '$count',
                   style: TextStyle(

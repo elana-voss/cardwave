@@ -404,9 +404,9 @@ class NavigationService {
         builder: (context, _) => Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
             Text(content),
           ],
         ),
@@ -437,6 +437,9 @@ class NavigationService {
       builder: (context) => AlertDialog(
         title: const Text('Import Errors'),
         content: SingleChildScrollView(
+          // Spread children carry their own `Padding(bottom: 4)`; a single
+          // `spacing:` would compound with that and change effective gaps.
+          // ignore: qcheck/prefer_spacing
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

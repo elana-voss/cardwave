@@ -39,11 +39,10 @@ class TextTokenizer {
     for (var i = 0; i < text.length; i++) {
       final unit = text.codeUnitAt(i);
       final isLower = unit >= 0x61 && unit <= 0x7A;
-      final isUpper = unit >= 0x41 && unit <= 0x5A;
       final isDigit = unit >= 0x30 && unit <= 0x39;
       if (isLower || isDigit) {
         buf.writeCharCode(unit);
-      } else if (isUpper) {
+      } else if (unit >= 0x41 && unit <= 0x5A) {
         buf.writeCharCode(unit + 0x20);
       } else if (buf.isNotEmpty) {
         if (buf.length > 1) out.add(buf.toString());

@@ -38,9 +38,9 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           Text('Edit Message', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
           TextFieldAutotrim(
             controller: _controller,
             maxLines: null,

@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'character_lorebook_entry_extensions.dart';
+part 'lorebook_entry_extensions.dart';
 
 part 'character_lorebook.g.dart';
 

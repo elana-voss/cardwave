@@ -1,16 +1,6 @@
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
+import 'package:cardwave/common/src/widgets/selection_option.dart';
 import 'package:flutter/material.dart';
-
-class SelectionOption<T> {
-  const SelectionOption({
-    required this.value,
-    required this.label,
-    this.subtitle,
-  });
-  final T value;
-  final String label;
-  final String? subtitle;
-}
 
 /// Above this many options the dialog grows a search field. Below it
 /// the static list reads faster than a search box would.

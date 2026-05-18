@@ -85,13 +85,13 @@ class _DialogFormBody extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Row(
+                    spacing: 8,
                     children: [
                       Icon(
                         Icons.info_outline,
                         size: 16,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Models are filtered to support the active domains: ${activeDomains.map((d) => d.label).join(', ')}',
@@ -110,9 +110,9 @@ class _DialogFormBody extends StatelessWidget {
                 modelField,
               ] else
                 Row(
+                  spacing: 16,
                   children: [
                     Expanded(child: nameField),
-                    const SizedBox(width: 16),
                     Expanded(child: modelField),
                   ],
                 ),
@@ -126,7 +126,7 @@ class _DialogFormBody extends StatelessWidget {
                 children: activeParameters.map((param) {
                   return SizedBox(
                     width: itemWidth,
-                    child: ParameterInputWidget(
+                    child: DialogPresetConfigParameterInputWidget(
                       key: ValueKey(param.id),
                       parameter: param,
                       controller: parameterControllers[param.id]!,

@@ -76,19 +76,16 @@ class _DialogAiDiffConfirmationState extends State<DialogAiDiffConfirmation> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              originalWidget,
-              const SizedBox(height: 16),
-              suggestedWidget,
-            ],
+            spacing: 16,
+            children: [originalWidget, suggestedWidget],
           );
         }
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
           children: [
             Expanded(child: originalWidget),
-            const SizedBox(width: 16),
             Expanded(child: suggestedWidget),
           ],
         );

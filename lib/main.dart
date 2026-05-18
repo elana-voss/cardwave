@@ -23,8 +23,8 @@ import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 
-part 'main_app_bootstrapper.dart';
-part 'main_my_app.dart';
+part 'app_bootstrapper.dart';
+part 'my_app.dart';
 
 void main() {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -627,9 +627,9 @@ class ModalLoadingOverlay extends StatelessWidget {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 16,
           children: [
             CircularProgressIndicator(value: progress),
-            const SizedBox(height: 16),
             Text(
               status,
               textAlign: TextAlign.center,

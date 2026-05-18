@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/llm_app/src/media/widgets/media_cell_action.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
 import 'package:cardwave/llm_app/src/models/config_media.dart';
@@ -15,8 +16,6 @@ const MediaSettingsGridCell kNotApplicableCell = MediaSettingsGridCell(
   state: MediaSettingsGridCellState.notApplicable,
   onTap: null,
 );
-
-enum MediaCellAction { change, clear }
 
 MediaSettingsGridCellState mediaCellStateFor({
   required MediaSettingsGridLayer layer,

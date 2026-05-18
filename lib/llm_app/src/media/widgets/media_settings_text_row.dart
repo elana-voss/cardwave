@@ -1,6 +1,7 @@
 // Composes [MediaSettingsGridRow] (the layout widget) with field-type-specific cells.
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/llm_app/src/media/media_settings_controller.dart';
+import 'package:cardwave/llm_app/src/media/widgets/media_cell_action.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_row.dart';

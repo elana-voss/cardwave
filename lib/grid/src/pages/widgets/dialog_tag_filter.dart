@@ -67,17 +67,16 @@ class _DialogTagFilterState extends State<DialogTagFilter> {
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           Text(
             'Filter Tags',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 16),
           AppSearchField(
             controller: _searchController,
             hintText: 'Search tags...',
           ),
-          const SizedBox(height: 16),
           Expanded(
             child: SingleChildScrollView(
               child: TagWrap(

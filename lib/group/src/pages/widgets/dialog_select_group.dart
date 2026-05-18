@@ -63,6 +63,9 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
   @override
   Widget build(BuildContext context) {
     return AppDialog(
+      // Single `SizedBox(8)`; an adjacent `FutureBuilder` has 0 gap
+      // that would become 8 if `spacing:` were applied.
+      // ignore: qcheck/prefer_spacing
       builder: (context, isMobile) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,

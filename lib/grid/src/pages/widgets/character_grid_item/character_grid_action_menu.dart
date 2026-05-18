@@ -99,12 +99,12 @@ class CharacterGridActionMenu extends StatelessWidget {
                 key: Key('drawer-ai-action-${action.name}'),
                 value: action,
                 child: Row(
+                  spacing: 8,
                   children: [
                     Icon(
                       action.icon,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    const SizedBox(width: 8),
                     Text(action.label),
                   ],
                 ),
@@ -120,20 +120,17 @@ class CharacterGridActionMenu extends StatelessWidget {
           const PopupMenuItem<Object>(
             value: _CharacterGridItemActionEnum.editNotes,
             child: Row(
-              children: [
-                Icon(Icons.note_alt),
-                SizedBox(width: 8),
-                Text('Edit Notes'),
-              ],
+              spacing: 8,
+              children: [Icon(Icons.note_alt), Text('Edit Notes')],
             ),
           ),
         if (file.isRecent)
           const PopupMenuItem<Object>(
             value: _CharacterGridItemActionEnum.dismissRecent,
             child: Row(
+              spacing: 8,
               children: [
                 Icon(Icons.history_toggle_off),
-                SizedBox(width: 8),
                 Text('Dismiss Recent'),
               ],
             ),
@@ -143,9 +140,9 @@ class CharacterGridActionMenu extends StatelessWidget {
         const PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.pngExportV2V3,
           child: Row(
+            spacing: 8,
             children: [
               Icon(Icons.image, size: 20),
-              SizedBox(width: 8),
               Text('Export as PNG (V2/V3)'),
             ],
           ),
@@ -153,9 +150,9 @@ class CharacterGridActionMenu extends StatelessWidget {
         const PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.jsonExportV3,
           child: Row(
+            spacing: 8,
             children: [
               Icon(Icons.data_object, size: 20),
-              SizedBox(width: 8),
               Text('Export as JSON (V3)'),
             ],
           ),
@@ -163,9 +160,9 @@ class CharacterGridActionMenu extends StatelessWidget {
         const PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.jsonExportV2,
           child: Row(
+            spacing: 8,
             children: [
               Icon(Icons.data_object, size: 20),
-              SizedBox(width: 8),
               Text('Export as JSON (V2)'),
             ],
           ),
@@ -174,16 +171,17 @@ class CharacterGridActionMenu extends StatelessWidget {
         const PopupMenuItem<Object>(
           value: _CharacterGridItemActionEnum.duplicate,
           child: Row(
-            children: [Icon(Icons.copy), SizedBox(width: 8), Text('Duplicate')],
+            spacing: 8,
+            children: [Icon(Icons.copy), Text('Duplicate')],
           ),
         ),
         PopupMenuItem<Object>(
           key: const Key('grid-item-delete'),
           value: _CharacterGridItemActionEnum.delete,
           child: Row(
+            spacing: 8,
             children: [
               Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-              const SizedBox(width: 8),
               Text(
                 'Delete',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),

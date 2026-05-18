@@ -64,13 +64,13 @@ class AiActionTextfieldPopup extends StatelessWidget {
           return PopupMenuItem<AiActionEnum>(
             value: action,
             child: Row(
+              spacing: 8,
               children: [
                 Icon(
                   action.icon,
                   size: 20,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: 8),
                 Text(action.label),
               ],
             ),

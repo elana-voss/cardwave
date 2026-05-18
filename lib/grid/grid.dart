@@ -5,7 +5,7 @@
 export 'src/controllers/character_grid_controller.dart';
 export 'src/controllers/filter_controller.dart';
 export 'src/pages/character_grid_page.dart';
-export 'src/pages/widgets/appbar_group_grid.dart';
+export 'src/pages/widgets/app_bar_group_grid.dart';
 export 'src/pages/widgets/character_grid_item.dart';
 export 'src/pages/widgets/dialog_create_character.dart';
 export 'src/pages/widgets/dialog_multi_select.dart';

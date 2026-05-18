@@ -34,6 +34,7 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
           automaticallyImplyLeading: false,
           title: isWideScreen
               ? Row(
+                  spacing: 8,
                   children: [
                     FilledButton.icon(
                       key: const Key('grid-create-new-button'),
@@ -41,7 +42,6 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
                       icon: const Icon(Icons.add),
                       label: const Text('Create New'),
                     ),
-                    const SizedBox(width: 8),
                     FilledButton.tonalIcon(
                       key: const Key('grid-import-button'),
                       onPressed: () =>

@@ -112,6 +112,9 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
           child: const Text('Apply'),
         ),
       ],
+      // Non-uniform: `SizedBox(16)` and conditional `SizedBox(12)`;
+      // single `spacing:` can't express both.
+      // ignore: qcheck/prefer_spacing
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -195,9 +198,9 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
                 showCheckmark: false,
                 label: Row(
                   mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
                   children: [
                     Text(entry.key),
-                    const SizedBox(width: 8),
                     Container(
                       width: 34,
                       padding: const EdgeInsets.symmetric(vertical: 2),

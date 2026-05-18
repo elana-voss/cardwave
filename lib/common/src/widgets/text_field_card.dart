@@ -169,7 +169,8 @@ class TextFieldCardState extends State<TextFieldCard> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       unawaited(() async {
         final count = await UtilsLlm.countTokens(text);
-        if (mounted) _tokenCount.value = count;
+        if (!mounted) return;
+        _tokenCount.value = count;
       }());
     });
   }
@@ -310,7 +311,8 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
 
   Future<void> _initTokenCount() async {
     final count = await UtilsLlm.countTokens(widget.controller.text);
-    if (mounted) _localTokenCount.value = count;
+    if (!mounted) return;
+    _localTokenCount.value = count;
   }
 
   void _onControllerTextChanged() {
@@ -319,10 +321,10 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
     }
     _localDebounce = Timer(const Duration(milliseconds: 500), () {
       unawaited(() async {
-        if (widget.showTokenCount) {
-          final count = await UtilsLlm.countTokens(widget.controller.text);
-          if (mounted) _localTokenCount.value = count;
-        }
+        if (!widget.showTokenCount) return;
+        final count = await UtilsLlm.countTokens(widget.controller.text);
+        if (!mounted) return;
+        _localTokenCount.value = count;
       }());
     });
   }

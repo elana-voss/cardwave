@@ -1,7 +1,7 @@
 part of 'dialog_preset_config.dart';
 
-class ParameterInputWidget extends StatefulWidget {
-  const ParameterInputWidget({
+class DialogPresetConfigParameterInputWidget extends StatefulWidget {
+  const DialogPresetConfigParameterInputWidget({
     required this.parameter,
     required this.controller,
     required this.isMobile,
@@ -12,10 +12,10 @@ class ParameterInputWidget extends StatefulWidget {
   final bool isMobile;
 
   @override
-  State<ParameterInputWidget> createState() => _ParameterInputWidgetState();
+  State<DialogPresetConfigParameterInputWidget> createState() => _DialogPresetConfigParameterInputWidgetState();
 }
 
-class _ParameterInputWidgetState extends State<ParameterInputWidget> {
+class _DialogPresetConfigParameterInputWidgetState extends State<DialogPresetConfigParameterInputWidget> {
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -41,7 +41,7 @@ class _ParameterInputWidgetState extends State<ParameterInputWidget> {
   void _setValue(double value) {
     final clamped = value.clamp(widget.parameter.min, widget.parameter.max);
     final newText =
-        widget.parameter.type == LLmParameterDefinitionTypeEnum.integer
+        widget.parameter.type == LlmParameterDefinitionTypeEnum.integer
         ? clamped.toInt().toString()
         : clamped.toStringAsFixed(2);
 
@@ -65,11 +65,15 @@ class _ParameterInputWidgetState extends State<ParameterInputWidget> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
+      // Mobile branch combines `Spacer` + `SizedBox(16)` whose effect
+      // is 16px; `spacing: 16` would double the gap to 32.
+      // ignore: qcheck/prefer_spacing
       child: Row(
         children: [
           SizedBox(
             width: 160,
             child: Row(
+              spacing: 4,
               children: [
                 Flexible(
                   child: Text(
@@ -79,7 +83,6 @@ class _ParameterInputWidgetState extends State<ParameterInputWidget> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 4),
                 Tooltip(
                   message: def.description,
                   child: const Icon(
@@ -103,7 +106,7 @@ class _ParameterInputWidgetState extends State<ParameterInputWidget> {
                     min: def.min,
                     max: def.max,
                     divisions:
-                        def.type == LLmParameterDefinitionTypeEnum.integer
+                        def.type == LlmParameterDefinitionTypeEnum.integer
                         ? (def.max - def.min).toInt()
                         : 100,
                     label: value.text,
@@ -124,14 +127,14 @@ class _ParameterInputWidgetState extends State<ParameterInputWidget> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(
                   RegExp(
-                    def.type == LLmParameterDefinitionTypeEnum.integer
+                    def.type == LlmParameterDefinitionTypeEnum.integer
                         ? (def.min < 0 ? r'^-?\d*$' : r'^\d*$')
                         : (def.min < 0 ? r'^-?\d*\.?\d*$' : r'^\d*\.?\d*$'),
                   ),
                 ),
               ],
               keyboardType: TextInputType.numberWithOptions(
-                decimal: def.type == LLmParameterDefinitionTypeEnum.double,
+                decimal: def.type == LlmParameterDefinitionTypeEnum.double,
                 signed: def.min < 0,
               ),
               decoration: const InputDecoration(

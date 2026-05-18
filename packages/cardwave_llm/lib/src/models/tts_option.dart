@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'tts_option_options.dart';
+part 'options_tts.dart';
 
 part 'tts_option.g.dart';
 

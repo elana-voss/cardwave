@@ -79,13 +79,14 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
       ],
       builder: (ctx, isMobile) {
         return Column(
+          spacing: 8,
           children: [
             Row(
+              spacing: 8,
               children: [
                 Expanded(
                   child: AppSearchField(controller: _searchController),
                 ),
-                const SizedBox(width: 8),
                 ToggleButtons(
                   isSelected: [_favoritesOnly],
                   onPressed: (_) =>
@@ -104,7 +105,6 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
             Expanded(
               child: filtered.isEmpty
                   ? Center(

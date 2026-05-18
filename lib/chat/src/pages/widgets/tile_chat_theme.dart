@@ -4,8 +4,8 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-class ChatThemeTile extends StatelessWidget {
-  const ChatThemeTile({
+class TileChatTheme extends StatelessWidget {
+  const TileChatTheme({
     required this.settings,
     required this.onThemeChanged,
     super.key,

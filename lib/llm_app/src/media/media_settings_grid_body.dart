@@ -5,6 +5,7 @@ import 'package:cardwave/llm_app/src/media/media_resolver.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_dense_section.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_dropdown_row.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
+import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_header.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_row.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_preset_row.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_text_row.dart';

@@ -133,7 +133,6 @@ String _classifyFirst(Map<String, dynamic> entry) {
   if (genre.contains('cyberpunk')) {
     return 'cyberpunk-handle';
   }
-  final eras = (entry['era'] as List).cast<String>();
   final language = entry['language_ethnicity'] as String;
   final gender = entry['gender'] as String;
   // First matching era wins so a multi-era English name (e.g. era=
@@ -142,6 +141,7 @@ String _classifyFirst(Map<String, dynamic> entry) {
   // chronological order by the SSA loader, so the earliest era it
   // qualifies for is the bucket it lands in.
   if (language == 'english') {
+    final eras = (entry['era'] as List).cast<String>();
     for (final era in eras) {
       if (_eraLockedEras.contains(era)) {
         return 'era-locked-first-name / $era-$gender';

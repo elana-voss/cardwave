@@ -5,7 +5,7 @@ export 'src/audio/services/text_to_speech_service.dart';
 export 'src/dispatcher/cardwave_llm_module.dart';
 export 'src/image/clients/image_http_client.dart';
 export 'src/image/image_generation_mode_enum.dart';
-export 'src/image/image_generation_result.dart';
+export 'src/image/llm_image_result.dart';
 export 'src/image/image_options.dart';
 export 'src/image/llm_image_prompt_request.dart';
 export 'src/image/services/image_generation_service.dart';

@@ -1,4 +1,5 @@
 import 'package:cardwave/common/src/utils/app_constants.dart';
+import 'package:cardwave/common/src/widgets/app_dialog_action_row.dart';
 import 'package:flutter/material.dart';
 
 /// Modal Dialog on Desktop, Fullscreen Dialog on mobile
@@ -95,46 +96,6 @@ class AppDialog extends StatelessWidget {
           maxWidth: AppConstants.dialogMaxWidth,
         ),
         child: content,
-      ),
-    );
-  }
-}
-
-class AppDialogActionRow extends StatelessWidget {
-  const AppDialogActionRow({
-    required this.actions,
-    super.key,
-    this.showDismissButton = true,
-  });
-  final List<Widget> actions;
-  final bool showDismissButton;
-
-  @override
-  Widget build(BuildContext context) {
-    const paddingValue = 16.0;
-    final closeButton = TextButton(
-      key: AppDialog.dismissKey,
-      onPressed: () => Navigator.pop(context),
-      child: const Text('Close'),
-    );
-
-    final List<Widget> rowChildren;
-    // Flat three-way `else if` chain — swapping the first arm would nest the
-    // other two under the dismiss-button case.
-    // ignore: qcheck/avoid_negated_conditions
-    if (!showDismissButton) {
-      rowChildren = actions;
-    } else if (actions.isEmpty) {
-      rowChildren = [const Spacer(), closeButton];
-    } else {
-      rowChildren = [closeButton, const Spacer(), ...actions];
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(paddingValue),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: rowChildren,
       ),
     );
   }

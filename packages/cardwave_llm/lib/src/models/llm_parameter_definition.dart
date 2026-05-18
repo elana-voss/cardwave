@@ -29,7 +29,7 @@ class LlmParameterDefinition {
   final double min;
   final double max;
   final double defaultValue;
-  final LLmParameterDefinitionTypeEnum type;
+  final LlmParameterDefinitionTypeEnum type;
   Map<String, dynamic> toJson() => _$LlmParameterDefinitionToJson(this);
 
   @override
@@ -45,7 +45,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 512,
     max: LlmConstants.fallbackContextLength.toDouble(),
     defaultValue: LlmConstants.fallbackContextLength.toDouble(),
-    type: LLmParameterDefinitionTypeEnum.integer,
+    type: LlmParameterDefinitionTypeEnum.integer,
   ),
   // not const: `max` uses `.toDouble()`, not a const expression
   LlmParameterDefinition(
@@ -55,7 +55,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 1,
     max: LlmConstants.fallbackMaxResponseTokens.toDouble(),
     defaultValue: LlmConstants.defaultMaxResponseTokens,
-    type: LLmParameterDefinitionTypeEnum.integer,
+    type: LlmParameterDefinitionTypeEnum.integer,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.temperature,
@@ -64,7 +64,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 0,
     max: 2,
     defaultValue: 1,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.topP,
@@ -73,7 +73,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 0,
     max: 1,
     defaultValue: 1,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.minP,
@@ -82,7 +82,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 0,
     max: 1,
     defaultValue: 0,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.topK,
@@ -91,7 +91,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 0,
     max: 100,
     defaultValue: 0,
-    type: LLmParameterDefinitionTypeEnum.integer,
+    type: LlmParameterDefinitionTypeEnum.integer,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.topA,
@@ -100,7 +100,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 0,
     max: 1,
     defaultValue: 0,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.repetitionPenalty,
@@ -109,7 +109,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: 1,
     max: 2,
     defaultValue: 1,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.frequencyPenalty,
@@ -118,7 +118,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: -2,
     max: 2,
     defaultValue: 0,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.presencePenalty,
@@ -127,7 +127,7 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: -2,
     max: 2,
     defaultValue: 0,
-    type: LLmParameterDefinitionTypeEnum.double,
+    type: LlmParameterDefinitionTypeEnum.double,
   ),
   const LlmParameterDefinition(
     id: LlmParameterDefinitionIdEnum.seed,
@@ -136,6 +136,6 @@ final List<LlmParameterDefinition> commonParameters = List.unmodifiable([
     min: -1,
     max: 4294967295, // Standard uint32 max
     defaultValue: -1,
-    type: LLmParameterDefinitionTypeEnum.integer,
+    type: LlmParameterDefinitionTypeEnum.integer,
   ),
 ]);

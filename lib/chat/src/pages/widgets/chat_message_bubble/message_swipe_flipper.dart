@@ -36,6 +36,7 @@ class MessageSwipeFlipper extends StatelessWidget {
 
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 4,
       children: [
         IconButton(
           constraints: const BoxConstraints(),
@@ -56,12 +57,10 @@ class MessageSwipeFlipper extends StatelessWidget {
                 }
               : null,
         ),
-        const SizedBox(width: 4),
         Text(
           '${message.swipeIndex + 1} / ${message.swipes.length}',
           style: metaStyle,
         ),
-        const SizedBox(width: 4),
         IconButton(
           key: const Key('msg-swipe-next'),
           constraints: const BoxConstraints(),

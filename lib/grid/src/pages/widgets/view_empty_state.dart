@@ -14,13 +14,13 @@ class ViewEmptyState extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        spacing: 16,
         children: [
           Icon(
             filterController.hasActiveFilters ? Icons.search_off : Icons.inbox,
             size: 64,
             color: Theme.of(context).colorScheme.outline,
           ),
-          const SizedBox(height: 16),
           Text(
             filterController.hasActiveFilters
                 ? 'No characters match your filters'
@@ -29,15 +29,13 @@ class ViewEmptyState extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-          if (filterController.hasActiveFilters) ...[
-            const SizedBox(height: 16),
+          if (filterController.hasActiveFilters)
             FilledButton.icon(
               onPressed: filterController.clearAllFilters,
               icon: const Icon(Icons.clear_all),
               label: const Text('Clear all filters'),
-            ),
-          ] else ...[
-            const SizedBox(height: 16),
+            )
+          else
             Wrap(
               spacing: 16,
               runSpacing: 16,
@@ -57,7 +55,6 @@ class ViewEmptyState extends StatelessWidget {
                 ),
               ],
             ),
-          ],
         ],
       ),
     );

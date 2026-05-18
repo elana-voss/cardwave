@@ -51,6 +51,7 @@ class EditorAppDataState extends State<EditorAppData> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8,
       children: [
         TextFieldCard.multiLine(
           controller: _notesController,
@@ -63,7 +64,6 @@ class EditorAppDataState extends State<EditorAppData> {
             contextCard: widget.characterFile.card,
           ),
         ),
-        const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _previewDescriptionController,
           label: 'Description Preview',

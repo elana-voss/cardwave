@@ -1,8 +1,6 @@
+import 'package:cardwave/character/src/pages/widgets/prompt_prefix_domain.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:flutter/material.dart';
-
-/// Which prompt-prefix the dialog edits.
-enum PromptPrefixDomain { image, video }
 
 /// Modal text-field for editing a character's per-domain prompt-prefix
 /// (image style, video style). Shared by the chat-drawer "Style" tile

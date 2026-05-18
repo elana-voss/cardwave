@@ -170,13 +170,14 @@ class ChatPromptBuilder {
         characterFile.card.extensions['depth_prompt'] as Map<String, dynamic>?;
     if (depthPrompt != null) {
       final rawContent = depthPrompt['prompt'] as String?;
-      final depthVal = depthPrompt['depth'];
-      final depth = depthVal is num
-          ? depthVal.toInt()
-          : _defaultDepthPromptDepth;
-      final role = depthPrompt['role'] as String? ?? _defaultDepthPromptRole;
 
       if (rawContent != null && rawContent.isNotEmpty) {
+        final depthVal = depthPrompt['depth'];
+        final depth = depthVal is num
+            ? depthVal.toInt()
+            : _defaultDepthPromptDepth;
+        final role =
+            depthPrompt['role'] as String? ?? _defaultDepthPromptRole;
         final content = UtilsPrompt.replacePlaceholders(
           rawContent,
           charName: _charName,

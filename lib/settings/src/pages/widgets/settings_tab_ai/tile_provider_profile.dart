@@ -7,7 +7,7 @@ import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai.dart'
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_tts.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_video.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/domain_pill.dart';
-import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/section_header.dart';
+import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/ai_tab_section_header.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_domain_model.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';

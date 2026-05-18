@@ -53,7 +53,6 @@ class UpdateService {
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       final latestVersion = data['latest_version'] as String;
-      final releaseNotes = data['release_notes'] as String?;
 
       final packageInfo = await PackageInfo.fromPlatform();
       var currentFullVersion = packageInfo.version;
@@ -62,6 +61,7 @@ class UpdateService {
       }
 
       if (_isNewerVersion(currentFullVersion, latestVersion)) {
+        final releaseNotes = data['release_notes'] as String?;
         return UpdateAvailable(
           currentVersion: currentFullVersion,
           latestVersion: latestVersion,

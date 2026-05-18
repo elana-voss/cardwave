@@ -97,23 +97,24 @@ class LorebookService {
                       ? trimmed.substring(2, firstSpace)
                       : trimmed.substring(2))
                   .replaceAll('@', '');
-          final val = firstSpace != -1
-              ? trimmed.substring(firstSpace + 1).trim()
-              : '';
-
           if (cmd == 'activate') {
             forceActivate = true;
           } else if (cmd == 'dont_activate') {
             dontActivate = true;
-          } else if (cmd == 'depth' && decoratorOverrideDepth == null) {
-            decoratorOverrideDepth = int.tryParse(val);
-          } else if (cmd == 'role' && decoratorOverrideRole == null) {
-            if (val == 'user') {
-              decoratorOverrideRole = ChatRoleEnum.user;
-            } else if (val == 'assistant') {
-              decoratorOverrideRole = ChatRoleEnum.assistant;
-            } else if (val == 'system') {
-              decoratorOverrideRole = ChatRoleEnum.system;
+          } else {
+            final val = firstSpace != -1
+                ? trimmed.substring(firstSpace + 1).trim()
+                : '';
+            if (cmd == 'depth' && decoratorOverrideDepth == null) {
+              decoratorOverrideDepth = int.tryParse(val);
+            } else if (cmd == 'role' && decoratorOverrideRole == null) {
+              if (val == 'user') {
+                decoratorOverrideRole = ChatRoleEnum.user;
+              } else if (val == 'assistant') {
+                decoratorOverrideRole = ChatRoleEnum.assistant;
+              } else if (val == 'system') {
+                decoratorOverrideRole = ChatRoleEnum.system;
+              }
             }
           }
           currentIndex = nextNewline + 1;
@@ -232,10 +233,10 @@ class LorebookService {
     final newCooldowns = <String, int>{};
 
     for (final evaluated in survivors) {
-      final entry = evaluated.entry;
       final uidStr = evaluated.uidStr;
 
       if (!session.activeStickies.containsKey(uidStr)) {
+        final entry = evaluated.entry;
         final stickyLength = entry.extensions.sticky ?? 0;
         final cooldownLength = entry.extensions.cooldown ?? 0;
 
@@ -381,7 +382,6 @@ class LorebookService {
         return false;
       }
     } else {
-      final target = caseSensitive ? text : haystackLower;
       if (matchWholeWords) {
         try {
           final regExp = _getWordBoundaryRegex(key, caseSensitive);
@@ -392,6 +392,7 @@ class LorebookService {
           return false;
         }
       } else {
+        final target = caseSensitive ? text : haystackLower;
         final needle = caseSensitive ? key : key.toLowerCase();
         return target.contains(needle);
       }

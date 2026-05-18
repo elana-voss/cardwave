@@ -207,9 +207,9 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    spacing: 12,
                     children: [
                       CircularProgressIndicator(),
-                      SizedBox(height: 12),
                       Text(
                         'Adding provider…',
                         style: TextStyle(color: Colors.white),

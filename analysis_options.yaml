@@ -47,17 +47,13 @@ qcheck:
   disabled-rules:
     # Architecture conflicts — these rules contradict project-wide conventions.
     - prefer-nullable-provider-types # Providers are always present at scope; nullable T? defeats the contract
-    - prefer-single-widget-per-file # Page files intentionally host their inline-only helper widgets
 
     # Stylistic noise — high count, low payoff, no behavioral signal.
-    - prefer-spacing                # whitespace-only
-    - move-variable-closer-to-its-usage # mechanical refactor pressure
     - prefer-shorthands-with-enums  # `.min` over `MainAxisSize.min` hurts call-site readability for unfamiliar code
     - prefer-shorthands-with-static-fields # same readability cost — `.constName` over `MyClass.constName`
     - prefer-returning-shorthands   # same readability cost in return position
     - prefer-shorthands-with-constructors # same readability cost at construction sites
 
     # Convention conflicts — project uses different naming/file conventions on purpose.
-    - prefer-match-file-name        # idiomatic multi-class files (enums + helpers + widget) are intentional here
     - prefer-prefixed-global-constants # shared values live in AppConstants; the few top-level consts are local-scope
     - prefer-extracting-callbacks   # from flutter-extras; contradicts CLAUDE.md "flat over nested; inline single-use private helpers"

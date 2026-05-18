@@ -42,12 +42,11 @@ class _AllChatsDrawerListState extends State<AllChatsDrawerList> {
         if (mounted) setState(() => _isRebuilding = true);
       },
     );
-    if (mounted) {
-      setState(() {
-        _chatIndex = index;
-        _isRebuilding = false;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _chatIndex = index;
+      _isRebuilding = false;
+    });
   }
 
   Future<void> _renameChat(ChatIndexEntry entry) async {

@@ -19,7 +19,7 @@ class _WorkspaceEndDrawerChatTheme extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const DrawerSectionHeader('Chat Theme'),
-        ChatThemeTile(
+        TileChatTheme(
           settings: settings,
           onThemeChanged: (theme) {
             settings.chatTheme = theme;
@@ -49,6 +49,7 @@ class _WorkspaceEndDrawerChatTheme extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
+                    spacing: 4,
                     children: [
                       InkWell(
                         onTap: hasBg
@@ -61,7 +62,6 @@ class _WorkspaceEndDrawerChatTheme extends StatelessWidget {
                           color: hasBg ? null : disabledColor,
                         ),
                       ),
-                      const SizedBox(width: 4),
                       InkWell(
                         onTap: hasAvatar
                             ? () {

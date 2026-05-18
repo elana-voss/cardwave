@@ -59,12 +59,12 @@ class EditorPromptsState extends State<EditorPrompts> {
 
   void _updateDepthPrompt() {
     final prompt = _depthPromptController.text;
-    final depth = int.tryParse(_depthController.text) ?? 4;
-    final role = _depthRole;
 
     if (prompt.isEmpty) {
       widget.characterFile.card.depthPrompt = null;
     } else {
+      final depth = int.tryParse(_depthController.text) ?? 4;
+      final role = _depthRole;
       widget.characterFile.card.depthPrompt = DepthPrompt(
         prompt: prompt,
         depth: depth,
@@ -132,6 +132,7 @@ class EditorPromptsState extends State<EditorPrompts> {
         ),
         const SizedBox(height: 8),
         Row(
+          spacing: 16,
           children: [
             Expanded(
               child: TextFieldCard.singleLine(
@@ -140,7 +141,6 @@ class EditorPromptsState extends State<EditorPrompts> {
                 keyboardType: TextInputType.number,
               ),
             ),
-            const SizedBox(width: 16),
             Expanded(
               flex: 2,
               child: DropdownLabeled<DepthPromptRoleEnum>(

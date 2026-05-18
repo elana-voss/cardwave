@@ -14,6 +14,7 @@ class _EntryScanRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 8,
       children: [
         Wrap(
           spacing: 16,
@@ -36,7 +37,6 @@ class _EntryScanRow extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 4,

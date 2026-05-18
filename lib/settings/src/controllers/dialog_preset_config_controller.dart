@@ -69,7 +69,7 @@ class DialogPresetConfigController extends ChangeNotifier {
             configuration!.parameterValues[param.id] ?? param.defaultValue;
       }
 
-      if (param.type == LLmParameterDefinitionTypeEnum.integer) {
+      if (param.type == LlmParameterDefinitionTypeEnum.integer) {
         parameterControllers[param.id] = TextEditingController(
           text: value.toInt().toString(),
         );
@@ -229,7 +229,7 @@ class DialogPresetConfigController extends ChangeNotifier {
           val = param.max;
         }
         parameterControllers[param.id] = TextEditingController(
-          text: param.type == LLmParameterDefinitionTypeEnum.integer
+          text: param.type == LlmParameterDefinitionTypeEnum.integer
               ? val.toInt().toString()
               : val.toStringAsFixed(2),
         );
@@ -238,7 +238,7 @@ class DialogPresetConfigController extends ChangeNotifier {
         final controller = parameterControllers[param.id]!;
         if (maximizeContext &&
             param.id == LlmParameterDefinitionIdEnum.contextSize) {
-          final newText = param.type == LLmParameterDefinitionTypeEnum.integer
+          final newText = param.type == LlmParameterDefinitionTypeEnum.integer
               ? param.max.toInt().toString()
               : param.max.toStringAsFixed(2);
           if (controller.text != newText) {
@@ -250,7 +250,7 @@ class DialogPresetConfigController extends ChangeNotifier {
         } else {
           final current = double.tryParse(controller.text);
           if (current != null && current > param.max) {
-            final newText = param.type == LLmParameterDefinitionTypeEnum.integer
+            final newText = param.type == LlmParameterDefinitionTypeEnum.integer
                 ? param.max.toInt().toString()
                 : param.max.toStringAsFixed(2);
             if (controller.text != newText) {
@@ -273,14 +273,14 @@ class DialogPresetConfigController extends ChangeNotifier {
       if (controller == null) continue;
 
       final text = controller.text;
-      final val = param.type == LLmParameterDefinitionTypeEnum.integer
+      final val = param.type == LlmParameterDefinitionTypeEnum.integer
           ? (int.tryParse(text) ?? param.defaultValue.toInt())
           : (double.tryParse(text) ?? param.defaultValue);
 
       final clampedVal = val.toDouble().clamp(param.min, param.max);
       parameterValues[param.id] = clampedVal;
 
-      final newText = param.type == LLmParameterDefinitionTypeEnum.integer
+      final newText = param.type == LlmParameterDefinitionTypeEnum.integer
           ? clampedVal.toInt().toString()
           : clampedVal.toStringAsFixed(2);
 
@@ -411,7 +411,7 @@ class DialogPresetConfigController extends ChangeNotifier {
       final controller = parameterControllers[param.id];
       if (controller != null) {
         final val = param.defaultValue;
-        final newText = param.type == LLmParameterDefinitionTypeEnum.integer
+        final newText = param.type == LlmParameterDefinitionTypeEnum.integer
             ? val.toInt().toString()
             : val.toStringAsFixed(2);
         if (controller.text != newText) {

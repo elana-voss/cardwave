@@ -15,7 +15,7 @@ LlmParameterDefinition _$LlmParameterDefinitionFromJson(
   min: (json['min'] as num).toDouble(),
   max: (json['max'] as num).toDouble(),
   defaultValue: (json['default_value'] as num).toDouble(),
-  type: $enumDecode(_$LLmParameterDefinitionTypeEnumEnumMap, json['type']),
+  type: $enumDecode(_$LlmParameterDefinitionTypeEnumEnumMap, json['type']),
 );
 
 Map<String, dynamic> _$LlmParameterDefinitionToJson(
@@ -27,7 +27,7 @@ Map<String, dynamic> _$LlmParameterDefinitionToJson(
   'min': instance.min,
   'max': instance.max,
   'default_value': instance.defaultValue,
-  'type': _$LLmParameterDefinitionTypeEnumEnumMap[instance.type]!,
+  'type': _$LlmParameterDefinitionTypeEnumEnumMap[instance.type]!,
 };
 
 const _$LlmParameterDefinitionIdEnumEnumMap = {
@@ -44,7 +44,7 @@ const _$LlmParameterDefinitionIdEnumEnumMap = {
   LlmParameterDefinitionIdEnum.seed: 'seed',
 };
 
-const _$LLmParameterDefinitionTypeEnumEnumMap = {
-  LLmParameterDefinitionTypeEnum.integer: 'integer',
-  LLmParameterDefinitionTypeEnum.double: 'double',
+const _$LlmParameterDefinitionTypeEnumEnumMap = {
+  LlmParameterDefinitionTypeEnum.integer: 'integer',
+  LlmParameterDefinitionTypeEnum.double: 'double',
 };

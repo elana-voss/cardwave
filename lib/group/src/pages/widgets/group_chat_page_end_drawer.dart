@@ -180,7 +180,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                   ),
                   // ── Chat Theme ──
                   const DrawerSectionHeader('Chat Theme'),
-                  ChatThemeTile(
+                  TileChatTheme(
                     settings: settings,
                     onThemeChanged: (theme) {
                       settings.chatTheme = theme;

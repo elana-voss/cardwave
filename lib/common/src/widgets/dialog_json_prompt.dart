@@ -23,12 +23,12 @@ class DialogJsonPrompt extends StatelessWidget {
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           Text(
             'Generation Prompt',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 16),
           SelectionArea(child: JsonPromptViewer(jsonContent: content)),
         ],
       ),

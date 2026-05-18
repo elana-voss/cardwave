@@ -239,6 +239,9 @@ class _BranchRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outline = Theme.of(context).colorScheme.outline;
+    // `Spacer` pushes the chevron to the trailing edge; `spacing:` would
+    // insert a fixed 8px gap after the Spacer and break that alignment.
+    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         Icon(icon, size: 20),
@@ -262,9 +265,9 @@ class _ModeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: 8,
       children: [
         Icon(icon, size: 20),
-        const SizedBox(width: 8),
         Text(label),
       ],
     );

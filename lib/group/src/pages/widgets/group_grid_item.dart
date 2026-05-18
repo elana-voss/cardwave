@@ -249,6 +249,9 @@ class _GroupGridItemHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Adjacent `Expanded`/`IconButton` pair is flush (0 gap);
+    // `spacing:` would add an unwanted gap.
+    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         Expanded(
@@ -309,9 +312,9 @@ class _GroupGridActionMenu extends StatelessWidget {
         PopupMenuItem<_GroupGridItemActionEnum>(
           value: _GroupGridItemActionEnum.delete,
           child: Row(
+            spacing: 8,
             children: [
               Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-              const SizedBox(width: 8),
               Text(
                 'Delete',
                 style: TextStyle(color: Theme.of(context).colorScheme.error),

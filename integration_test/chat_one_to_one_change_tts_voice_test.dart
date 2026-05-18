@@ -69,7 +69,7 @@ void main() {
       );
       final originalVoiceId = resolvedBefore.ttsVoiceId!;
 
-      // Open end-drawer via the appbar menu icon (appbar_chat.dart:62).
+      // Open end-drawer via the appbar menu icon (app_bar_chat.dart:62).
       await tester.tap(find.byKey(const Key('appbar-end-drawer')));
       await tester.pumpAndSettle();
 
