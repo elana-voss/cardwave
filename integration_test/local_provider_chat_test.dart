@@ -98,22 +98,26 @@ void main() {
       }
 
       // ─────────────────────────────────────────────────────────────
-      // STEP 2: create a preset for the model. The "Add preset"
-      // IconButton sits inside the provider's TileProviderProfile
-      // expansion header. Find by tooltip — unique across the dialog
-      // (other Icons.add usages live elsewhere in the app, not here).
-      // Scroll it into view first so the tap doesn't fall through.
+      // STEP 2: create a preset for the model. The "Add Model"
+      // TextButton sits in the provider's TileProviderProfile section
+      // header band (Set default / Add Model / overflow). Only one
+      // provider was added so the `.first` scope is unambiguous; the
+      // post-tap assertion verifies the dialog by its form-field label
+      // ('Model name') since the button text 'Add Model' is still on
+      // screen behind the dialog scrim.
       // ─────────────────────────────────────────────────────────────
-      final addPresetButton = find.byTooltip('Add Model');
+      final addPresetButton = find
+          .widgetWithText(TextButton, 'Add Model')
+          .first;
       await tester.ensureVisible(addPresetButton);
       await tester.pumpAndSettle();
       await tester.tap(addPresetButton);
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Add Model'),
+        find.text('Model name'),
         findsOneWidget,
-        reason: 'preset dialog header should appear',
+        reason: 'preset dialog should be open (form field label visible)',
       );
 
       // Name field — labelText is "Preset Name" (not just "Name").
@@ -152,8 +156,11 @@ void main() {
 
       // ─────────────────────────────────────────────────────────────
       // STEP 3: close the AI Settings dialog and return to the grid.
+      // DialogAiSettings is now a fullscreenDialog MaterialPageRoute
+      // (Scaffold with a plain CloseButton, no AppDialog.dismissKey),
+      // so pop via Android-back instead of tapping a keyed button.
       // ─────────────────────────────────────────────────────────────
-      await tester.tap(find.byKey(AppDialog.dismissKey).last);
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
       // ─────────────────────────────────────────────────────────────

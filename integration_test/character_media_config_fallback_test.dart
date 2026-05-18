@@ -132,7 +132,11 @@ void main() {
         nanogptImagePresetId,
         firstImageAspectRatioId(nanogptResolved!.model),
       );
-      await characterService.flushJsonInCacheAndPngIfDirtyOrPending(cassFile);
+      // Direct field mutation doesn't bump the dirty timestamp, so
+      // `flushJsonInCacheAndPngIfDirtyOrPending` would no-op. Use the
+      // unconditional save so the change actually reaches disk before
+      // the loadCharacters() reload below.
+      await characterService.saveJsonInCacheAndPngNow(cassFile);
       expect(
         cassFile.configMedia!.imagePresetId,
         nanogptImagePresetId,

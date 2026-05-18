@@ -96,6 +96,11 @@ void main() {
         settings: settings,
         profile: grok,
       );
+      // The drawer's "Image Model" tile (TileImagePreset) is gated by
+      // the Image section's advanced flag — flat layout puts it under
+      // "More". Pre-enable so the test can drive the picker without
+      // navigating the More expander.
+      await settingsService.setDrawerSectionAdvanced('image', true);
       await settingsService.saveSettings();
       await tester.pumpAndSettle();
 
@@ -127,22 +132,10 @@ void main() {
       await tester.tap(find.byKey(const Key('appbar-end-drawer')));
       await tester.pumpAndSettle();
 
-      // Image is the bottom-most ExpansionTile in the drawer (order:
-      // Chat → Chat Theme → Speech → Video → Image), below the fold on
-      // a phone viewport.
-      final imageHeader = find.text('Image');
-      await tester.dragUntilVisible(
-        imageHeader,
-        find.byType(Scrollable).last,
-        const Offset(0, -100),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(imageHeader);
-      await tester.pumpAndSettle();
-
-      // After expanding 'Image', the 'Image Model' tile sits further
-      // down the drawer and is itself off-screen on a phone viewport —
-      // scroll again so the tap actually hits it.
+      // Flat drawer: sections are DrawerSectionHeader bands, not
+      // ExpansionTiles. The Image section sits below the fold on a
+      // phone viewport; scroll until the 'Image Model' tile
+      // (TileImagePreset, advanced row pre-enabled above) is visible.
       final imageModelTile = find.text('Image Model');
       await tester.dragUntilVisible(
         imageModelTile,

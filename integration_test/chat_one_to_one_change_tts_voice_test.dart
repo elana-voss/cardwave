@@ -73,15 +73,17 @@ void main() {
       await tester.tap(find.byKey(const Key('appbar-end-drawer')));
       await tester.pumpAndSettle();
 
-      // Speech section is a collapsed ExpansionTile (workspace_page.dart:607);
-      // Voice/Language/Preset tiles are hidden until it's expanded. Tap
-      // the header to expand.
-      await tester.tap(find.text('Speech'));
+      // Speech section is now a flat DrawerSectionHeader (not an
+      // ExpansionTile) — Voice/Preset tiles are always visible, no expand
+      // step needed. Drag in case the section sits below the fold.
+      final voiceTile = find.text('Voice');
+      await tester.dragUntilVisible(
+        voiceTile,
+        find.byType(Scrollable).last,
+        const Offset(0, -100),
+      );
       await tester.pumpAndSettle();
-
-      // Tap the Voice tile. Title text 'Voice' is unique inside the
-      // expanded Speech section.
-      await tester.tap(find.text('Voice'));
+      await tester.tap(voiceTile);
       await tester.pumpAndSettle();
 
       // SelectionDialog now open. Tap any radio_button_unchecked option
