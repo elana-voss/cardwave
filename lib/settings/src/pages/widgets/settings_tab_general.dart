@@ -39,7 +39,6 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final settingsService = context.watch<SettingsService>();
@@ -57,104 +56,107 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _MenuGroupCard(children: [
-          ListTile(
-            leading: const Icon(Icons.folder_open),
-            title: const Text('Character Folder'),
-            subtitle: Text(
-              settings.characterPath != null &&
-                      settings.characterPath!.isNotEmpty
-                  ? settings.characterPath!
-                  : 'Not set. Required for the app to function.',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: settings.characterPath == null
-                  ? TextStyle(color: Theme.of(context).colorScheme.error)
-                  : null,
-            ),
-            trailing: ElevatedButton(
-              onPressed: _pickDirectory,
-              child: const Text('Browse...'),
-            ),
-          ),
-          if (kDebugMode)
+        _MenuGroupCard(
+          children: [
             ListTile(
-              leading: const Icon(Icons.tag_sharp),
-              title: const Text('Taxonomy Tags'),
-              onTap: () => unawaited(
-                NavigationService().showTaxonomyEditorDialog(),
+              leading: const Icon(Icons.folder_open),
+              title: const Text('Character Folder'),
+              subtitle: Text(
+                settings.characterPath != null &&
+                        settings.characterPath!.isNotEmpty
+                    ? settings.characterPath!
+                    : 'Not set. Required for the app to function.',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: settings.characterPath == null
+                    ? TextStyle(color: Theme.of(context).colorScheme.error)
+                    : null,
+              ),
+              trailing: ElevatedButton(
+                onPressed: _pickDirectory,
+                child: const Text('Browse...'),
               ),
             ),
-          ListTile(
-            leading: Icon(
-              currentMode == ThemeMode.dark
-                  ? Icons.dark_mode
-                  : currentMode == ThemeMode.light
-                  ? Icons.light_mode
-                  : Icons.brightness_auto,
-            ),
-            title: const Text('App Theme'),
-            trailing: Padding(
-              padding: EdgeInsets.zero,
-              child: SegmentedButton<ThemeMode>(
-                showSelectedIcon: false,
-                segments: [
-                  ButtonSegment(
-                    value: ThemeMode.system,
-                    icon: const Icon(Icons.brightness_auto, size: 18),
-                    label: isNarrow ? null : const Text('System'),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.light,
-                    icon: const Icon(Icons.light_mode, size: 18),
-                    label: isNarrow ? null : const Text('Light'),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.dark,
-                    icon: const Icon(Icons.dark_mode, size: 18),
-                    label: isNarrow ? null : const Text('Dark'),
-                  ),
-                ],
-                selected: {currentMode},
-                onSelectionChanged: (newSelection) async {
-                  final newMode = newSelection.first;
-                  settingsDisplay.themeMode = newMode;
-                  settingsService.settings.themeMode = newMode;
-                  await settingsService.saveSettings();
-                },
+            if (kDebugMode)
+              ListTile(
+                leading: const Icon(Icons.tag_sharp),
+                title: const Text('Taxonomy Tags'),
+                onTap: () =>
+                    unawaited(NavigationService().showTaxonomyEditorDialog()),
+              ),
+            ListTile(
+              leading: Icon(
+                currentMode == ThemeMode.dark
+                    ? Icons.dark_mode
+                    : currentMode == ThemeMode.light
+                    ? Icons.light_mode
+                    : Icons.brightness_auto,
+              ),
+              title: const Text('App Theme'),
+              trailing: Padding(
+                padding: EdgeInsets.zero,
+                child: SegmentedButton<ThemeMode>(
+                  showSelectedIcon: false,
+                  segments: [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      icon: const Icon(Icons.brightness_auto, size: 18),
+                      label: isNarrow ? null : const Text('System'),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      icon: const Icon(Icons.light_mode, size: 18),
+                      label: isNarrow ? null : const Text('Light'),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      icon: const Icon(Icons.dark_mode, size: 18),
+                      label: isNarrow ? null : const Text('Dark'),
+                    ),
+                  ],
+                  selected: {currentMode},
+                  onSelectionChanged: (newSelection) {
+                    final newMode = newSelection.first;
+                    settingsDisplay.themeMode = newMode;
+                    settingsService.settings.themeMode = newMode;
+                    unawaited(settingsService.saveSettings());
+                  },
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
         const SizedBox(height: 16),
-        _MenuGroupCard(children: [
-          ListTile(
-            leading: const Icon(Icons.system_update),
-            title: const Text('Check for Updates'),
-            subtitle: const Text(
-              'Check if a newer version of the app is available.',
+        _MenuGroupCard(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.system_update),
+              title: const Text('Check for Updates'),
+              subtitle: const Text(
+                'Check if a newer version of the app is available.',
+              ),
+              onTap: () => unawaited(UpdateController.checkAndShow()),
             ),
-            onTap: () => unawaited(UpdateController.checkAndShow()),
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Website'),
-            subtitle: const Text(
-              'Visit the official website for updates and information.',
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Website'),
+              subtitle: const Text(
+                'Visit the official website for updates and information.',
+              ),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => launchUrl(Uri.parse(AppConstants.website)),
             ),
-            trailing: const Icon(Icons.open_in_new),
-            onTap: () => launchUrl(Uri.parse(AppConstants.website)),
-          ),
-          ListTile(
-            leading: const Icon(Icons.warning_amber),
-            title: const Text('Disclaimer & Terms'),
-            subtitle: const Text(
-              'Read the application disclaimer and terms of use.',
+            ListTile(
+              leading: const Icon(Icons.warning_amber),
+              title: const Text('Disclaimer & Terms'),
+              subtitle: const Text(
+                'Read the application disclaimer and terms of use.',
+              ),
+              trailing: const Icon(Icons.open_in_new),
+              onTap: () => launchUrl(Uri.parse(AppConstants.disclaimer)),
             ),
-            trailing: const Icon(Icons.open_in_new),
-            onTap: () => launchUrl(Uri.parse(AppConstants.disclaimer)),
-          ),
-        ]),
+          ],
+        ),
         const SizedBox(height: 16),
         FutureBuilder<PackageInfo>(
           future: _packageInfoFuture,

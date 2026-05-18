@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
@@ -54,36 +56,37 @@ class TileAiProvider extends StatelessWidget {
           ? DrawerTrailingValue(
               activePresetEntry.config.name,
               suffix: InkWell(
-                onTap: () async {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  await RouteEditPreset().execute(context, activePresetId);
-                  onChanged();
+                onTap: () {
+                  unawaited(() async {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    await RouteEditPreset().execute(context, activePresetId);
+                    onChanged();
+                  }());
                 },
                 child: const Icon(Icons.settings, size: 18),
               ),
             )
-          : Text(
-              'Invalid',
-              style: TextStyle(color: errorColor),
-            ),
-      onTap: () async {
+          : Text('Invalid', style: TextStyle(color: errorColor)),
+      onTap: () {
         final chatService = context.read<ChatService>();
         Navigator.of(context, rootNavigator: true).pop();
-        final pickedId = await DialogPresetPicker.show(
-          context: context,
-          title: Text(
-            'Choose a model',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          validPresets: textCapablePresets,
-          activePresetId: activePresetId,
-        );
-        if (pickedId == null) return;
-        chatSession!.modelPresetId = pickedId;
-        if (characterFile != null) {
-          await chatService.updateChat(characterFile!, chatSession!);
-        }
-        onChanged();
+        unawaited(() async {
+          final pickedId = await DialogPresetPicker.show(
+            context: context,
+            title: Text(
+              'Choose a model',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            validPresets: textCapablePresets,
+            activePresetId: activePresetId,
+          );
+          if (pickedId == null) return;
+          chatSession!.modelPresetId = pickedId;
+          if (characterFile != null) {
+            await chatService.updateChat(characterFile!, chatSession!);
+          }
+          onChanged();
+        }());
       },
     );
   }

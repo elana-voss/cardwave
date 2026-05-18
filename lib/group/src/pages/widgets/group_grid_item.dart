@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_grid_controller.dart';
@@ -288,34 +290,31 @@ class _GroupGridActionMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<_GroupGridItemActionEnum>(
       padding: EdgeInsets.zero,
-      onSelected: (value) async {
+      onSelected: (value) {
         final service = context.read<GroupFileService>();
         final errorColor = Theme.of(context).colorScheme.error;
-        switch (value) {
-          case _GroupGridItemActionEnum.delete:
-            final committed = await GroupGridController.confirmAndDelete(
-              service: service,
-              group: group,
-              confirmColor: errorColor,
-            );
-            if (committed) onChanged();
-        }
+        unawaited(() async {
+          switch (value) {
+            case _GroupGridItemActionEnum.delete:
+              final committed = await GroupGridController.confirmAndDelete(
+                service: service,
+                group: group,
+                confirmColor: errorColor,
+              );
+              if (committed) onChanged();
+          }
+        }());
       },
       itemBuilder: (context) => [
         PopupMenuItem<_GroupGridItemActionEnum>(
           value: _GroupGridItemActionEnum.delete,
           child: Row(
             children: [
-              Icon(
-                Icons.delete,
-                color: Theme.of(context).colorScheme.error,
-              ),
+              Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
               const SizedBox(width: 8),
               Text(
                 'Delete',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
           ),

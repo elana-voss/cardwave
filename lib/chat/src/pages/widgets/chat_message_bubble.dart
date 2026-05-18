@@ -183,10 +183,7 @@ class ChatMessageBubble extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (hasText) ...[
-                textWidget,
-                const SizedBox(height: 8),
-              ],
+              if (hasText) ...[textWidget, const SizedBox(height: 8)],
               for (final path in attachments)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -253,11 +250,13 @@ class ChatMessageBubble extends StatelessWidget {
       onShowPrompt: () => NavigationService().showJsonPromptDialog(
         rawPrompt: message.rawPrompt,
       ),
-      onShowEdit: () async {
-        final newContent = await NavigationService().showMessageEditDialog(
-          initialContent: message.content,
-        );
-        if (newContent != null) onEdit(newContent);
+      onShowEdit: () {
+        unawaited(() async {
+          final newContent = await NavigationService().showMessageEditDialog(
+            initialContent: message.content,
+          );
+          if (newContent != null) onEdit(newContent);
+        }());
       },
       onDelete: onDelete,
       onShareImage: message.attachedImages.isNotEmpty
@@ -265,9 +264,8 @@ class ChatMessageBubble extends StatelessWidget {
           : null,
       onSetAsBackground:
           pageController != null && message.attachedImages.isNotEmpty
-          ? () => pageController!.setBackgroundImage(
-              message.attachedImages.first,
-            )
+          ? () =>
+                pageController!.setBackgroundImage(message.attachedImages.first)
           : null,
       onSetAsCharacterImage:
           characterFile != null && message.attachedImages.isNotEmpty

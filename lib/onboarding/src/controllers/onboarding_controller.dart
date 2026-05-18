@@ -76,7 +76,7 @@ class OnboardingController extends ChangeNotifier {
 
   void _safeNotify() {
     if (_isDisposed) return;
-    super.notifyListeners();
+    notifyListeners();
   }
 
   Future<void> pickDirectory() async {

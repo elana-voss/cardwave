@@ -1,7 +1,7 @@
 # Name database generator
 
 One-shot offline tooling for the const-baked NPC name database at
-`packages/cardwave_names/lib/src/services/name_database_data.dart`.
+`packages/cardwave_names/lib/src/services/name_database_data.g.dart`.
 Not invoked by the app. Run it from the host machine when you want to
 (re)generate the NPC name pool.
 
@@ -86,7 +86,7 @@ so re-runs exit early — delete it manually to force a re-classify.
 ## Human review
 
 Before committing the generated `name_database.tagged.json` and the
-emitted `name_database_data.dart`, sample 50–100 entries and eyeball
+emitted `name_database_data.g.dart`, sample 50–100 entries and eyeball
 for absurd tag combinations (e.g. "Mary" tagged allure=5), accidental
 cultural insensitivity, and false cognates. The README in
 `memory-bank/name_datasets/` lists the corpora used.

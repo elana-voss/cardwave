@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
@@ -58,22 +60,24 @@ class TileImageAspectRatio extends StatelessWidget {
       leading: const Icon(Icons.aspect_ratio),
       title: const Text('Image aspect ratio'),
       trailing: DrawerTrailingValue(active.label),
-      onTap: () async {
-        final picked = await showSelectionDialog<String>(
-          context: context,
-          title: 'Image aspect ratio',
-          activeValue: active.id,
-          options: [
-            for (final a in aspects)
-              SelectionOption(value: a.id, label: a.label),
-          ],
-        );
-        if (picked == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setImagePreset(
-          imagePreset.preset.id,
-          picked,
-        );
-        onChanged();
+      onTap: () {
+        unawaited(() async {
+          final picked = await showSelectionDialog<String>(
+            context: context,
+            title: 'Image aspect ratio',
+            activeValue: active.id,
+            options: [
+              for (final a in aspects)
+                SelectionOption(value: a.id, label: a.label),
+            ],
+          );
+          if (picked == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setImagePreset(
+            imagePreset.preset.id,
+            picked,
+          );
+          onChanged();
+        }());
       },
     );
   }

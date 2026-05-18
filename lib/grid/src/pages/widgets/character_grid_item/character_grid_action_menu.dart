@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/controllers/character_grid_controller.dart';
@@ -30,7 +32,7 @@ class CharacterGridActionMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<Object>(
       padding: EdgeInsets.zero,
-      onSelected: (value) async {
+      onSelected: (value) {
         final characterService = context.read<CharacterService>();
 
         if (value is AiActionEnum) {
@@ -39,53 +41,55 @@ class CharacterGridActionMenu extends StatelessWidget {
           // over the full AiActionEnum needs a dead default: arm.
           // ignore: qcheck/prefer_switch_with_enums
           if (value == AiActionEnum.generatePreview) {
-            await characterAiService.generateDescriptionPreview(file);
+            unawaited(characterAiService.generateDescriptionPreview(file));
           } else if (value == AiActionEnum.autoTag) {
-            await characterAiService.autoTagCharacter(file);
+            unawaited(characterAiService.autoTagCharacter(file));
           }
           return;
         }
 
         final errorColor = Theme.of(context).colorScheme.error;
-        switch (value as _CharacterGridItemActionEnum) {
-          case _CharacterGridItemActionEnum.duplicate:
-            await CharacterGridController.duplicateAndShowError(
-              service: characterService,
-              file: file,
-            );
-          case _CharacterGridItemActionEnum.editNotes:
-            await CharacterGridController.editVariantNotes(
-              service: characterService,
-              file: file,
-            );
-          case _CharacterGridItemActionEnum.dismissRecent:
-            await CharacterGridController.dismissRecent(
-              service: characterService,
-              file: file,
-            );
-          case _CharacterGridItemActionEnum.pngExportV2V3:
-            await CharacterGridController.exportPngAndShowError(
-              service: characterService,
-              file: file,
-            );
-          case _CharacterGridItemActionEnum.jsonExportV2:
-            await CharacterGridController.exportJsonAndShowError(
-              service: characterService,
-              file: file,
-              asV2: true,
-            );
-          case _CharacterGridItemActionEnum.jsonExportV3:
-            await CharacterGridController.exportJsonAndShowError(
-              service: characterService,
-              file: file,
-            );
-          case _CharacterGridItemActionEnum.delete:
-            await CharacterGridController.confirmAndDelete(
-              service: characterService,
-              file: file,
-              confirmColor: errorColor,
-            );
-        }
+        unawaited(() async {
+          switch (value as _CharacterGridItemActionEnum) {
+            case _CharacterGridItemActionEnum.duplicate:
+              await CharacterGridController.duplicateAndShowError(
+                service: characterService,
+                file: file,
+              );
+            case _CharacterGridItemActionEnum.editNotes:
+              await CharacterGridController.editVariantNotes(
+                service: characterService,
+                file: file,
+              );
+            case _CharacterGridItemActionEnum.dismissRecent:
+              await CharacterGridController.dismissRecent(
+                service: characterService,
+                file: file,
+              );
+            case _CharacterGridItemActionEnum.pngExportV2V3:
+              await CharacterGridController.exportPngAndShowError(
+                service: characterService,
+                file: file,
+              );
+            case _CharacterGridItemActionEnum.jsonExportV2:
+              await CharacterGridController.exportJsonAndShowError(
+                service: characterService,
+                file: file,
+                asV2: true,
+              );
+            case _CharacterGridItemActionEnum.jsonExportV3:
+              await CharacterGridController.exportJsonAndShowError(
+                service: characterService,
+                file: file,
+              );
+            case _CharacterGridItemActionEnum.delete:
+              await CharacterGridController.confirmAndDelete(
+                service: characterService,
+                file: file,
+                confirmColor: errorColor,
+              );
+          }
+        }());
       },
       itemBuilder: (context) => [
         ...AiActionEnum.values
@@ -178,16 +182,11 @@ class CharacterGridActionMenu extends StatelessWidget {
           value: _CharacterGridItemActionEnum.delete,
           child: Row(
             children: [
-              Icon(
-                Icons.delete,
-                color: Theme.of(context).colorScheme.error,
-              ),
+              Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
               const SizedBox(width: 8),
               Text(
                 'Delete',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
           ),

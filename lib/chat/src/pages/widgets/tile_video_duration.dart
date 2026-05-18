@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
@@ -49,24 +51,26 @@ class TileVideoDuration extends StatelessWidget {
       leading: const Icon(Icons.timer),
       title: const Text('Duration'),
       trailing: DrawerTrailingValue(active.label),
-      onTap: () async {
-        final picked = await showSelectionDialog<int>(
-          context: context,
-          title: 'Duration',
-          activeValue: active.seconds,
-          options: [
-            for (final d in durations)
-              SelectionOption(value: d.seconds, label: d.label),
-          ],
-        );
-        if (picked == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setVideoPreset(
-          videoPreset.preset.id,
-          resolved.videoResolutionId,
-          resolved.videoAspectRatioId,
-          picked,
-        );
-        onChanged();
+      onTap: () {
+        unawaited(() async {
+          final picked = await showSelectionDialog<int>(
+            context: context,
+            title: 'Duration',
+            activeValue: active.seconds,
+            options: [
+              for (final d in durations)
+                SelectionOption(value: d.seconds, label: d.label),
+            ],
+          );
+          if (picked == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setVideoPreset(
+            videoPreset.preset.id,
+            resolved.videoResolutionId,
+            resolved.videoAspectRatioId,
+            picked,
+          );
+          onChanged();
+        }());
       },
     );
   }

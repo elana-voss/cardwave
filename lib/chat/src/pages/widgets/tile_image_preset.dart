@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/pages/widgets/tile_ai_provider.dart'
@@ -61,31 +63,33 @@ class TileImagePreset extends StatelessWidget {
       trailing: DrawerTrailingValue(
         activeEntry == null ? 'Tap to choose' : activeEntry.config.name,
       ),
-      onTap: () async {
+      onTap: () {
         // Capture before the async gap so we don't reach into `context`
         // after it may have been unmounted.
         final llm = pureHelpers;
         Navigator.of(context, rootNavigator: true).pop();
-        final pickedId = await DialogPresetPicker.show(
-          context: context,
-          title: Text(
-            'Choose an image model',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          validPresets: validPresets,
-          activePresetId: activePresetId,
-        );
-        if (pickedId == null) return;
-        final newPreset = llm.resolvePresetOrNull(
-          configId: pickedId,
-          providers: profiles,
-        );
-        if (newPreset == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setImagePreset(
-          pickedId,
-          firstImageAspectRatioId(newPreset.model),
-        );
-        onChanged();
+        unawaited(() async {
+          final pickedId = await DialogPresetPicker.show(
+            context: context,
+            title: Text(
+              'Choose an image model',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            validPresets: validPresets,
+            activePresetId: activePresetId,
+          );
+          if (pickedId == null) return;
+          final newPreset = llm.resolvePresetOrNull(
+            configId: pickedId,
+            providers: profiles,
+          );
+          if (newPreset == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setImagePreset(
+            pickedId,
+            firstImageAspectRatioId(newPreset.model),
+          );
+          onChanged();
+        }());
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/src/utils/logging_service.dart';
 import 'package:cardwave/common/src/widgets/ai_action_enum.dart';
@@ -44,16 +46,18 @@ class AiActionTextfieldPopup extends StatelessWidget {
         color: Theme.of(context).colorScheme.primary,
       ),
       tooltip: 'AI Actions',
-      onSelected: (action) async {
+      onSelected: (action) {
         final service = context.read<CharacterAiService>();
-        final newText = await AiActionController.runAndConfirmTextAction(
-          service: service,
-          action: action,
-          currentText: currentText(),
-          fieldName: fieldName,
-          contextCard: contextCard,
-        );
-        if (newText != null) onApply(newText);
+        unawaited(() async {
+          final newText = await AiActionController.runAndConfirmTextAction(
+            service: service,
+            action: action,
+            currentText: currentText(),
+            fieldName: fieldName,
+            contextCard: contextCard,
+          );
+          if (newText != null) onApply(newText);
+        }());
       },
       itemBuilder: (context) {
         return AiActionEnum.values.where((a) => !a.isGlobalOnly).map((action) {

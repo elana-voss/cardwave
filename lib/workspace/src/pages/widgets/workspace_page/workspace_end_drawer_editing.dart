@@ -13,11 +13,13 @@ class _WorkspaceEndDrawerEditing extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.cleaning_services),
           title: const Text('Content Cleaner'),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             if (onApplyCleaner != null) {
-              await NavigationService().showContentCleanerDialog(
-                onApply: onApplyCleaner!,
+              unawaited(
+                NavigationService().showContentCleanerDialog(
+                  onApply: onApplyCleaner!,
+                ),
               );
             }
           },
@@ -25,11 +27,13 @@ class _WorkspaceEndDrawerEditing extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.find_replace),
           title: const Text('Find & Replace'),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             if (onApplyCleaner != null) {
-              await NavigationService().showFindReplaceDialog(
-                onApply: onApplyCleaner!,
+              unawaited(
+                NavigationService().showFindReplaceDialog(
+                  onApply: onApplyCleaner!,
+                ),
               );
             }
           },

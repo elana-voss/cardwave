@@ -52,7 +52,7 @@ class LlmModelRepository {
 
     final models = <LlmModel>[];
     for (final e in rawModels) {
-      final map = Map<String, dynamic>.from(e as Map<dynamic, dynamic>);
+      final map = Map<String, dynamic>.of((e as Map).cast<String, dynamic>());
       try {
         final model = provider.parseModel(map, openRouterLookup: orLookup);
         if (zdrIds != null && !zdrIds.contains(model.id)) continue;
@@ -108,7 +108,7 @@ class LlmModelRepository {
     );
     final ids = <String>{};
     for (final e in raw) {
-      final map = Map<String, dynamic>.from(e as Map<dynamic, dynamic>);
+      final map = Map<String, dynamic>.of((e as Map).cast<String, dynamic>());
       final id = map['model_id'] as String?;
       if (id != null) ids.add(id);
     }
@@ -120,7 +120,7 @@ class LlmModelRepository {
   ) {
     final lookup = <String, Map<String, dynamic>>{};
     for (final raw in rawList) {
-      final map = Map<String, dynamic>.from(raw as Map<dynamic, dynamic>);
+      final map = Map<String, dynamic>.of((raw as Map).cast<String, dynamic>());
       final id = (map['id'] as String?)?.toLowerCase();
       if (id == null) continue;
       lookup[id] = map;

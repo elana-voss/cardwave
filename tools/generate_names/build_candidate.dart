@@ -14,7 +14,7 @@
 //   slim_candidate.dart   → data/name_database.slim.json   (committed)
 //   classify.dart         → data/name_database.tagged.json (committed)
 //   emit_dart.dart        → packages/cardwave_names/lib/src/services/
-//                           name_database_data.dart        (committed)
+//                           name_database_data.g.dart      (committed)
 //
 // No API cost. Re-runnable for free. Inspect the output for "are we
 // ingesting the right names?" before paying for Phase 2 classification.

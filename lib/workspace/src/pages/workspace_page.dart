@@ -230,10 +230,12 @@ class _AllChatsList extends StatelessWidget {
     return AllChatsDrawerList(
       characterFile: characterFile,
       selectedChatId: primaryChatController.selectedChat?.id,
-      onChatSelected: (entry) async {
-        await primaryChatController.selectChat(entry.id);
-        if (!context.mounted) return;
-        Navigator.of(context, rootNavigator: true).pop();
+      onChatSelected: (entry) {
+        unawaited(() async {
+          await primaryChatController.selectChat(entry.id);
+          if (!context.mounted) return;
+          Navigator.of(context, rootNavigator: true).pop();
+        }());
       },
       onChatDeleted: (deletedChatId) {
         if (primaryChatController.selectedChat?.id == deletedChatId) {

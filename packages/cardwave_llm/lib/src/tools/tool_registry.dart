@@ -84,7 +84,7 @@ class ToolRegistry {
             jsonSchema: tool.parametersSchemaFor(appData),
             parse: (json) => json is Map<String, dynamic>
                 ? json
-                : Map<String, dynamic>.from(json as Map),
+                : Map<String, dynamic>.of((json as Map).cast<String, dynamic>()),
           ),
           fn: (input, ctx) async {
             throw StateError(

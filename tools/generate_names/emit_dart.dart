@@ -6,7 +6,7 @@
 // Run from app/ via:
 //   dart run tools/generate_names/emit_dart.dart
 //
-// Output: packages/cardwave_names/lib/src/services/name_database_data.dart
+// Output: packages/cardwave_names/lib/src/services/name_database_data.g.dart
 //
 // Deterministic: re-running on the same tagged JSON produces a
 // byte-identical Dart file.
@@ -18,7 +18,7 @@ import 'loaders/local_taxonomy.dart';
 
 const _inputPath = 'tools/generate_names/data/name_database.tagged.json';
 const _outputPath =
-    'packages/cardwave_names/lib/src/services/name_database_data.dart';
+    'packages/cardwave_names/lib/src/services/name_database_data.g.dart';
 
 Future<void> main() async {
   final raw = File(_inputPath).readAsStringSync();

@@ -17,49 +17,55 @@ class _WorkspaceEndDrawerExport extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.image),
           title: const Text('Export as PNG (V2/V3)'),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
-            try {
-              await characterService.exportAsPng(activeCharacterFile);
-            } on Exception catch (e, st) {
-              LoggingService().error('PNG export failed', e, st);
-              NavigationService().showSnackBar(
-                AppConstants.exportFailedMessage,
-              );
-            }
+            unawaited(() async {
+              try {
+                await characterService.exportAsPng(activeCharacterFile);
+              } on Exception catch (e, st) {
+                LoggingService().error('PNG export failed', e, st);
+                NavigationService().showSnackBar(
+                  AppConstants.exportFailedMessage,
+                );
+              }
+            }());
           },
         ),
         ListTile(
           leading: const Icon(Icons.data_object),
           title: const Text('Export as JSON (V3)'),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
-            try {
-              await characterService.exportAsJson(activeCharacterFile);
-            } on Exception catch (e, st) {
-              LoggingService().error('JSON V3 export failed', e, st);
-              NavigationService().showSnackBar(
-                AppConstants.exportFailedMessage,
-              );
-            }
+            unawaited(() async {
+              try {
+                await characterService.exportAsJson(activeCharacterFile);
+              } on Exception catch (e, st) {
+                LoggingService().error('JSON V3 export failed', e, st);
+                NavigationService().showSnackBar(
+                  AppConstants.exportFailedMessage,
+                );
+              }
+            }());
           },
         ),
         ListTile(
           leading: const Icon(Icons.data_object),
           title: const Text('Export as JSON (V2)'),
-          onTap: () async {
+          onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
-            try {
-              await characterService.exportAsJson(
-                activeCharacterFile,
-                asV2: true,
-              );
-            } on Exception catch (e, st) {
-              LoggingService().error('JSON V2 export failed', e, st);
-              NavigationService().showSnackBar(
-                AppConstants.exportFailedMessage,
-              );
-            }
+            unawaited(() async {
+              try {
+                await characterService.exportAsJson(
+                  activeCharacterFile,
+                  asV2: true,
+                );
+              } on Exception catch (e, st) {
+                LoggingService().error('JSON V2 export failed', e, st);
+                NavigationService().showSnackBar(
+                  AppConstants.exportFailedMessage,
+                );
+              }
+            }());
           },
         ),
       ],

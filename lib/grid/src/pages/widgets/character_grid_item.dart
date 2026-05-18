@@ -58,19 +58,15 @@ class CharacterGridItem extends StatelessWidget {
             side: file.card.cardwaveData.isFavorite
                 ? BorderSide(color: Theme.of(context).colorScheme.error)
                 : file.isRecent
-                ? BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                  )
+                ? BorderSide(color: Theme.of(context).colorScheme.primary)
                 : BorderSide.none,
           ),
           child: InkWell(
-            onTap: () async {
+            onTap: () {
               if (isGroup) {
                 _showVariants(context);
-              } else {
-                if (context.mounted) {
-                  await RouteChatCharacter().execute(context, file);
-                }
+              } else if (context.mounted) {
+                unawaited(RouteChatCharacter().execute(context, file));
               }
             },
             child: Row(

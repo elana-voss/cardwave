@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/pages/widgets/tile_ai_provider.dart'
@@ -62,32 +64,34 @@ class TileTtsPreset extends StatelessWidget {
       trailing: DrawerTrailingValue(
         activeEntry == null ? 'Tap to choose' : activeEntry.config.name,
       ),
-      onTap: () async {
+      onTap: () {
         final llm = pureHelpers;
         Navigator.of(context, rootNavigator: true).pop();
-        final pickedId = await DialogPresetPicker.show(
-          context: context,
-          title: Text(
-            'Choose a speech model',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          validPresets: validPresets,
-          activePresetId: activePresetId,
-        );
-        if (pickedId == null) return;
-        final newPreset = llm.resolvePresetOrNull(
-          configId: pickedId,
-          providers: profiles,
-        );
-        if (newPreset == null) return;
-        final seed = firstTtsOptions(newPreset.model);
-        if (seed == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
-          pickedId,
-          seed.voiceId,
-          seed.languageCode,
-        );
-        onChanged();
+        unawaited(() async {
+          final pickedId = await DialogPresetPicker.show(
+            context: context,
+            title: Text(
+              'Choose a speech model',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            validPresets: validPresets,
+            activePresetId: activePresetId,
+          );
+          if (pickedId == null) return;
+          final newPreset = llm.resolvePresetOrNull(
+            configId: pickedId,
+            providers: profiles,
+          );
+          if (newPreset == null) return;
+          final seed = firstTtsOptions(newPreset.model);
+          if (seed == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
+            pickedId,
+            seed.voiceId,
+            seed.languageCode,
+          );
+          onChanged();
+        }());
       },
     );
   }

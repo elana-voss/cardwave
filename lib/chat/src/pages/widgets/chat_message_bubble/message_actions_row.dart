@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/chat/src/controllers/base_chat_view_controller.dart';
 import 'package:cardwave/chat/src/controllers/text_to_speech_controller.dart';
 import 'package:cardwave/chat/src/models/chat_message.dart';
@@ -131,22 +133,26 @@ class MessageActionsRow extends StatelessWidget {
                 child: Text('Delete'),
               ),
           ],
-          onSelected: (action) async {
-            switch (action) {
-              case _MessageActionEnum.edit:
-                onShowEdit?.call();
-              case _MessageActionEnum.copy:
-                await Clipboard.setData(ClipboardData(text: message.content));
-                NavigationService().showSnackBar('Message copied to clipboard');
-              case _MessageActionEnum.shareImage:
-                onShareImage?.call();
-              case _MessageActionEnum.setAsBackground:
-                onSetAsBackground?.call();
-              case _MessageActionEnum.setAsCharacterImage:
-                onSetAsCharacterImage?.call();
-              case _MessageActionEnum.delete:
-                onDelete?.call();
-            }
+          onSelected: (action) {
+            unawaited(() async {
+              switch (action) {
+                case _MessageActionEnum.edit:
+                  onShowEdit?.call();
+                case _MessageActionEnum.copy:
+                  await Clipboard.setData(ClipboardData(text: message.content));
+                  NavigationService().showSnackBar(
+                    'Message copied to clipboard',
+                  );
+                case _MessageActionEnum.shareImage:
+                  onShareImage?.call();
+                case _MessageActionEnum.setAsBackground:
+                  onSetAsBackground?.call();
+                case _MessageActionEnum.setAsCharacterImage:
+                  onSetAsCharacterImage?.call();
+                case _MessageActionEnum.delete:
+                  onDelete?.call();
+              }
+            }());
           },
         ),
       ],

@@ -20,8 +20,8 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
         const DrawerSectionHeader('Chat'),
         TileNsfw(
           chatSession: visibleChatController.selectedChat,
-          onChanged: (value) => visibleChatController
-              .updateSelectedChatSettings(isNsfw: value),
+          onChanged: (value) =>
+              visibleChatController.updateSelectedChatSettings(isNsfw: value),
         ),
         TileScenario(
           chatSession: visibleChatController.selectedChat,
@@ -36,26 +36,23 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
         if (isAdvanced) ...[
           TileTrailingParagraph(
             chatSession: visibleChatController.selectedChat,
-            onChanged: (value) async {
-              await visibleChatController.updateSelectedChatSettings(
-                removeTrailingSentences: value,
-              );
-              if (value) {
-                await visibleChatController.trimTrailingParagraph();
-              }
+            onChanged: (value) {
+              unawaited(() async {
+                await visibleChatController.updateSelectedChatSettings(
+                  removeTrailingSentences: value,
+                );
+                if (value) {
+                  await visibleChatController.trimTrailingParagraph();
+                }
+              }());
             },
           ),
           TileMaxResponseLength(
             chatSession: visibleChatController.selectedChat,
           ),
-          TileReasoningEffort(
-            chatSession: visibleChatController.selectedChat,
-          ),
+          TileReasoningEffort(chatSession: visibleChatController.selectedChat),
         ],
-        DrawerShowAdvanced(
-          expanded: isAdvanced,
-          onToggle: onToggleAdvanced,
-        ),
+        DrawerShowAdvanced(expanded: isAdvanced, onToggle: onToggleAdvanced),
       ],
     );
   }

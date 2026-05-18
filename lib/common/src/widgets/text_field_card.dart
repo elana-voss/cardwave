@@ -110,7 +110,7 @@ class TextFieldCard extends StatefulWidget {
 }
 
 class TextFieldCardState extends State<TextFieldCard> {
-  static FilteringTextInputFormatter onlyDigits =
+  static final FilteringTextInputFormatter onlyDigits =
       FilteringTextInputFormatter.allow(RegExp('[0-9]'));
   Timer? _debounceTimer;
   late final FocusNode _focusNode;
@@ -166,9 +166,11 @@ class TextFieldCardState extends State<TextFieldCard> {
     if (!widget.showTokenCount) return;
 
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
-      final count = await UtilsLlm.countTokens(text);
-      if (mounted) _tokenCount.value = count;
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      unawaited(() async {
+        final count = await UtilsLlm.countTokens(text);
+        if (mounted) _tokenCount.value = count;
+      }());
     });
   }
 
@@ -243,10 +245,7 @@ class TextFieldCardState extends State<TextFieldCard> {
         ? ValueListenableBuilder<int>(
             valueListenable: _tokenCount,
             builder: (context, count, child) {
-              return Text(
-                '${widget.label} - $count tokens',
-                style: textStyle,
-              );
+              return Text('${widget.label} - $count tokens', style: textStyle);
             },
           )
         : Text(widget.label, style: textStyle);
@@ -318,11 +317,13 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
     if (_localDebounce?.isActive ?? false) {
       _localDebounce!.cancel();
     }
-    _localDebounce = Timer(const Duration(milliseconds: 500), () async {
-      if (widget.showTokenCount) {
-        final count = await UtilsLlm.countTokens(widget.controller.text);
-        if (mounted) _localTokenCount.value = count;
-      }
+    _localDebounce = Timer(const Duration(milliseconds: 500), () {
+      unawaited(() async {
+        if (widget.showTokenCount) {
+          final count = await UtilsLlm.countTokens(widget.controller.text);
+          if (mounted) _localTokenCount.value = count;
+        }
+      }());
     });
   }
 
@@ -375,16 +376,8 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
           body: Padding(
             padding: EdgeInsets.all(padding),
             child: TextFormField(
-              // child: TextFieldAutotrim(
               autofocus: true,
               controller: widget.controller,
-              // decoration: const InputDecoration(
-              //   border: InputBorder.none,
-              //   focusedBorder: InputBorder.none,
-              //   enabledBorder: InputBorder.none,
-              //   errorBorder: InputBorder.none,
-              //   disabledBorder: InputBorder.none,
-              // ),
               maxLines: null,
               expands: true,
               textAlignVertical: TextAlignVertical.top,

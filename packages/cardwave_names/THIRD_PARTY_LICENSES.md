@@ -1,6 +1,6 @@
 # Third-Party Licenses
 
-The frozen name database compiled into `lib/src/services/name_database_data.dart`
+The frozen name database compiled into `lib/src/services/name_database_data.g.dart`
 is a derivative work of the open corpora listed below. Each name in
 the database was sourced from one of these; the LLM only adds the
 synthetic tags (role, intelligence, allure, themes, etc.) at build

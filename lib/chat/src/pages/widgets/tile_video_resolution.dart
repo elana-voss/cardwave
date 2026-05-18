@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
@@ -49,24 +51,26 @@ class TileVideoResolution extends StatelessWidget {
       leading: const Icon(Icons.high_quality),
       title: const Text('Resolution'),
       trailing: DrawerTrailingValue(active.label),
-      onTap: () async {
-        final picked = await showSelectionDialog<String>(
-          context: context,
-          title: 'Resolution',
-          activeValue: active.id,
-          options: [
-            for (final r in resolutions)
-              SelectionOption(value: r.id, label: r.label),
-          ],
-        );
-        if (picked == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setVideoPreset(
-          videoPreset.preset.id,
-          picked,
-          resolved.videoAspectRatioId,
-          resolved.videoDurationSeconds,
-        );
-        onChanged();
+      onTap: () {
+        unawaited(() async {
+          final picked = await showSelectionDialog<String>(
+            context: context,
+            title: 'Resolution',
+            activeValue: active.id,
+            options: [
+              for (final r in resolutions)
+                SelectionOption(value: r.id, label: r.label),
+            ],
+          );
+          if (picked == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setVideoPreset(
+            videoPreset.preset.id,
+            picked,
+            resolved.videoAspectRatioId,
+            resolved.videoDurationSeconds,
+          );
+          onChanged();
+        }());
       },
     );
   }

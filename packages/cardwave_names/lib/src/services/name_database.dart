@@ -5,11 +5,11 @@ import 'package:cardwave_names/src/models/name_filter_field.dart';
 import 'package:cardwave_names/src/models/name_filters.dart';
 import 'package:cardwave_names/src/models/name_pick.dart';
 import 'package:cardwave_names/src/models/name_surname.dart';
-import 'package:cardwave_names/src/services/name_database_data.dart';
+import 'package:cardwave_names/src/services/name_database_data.g.dart';
 
 /// Serves filtered NPC name picks to the `suggest_name` tool. Entry data
 /// is a const top-level list compiled into the binary (see
-/// [name_database_data.dart]). Filter intersection that produces no
+/// [name_database_data.g.dart]). Filter intersection that produces no
 /// candidates degrades by dropping fields in [_dropOrder] until the pool
 /// is non-empty; per-call used-name sets are reset within the active
 /// filter slice when every candidate is already used.

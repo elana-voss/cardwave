@@ -1,3 +1,12 @@
+# Include qcheck's `recommended` (180 rules), `provider` (8 rules), and
+# `flutter-extras` (8 rules) presets. qcheck's config loader and the Dart
+# analyzer (3.10+) both accept `include:` as a YAML sequence; lists merge
+# with deduplication.
+include:
+  - ../../qcheck/packages/qcheck/lib/recommended.yaml
+  - ../../qcheck/packages/qcheck/lib/provider.yaml
+  - ../../qcheck/packages/qcheck/lib/flutter-extras.yaml
+
 analyzer:
   exclude:
     - "**/*.g.dart"
@@ -10,13 +19,14 @@ analyzer:
 linter:
   rules:
     - avoid_print # No more console logs in production
-    - unawaited_futures # Catches async bugs
-    - prefer_const_constructors # Keeps the UI snappy
-    - cancel_subscriptions # Prevents memory leaks
-    - close_sinks # Prevents memory leaks
+    - unawaited_futures # Catches async bugs (qcheck's unawaited_future_in_void_context is narrower)
+    - prefer_const_constructors # Keeps the UI snappy (qcheck has no equivalent)
+    - cancel_subscriptions # Prevents memory leaks (qcheck has the same rule but it's not in `recommended`)
+    - close_sinks # Prevents memory leaks (qcheck's dispose_class_fields covers only classes with a cleanup method)
 
 # qcheck — Flutter/Dart code-quality analyzer (third-party).
-# CLI: `..\..\qcheck\build\qcheck.exe analyze --preset recommended lib/`
+# CLI: `..\..\qcheck\build\qcheck.exe analyze lib/` (no --preset flag —
+# the `include:` above already selects `recommended`, so the CLI inherits it).
 # In-editor: loaded as an analysis_server_plugin via the top-level `plugins:`
 # block below (NOT `analyzer: plugins:` — that's the legacy mechanism).
 # qcheck lives at `..\..\qcheck` (sibling of `own_card_editor/`), not inside this repo.
@@ -29,21 +39,19 @@ qcheck:
     - "**/*.g.dart"          # json_serializable generated code; mirrors analyzer:exclude above
     - "memory-bank/**"       # reference-code scratch files, not part of the app
     - "scripts/**"           # build/dev scripts — not app code
-    - "test/**"              # unit tests — not linted by qcheck
-    - "integration_test/**"  # UI-driven integration tests — not linted by qcheck
+    - "test/**"              # unit tests at workspace root — not linted by qcheck
+    - "**/test/**"           # unit tests inside member packages
+    - "integration_test/**"  # UI-driven integration tests at workspace root
+    - "**/integration_test/**" # UI-driven integration tests inside member packages
+
   disabled-rules:
     # Architecture conflicts — these rules contradict project-wide conventions.
-    - avoid-barrel-files            # CLAUDE.md mandates per-domain barrels (lib/<domain>/<domain>.dart) enforced by import_lint
     - prefer-nullable-provider-types # Providers are always present at scope; nullable T? defeats the contract
     - prefer-single-widget-per-file # Page files intentionally host their inline-only helper widgets
 
     # Stylistic noise — high count, low payoff, no behavioral signal.
-    - arguments-ordering            # named-arg reordering at call sites; cosmetic
     - prefer-spacing                # whitespace-only
     - move-variable-closer-to-its-usage # mechanical refactor pressure
-    - avoid-adjacent-strings        # cosmetic
-    - prefer-addition-subtraction-assignments # cosmetic
-    - avoid-collection-mutating-methods # flags legitimate List.add / Map.[]= ; too noisy
     - prefer-shorthands-with-enums  # `.min` over `MainAxisSize.min` hurts call-site readability for unfamiliar code
     - prefer-shorthands-with-static-fields # same readability cost — `.constName` over `MyClass.constName`
     - prefer-returning-shorthands   # same readability cost in return position
@@ -52,12 +60,4 @@ qcheck:
     # Convention conflicts — project uses different naming/file conventions on purpose.
     - prefer-match-file-name        # idiomatic multi-class files (enums + helpers + widget) are intentional here
     - prefer-prefixed-global-constants # shared values live in AppConstants; the few top-level consts are local-scope
-
-    # CLI-noisy without behavior signal — silenced after the 2026-05-16 qcheck triage (3K+ → ~800 mixed + 5 real).
-    - member-ordering               # stylistic class-member order; project hasn't adopted the convention
-    - newline-before-return         # whitespace-only; no behavioral signal
-    - prefer-extracting-callbacks   # contradicts CLAUDE.md "flat over nested; inline single-use private helpers"
-    - prefer-static-class           # top-level helper functions are idiomatic Dart in this codebase
-    - avoid-late-keyword            # fires on every `late`; investigation found all 112 sites are idiomatic Dart/Flutter (State init, bootstrap singletons, branch-assigned locals)
-    - prefer-moving-to-variable     # fires on any chain repeated 2+ times in a block; mostly two-use repeats where a local is more noise than savings
-    - no-magic-number               # fires on every numeric literal; CLAUDE.md exempts inline widget layout values, and non-UI hits are mostly self-meaning (days-per-year, byte sizes, Unicode codepoint ranges)
+    - prefer-extracting-callbacks   # from flutter-extras; contradicts CLAUDE.md "flat over nested; inline single-use private helpers"

@@ -52,32 +52,6 @@ class ViewEmptyState extends StatelessWidget {
                 ),
                 OutlinedButton.icon(
                   onPressed: () => RouteCreateCharacter().execute(context),
-                  // {
-                  // try {
-                  //   final newCharFile = await context
-                  //       .read<CharacterService>()
-                  //       .createCharacterInteractive();
-                  //   if (newCharFile == null) return;
-                  //   if (context.mounted) {
-                  //     await Navigator.of(context).push(
-                  //       MaterialPageRoute(
-                  //         builder: (context) => CharacterWorkspacePage(
-                  //           characterFile: newCharFile,
-                  //           initialMode: ChatPageModeEnum.editor,
-                  //         ),
-                  //       ),
-                  //     );
-                  //   }
-                  // } catch (e) {
-                  //   if (context.mounted) {
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       SnackBar(
-                  //         content: Text('Failed to create character: $e'),
-                  //       ),
-                  //     );
-                  //   }
-                  // }
-                  // },
                   icon: const Icon(Icons.add),
                   label: const Text('Create New Character'),
                 ),

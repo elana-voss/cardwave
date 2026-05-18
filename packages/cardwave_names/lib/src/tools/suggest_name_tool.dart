@@ -12,7 +12,7 @@ import 'package:cardwave_names/src/services/name_database.dart';
 /// [BuiltinToolAppData.usedFirstNames] / [BuiltinToolAppData.usedLastNames]
 /// — the app side implements those by exposing the session's sets.
 class SuggestNameTool extends ToolDefinition {
-  SuggestNameTool({
+  const SuggestNameTool({
     required this.promptRepository,
     required this.maxCallsPerTurn,
     required this.nameDatabase,
@@ -111,8 +111,8 @@ class SuggestNameTool extends ToolDefinition {
     };
   }
 
-  Map<String, Object?> _enumField(List<String> values, String description) {
-    return {'type': 'string', 'enum': values, 'description': description};
+  Map<String, Object?> _enumField(List<String> values, String desc) {
+    return {'type': 'string', 'enum': values, 'description': desc};
   }
 
   @override

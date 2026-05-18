@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
@@ -53,27 +55,29 @@ class TileTtsLanguage extends StatelessWidget {
       leading: const Icon(Icons.language),
       title: const Text('Language'),
       trailing: DrawerTrailingValue(active.label),
-      onTap: () async {
-        final pickedCode = await showSelectionDialog<String>(
-          context: context,
-          title: 'Language',
-          activeValue: active.code,
-          options: [
-            for (final lang in languages)
-              SelectionOption(
-                value: lang.code,
-                label: lang.label,
-                subtitle: lang.code,
-              ),
-          ],
-        );
-        if (pickedCode == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
-          ttsPreset.preset.id,
-          resolved.ttsVoiceId,
-          pickedCode,
-        );
-        onChanged();
+      onTap: () {
+        unawaited(() async {
+          final pickedCode = await showSelectionDialog<String>(
+            context: context,
+            title: 'Language',
+            activeValue: active.code,
+            options: [
+              for (final lang in languages)
+                SelectionOption(
+                  value: lang.code,
+                  label: lang.label,
+                  subtitle: lang.code,
+                ),
+            ],
+          );
+          if (pickedCode == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
+            ttsPreset.preset.id,
+            resolved.ttsVoiceId,
+            pickedCode,
+          );
+          onChanged();
+        }());
       },
     );
   }

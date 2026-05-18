@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
@@ -54,27 +56,29 @@ class TileTtsVoice extends StatelessWidget {
       leading: const Icon(Icons.record_voice_over),
       title: const Text('Voice'),
       trailing: DrawerTrailingValue(active.label),
-      onTap: () async {
-        final pickedId = await showSelectionDialog<String>(
-          context: context,
-          title: 'Voice',
-          activeValue: active.id,
-          options: [
-            for (final voice in voices)
-              SelectionOption(
-                value: voice.id,
-                label: voice.label,
-                subtitle: voice.tone?.isNotEmpty == true ? voice.tone : null,
-              ),
-          ],
-        );
-        if (pickedId == null) return;
-        (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
-          ttsPreset.preset.id,
-          pickedId,
-          resolved.ttsLanguageCode,
-        );
-        onChanged();
+      onTap: () {
+        unawaited(() async {
+          final pickedId = await showSelectionDialog<String>(
+            context: context,
+            title: 'Voice',
+            activeValue: active.id,
+            options: [
+              for (final voice in voices)
+                SelectionOption(
+                  value: voice.id,
+                  label: voice.label,
+                  subtitle: voice.tone?.isNotEmpty == true ? voice.tone : null,
+                ),
+            ],
+          );
+          if (pickedId == null) return;
+          (session.configMedia ??= ConfigMediaSession()).setTtsPreset(
+            ttsPreset.preset.id,
+            pickedId,
+            resolved.ttsLanguageCode,
+          );
+          onChanged();
+        }());
       },
     );
   }

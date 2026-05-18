@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/character_grid_action_menu.dart';
@@ -81,9 +83,8 @@ class _CharacterGridItemHeader extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.edit, size: 20),
           padding: EdgeInsets.zero,
-          onPressed: () async {
-            await RouteEditCharacter().execute(context, file);
-          },
+          onPressed: () =>
+              unawaited(RouteEditCharacter().execute(context, file)),
         ),
         const SizedBox(width: 4),
         CharacterGridActionMenu(
