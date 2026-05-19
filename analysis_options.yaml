@@ -49,7 +49,7 @@ qcheck:
     - prefer-nullable-provider-types # Providers are always present at scope; nullable T? defeats the contract
 
     # Stylistic noise — high count, low payoff, no behavioral signal.
-    - prefer-shorthands-with-enums  # `.min` over `MainAxisSize.min` hurts call-site readability for unfamiliar code
+    - prefer-shorthands-with-enums  # 1033 sites; readers see the enum name at every match arm and named-argument site — we pay verbosity for navigation. Tooling-only migration if ever reversed.
     - prefer-shorthands-with-static-fields # same readability cost — `.constName` over `MyClass.constName`
     - prefer-returning-shorthands   # same readability cost in return position
     - prefer-shorthands-with-constructors # same readability cost at construction sites
