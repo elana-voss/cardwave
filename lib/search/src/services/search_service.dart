@@ -29,6 +29,13 @@ class SearchService extends ChangeNotifier {
     required Embedder embedder,
   }) : _embedder = embedder;
 
+  /// Minimum best-field cosine for discovery — cards with no literal
+  /// token match enter the result set only when their best-field cosine
+  /// clears this bar. Calibrated against BGE-small-en-v1.5 on the
+  /// example-card pool: real matches land at 0.65–0.85, baseline noise
+  /// at 0.45–0.57; 0.6 leaves a small margin above the noise floor.
+  static const double _semanticThreshold = 0.6;
+
   final SearchRepository repository;
   final Embedder _embedder;
 
@@ -135,11 +142,14 @@ class SearchService extends ChangeNotifier {
     String query,
     Iterable<String> candidateIds,
   ) {
+    final candidates = candidateIds.toList();
     final tokens = TextTokenizer.tokenize(query);
-    final lexical = _bm25Index?.rankAll(tokens, candidateIds) ?? const [];
-    if (lexical.isEmpty) return const {};
+    final lexical = _bm25Index?.rankAll(tokens, candidates) ?? const [];
     final ids = lexical.map((e) => e.key).toList();
-    return reciprocalRankFusion([ids]);
+    final scores = ids.isEmpty
+        ? <String, double>{}
+        : reciprocalRankFusion([ids]);
+    return _applyExactNameOverride(query, candidates, scores);
   }
 
   /// Full keyword + meaning ranking. Embeds the query (cached across
@@ -154,23 +164,36 @@ class SearchService extends ChangeNotifier {
     final tokens = TextTokenizer.tokenize(query);
     final lexicalEntries = _bm25Index?.rankAll(tokens, candidates) ?? const [];
     final lexicalIds = lexicalEntries.map((e) => e.key).toList();
+    final lexicalSet = lexicalIds.toSet();
 
     final queryEmbedding = await _resolveQueryEmbedding(query);
 
     final rankedLists = <List<String>>[];
     if (lexicalIds.isNotEmpty) rankedLists.add(lexicalIds);
 
+    // Semantic admits cards via two paths: lexical-set membership (BM25
+    // already found a literal token match) OR best-field cosine clearing
+    // the discovery threshold. Cards with partial data (still mid-ingest)
+    // are skipped so noisy half-vectors don't sneak in.
     if (queryEmbedding != null) {
       final semanticScores = <String, double>{};
       for (final id in candidates) {
         final data = _byPath[id];
         if (data == null) continue;
-        final allChunks = data.byField.values
-            .expand((chunks) => chunks)
-            .toList();
-        if (allChunks.isEmpty) continue;
-        final score = maxCosine(queryEmbedding, allChunks);
-        if (score > 0) semanticScores[id] = score;
+        if (data.hashes.length < CardSearchFieldEnum.values.length) continue;
+        var bestCosine = 0.0;
+        var orderingScore = 0.0;
+        for (final field in CardSearchFieldEnum.values) {
+          final chunks = data.byField[field] ?? const <Float32List>[];
+          if (chunks.isEmpty) continue;
+          final cos = maxCosine(queryEmbedding, chunks);
+          if (cos > bestCosine) bestCosine = cos;
+          orderingScore +=
+              (field.weight / CardSearchFieldEnum.totalWeight) * cos;
+        }
+        if (lexicalSet.contains(id) || bestCosine >= _semanticThreshold) {
+          semanticScores[id] = orderingScore;
+        }
       }
       if (semanticScores.isNotEmpty) {
         final semanticIds = semanticScores.entries.toList()
@@ -179,8 +202,42 @@ class SearchService extends ChangeNotifier {
       }
     }
 
-    if (rankedLists.isEmpty) return const {};
-    return reciprocalRankFusion(rankedLists);
+    final fused = rankedLists.isEmpty
+        ? <String, double>{}
+        : reciprocalRankFusion(rankedLists);
+    return _applyExactNameOverride(query, candidates, fused);
+  }
+
+  /// Boosts an exact-name match to the top of the fused score map. Fires
+  /// only when exactly one candidate's card name equals the trimmed query
+  /// case-insensitively — multi-match (variants) and zero-match cases are
+  /// no-ops. The override inserts even when the card wasn't otherwise
+  /// scored, so the display-time gate still keeps it visible.
+  Map<String, double> _applyExactNameOverride(
+    String query,
+    Iterable<String> candidates,
+    Map<String, double> scores,
+  ) {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) return scores;
+    String? singleMatch;
+    var matchCount = 0;
+    for (final id in candidates) {
+      final card = _cardsByPath[id];
+      if (card == null) continue;
+      if (card.card.name.trim().toLowerCase() != normalized) continue;
+      singleMatch = id;
+      matchCount++;
+      if (matchCount > 1) return scores;
+    }
+    if (matchCount != 1 || singleMatch == null) return scores;
+    var maxScore = 0.0;
+    for (final v in scores.values) {
+      if (v > maxScore) maxScore = v;
+    }
+    final result = Map<String, double>.of(scores);
+    result[singleMatch] = maxScore + 1.0;
+    return result;
   }
 
   Future<Float32List?> _resolveQueryEmbedding(String query) async {

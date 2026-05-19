@@ -10,21 +10,23 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// Bug being defended: a card with the searched word in `description`
-/// (a low-weighted field) used to rank far below cards whose `name`
-/// merely embedded close-ish to the query via topical similarity. With
-/// BM25F + RRF, a literal hit in any indexed field beats a fuzzy
-/// no-literal-hit semantic neighbor.
+/// Bug being defended: typing a word that exists literally in a card's
+/// `description` (a low-weighted field) used to leave that card buried
+/// below fuzzy semantic neighbors. The library also failed to filter the
+/// grid at all — every card stayed visible, just re-ordered. Both are
+/// fixed: BM25F + RRF rank the literal hit at the top, and the relevance
+/// gate drops the fuzzy-only neighbor.
 ///
 /// Underlying use case: type a word that exists literally in a card's
-/// description but nowhere else — that card should be at position 0.
+/// description but nowhere else — that card should be the only one
+/// visible on the grid.
 ///
 /// No API calls — embedder and keyword index are both local.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'Grid — literal hit in description beats fuzzy neighbors',
+    'Grid — literal description hit is the only card kept after cutoff',
     timeout: const Timeout(Duration(minutes: 6)),
     (tester) async {
       await wipeAppData();
@@ -100,24 +102,21 @@ void main() {
       await tester.enterText(searchField, 'Vietnamese');
       await tester.pumpAndSettle(const Duration(milliseconds: 700));
 
+      // Cass has no "vietnamese" anywhere indexed and isn't semantically
+      // close; cutoff drops it.
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(2),
-        reason: 'typing "Vietnamese" sorts but does not filter cards out',
-      );
-
-      // The Vietnamese-in-description card has no "Vietnamese" in its name
-      // by construction (that's the whole point of the test). So the
-      // first-tile assertion is "not Cass" — the seeded card is the only
-      // other one on the grid, so anything-but-Cass means the literal hit
-      // landed at the top.
-      final firstItem = find.byType(CharacterGridItem).first;
-      expect(
-        find.descendant(of: firstItem, matching: find.text(kCassName)),
-        findsNothing,
+        findsOneWidget,
         reason:
-            'BM25F + RRF should rank the literal-description-hit card '
-            'above the fuzzy-only Cass match — Cass should not be first',
+            'relevance cutoff should drop Cass (no literal hit, low '
+            'meaning-side cosine) — only the Vietnamese-description card '
+            'should remain',
+      );
+      final onlyItem = find.byType(CharacterGridItem).first;
+      expect(
+        find.descendant(of: onlyItem, matching: find.text(kCassName)),
+        findsNothing,
+        reason: 'remaining tile must be the Vietnamese card, not Cass',
       );
     },
   );

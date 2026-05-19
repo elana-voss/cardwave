@@ -135,6 +135,15 @@ flutter:
     - assets/cards/Cass_Assistant.png
     - assets/test_cards/Test_Character.png
     - assets/test_cards/Vietnamese_Desc_Character.png
+    - assets/test_cards/Ada_Lovelace.png
+    - assets/test_cards/Aria.png
+    - assets/test_cards/Chester.png
+    - assets/test_cards/Detective_Ryn.png
+    - assets/test_cards/Julian.png
+    - assets/test_cards/Nexus-7.png
+    - assets/test_cards/Orion.png
+    - assets/test_cards/Pip.png
+    - assets/test_cards/Seraphina.png
 
   fonts:
     - family: NotoSans

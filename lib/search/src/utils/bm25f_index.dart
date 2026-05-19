@@ -85,13 +85,11 @@ class Bm25fIndex {
       ..sort((a, b) => b.value.compareTo(a.value));
   }
 
-  /// Per-field boost. Floored at 0.5 so the scenario field (whose source
-  /// `weight: 1` would map to 0.1) still contributes, just at the lowest
-  /// rate among the five fields.
-  static double _boostFor(CardSearchFieldEnum field) {
-    final raw = field.weight / 10;
-    return raw < 0.5 ? 0.5 : raw;
-  }
+  /// Per-field boost. Source `weight` divided by 10 keeps the boost in
+  /// the range where BM25's saturation curve doesn't crush the gap
+  /// between high- and low-weighted fields. Scenario (weight 1) lands at
+  /// 0.1 — quiet but still scored.
+  static double _boostFor(CardSearchFieldEnum field) => field.weight / 10;
 
   /// Builds the index from per-card pre-tokenized snapshots. On native,
   /// hops to a background isolate so the main thread stays free during

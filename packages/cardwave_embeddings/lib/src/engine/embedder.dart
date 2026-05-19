@@ -90,8 +90,10 @@ class Embedder {
     return results.first;
   }
 
-  /// One embedding per input string (order preserved). e5 prefixes are
-  /// applied per [EmbedTaskEnum].
+  /// One embedding per input string (order preserved). BGE prefixes
+  /// (query instruction; empty for passage) are applied per [EmbedTaskEnum].
+  /// llamadart returns L2-normalized vectors, so downstream cosine code
+  /// can rely on dot product.
   Future<List<Float32List>> embed(
     List<String> texts, {
     required EmbedTaskEnum task,

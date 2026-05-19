@@ -289,6 +289,59 @@ Future<void> seedVietnameseDescriptionCharacter() async {
   await cardFile.writeAsBytes(bytes);
 }
 
+/// Filenames of the diverse example cards bundled under
+/// `assets/test_cards/` for search calibration. Distinct personas spanning
+/// historical, fantasy, sci-fi, romance, and a magical corgi — enough
+/// variety to probe both literal-token admission and discovery via the
+/// meaning channel. Skip-only when a test wants a small pool.
+const List<String> kExampleCardFilenames = [
+  'Ada_Lovelace.png',
+  'Aria.png',
+  'Chester.png',
+  'Detective_Ryn.png',
+  'Julian.png',
+  'Nexus-7.png',
+  'Orion.png',
+  'Pip.png',
+  'Seraphina.png',
+];
+
+/// Copies all nine example cards into the documents directory so a single
+/// test can exercise queries against a diverse pool. Opt-in only — no
+/// other helper or auto-seed pulls this in. Combined with the
+/// auto-copied Cass, a test that calls this ends up with ten cards on
+/// the grid. Call AFTER `wipeAppData` and BEFORE `app.main()`.
+Future<void> seedExampleCards() async {
+  if (kIsWeb) {
+    await AppStorage.instance.init((_) => '');
+    for (final filename in kExampleCardFilenames) {
+      final byteData = await rootBundle.load('assets/test_cards/$filename');
+      await AppStorage.instance.writeBytes(
+        StorageDomainEnum.cards,
+        filename,
+        byteData.buffer.asUint8List(
+          byteData.offsetInBytes,
+          byteData.lengthInBytes,
+        ),
+      );
+    }
+    return;
+  }
+  final dir = await getApplicationDocumentsDirectory();
+  for (final filename in kExampleCardFilenames) {
+    final byteData = await rootBundle.load('assets/test_cards/$filename');
+    final cardFile = File(
+      '${dir.path}${Platform.pathSeparator}$filename',
+    );
+    await cardFile.writeAsBytes(
+      byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
+      ),
+    );
+  }
+}
+
 /// The bundled assistant card's display name. Promoted to a constant so
 /// an asset rename is a one-line change instead of a sweep across every
 /// test that targets Cass.

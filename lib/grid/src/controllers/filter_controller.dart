@@ -31,6 +31,7 @@ class FilterController extends ChangeNotifier {
   }) {
     searchController.addListener(_onSearchChanged);
     characterService.addListener(_onCharacterServiceUpdated);
+    searchService.addListener(_onSearchIndexChanged);
     _onCharacterServiceUpdated();
   }
   static const String allDirectories = 'Folders';
@@ -65,6 +66,7 @@ class FilterController extends ChangeNotifier {
   List<List<CharacterFile>> get groupedFiles => _groupedFiles;
 
   Timer? _debounceTimer;
+  Timer? _indexReRankTimer;
 
   final Map<String, Set<String>> _tagIndex = {};
   final Map<String, List<String>> _cardTags = {};
@@ -83,8 +85,25 @@ class FilterController extends ChangeNotifier {
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
     _debounceTimer?.cancel();
+    _indexReRankTimer?.cancel();
     characterService.removeListener(_onCharacterServiceUpdated);
+    searchService.removeListener(_onSearchIndexChanged);
     super.dispose();
+  }
+
+  // Re-rank during an active search so newly-ingested or edited cards
+  // surface without the user having to clear the field.
+  //
+  // Rate-limit, not debounce — SearchService notifies in continuous
+  // 30–200 ms bursts during indexing, so a debounce timer would never
+  // fire. Owns a separate timer so the typing debounce isn't cancelled.
+  void _onSearchIndexChanged() {
+    if (searchController.text.trim().length < 2) return;
+    if (_indexReRankTimer?.isActive ?? false) return;
+    _indexReRankTimer = Timer(const Duration(milliseconds: 250), () {
+      if (searchController.text.trim().length < 2) return;
+      unawaited(_resolveQueryAndUpdate());
+    });
   }
 
   void _onCharacterServiceUpdated() {
@@ -133,7 +152,15 @@ class FilterController extends ChangeNotifier {
     // a single ranked list correctly, so dropping the meaning-search rank
     // doesn't break the math — it just narrows the signal to the lexical
     // channel until the embedder catches up.
-    final pool = _filteredFiles.map((f) => f.appCardImagePath).toList();
+    //
+    // Pool sources the FULL character set. The rank gate
+    // (updateFilteredList) makes _filteredFiles the post-gate display —
+    // reading the pool from there would shrink it across queries. Tag,
+    // creator, and folder filters apply at display time independent of
+    // ranking, so the pool stays stable.
+    final pool = characterService.characterFiles
+        .map((f) => f.appCardImagePath)
+        .toList();
     _rankScores = searchService.rankLexical(query, pool);
     updateFilteredList();
 
@@ -404,6 +431,16 @@ class FilterController extends ChangeNotifier {
 
       return passesCreator && passesTags && passesDirectory;
     }).toList();
+
+    // Drop cards that don't match the active query. Keyed on query length
+    // (not _rankScores.isNotEmpty) so an empty rank map with a non-empty
+    // query correctly empties the grid — a non-matching query should show
+    // "no results", not the whole library.
+    if (searchController.text.trim().length >= 2) {
+      _filteredFiles = _filteredFiles
+          .where((f) => _rankScores.containsKey(f.appCardImagePath))
+          .toList();
+    }
 
     _sortFiltered();
     _updateGroupedFiles();

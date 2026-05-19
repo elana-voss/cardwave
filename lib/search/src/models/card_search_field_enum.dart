@@ -11,4 +11,11 @@ enum CardSearchFieldEnum {
 
   const CardSearchFieldEnum({required this.weight});
   final int weight;
+
+  // Sum of every field's weight. Used by the meaning-search channel to
+  // normalize per-field cosine contributions into a [0, 1] combined score.
+  static final int totalWeight = values.fold(
+    0,
+    (sum, f) => sum + f.weight,
+  );
 }
