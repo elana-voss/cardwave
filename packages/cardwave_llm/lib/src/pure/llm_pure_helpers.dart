@@ -12,12 +12,26 @@ import 'package:cardwave_llm/src/models/tts_option.dart';
 import 'package:cardwave_llm/src/observability/llm_log_event.dart';
 import 'package:cardwave_llm/src/observability/llm_loggers.dart';
 import 'package:cardwave_llm/src/repositories/llm_model_repository.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 typedef ResolvedPreset = ({
   LlmProviderConfig provider,
   LlmModel model,
   LlmPresetConfig preset,
 });
+
+/// Test-only override hook. When non-null, [LlmPureHelpers.createRunner]
+/// returns whatever this factory produces instead of building a real
+/// provider-backed runner. Lets integration tests script LLM behaviour
+/// without hitting the network. Production code leaves it null; tests
+/// MUST clear it in tearDown.
+@visibleForTesting
+LlmRunner Function({
+  required LlmProviderConfig provider,
+  required LlmModel model,
+  required LlmPresetConfig preset,
+  Map<LlmParameterDefinitionIdEnum, double>? paramOverrides,
+})? debugRunnerFactory;
 
 /// Read-only / pure-compute helpers — model fetch, lookup, capability
 /// checks, runner construction, options enrichment. Nothing here mutates
@@ -204,6 +218,15 @@ class LlmPureHelpers {
     required LlmPresetConfig preset,
     Map<LlmParameterDefinitionIdEnum, double>? paramOverrides,
   }) {
+    final override = debugRunnerFactory;
+    if (override != null) {
+      return override(
+        provider: provider,
+        model: model,
+        preset: preset,
+        paramOverrides: paramOverrides,
+      );
+    }
     final params = <LlmParameterDefinitionIdEnum, double>{
       ...preset.parameterValues,
       ...?paramOverrides,

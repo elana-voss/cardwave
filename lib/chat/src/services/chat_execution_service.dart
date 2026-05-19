@@ -107,6 +107,17 @@ class ChatExecutionService {
             if (resolvedMedia.webToolFetchAllowed) FetchWebsiteTool.toolName,
             if (resolvedMedia.nameToolSuggestAllowed)
               SuggestNameTool.toolName,
+            // Card-edit tools advertised only in assistant chats — regular
+            // chats with a character should not let the character rewrite
+            // its own card mid-conversation.
+            if (session.isAssistant) ...[
+              CardFieldGetTool.toolName,
+              CardFieldSetTool.toolName,
+              CardFieldListGetTool.toolName,
+              CardFieldListSetTool.toolName,
+              CardFieldListAppendTool.toolName,
+              CardFieldListDeleteTool.toolName,
+            ],
           ];
           final enabledTools = model.capabilities.toolCalling
               ? toolRegistry.enabledFor(allowedNames)

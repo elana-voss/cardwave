@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// One side of the AI-diff confirmation dialog — a titled, boxed,
-/// selectable rich-text view of the original or suggested text with the
-/// diff highlights baked into [spans]. `tokenCount` adds a "(N Tokens)"
-/// suffix to the title when known.
+/// Titled, boxed, selectable rich-text view of pre-built diff spans. Used
+/// by both the editor's "AI rewrite" diff dialog and the assistant
+/// card-edit approval dialog. `tokenCount` adds a "(N Tokens)" suffix to
+/// the title when known.
 class DiffPanel extends StatelessWidget {
   const DiffPanel({
     required this.title,

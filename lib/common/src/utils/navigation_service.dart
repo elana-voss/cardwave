@@ -118,6 +118,19 @@ class NavigationService {
     );
   }
 
+  /// Shows the assistant-chat card-edit approval dialog. Returns one
+  /// [ApprovalDecision] per input proposal in the same order. Dismissed
+  /// (without explicit Confirm) → null; the gate controller treats that
+  /// as deny-all.
+  Future<List<ApprovalDecision>?> showCardEditApprovalDialog(
+    List<CardEditProposal> proposals,
+  ) {
+    return _showAppDialog<List<ApprovalDecision>>(
+      builder: (context) => DialogCardEditApproval(proposals: proposals),
+      barrierDismissible: false,
+    );
+  }
+
   /// Opens the message edit dialog. Returns the new content if the user saved
   /// a non-empty change, null on cancel or if the text was unchanged.
   Future<String?> showMessageEditDialog({

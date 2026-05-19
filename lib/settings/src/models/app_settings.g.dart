@@ -49,6 +49,17 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) =>
         onboardingComplete: json['onboarding_complete'] as bool? ?? false,
         chatImageVisible: json['chat_image_visible'] as bool? ?? true,
         editorImageVisible: json['editor_image_visible'] as bool? ?? false,
+        assistantCardEditRequireApprovalForEdits:
+            json['assistant_card_edit_require_approval_for_edits'] as bool? ??
+            false,
+        assistantCardEditRequireApprovalForAdditions:
+            json['assistant_card_edit_require_approval_for_additions']
+                as bool? ??
+            false,
+        assistantCardEditRequireApprovalForDeletions:
+            json['assistant_card_edit_require_approval_for_deletions']
+                as bool? ??
+            true,
         drawerSectionAdvanced:
             (json['drawer_section_advanced'] as Map<String, dynamic>?)?.map(
               (k, e) => MapEntry(k, e as bool),
@@ -90,6 +101,12 @@ Map<String, dynamic> _$AppSettingsToJson(
   'onboarding_complete': instance.onboardingComplete,
   'chat_image_visible': instance.chatImageVisible,
   'editor_image_visible': instance.editorImageVisible,
+  'assistant_card_edit_require_approval_for_edits':
+      instance.assistantCardEditRequireApprovalForEdits,
+  'assistant_card_edit_require_approval_for_additions':
+      instance.assistantCardEditRequireApprovalForAdditions,
+  'assistant_card_edit_require_approval_for_deletions':
+      instance.assistantCardEditRequireApprovalForDeletions,
   'drawer_section_advanced': instance.drawerSectionAdvanced,
   'refresh_policy': _$ModelRefreshPolicyEnumEnumMap[instance.refreshPolicy]!,
   'last_model_refresh_at_millis': instance.lastModelRefreshAtMillis,

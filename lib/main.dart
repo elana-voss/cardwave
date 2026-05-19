@@ -290,6 +290,42 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             maxCallsPerTurn: AppConstants.toolSuggestNameMaxPerTurn,
             nameDatabase: _nameDatabase,
           ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldGetTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldGetMaxPerTurn,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldSetTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldSetMaxPerTurn,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldListGetTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldListGetMaxPerTurn,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldListSetTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldListSetMaxPerTurn,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldListAppendTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldListAppendMaxPerTurn,
+          ),
+        )
+        ..register(
+          // ignore: qcheck/avoid_undisposed_instances
+          const CardFieldListDeleteTool(
+            maxCallsPerTurn: AppConstants.toolCardFieldListDeleteMaxPerTurn,
+          ),
         );
       _toolDispatcher = ToolDispatcher(registry: _toolRegistry);
 

@@ -35,6 +35,32 @@ class EditorView extends StatefulWidget {
 class EditorViewState extends State<EditorView> {
   int _editorVersion = 0;
   bool _isAdvancedMode = false;
+  ValueNotifier<({String appCardId, int counter})?>? _mutationNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    // Subscribe to external card mutations (assistant-chat card-edit tool
+    // calls that landed). Reference captured into a field so dispose can
+    // detach without `context.read`, which is unsafe during teardown.
+    _mutationNotifier = context.read<CharacterService>().externalCardMutation
+      ..addListener(_onExternalCardMutation);
+  }
+
+  @override
+  void dispose() {
+    _mutationNotifier?.removeListener(_onExternalCardMutation);
+    super.dispose();
+  }
+
+  void _onExternalCardMutation() {
+    if (!mounted) return;
+    final v = _mutationNotifier?.value;
+    if (v?.appCardId != widget.characterFile.appCardId) return;
+    setState(() {
+      _editorVersion++;
+    });
+  }
 
   void _triggerJsonCacheAutoSave() {
     context.read<CharacterService>().queueJsonInCacheDebounced(

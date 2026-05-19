@@ -40,6 +40,11 @@ mixin ChatImageGenerationMixin
   /// constructor.
   ToolDispatcher get toolDispatcher;
 
+  /// Character service. Used by [buildToolDispatch] to land approved
+  /// assistant-card-edit mutations through the cache-save +
+  /// external-mutation-notifier path.
+  CharacterService get characterService;
+
   /// Directory (relative to the cards storage domain) that holds the chat's
   /// JSON file. Generated images are nested beneath this in a `<chatId>/`
   /// subfolder so they live next to the chat they belong to.
@@ -324,16 +329,179 @@ mixin ChatImageGenerationMixin
         ),
         confirmFetchImpl: _confirmUrlFetch,
       );
+      final ctx = ToolCallContext(appData: appData);
+
+      // Partition calls into three buckets so card-edit writes can go
+      // through the propose/gate/apply flow without disrupting the
+      // existing side-effect tools.
+      final reads = <ToolCall>[];
+      final writes = <ToolCall>[];
+      final others = <ToolCall>[];
+      final originBucket = <int>[]; // 0 reads, 1 writes, 2 others
+      final originPos = <int>[];
+      for (final call in calls) {
+        if (_cardReadNames.contains(call.name)) {
+          originBucket.add(0);
+          originPos.add(reads.length);
+          reads.add(call);
+        } else if (_cardWriteNames.contains(call.name)) {
+          originBucket.add(1);
+          originPos.add(writes.length);
+          writes.add(call);
+        } else {
+          originBucket.add(2);
+          originPos.add(others.length);
+          others.add(call);
+        }
+      }
+
       try {
-        return await toolDispatcher.dispatch(
-          calls,
-          ToolCallContext(appData: appData),
-          callCounts: callCounts,
-        );
+        final readResults = reads.isEmpty
+            ? const <ToolResult>[]
+            : await toolDispatcher.dispatch(
+                reads,
+                ctx,
+                callCounts: callCounts,
+              );
+
+        final writeResults = writes.isEmpty
+            ? const <ToolResult>[]
+            : await _runWriteBatch(writes, ctx, callCounts, appData);
+
+        final otherResults = others.isEmpty
+            ? const <ToolResult>[]
+            : await toolDispatcher.dispatch(
+                others,
+                ctx,
+                callCounts: callCounts,
+              );
+
+        return List<ToolResult>.generate(calls.length, (i) {
+          // originBucket / originPos are filled once per element of calls
+          // in the loop above, so they're indexable for i < calls.length.
+          // The per-bucket result list lengths match their input list
+          // lengths (dispatch returns one result per call); originPos[i]
+          // was set to the bucket-list length at insert time.
+          // ignore: qcheck/avoid_unsafe_collection_methods
+          final pos = originPos[i];
+          // ignore: qcheck/avoid_unsafe_collection_methods
+          switch (originBucket[i]) {
+            case 0:
+              // ignore: qcheck/avoid_unsafe_collection_methods
+              return readResults[pos];
+            case 1:
+              // ignore: qcheck/avoid_unsafe_collection_methods
+              return writeResults[pos];
+            case 2:
+              // ignore: qcheck/avoid_unsafe_collection_methods
+              return otherResults[pos];
+            default:
+              throw StateError('unreachable bucket');
+          }
+        });
       } finally {
         targetMessage.waitingFor = BubbleWaitingForEnum.callingLlm;
         targetMessage.waitingForLabel = null;
       }
     };
+  }
+
+  static const Set<String> _cardReadNames = {
+    CardFieldGetTool.toolName,
+    CardFieldListGetTool.toolName,
+  };
+
+  static const Set<String> _cardWriteNames = {
+    CardFieldSetTool.toolName,
+    CardFieldListSetTool.toolName,
+    CardFieldListAppendTool.toolName,
+    CardFieldListDeleteTool.toolName,
+  };
+
+  /// Two-pass propose / gate / apply for the card-edit write tools.
+  /// Tools' execute records proposals on [appData] without mutating the
+  /// card; this method then opens the approval dialog (filtered by the
+  /// per-modality require-approval settings), applies the approved
+  /// proposals through [CharacterService.applyExternalCardEdits], and
+  /// returns one result per input call: a generic "edit applied" success
+  /// for approved writes, the user's denial reason as failure for denied
+  /// writes, and the raw at-execute failure for writes that errored
+  /// before producing a proposal (out-of-bounds index, etc.).
+  Future<List<ToolResult>> _runWriteBatch(
+    List<ToolCall> writes,
+    ToolCallContext ctx,
+    Map<String, int> callCounts,
+    ChatBuiltinToolAppData appData,
+  ) async {
+    appData.beginCardEditBatch();
+    final writeRaw = await toolDispatcher.dispatch(
+      writes,
+      ctx,
+      callCounts: callCounts,
+    );
+    final proposals = appData.takeBatch();
+
+    // Walk writes and writeRaw together; proposals were appended in the
+    // order of successful executes, so the n-th successful write maps to
+    // proposals[n].
+    final proposalIdxForWrite = <int, int>{};
+    var pIdx = 0;
+    for (var i = 0; i < writes.length; i++) {
+      // i is bounded by writes.length; writeRaw came back from dispatch
+      // and has the same length.
+      // ignore: qcheck/avoid_unsafe_collection_methods
+      if (writeRaw[i].success) {
+        proposalIdxForWrite[i] = pIdx++;
+      }
+    }
+
+    final s = imageGenSettingsService.settings;
+    final decisions = await CardEditGateController.askUser(
+      proposals,
+      requireApprovalForEdits: s.assistantCardEditRequireApprovalForEdits,
+      requireApprovalForAdditions:
+          s.assistantCardEditRequireApprovalForAdditions,
+      requireApprovalForDeletions:
+          s.assistantCardEditRequireApprovalForDeletions,
+    );
+
+    final approved = <CardEditProposal>[];
+    for (var i = 0; i < proposals.length; i++) {
+      // i bounded by proposals.length; askUser returns same-length list.
+      // ignore: qcheck/avoid_unsafe_collection_methods
+      if (decisions[i].approved) approved.add(proposals[i]);
+    }
+
+    if (approved.isNotEmpty) {
+      final file = imageGenTargetCharacter;
+      if (file != null) {
+        await characterService.applyExternalCardEdits(file, () {
+          appData.applyApprovedProposals(approved);
+        });
+      }
+    }
+
+    final results = <ToolResult>[];
+    for (var i = 0; i < writes.length; i++) {
+      final pi = proposalIdxForWrite[i];
+      if (pi == null) {
+        // ignore: qcheck/avoid_unsafe_collection_methods
+        results.add(writeRaw[i]);
+        continue;
+      }
+      // pi was set above only when pIdx < proposals.length, and pIdx grew
+      // by one per insert — so pi is in range for both proposals and
+      // decisions.
+      // ignore: qcheck/avoid_unsafe_collection_methods
+      final decision = decisions[pi];
+      if (decision.approved) {
+        results.add(const ToolResult.ok(data: 'edit applied'));
+      } else {
+        results.add(ToolResult.failure(
+          'user denied: ${decision.reason ?? "(no reason)"}',
+        ));
+      }
+    }
+    return results;
   }
 }

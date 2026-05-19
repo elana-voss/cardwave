@@ -33,6 +33,8 @@ export 'src/pure/llm_pure_helpers.dart';
 export 'src/repositories/llm_model_repository.dart';
 export 'src/repositories/prompt_repository.dart';
 export 'src/tools/builtin/builtin_tool_app_data.dart';
+export 'src/tools/builtin/card_field_tools.dart';
+export 'src/tools/builtin/card_field_types.dart';
 export 'src/tools/builtin/fetch_website_tool.dart';
 export 'src/tools/builtin/send_selfie_tool.dart';
 export 'src/tools/builtin/send_video_tool.dart';

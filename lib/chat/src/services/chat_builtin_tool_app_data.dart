@@ -9,7 +9,7 @@ import 'package:cardwave_llm/cardwave_llm.dart';
 /// this as opaque inside `ToolCallContext.appData`; the builtin tools cast
 /// it back via the abstract base.
 class ChatBuiltinToolAppData implements BuiltinToolAppData {
-  const ChatBuiltinToolAppData({
+  ChatBuiltinToolAppData({
     required this.session,
     required this.character,
     required this.targetMessage,
@@ -47,6 +47,8 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
   _generateVideoImpl;
   final Future<bool> Function(String url, {String? purpose}) _confirmFetchImpl;
 
+  final List<CardEditProposal> _cardEditBatch = [];
+
   @override
   bool get imageToolSelfieCaptionsAllowed =>
       session.configMedia?.imageToolSelfieCaptionsAllowed ?? false;
@@ -74,4 +76,115 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
 
   @override
   Set<String> get usedLastNames => session.usedLastNames;
+
+  // --- Card edit reads -------------------------------------------------------
+
+  @override
+  String readScalar(CardFieldScalar field) {
+    final card = character?.card;
+    return card == null ? '' : readScalarField(card, field);
+  }
+
+  @override
+  int listSize(CardFieldList field) {
+    final card = character?.card;
+    return card == null ? 0 : listFieldOf(card, field).length;
+  }
+
+  @override
+  String readListEntry(CardFieldList field, int index) {
+    final card = character?.card;
+    if (card == null) return '';
+    final list = listFieldOf(card, field);
+    if (index < 0 || index >= list.length) return '';
+    // Bounds checked above.
+    // ignore: qcheck/avoid_unsafe_collection_methods
+    return list[index];
+  }
+
+  // --- Card edit proposals ---------------------------------------------------
+
+  @override
+  ToolResult proposeScalarSet(CardFieldScalar field, String content) {
+    if (character == null) return const ToolResult.failure('no card open');
+    _cardEditBatch.add(CardScalarSetProposal(
+      field: field,
+      oldValue: readScalar(field),
+      newValue: content,
+    ));
+    return const ToolResult.ok();
+  }
+
+  @override
+  ToolResult proposeListSet(CardFieldList field, int index, String content) {
+    final card = character?.card;
+    if (card == null) return const ToolResult.failure('no card open');
+    final list = listFieldOf(card, field);
+    if (index < 0 || index >= list.length) {
+      return ToolResult.failure(
+        'index out of bounds; list has ${list.length} entries.',
+      );
+    }
+    _cardEditBatch.add(CardListSetProposal(
+      field: field,
+      index: index,
+      // Bounds checked above.
+      // ignore: qcheck/avoid_unsafe_collection_methods
+      oldValue: list[index],
+      newValue: normalizeFieldValue(field, content),
+    ));
+    return const ToolResult.ok();
+  }
+
+  @override
+  ToolResult proposeListAppend(CardFieldList field, String content) {
+    if (character == null) return const ToolResult.failure('no card open');
+    _cardEditBatch.add(CardListAppendProposal(
+      field: field,
+      newValue: normalizeFieldValue(field, content),
+    ));
+    return const ToolResult.ok();
+  }
+
+  @override
+  ToolResult proposeListDelete(CardFieldList field, int index) {
+    final card = character?.card;
+    if (card == null) return const ToolResult.failure('no card open');
+    final list = listFieldOf(card, field);
+    if (index < 0 || index >= list.length) {
+      return ToolResult.failure(
+        'index out of bounds; list has ${list.length} entries.',
+      );
+    }
+    _cardEditBatch.add(CardListDeleteProposal(
+      field: field,
+      index: index,
+      // Bounds checked above.
+      // ignore: qcheck/avoid_unsafe_collection_methods
+      oldValue: list[index],
+    ));
+    return const ToolResult.ok();
+  }
+
+  @override
+  void beginCardEditBatch() {
+    _cardEditBatch.clear();
+  }
+
+  @override
+  List<CardEditProposal> takeBatch() {
+    final out = List<CardEditProposal>.unmodifiable(_cardEditBatch);
+    _cardEditBatch.clear();
+    return out;
+  }
+
+  /// Mutates the card in place to apply the given approved proposals. Caller
+  /// wraps this in [CharacterService.applyExternalCardEdits] which handles
+  /// save + notify after the mutation completes. Application order and
+  /// overlap rules live with the character-domain helper.
+  void applyApprovedProposals(Iterable<CardEditProposal> approved) {
+    final card = character?.card;
+    if (card == null) return;
+    applyCardEditProposals(card, approved);
+  }
 }

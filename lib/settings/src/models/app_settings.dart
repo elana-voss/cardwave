@@ -27,6 +27,9 @@ class AppSettings {
     this.onboardingComplete = false,
     this.chatImageVisible = true,
     this.editorImageVisible = false,
+    this.assistantCardEditRequireApprovalForEdits = false,
+    this.assistantCardEditRequireApprovalForAdditions = false,
+    this.assistantCardEditRequireApprovalForDeletions = true,
     Map<String, bool>? drawerSectionAdvanced,
     this.refreshPolicy = ModelRefreshPolicyEnum.daily,
     this.lastModelRefreshAtMillis,
@@ -107,6 +110,21 @@ class AppSettings {
 
   @JsonKey(defaultValue: false)
   bool editorImageVisible;
+
+  /// Gate flags for assistant-chat tool-driven card edits. When false the
+  /// modality auto-applies; when true the user sees the approval dialog
+  /// before any change of that modality lands. Aggressive defaults: only
+  /// destructive changes (deletions, clearing a scalar) require approval
+  /// out of the box; less destructive ones auto-apply until the user
+  /// opts in via the assistant chat drawer.
+  @JsonKey(defaultValue: false)
+  bool assistantCardEditRequireApprovalForEdits;
+
+  @JsonKey(defaultValue: false)
+  bool assistantCardEditRequireApprovalForAdditions;
+
+  @JsonKey(defaultValue: true)
+  bool assistantCardEditRequireApprovalForDeletions;
 
   /// Per-section "Show advanced" expander state in the chat drawer. Keyed
   /// by section name (e.g. `chat`, `speech`, `video`, `image`); missing or

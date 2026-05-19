@@ -23,6 +23,8 @@ export 'src/widgets/app_bar_switcher_title.dart';
 export 'src/widgets/badge_model_unavailable.dart';
 export 'src/widgets/custom_log_screen.dart';
 export 'src/widgets/dialog_model_selection.dart';
+export 'src/widgets/diff_panel.dart';
+export 'src/widgets/diff_spans_builder.dart';
 export 'src/widgets/drawer_section_header.dart';
 export 'src/widgets/drawer_show_advanced.dart';
 export 'src/widgets/drawer_switch_tile.dart';

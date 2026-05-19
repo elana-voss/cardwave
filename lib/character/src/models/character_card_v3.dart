@@ -1,5 +1,6 @@
 import 'package:cardwave/character/src/models/character_card_v2.dart';
 import 'package:cardwave/character/src/models/character_lorebook.dart';
+import 'package:cardwave/character/src/utils/tag_normalizer.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,7 +10,7 @@ List<String> _tagsFromJson(dynamic value) {
   if (value is List) {
     return value
         .where((e) => e != null)
-        .map((e) => e.toString().trim().toLowerCase())
+        .map((e) => normalizeTagEntry(e.toString()))
         .where((e) => e.isNotEmpty)
         .toSet()
         .toList();

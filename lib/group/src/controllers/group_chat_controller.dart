@@ -74,6 +74,8 @@ class GroupChatController extends BaseChatViewController
   final LlmPureHelpers _llmService;
   final PromptRepository _promptRepository;
   final CharacterService _characterService;
+  @override
+  CharacterService get characterService => _characterService;
   final TextToSpeechController _textToSpeechService;
   final ChatRepository _chatRepository;
   @override

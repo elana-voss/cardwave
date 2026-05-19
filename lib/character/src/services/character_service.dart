@@ -119,6 +119,7 @@ class CharacterService extends ChangeNotifier {
   @override
   void dispose() {
     _lifecycleListener?.dispose();
+    externalCardMutation.dispose();
     super.dispose();
   }
 
@@ -408,6 +409,38 @@ class CharacterService extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  /// Fires when an external mutation (currently: an assistant-chat
+  /// card-edit tool call that landed) has changed an open card. Carries
+  /// the `appCardId` of the changed card so listeners with multiple
+  /// open editors can filter to their own. The counter exists only so
+  /// successive mutations to the same card produce distinct values
+  /// (ValueNotifier dedupes equal record values).
+  ///
+  /// This is intentionally a separate signal from [notifyListeners]: the
+  /// service's main change-notifier fires on every keystroke-debounced
+  /// save, so wiring the editor's full rebuild path to it would thrash.
+  final ValueNotifier<({String appCardId, int counter})?> externalCardMutation =
+      ValueNotifier(null);
+
+  /// Applies a tool-driven mutation to [file], persists it through the
+  /// fast cache path, and bumps [externalCardMutation] so any open editor
+  /// for this card can rebuild and pick up the new field values. The
+  /// [mutate] callback is the place to do all card mutations for one
+  /// approval batch — a single save + single notifier bump covers the
+  /// whole batch.
+  Future<void> applyExternalCardEdits(
+    CharacterFile file,
+    void Function() mutate,
+  ) async {
+    mutate();
+    await saveJsonInCacheNow(file);
+    final prev = externalCardMutation.value;
+    externalCardMutation.value = (
+      appCardId: file.appCardId,
+      counter: (prev?.counter ?? 0) + 1,
+    );
   }
 
   /// Replaces the avatar PNG of a character card while preserving its embedded JSON data,

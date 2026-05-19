@@ -127,6 +127,17 @@ class AppConstants {
   /// exhaust the per-chat pool in one reply.
   static const int toolSuggestNameMaxPerTurn = 5;
 
+  /// Per-turn caps for the assistant-chat card-edit tools. Reads are
+  /// cheap and frequent (the LLM may want to inspect several fields
+  /// before deciding what to change); writes are gated by the approval
+  /// dialog so a runaway model still can't smash through the card.
+  static const int toolCardFieldGetMaxPerTurn = 10;
+  static const int toolCardFieldSetMaxPerTurn = 5;
+  static const int toolCardFieldListGetMaxPerTurn = 10;
+  static const int toolCardFieldListSetMaxPerTurn = 5;
+  static const int toolCardFieldListAppendMaxPerTurn = 5;
+  static const int toolCardFieldListDeleteMaxPerTurn = 5;
+
   /// Hard ceiling on rounds in the manual tool loop (chat → tool → chat
   /// → tool → …). Caps cost when a misbehaving model keeps emitting tool
   /// calls; the loop bails after this many model invocations.
