@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/search/src/models/card_search_data.dart';
 import 'package:cardwave/search/src/models/card_search_field_enum.dart';
 import 'package:cardwave/search/src/observability/embeddings_loggers.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
@@ -50,7 +51,7 @@ class SearchService extends ChangeNotifier {
   // Per-card data + a parallel CharacterFile lookup so the worker can
   // resolve a queue entry's cardPath in O(1) instead of scanning every
   // loaded card.
-  final Map<String, FieldSearchData<CardSearchFieldEnum>> _byPath = {};
+  final Map<String, CardSearchData> _byPath = {};
   final Map<String, CharacterFile> _cardsByPath = {};
 
   // Worker removes the key on dequeue, so an edit landing mid-process
@@ -100,7 +101,7 @@ class SearchService extends ChangeNotifier {
 
   /// Cached search data for [cardImagePath], or null when the card
   /// hasn't been ingested yet.
-  FieldSearchData<CardSearchFieldEnum>? embeddingsFor(String cardImagePath) =>
+  CardSearchData? embeddingsFor(String cardImagePath) =>
       _byPath[cardImagePath];
 
   /// Wires the back-pointer to `CharacterService` and starts discovery.
@@ -126,7 +127,7 @@ class SearchService extends ChangeNotifier {
     // this card; _ingestCard's later merge keeps any sidecar data we read.
     final existing = _byPath.putIfAbsent(
       card.appCardImagePath,
-      FieldSearchData<CardSearchFieldEnum>.empty,
+      CardSearchData.empty,
     );
     _cardsByPath[card.appCardImagePath] = card;
 
@@ -296,7 +297,7 @@ class SearchService extends ChangeNotifier {
       // Claim the slot synchronously before any await so concurrent
       // _scanForChanges invocations don't double-ingest the same card.
       if (_byPath.containsKey(card.appCardImagePath)) continue;
-      _byPath[card.appCardImagePath] = FieldSearchData<CardSearchFieldEnum>.empty();
+      _byPath[card.appCardImagePath] = CardSearchData.empty();
       _cardsByPath[card.appCardImagePath] = card;
       await _ingestCard(card);
     }

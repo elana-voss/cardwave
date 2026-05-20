@@ -1,3 +1,4 @@
+import 'package:cardwave/search/src/models/card_search_data.dart';
 import 'package:cardwave/search/src/models/card_search_field_enum.dart';
 import 'package:cardwave/search/src/observability/embeddings_loggers.dart';
 import 'package:cardwave/search/src/repositories/io_search.dart';
@@ -31,7 +32,7 @@ class SearchRepository {
     return null;
   }
 
-  Future<FieldSearchData<CardSearchFieldEnum>?> read(
+  Future<CardSearchData?> read(
     String relativePath,
   ) async {
     if (!await _ioSearch.exists(relativePath)) return null;
@@ -54,7 +55,7 @@ class SearchRepository {
 
   Future<void> write(
     String relativePath,
-    FieldSearchData<CardSearchFieldEnum> data,
+    CardSearchData data,
   ) async {
     try {
       final bytes = _codec.encode(data);
