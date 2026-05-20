@@ -1,0 +1,33 @@
+name: cardwave_memory
+description: "Story-structured chat memory: the event-graph schema and its (de)serialization."
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  json_annotation: ^4.10.0
+  uuid: ^4.5.3
+
+  cardwave_embeddings:
+    path: ../cardwave_embeddings
+  cardwave_retrieval:
+    path: ../cardwave_retrieval
+  cardwave_emotion:
+    path: ../cardwave_emotion
+  cardwave_llm:
+    path: ../cardwave_llm
+  cardwave_storage:
+    path: ../cardwave_storage
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.6
+  json_serializable: ^6.7.1
+  import_lint: ^0.1.6

@@ -1,0 +1,13 @@
+// Top-level barrel — public API for the cardwave_memory package.
+// Files under src/ are private to this package (enforced by import_lint).
+// Cross-package consumers MUST import this barrel, not src/ paths.
+
+export 'src/models/memory_field_enum.dart';
+export 'src/models/memory_graph.dart';
+export 'src/models/memory_message.dart';
+export 'src/models/memory_role.dart';
+export 'src/models/scene_beat_enum.dart';
+export 'src/models/story_event.dart';
+export 'src/models/tree_level_enum.dart';
+export 'src/models/tree_node.dart';
+export 'src/utils/memory_id.dart';

@@ -20,17 +20,9 @@ class SearchRepository {
   // retrieval package stays embedder-agnostic.
   static const _codec = VectorSidecarCodec<CardSearchFieldEnum>(
     fields: CardSearchFieldEnum.values,
-    fieldByName: _fieldByName,
     dim: embeddingsDim,
     modelId: embeddingsModelId,
   );
-
-  static CardSearchFieldEnum? _fieldByName(String name) {
-    for (final f in CardSearchFieldEnum.values) {
-      if (f.name == name) return f;
-    }
-    return null;
-  }
 
   Future<CardSearchData?> read(
     String relativePath,

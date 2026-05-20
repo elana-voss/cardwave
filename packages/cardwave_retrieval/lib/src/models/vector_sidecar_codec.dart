@@ -37,19 +37,17 @@ class FieldSearchData<F extends Enum> {
 /// `tokens` field.
 ///
 /// Embedder-agnostic: [dim] and [modelId] are injected by the caller, so the
-/// package never depends on a specific embedder. [fieldByName] maps a stored
-/// field name back to the enum; an unknown name is skipped and its bytes are
+/// package never depends on a specific embedder. A stored field name is mapped
+/// back to [fields] by name; an unknown name is skipped and its bytes are
 /// stepped over (schema change tolerated).
 class VectorSidecarCodec<F extends Enum> {
   const VectorSidecarCodec({
     required this.fields,
-    required this.fieldByName,
     required this.dim,
     required this.modelId,
   });
 
   final List<F> fields;
-  final F? Function(String name) fieldByName;
   final int dim;
   final String modelId;
 
@@ -154,6 +152,7 @@ class VectorSidecarCodec<F extends Enum> {
     final byField = <F, List<Float32List>>{};
     final hashes = <F, String>{};
     final tokens = <F, List<String>>{};
+    final byName = {for (final value in fields) value.name: value};
 
     for (final entry in fieldsJson) {
       if (entry is! Map<String, dynamic>) return null;
@@ -177,7 +176,7 @@ class VectorSidecarCodec<F extends Enum> {
       // Skip stored data for fields no longer in the enum (schema change);
       // missing fields will be detected as a per-field hash mismatch and
       // re-processed on demand.
-      final field = fieldByName(name);
+      final field = byName[name];
       if (field == null) {
         offset += chunkCount * chunkByteLen;
         if (offset > bytes.length) return null;

@@ -10,6 +10,7 @@ workspace:
   - packages/cardwave_storage
   - packages/cardwave_retrieval
   - packages/cardwave_emotion
+  - packages/cardwave_memory
 
 environment:
   sdk: ^3.10.8
@@ -61,6 +62,13 @@ dependencies:
   # writes back to it.
   cardwave_names:
     path: packages/cardwave_names
+
+  # The cardwave_memory package owns the story-structured chat-memory event
+  # graph: schema + (de)serialization. Built on cardwave_embeddings +
+  # cardwave_retrieval + cardwave_emotion + cardwave_llm; no app deps. Wired
+  # into the app in a later phase.
+  cardwave_memory:
+    path: packages/cardwave_memory
 
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.
