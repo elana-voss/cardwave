@@ -5,6 +5,7 @@
 export 'src/engine/chapter_grouper.dart';
 export 'src/engine/memory_engine.dart';
 export 'src/engine/memory_extractor.dart';
+export 'src/engine/memory_retriever.dart';
 export 'src/engine/scene_verdict.dart';
 export 'src/engine/staging_buffer.dart';
 export 'src/models/memory_field_enum.dart';
