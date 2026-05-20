@@ -659,6 +659,7 @@ class GroupChatController extends BaseChatViewController
       final effectiveInjected =
           injectedMessage ??
           ChatMessage(
+            id: UtilsApp.generateId('msg'),
             role: ChatRoleEnum.user,
             swipes: [
               ChatSwipe(
@@ -782,6 +783,7 @@ class GroupChatController extends BaseChatViewController
     required String? characterId,
   }) {
     final message = ChatMessage(
+      id: UtilsApp.generateId('msg'),
       role: role,
       swipes: [ChatSwipe(content: text)],
       timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -870,6 +872,7 @@ class GroupChatController extends BaseChatViewController
         : '${last.content}\n\n';
 
     final tempUserMsg = ChatMessage(
+      id: UtilsApp.generateId('msg'),
       role: ChatRoleEnum.user,
       swipes: [ChatSwipe(content: _promptRepository.continueChat)],
       timestamp: DateTime.now().millisecondsSinceEpoch,

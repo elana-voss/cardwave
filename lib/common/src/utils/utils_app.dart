@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:uuid/uuid.dart';
+
 class UtilsApp {
   static final _htmlTags = RegExp('<[^>]*>');
   static final _mdImages = RegExp(r'!\[.*?\]\(.*?\)');
@@ -238,14 +240,6 @@ class UtilsApp {
         .replaceAll(RegExp(r'^-+|-+$'), '');
     if (slug.isEmpty) slug = 'profile';
 
-    const chars =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final rnd = math.Random();
-    final suffix = List.generate(
-      5,
-      (_) => chars[rnd.nextInt(chars.length)],
-    ).join();
-
-    return '$slug-$suffix';
+    return '$slug-${const Uuid().v4()}';
   }
 }

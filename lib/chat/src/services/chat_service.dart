@@ -218,6 +218,7 @@ class ChatService extends ChangeNotifier {
 
       messages.add(
         ChatMessage(
+          id: UtilsApp.generateId('msg'),
           role: ChatRoleEnum.assistant,
           swipes: swipes,
           timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -353,6 +354,7 @@ class ChatService extends ChangeNotifier {
       final firstMesTokenCount = await UtilsLlm.countTokens(processedFirstMes);
 
       final newMessage = ChatMessage(
+        id: UtilsApp.generateId('msg'),
         role: ChatRoleEnum.assistant,
         swipes: [
           ChatSwipe(content: processedFirstMes, tokenCount: firstMesTokenCount),

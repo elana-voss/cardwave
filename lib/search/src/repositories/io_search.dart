@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:cardwave_storage/cardwave_storage.dart';
 
 /// Raw bytes IO for the per-card sidecar file. No domain types; the
-/// repository layer above wraps these in `CardSearchData` decode/encode.
+/// repository layer above wraps these in `FieldSearchData` decode/encode.
 class IoSearch {
   const IoSearch({required this.appStorage});
 

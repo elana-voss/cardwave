@@ -1,47 +1,57 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:cardwave/search/src/models/card_search_field_enum.dart';
-import 'package:cardwave_embeddings/cardwave_embeddings.dart'
-    show embeddingsDim, embeddingsModelId;
-
-/// Per-field cached data for one card: source-text hash, embedded vectors,
-/// and lowercase tokens. The hash detects whether the source text has
-/// changed since this entry was written; the vectors and tokens feed the
+/// Per-field cached data for one document: source-text hash, embedded
+/// vectors, and lowercase tokens. The hash detects whether the source text
+/// has changed since this entry was written; the vectors and tokens feed the
 /// in-memory semantic + keyword indexes.
 ///
-/// Maps are owned by `SearchService` and mutated in place as fields are
-/// processed — callers must treat them as read-only.
-class CardSearchData {
-  const CardSearchData({
+/// Maps are owned by the caller and may be mutated in place as fields are
+/// processed — treat them as read-only here.
+class FieldSearchData<F extends Enum> {
+  const FieldSearchData({
     required this.byField,
     required this.hashes,
     required this.tokens,
   });
 
-  factory CardSearchData.empty() =>
-      // Maps must stay mutable — SearchService mutates them in place.
+  factory FieldSearchData.empty() =>
+      // Maps must stay mutable — the owner mutates them in place.
       // ignore: prefer_const_constructors
-      CardSearchData(byField: {}, hashes: {}, tokens: {});
+      FieldSearchData(byField: {}, hashes: {}, tokens: {});
 
-  final Map<CardSearchFieldEnum, List<Float32List>> byField;
-  final Map<CardSearchFieldEnum, String> hashes;
-  final Map<CardSearchFieldEnum, List<String>> tokens;
+  final Map<F, List<Float32List>> byField;
+  final Map<F, String> hashes;
+  final Map<F, List<String>> tokens;
 
-  List<Float32List> chunksFor(CardSearchFieldEnum field) =>
-      byField[field] ?? const [];
+  List<Float32List> chunksFor(F field) => byField[field] ?? const [];
 
-  List<String> tokensFor(CardSearchFieldEnum field) =>
-      tokens[field] ?? const [];
+  List<String> tokensFor(F field) => tokens[field] ?? const [];
 }
 
-/// `card.embedding.bin` codec: 'CWE1' magic + uint32 header_len + JSON
-/// header (model, dim, per-field {name, hash, chunks, tokens}) +
-/// 4-byte-aligned float32 blob in `CardSearchFieldEnum.values` order.
-/// Returns null when the caller should discard the sidecar and re-process
-/// every field — including any sidecar that lacks the `tokens` field.
-class CardSearchSidecarCodec {
-  const CardSearchSidecarCodec._();
+/// `*.embedding.bin` codec: 'CWE1' magic + uint32 header_len + JSON header
+/// (model, dim, per-field {name, hash, chunks, tokens}) + 4-byte-aligned
+/// float32 blob in [fields] order. [decode] returns null when the caller
+/// should discard the sidecar and re-process every field — including any
+/// sidecar whose stored model/dim no longer match, or that lacks the
+/// `tokens` field.
+///
+/// Embedder-agnostic: [dim] and [modelId] are injected by the caller, so the
+/// package never depends on a specific embedder. [fieldByName] maps a stored
+/// field name back to the enum; an unknown name is skipped and its bytes are
+/// stepped over (schema change tolerated).
+class VectorSidecarCodec<F extends Enum> {
+  const VectorSidecarCodec({
+    required this.fields,
+    required this.fieldByName,
+    required this.dim,
+    required this.modelId,
+  });
+
+  final List<F> fields;
+  final F? Function(String name) fieldByName;
+  final int dim;
+  final String modelId;
 
   static const _magic = <int>[0x43, 0x57, 0x45, 0x31]; // 'CWE1'
 
@@ -53,11 +63,11 @@ class CardSearchSidecarCodec {
   static const _keyChunks = 'chunks';
   static const _keyTokens = 'tokens';
 
-  static Uint8List encode(CardSearchData data) {
+  Uint8List encode(FieldSearchData<F> data) {
     final fieldEntries = <Map<String, dynamic>>[];
     var totalFloats = 0;
 
-    for (final field in CardSearchFieldEnum.values) {
+    for (final field in fields) {
       final chunks = data.byField[field] ?? const <Float32List>[];
       fieldEntries.add({
         _keyName: field.name,
@@ -72,8 +82,8 @@ class CardSearchSidecarCodec {
 
     final headerBytes = utf8.encode(
       jsonEncode({
-        _keyModel: embeddingsModelId,
-        _keyDim: embeddingsDim,
+        _keyModel: modelId,
+        _keyDim: dim,
         _keyFields: fieldEntries,
       }),
     );
@@ -88,7 +98,7 @@ class CardSearchSidecarCodec {
     out.setRange(8, 8 + headerLen, headerBytes);
 
     var offset = 8 + headerLen + pad;
-    for (final field in CardSearchFieldEnum.values) {
+    for (final field in fields) {
       final chunks = data.byField[field] ?? const <Float32List>[];
       for (final chunk in chunks) {
         final chunkBytes = chunk.buffer.asUint8List(
@@ -103,7 +113,7 @@ class CardSearchSidecarCodec {
     return out;
   }
 
-  static CardSearchData? decode(Uint8List bytes) {
+  FieldSearchData<F>? decode(Uint8List bytes) {
     if (bytes.length < 8) return null;
     for (var i = 0; i < 4; i++) {
       // `bytes` has >= 8 elements (checked above) and `_magic` is a 4-byte
@@ -131,21 +141,21 @@ class CardSearchSidecarCodec {
       return null;
     }
 
-    if (header[_keyModel] != embeddingsModelId) return null;
-    if (header[_keyDim] != embeddingsDim) return null;
+    if (header[_keyModel] != modelId) return null;
+    if (header[_keyDim] != dim) return null;
 
-    final fields = header[_keyFields];
-    if (fields is! List) return null;
+    final fieldsJson = header[_keyFields];
+    if (fieldsJson is! List) return null;
 
     final pad = (4 - (headerLen % 4)) % 4;
     var offset = 8 + headerLen + pad;
-    const chunkByteLen = embeddingsDim * 4;
+    final chunkByteLen = dim * 4;
 
-    final byField = <CardSearchFieldEnum, List<Float32List>>{};
-    final hashes = <CardSearchFieldEnum, String>{};
-    final tokens = <CardSearchFieldEnum, List<String>>{};
+    final byField = <F, List<Float32List>>{};
+    final hashes = <F, String>{};
+    final tokens = <F, List<String>>{};
 
-    for (final entry in fields) {
+    for (final entry in fieldsJson) {
       if (entry is! Map<String, dynamic>) return null;
       final name = entry[_keyName];
       final hash = entry[_keyHash];
@@ -167,7 +177,7 @@ class CardSearchSidecarCodec {
       // Skip stored data for fields no longer in the enum (schema change);
       // missing fields will be detected as a per-field hash mismatch and
       // re-processed on demand.
-      final field = _fieldByName(name);
+      final field = fieldByName(name);
       if (field == null) {
         offset += chunkCount * chunkByteLen;
         if (offset > bytes.length) return null;
@@ -180,12 +190,12 @@ class CardSearchSidecarCodec {
       for (var i = 0; i < chunkCount; i++) {
         if (offset + chunkByteLen > bytes.length) return null;
         // View aliases the source buffer; safe because the caller's Uint8List
-        // outlives the parsed CardSearchData (held via SearchService cache).
+        // outlives the parsed FieldSearchData (held via the owner's cache).
         fieldChunks.add(
           Float32List.view(
             bytes.buffer,
             bytes.offsetInBytes + offset,
-            embeddingsDim,
+            dim,
           ),
         );
         offset += chunkByteLen;
@@ -193,13 +203,6 @@ class CardSearchSidecarCodec {
       byField[field] = fieldChunks;
     }
 
-    return CardSearchData(byField: byField, hashes: hashes, tokens: tokens);
-  }
-
-  static CardSearchFieldEnum? _fieldByName(String name) {
-    for (final f in CardSearchFieldEnum.values) {
-      if (f.name == name) return f;
-    }
-    return null;
+    return FieldSearchData<F>(byField: byField, hashes: hashes, tokens: tokens);
   }
 }

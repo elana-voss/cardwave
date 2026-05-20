@@ -8,6 +8,7 @@ workspace:
   - packages/cardwave_embeddings
   - packages/cardwave_names
   - packages/cardwave_storage
+  - packages/cardwave_retrieval
 
 environment:
   sdk: ^3.10.8
@@ -34,6 +35,12 @@ dependencies:
   # it via Provider.
   cardwave_embeddings:
     path: packages/cardwave_embeddings
+
+  # The cardwave_retrieval package owns embedder-agnostic retrieval math:
+  # cosine, RRF, BM25F, and the vector sidecar codec. SearchService composes
+  # it with cardwave_embeddings; the package itself has no cardwave deps.
+  cardwave_retrieval:
+    path: packages/cardwave_retrieval
 
   # The cardwave_storage package owns the cross-platform storage shim:
   # IndexedDB on web (via fs_shim + idb_shim), dart:io on native. Owns
@@ -63,6 +70,7 @@ dependencies:
   package_info_plus: ^10.0.0
   pub_semver: ^2.1.4
   diff_match_patch: ^0.4.1
+  uuid: ^4.5.3
   provider: ^6.1.5+1
   flutter_native_splash: ^2.4.1
   flutter_speed_dial: ^7.0.0

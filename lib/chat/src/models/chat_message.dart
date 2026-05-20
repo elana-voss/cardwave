@@ -18,6 +18,7 @@ enum ChatRoleEnum {
 @JsonSerializable(explicitToJson: true)
 class ChatMessage {
   ChatMessage({
+    required this.id,
     required this.role,
     required this.timestamp,
     List<ChatSwipe>? swipes,
@@ -30,6 +31,7 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) =>
       _$ChatMessageFromJson(json);
+  final String id;
   final ChatRoleEnum role;
   List<ChatSwipe> swipes;
   int swipeIndex;

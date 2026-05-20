@@ -263,6 +263,7 @@ class ChatController extends BaseChatViewController
     }
 
     final userMessage = ChatMessage(
+      id: UtilsApp.generateId('msg'),
       role: ChatRoleEnum.user,
       swipes: [
         ChatSwipe(
@@ -328,6 +329,7 @@ class ChatController extends BaseChatViewController
     final prompt = promptRepository.continueChat;
 
     final tempUserMsg = ChatMessage(
+      id: UtilsApp.generateId('msg'),
       role: ChatRoleEnum.user,
       swipes: [ChatSwipe(content: prompt)],
       timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -357,6 +359,7 @@ class ChatController extends BaseChatViewController
     prompt = prompt.replaceAll('%LENGTH_CONSTRAINT%', lengthConstraint);
 
     final tempUserMsg = ChatMessage(
+      id: UtilsApp.generateId('msg'),
       role: ChatRoleEnum.user,
       swipes: [ChatSwipe(content: prompt)],
       timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -510,6 +513,7 @@ class ChatController extends BaseChatViewController
     final assistantMessageToBeFilled =
         existingMessage ??
         ChatMessage(
+          id: UtilsApp.generateId('msg'),
           role: ChatRoleEnum.assistant,
           swipes: [ChatSwipe(content: '')],
           timestamp: DateTime.now().millisecondsSinceEpoch,

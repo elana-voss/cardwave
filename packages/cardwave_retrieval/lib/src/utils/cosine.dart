@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 /// Dot product — equals cosine when both vectors are L2-normalized
-/// (which our e5-small embedder produces).
+/// (which our BGE-small embedder produces).
 double cosineNormalized(Float32List a, Float32List b) {
   assert(a.length == b.length, 'cosine vectors must be the same length');
   var sum = 0.0;

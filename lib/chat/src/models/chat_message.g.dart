@@ -7,6 +7,7 @@ part of 'chat_message.dart';
 // **************************************************************************
 
 ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => ChatMessage(
+  id: json['id'] as String,
   role: $enumDecode(_$ChatRoleEnumEnumMap, json['role']),
   timestamp: (json['timestamp'] as num).toInt(),
   swipes: (json['swipes'] as List<dynamic>?)
@@ -20,6 +21,7 @@ ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => ChatMessage(
 
 Map<String, dynamic> _$ChatMessageToJson(ChatMessage instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'role': _$ChatRoleEnumEnumMap[instance.role]!,
       'swipes': instance.swipes.map((e) => e.toJson()).toList(),
       'swipe_index': instance.swipeIndex,

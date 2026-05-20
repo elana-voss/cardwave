@@ -95,6 +95,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
       workingMessage = targetMessage;
     } else {
       workingMessage = ChatMessage(
+        id: UtilsApp.generateId('msg'),
         role: ChatRoleEnum.assistant,
         swipes: [ChatSwipe(content: '')],
         timestamp: DateTime.now().millisecondsSinceEpoch,

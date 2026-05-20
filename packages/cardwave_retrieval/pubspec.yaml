@@ -1,0 +1,17 @@
+name: cardwave_retrieval
+description: "Embedder-agnostic retrieval primitives: cosine, RRF, BM25F, and the vector sidecar codec."
+publish_to: 'none'
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  import_lint: ^0.1.6

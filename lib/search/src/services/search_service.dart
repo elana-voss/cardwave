@@ -3,15 +3,11 @@ import 'dart:collection';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
-import 'package:cardwave/search/src/models/card_search_data.dart';
 import 'package:cardwave/search/src/models/card_search_field_enum.dart';
 import 'package:cardwave/search/src/observability/embeddings_loggers.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
-import 'package:cardwave/search/src/utils/bm25f_index.dart';
-import 'package:cardwave/search/src/utils/cosine.dart';
-import 'package:cardwave/search/src/utils/rrf.dart';
-import 'package:cardwave/search/src/utils/text_tokenizer.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
@@ -36,6 +32,14 @@ class SearchService extends ChangeNotifier {
   /// at 0.45–0.57; 0.6 leaves a small margin above the noise floor.
   static const double _semanticThreshold = 0.6;
 
+  // Per-field BM25F boost = source weight / 10. Dividing by 10 keeps the
+  // boost in the range where BM25's saturation curve doesn't crush the gap
+  // between high- and low-weighted fields (scenario at weight 1 lands at
+  // 0.1 — quiet but still scored).
+  static final Map<CardSearchFieldEnum, double> _bm25FieldWeights = {
+    for (final f in CardSearchFieldEnum.values) f: f.weight / 10,
+  };
+
   final SearchRepository repository;
   final Embedder _embedder;
 
@@ -46,7 +50,7 @@ class SearchService extends ChangeNotifier {
   // Per-card data + a parallel CharacterFile lookup so the worker can
   // resolve a queue entry's cardPath in O(1) instead of scanning every
   // loaded card.
-  final Map<String, CardSearchData> _byPath = {};
+  final Map<String, FieldSearchData<CardSearchFieldEnum>> _byPath = {};
   final Map<String, CharacterFile> _cardsByPath = {};
 
   // Worker removes the key on dequeue, so an edit landing mid-process
@@ -74,7 +78,7 @@ class SearchService extends ChangeNotifier {
   // null until the first build completes. Token storage marks _bm25Dirty
   // so the rebuild loop keeps running while indexing proceeds; only one
   // build is in flight at a time.
-  Bm25fIndex? _bm25Index;
+  Bm25fIndex<CardSearchFieldEnum>? _bm25Index;
   bool _bm25Building = false;
   bool _bm25Dirty = false;
   bool _bm25Disposed = false;
@@ -96,7 +100,8 @@ class SearchService extends ChangeNotifier {
 
   /// Cached search data for [cardImagePath], or null when the card
   /// hasn't been ingested yet.
-  CardSearchData? embeddingsFor(String cardImagePath) => _byPath[cardImagePath];
+  FieldSearchData<CardSearchFieldEnum>? embeddingsFor(String cardImagePath) =>
+      _byPath[cardImagePath];
 
   /// Wires the back-pointer to `CharacterService` and starts discovery.
   /// Idempotent.
@@ -121,7 +126,7 @@ class SearchService extends ChangeNotifier {
     // this card; _ingestCard's later merge keeps any sidecar data we read.
     final existing = _byPath.putIfAbsent(
       card.appCardImagePath,
-      CardSearchData.empty,
+      FieldSearchData<CardSearchFieldEnum>.empty,
     );
     _cardsByPath[card.appCardImagePath] = card;
 
@@ -291,7 +296,7 @@ class SearchService extends ChangeNotifier {
       // Claim the slot synchronously before any await so concurrent
       // _scanForChanges invocations don't double-ingest the same card.
       if (_byPath.containsKey(card.appCardImagePath)) continue;
-      _byPath[card.appCardImagePath] = CardSearchData.empty();
+      _byPath[card.appCardImagePath] = FieldSearchData<CardSearchFieldEnum>.empty();
       _cardsByPath[card.appCardImagePath] = card;
       await _ingestCard(card);
     }
@@ -482,9 +487,13 @@ class SearchService extends ChangeNotifier {
         _bm25Dirty = false;
         final snapshots = _collectBm25Snapshots();
         if (snapshots.isEmpty) continue;
-        final Bm25fIndex fresh;
+        final Bm25fIndex<CardSearchFieldEnum> fresh;
         try {
-          fresh = await Bm25fIndex.buildFromSnapshots(snapshots);
+          fresh = await Bm25fIndex.buildFromSnapshots(
+            snapshots,
+            fields: CardSearchFieldEnum.values,
+            fieldWeights: _bm25FieldWeights,
+          );
         } on Object catch (e, st) {
           searchLogger.severe(
             EmbeddingsDiagnosticEvent(
@@ -505,8 +514,8 @@ class SearchService extends ChangeNotifier {
     }
   }
 
-  List<CardTokenSnapshot> _collectBm25Snapshots() {
-    final snapshots = <CardTokenSnapshot>[];
+  List<TokenSnapshot<CardSearchFieldEnum>> _collectBm25Snapshots() {
+    final snapshots = <TokenSnapshot<CardSearchFieldEnum>>[];
     for (final entry in _byPath.entries) {
       final tokensByField = <CardSearchFieldEnum, List<String>>{};
       for (final field in CardSearchFieldEnum.values) {
@@ -517,7 +526,10 @@ class SearchService extends ChangeNotifier {
       }
       if (tokensByField.isEmpty) continue;
       snapshots.add(
-        CardTokenSnapshot(id: entry.key, tokensByField: tokensByField),
+        TokenSnapshot<CardSearchFieldEnum>(
+          id: entry.key,
+          tokensByField: tokensByField,
+        ),
       );
     }
     return snapshots;

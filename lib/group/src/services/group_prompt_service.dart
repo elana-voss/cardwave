@@ -23,6 +23,7 @@ class GroupPromptService {
       }
       final speakerName = resolveSpeakerName(message.characterId);
       return ChatMessage(
+        id: UtilsApp.generateId('msg'),
         role: message.role,
         swipes: [ChatSwipe(content: '$speakerName: ${message.content}')],
         timestamp: message.timestamp,
