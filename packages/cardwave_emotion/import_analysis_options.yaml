@@ -1,0 +1,18 @@
+# Forbids the package from depending on app code.
+# Run via:  dart pub run import_lint
+#
+# search_file_path_reg_exp scopes the rule to all .dart files in the package.
+# not_allow_import_reg_exps blocks every package:cardwave/* import (the app);
+# sibling packages (cardwave_embeddings, cardwave_retrieval) are allowed —
+# they do not match `package:cardwave/` (note the trailing slash).
+
+rules:
+  no_app_imports:
+    search_file_path_reg_exp: 'lib[\\/].*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave/.*"]
+    ignore_import_reg_exps: []
+
+  src_internals_private:
+    search_file_path_reg_exp: 'test[\\/].*\.dart$'
+    not_allow_import_reg_exps: ["package:cardwave_emotion/src/.*"]
+    ignore_import_reg_exps: []

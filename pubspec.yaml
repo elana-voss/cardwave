@@ -9,6 +9,7 @@ workspace:
   - packages/cardwave_names
   - packages/cardwave_storage
   - packages/cardwave_retrieval
+  - packages/cardwave_emotion
 
 environment:
   sdk: ^3.10.8
@@ -41,6 +42,12 @@ dependencies:
   # it with cardwave_embeddings; the package itself has no cardwave deps.
   cardwave_retrieval:
     path: packages/cardwave_retrieval
+
+  # The cardwave_emotion package owns the embedding-similarity emotion
+  # classifier (GoEmotions labels). Built on cardwave_embeddings +
+  # cardwave_retrieval; no app deps. Wired into the app in a later phase.
+  cardwave_emotion:
+    path: packages/cardwave_emotion
 
   # The cardwave_storage package owns the cross-platform storage shim:
   # IndexedDB on web (via fs_shim + idb_shim), dart:io on native. Owns
