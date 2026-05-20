@@ -29,13 +29,8 @@ void main() {
     'Grid — search filters non-matches and ranks the name match first',
     timeout: const Timeout(Duration(minutes: 1)),
     (tester) async {
-      if (!hasGrokKey) {
-        markTestSkipped('GROK_API_KEY not supplied (pass --dart-define).');
-        return;
-      }
-
       await wipeAppData();
-      await seedGrokRecovery();
+      await seedOnboardingComplete();
       await seedTestCharacter();
 
       app.main();
