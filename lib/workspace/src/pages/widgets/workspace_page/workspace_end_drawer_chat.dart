@@ -45,6 +45,7 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
           characterFile: activeCharacterFile,
           onChanged: visibleChatController.refresh,
         ),
+        if (!visibleChatController.isAssistant) const TileRecalledMemory(),
         if (isAdvanced) ...[
           TileTrailingParagraph(
             chatSession: visibleChatController.selectedChat,

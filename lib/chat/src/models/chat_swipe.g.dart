@@ -21,6 +21,11 @@ ChatSwipe _$ChatSwipeFromJson(Map<String, dynamic> json) => ChatSwipe(
           ?.map((e) => ChatToolCallRecord.fromJson(e as Map<String, dynamic>))
           .toList() ??
       [],
+  recalledMemory:
+      (json['recalled_memory'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      [],
 );
 
 Map<String, dynamic> _$ChatSwipeToJson(ChatSwipe instance) => <String, dynamic>{
@@ -30,4 +35,5 @@ Map<String, dynamic> _$ChatSwipeToJson(ChatSwipe instance) => <String, dynamic>{
   'image_caption': ?instance.imageCaption,
   'video_path': ?instance.videoPath,
   'tool_calls': instance.toolCalls.map((e) => e.toJson()).toList(),
+  'recalled_memory': instance.recalledMemory,
 };

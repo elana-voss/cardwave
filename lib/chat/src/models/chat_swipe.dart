@@ -13,10 +13,12 @@ class ChatSwipe {
     this.imageCaption,
     this.videoPath,
     List<ChatToolCallRecord>? toolCalls,
+    List<String>? recalledMemory,
     this.waitingFor = BubbleWaitingForEnum.complete,
     this.waitingForLabel,
   }) : attachedImages = attachedImages ?? <String>[],
-       toolCalls = toolCalls ?? <ChatToolCallRecord>[];
+       toolCalls = toolCalls ?? <ChatToolCallRecord>[],
+       recalledMemory = recalledMemory ?? <String>[];
 
   factory ChatSwipe.fromJson(Map<String, dynamic> json) =>
       _$ChatSwipeFromJson(json);
@@ -55,6 +57,13 @@ class ChatSwipe {
   /// URL"); the chat bubble does not render these in v1.
   @JsonKey(defaultValue: <ChatToolCallRecord>[])
   List<ChatToolCallRecord> toolCalls;
+
+  /// Story-memory lines recalled for this swipe and fed into its prompt, each
+  /// already formatted as a "- …" line. Persisted so the reply can show what
+  /// memory informed it; empty when memory was off or nothing matched. Whether
+  /// it renders is gated by the app-wide `showRecalledMemory` setting.
+  @JsonKey(defaultValue: <String>[])
+  List<String> recalledMemory;
 
   /// Drives the bubble's progress indicator. Single source of truth for
   /// "is this swipe in flight, and on what". Runtime-only — never persisted.

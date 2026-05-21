@@ -31,6 +31,7 @@ export 'src/pages/widgets/tile_image_preset.dart';
 export 'src/pages/widgets/tile_max_response_length.dart';
 export 'src/pages/widgets/tile_nsfw.dart';
 export 'src/pages/widgets/tile_reasoning_effort.dart';
+export 'src/pages/widgets/tile_recalled_memory.dart';
 export 'src/pages/widgets/tile_scenario.dart';
 export 'src/pages/widgets/tile_trailing_paragraph.dart';
 export 'src/pages/widgets/tile_tts_language.dart';

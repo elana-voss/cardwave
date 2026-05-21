@@ -44,18 +44,23 @@ class MemoryService {
   MemoryEngine? _engine;
   MemoryRetriever? _retriever;
 
-  /// Retrieves the events most relevant to the user's latest message, formatted
+  /// Retrieves the memory most relevant to the user's latest message as a list
+  /// of preformatted "- …" lines — recalled events plus current entity facts —
   /// for the `<memory>` prompt section. Returns empty (and the section is
   /// omitted) when memory is unavailable for any reason — a missing embedder, an
-  /// empty graph, or a failure — so a memory problem never blocks the reply.
-  Future<String> retrieveContext(ChatSession session, CharacterFile file) async {
-    if (!embedder.isReady) return '';
+  /// empty graph, or a failure — so a memory problem never blocks the reply. The
+  /// caller joins the lines for the prompt and also stores them on the reply.
+  Future<List<String>> retrieveContext(
+    ChatSession session,
+    CharacterFile file,
+  ) async {
+    if (!embedder.isReady) return const [];
     try {
       await _ensureLoaded(session, file);
       final retriever = _retriever;
-      if (retriever == null) return '';
+      if (retriever == null) return const [];
       final query = _latestUserText(session.messages);
-      if (query.isEmpty) return '';
+      if (query.isEmpty) return const [];
       final events = await retriever.retrieve(query);
       // Facts the query or the active character names carry current state
       // ("what's true now"); events carry "what happened".
@@ -72,14 +77,14 @@ class MemoryService {
         for (final event in events) '- ${_formatEvent(event)}',
         for (final fact in facts) '- (current) ${fact.text}',
       ];
-      return lines.join('\n');
+      return lines;
     } on Exception catch (error, stackTrace) {
       loggingService.warning(
         'Memory retrieval failed; replying without memory context.',
         error,
         stackTrace,
       );
-      return '';
+      return const [];
     }
   }
 

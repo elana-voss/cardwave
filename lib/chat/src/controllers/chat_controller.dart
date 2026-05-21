@@ -590,6 +590,12 @@ class ChatController extends BaseChatViewController
             );
           }
 
+          if (event.recalledMemory.isNotEmpty &&
+              assistantMessageToBeFilled.swipes.isNotEmpty) {
+            assistantMessageToBeFilled.activeSwipe.recalledMemory =
+                event.recalledMemory;
+          }
+
           if (assistantMessageToBeFilled.content.isNotEmpty) {
             characterFile.appCardTimestampLastChatted =
                 DateTime.now().millisecondsSinceEpoch;

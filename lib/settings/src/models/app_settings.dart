@@ -28,6 +28,7 @@ class AppSettings {
     this.chatImageVisible = true,
     this.editorImageVisible = false,
     this.memoryEnabled = true,
+    this.showRecalledMemory = false,
     this.assistantCardEditRequireApprovalForEdits = false,
     this.assistantCardEditRequireApprovalForAdditions = false,
     this.assistantCardEditRequireApprovalForDeletions = true,
@@ -118,6 +119,13 @@ class AppSettings {
   /// in Settings, not onboarding.
   @JsonKey(defaultValue: true)
   bool memoryEnabled;
+
+  /// When on, each AI reply shows, beneath its text, the story-memory lines
+  /// that informed it (dimmed footnotes). An insight aid for power users; off
+  /// by default so basic users never see it. Only meaningful while
+  /// [memoryEnabled] is on.
+  @JsonKey(defaultValue: false)
+  bool showRecalledMemory;
 
   /// Gate flags for assistant-chat tool-driven card edits. When false the
   /// modality auto-applies; when true the user sees the approval dialog

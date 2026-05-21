@@ -218,6 +218,19 @@ class ChatMessageBubble extends StatelessWidget {
     final videoPath = message.swipes.isNotEmpty
         ? message.activeSwipe.videoPath
         : null;
+
+    // The select below is reached only when this reply actually has recalled
+    // lines, so bubbles with nothing to show don't rebuild when the toggle flips.
+    final recalledMemory =
+        message.role == ChatRoleEnum.assistant && message.swipes.isNotEmpty
+        ? message.activeSwipe.recalledMemory
+        : const <String>[];
+    final showRecalledMemory =
+        recalledMemory.isNotEmpty &&
+        context.select<SettingsService, bool>(
+          (s) => s.settings.showRecalledMemory,
+        );
+
     final contentWithVideo =
         videoPath == null && message.role != ChatRoleEnum.assistant
         ? contentWidget
@@ -226,6 +239,11 @@ class ChatMessageBubble extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               contentWidget,
+              if (showRecalledMemory)
+                _RecalledMemoryFootnote(
+                  lines: recalledMemory,
+                  metaStyle: metaStyle,
+                ),
               if (message.role == ChatRoleEnum.assistant)
                 _BubbleWaitingIndicator(message: message, metaStyle: metaStyle),
               if (videoPath != null)
@@ -482,5 +500,32 @@ class _BubbleWaitingIndicator extends StatelessWidget {
       case VideoJobStateEnum.failed:
         return null;
     }
+  }
+}
+
+/// Dimmed footnotes under an AI reply listing the story-memory lines that
+/// informed it. Each line arrives preformatted (e.g. "- (current) …"); this
+/// only styles them as muted metadata so they read as a footnote, not part of
+/// the reply. The parent decides whether to show it.
+class _RecalledMemoryFootnote extends StatelessWidget {
+  const _RecalledMemoryFootnote({required this.lines, required this.metaStyle});
+
+  final List<String> lines;
+  final TextStyle metaStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = metaStyle.copyWith(
+      fontStyle: FontStyle.italic,
+      color: metaStyle.color?.withValues(alpha: 0.7),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 2,
+        children: [for (final line in lines) Text(line, style: style)],
+      ),
+    );
   }
 }

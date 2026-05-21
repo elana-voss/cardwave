@@ -34,6 +34,7 @@ class GenerationCompleteEvent extends GenerationEvent {
     required this.modelUsed,
     this.rawPrompt,
     this.toolCallRecords = const [],
+    this.recalledMemory = const [],
   });
   final String finalContent;
   final String? rawPrompt;
@@ -46,4 +47,9 @@ class GenerationCompleteEvent extends GenerationEvent {
   /// result. Empty when no tools fired. The chat controller writes
   /// these onto the swipe so future turns can see them.
   final List<ChatToolCallRecord> toolCallRecords;
+
+  /// Story-memory lines recalled for this reply (each a preformatted "- …"
+  /// line), carried so the controller can store them on the reply's swipe.
+  /// Empty when memory was off or the path doesn't use memory.
+  final List<String> recalledMemory;
 }

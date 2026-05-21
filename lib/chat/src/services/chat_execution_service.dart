@@ -152,10 +152,10 @@ class ChatExecutionService {
           // as its own <memory> section. Skipped for the assistant chat and
           // when memory is off. retrieveContext degrades to empty on any
           // failure, so it never blocks the reply.
-          final memoryContext =
+          final memoryLines =
               settingsService.settings.memoryEnabled && !session.isAssistant
               ? await memoryService.retrieveContext(session, characterFile)
-              : null;
+              : const <String>[];
 
           final builder = ChatPromptBuilder(
             contextSize: contextSize,
@@ -167,7 +167,7 @@ class ChatExecutionService {
             injectedMessage: injectedMessage,
             isImpersonating: isImpersonating,
             dataContext: dataContext,
-            memoryContext: memoryContext,
+            memoryContext: memoryLines.isEmpty ? null : memoryLines.join('\n'),
             enabledTools: enabledTools,
             toolRegistry: toolRegistry,
           );
@@ -215,6 +215,7 @@ class ChatExecutionService {
                 tokenCount: tokenCount,
                 modelUsed: model.id,
                 toolCallRecords: accumulatedRecords,
+                recalledMemory: memoryLines,
               ),
             );
           }
