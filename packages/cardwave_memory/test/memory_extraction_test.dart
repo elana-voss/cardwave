@@ -85,12 +85,32 @@ Map<String, dynamic> _eventJson({
   'concepts': <String>[],
   'keywords': <String>[],
   'importance': 1,
-  'beat': null,
 };
+
+Map<String, dynamic> _factJson({
+  required List<String> subjects,
+  required String text,
+  required List<int> numbers,
+  String? supersedes,
+}) => <String, dynamic>{
+  'subjects': subjects,
+  'text': text,
+  'message_numbers': numbers,
+  'supersedes': supersedes,
+};
+
+Map<String, dynamic> _output({
+  List<Map<String, dynamic>> events = const [],
+  List<Map<String, dynamic>> facts = const [],
+}) => <String, dynamic>{'events': events, 'facts': facts};
+
+MemoryMessage _msg(String id, MemoryRole role, String text, int timestamp) =>
+    MemoryMessage(id: id, role: role, text: text, timestamp: timestamp);
 
 void main() {
   const happyText = 'I am so happy to see you again!';
   const angerText = 'You betrayed me and now I am furious.';
+  const maylaText = 'Mayla draws her blade in the tavern.';
 
   late Map<String, Float32List> vectors;
 
@@ -119,22 +139,12 @@ void main() {
 
   test('extraction yields an event with prefix, emotions, and a vector', () async {
     final window = [
-      const MemoryMessage(
-        id: 'm1',
-        role: MemoryRole.user,
-        text: happyText,
-        timestamp: 1,
-      ),
-      const MemoryMessage(
-        id: 'm2',
-        role: MemoryRole.character,
-        text: angerText,
-        timestamp: 2,
-      ),
+      _msg('m1', MemoryRole.user, happyText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
     ];
     final extractor = buildExtractor([
-      <String, dynamic>{
-        'events': [
+      _output(
+        events: [
           <String, dynamic>{
             'text': 'They reunite, then the mood turns.',
             'contextual_prefix': 'At the harbor at dusk,',
@@ -145,45 +155,56 @@ void main() {
             'concepts': ['reunion'],
             'keywords': ['dusk'],
             'importance': 3,
-            'beat': 'conflict',
           },
         ],
-        'scene_end_message': null,
-        'scene_summary': '',
-      },
+      ),
     ]);
 
     final result = await extractor.extract(window);
 
-    expect(result.verdict, isA<SceneContinues>());
     expect(result.events, hasLength(1));
-    for (final event in result.events) {
-      expect(event.contextualPrefix, 'At the harbor at dusk,');
-      expect(event.messageIds, ['m1', 'm2']);
-      expect(event.userEmotion, EmotionLabelEnum.joy);
-      expect(event.characterEmotion, EmotionLabelEnum.anger);
-      expect(event.beat, SceneBeatEnum.conflict);
-      expect(event.importance, 3);
-      expect(event.vector, isNotNull);
-      expect(event.vector!.length, embeddingsDim);
-    }
+    expect(result.facts, isEmpty);
+    final event = result.events.single;
+    expect(event.contextualPrefix, 'At the harbor at dusk,');
+    expect(event.messageIds, ['m1', 'm2']);
+    expect(event.userEmotion, EmotionLabelEnum.joy);
+    expect(event.characterEmotion, EmotionLabelEnum.anger);
+    expect(event.importance, 3);
+    expect(event.vector, isNotNull);
+    expect(event.vector!.length, embeddingsDim);
+  });
+
+  test('extraction yields a fact with normalized subjects and message ids', () async {
+    final window = [_msg('m1', MemoryRole.character, maylaText, 1)];
+    final result = await buildExtractor([
+      _output(
+        facts: [
+          _factJson(
+            subjects: ['Mayla', 'Captain'],
+            text: 'Mayla and the captain are enemies',
+            numbers: [1],
+          ),
+        ],
+      ),
+    ]).extract(window);
+
+    expect(result.events, isEmpty);
+    expect(result.facts, hasLength(1));
+    final fact = result.facts.single;
+    expect(
+      fact.subjects,
+      ['mayla', 'captain'],
+      reason: 'subjects are lower-cased for lookup',
+    );
+    expect(fact.text, 'Mayla and the captain are enemies');
+    expect(fact.messageIds, ['m1']);
+    expect(fact.supersededAt, isNull);
   });
 
   test('an event citing only non-existent messages is dropped, not orphaned', () async {
-    final window = [
-      const MemoryMessage(
-        id: 'm1',
-        role: MemoryRole.user,
-        text: happyText,
-        timestamp: 1,
-      ),
-    ];
+    final window = [_msg('m1', MemoryRole.user, happyText, 1)];
     final result = await buildExtractor([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'unanchored', numbers: [99])],
-        'scene_end_message': null,
-        'scene_summary': '',
-      },
+      _output(events: [_eventJson(text: 'unanchored', numbers: [99])]),
     ]).extract(window);
 
     expect(
@@ -193,168 +214,155 @@ void main() {
     );
   });
 
-  test('malformed or failed output leaves the window provisional, no throw', () async {
-    final window = [
-      const MemoryMessage(
-        id: 'm1',
-        role: MemoryRole.user,
-        text: happyText,
-        timestamp: 1,
+  test('a fact citing only non-existent messages is dropped', () async {
+    final window = [_msg('m1', MemoryRole.user, happyText, 1)];
+    final result = await buildExtractor([
+      _output(
+        facts: [_factJson(subjects: ['x'], text: 'unanchored', numbers: [99])],
       ),
-    ];
+    ]).extract(window);
 
-    // A present-but-malformed map: no usable events.
+    expect(
+      result.facts,
+      isEmpty,
+      reason: 'no real message backs the fact, so it cannot be reconciled',
+    );
+  });
+
+  test('malformed or failed output yields nothing, no throw', () async {
+    final window = [_msg('m1', MemoryRole.user, happyText, 1)];
+
+    // A present-but-malformed map: no usable events or facts.
     final malformed = await buildExtractor([
       <String, dynamic>{'unexpected': true},
     ]).extract(window);
     expect(malformed.events, isEmpty);
-    expect(malformed.verdict, isA<SceneContinues>());
+    expect(malformed.facts, isEmpty);
 
     // completeStructured throwing (its real behavior on unparseable output).
     final failed = await buildExtractor([
       Exception('no parseable structured output'),
     ]).extract(window);
     expect(failed.events, isEmpty);
-    expect(failed.verdict, isA<SceneContinues>());
+    expect(failed.facts, isEmpty);
   });
 
-  test('an end-cut verdict commits the staged scene as a tree node', () async {
-    final window = [
-      const MemoryMessage(
-        id: 'm1',
-        role: MemoryRole.user,
-        text: happyText,
-        timestamp: 1,
-      ),
-      const MemoryMessage(
-        id: 'm2',
-        role: MemoryRole.character,
-        text: angerText,
-        timestamp: 2,
-      ),
-    ];
+  test('events and facts commit straight into the graph, no staging', () async {
     final engine = buildEngine([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'A tense reunion.', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'Mayla and the captain reunite, badly.',
-      },
+      _output(
+        events: [_eventJson(text: 'a tense reunion', numbers: [1, 2])],
+        facts: [
+          _factJson(subjects: ['mayla'], text: 'Mayla is furious', numbers: [2]),
+        ],
+      ),
     ]);
 
-    await engine.ingestWindow(window);
+    await engine.ingestWindow([
+      _msg('m1', MemoryRole.user, happyText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
+    ]);
 
-    expect(engine.staging.isEmpty, isTrue, reason: 'committed events leave staging');
     expect(engine.graph.events, hasLength(1));
-    final scenes = [
-      for (final node in engine.graph.nodes)
-        if (node.level == TreeLevelEnum.scene) node,
-    ];
-    expect(scenes, hasLength(1));
-    for (final scene in scenes) {
-      expect(scene.summary, 'Mayla and the captain reunite, badly.');
-      expect(scene.eventIds, hasLength(1));
-      expect(scene.messageIds, ['m1', 'm2']);
-    }
+    expect(engine.graph.facts, hasLength(1));
+    expect(engine.graph.events.single.messageIds, ['m1', 'm2']);
+    expect(engine.graph.facts.single.text, 'Mayla is furious');
   });
 
-  test('a "continues" verdict keeps events provisional across two windows', () async {
-    const m1 = MemoryMessage(
-      id: 'm1',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 1,
-    );
-    const m2 = MemoryMessage(
-      id: 'm2',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 2,
-    );
-    const m3 = MemoryMessage(
-      id: 'm3',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 3,
-    );
+  test('a new fact supersedes a known candidate fact in one call', () async {
     final engine = buildEngine([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'beat one', numbers: [1, 2])],
-        'scene_end_message': null,
-        'scene_summary': '',
-      },
-      <String, dynamic>{
-        'events': [_eventJson(text: 'beat two', numbers: [1, 2])],
-        'scene_end_message': null,
-        'scene_summary': '',
-      },
+      _output(
+        facts: [
+          _factJson(subjects: ['mayla'], text: 'Mayla is a sailor', numbers: [1]),
+        ],
+      ),
+      _output(
+        facts: [
+          _factJson(
+            subjects: ['mayla'],
+            text: 'Mayla is a captain',
+            numbers: [1],
+            supersedes: 'F1',
+          ),
+        ],
+      ),
     ]);
 
-    await engine.ingestWindow([m1, m2]);
-    // Overlapping window (re-reads m2 as leading context).
-    await engine.ingestWindow([m2, m3]);
+    // Both windows name Mayla, so the first fact is a candidate in the second.
+    await engine.ingestWindow([_msg('m1', MemoryRole.character, maylaText, 1)]);
+    await engine.ingestWindow([_msg('m2', MemoryRole.character, maylaText, 2)]);
 
-    expect(engine.graph.nodes, isEmpty, reason: 'nothing commits while the scene continues');
+    final byText = {for (final fact in engine.graph.facts) fact.text: fact};
+    expect(byText.keys, containsAll(['Mayla is a sailor', 'Mayla is a captain']));
     expect(
-      engine.staging.length,
-      2,
-      reason: 'both events stay provisional, not lost across windows',
+      byText['Mayla is a sailor']!.supersededAt,
+      isNotNull,
+      reason: 'the old fact is retired',
+    );
+    expect(
+      byText['Mayla is a sailor']!.supersededBy,
+      byText['Mayla is a captain']!.id,
+    );
+    expect(
+      byText['Mayla is a captain']!.supersededAt,
+      isNull,
+      reason: 'the new fact is current',
     );
   });
 
-  test('reconcile drops nodes whose messages changed and recomputes from there', () async {
-    const m1 = MemoryMessage(
-      id: 'm1',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 1,
+  test('earlier messages are background only; each message is extracted once', () async {
+    final engine = MemoryEngine(
+      extractor: buildExtractor([
+        // Window 1: m1, m2 are new (numbered 1, 2).
+        _output(events: [_eventJson(text: 'opening beat', numbers: [1, 2])]),
+        // Window 2: m2 is background, m3 is the only new message (number 1).
+        _output(events: [_eventJson(text: 'next beat', numbers: [1])]),
+      ]),
+      batchSize: 2,
+      contextSize: 1,
     );
-    const m2 = MemoryMessage(
-      id: 'm2',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 2,
-    );
-    const m3 = MemoryMessage(
-      id: 'm3',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 3,
-    );
-    const m4 = MemoryMessage(
-      id: 'm4',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 4,
-    );
-    final engine = buildEngine([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene one', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'first scene',
-      },
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene two', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'second scene',
-      },
+
+    await engine.processMessages([
+      _msg('m1', MemoryRole.user, happyText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
+      _msg('m3', MemoryRole.user, happyText, 3),
     ]);
 
-    await engine.ingestWindow([m1, m2]); // commits scene 1 over m1, m2
-    await engine.ingestWindow([m3, m4]); // commits scene 2 over m3, m4
+    expect(
+      engine.graph.events,
+      hasLength(2),
+      reason: 'one event per window — m2 is background in window 2, not re-extracted',
+    );
+    final covered = {
+      for (final event in engine.graph.events) ...event.messageIds,
+    };
+    expect(covered, {'m1', 'm2', 'm3'});
+  });
 
-    final committedIds = [for (final node in engine.graph.nodes) node.id];
-    expect(committedIds, hasLength(2));
+  test('reconcile drops events and facts whose messages changed, recomputes from there', () async {
+    final engine = buildEngine([
+      _output(
+        events: [_eventJson(text: 'e1', numbers: [1, 2])],
+        facts: [_factJson(subjects: ['mayla'], text: 'f1', numbers: [1])],
+      ),
+      _output(
+        events: [_eventJson(text: 'e2', numbers: [1, 2])],
+        facts: [_factJson(subjects: ['mayla'], text: 'f2', numbers: [1])],
+      ),
+    ]);
+    await engine.ingestWindow([
+      _msg('m1', MemoryRole.user, maylaText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
+    ]);
+    await engine.ingestWindow([
+      _msg('m3', MemoryRole.user, maylaText, 3),
+      _msg('m4', MemoryRole.character, angerText, 4),
+    ]);
 
     // m2's text changes; m4 is deleted.
-    final result = engine.reconcile(const [
-      m1,
-      MemoryMessage(
-        id: 'm2',
-        role: MemoryRole.character,
-        text: 'an entirely different line',
-        timestamp: 2,
-      ),
-      m3,
+    final result = engine.reconcile([
+      _msg('m1', MemoryRole.user, maylaText, 1),
+      _msg('m2', MemoryRole.character, 'an entirely different line', 2),
+      _msg('m3', MemoryRole.user, maylaText, 3),
     ]);
 
     expect(
@@ -363,270 +371,59 @@ void main() {
       reason: 'm2 sits at position 1 and is the earliest change',
     );
     expect(
-      result.dirtyNodeIds.toSet(),
-      committedIds.toSet(),
-      reason: 'scene 1 depends on m2; scene 2 sits after the change — both recompute',
+      engine.graph.events,
+      isEmpty,
+      reason: 'e1 covers m2; e2 covers m3/m4 — both at or after the change',
     );
-    expect(engine.graph.nodes, isEmpty);
-    expect(engine.graph.events, isEmpty);
-  });
-
-  test('earlier messages are background only; each message is extracted once', () async {
-    const m1 = MemoryMessage(
-      id: 'm1',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 1,
-    );
-    const m2 = MemoryMessage(
-      id: 'm2',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 2,
-    );
-    const m3 = MemoryMessage(
-      id: 'm3',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 3,
-    );
-    final engine = MemoryEngine(
-      extractor: buildExtractor([
-        // Window 1: m1, m2 are new (numbered 1, 2).
-        <String, dynamic>{
-          'events': [_eventJson(text: 'opening beat', numbers: [1, 2])],
-          'scene_end_message': null,
-          'scene_summary': '',
-        },
-        // Window 2: m2 is background, m3 is the only new message (number 1).
-        <String, dynamic>{
-          'events': [_eventJson(text: 'next beat', numbers: [1])],
-          'scene_end_message': null,
-          'scene_summary': '',
-        },
-      ]),
-      batchSize: 2,
-      contextSize: 1,
-    );
-
-    await engine.processMessages([m1, m2, m3]);
-
     expect(
-      engine.staging.length,
-      2,
-      reason: 'one event per window — m2 is background in window 2, not re-extracted',
+      engine.graph.facts.map((fact) => fact.text),
+      ['f1'],
+      reason: 'f1 anchors to m1 (before the change) and survives; f2 (m3) drops',
     );
-    final covered = {
-      for (final event in engine.staging.events) ...event.messageIds,
-    };
-    expect(covered, {'m1', 'm2', 'm3'});
   });
 
-  test('a chapter records the message ids and summary of its scenes', () async {
-    // Bound to a variable so the graph isn't a const (groupScenes rewrites
-    // graph.nodes in place, which a const list would reject).
-    final scenes = [
-      const TreeNode(
-        id: 's1',
-        level: TreeLevelEnum.scene,
-        messageIds: ['m1', 'm2'],
-        summary: 'they meet',
-      ),
-      const TreeNode(
-        id: 's2',
-        level: TreeLevelEnum.scene,
-        messageIds: ['m3', 'm4'],
-        summary: 'they fight',
-      ),
-    ];
-    final graph = MemoryGraph(nodes: scenes);
-    await ChapterGrouper(
-      runner: _FakeLlmRunner([
-        <String, dynamic>{
-          'chapters': [
-            <String, dynamic>{
-              'scene_numbers': [1, 2],
-              'summary': 'the first chapter',
-            },
-          ],
-        },
-      ]),
-      minScenes: 2,
-    ).groupScenes(graph);
-
-    final chapters = [
-      for (final node in graph.nodes)
-        if (node.level == TreeLevelEnum.chapter) node,
-    ];
-    expect(chapters, hasLength(1));
-    for (final chapter in chapters) {
-      expect(chapter.childIds, ['s1', 's2']);
-      expect(
-        chapter.messageIds,
-        ['m1', 'm2', 'm3', 'm4'],
-        reason: 'a chapter covers the union of its scenes message ids',
-      );
-      expect(chapter.summary, 'the first chapter');
-      for (final scene in graph.nodes) {
-        if (scene.level == TreeLevelEnum.scene) {
-          expect(scene.parentId, chapter.id, reason: 'scenes point to the chapter');
-        }
-      }
-    }
-  });
-
-  test('reconcile drops a chapter and detaches its surviving scene', () async {
-    const m1 = MemoryMessage(
-      id: 'm1',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 1,
-    );
-    const m2 = MemoryMessage(
-      id: 'm2',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 2,
-    );
-    const m3 = MemoryMessage(
-      id: 'm3',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 3,
-    );
-    const m4 = MemoryMessage(
-      id: 'm4',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 4,
-    );
+  test('reconcile revives a fact whose superseding fact was dropped', () async {
     final engine = buildEngine([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene one', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'first scene',
-      },
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene two', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'second scene',
-      },
-    ]);
-    await engine.ingestWindow([m1, m2]); // scene 1 over m1, m2
-    await engine.ingestWindow([m3, m4]); // scene 2 over m3, m4
-
-    await ChapterGrouper(
-      runner: _FakeLlmRunner([
-        <String, dynamic>{
-          'chapters': [
-            <String, dynamic>{
-              'scene_numbers': [1, 2],
-              'summary': 'a chapter',
-            },
-          ],
-        },
-      ]),
-      minScenes: 2,
-    ).groupScenes(engine.graph);
-
-    final chaptersBefore = [
-      for (final node in engine.graph.nodes)
-        if (node.level == TreeLevelEnum.chapter) node,
-    ];
-    expect(chaptersBefore, hasLength(1), reason: 'the two scenes group into one chapter');
-
-    // m3's text changes: the chapter covers m3, so it is dropped along with
-    // scene 2; scene 1 survives but its chapter is gone.
-    engine.reconcile(const [
-      m1,
-      m2,
-      MemoryMessage(
-        id: 'm3',
-        role: MemoryRole.user,
-        text: 'an entirely different line',
-        timestamp: 3,
+      _output(
+        facts: [_factJson(subjects: ['mayla'], text: 'f-old', numbers: [1])],
       ),
-      m4,
+      _output(
+        facts: [
+          _factJson(
+            subjects: ['mayla'],
+            text: 'f-new',
+            numbers: [1],
+            supersedes: 'F1',
+          ),
+        ],
+      ),
+    ]);
+    await engine.ingestWindow([
+      _msg('m1', MemoryRole.character, maylaText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
+    ]);
+    await engine.ingestWindow([
+      _msg('m3', MemoryRole.character, maylaText, 3),
+      _msg('m4', MemoryRole.character, angerText, 4),
     ]);
 
-    expect(engine.graph.nodes, hasLength(1));
-    for (final node in engine.graph.nodes) {
-      expect(node.level, TreeLevelEnum.scene);
-      expect(node.messageIds, ['m1', 'm2']);
-      expect(
-        node.parentId,
-        isNull,
-        reason: 'the surviving scene is detached from the dropped chapter',
-      );
-    }
-  });
+    final old = engine.graph.facts.firstWhere((fact) => fact.text == 'f-old');
+    expect(old.supersededAt, isNotNull, reason: 'f-new retired f-old');
 
-  test('reconcile revives a fact whose superseding event was dropped', () async {
-    const m1 = MemoryMessage(
-      id: 'm1',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 1,
-    );
-    const m2 = MemoryMessage(
-      id: 'm2',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 2,
-    );
-    const m3 = MemoryMessage(
-      id: 'm3',
-      role: MemoryRole.user,
-      text: happyText,
-      timestamp: 3,
-    );
-    const m4 = MemoryMessage(
-      id: 'm4',
-      role: MemoryRole.character,
-      text: angerText,
-      timestamp: 4,
-    );
-    final engine = buildEngine([
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene one', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'first scene',
-      },
-      <String, dynamic>{
-        'events': [_eventJson(text: 'scene two', numbers: [1, 2])],
-        'scene_end_message': 2,
-        'scene_summary': 'second scene',
-      },
+    // m3 is deleted: reconcile drops f-new (anchored to m3), so the fact it had
+    // superseded is no longer contradicted and must come back as current.
+    engine.reconcile([
+      _msg('m1', MemoryRole.character, maylaText, 1),
+      _msg('m2', MemoryRole.character, angerText, 2),
+      _msg('m4', MemoryRole.character, angerText, 4),
     ]);
-    await engine.ingestWindow([m1, m2]);
-    await engine.ingestWindow([m3, m4]);
 
-    // The scene-two event supersedes the scene-one event.
-    StoryEvent? sceneOne;
-    StoryEvent? sceneTwo;
-    for (final event in engine.graph.events) {
-      if (event.text == 'scene one') sceneOne = event;
-      if (event.text == 'scene two') sceneTwo = event;
-    }
-    sceneOne!.supersededAt = sceneTwo!.recordedAt;
-    sceneOne.supersededBy = sceneTwo.id;
-
-    // m3 is deleted: reconcile drops scene two and its event, so the fact it
-    // had superseded is no longer contradicted and must come back as current.
-    engine.reconcile(const [m1, m2, m4]);
-
+    expect(engine.graph.facts.map((fact) => fact.text), ['f-old']);
     expect(
-      engine.graph.events.map((event) => event.text).toList(),
-      ['scene one'],
-      reason: 'scene two was dropped; scene one survives',
+      engine.graph.facts.single.supersededAt,
+      isNull,
+      reason: 'the revived fact is current again',
     );
-    for (final event in engine.graph.events) {
-      expect(
-        event.supersededAt,
-        isNull,
-        reason: 'the revived fact is current again',
-      );
-      expect(event.supersededBy, isNull);
-    }
+    expect(engine.graph.facts.single.supersededBy, isNull);
   });
 }

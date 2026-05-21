@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:cardwave_emotion/cardwave_emotion.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_emotion/cardwave_emotion.dart';
 import 'package:cardwave_memory/cardwave_memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,12 +11,9 @@ StoryEvent _buildEvent({Float32List? vector}) => StoryEvent(
   text: 'Mayla drew her blade on the crew in the harbor tavern.',
   contextualPrefix: 'In the harbor tavern at dusk,',
   messageIds: const ['msg-1', 'msg-2'],
-  validFrom: 1000,
-  beat: SceneBeatEnum.conflict,
   characterEmotion: EmotionLabelEnum.anger,
   userEmotion: EmotionLabelEnum.fear,
   importance: 3,
-  linkedEventIds: const ['event-earlier'],
   characters: const ['Mayla'],
   locations: const ['Harbor Tavern'],
   items: const ['blade'],
@@ -25,32 +22,17 @@ StoryEvent _buildEvent({Float32List? vector}) => StoryEvent(
   vector: vector,
 );
 
-MemoryGraph _buildGraph({Float32List? vector}) {
-  final event = _buildEvent(vector: vector);
-  final sceneId = newSceneId();
-  final chapterId = newChapterId();
-  return MemoryGraph(
-    events: [event],
-    nodes: [
-      TreeNode(
-        id: sceneId,
-        level: TreeLevelEnum.scene,
-        parentId: chapterId,
-        childIds: [event.id],
-        messageIds: const ['msg-1', 'msg-2'],
-        summary: 'Mayla confronts the crew.',
-        eventIds: [event.id],
-      ),
-      TreeNode(
-        id: chapterId,
-        level: TreeLevelEnum.chapter,
-        childIds: [sceneId],
-        summary: '',
-      ),
-    ],
-    roots: [chapterId],
-  );
-}
+MemoryFact _buildFact() => MemoryFact(
+  id: newFactId(),
+  subjects: const ['mayla', 'the crew'],
+  text: 'Mayla and the crew are enemies.',
+  messageIds: const ['msg-1', 'msg-2'],
+);
+
+MemoryGraph _buildGraph({Float32List? vector}) => MemoryGraph(
+  events: [_buildEvent(vector: vector)],
+  facts: [_buildFact()],
+);
 
 void main() {
   test('MemoryGraph survives a JSON round-trip with field equality', () {
@@ -71,7 +53,21 @@ void main() {
     expect(message.characterId, 'char-3');
   });
 
-  test('event vectors round-trip through the sidecar codec', () {
+  test('a superseded fact round-trips its supersession marks', () {
+    final fact = MemoryFact(
+      id: 'f1',
+      subjects: const ['mayla'],
+      text: 'Mayla is a sailor',
+      messageIds: const ['msg-1'],
+      supersededAt: 42,
+      supersededBy: 'f2',
+    );
+    final clone = MemoryFact.fromJson(fact.toJson());
+    expect(clone.supersededAt, 42);
+    expect(clone.supersededBy, 'f2');
+  });
+
+  test('event vectors round-trip through the sidecar; facts carry none', () {
     final source = Float32List.fromList(
       List<double>.generate(embeddingsDim, (i) => (i % 7) * 0.01),
     );

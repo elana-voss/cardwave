@@ -1,24 +1,26 @@
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_field_enum.dart';
 import 'package:cardwave_memory/src/models/memory_graph.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
-import 'package:cardwave_memory/src/models/tree_level_enum.dart';
-import 'package:cardwave_memory/src/models/tree_node.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 
-/// Retrieves the events most relevant to a query from one chat's
-/// [MemoryGraph], the same hybrid keyword + meaning ranking the card search
-/// uses: the dense channel embeds the query and scores it against each event
-/// vector; the keyword channel runs BM25 over the event fields; the two ranked
-/// lists fuse by reciprocal rank. A separate boost lifts events naming a person
-/// or place the query mentions, since the embedder under-weights rare proper
-/// nouns. Validity filtering, the relevance cutoff, top-k, and one-hop link
-/// expansion all run as named steps — an event leaves the result only because
-/// a named filter removed it, never because an error was swallowed.
+/// Retrieves the most relevant memory from one chat's [MemoryGraph], on two
+/// channels:
+///
+/// - [retrieve] ranks the EVENTS ("what happened") with the same hybrid
+///   keyword + meaning ranking the card search uses: the dense channel embeds
+///   the query and scores it against each event vector; the keyword channel
+///   runs BM25 over the event fields; the two ranked lists fuse by reciprocal
+///   rank, then a boost lifts events naming a person or place the query
+///   mentions (the embedder under-weights rare proper nouns).
+/// - [retrieveFacts] looks up the FACTS ("what's true now") by entity name
+///   only — facts carry no vector, so recall is a direct scan of the facts the
+///   query (or the active character) names.
 ///
 /// [embedder] is injected; this package never resolves models or reads
-/// settings. The keyword index is rebuilt via [rebuildIndex] when the graph
-/// loads and after each scene commits.
+/// settings. The keyword index covers events only and is rebuilt via
+/// [rebuildIndex] when the graph loads and after extraction commits.
 class MemoryRetriever {
   MemoryRetriever({required this.embedder, required this.graph});
 
@@ -44,13 +46,14 @@ class MemoryRetriever {
   static const double _properNounBoost = 0.1;
 
   static const int _defaultTopK = 12;
+  static const int _defaultFactTopK = 8;
 
   Bm25fIndex<MemoryFieldEnum>? _index;
 
   /// Rebuilds the keyword index from the current events. Runs on a background
   /// isolate on native and in yielding chunks on web (handled by
-  /// [Bm25fIndex.buildFromSnapshots]). Call on graph load and after a scene
-  /// commits new events.
+  /// [Bm25fIndex.buildFromSnapshots]). Call on graph load and after extraction
+  /// commits new events. Facts have no index — [retrieveFacts] scans them.
   Future<void> rebuildIndex() async {
     final snapshots = _collectSnapshots();
     if (snapshots.isEmpty) {
@@ -64,20 +67,12 @@ class MemoryRetriever {
     );
   }
 
-  /// Returns the events most relevant to [query], best first, followed by the
-  /// events one link away from them. [retrospective] keeps facts that are no
-  /// longer current (superseded or past their validity window) for
-  /// "remember when…" questions; by default they are filtered out.
-  Future<List<StoryEvent>> retrieve(
-    String query, {
-    int topK = _defaultTopK,
-    bool retrospective = false,
-  }) async {
-    final candidates = <String, StoryEvent>{};
-    for (final event in graph.events) {
-      if (retrospective || _isCurrent(event)) candidates[event.id] = event;
-    }
-    if (candidates.isEmpty) return const [];
+  /// Returns the events most relevant to [query], best first. Events are
+  /// append-only "what happened" records, so every event is a candidate — there
+  /// is no validity filter here (current state lives on facts).
+  Future<List<StoryEvent>> retrieve(String query, {int topK = _defaultTopK}) async {
+    if (graph.events.isEmpty) return const [];
+    final candidates = {for (final event in graph.events) event.id: event};
 
     final queryTokens = TextTokenizer.tokenize(query);
     final queryVector = await embedder.embedOne(query, task: EmbedTaskEnum.query);
@@ -109,55 +104,48 @@ class MemoryRetriever {
     final queryTokenSet = queryTokens.toSet();
     fused.updateAll((id, score) {
       final event = candidates[id];
-      if (event != null && _namesAQueryEntity(event, queryTokenSet)) {
+      if (event != null &&
+          _anyNameToken(
+            [...event.characters, ...event.locations],
+            queryTokenSet,
+          )) {
         return score + _properNounBoost;
       }
       return score;
     });
 
     final topIds = _keysByDescendingScore(fused.entries, limit: topK);
-
-    // ids in [fused] are candidate ids by construction, so these lookups hold.
-    final selected = topIds.toSet();
-    final result = <StoryEvent>[for (final id in topIds) candidates[id]!];
-    for (final id in topIds) {
-      for (final linkedId in candidates[id]!.linkedEventIds) {
-        if (!selected.add(linkedId)) continue;
-        // Unlike the candidate ids above, a linked id may point at an event
-        // dropped by the validity filter (or a dangling link), so it is not
-        // guaranteed present.
-        final linked = candidates[linkedId];
-        if (linked != null) result.add(linked);
-      }
-    }
-    return result;
+    return [for (final id in topIds) candidates[id]!];
   }
 
-  /// Returns the [level] nodes whose summary best matches [query], for
-  /// arc-level questions ("what's the story so far"). Ranks on summary text
-  /// only, so it returns the coarse summaries rather than per-turn event text.
-  /// [level] is meant to be part or chapter.
-  List<TreeNode> retrieveArcSummaries(
+  /// Returns the current (non-superseded) facts about any entity the [query]
+  /// names or that the chat is actively about ([activeSubjects], e.g. the
+  /// character's name), newest first, capped at [topK]. Facts aren't embedded —
+  /// recall is by entity name, a direct scan of [MemoryGraph.facts]. A fact the
+  /// query never names and that isn't an active subject does not surface.
+  List<MemoryFact> retrieveFacts(
     String query, {
-    required TreeLevelEnum level,
-    int topK = _defaultTopK,
+    List<String> activeSubjects = const [],
+    int topK = _defaultFactTopK,
   }) {
-    final queryTokens = TextTokenizer.tokenize(query).toSet();
-    if (queryTokens.isEmpty) return const [];
-    final scored = <MapEntry<TreeNode, int>>[];
-    for (final node in graph.nodes) {
-      if (node.level != level) continue;
-      final overlap = TextTokenizer.tokenize(
-        node.summary,
-      ).toSet().intersection(queryTokens).length;
-      if (overlap > 0) scored.add(MapEntry(node, overlap));
+    final wanted = <String>{
+      ...TextTokenizer.tokenize(query),
+      for (final subject in activeSubjects) ...TextTokenizer.tokenize(subject),
+    };
+    if (wanted.isEmpty) return const [];
+
+    final matched = <MemoryFact>[];
+    // Facts append in extraction order, so the tail is newest.
+    for (final fact in graph.facts.reversed) {
+      if (fact.supersededAt != null) continue;
+      if (_anyNameToken(fact.subjects, wanted)) matched.add(fact);
+      if (matched.length >= topK) break;
     }
-    return _keysByDescendingScore(scored, limit: topK);
+    return matched;
   }
 
   // Sorts [entries] by score, highest first, and returns their keys — all of
-  // them, or the top [limit] when given. Shared by the id rankings and the
-  // arc-summary ranking.
+  // them, or the top [limit] when given.
   static List<K> _keysByDescendingScore<K>(
     Iterable<MapEntry<K, num>> entries, {
     int? limit,
@@ -202,20 +190,15 @@ class MemoryRetriever {
     }
   }
 
-  static bool _namesAQueryEntity(StoryEvent event, Set<String> queryTokens) {
-    for (final value in [...event.characters, ...event.locations]) {
-      for (final token in TextTokenizer.tokenize(value)) {
-        if (queryTokens.contains(token)) return true;
+  // True when any of [names], tokenized, hits a token in [wanted]. Shared by
+  // the event proper-noun boost and the fact entity lookup so the two matchers
+  // can't drift apart.
+  static bool _anyNameToken(Iterable<String> names, Set<String> wanted) {
+    for (final name in names) {
+      for (final token in TextTokenizer.tokenize(name)) {
+        if (wanted.contains(token)) return true;
       }
     }
     return false;
   }
-
-  // An event leaves default retrieval once a later event supersedes it
-  // (supersededAt) or its validity window is marked closed (validUntil). The
-  // opening side (validFrom, a fact not yet true) is deliberately not checked:
-  // judging it would need a story-time clock the retriever isn't given.
-  // Retrospective queries skip the whole check.
-  static bool _isCurrent(StoryEvent event) =>
-      event.supersededAt == null && event.validUntil == null;
 }

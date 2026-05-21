@@ -37,17 +37,11 @@ class MemoryService {
   /// which is cheap and keeps memory honest after edits, runs every turn.
   static const int _extractionCadenceMessages = 4;
 
-  /// How many chapter-level summaries to fold into the retrieved context for
-  /// arc-level ("story so far") questions.
-  static const int _arcSummaryCount = 3;
-
   String? _currentSessionId;
   // Mapped-message count at the last extraction pass; the cadence gate fires
   // once this many new messages have accumulated past it. Reset per chat.
   int _lastExtractedCount = 0;
   MemoryEngine? _engine;
-  ChapterGrouper? _grouper;
-  EventRelationDetector? _relationDetector;
   MemoryRetriever? _retriever;
 
   /// Retrieves the events most relevant to the user's latest message, formatted
@@ -63,19 +57,16 @@ class MemoryService {
       final query = _latestUserText(session.messages);
       if (query.isEmpty) return '';
       final events = await retriever.retrieve(query);
-      final lines = [for (final event in events) '- ${_formatEvent(event)}'];
-      // Fold in chapter-level summaries the query touches, so arc questions
-      // ("what's the story so far") get the broad shape, not just single events.
-      final arcs = retriever.retrieveArcSummaries(
+      // Facts the query or the active character names carry current state
+      // ("what's true now"); events carry "what happened".
+      final facts = retriever.retrieveFacts(
         query,
-        level: TreeLevelEnum.chapter,
-        topK: _arcSummaryCount,
+        activeSubjects: [file.card.name],
       );
-      for (final node in arcs) {
-        if (node.summary.isNotEmpty) {
-          lines.add('- (story so far) ${node.summary}');
-        }
-      }
+      final lines = <String>[
+        for (final event in events) '- ${_formatEvent(event)}',
+        for (final fact in facts) '- (current) ${fact.text}',
+      ];
       return lines.join('\n');
     } on Exception catch (error, stackTrace) {
       loggingService.warning(
@@ -118,28 +109,17 @@ class MemoryService {
       // graph would erase this chat's memory on disk. The captured engine
       // still holds the real graph.
       final graph = engine.graph;
-      final committedNodeCount = graph.nodes.length;
-      var relationsChanged = false;
+      final eventCountBefore = graph.events.length;
+      final factCountBefore = graph.facts.length;
       if (messages.length - _lastExtractedCount >= _extractionCadenceMessages) {
-        final eventCountBefore = graph.events.length;
         await engine.processMessages(messages);
-        // Group freshly committed scenes into chapters. This self-skips until
-        // enough ungrouped scenes exist, so most passes make no extra call. The
-        // null-check covers the chat closing during the await above.
-        await _grouper?.groupScenes(graph);
-        // When new events were committed, weigh how they relate to recent ones
-        // — which supersede which, and which link together. Skipped otherwise,
-        // so it costs a model call only when there is something new to relate.
-        if (graph.events.length != eventCountBefore) {
-          relationsChanged = await _relationDetector?.detect(graph) ?? false;
-        }
         _lastExtractedCount = messages.length;
       }
 
-      final changed =
-          reconcile.recomputeFromIndex != -1 ||
-          graph.nodes.length != committedNodeCount ||
-          relationsChanged;
+      final extracted =
+          graph.events.length != eventCountBefore ||
+          graph.facts.length != factCountBefore;
+      final changed = reconcile.recomputeFromIndex != -1 || extracted;
       if (!changed) return;
 
       await retriever.rebuildIndex();
@@ -160,8 +140,6 @@ class MemoryService {
     _currentSessionId = null;
     _lastExtractedCount = 0;
     _engine = null;
-    _grouper = null;
-    _relationDetector = null;
     _retriever = null;
   }
 
@@ -184,13 +162,9 @@ class MemoryService {
       );
       engine.loadGraph(loaded, _mapMessages(session.messages));
       _engine = engine;
-      _grouper = ChapterGrouper(runner: runner);
-      _relationDetector = EventRelationDetector(runner: runner);
       graph = engine.graph;
     } else {
       _engine = null;
-      _grouper = null;
-      _relationDetector = null;
       graph = loaded;
     }
 

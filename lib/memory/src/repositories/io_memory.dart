@@ -7,7 +7,7 @@ import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:path/path.dart' as p;
 
 /// Reads and writes one chat's story-memory graph. The JSON file holds the
-/// events and tree; the event vectors travel in a binary sidecar next to it,
+/// events and facts; the event vectors travel in a binary sidecar next to it,
 /// the same split the card search uses. Layout mirrors the chat session:
 /// `<chatDir>/<sessionId>/memory/graph.json` + `graph.vectors.bin`.
 class IoMemory {

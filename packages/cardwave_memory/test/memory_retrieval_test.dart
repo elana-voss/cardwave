@@ -42,9 +42,6 @@ StoryEvent _event(
   List<String> characters = const [],
   List<String> locations = const [],
   List<String> keywords = const [],
-  List<String> linkedEventIds = const [],
-  int? supersededAt,
-  int? validUntil,
   Float32List? vector,
 }) {
   final event = StoryEvent(
@@ -55,13 +52,22 @@ StoryEvent _event(
     characters: characters,
     locations: locations,
     keywords: keywords,
-    linkedEventIds: linkedEventIds,
-    supersededAt: supersededAt,
-    validUntil: validUntil,
   );
   event.vector = vector;
   return event;
 }
+
+MemoryFact _fact(
+  String id, {
+  required List<String> subjects,
+  String text = '',
+  int? supersededAt,
+}) => MemoryFact(
+  id: id,
+  subjects: subjects,
+  text: text,
+  supersededAt: supersededAt,
+);
 
 List<String> _ids(List<StoryEvent> events) => [for (final e in events) e.id];
 
@@ -70,19 +76,11 @@ void main() {
       () async {
     final graph = MemoryGraph(
       events: [
-        _event(
-          'attack',
-          text: 'a dragon attacks the village',
-          keywords: ['dragon', 'attack'],
-          vector: _basis(0),
-        ),
+        _event('attack', text: 'a dragon attacks the village',
+            keywords: ['dragon', 'attack'], vector: _basis(0)),
         _event('dinner', text: 'they eat dinner', vector: _basis(1)),
-        _event(
-          'mention',
-          text: 'a dragon is mentioned',
-          keywords: ['dragon'],
-          vector: _basis(2),
-        ),
+        _event('mention', text: 'a dragon is mentioned',
+            keywords: ['dragon'], vector: _basis(2)),
       ],
     );
     final retriever = MemoryRetriever(
@@ -103,8 +101,8 @@ void main() {
 
   test('an exact name match outranks an otherwise-equal event without it',
       () async {
-    // Both events match the query "raven" in exactly one field and share the
-    // query vector, so they tie on both channels; only the named-entity boost
+    // Both events match "raven" in exactly one field and share the query
+    // vector, so they tie on both channels; only the named-entity boost
     // separates them.
     final graph = MemoryGraph(
       events: [
@@ -156,98 +154,13 @@ void main() {
     );
   });
 
-  test('superseded events are filtered by default, kept when retrospective',
-      () async {
-    final graph = MemoryGraph(
-      events: [
-        _event('live', text: 'the king rules', keywords: ['king'],
-            vector: _basis(0)),
-        _event('old', text: 'the king rules', keywords: ['king'],
-            vector: _basis(0), supersededAt: 123),
-      ],
-    );
-    final retriever = MemoryRetriever(
-      embedder: _QueryEmbedder({'king': _basis(0)}),
-      graph: graph,
-    );
-    await retriever.rebuildIndex();
-
-    final current = await retriever.retrieve('king');
-    expect(_ids(current), ['live'], reason: 'the superseded fact is filtered');
-
-    final past = await retriever.retrieve('king', retrospective: true);
-    expect(
-      _ids(past).toSet(),
-      {'live', 'old'},
-      reason: 'a retrospective query keeps the superseded fact',
-    );
-  });
-
-  test('cross-link expansion walks exactly one hop', () async {
-    // Only `start` is retrievable directly; `linked` and `far` match nothing.
-    // `linked` should appear (one hop from start); `far` should not (two hops).
-    final graph = MemoryGraph(
-      events: [
-        _event('start', text: 'opening', keywords: ['opening'],
-            vector: _basis(0), linkedEventIds: ['linked']),
-        _event('linked', text: 'aside', vector: _basis(5),
-            linkedEventIds: ['far']),
-        _event('far', text: 'unrelated', vector: _basis(6)),
-      ],
-    );
-    final retriever = MemoryRetriever(
-      embedder: _QueryEmbedder({'opening': _basis(0)}),
-      graph: graph,
-    );
-    await retriever.rebuildIndex();
-
-    final result = await retriever.retrieve('opening');
-
-    expect(_ids(result), contains('start'));
-    expect(_ids(result), contains('linked'));
-    expect(
-      _ids(result),
-      isNot(contains('far')),
-      reason: 'far is two hops away and must not be pulled in',
-    );
-  });
-
-  test('arc retrieval returns the chapter summary, not scenes or event text',
-      () async {
-    final graph = MemoryGraph(
-      events: [_event('e1', text: 'sword clashes in the war')],
-      nodes: [
-        const TreeNode(
-          id: 'scene1',
-          level: TreeLevelEnum.scene,
-          summary: 'the war drums sound',
-        ),
-        const TreeNode(
-          id: 'chapter1',
-          level: TreeLevelEnum.chapter,
-          summary: 'the war begins',
-        ),
-      ],
-    );
-    final retriever = MemoryRetriever(
-      embedder: _QueryEmbedder(const {}),
-      graph: graph,
-    );
-
-    final result = retriever.retrieveArcSummaries(
-      'war',
-      level: TreeLevelEnum.chapter,
-    );
-
-    expect(result, hasLength(1));
-    expect(result.first.level, TreeLevelEnum.chapter);
-    expect(result.first.summary, 'the war begins');
-  });
-
   test('rebuilding the index picks up events committed after load', () async {
-    final eventLoaded = _event('loaded', text: 'prologue',
-        keywords: ['prologue'], vector: _basis(0));
-    final graph = MemoryGraph(events: [eventLoaded]);
+    final graph = MemoryGraph(
+      events: [
+        _event('loaded', text: 'prologue', keywords: ['prologue'],
+            vector: _basis(0)),
+      ],
+    );
     final retriever = MemoryRetriever(
       embedder: _QueryEmbedder(const {}),
       graph: graph,
@@ -270,6 +183,82 @@ void main() {
       _ids(await retriever.retrieve('newcomer')),
       ['committed'],
       reason: 'the rebuilt index now finds the newly committed event',
+    );
+  });
+
+  test('facts are retrieved by an entity the query names, newest first', () {
+    final graph = MemoryGraph(
+      facts: [
+        _fact('f1', subjects: ['mayla'], text: 'Mayla is a sailor'),
+        _fact('f2', subjects: ['captain'], text: 'the captain is cruel'),
+        _fact('f3', subjects: ['mayla'], text: 'Mayla now captains the ship'),
+      ],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder(const {}),
+      graph: graph,
+    );
+
+    final facts = retriever.retrieveFacts('what is mayla doing now');
+
+    expect(
+      facts.map((fact) => fact.text),
+      ['Mayla now captains the ship', 'Mayla is a sailor'],
+      reason: 'both Mayla facts, newest first; the captain fact is not named',
+    );
+  });
+
+  test('a superseded fact is never retrieved', () {
+    final graph = MemoryGraph(
+      facts: [
+        _fact('f1', subjects: ['mayla'], text: 'old', supersededAt: 123),
+        _fact('f2', subjects: ['mayla'], text: 'current'),
+      ],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder(const {}),
+      graph: graph,
+    );
+
+    expect(
+      retriever.retrieveFacts('mayla').map((fact) => fact.text),
+      ['current'],
+      reason: 'the retired fact stays hidden',
+    );
+  });
+
+  test('the active character brings its facts even when the query omits the name',
+      () {
+    final graph = MemoryGraph(
+      facts: [_fact('f1', subjects: ['mayla'], text: 'Mayla is a captain')],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder(const {}),
+      graph: graph,
+    );
+
+    expect(
+      retriever
+          .retrieveFacts('what now', activeSubjects: ['Mayla'])
+          .map((fact) => fact.text),
+      ['Mayla is a captain'],
+      reason: 'the current character is always an entity in the lookup',
+    );
+  });
+
+  test('a fact about an unnamed entity does not surface', () {
+    final graph = MemoryGraph(
+      facts: [_fact('f1', subjects: ['captain'], text: 'the captain is cruel')],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder(const {}),
+      graph: graph,
+    );
+
+    expect(
+      retriever.retrieveFacts('tell me about mayla'),
+      isEmpty,
+      reason: 'no query token or active subject names the captain',
     );
   });
 }

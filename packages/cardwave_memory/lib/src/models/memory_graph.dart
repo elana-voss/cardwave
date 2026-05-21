@@ -1,34 +1,29 @@
 import 'dart:typed_data';
 
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_field_enum.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
-import 'package:cardwave_memory/src/models/tree_node.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'memory_graph.g.dart';
 
-/// The per-chat memory unit: the flat list of [events], the [nodes] of the
-/// story tree, and the [roots] (book-level node ids). Serializes to one JSON
-/// file; the event [StoryEvent.vector]s travel in a binary sidecar instead,
-/// since vectors-in-JSON cost ~3–4× the bytes.
+/// The per-chat memory unit: a flat list of [events] ("what happened") and a
+/// flat list of [facts] ("what's true now" about the chat's entities).
+/// Serializes to one JSON file; the event [StoryEvent.vector]s travel in a
+/// binary sidecar instead, since vectors-in-JSON cost ~3–4× the bytes. Facts
+/// carry no vector — they are recalled by entity name, not by similarity.
 @JsonSerializable(explicitToJson: true)
 class MemoryGraph {
-  const MemoryGraph({
-    this.events = const [],
-    this.nodes = const [],
-    this.roots = const [],
-  });
+  const MemoryGraph({this.events = const [], this.facts = const []});
 
   factory MemoryGraph.fromJson(Map<String, dynamic> json) =>
       _$MemoryGraphFromJson(json);
 
   final List<StoryEvent> events;
 
-  final List<TreeNode> nodes;
-
-  final List<String> roots;
+  final List<MemoryFact> facts;
 
   Map<String, dynamic> toJson() => _$MemoryGraphToJson(this);
 

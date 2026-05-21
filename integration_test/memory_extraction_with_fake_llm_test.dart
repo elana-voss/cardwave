@@ -22,20 +22,23 @@ import 'app_test_helpers.dart';
 
 /// Drives story memory end-to-end against a scripted runner (no network). The
 /// same fake stands in for both the chat reply (`generate`) and the memory
-/// extraction (`completeStructured`), so the extractor deterministically
-/// commits a scene. Verifies, in one run:
+/// extraction (`completeStructured`); the test switches what extraction returns
+/// between phases by mutating the shared [extraction] map. Verifies, in one run:
 ///
-/// - After enough turns, an event commits to the on-disk graph file.
-/// - The retrieved event reaches the next prompt under `<memory>` (and not in
-///   the assistant-only `supplemental_data_context`).
-/// - Deleting a covered message then taking a turn recomputes the tree — the
-///   node covering the deleted message is dropped.
+/// - After enough turns, an event and a fact commit to the on-disk graph file.
+/// - A later turn whose extraction overrides the known fact retires it: the new
+///   fact is current, the old one is marked superseded.
+/// - The current fact (not the superseded one) and the event reach the next
+///   prompt under `<memory>` (and not in the assistant-only
+///   `supplemental_data_context`).
+/// - Deleting the message the superseding fact was drawn from revives the
+///   original fact — it is current again and the superseding fact is gone.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'story memory — commit, retrieve into <memory>, recompute on delete',
-    timeout: const Timeout(Duration(minutes: 4)),
+    'story memory — commit, supersede, retrieve current fact, revive on delete',
+    timeout: const Timeout(Duration(minutes: 6)),
     (tester) async {
       tester.view.physicalSize = const Size(1400, 1000);
       tester.view.devicePixelRatio = 1.0;
@@ -83,27 +86,48 @@ void main() {
 
       await seedTestCharacter();
 
-      // The fake extraction always commits a one-event scene ending at the
-      // first numbered message of each window, with "dragon" as a keyword the
-      // later query matches.
-      final extraction = <String, dynamic>{
-        'events': [
-          <String, dynamic>{
-            'text': 'The hero faced the dragon at the gate.',
-            'contextual_prefix': 'At the castle gate,',
-            'message_numbers': [1],
-            'characters': ['the hero'],
-            'locations': ['the gate'],
-            'items': <String>[],
-            'concepts': ['confrontation'],
-            'keywords': ['dragon'],
-            'importance': 4,
-            'beat': 'conflict',
-          },
-        ],
-        'scene_end_message': 1,
-        'scene_summary': 'The hero confronts the dragon.',
-      };
+      // Distinctive fact texts: the kingdom fact is committed first, superseded
+      // by the mountains fact, then revived. The event text ("hero faced") is
+      // constant across phases and appears in no message or reply, so the
+      // <memory> assertion only passes if retrieval put it there.
+      const factKingdom = 'The dragon rules the gate kingdom.';
+      const factMountains = 'The dragon has fled to the mountains.';
+
+      // Shared, mutable extraction output. The fake reads it live; the test
+      // rewrites its contents (clear + addAll) to advance phases. A null
+      // [factText] commits an event but no fact.
+      final extraction = <String, dynamic>{};
+      void setExtraction({String? factText, String? supersedes}) {
+        extraction
+          ..clear()
+          ..addAll(<String, dynamic>{
+            'events': [
+              <String, dynamic>{
+                'text': 'The hero faced the dragon at the gate.',
+                'contextual_prefix': 'At the castle gate,',
+                'message_numbers': [1],
+                'characters': ['the hero'],
+                'locations': ['the gate'],
+                'items': <String>[],
+                'concepts': ['confrontation'],
+                'keywords': ['dragon'],
+                'importance': 4,
+              },
+            ],
+            'facts': [
+              if (factText != null)
+                <String, dynamic>{
+                  'subjects': ['dragon'],
+                  'text': factText,
+                  'message_numbers': [1],
+                  'supersedes': supersedes,
+                },
+            ],
+          });
+      }
+
+      setExtraction(factText: factKingdom);
+
       final prompts = <String>[];
       debugRunnerFactory = ({
         required provider,
@@ -193,7 +217,8 @@ void main() {
         );
       }
 
-      // Two turns clears the extraction cadence; the post-turn pass commits.
+      // Phase 1 — two turns clears the extraction cadence; the post-turn pass
+      // commits one event and the kingdom fact.
       await doTurn('Tell me what happened at the gate.');
       await doTurn('And then what did the dragon do?');
 
@@ -203,20 +228,46 @@ void main() {
         isNotEmpty,
         reason: 'extraction should have committed at least one event',
       );
-      final committedNodeIds = {
-        for (final node in committed['nodes'] as List)
-          (node as Map<String, dynamic>)['id'] as String,
-      };
-      expect(committedNodeIds, isNotEmpty, reason: 'a scene node should commit');
+      expect(
+        _factContaining(committed, 'kingdom'),
+        isNotNull,
+        reason: 'the kingdom fact should commit',
+      );
+      expect(
+        _factContaining(committed, 'kingdom')!['superseded_at'],
+        isNull,
+        reason: 'the kingdom fact is current when first committed',
+      );
 
-      // Next turn: retrieval should pull the dragon event into <memory>.
+      // Phase 2 — the next extraction overrides the kingdom fact with the
+      // mountains fact. Both windows mention "dragon" (it is in every reply),
+      // so the kingdom fact is offered as candidate F1 and the new fact retires
+      // it. Two turns clears the cadence again.
+      setExtraction(factText: factMountains, supersedes: 'F1');
+      await doTurn('Where is the dragon now?');
+      await doTurn('Are you sure it left the kingdom?');
+
+      final superseded = await _awaitGraphWhere(tester, readGraph, (graph) {
+        final old = _factContaining(graph, 'kingdom');
+        final neu = _factContaining(graph, 'mountains');
+        return old != null &&
+            old['superseded_at'] != null &&
+            neu != null &&
+            neu['superseded_at'] == null;
+      });
+      expect(
+        _factContaining(superseded, 'kingdom')!['superseded_at'],
+        isNotNull,
+        reason: 'the kingdom fact is retired once the mountains fact overrides it',
+      );
+
+      // Retrieval turn — the current (mountains) fact and the event should reach
+      // <memory>; the retired kingdom fact should not be offered. This turn does
+      // not clear the cadence, so it triggers no extraction.
       prompts.clear();
       await sendChatPrompt(tester, 'Remind me about the dragon.');
       await awaitChatIdle(tester, timeout: const Duration(seconds: 60));
 
-      // 'hero faced' is the extracted event's text — it appears in no user
-      // message or reply, so this fails if <memory> is empty or carries the
-      // wrong event, not just when the tag is missing.
       expect(
         prompts.any(
           (prompt) =>
@@ -226,6 +277,14 @@ void main() {
         reason: 'the retrieved event text should reach the prompt under <memory>',
       );
       expect(
+        prompts.any(
+          (prompt) =>
+              prompt.contains('<memory>') && prompt.contains('mountains'),
+        ),
+        isTrue,
+        reason: 'the current fact should reach the prompt under <memory>',
+      );
+      expect(
         prompts.every(
           (prompt) => !prompt.contains('<supplemental_data_context>'),
         ),
@@ -233,34 +292,50 @@ void main() {
         reason: 'memory must not leak into the assistant data-context section',
       );
 
-      // Delete the oldest message (covered by the first committed scene), then
-      // take a turn — reconcile must drop the node covering it.
-      // ignore: qcheck/avoid_unsafe_collection_methods
-      final oldest = controller.messages.first;
-      final oldestId = oldest.id;
-      await controller.deleteMessage(oldest);
+      // Phase 3 — delete the message the mountains fact was drawn from. From
+      // here extraction commits no fact (so the re-extraction after reconcile
+      // cannot re-supersede), and reconcile should drop the mountains fact and
+      // revive the kingdom fact it had retired.
+      setExtraction();
+      final beforeDelete = (await readGraph())!;
+      final mountainsFact = _factContaining(beforeDelete, 'mountains')!;
+      final supersedingMessageId =
+          (mountainsFact['message_ids'] as List).first as String;
+      final target = controller.messages.firstWhere(
+        (message) => message.id == supersedingMessageId,
+      );
+      await controller.deleteMessage(target);
       await tester.pumpAndSettle();
 
       await doTurn('Carry on.');
 
-      final recomputed = await _awaitGraphWhere(
-        tester,
-        readGraph,
-        (graph) => (graph['nodes'] as List).every(
-          (node) => !((node as Map<String, dynamic>)['message_ids'] as List)
-              .contains(oldestId),
-        ),
+      final revived = await _awaitGraphWhere(tester, readGraph, (graph) {
+        final old = _factContaining(graph, 'kingdom');
+        return old != null &&
+            old['superseded_at'] == null &&
+            _factContaining(graph, 'mountains') == null;
+      });
+      expect(
+        _factContaining(revived, 'kingdom')!['superseded_at'],
+        isNull,
+        reason: 'deleting the superseding message revives the original fact',
       );
       expect(
-        (recomputed['nodes'] as List).every(
-          (node) => !((node as Map<String, dynamic>)['message_ids'] as List)
-              .contains(oldestId),
-        ),
-        isTrue,
-        reason: 'no committed node should still reference the deleted message',
+        _factContaining(revived, 'mountains'),
+        isNull,
+        reason: 'the fact drawn from the deleted message is gone',
       );
     },
   );
+}
+
+/// The first fact in [graph] whose text contains [needle], or null.
+Map<String, dynamic>? _factContaining(Map<String, dynamic> graph, String needle) {
+  for (final entry in graph['facts'] as List) {
+    final fact = entry as Map<String, dynamic>;
+    if ((fact['text'] as String).contains(needle)) return fact;
+  }
+  return null;
 }
 
 /// Polls [readGraph] until [predicate] holds, returning the matching graph.
@@ -279,8 +354,8 @@ Future<Map<String, dynamic>> _awaitGraphWhere(
 }
 
 /// Scripted stand-in for [LlmRunner]: a constant reply for [generate] and a
-/// fixed extraction map for [completeStructured]. Records the prompts handed to
-/// [generate] so the test can assert what reached the model.
+/// caller-supplied extraction map for [completeStructured]. Records the prompts
+/// handed to [generate] so the test can assert what reached the model.
 class _FakeRunner extends LlmRunner {
   _FakeRunner({required this.extraction, required this.prompts})
     : super(
