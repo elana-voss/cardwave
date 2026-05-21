@@ -63,6 +63,11 @@ class MemoryService {
         query,
         activeSubjects: [file.card.name],
       );
+      if (events.isNotEmpty || facts.isNotEmpty) {
+        loggingService.info(
+          'Memory: recalled ${events.length} events, ${facts.length} facts.',
+        );
+      }
       final lines = <String>[
         for (final event in events) '- ${_formatEvent(event)}',
         for (final fact in facts) '- (current) ${fact.text}',
@@ -93,27 +98,43 @@ class MemoryService {
       if (engine == null || retriever == null) return;
 
       final messages = _mapMessages(session.messages);
-
-      // Reconcile every turn so edits and deletions drop out of memory
-      // promptly; rewind the cadence mark to the change so the affected tail
-      // re-extracts once enough messages build back up.
-      final reconcile = engine.reconcile(messages);
-      if (reconcile.recomputeFromIndex != -1) {
-        _lastExtractedCount = reconcile.recomputeFromIndex;
-      }
-
-      // Extraction is an LLM call — run it only once enough new messages have
-      // accumulated since the last pass, not every turn.
       // Work through the captured [engine], not the live fields: if the chat
       // closes mid-extraction, releaseChat clears them, and saving an empty
       // graph would erase this chat's memory on disk. The captured engine
       // still holds the real graph.
       final graph = engine.graph;
+
+      // Reconcile every turn so edits and deletions drop out of memory
+      // promptly; rewind the cadence mark to the change so the affected tail
+      // re-extracts once enough messages build back up.
+      final eventsBeforeReconcile = graph.events.length;
+      final factsBeforeReconcile = graph.facts.length;
+      final reconcile = engine.reconcile(messages);
+      if (reconcile.recomputeFromIndex != -1) {
+        _lastExtractedCount = reconcile.recomputeFromIndex;
+        final droppedEvents = eventsBeforeReconcile - graph.events.length;
+        final droppedFacts = factsBeforeReconcile - graph.facts.length;
+        if (droppedEvents > 0 || droppedFacts > 0) {
+          loggingService.info(
+            'Memory: an edit dropped $droppedEvents events, $droppedFacts facts.',
+          );
+        }
+      }
+
+      // Extraction is an LLM call — run it only once enough new messages have
+      // accumulated since the last pass, not every turn.
       final eventCountBefore = graph.events.length;
       final factCountBefore = graph.facts.length;
       if (messages.length - _lastExtractedCount >= _extractionCadenceMessages) {
         await engine.processMessages(messages);
         _lastExtractedCount = messages.length;
+        final newEvents = graph.events.length - eventCountBefore;
+        final newFacts = graph.facts.length - factCountBefore;
+        if (newEvents > 0 || newFacts > 0) {
+          loggingService.info(
+            'Memory: extracted $newEvents events, $newFacts facts.',
+          );
+        }
       }
 
       final extracted =

@@ -107,7 +107,7 @@ class MemoryExtractor {
         _buildSchema(labelToFact.keys.toList()),
       );
     } on Exception catch (error, stackTrace) {
-      memoryLogger.warning(
+      logMemoryWarning(
         'Memory extraction failed; window will be retried next pass.',
         error,
         stackTrace,
@@ -246,7 +246,7 @@ class MemoryExtractor {
       }
     }
     if (messages.isEmpty) {
-      memoryLogger.warning(
+      logMemoryWarning(
         'Dropped an extracted $kind: it cited no message present in the window.',
       );
       return null;

@@ -10,4 +10,5 @@ export 'src/models/memory_graph.dart';
 export 'src/models/memory_message.dart';
 export 'src/models/memory_role.dart';
 export 'src/models/story_event.dart';
+export 'src/observability/memory_log_event.dart';
 export 'src/utils/memory_id.dart';

@@ -16,6 +16,7 @@ import 'package:cardwave/search/src/repositories/search_repository.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_memory/cardwave_memory.dart' show MemoryDiagnosticEvent;
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +144,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       _loggingService = LoggingService();
       _loggingService.captureUnhandledErrors();
 
-      // Routes typed events from the LLM and embeddings domains to LoggingService.
+      // Routes typed events from the LLM, embeddings, and memory domains to
+      // LoggingService.
       Logger.root.level = Level.ALL;
       // App-lifetime logging subscription — never cancelled.
       // ignore: qcheck/avoid_unassigned_stream_subscriptions
@@ -166,6 +168,14 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         } else if (obj is LlmCacheEvent) {
           _loggingService.logCache(obj.message);
         } else if (obj is EmbeddingsDiagnosticEvent) {
+          _routeDiag(
+            obj.level.name,
+            obj.message,
+            obj.error,
+            obj.stackTrace,
+            obj.dataContext,
+          );
+        } else if (obj is MemoryDiagnosticEvent) {
           _routeDiag(
             obj.level.name,
             obj.message,

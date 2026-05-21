@@ -3,6 +3,7 @@ import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_graph.dart';
 import 'package:cardwave_memory/src/models/memory_message.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
+import 'package:cardwave_memory/src/observability/memory_logger.dart';
 
 /// What [MemoryEngine.reconcile] changed: the message position to re-extract
 /// from. [recomputeFromIndex] is -1 when nothing changed.
@@ -123,6 +124,12 @@ class MemoryEngine {
         }
       }
     });
+
+    if (result.supersedes.isNotEmpty) {
+      logMemoryInfo(
+        'Retired ${result.supersedes.length} fact(s), replaced by newer state.',
+      );
+    }
   }
 
   // An existing, still-current fact is a candidate for this window when one of
