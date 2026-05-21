@@ -35,5 +35,18 @@ class TreeNode {
 
   final List<String> eventIds;
 
+  /// A copy of this node under [newParentId], or detached when it is null.
+  /// Grouping and reconcile only ever change a node's parent link, so this is
+  /// kept narrower than a general copyWith.
+  TreeNode withParent(String? newParentId) => TreeNode(
+    id: id,
+    level: level,
+    parentId: newParentId,
+    childIds: childIds,
+    messageIds: messageIds,
+    summary: summary,
+    eventIds: eventIds,
+  );
+
   Map<String, dynamic> toJson() => _$TreeNodeToJson(this);
 }

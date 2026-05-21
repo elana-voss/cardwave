@@ -19,6 +19,7 @@ StoryEvent _$StoryEventFromJson(Map<String, dynamic> json) => StoryEvent(
   validFrom: (json['valid_from'] as num?)?.toInt(),
   validUntil: (json['valid_until'] as num?)?.toInt(),
   supersededAt: (json['superseded_at'] as num?)?.toInt(),
+  supersededBy: json['superseded_by'] as String?,
   beat: $enumDecodeNullable(_$SceneBeatEnumEnumMap, json['beat']),
   characterEmotion:
       $enumDecodeNullable(
@@ -65,6 +66,7 @@ Map<String, dynamic> _$StoryEventToJson(
   'valid_until': instance.validUntil,
   'recorded_at': instance.recordedAt,
   'superseded_at': instance.supersededAt,
+  'superseded_by': instance.supersededBy,
   'beat': _$SceneBeatEnumEnumMap[instance.beat],
   'character_emotion': _$EmotionLabelEnumEnumMap[instance.characterEmotion]!,
   'user_emotion': _$EmotionLabelEnumEnumMap[instance.userEmotion]!,

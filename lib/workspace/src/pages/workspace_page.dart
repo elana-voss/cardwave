@@ -6,6 +6,7 @@ import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/editor.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
+import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/src/controllers/workspace_controller.dart';
 import 'package:cardwave/workspace/src/models/chat_page_mode_enum.dart';
@@ -298,6 +299,7 @@ class _PrimaryChat extends StatelessWidget {
         videoPromptBuilder: ctx.read<VideoPromptBuilder>(),
         toolDispatcher: ctx.read<ToolDispatcher>(),
         chatRepository: ctx.read<ChatRepository>(),
+        memoryService: ctx.read<CardwaveMemoryModule>().memoryService,
       ),
       child: ChatView(
         characterFile: characterFile,
@@ -375,6 +377,7 @@ class _AssistantChat extends StatelessWidget {
             videoPromptBuilder: ctx.read<VideoPromptBuilder>(),
             toolDispatcher: ctx.read<ToolDispatcher>(),
             chatRepository: ctx.read<ChatRepository>(),
+            memoryService: ctx.read<CardwaveMemoryModule>().memoryService,
             dataContextProvider: editorController.getCharacterDataJson,
           ),
           child: ChatView(

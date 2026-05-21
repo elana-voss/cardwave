@@ -421,4 +421,212 @@ void main() {
     };
     expect(covered, {'m1', 'm2', 'm3'});
   });
+
+  test('a chapter records the message ids and summary of its scenes', () async {
+    // Bound to a variable so the graph isn't a const (groupScenes rewrites
+    // graph.nodes in place, which a const list would reject).
+    final scenes = [
+      const TreeNode(
+        id: 's1',
+        level: TreeLevelEnum.scene,
+        messageIds: ['m1', 'm2'],
+        summary: 'they meet',
+      ),
+      const TreeNode(
+        id: 's2',
+        level: TreeLevelEnum.scene,
+        messageIds: ['m3', 'm4'],
+        summary: 'they fight',
+      ),
+    ];
+    final graph = MemoryGraph(nodes: scenes);
+    await ChapterGrouper(
+      runner: _FakeLlmRunner([
+        <String, dynamic>{
+          'chapters': [
+            <String, dynamic>{
+              'scene_numbers': [1, 2],
+              'summary': 'the first chapter',
+            },
+          ],
+        },
+      ]),
+      minScenes: 2,
+    ).groupScenes(graph);
+
+    final chapters = [
+      for (final node in graph.nodes)
+        if (node.level == TreeLevelEnum.chapter) node,
+    ];
+    expect(chapters, hasLength(1));
+    for (final chapter in chapters) {
+      expect(chapter.childIds, ['s1', 's2']);
+      expect(
+        chapter.messageIds,
+        ['m1', 'm2', 'm3', 'm4'],
+        reason: 'a chapter covers the union of its scenes message ids',
+      );
+      expect(chapter.summary, 'the first chapter');
+      for (final scene in graph.nodes) {
+        if (scene.level == TreeLevelEnum.scene) {
+          expect(scene.parentId, chapter.id, reason: 'scenes point to the chapter');
+        }
+      }
+    }
+  });
+
+  test('reconcile drops a chapter and detaches its surviving scene', () async {
+    const m1 = MemoryMessage(
+      id: 'm1',
+      role: MemoryRole.user,
+      text: happyText,
+      timestamp: 1,
+    );
+    const m2 = MemoryMessage(
+      id: 'm2',
+      role: MemoryRole.character,
+      text: angerText,
+      timestamp: 2,
+    );
+    const m3 = MemoryMessage(
+      id: 'm3',
+      role: MemoryRole.user,
+      text: happyText,
+      timestamp: 3,
+    );
+    const m4 = MemoryMessage(
+      id: 'm4',
+      role: MemoryRole.character,
+      text: angerText,
+      timestamp: 4,
+    );
+    final engine = buildEngine([
+      <String, dynamic>{
+        'events': [_eventJson(text: 'scene one', numbers: [1, 2])],
+        'scene_end_message': 2,
+        'scene_summary': 'first scene',
+      },
+      <String, dynamic>{
+        'events': [_eventJson(text: 'scene two', numbers: [1, 2])],
+        'scene_end_message': 2,
+        'scene_summary': 'second scene',
+      },
+    ]);
+    await engine.ingestWindow([m1, m2]); // scene 1 over m1, m2
+    await engine.ingestWindow([m3, m4]); // scene 2 over m3, m4
+
+    await ChapterGrouper(
+      runner: _FakeLlmRunner([
+        <String, dynamic>{
+          'chapters': [
+            <String, dynamic>{
+              'scene_numbers': [1, 2],
+              'summary': 'a chapter',
+            },
+          ],
+        },
+      ]),
+      minScenes: 2,
+    ).groupScenes(engine.graph);
+
+    final chaptersBefore = [
+      for (final node in engine.graph.nodes)
+        if (node.level == TreeLevelEnum.chapter) node,
+    ];
+    expect(chaptersBefore, hasLength(1), reason: 'the two scenes group into one chapter');
+
+    // m3's text changes: the chapter covers m3, so it is dropped along with
+    // scene 2; scene 1 survives but its chapter is gone.
+    engine.reconcile(const [
+      m1,
+      m2,
+      MemoryMessage(
+        id: 'm3',
+        role: MemoryRole.user,
+        text: 'an entirely different line',
+        timestamp: 3,
+      ),
+      m4,
+    ]);
+
+    expect(engine.graph.nodes, hasLength(1));
+    for (final node in engine.graph.nodes) {
+      expect(node.level, TreeLevelEnum.scene);
+      expect(node.messageIds, ['m1', 'm2']);
+      expect(
+        node.parentId,
+        isNull,
+        reason: 'the surviving scene is detached from the dropped chapter',
+      );
+    }
+  });
+
+  test('reconcile revives a fact whose superseding event was dropped', () async {
+    const m1 = MemoryMessage(
+      id: 'm1',
+      role: MemoryRole.user,
+      text: happyText,
+      timestamp: 1,
+    );
+    const m2 = MemoryMessage(
+      id: 'm2',
+      role: MemoryRole.character,
+      text: angerText,
+      timestamp: 2,
+    );
+    const m3 = MemoryMessage(
+      id: 'm3',
+      role: MemoryRole.user,
+      text: happyText,
+      timestamp: 3,
+    );
+    const m4 = MemoryMessage(
+      id: 'm4',
+      role: MemoryRole.character,
+      text: angerText,
+      timestamp: 4,
+    );
+    final engine = buildEngine([
+      <String, dynamic>{
+        'events': [_eventJson(text: 'scene one', numbers: [1, 2])],
+        'scene_end_message': 2,
+        'scene_summary': 'first scene',
+      },
+      <String, dynamic>{
+        'events': [_eventJson(text: 'scene two', numbers: [1, 2])],
+        'scene_end_message': 2,
+        'scene_summary': 'second scene',
+      },
+    ]);
+    await engine.ingestWindow([m1, m2]);
+    await engine.ingestWindow([m3, m4]);
+
+    // The scene-two event supersedes the scene-one event.
+    StoryEvent? sceneOne;
+    StoryEvent? sceneTwo;
+    for (final event in engine.graph.events) {
+      if (event.text == 'scene one') sceneOne = event;
+      if (event.text == 'scene two') sceneTwo = event;
+    }
+    sceneOne!.supersededAt = sceneTwo!.recordedAt;
+    sceneOne.supersededBy = sceneTwo.id;
+
+    // m3 is deleted: reconcile drops scene two and its event, so the fact it
+    // had superseded is no longer contradicted and must come back as current.
+    engine.reconcile(const [m1, m2, m4]);
+
+    expect(
+      engine.graph.events.map((event) => event.text).toList(),
+      ['scene one'],
+      reason: 'scene two was dropped; scene one survives',
+    );
+    for (final event in engine.graph.events) {
+      expect(
+        event.supersededAt,
+        isNull,
+        reason: 'the revived fact is current again',
+      );
+      expect(event.supersededBy, isNull);
+    }
+  });
 }

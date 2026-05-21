@@ -24,7 +24,7 @@ class ReconcileResult {
 /// Drives extraction over a chat: turns each message into events exactly once,
 /// holds provisional events in a [StagingBuffer], and commits a scene into
 /// [graph] when the extractor reports a boundary. Chapter/part grouping lives
-/// in `ChapterGrouper`; persistence is Phase 5.
+/// in `ChapterGrouper`; the app layer loads and saves the graph.
 class MemoryEngine {
   MemoryEngine({required this.extractor, this.batchSize = 8, this.contextSize = 2});
 
@@ -37,8 +37,8 @@ class MemoryEngine {
   final int contextSize;
 
   // The graph wraps these growable lists so the engine appends events and
-  // nodes in place; `graph.events` and these are the same references. Phase 5
-  // loads/saves the graph.
+  // nodes in place; `graph.events` and these are the same references. The app
+  // layer loads and saves the graph.
   final List<StoryEvent> _events = [];
   final List<TreeNode> _nodes = [];
   final List<String> _roots = [];
@@ -56,6 +56,38 @@ class MemoryEngine {
 
   // Messages [0, _extractedThrough) have already been turned into events.
   int _extractedThrough = 0;
+
+  /// Seeds the engine from a [loaded] graph and the chat's [currentMessages].
+  /// The per-message bookkeeping reconcile relies on — the processed-message
+  /// hashes and the extracted-through mark — is not part of the saved graph,
+  /// so it is rebuilt here: a message counts as already extracted exactly when
+  /// a committed node covers it, and extraction resumes after the last such
+  /// message. Provisional (uncommitted) events were never saved, so the
+  /// messages past the last committed scene are re-extracted on the next pass.
+  void loadGraph(MemoryGraph loaded, List<MemoryMessage> currentMessages) {
+    _events
+      ..clear()
+      ..addAll(loaded.events);
+    _nodes
+      ..clear()
+      ..addAll(loaded.nodes);
+    _roots
+      ..clear()
+      ..addAll(loaded.roots);
+    staging.clear();
+
+    final committedMessageIds = <String>{
+      for (final node in _nodes) ...node.messageIds,
+    };
+    _processedHashes.clear();
+    var extractedThrough = 0;
+    for (final message in currentMessages) {
+      if (!committedMessageIds.contains(message.id)) break;
+      _processedHashes[message.id] = _hashText(message.text);
+      extractedThrough++;
+    }
+    _extractedThrough = extractedThrough;
+  }
 
   /// Walks [messages] from where extraction left off, taking [batchSize] new
   /// messages at a time and showing the preceding [contextSize] as background,
@@ -148,10 +180,26 @@ class MemoryEngine {
       }
     }
 
+    final dropped = dirtyNodeIds.toSet();
     graph.events.removeWhere((event) => dirtyEventIds.contains(event.id));
+    // A fact that a now-dropped event had superseded is no longer contradicted,
+    // so revive it instead of leaving it hidden forever.
+    for (final event in graph.events) {
+      if (event.supersededBy != null &&
+          dirtyEventIds.contains(event.supersededBy)) {
+        event.supersededAt = null;
+        event.supersededBy = null;
+      }
+    }
     graph.nodes
       ..clear()
-      ..addAll(survivingNodes);
+      // A surviving scene whose chapter was dropped keeps a parent id that no
+      // longer resolves; clear it so a later chapter pass can regroup the scene
+      // instead of stranding it under a missing node.
+      ..addAll([
+        for (final node in survivingNodes)
+          dropped.contains(node.parentId) ? node.withParent(null) : node,
+      ]);
 
     final keptHashes = {
       for (final id in _processedHashes.keys.take(earliest))
@@ -169,11 +217,10 @@ class MemoryEngine {
     );
   }
 
-  // Change-detection hash for reconcile. Fine while the graph lives only in
-  // memory: within a single run text.hashCode is consistent. It is NOT safe to
-  // persist — Dart does not guarantee hashCode is the same across runs, and the
-  // native and web builds use different algorithms, so a hash written to disk
-  // can't be relied on to match on reload. Before Phase 5 persists hashes,
-  // switch to a defined, cross-platform-stable hash.
+  // Change-detection hash for reconcile. Rebuilt from the chat's messages on
+  // every load ([loadGraph]) and never written to disk, so it only needs to be
+  // consistent within one run — which text.hashCode is. It is deliberately not
+  // persisted: hashCode isn't stable across runs or between native and web,
+  // which is exactly why the hashes are recomputed on load.
   static String _hashText(String text) => text.hashCode.toRadixString(16);
 }

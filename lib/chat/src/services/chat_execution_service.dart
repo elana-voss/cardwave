@@ -10,6 +10,7 @@ import 'package:cardwave/chat/src/services/chat_prompt_builder.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
+import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_names/cardwave_names.dart';
@@ -38,12 +39,14 @@ class ChatExecutionService {
     required this.chatService,
     required this.promptRepository,
     required this.toolRegistry,
+    required this.memoryService,
   });
   final LlmPureHelpers pureHelpers;
   final SettingsService settingsService;
   final ChatService chatService;
   final PromptRepository promptRepository;
   final ToolRegistry toolRegistry;
+  final MemoryService memoryService;
 
   /// Generates a chat reply, running the manual tool loop when the
   /// model emits tool calls. Pass [dispatchToolCalls] when the chat
@@ -145,6 +148,15 @@ class ChatExecutionService {
             'enabledTools=${enabledTools.map((t) => t.name).toList()}',
           );
 
+          // Story memory — retrieved before the prompt is built and injected
+          // as its own <memory> section. Skipped for the assistant chat and
+          // when memory is off. retrieveContext degrades to empty on any
+          // failure, so it never blocks the reply.
+          final memoryContext =
+              settingsService.settings.memoryEnabled && !session.isAssistant
+              ? await memoryService.retrieveContext(session, characterFile)
+              : null;
+
           final builder = ChatPromptBuilder(
             contextSize: contextSize,
             maxResponseLength: maxResponseLength,
@@ -155,6 +167,7 @@ class ChatExecutionService {
             injectedMessage: injectedMessage,
             isImpersonating: isImpersonating,
             dataContext: dataContext,
+            memoryContext: memoryContext,
             enabledTools: enabledTools,
             toolRegistry: toolRegistry,
           );

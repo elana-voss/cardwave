@@ -16,6 +16,18 @@ class Embedder {
   LlamaEngine? _engine;
   Future<void>? _initFuture;
 
+  // The native model runs one inference at a time, and this embedder is shared
+  // (card search + chat memory). Every engine call chains behind the previous
+  // one through this lock so two never overlap. A failed call doesn't wedge the
+  // queue — the chain resumes once it settles.
+  Future<void> _engineLock = Future<void>.value();
+
+  Future<T> _runSerialized<T>(Future<T> Function() operation) {
+    final result = _engineLock.then((_) => operation());
+    _engineLock = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
   bool get isReady => _engine != null;
 
   /// Caller must serialize: do not call while `embed` / `chunkByTokens` are
@@ -103,7 +115,7 @@ class Embedder {
     try {
       final prefix = task.prefix;
       final prefixed = texts.map((t) => '$prefix$t').toList();
-      final response = await engine.embedBatch(prefixed);
+      final response = await _runSerialized(() => engine.embedBatch(prefixed));
       return response.map(Float32List.fromList).toList();
     } on Exception catch (e) {
       throw EmbeddingsException('Embedding generation failed.', cause: e);
@@ -124,7 +136,7 @@ class Embedder {
 
   Future<List<String>> _bisect(String text, int maxTokens) async {
     final engine = _engine!;
-    final count = await engine.getTokenCount(text);
+    final count = await _runSerialized(() => engine.getTokenCount(text));
     if (count <= maxTokens) return [text];
     if (text.length <= 1) return [text]; // unsplittable, accept the overflow
     final mid = _safeMidpoint(text);

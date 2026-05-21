@@ -25,6 +25,7 @@ class StoryEvent {
     this.validFrom,
     this.validUntil,
     this.supersededAt,
+    this.supersededBy,
     this.beat,
     this.characterEmotion = EmotionLabelEnum.neutral,
     this.userEmotion = EmotionLabelEnum.neutral,
@@ -58,10 +59,15 @@ class StoryEvent {
   final int? validFrom;
   final int? validUntil;
 
-  /// Record time the system learned the fact. [supersededAt] is stamped when
-  /// a later event contradicts it, and is null while the fact is current.
+  /// Record time the system learned the fact. [supersededAt] is stamped by the
+  /// event-relation pass when a later event contradicts it, and is null while
+  /// the fact is current — so it is mutable, like [vector].
   final int recordedAt;
-  final int? supersededAt;
+  int? supersededAt;
+
+  /// Id of the event that superseded this one. Kept so reconcile can revive
+  /// this fact when that later event is edited away; cleared with [supersededAt].
+  String? supersededBy;
 
   final SceneBeatEnum? beat;
   final EmotionLabelEnum characterEmotion;
@@ -69,8 +75,9 @@ class StoryEvent {
   final int importance;
 
   /// Lateral links to related events across the tree (callbacks, cause
-  /// chains) — the additive-links model, never deletions.
-  final List<String> linkedEventIds;
+  /// chains) — the additive-links model, never deletions. Filled by the
+  /// event-relation pass after commit, so it is mutable, like [vector].
+  List<String> linkedEventIds;
 
   final List<String> characters;
   final List<String> locations;

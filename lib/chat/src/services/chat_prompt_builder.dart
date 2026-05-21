@@ -19,6 +19,7 @@ class ChatPromptBuilder {
     this.injectedMessage,
     this.isImpersonating = false,
     this.dataContext,
+    this.memoryContext,
     this.enabledTools = const [],
   }) : _charName = (characterFile.card.nickname?.isNotEmpty == true)
            ? characterFile.card.nickname!
@@ -41,6 +42,11 @@ class ChatPromptBuilder {
   final ChatMessage? injectedMessage;
   final bool isImpersonating;
   final String? dataContext;
+
+  /// Retrieved story-memory lines for the `<memory>` prompt section. Its own
+  /// section — never folded into [dataContext], which assistant-mode card JSON
+  /// owns. Null or empty ⇒ no section.
+  final String? memoryContext;
 
   /// Tools enabled for this generation, derived from per-domain tool flags
   /// on the session's media config and gated by `model.capabilities.toolCalling`.
@@ -117,6 +123,10 @@ class ChatPromptBuilder {
         'user_persona',
         'Name: ${session.personaName.trim()}\n${session.personaDescription.trim()}',
       );
+    }
+
+    if (memoryContext != null && memoryContext!.isNotEmpty) {
+      _addSection(systemBuffer, 'memory', memoryContext!);
     }
 
     if (dataContext != null && dataContext!.isNotEmpty) {

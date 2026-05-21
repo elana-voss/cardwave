@@ -3,6 +3,7 @@
 // Cross-package consumers MUST import this barrel, not src/ paths.
 
 export 'src/engine/chapter_grouper.dart';
+export 'src/engine/event_relation_detector.dart';
 export 'src/engine/memory_engine.dart';
 export 'src/engine/memory_extractor.dart';
 export 'src/engine/memory_retriever.dart';

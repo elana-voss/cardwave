@@ -9,6 +9,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
+import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave_names/cardwave_names.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
@@ -68,6 +69,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
   late final VideoPromptBuilder _videoPromptBuilder;
   late final CardwaveLlmModule _cardwaveLlmModule;
   late final CardwaveEmbeddingsModule _cardwaveEmbeddingsModule;
+  late final MemoryService _memoryService;
+  late final CardwaveMemoryModule _cardwaveMemoryModule;
   late final GroupRepository _groupRepository;
   late final GroupFileService _groupFileService;
   late final GroupChatService _groupChatService;
@@ -213,6 +216,20 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       );
       unawaited(_searchService.initEmbedder());
 
+      _memoryService = MemoryService(
+        repository: MemoryRepository(
+          loggingService: _loggingService,
+          appStorage: _appStorage,
+        ),
+        embedder: _cardwaveEmbeddingsModule.embedder,
+        settingsService: _settingsService,
+        loggingService: _loggingService,
+        pureHelpers: _pureHelpers,
+      );
+      _cardwaveMemoryModule = CardwaveMemoryModule(
+        memoryService: _memoryService,
+      );
+
       _textToSpeechService = const TextToSpeechService();
       _textToSpeechController = TextToSpeechController(
         ttsService: _textToSpeechService,
@@ -335,6 +352,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         chatService: _chatService,
         promptRepository: _promptRepository,
         toolRegistry: _toolRegistry,
+        memoryService: _memoryService,
       );
 
       _imageGenerationService = ImageGenerationService(
@@ -531,6 +549,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         Provider<LlmPureHelpers>.value(value: _pureHelpers),
         Provider<LlmManagementService>.value(value: _llmManagementService),
         ChangeNotifierProvider<SearchService>.value(value: _searchService),
+        Provider<CardwaveMemoryModule>.value(value: _cardwaveMemoryModule),
         ChangeNotifierProvider<TextToSpeechController>.value(
           value: _textToSpeechController,
         ),

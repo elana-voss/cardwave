@@ -129,6 +129,23 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
         ),
         _MenuGroupCard(
           children: [
+            SwitchListTile(
+              secondary: const Icon(Icons.psychology),
+              title: const Text('Story Memory'),
+              subtitle: const Text(
+                'Remember earlier moments and bring the relevant ones back '
+                'into long chats.',
+              ),
+              value: settings.memoryEnabled,
+              onChanged: (value) {
+                settings.memoryEnabled = value;
+                unawaited(settingsService.saveSettings());
+              },
+            ),
+          ],
+        ),
+        _MenuGroupCard(
+          children: [
             ListTile(
               leading: const Icon(Icons.system_update),
               title: const Text('Check for Updates'),

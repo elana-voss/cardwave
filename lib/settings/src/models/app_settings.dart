@@ -27,6 +27,7 @@ class AppSettings {
     this.onboardingComplete = false,
     this.chatImageVisible = true,
     this.editorImageVisible = false,
+    this.memoryEnabled = true,
     this.assistantCardEditRequireApprovalForEdits = false,
     this.assistantCardEditRequireApprovalForAdditions = false,
     this.assistantCardEditRequireApprovalForDeletions = true,
@@ -110,6 +111,13 @@ class AppSettings {
 
   @JsonKey(defaultValue: false)
   bool editorImageVisible;
+
+  /// Story memory: when on, the app remembers earlier moments in a chat and
+  /// brings the relevant ones back into the prompt during long conversations.
+  /// Gates both retrieval and background extraction. A power feature surfaced
+  /// in Settings, not onboarding.
+  @JsonKey(defaultValue: true)
+  bool memoryEnabled;
 
   /// Gate flags for assistant-chat tool-driven card edits. When false the
   /// modality auto-applies; when true the user sees the approval dialog

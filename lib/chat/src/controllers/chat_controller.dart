@@ -16,6 +16,7 @@ import 'package:cardwave/chat/src/services/chat_execution_service.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
+import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -38,6 +39,7 @@ class ChatController extends BaseChatViewController
     required this.videoPromptBuilder,
     required this.toolDispatcher,
     required this.chatRepository,
+    required this.memoryService,
     this.dataContextProvider,
   }) {
     scrollController.addListener(_onScroll);
@@ -65,6 +67,7 @@ class ChatController extends BaseChatViewController
   @override
   final PromptRepository promptRepository;
   final ChatExecutionService chatExecutionService;
+  final MemoryService memoryService;
   final TextToSpeechController textToSpeechService;
   @override
   final ImageGenerationService imageGenerationService;
@@ -205,6 +208,7 @@ class ChatController extends BaseChatViewController
     inputController.dispose();
     focusNode.dispose();
     streamingContent.dispose();
+    memoryService.releaseChat(chatSession.id);
     super.dispose();
   }
 
@@ -644,6 +648,13 @@ class ChatController extends BaseChatViewController
       }
 
       unawaited(chatService.updateChat(characterFile, chatSession));
+
+      // Story memory runs after the reply is persisted and never blocks it.
+      // recordTurn reconciles edits every turn and throttles its own LLM
+      // extraction. Skipped for the assistant chat and when memory is off.
+      if (settingsService.settings.memoryEnabled && !chatSession.isAssistant) {
+        unawaited(memoryService.recordTurn(chatSession, characterFile));
+      }
 
       cancelToken?.dispose();
       cancelToken = null;

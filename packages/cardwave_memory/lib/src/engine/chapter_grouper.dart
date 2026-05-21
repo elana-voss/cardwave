@@ -86,15 +86,22 @@ class ChapterGrouper {
       final summary = entry[_keySummary] is String
           ? entry[_keySummary] as String
           : '';
+      // A chapter covers every message its scenes cover. Recording those ids
+      // lets reconcile drop the chapter when any of them changes, the same
+      // message dependency every committed node carries.
+      final chapterMessageIds = <String>[];
       for (final childId in childIds) {
         final scene = byId[childId];
-        if (scene != null) byId[childId] = _withParent(scene, chapterId);
+        if (scene == null) continue;
+        chapterMessageIds.addAll(scene.messageIds);
+        byId[childId] = scene.withParent(chapterId);
       }
       chapterNodes.add(
         TreeNode(
           id: chapterId,
           level: TreeLevelEnum.chapter,
           childIds: childIds,
+          messageIds: chapterMessageIds,
           summary: summary,
         ),
       );
@@ -105,16 +112,6 @@ class ChapterGrouper {
       ..addAll(byId.values)
       ..addAll(chapterNodes);
   }
-
-  static TreeNode _withParent(TreeNode node, String parentId) => TreeNode(
-    id: node.id,
-    level: node.level,
-    parentId: parentId,
-    childIds: node.childIds,
-    messageIds: node.messageIds,
-    summary: node.summary,
-    eventIds: node.eventIds,
-  );
 
   static String _buildPrompt(Map<int, TreeNode> numberToScene) {
     final buffer = StringBuffer()
