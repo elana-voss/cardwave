@@ -2,6 +2,7 @@ import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_field_enum.dart';
 import 'package:cardwave_memory/src/models/memory_graph.dart';
+import 'package:cardwave_memory/src/models/memory_thread.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 
@@ -47,6 +48,14 @@ class MemoryRetriever {
 
   static const int _defaultTopK = 12;
   static const int _defaultFactTopK = 8;
+  static const int _defaultThreadTopK = 6;
+
+  // Lifts an event's fused score by its importance, normalized so importance 1
+  // adds nothing and 5 adds the full weight. Kept below the proper-noun boost
+  // (0.1) and around the two-channel reciprocal-rank ceiling (~0.033) so it
+  // reorders near-ties and surfaces pivotal moments without overriding a strong
+  // relevance match. Tunable.
+  static const double _importanceBoost = 0.02;
 
   Bm25fIndex<MemoryFieldEnum>? _index;
 
@@ -104,14 +113,15 @@ class MemoryRetriever {
     final queryTokenSet = queryTokens.toSet();
     fused.updateAll((id, score) {
       final event = candidates[id];
-      if (event != null &&
-          _anyNameToken(
-            [...event.characters, ...event.locations],
-            queryTokenSet,
-          )) {
-        return score + _properNounBoost;
+      if (event == null) return score;
+      var boosted = score + _importanceLift(event.importance);
+      if (_anyNameToken(
+        [...event.characters, ...event.locations],
+        queryTokenSet,
+      )) {
+        boosted += _properNounBoost;
       }
-      return score;
+      return boosted;
     });
 
     final topIds = _keysByDescendingScore(fused.entries, limit: topK);
@@ -143,6 +153,35 @@ class MemoryRetriever {
     }
     return matched;
   }
+
+  /// Returns the still-open threads about any entity the [query] names or that
+  /// the chat is actively about ([activeSubjects]), newest first, capped at
+  /// [topK]. The open-thread twin of [retrieveFacts]: threads aren't embedded,
+  /// recall is by entity name. Resolved threads are skipped.
+  List<MemoryThread> retrieveThreads(
+    String query, {
+    List<String> activeSubjects = const [],
+    int topK = _defaultThreadTopK,
+  }) {
+    final wanted = <String>{
+      ...TextTokenizer.tokenize(query),
+      for (final subject in activeSubjects) ...TextTokenizer.tokenize(subject),
+    };
+    if (wanted.isEmpty) return const [];
+
+    final matched = <MemoryThread>[];
+    for (final thread in graph.threads.reversed) {
+      if (thread.resolvedAt != null) continue;
+      if (_anyNameToken(thread.subjects, wanted)) matched.add(thread);
+      if (matched.length >= topK) break;
+    }
+    return matched;
+  }
+
+  // Maps importance 1-5 to its ranking lift: 1 adds nothing, 5 adds the full
+  // [_importanceBoost]. Importance is 1-5 by the extractor's contract.
+  static double _importanceLift(int importance) =>
+      (importance - 1) / 4 * _importanceBoost;
 
   // Sorts [entries] by score, highest first, and returns their keys — all of
   // them, or the top [limit] when given.

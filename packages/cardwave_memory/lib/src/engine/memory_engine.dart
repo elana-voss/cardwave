@@ -2,6 +2,7 @@ import 'package:cardwave_memory/src/engine/memory_extractor.dart';
 import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_graph.dart';
 import 'package:cardwave_memory/src/models/memory_message.dart';
+import 'package:cardwave_memory/src/models/memory_thread.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
 import 'package:cardwave_memory/src/observability/memory_logger.dart';
 
@@ -32,11 +33,16 @@ class MemoryEngine {
   final int contextSize;
 
   // The graph wraps these growable lists so the engine appends in place;
-  // `graph.events`/`graph.facts` and these are the same references. The app
-  // layer loads and saves the graph.
+  // `graph.events`/`graph.facts`/`graph.threads` and these are the same
+  // references. The app layer loads and saves the graph.
   final List<StoryEvent> _events = [];
   final List<MemoryFact> _facts = [];
-  late final MemoryGraph graph = MemoryGraph(events: _events, facts: _facts);
+  final List<MemoryThread> _threads = [];
+  late final MemoryGraph graph = MemoryGraph(
+    events: _events,
+    facts: _facts,
+    threads: _threads,
+  );
 
   // messageId -> content hash. Insertion order is the processing order (Dart
   // preserves it), so reconcile finds the earliest changed message by walking
@@ -59,10 +65,14 @@ class MemoryEngine {
     _facts
       ..clear()
       ..addAll(loaded.facts);
+    _threads
+      ..clear()
+      ..addAll(loaded.threads);
 
     final extractedMessageIds = <String>{
       for (final event in _events) ...event.messageIds,
       for (final fact in _facts) ...fact.messageIds,
+      for (final thread in _threads) ...thread.messageIds,
     };
     _processedHashes.clear();
     var extractedThrough = 0;
@@ -93,26 +103,33 @@ class MemoryEngine {
   }
 
   /// Extracts one window — the first [contextCount] messages are background,
-  /// the rest are new — and commits its events and facts straight into the
-  /// graph. New facts that the model marked as overriding a known fact retire
-  /// that fact in place.
+  /// the rest are new — and commits its events, facts and threads straight into
+  /// the graph. New facts that the model marked as overriding a known fact
+  /// retire that fact in place; open threads the model marked resolved are
+  /// closed, stamped with the new messages that resolved them.
   Future<void> ingestWindow(
     List<MemoryMessage> window, {
     int contextCount = 0,
   }) async {
+    final newMessageIds = [
+      for (final message in window.skip(contextCount)) message.id,
+    ];
     for (final message in window.skip(contextCount)) {
       _processedHashes[message.id] = _hashText(message.text);
     }
 
     final candidateFacts = _candidateFacts(window);
+    final candidateThreads = _candidateThreads(window);
     final result = await extractor.extract(
       window,
       contextCount: contextCount,
       candidateFacts: candidateFacts,
+      candidateThreads: candidateThreads,
     );
 
     _events.addAll(result.events);
     _facts.addAll(result.facts);
+    _threads.addAll(result.threads);
 
     final now = DateTime.now().millisecondsSinceEpoch;
     result.supersedes.forEach((supersededId, newId) {
@@ -125,9 +142,21 @@ class MemoryEngine {
       }
     });
 
+    for (final thread in _threads) {
+      if (result.resolvedThreadIds.contains(thread.id)) {
+        thread.resolvedAt = now;
+        thread.resolvedByMessageIds = newMessageIds;
+      }
+    }
+
     if (result.supersedes.isNotEmpty) {
       logMemoryInfo(
         'Retired ${result.supersedes.length} fact(s), replaced by newer state.',
+      );
+    }
+    if (result.resolvedThreadIds.isNotEmpty) {
+      logMemoryInfo(
+        'Closed ${result.resolvedThreadIds.length} open thread(s).',
       );
     }
   }
@@ -137,9 +166,7 @@ class MemoryEngine {
   // model can flag which known facts the new messages make false, with no extra
   // call. Subjects are stored lower-cased, so the haystack is too.
   List<MemoryFact> _candidateFacts(List<MemoryMessage> window) {
-    final haystack = [for (final message in window) message.text]
-        .join('\n')
-        .toLowerCase();
+    final haystack = _haystack(window);
     return [
       for (final fact in _facts)
         if (fact.supersededAt == null &&
@@ -148,10 +175,26 @@ class MemoryEngine {
     ];
   }
 
+  // The open-thread twin of [_candidateFacts]: a still-open thread whose
+  // subject appears in the window text, so the model can flag which the new
+  // messages resolve.
+  List<MemoryThread> _candidateThreads(List<MemoryMessage> window) {
+    final haystack = _haystack(window);
+    return [
+      for (final thread in _threads)
+        if (thread.resolvedAt == null &&
+            thread.subjects.any(haystack.contains))
+          thread,
+    ];
+  }
+
+  static String _haystack(List<MemoryMessage> window) =>
+      [for (final message in window) message.text].join('\n').toLowerCase();
+
   /// Detects messages that were deleted or whose text changed since they were
-  /// processed, drops every event and fact that depends on a message at or
-  /// after the earliest change, and rewinds extraction so the next pass
-  /// re-extracts from there.
+  /// processed, drops every event, fact and thread that depends on a message at
+  /// or after the earliest change, reopens any thread whose resolving messages
+  /// are gone, and rewinds extraction so the next pass re-extracts from there.
   ReconcileResult reconcile(List<MemoryMessage> current) {
     final currentById = {for (final message in current) message.id: message};
 
@@ -176,6 +219,11 @@ class MemoryEngine {
       return true;
     });
     _events.removeWhere((event) => event.messageIds.any(affected.contains));
+    // A thread opened from an affected message can no longer be trusted, so
+    // drop it the same way facts and events are dropped.
+    _threads.removeWhere(
+      (thread) => thread.messageIds.any(affected.contains),
+    );
 
     // A fact a now-dropped fact had superseded is no longer contradicted, so
     // revive it instead of leaving it hidden forever.
@@ -184,6 +232,16 @@ class MemoryEngine {
           droppedFactIds.contains(fact.supersededBy)) {
         fact.supersededAt = null;
         fact.supersededBy = null;
+      }
+    }
+
+    // A thread whose resolving messages are gone is no longer resolved, so
+    // reopen it instead of leaving it closed forever.
+    for (final thread in _threads) {
+      if (thread.resolvedAt != null &&
+          thread.resolvedByMessageIds.any(affected.contains)) {
+        thread.resolvedAt = null;
+        thread.resolvedByMessageIds = const [];
       }
     }
 

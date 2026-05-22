@@ -11,6 +11,11 @@ StoryEvent _$StoryEventFromJson(Map<String, dynamic> json) => StoryEvent(
   recordedAt: (json['recorded_at'] as num).toInt(),
   text: json['text'] as String? ?? '',
   contextualPrefix: json['contextual_prefix'] as String? ?? '',
+  eventType:
+      $enumDecodeNullable(_$EventTypeEnumEnumMap, json['event_type']) ??
+      EventTypeEnum.other,
+  cause: json['cause'] as String? ?? '',
+  effect: json['effect'] as String? ?? '',
   messageIds:
       (json['message_ids'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -51,6 +56,9 @@ Map<String, dynamic> _$StoryEventToJson(
   'id': instance.id,
   'text': instance.text,
   'contextual_prefix': instance.contextualPrefix,
+  'event_type': _$EventTypeEnumEnumMap[instance.eventType]!,
+  'cause': instance.cause,
+  'effect': instance.effect,
   'message_ids': instance.messageIds,
   'recorded_at': instance.recordedAt,
   'character_emotion': _$EmotionLabelEnumEnumMap[instance.characterEmotion]!,
@@ -61,6 +69,27 @@ Map<String, dynamic> _$StoryEventToJson(
   'items': instance.items,
   'concepts': instance.concepts,
   'keywords': instance.keywords,
+};
+
+const _$EventTypeEnumEnumMap = {
+  EventTypeEnum.meeting: 'meeting',
+  EventTypeEnum.relationshipChange: 'relationship_change',
+  EventTypeEnum.conflict: 'conflict',
+  EventTypeEnum.reconciliation: 'reconciliation',
+  EventTypeEnum.separation: 'separation',
+  EventTypeEnum.intimacy: 'intimacy',
+  EventTypeEnum.promise: 'promise',
+  EventTypeEnum.betrayal: 'betrayal',
+  EventTypeEnum.revelation: 'revelation',
+  EventTypeEnum.discovery: 'discovery',
+  EventTypeEnum.locationChange: 'location_change',
+  EventTypeEnum.injuryOrIllness: 'injury_or_illness',
+  EventTypeEnum.birth: 'birth',
+  EventTypeEnum.death: 'death',
+  EventTypeEnum.timeJump: 'time_jump',
+  EventTypeEnum.lifeEvent: 'life_event',
+  EventTypeEnum.conversation: 'conversation',
+  EventTypeEnum.other: 'other',
 };
 
 const _$EmotionLabelEnumEnumMap = {

@@ -1,30 +1,44 @@
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_emotion/cardwave_emotion.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_memory/src/models/event_type_enum.dart';
 import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_message.dart';
 import 'package:cardwave_memory/src/models/memory_role.dart';
+import 'package:cardwave_memory/src/models/memory_thread.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
 import 'package:cardwave_memory/src/observability/memory_logger.dart';
 import 'package:cardwave_memory/src/utils/memory_id.dart';
 import 'package:schemantic/schemantic.dart';
 
 /// What one extraction call produced: the [events] ("what happened"), the new
-/// [facts] ("what's true now"), and [supersedes] — a map from an existing
-/// fact's id to the new fact id that overrode it, so the engine can retire the
-/// stale fact.
+/// [facts] ("what's true now"), the newly opened [threads] ("what's pending"),
+/// [supersedes] — a map from an existing fact's id to the new fact id that
+/// overrode it — and [resolvedThreadIds] — ids of existing open threads the
+/// window's messages closed. A thread is closed by the messages, not by a
+/// replacement record, so resolution is a set of ids, not a map.
 class ExtractionResult {
   const ExtractionResult({
     required this.events,
     required this.facts,
+    required this.threads,
     required this.supersedes,
+    required this.resolvedThreadIds,
   });
 
   final List<StoryEvent> events;
   final List<MemoryFact> facts;
+  final List<MemoryThread> threads;
   final Map<String, String> supersedes;
+  final Set<String> resolvedThreadIds;
 
-  static const empty = ExtractionResult(events: [], facts: [], supersedes: {});
+  static const empty = ExtractionResult(
+    events: [],
+    facts: [],
+    threads: [],
+    supersedes: {},
+    resolvedThreadIds: {},
+  );
 }
 
 /// Extracts story memory from a window of chat messages in one structured LLM
@@ -55,8 +69,13 @@ class MemoryExtractor {
   // Output field names, named once so the schema and the parser cannot drift.
   static const _keyEvents = 'events';
   static const _keyFacts = 'facts';
+  static const _keyThreads = 'threads';
+  static const _keyResolvedThreads = 'resolved_threads';
   static const _keyText = 'text';
   static const _keyContextualPrefix = 'contextual_prefix';
+  static const _keyEventType = 'event_type';
+  static const _keyCause = 'cause';
+  static const _keyEffect = 'effect';
   static const _keyMessageNumbers = 'message_numbers';
   static const _keyCharacters = 'characters';
   static const _keyLocations = 'locations';
@@ -71,12 +90,14 @@ class MemoryExtractor {
   /// already-remembered background — shown to the model for continuity but NOT
   /// numbered and NOT turned into memory. [candidateFacts] are existing facts
   /// the window's text touches; the model may mark one superseded by a new
-  /// fact. Only the messages after the background are extracted, so each
-  /// message becomes memory exactly once as windows advance.
+  /// fact. [candidateThreads] are still-open threads the text touches; the model
+  /// may mark one resolved. Only the messages after the background are
+  /// extracted, so each message becomes memory exactly once as windows advance.
   Future<ExtractionResult> extract(
     List<MemoryMessage> window, {
     int contextCount = 0,
     List<MemoryFact> candidateFacts = const [],
+    List<MemoryThread> candidateThreads = const [],
   }) async {
     final context = contextCount > 0
         ? window.take(contextCount).toList()
@@ -91,20 +112,27 @@ class MemoryExtractor {
       number++;
     }
 
-    // Candidate facts are labelled F1, F2, … so the model references them
-    // without colliding with the message numbers above.
+    // Candidate facts are labelled F1, F2, … and candidate open threads T1,
+    // T2, … so the model references them without colliding with the message
+    // numbers above or with each other.
     final labelToFact = <String, MemoryFact>{};
     var factNumber = 1;
     for (final fact in candidateFacts) {
       labelToFact['F$factNumber'] = fact;
       factNumber++;
     }
+    final labelToThread = <String, MemoryThread>{};
+    var threadNumber = 1;
+    for (final thread in candidateThreads) {
+      labelToThread['T$threadNumber'] = thread;
+      threadNumber++;
+    }
 
     final Map<String, dynamic> raw;
     try {
       raw = await runner.completeStructured(
-        _buildPrompt(context, numberToMessage, labelToFact),
-        _buildSchema(labelToFact.keys.toList()),
+        _buildPrompt(context, numberToMessage, labelToFact, labelToThread),
+        _buildSchema(labelToFact.keys.toList(), labelToThread.keys.toList()),
       );
     } on Exception catch (error, stackTrace) {
       logMemoryWarning(
@@ -115,13 +143,14 @@ class MemoryExtractor {
       return ExtractionResult.empty;
     }
 
-    return _parse(raw, numberToMessage, labelToFact);
+    return _parse(raw, numberToMessage, labelToFact, labelToThread);
   }
 
   Future<ExtractionResult> _parse(
     Map<String, dynamic> raw,
     Map<int, MemoryMessage> numberToMessage,
     Map<String, MemoryFact> labelToFact,
+    Map<String, MemoryThread> labelToThread,
   ) async {
     // LLM output is untrusted: read every field by type and skip what does not
     // fit, the same way the sidecar codec tolerates bad bytes. No try/catch —
@@ -153,7 +182,34 @@ class MemoryExtractor {
       }
     }
 
-    return ExtractionResult(events: events, facts: facts, supersedes: supersedes);
+    final threads = <MemoryThread>[];
+    final threadsJson = raw[_keyThreads];
+    if (threadsJson is List) {
+      for (final entry in threadsJson) {
+        if (entry is! Map) continue;
+        final thread = _parseThread(entry, numberToMessage);
+        if (thread != null) threads.add(thread);
+      }
+    }
+
+    // Resolved threads are cited by their candidate label (T1, T2, …); map each
+    // back to the open thread's id the engine will close.
+    final resolvedThreadIds = <String>{};
+    final resolvedJson = raw[_keyResolvedThreads];
+    if (resolvedJson is List) {
+      for (final label in resolvedJson) {
+        final thread = label is String ? labelToThread[label] : null;
+        if (thread != null) resolvedThreadIds.add(thread.id);
+      }
+    }
+
+    return ExtractionResult(
+      events: events,
+      facts: facts,
+      threads: threads,
+      supersedes: supersedes,
+      resolvedThreadIds: resolvedThreadIds,
+    );
   }
 
   Future<StoryEvent?> _parseEvent(
@@ -177,16 +233,18 @@ class MemoryExtractor {
         .join('\n');
     final emotions = await classifier.classifyPair(userText, characterText);
 
-    final importance = entry[_keyImportance];
     final event = StoryEvent(
       id: newEventId(),
       recordedAt: DateTime.now().millisecondsSinceEpoch,
       text: text,
       contextualPrefix: contextualPrefix,
+      eventType: EventTypeEnum.fromWireName(_string(entry[_keyEventType])),
+      cause: _string(entry[_keyCause]),
+      effect: _string(entry[_keyEffect]),
       messageIds: [for (final message in eventMessages) message.id],
       characterEmotion: emotions.character.label,
       userEmotion: emotions.user.label,
-      importance: importance is int ? importance : 0,
+      importance: _clampImportance(entry[_keyImportance]),
       characters: _stringList(entry[_keyCharacters]),
       locations: _stringList(entry[_keyLocations]),
       items: _stringList(entry[_keyItems]),
@@ -210,10 +268,7 @@ class MemoryExtractor {
     final text = entry[_keyText];
     if (text is! String || text.isEmpty) return null;
 
-    final subjects = <String>[
-      for (final subject in _stringList(entry[_keySubjects]))
-        if (subject.trim().isNotEmpty) subject.trim().toLowerCase(),
-    ];
+    final subjects = _normalizeSubjects(entry[_keySubjects]);
     if (subjects.isEmpty) return null;
 
     final messages = _citedMessages(entry, numberToMessage, 'fact');
@@ -225,6 +280,37 @@ class MemoryExtractor {
       text: text,
       messageIds: [for (final message in messages) message.id],
     );
+  }
+
+  // Threads, like facts, carry no vector — recalled by subject name. Opened
+  // here; closed later when a window's messages resolve them.
+  MemoryThread? _parseThread(
+    Map<dynamic, dynamic> entry,
+    Map<int, MemoryMessage> numberToMessage,
+  ) {
+    final text = entry[_keyText];
+    if (text is! String || text.isEmpty) return null;
+
+    final subjects = _normalizeSubjects(entry[_keySubjects]);
+    if (subjects.isEmpty) return null;
+
+    final messages = _citedMessages(entry, numberToMessage, 'thread');
+    if (messages == null) return null;
+
+    return MemoryThread(
+      id: newThreadId(),
+      subjects: subjects,
+      text: text,
+      messageIds: [for (final message in messages) message.id],
+    );
+  }
+
+  // The model's importance, clamped to 1-5; anything missing or out of range
+  // becomes 3 (neutral) so a malformed value neither buries nor over-lifts the
+  // event in ranking.
+  static int _clampImportance(Object? value) {
+    if (value is! int) return 3;
+    return value.clamp(1, 5);
   }
 
   // Resolves the cited message numbers to the window messages they point at,
@@ -254,6 +340,13 @@ class MemoryExtractor {
     return messages;
   }
 
+  // Trimmed, lower-cased entity names — the shared lookup-key form for both
+  // fact and thread subjects, so the two cannot drift.
+  static List<String> _normalizeSubjects(Object? value) => [
+    for (final subject in _stringList(value))
+      if (subject.trim().isNotEmpty) subject.trim().toLowerCase(),
+  ];
+
   static String _string(Object? value) => value is String ? value : '';
 
   static List<String> _stringList(Object? value) {
@@ -265,21 +358,45 @@ class MemoryExtractor {
     List<MemoryMessage> context,
     Map<int, MemoryMessage> numberToMessage,
     Map<String, MemoryFact> labelToFact,
+    Map<String, MemoryThread> labelToThread,
   ) {
     final buffer = StringBuffer()
       ..writeln(
         'You extract story memory from a roleplay chat. Read the messages and '
-        'pull out two things: the atomic events that happened, and the facts '
-        'about the characters and world that hold true as of these messages.',
+        'pull out three things: the atomic events that happened, the facts '
+        'about the characters and world that hold true as of these messages, '
+        'and the open threads left unresolved.',
       )
       ..writeln()
       ..writeln(
         'For each event give: a short factual "text"; a one-line '
         '"contextual_prefix" situating it in the wider story (who, where, '
-        'when); the "message_numbers" it draws from; the "characters", '
-        '"locations", "items", "concepts" and "keywords" involved; and an '
-        '"importance" from 1 (trivial) to 5 (pivotal).',
+        'when); an "event_type" from the list below; a short "cause" (why it '
+        'happened) and "effect" (what came of it), each "" if not clear; the '
+        '"message_numbers" it draws from; the "characters", "locations", '
+        '"items", "concepts" and "keywords" involved; and an "importance".',
       )
+      ..writeln()
+      ..writeln('event_type — choose the closest:')
+      ..writeAll([
+        for (final type in EventTypeEnum.values)
+          '  ${type.wireName}: ${type.description}\n',
+      ])
+      ..writeln()
+      ..writeln(
+        'importance — 1 to 5, judged the same way across every event_type (a '
+        'quiet conversation can outrank a fight); score by lasting impact on '
+        'the characters or story, not by how dramatic the type sounds:',
+      )
+      ..writeln(
+        '  1 trivial: ambient or routine, forgotten within the scene.',
+      )
+      ..writeln('  2 minor: a small real beat worth light recall.')
+      ..writeln('  3 notable: shapes the near-term mood or plan.')
+      ..writeln(
+        '  4 major: lastingly changes a relationship or situation.',
+      )
+      ..writeln('  5 pivotal: a turning point the story hinges on.')
       ..writeln()
       ..writeln(
         'For each fact give: the "subjects" it is about (character or place '
@@ -287,6 +404,13 @@ class MemoryExtractor {
         '"Mayla and the captain are enemies"); and the "message_numbers" it '
         'draws from. A fact is durable current state — a relationship, trait, '
         'possession, role, or goal — not a one-off action, which is an event.',
+      )
+      ..writeln()
+      ..writeln(
+        'For each NEW open thread give: the "subjects" it is about; the "text" '
+        'of what is left pending (a promise made, a debt owed, an unanswered '
+        'question); and the "message_numbers" it draws from. Only threads these '
+        'messages newly raise — not ones already listed below.',
       )
       ..writeln();
 
@@ -298,6 +422,17 @@ class MemoryExtractor {
       );
       labelToFact.forEach((label, fact) {
         buffer.writeln('$label. ${fact.text}');
+      });
+      buffer.writeln();
+    }
+
+    if (labelToThread.isNotEmpty) {
+      buffer.writeln(
+        'Open threads so far. If these messages resolve any, list its label in '
+        '"resolved_threads":',
+      );
+      labelToThread.forEach((label, thread) {
+        buffer.writeln('$label. ${thread.text}');
       });
       buffer.writeln();
     }
@@ -322,6 +457,7 @@ class MemoryExtractor {
 
   static SchemanticType<Map<String, dynamic>> _buildSchema(
     List<String> factLabels,
+    List<String> threadLabels,
   ) {
     final stringArray = <String, Object?>{
       'type': 'array',
@@ -333,6 +469,9 @@ class MemoryExtractor {
       'required': <String>[
         _keyText,
         _keyContextualPrefix,
+        _keyEventType,
+        _keyCause,
+        _keyEffect,
         _keyMessageNumbers,
         _keyCharacters,
         _keyLocations,
@@ -352,6 +491,19 @@ class MemoryExtractor {
               'One line situating the event in the wider story; prepended '
               'before embedding.',
         },
+        _keyEventType: <String, Object?>{
+          'type': 'string',
+          'enum': <String>[for (final t in EventTypeEnum.values) t.wireName],
+          'description': 'The kind of moment; see the list in the prompt.',
+        },
+        _keyCause: <String, Object?>{
+          'type': 'string',
+          'description': 'Why it happened, or "" if unclear.',
+        },
+        _keyEffect: <String, Object?>{
+          'type': 'string',
+          'description': 'What came of it, or "" if unclear.',
+        },
         _keyMessageNumbers: <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{'type': 'integer'},
@@ -364,7 +516,27 @@ class MemoryExtractor {
         _keyKeywords: stringArray,
         _keyImportance: <String, Object?>{
           'type': 'integer',
-          'description': '1 (trivial) to 5 (pivotal).',
+          'description': '1 (trivial) to 5 (pivotal); see the prompt rubric.',
+        },
+      },
+    };
+    final threadItem = <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <String>[_keySubjects, _keyText, _keyMessageNumbers],
+      'properties': <String, Object?>{
+        _keySubjects: <String, Object?>{
+          ...stringArray,
+          'description': 'Character or place names this thread is about.',
+        },
+        _keyText: <String, Object?>{
+          'type': 'string',
+          'description': 'What is left pending — a promise, debt, or question.',
+        },
+        _keyMessageNumbers: <String, Object?>{
+          'type': 'array',
+          'items': <String, Object?>{'type': 'integer'},
+          'description': 'The numbered messages this thread is drawn from.',
         },
       },
     };
@@ -406,10 +578,27 @@ class MemoryExtractor {
     final schema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'required': <String>[_keyEvents, _keyFacts],
+      'required': <String>[
+        _keyEvents,
+        _keyFacts,
+        _keyThreads,
+        _keyResolvedThreads,
+      ],
       'properties': <String, Object?>{
         _keyEvents: <String, Object?>{'type': 'array', 'items': eventItem},
         _keyFacts: <String, Object?>{'type': 'array', 'items': factItem},
+        _keyThreads: <String, Object?>{'type': 'array', 'items': threadItem},
+        _keyResolvedThreads: <String, Object?>{
+          'type': 'array',
+          // Constrain to the offered thread labels only when there are some, the
+          // same guard the fact "supersedes" enum uses.
+          'items': <String, Object?>{
+            'type': 'string',
+            if (threadLabels.isNotEmpty) 'enum': threadLabels,
+          },
+          'description':
+              'Labels of the open threads above that these messages resolve.',
+        },
       },
     };
     return SchemanticType.from<Map<String, dynamic>>(

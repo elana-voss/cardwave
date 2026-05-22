@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_memory/src/models/memory_fact.dart';
 import 'package:cardwave_memory/src/models/memory_field_enum.dart';
+import 'package:cardwave_memory/src/models/memory_thread.dart';
 import 'package:cardwave_memory/src/models/story_event.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -16,7 +17,11 @@ part 'memory_graph.g.dart';
 /// carry no vector — they are recalled by entity name, not by similarity.
 @JsonSerializable(explicitToJson: true)
 class MemoryGraph {
-  const MemoryGraph({this.events = const [], this.facts = const []});
+  const MemoryGraph({
+    this.events = const [],
+    this.facts = const [],
+    this.threads = const [],
+  });
 
   factory MemoryGraph.fromJson(Map<String, dynamic> json) =>
       _$MemoryGraphFromJson(json);
@@ -24,6 +29,11 @@ class MemoryGraph {
   final List<StoryEvent> events;
 
   final List<MemoryFact> facts;
+
+  /// Unresolved story threads ("what's pending"). Like [facts] they carry no
+  /// vector — recalled by entity name, not similarity — so the sidecar is
+  /// unchanged.
+  final List<MemoryThread> threads;
 
   Map<String, dynamic> toJson() => _$MemoryGraphToJson(this);
 

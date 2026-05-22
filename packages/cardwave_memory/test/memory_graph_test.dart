@@ -10,6 +10,9 @@ StoryEvent _buildEvent({Float32List? vector}) => StoryEvent(
   recordedAt: 2000,
   text: 'Mayla drew her blade on the crew in the harbor tavern.',
   contextualPrefix: 'In the harbor tavern at dusk,',
+  eventType: EventTypeEnum.conflict,
+  cause: 'the crew mutinied',
+  effect: 'two sailors fled',
   messageIds: const ['msg-1', 'msg-2'],
   characterEmotion: EmotionLabelEnum.anger,
   userEmotion: EmotionLabelEnum.fear,
@@ -29,9 +32,17 @@ MemoryFact _buildFact() => MemoryFact(
   messageIds: const ['msg-1', 'msg-2'],
 );
 
+MemoryThread _buildThread() => MemoryThread(
+  id: newThreadId(),
+  subjects: const ['mayla'],
+  text: 'Mayla still owes the captain a debt.',
+  messageIds: const ['msg-1'],
+);
+
 MemoryGraph _buildGraph({Float32List? vector}) => MemoryGraph(
   events: [_buildEvent(vector: vector)],
   facts: [_buildFact()],
+  threads: [_buildThread()],
 );
 
 void main() {
@@ -65,6 +76,34 @@ void main() {
     final clone = MemoryFact.fromJson(fact.toJson());
     expect(clone.supersededAt, 42);
     expect(clone.supersededBy, 'f2');
+  });
+
+  test('event_type round-trips as the enum, saved snake_case', () {
+    final event = _buildEvent();
+    final json = event.toJson();
+    expect(
+      json['event_type'],
+      'conflict',
+      reason: 'the enum saves under its snake_case wire name',
+    );
+    final clone = StoryEvent.fromJson(json);
+    expect(clone.eventType, EventTypeEnum.conflict);
+    expect(clone.cause, 'the crew mutinied');
+    expect(clone.effect, 'two sailors fled');
+  });
+
+  test('a resolved thread round-trips its resolution marks', () {
+    final thread = MemoryThread(
+      id: 't1',
+      subjects: const ['mayla'],
+      text: 'a debt owed',
+      messageIds: const ['msg-1'],
+      resolvedAt: 99,
+      resolvedByMessageIds: const ['msg-5'],
+    );
+    final clone = MemoryThread.fromJson(thread.toJson());
+    expect(clone.resolvedAt, 99);
+    expect(clone.resolvedByMessageIds, ['msg-5']);
   });
 
   test('event vectors round-trip through the sidecar; facts carry none', () {

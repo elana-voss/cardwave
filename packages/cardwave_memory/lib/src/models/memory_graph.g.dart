@@ -17,10 +17,16 @@ MemoryGraph _$MemoryGraphFromJson(Map<String, dynamic> json) => MemoryGraph(
           ?.map((e) => MemoryFact.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  threads:
+      (json['threads'] as List<dynamic>?)
+          ?.map((e) => MemoryThread.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$MemoryGraphToJson(MemoryGraph instance) =>
     <String, dynamic>{
       'events': instance.events.map((e) => e.toJson()).toList(),
       'facts': instance.facts.map((e) => e.toJson()).toList(),
+      'threads': instance.threads.map((e) => e.toJson()).toList(),
     };

@@ -62,20 +62,34 @@ class MemoryService {
       final query = _latestUserText(session.messages);
       if (query.isEmpty) return const [];
       final events = await retriever.retrieve(query);
-      // Facts the query or the active character names carry current state
-      // ("what's true now"); events carry "what happened".
+      // Facts carry current state ("what's true now"); threads carry what's
+      // still pending; events carry "what happened". All keyed off the query or
+      // the active character's name.
       final facts = retriever.retrieveFacts(
         query,
         activeSubjects: [file.card.name],
       );
-      if (events.isNotEmpty || facts.isNotEmpty) {
+      final threads = retriever.retrieveThreads(
+        query,
+        activeSubjects: [file.card.name],
+      );
+      if (events.isNotEmpty || facts.isNotEmpty || threads.isNotEmpty) {
         loggingService.info(
-          'Memory: recalled ${events.length} events, ${facts.length} facts.',
+          'Memory: recalled ${events.length} events, ${facts.length} facts, '
+          '${threads.length} threads.',
         );
       }
+      // Order each section oldest-to-newest by its earliest source message, so
+      // the block reads as one timeline rather than in relevance order.
+      final order = _messageOrder(session.messages);
+      final orderedEvents = _byEarliestMessage(events, (e) => e.messageIds, order);
+      final orderedFacts = _byEarliestMessage(facts, (f) => f.messageIds, order);
+      final orderedThreads =
+          _byEarliestMessage(threads, (t) => t.messageIds, order);
       final lines = <String>[
-        for (final event in events) '- ${_formatEvent(event)}',
-        for (final fact in facts) '- (current) ${fact.text}',
+        for (final event in orderedEvents) _formatEvent(event),
+        for (final fact in orderedFacts) '- (current) ${fact.text}',
+        for (final thread in orderedThreads) '- (open thread) ${thread.text}',
       ];
       return lines;
     } on Exception catch (error, stackTrace) {
@@ -130,21 +144,29 @@ class MemoryService {
       // accumulated since the last pass, not every turn.
       final eventCountBefore = graph.events.length;
       final factCountBefore = graph.facts.length;
+      final threadCountBefore = graph.threads.length;
+      final resolvedThreadsBefore = _resolvedThreadCount(graph);
       if (messages.length - _lastExtractedCount >= _extractionCadenceMessages) {
         await engine.processMessages(messages);
         _lastExtractedCount = messages.length;
         final newEvents = graph.events.length - eventCountBefore;
         final newFacts = graph.facts.length - factCountBefore;
-        if (newEvents > 0 || newFacts > 0) {
+        final newThreads = graph.threads.length - threadCountBefore;
+        if (newEvents > 0 || newFacts > 0 || newThreads > 0) {
           loggingService.info(
-            'Memory: extracted $newEvents events, $newFacts facts.',
+            'Memory: extracted $newEvents events, $newFacts facts, '
+            '$newThreads threads.',
           );
         }
       }
 
+      // A resolved thread changes no count, so check the resolved tally too,
+      // or a resolve-only pass would never be saved.
       final extracted =
           graph.events.length != eventCountBefore ||
-          graph.facts.length != factCountBefore;
+          graph.facts.length != factCountBefore ||
+          graph.threads.length != threadCountBefore ||
+          _resolvedThreadCount(graph) != resolvedThreadsBefore;
       final changed = reconcile.recomputeFromIndex != -1 || extracted;
       if (!changed) return;
 
@@ -250,6 +272,9 @@ class MemoryService {
     ChatRoleEnum.system => null,
   };
 
+  static int _resolvedThreadCount(MemoryGraph graph) =>
+      graph.threads.where((thread) => thread.resolvedAt != null).length;
+
   static String _latestUserText(List<ChatMessage> messages) {
     String? text;
     for (final message in messages) {
@@ -260,7 +285,45 @@ class MemoryService {
     return text ?? '';
   }
 
-  static String _formatEvent(StoryEvent event) => event.contextualPrefix.isEmpty
-      ? event.text
-      : '${event.contextualPrefix} ${event.text}';
+  // Returns the whole "- …" block, leading dash included, so the caller joins
+  // these as-is — an event can span three lines and must not be re-prefixed.
+  static String _formatEvent(StoryEvent event) {
+    final text = event.contextualPrefix.isEmpty
+        ? event.text
+        : '${event.contextualPrefix} ${event.text}';
+    final buffer = StringBuffer('- [${event.eventType.wireName}] $text');
+    if (event.cause.isNotEmpty) buffer.write('\n  Cause: ${event.cause}');
+    if (event.effect.isNotEmpty) buffer.write('\n  Effect: ${event.effect}');
+    return buffer.toString();
+  }
+
+  // Message id to chat position, so recalled memory can be ordered as a
+  // timeline rather than by relevance.
+  static Map<String, int> _messageOrder(List<ChatMessage> messages) => {
+    for (var i = 0; i < messages.length; i++) messages[i].id: i,
+  };
+
+  // Orders recalled items oldest-to-newest by their earliest source message.
+  // Each item's position is computed once up front, not on every comparison.
+  static List<T> _byEarliestMessage<T>(
+    List<T> items,
+    List<String> Function(T) messageIds,
+    Map<String, int> order,
+  ) {
+    final keyed = [
+      for (final item in items)
+        (position: _earliestPosition(messageIds(item), order), item: item),
+    ]..sort((a, b) => a.position.compareTo(b.position));
+    return [for (final entry in keyed) entry.item];
+  }
+
+  // The earliest chat position among [ids]; ids not in the chat sort last.
+  static int _earliestPosition(List<String> ids, Map<String, int> order) {
+    var earliest = order.length;
+    for (final id in ids) {
+      final pos = order[id];
+      if (pos != null && pos < earliest) earliest = pos;
+    }
+    return earliest;
+  }
 }

@@ -42,6 +42,7 @@ StoryEvent _event(
   List<String> characters = const [],
   List<String> locations = const [],
   List<String> keywords = const [],
+  int importance = 3,
   Float32List? vector,
 }) {
   final event = StoryEvent(
@@ -49,6 +50,7 @@ StoryEvent _event(
     recordedAt: 0,
     text: text,
     contextualPrefix: '',
+    importance: importance,
     characters: characters,
     locations: locations,
     keywords: keywords,
@@ -56,6 +58,18 @@ StoryEvent _event(
   event.vector = vector;
   return event;
 }
+
+MemoryThread _thread(
+  String id, {
+  required List<String> subjects,
+  String text = '',
+  int? resolvedAt,
+}) => MemoryThread(
+  id: id,
+  subjects: subjects,
+  text: text,
+  resolvedAt: resolvedAt,
+);
 
 MemoryFact _fact(
   String id, {
@@ -259,6 +273,54 @@ void main() {
       retriever.retrieveFacts('tell me about mayla'),
       isEmpty,
       reason: 'no query token or active subject names the captain',
+    );
+  });
+
+  test('between equally-relevant events the more important ranks first', () async {
+    // Both events match the keyword and share the query vector, so they tie on
+    // both channels; only the importance boost separates them.
+    final graph = MemoryGraph(
+      events: [
+        _event('trivial', text: 'a dragon passes by',
+            keywords: ['dragon'], importance: 1, vector: _basis(0)),
+        _event('pivotal', text: 'a dragon razes the village',
+            keywords: ['dragon'], importance: 5, vector: _basis(0)),
+      ],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder({'dragon': _basis(0)}),
+      graph: graph,
+    );
+    await retriever.rebuildIndex();
+
+    final result = await retriever.retrieve('dragon');
+
+    expect(result.first.id, 'pivotal', reason: 'higher importance is lifted');
+    expect(
+      _ids(result).toSet(),
+      {'pivotal', 'trivial'},
+      reason: 'the boost reorders, it does not drop the other event',
+    );
+  });
+
+  test('open threads are retrieved by name; resolved ones stay hidden', () {
+    final graph = MemoryGraph(
+      threads: [
+        _thread('t1', subjects: ['mayla'], text: 'Mayla owes a debt'),
+        _thread('t2', subjects: ['mayla'], text: 'an old promise',
+            resolvedAt: 123),
+        _thread('t3', subjects: ['captain'], text: 'the captain seeks revenge'),
+      ],
+    );
+    final retriever = MemoryRetriever(
+      embedder: _QueryEmbedder(const {}),
+      graph: graph,
+    );
+
+    expect(
+      retriever.retrieveThreads('what about mayla').map((t) => t.text),
+      ['Mayla owes a debt'],
+      reason: 'only the open thread Mayla is named in surfaces',
     );
   });
 }

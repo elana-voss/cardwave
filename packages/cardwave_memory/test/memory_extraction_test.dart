@@ -75,16 +75,23 @@ int _indexOfLabel(EmotionLabelEnum label) {
 Map<String, dynamic> _eventJson({
   required String text,
   required List<int> numbers,
+  String eventType = 'conversation',
+  String cause = '',
+  String effect = '',
+  int importance = 1,
 }) => <String, dynamic>{
   'text': text,
   'contextual_prefix': 'prefix',
+  'event_type': eventType,
+  'cause': cause,
+  'effect': effect,
   'message_numbers': numbers,
   'characters': <String>[],
   'locations': <String>[],
   'items': <String>[],
   'concepts': <String>[],
   'keywords': <String>[],
-  'importance': 1,
+  'importance': importance,
 };
 
 Map<String, dynamic> _factJson({
@@ -99,10 +106,27 @@ Map<String, dynamic> _factJson({
   'supersedes': supersedes,
 };
 
+Map<String, dynamic> _threadJson({
+  required List<String> subjects,
+  required String text,
+  required List<int> numbers,
+}) => <String, dynamic>{
+  'subjects': subjects,
+  'text': text,
+  'message_numbers': numbers,
+};
+
 Map<String, dynamic> _output({
   List<Map<String, dynamic>> events = const [],
   List<Map<String, dynamic>> facts = const [],
-}) => <String, dynamic>{'events': events, 'facts': facts};
+  List<Map<String, dynamic>> threads = const [],
+  List<String> resolvedThreads = const [],
+}) => <String, dynamic>{
+  'events': events,
+  'facts': facts,
+  'threads': threads,
+  'resolved_threads': resolvedThreads,
+};
 
 MemoryMessage _msg(String id, MemoryRole role, String text, int timestamp) =>
     MemoryMessage(id: id, role: role, text: text, timestamp: timestamp);
@@ -425,5 +449,118 @@ void main() {
       reason: 'the revived fact is current again',
     );
     expect(engine.graph.facts.single.supersededBy, isNull);
+  });
+
+  test('extraction parses event_type, cause and effect', () async {
+    final window = [_msg('m1', MemoryRole.character, maylaText, 1)];
+    final result = await buildExtractor([
+      _output(
+        events: [
+          _eventJson(
+            text: 'Mayla strikes the captain',
+            numbers: [1],
+            eventType: 'conflict',
+            cause: 'he refused her the ship',
+            effect: 'the crew turns on her',
+            importance: 4,
+          ),
+        ],
+      ),
+    ]).extract(window);
+
+    final event = result.events.single;
+    expect(event.eventType, EventTypeEnum.conflict);
+    expect(event.cause, 'he refused her the ship');
+    expect(event.effect, 'the crew turns on her');
+    expect(event.importance, 4);
+  });
+
+  test('an unknown event_type falls back to other; importance clamps to 1-5', () async {
+    final window = [_msg('m1', MemoryRole.character, maylaText, 1)];
+    final result = await buildExtractor([
+      _output(
+        events: [
+          _eventJson(
+            text: 'something',
+            numbers: [1],
+            eventType: 'quest_update',
+            importance: 9,
+          ),
+        ],
+      ),
+    ]).extract(window);
+
+    final event = result.events.single;
+    expect(event.eventType, EventTypeEnum.other);
+    expect(event.importance, 5, reason: 'out-of-range importance clamps to 5');
+  });
+
+  test('a thread opens, then a later window resolves it', () async {
+    final engine = buildEngine([
+      _output(
+        threads: [
+          _threadJson(
+            subjects: ['mayla'],
+            text: 'Mayla owes the captain a debt',
+            numbers: [1],
+          ),
+        ],
+      ),
+      _output(resolvedThreads: ['T1']),
+    ]);
+
+    await engine.ingestWindow([_msg('m1', MemoryRole.character, maylaText, 1)]);
+    expect(engine.graph.threads, hasLength(1));
+    expect(engine.graph.threads.single.resolvedAt, isNull);
+
+    // Second window names Mayla, so the open thread is a candidate; the model
+    // marks it resolved.
+    await engine.ingestWindow([_msg('m2', MemoryRole.character, maylaText, 2)]);
+    final thread = engine.graph.threads.single;
+    expect(thread.resolvedAt, isNotNull, reason: 'the thread is closed');
+    expect(thread.resolvedByMessageIds, ['m2']);
+  });
+
+  test('reconcile reopens a thread whose resolving message is edited away', () async {
+    final engine = buildEngine([
+      _output(
+        threads: [
+          _threadJson(subjects: ['mayla'], text: 'a debt owed', numbers: [1]),
+        ],
+      ),
+      _output(resolvedThreads: ['T1']),
+    ]);
+    await engine.ingestWindow([_msg('m1', MemoryRole.character, maylaText, 1)]);
+    await engine.ingestWindow([_msg('m2', MemoryRole.character, maylaText, 2)]);
+    expect(engine.graph.threads.single.resolvedAt, isNotNull);
+
+    // m2 resolved it; change m2's text so reconcile drops the resolution.
+    engine.reconcile([
+      _msg('m1', MemoryRole.character, maylaText, 1),
+      _msg('m2', MemoryRole.character, 'a different line', 2),
+    ]);
+
+    final thread = engine.graph.threads.single;
+    expect(thread.resolvedAt, isNull, reason: 'the thread reopens');
+    expect(thread.resolvedByMessageIds, isEmpty);
+  });
+
+  test('reconcile drops a thread whose opening message changed', () async {
+    final engine = buildEngine([
+      _output(
+        threads: [
+          _threadJson(subjects: ['mayla'], text: 'a debt owed', numbers: [1]),
+        ],
+      ),
+    ]);
+    await engine.ingestWindow([_msg('m1', MemoryRole.character, maylaText, 1)]);
+    expect(engine.graph.threads, hasLength(1));
+
+    engine.reconcile([_msg('m1', MemoryRole.character, 'rewritten', 1)]);
+    expect(
+      engine.graph.threads,
+      isEmpty,
+      reason: 'the thread was opened from m1, which changed',
+    );
   });
 }

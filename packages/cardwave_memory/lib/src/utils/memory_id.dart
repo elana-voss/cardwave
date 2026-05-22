@@ -6,3 +6,5 @@ import 'package:uuid/uuid.dart';
 String newEventId() => 'event-${const Uuid().v4()}';
 
 String newFactId() => 'fact-${const Uuid().v4()}';
+
+String newThreadId() => 'thread-${const Uuid().v4()}';

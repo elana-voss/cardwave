@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cardwave_emotion/cardwave_emotion.dart';
+import 'package:cardwave_memory/src/models/event_type_enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'story_event.g.dart';
@@ -19,6 +20,9 @@ class StoryEvent {
     required this.recordedAt,
     required this.text,
     required this.contextualPrefix,
+    this.eventType = EventTypeEnum.other,
+    this.cause = '',
+    this.effect = '',
     this.messageIds = const [],
     this.characterEmotion = EmotionLabelEnum.neutral,
     this.userEmotion = EmotionLabelEnum.neutral,
@@ -43,6 +47,17 @@ class StoryEvent {
   /// (Anthropic contextual retrieval).
   @JsonKey(defaultValue: '')
   final String contextualPrefix;
+
+  /// The kind of story moment this is. Display + ranking only; not embedded.
+  final EventTypeEnum eventType;
+
+  /// Why it happened and what came of it — free text, may be empty. Sent in the
+  /// prompt under the event; not embedded or keyword-indexed.
+  @JsonKey(defaultValue: '')
+  final String cause;
+
+  @JsonKey(defaultValue: '')
+  final String effect;
 
   final List<String> messageIds;
 
