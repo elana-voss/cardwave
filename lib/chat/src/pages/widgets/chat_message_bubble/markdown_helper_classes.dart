@@ -18,7 +18,7 @@ class QuoteNode extends ElementNode {
   InlineSpan build() {
     return TextSpan(
       style: style,
-      children: children.map((e) => e.build()).toList(),
+      children: [for (final e in children) e.build()],
     );
   }
 }
@@ -60,7 +60,7 @@ class ActionNode extends ElementNode {
   InlineSpan build() {
     return TextSpan(
       style: style,
-      children: children.map((e) => e.build()).toList(),
+      children: [for (final e in children) e.build()],
     );
   }
 }

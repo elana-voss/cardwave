@@ -111,9 +111,8 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
           key: const Key('character-create-confirm'),
           onPressed: _isChecking ? null : _validateAndSubmit,
           child: _isChecking
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
+              ? const SizedBox.square(
+                  dimension: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Text('Create'),

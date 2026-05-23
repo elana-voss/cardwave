@@ -29,7 +29,7 @@ class SectionHeaderBand extends StatelessWidget {
       child: Padding(
         padding: trailing != null
             ? const EdgeInsets.fromLTRB(16, 6, 8, 6)
-            : const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
             Expanded(

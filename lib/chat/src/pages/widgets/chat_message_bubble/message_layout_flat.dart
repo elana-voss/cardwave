@@ -36,7 +36,7 @@ class MessageLayoutFlat extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         color: backgroundColor,
-        border: borderColor != null ? Border.all(color: borderColor) : null,
+        border: borderColor != null ? Border.fromBorderSide(BorderSide(color: borderColor)) : null,
         boxShadow: theme.shadowColor != 0 && theme.shadowWidth > 0
             ? [
                 BoxShadow(

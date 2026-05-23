@@ -91,7 +91,7 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
                   isSelected: [_favoritesOnly],
                   onPressed: (_) =>
                       setState(() => _favoritesOnly = !_favoritesOnly),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
                   constraints: const BoxConstraints(
                     minHeight: 40,
                     minWidth: 48,
@@ -176,11 +176,10 @@ class _CharacterRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final description = character.card.description;
     return ListTile(
-      leading: SizedBox(
-        width: 40,
-        height: 40,
+      leading: SizedBox.square(
+        dimension: 40,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           child: ImageThumbnail(file: character, width: 40),
         ),
       ),

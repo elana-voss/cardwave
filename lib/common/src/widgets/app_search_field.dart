@@ -31,7 +31,7 @@ class AppSearchField extends StatelessWidget {
               vertical: 6,
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             prefixIcon: const Icon(Icons.search, size: 18),
             prefixIconConstraints: const BoxConstraints(
@@ -52,7 +52,7 @@ class AppSearchField extends StatelessWidget {
                       minHeight: 32,
                     ),
                   )
-                : const SizedBox(width: 32, height: 32),
+                : const SizedBox.square(dimension: 32),
           ),
         );
       },

@@ -86,7 +86,7 @@ class _SettingsTabPersonasState extends State<SettingsTabPersonas> {
                     vertical: 6,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: RadioListTile<String>(
                     title: Text(

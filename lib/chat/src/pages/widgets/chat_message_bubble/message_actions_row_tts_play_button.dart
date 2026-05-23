@@ -56,9 +56,8 @@ class _TtsPlayButton extends StatelessWidget {
       disabledColor: metaStyle.color?.withValues(alpha: 0.3),
       tooltip: isThisPlaying ? 'Stop' : 'Read aloud',
       icon: showSpinner
-          ? const SizedBox(
-              width: 16,
-              height: 16,
+          ? const SizedBox.square(
+              dimension: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : Icon(isThisPlaying ? Icons.stop : Icons.play_arrow),

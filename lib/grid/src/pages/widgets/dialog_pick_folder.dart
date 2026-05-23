@@ -155,10 +155,10 @@ class _FolderRow extends StatelessWidget {
       color: isSelected
           ? theme.colorScheme.primaryContainer
           : Colors.transparent,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.all(Radius.circular(6)),
       child: InkWell(
         onTap: isDisabled ? null : onTap,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.all(Radius.circular(6)),
         child: SizedBox(
           height: _rowHeight,
           child: Padding(
@@ -230,7 +230,7 @@ class _CountBadge extends StatelessWidget {
             : (isDisabled
                   ? theme.colorScheme.surfaceContainerLow
                   : theme.colorScheme.surfaceContainerHigh),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Text(
         '$count',

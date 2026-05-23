@@ -31,7 +31,7 @@ class DiffPanel extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           child: SelectionArea(child: Text.rich(TextSpan(children: spans))),
         ),

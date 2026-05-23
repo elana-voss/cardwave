@@ -33,9 +33,8 @@ class _ButtonTestTtsState extends State<ButtonTestTts> {
     }
     return IconButton(
       icon: _isPlaying
-          ? const SizedBox(
-              width: 16,
-              height: 16,
+          ? const SizedBox.square(
+              dimension: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : const Icon(Icons.play_arrow, size: 20),

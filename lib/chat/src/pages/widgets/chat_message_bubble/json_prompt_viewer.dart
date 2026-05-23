@@ -47,7 +47,7 @@ class JsonPromptViewer extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Text.rich(
         TextSpan(children: spans),

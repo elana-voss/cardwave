@@ -118,22 +118,23 @@ class _DialogFormBody extends StatelessWidget {
                 ),
               if (selectedModel != null)
                 Card(
-                  margin: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  margin: const EdgeInsets.symmetric(vertical: 16),
                   child: TileModel(model: selectedModel!),
                 ),
               Wrap(
                 spacing: 24,
-                children: activeParameters.map((param) {
-                  return SizedBox(
-                    width: itemWidth,
-                    child: DialogPresetConfigParameterInputWidget(
-                      key: ValueKey(param.id),
-                      parameter: param,
-                      controller: parameterControllers[param.id]!,
-                      isMobile: isMobile,
+                children: [
+                  for (final param in activeParameters)
+                    SizedBox(
+                      width: itemWidth,
+                      child: DialogPresetConfigParameterInputWidget(
+                        key: ValueKey(param.id),
+                        parameter: param,
+                        controller: parameterControllers[param.id]!,
+                        isMobile: isMobile,
+                      ),
                     ),
-                  );
-                }).toList(),
+                ],
               ),
             ],
           );

@@ -133,7 +133,7 @@ class _ChipWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

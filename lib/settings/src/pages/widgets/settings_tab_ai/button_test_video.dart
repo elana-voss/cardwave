@@ -46,9 +46,8 @@ class _ButtonTestVideoState extends State<ButtonTestVideo> {
     }
     return IconButton(
       icon: _isRunning
-          ? const SizedBox(
-              width: 16,
-              height: 16,
+          ? const SizedBox.square(
+              dimension: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : const Icon(Icons.movie, size: 20),

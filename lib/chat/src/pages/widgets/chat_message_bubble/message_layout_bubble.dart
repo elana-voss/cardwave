@@ -38,7 +38,7 @@ class MessageLayoutBubble extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: bubbleColor,
-        border: borderColor != null ? Border.all(color: borderColor) : null,
+        border: borderColor != null ? Border.fromBorderSide(BorderSide(color: borderColor)) : null,
         boxShadow: theme.shadowColor != 0 && theme.shadowWidth > 0
             ? [
                 BoxShadow(
@@ -48,7 +48,7 @@ class MessageLayoutBubble extends StatelessWidget {
                 ),
               ]
             : null,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class MessageLayoutBubble extends StatelessWidget {
 
     if (theme.blurTintColor != 0 && theme.blurStrength > 0) {
       bubble = ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: theme.blurStrength,

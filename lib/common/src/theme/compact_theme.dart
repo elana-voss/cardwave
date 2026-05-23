@@ -14,7 +14,7 @@ const TextTheme _compactTextTheme = TextTheme(
 );
 
 InputDecorationTheme _buildInputDecorationTheme(ColorScheme scheme) {
-  final radius = BorderRadius.circular(8);
+  final radius = BorderRadius.all(Radius.circular(8));
   return InputDecorationTheme(
     filled: true,
     isDense: true,
@@ -46,7 +46,7 @@ InputDecorationTheme _buildInputDecorationTheme(ColorScheme scheme) {
     ),
     floatingLabelBehavior: FloatingLabelBehavior.always,
     hintStyle: const TextStyle(color: Colors.grey),
-    contentPadding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
   );
 }
 

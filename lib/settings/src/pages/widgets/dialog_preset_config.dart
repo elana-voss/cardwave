@@ -126,9 +126,8 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
                       ? _onTest
                       : null,
                   icon: controller.isTesting
-                      ? const SizedBox(
-                          width: 12,
-                          height: 12,
+                      ? const SizedBox.square(
+                          dimension: 12,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.chat_bubble_outline, size: 18),

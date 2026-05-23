@@ -432,7 +432,7 @@ class CharacterService extends ChangeNotifier {
   /// whole batch.
   Future<void> applyExternalCardEdits(
     CharacterFile file,
-    void Function() mutate,
+    VoidCallback mutate,
   ) async {
     mutate();
     await saveJsonInCacheNow(file);

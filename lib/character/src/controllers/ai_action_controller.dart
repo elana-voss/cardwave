@@ -2,6 +2,7 @@ import 'package:cardwave/character/src/models/character_card_v3.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/services/character_ai_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:flutter/foundation.dart';
 
 class AiActionController {
   const AiActionController._();
@@ -72,7 +73,7 @@ class AiActionController {
     required String emptyMessage,
     required List<CharacterFile> targets,
     required Future<void> Function(CharacterFile) operation,
-    required void Function() onCancel,
+    required VoidCallback onCancel,
     String batchLogTag = 'Batch',
   }) async {
     final nav = NavigationService();

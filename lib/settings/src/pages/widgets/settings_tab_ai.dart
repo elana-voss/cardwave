@@ -138,7 +138,7 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
             // Wrap (not Row) so the labels don't have to truncate on narrow
             // phone widths — the second button drops to a new line instead.
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -249,9 +249,8 @@ class _RefreshMenuButton extends StatelessWidget {
         onPressed: () =>
             controller.isOpen ? controller.close() : controller.open(),
         icon: isRefreshing
-            ? const SizedBox(
-                width: 16,
-                height: 16,
+            ? const SizedBox.square(
+                dimension: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.refresh),

@@ -20,13 +20,14 @@ class TagWrap extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: tags.map((e) {
-        return FilterChip(
-          label: Text('${e.key} (${e.value})'),
-          selected: currentSelection.contains(e.key),
-          onSelected: (selected) => onToggle(e.key, selected),
-        );
-      }).toList(),
+      children: [
+        for (final e in tags)
+          FilterChip(
+            label: Text('${e.key} (${e.value})'),
+            selected: currentSelection.contains(e.key),
+            onSelected: (selected) => onToggle(e.key, selected),
+          ),
+      ],
     );
   }
 }

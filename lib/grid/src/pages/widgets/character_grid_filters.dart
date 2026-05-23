@@ -60,7 +60,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                       vertical: 8,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                   ),
                   items: CharacterSortOptionEnum.values.map((opt) {
@@ -285,7 +285,7 @@ class _CountPill extends StatelessWidget {
         color: canClear
             ? theme.colorScheme.primaryContainer
             : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -317,7 +317,7 @@ class _CountPill extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onClear,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
         child: pill,
       ),
     );

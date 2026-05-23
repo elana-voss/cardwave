@@ -105,7 +105,7 @@ class _AllChatsDrawerListState extends State<AllChatsDrawerList> {
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           child: ChatListItem(
             chat: entry,

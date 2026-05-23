@@ -128,15 +128,16 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
               scrollDirection: Axis.horizontal,
               child: Wrap(
                 spacing: 8,
-                children: _currentSelection.map((item) {
-                  return InputChip(
-                    label: Text(item),
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    side: BorderSide.none,
-                    onPressed: () => _toggleSelection(item, false),
-                    onDeleted: () => _toggleSelection(item, false),
-                  );
-                }).toList(),
+                children: [
+                  for (final item in _currentSelection)
+                    InputChip(
+                      label: Text(item),
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      side: BorderSide.none,
+                      onPressed: () => _toggleSelection(item, false),
+                      onDeleted: () => _toggleSelection(item, false),
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 12),
@@ -206,7 +207,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
                       alignment: Alignment.center,
                       child: Text(

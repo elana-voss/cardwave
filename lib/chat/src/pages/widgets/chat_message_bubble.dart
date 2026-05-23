@@ -190,7 +190,7 @@ class ChatMessageBubble extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => ImageFullScreenViewer.show(context, path),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 512),
                         child: ImageCharacter(
@@ -403,7 +403,7 @@ class _ReasoningRevealState extends State<_ReasoningReveal> {
       children: [
         InkWell(
           onTap: () => setState(() => _expanded = !_expanded),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.all(Radius.circular(4)),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Row(
@@ -472,9 +472,8 @@ class _BubbleWaitingIndicator extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          SizedBox(
-            width: 16,
-            height: 16,
+          SizedBox.square(
+            dimension: 16,
             child: CircularProgressIndicator(
               strokeWidth: 2,
               valueColor: AlwaysStoppedAnimation(metaStyle.color),

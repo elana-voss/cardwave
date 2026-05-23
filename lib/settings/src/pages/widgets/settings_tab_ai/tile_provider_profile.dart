@@ -84,7 +84,7 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
         const Divider(height: 1, thickness: 0.5),
         if (presets.isEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
               'No Models configured for this provider.',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),

@@ -61,9 +61,10 @@ class GroupCharacterPanel extends StatelessWidget {
                 )
               : ListView(
                   // padding: const EdgeInsets.symmetric(horizontal: 12),
-                  children: characters
-                      .map((e) => GroupCharacterTile(character: e))
-                      .toList(),
+                  children: [
+                    for (final e in characters)
+                      GroupCharacterTile(character: e),
+                  ],
                 ),
         ),
       ],

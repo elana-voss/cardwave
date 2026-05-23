@@ -123,7 +123,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                           _filterController.togglePrioritizeRecent();
                         }
                       },
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       constraints: const BoxConstraints(
                         minHeight: 40,
                         minWidth: 48,
@@ -194,7 +194,7 @@ class _CharacterSwitcherItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         child: Text(
           'ORIGINAL',
@@ -210,7 +210,7 @@ class _CharacterSwitcherItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         child: Text(
           'VARIANT',
@@ -224,11 +224,10 @@ class _CharacterSwitcherItem extends StatelessWidget {
     }
 
     return ListTile(
-      leading: SizedBox(
-        width: 40,
-        height: 40,
+      leading: SizedBox.square(
+        dimension: 40,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           child: ImageThumbnail(file: characterFile, width: 40),
         ),
       ),

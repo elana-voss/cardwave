@@ -24,7 +24,7 @@ class GroupCharacterTile extends StatelessWidget {
       elevation: 0,
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
       clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
         backgroundColor: highlight,
@@ -53,7 +53,7 @@ class GroupCharacterTile extends StatelessWidget {
             title: LinearProgressIndicator(
               value: talkativeness,
               minHeight: 4,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.all(Radius.circular(2)),
               backgroundColor: scheme.surfaceContainerHighest,
               color: isMuted
                   ? scheme.onSurface.withValues(alpha: 0.2)

@@ -109,16 +109,15 @@ class _VideoPlayerInlineState extends State<VideoPlayerInline> {
       return const Padding(
         padding: EdgeInsets.all(8),
         child: Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
+          child: SizedBox.square(
+            dimension: 24,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
         ),
       );
     }
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
       child: AspectRatio(
         aspectRatio: _aspectRatio(player),
         child: Video(

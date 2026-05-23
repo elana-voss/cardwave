@@ -359,9 +359,8 @@ class _ProviderStatusLine extends StatelessWidget {
       return const Row(
         spacing: 8,
         children: [
-          SizedBox(
-            width: 14,
-            height: 14,
+          SizedBox.square(
+            dimension: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           Text('Connecting…', style: TextStyle(fontSize: 12)),
