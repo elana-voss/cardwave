@@ -16,7 +16,7 @@ AI character cards editor + chat. Author SillyTavern-compatible cards, chat with
 ## Install
 
 - **Windows / Android**: [latest release](https://github.com/elana-voss/cardwave/releases/latest)
-- **Web**: https://elana-voss.github.io/cardwave/app/
+- **Web**: https://cardwave.cc/app/
 
 ## Quick start
 

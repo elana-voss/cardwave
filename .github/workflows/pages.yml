@@ -63,7 +63,7 @@ jobs:
 
       - name: Build web (wasm)
         if: steps.cache-web.outputs.cache-hit != 'true'
-        run: flutter build web --wasm --base-href=/cardwave/app/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
+        run: flutter build web --wasm --base-href=/app/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
 
       - name: Compose site (landing + app)
         run: |
