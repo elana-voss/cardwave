@@ -1,11 +1,7 @@
-# Include qcheck's `recommended` (180 rules), `provider` (8 rules), and
-# `flutter-extras` (8 rules) presets. qcheck's config loader and the Dart
-# analyzer (3.10+) both accept `include:` as a YAML sequence; lists merge
-# with deduplication.
 include:
   - ../../qcheck/app/lib/recommended.yaml
   - ../../qcheck/app/lib/provider.yaml
-  - ../../qcheck/app/lib/flutter-extras.yaml
+  - ../../qcheck/app/lib/flutter.yaml
 
 analyzer:
   exclude:
