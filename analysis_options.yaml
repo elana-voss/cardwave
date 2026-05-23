@@ -3,9 +3,9 @@
 # analyzer (3.10+) both accept `include:` as a YAML sequence; lists merge
 # with deduplication.
 include:
-  - ../../qcheck/packages/qcheck/lib/recommended.yaml
-  - ../../qcheck/packages/qcheck/lib/provider.yaml
-  - ../../qcheck/packages/qcheck/lib/flutter-extras.yaml
+  - ../../qcheck/app/lib/recommended.yaml
+  - ../../qcheck/app/lib/provider.yaml
+  - ../../qcheck/app/lib/flutter-extras.yaml
 
 analyzer:
   exclude:
@@ -32,7 +32,7 @@ linter:
 # qcheck lives at `..\..\qcheck` (sibling of `own_card_editor/`), not inside this repo.
 plugins:
   qcheck:
-    path: ../../qcheck/packages/qcheck
+    path: ../../qcheck/app
 
 qcheck:
   exclude:
