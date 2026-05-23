@@ -139,11 +139,11 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
             horizontal: 12,
             vertical: 8,
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
         ),
         checkboxTheme: theme.checkboxTheme.copyWith(
           visualDensity: VisualDensity.compact,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4))),
         ),
         chipTheme: theme.chipTheme.copyWith(showCheckmark: false),
       ),

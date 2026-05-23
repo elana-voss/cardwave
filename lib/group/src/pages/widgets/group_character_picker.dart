@@ -91,7 +91,7 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
                   isSelected: [_favoritesOnly],
                   onPressed: (_) =>
                       setState(() => _favoritesOnly = !_favoritesOnly),
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
                   constraints: const BoxConstraints(
                     minHeight: 40,
                     minWidth: 48,
@@ -179,7 +179,7 @@ class _CharacterRow extends StatelessWidget {
       leading: SizedBox.square(
         dimension: 40,
         child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
           child: ImageThumbnail(file: character, width: 40),
         ),
       ),

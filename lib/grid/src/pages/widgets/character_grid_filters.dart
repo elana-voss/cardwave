@@ -53,7 +53,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                 child: DropdownButtonFormField<CharacterSortOptionEnum>(
                   initialValue: controller.sortOption,
                   iconSize: 20,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -285,7 +285,7 @@ class _CountPill extends StatelessWidget {
         color: canClear
             ? theme.colorScheme.primaryContainer
             : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -317,7 +317,7 @@ class _CountPill extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onClear,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: pill,
       ),
     );

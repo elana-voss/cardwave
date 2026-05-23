@@ -104,7 +104,7 @@ class _AllChatsDrawerListState extends State<AllChatsDrawerList> {
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           clipBehavior: Clip.antiAlias,
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           child: ChatListItem(

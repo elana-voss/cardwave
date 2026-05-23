@@ -100,7 +100,7 @@ class _RecentOverlay extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.tertiaryContainer,
-          borderRadius: BorderRadius.all(Radius.circular(_badgeBorderRadius)),
+          borderRadius: const BorderRadius.all(Radius.circular(_badgeBorderRadius)),
         ),
         child: Text(
           'RECENT',
@@ -134,7 +134,7 @@ class _VariantOverlay extends StatelessWidget {
           color: isOriginal
               ? Theme.of(context).colorScheme.secondaryContainer
               : Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.all(Radius.circular(_badgeBorderRadius)),
+          borderRadius: const BorderRadius.all(Radius.circular(_badgeBorderRadius)),
         ),
         child: Text(
           isOriginal ? 'ORIGINAL' : 'VARIANT',

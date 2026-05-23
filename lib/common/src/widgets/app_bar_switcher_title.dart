@@ -20,7 +20,7 @@ class AppBarSwitcherTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.all(Radius.circular(8)),
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(

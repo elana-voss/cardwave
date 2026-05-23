@@ -48,7 +48,7 @@ class MessageLayoutBubble extends StatelessWidget {
                 ),
               ]
             : null,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class MessageLayoutBubble extends StatelessWidget {
 
     if (theme.blurTintColor != 0 && theme.blurStrength > 0) {
       bubble = ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: theme.blurStrength,

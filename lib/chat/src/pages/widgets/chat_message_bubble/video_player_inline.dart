@@ -117,7 +117,7 @@ class _VideoPlayerInlineState extends State<VideoPlayerInline> {
       );
     }
     return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
       child: AspectRatio(
         aspectRatio: _aspectRatio(player),
         child: Video(

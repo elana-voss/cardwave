@@ -61,7 +61,7 @@ class MessageMarkdownRenderer extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: surfaceColor,
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
               ),
               child: Text(
                 code,

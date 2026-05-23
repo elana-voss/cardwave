@@ -208,7 +208,7 @@ class _MenuGroupCard extends StatelessWidget {
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
       child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
   }

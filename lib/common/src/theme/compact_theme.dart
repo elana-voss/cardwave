@@ -14,7 +14,7 @@ const TextTheme _compactTextTheme = TextTheme(
 );
 
 InputDecorationTheme _buildInputDecorationTheme(ColorScheme scheme) {
-  final radius = BorderRadius.all(Radius.circular(8));
+  final radius = const BorderRadius.all(Radius.circular(8));
   return InputDecorationTheme(
     filled: true,
     isDense: true,

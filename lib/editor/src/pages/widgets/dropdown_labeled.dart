@@ -37,9 +37,9 @@ class DropdownLabeled<T> extends StatelessWidget {
               horizontal: 12,
               vertical: 16,
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.outlineVariant,
               ),

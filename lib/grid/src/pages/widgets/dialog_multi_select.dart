@@ -207,7 +207,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
                       ),
                       alignment: Alignment.center,
                       child: Text(

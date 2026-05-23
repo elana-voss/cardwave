@@ -30,7 +30,7 @@ class AppSearchField extends StatelessWidget {
               horizontal: 12,
               vertical: 6,
             ),
-            border: OutlineInputBorder(
+            border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             prefixIcon: const Icon(Icons.search, size: 18),
