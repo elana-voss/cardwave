@@ -126,9 +126,10 @@ class CharacterAiService extends ChangeNotifier {
                 const Duration(seconds: AppConstants.fallbackLlmTimeoutSeconds),
               );
           return result.trim();
-        } on Exception catch (e) {
-          if (taskState.isCancelled || e is AiCancelledException) {
-            throw const AiCancelledException();
+        } on Exception catch (e, st) {
+          if (e is AiCancelledException) rethrow;
+          if (taskState.isCancelled) {
+            Error.throwWithStackTrace(const AiCancelledException(), st);
           }
           if (attempt >= maxRetries) rethrow;
           attempt++;

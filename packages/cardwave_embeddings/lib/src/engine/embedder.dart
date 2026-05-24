@@ -54,11 +54,14 @@ class Embedder {
       final modelSource = kIsWeb ? _webModelUrl() : await _extractAsset();
       engine = LlamaEngine(LlamaBackend());
       await engine.loadModel(modelSource, modelParams: _modelParams());
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
       _initFuture = null;
-      throw EmbeddingsException(
-        'Failed to initialize on-device embedder.',
-        cause: e,
+      Error.throwWithStackTrace(
+        EmbeddingsException(
+          'Failed to initialize on-device embedder.',
+          cause: e,
+        ),
+        st,
       );
     }
     // dispose() nulls _initFuture; if it ran while we were loading, drop
@@ -117,8 +120,11 @@ class Embedder {
       final prefixed = texts.map((t) => '$prefix$t').toList();
       final response = await _runSerialized(() => engine.embedBatch(prefixed));
       return response.map(Float32List.fromList).toList();
-    } on Exception catch (e) {
-      throw EmbeddingsException('Embedding generation failed.', cause: e);
+    } on Exception catch (e, st) {
+      Error.throwWithStackTrace(
+        EmbeddingsException('Embedding generation failed.', cause: e),
+        st,
+      );
     }
   }
 

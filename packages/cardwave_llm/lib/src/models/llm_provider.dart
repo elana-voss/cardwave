@@ -93,7 +93,7 @@ sealed class LlmProvider {
       response = await client
           .get(Uri.parse(url), headers: headers)
           .timeout(const Duration(seconds: 30));
-    } catch (e) {
+    } catch (e, st) {
       modelsLogger.severe(
         LlmStructuredEvent(
           category: LlmEventCategoryEnum.models,
@@ -102,11 +102,14 @@ sealed class LlmProvider {
           providerEnumName: enumValue.name,
         ),
       );
-      throw LlmFetchException(
-        provider: enumValue,
-        providerLabel: label,
-        message: 'Transport error: $e',
-        cause: e,
+      Error.throwWithStackTrace(
+        LlmFetchException(
+          provider: enumValue,
+          providerLabel: label,
+          message: 'Transport error: $e',
+          cause: e,
+        ),
+        st,
       );
     }
     final status = response.statusCode;

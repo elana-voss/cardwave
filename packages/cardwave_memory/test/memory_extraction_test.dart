@@ -98,12 +98,12 @@ Map<String, dynamic> _factJson({
   required List<String> subjects,
   required String text,
   required List<int> numbers,
-  String? supersedes,
+  String supersedes = '',
 }) => <String, dynamic>{
   'subjects': subjects,
   'text': text,
   'message_numbers': numbers,
-  'supersedes': supersedes,
+  if (supersedes.isNotEmpty) 'supersedes': supersedes,
 };
 
 Map<String, dynamic> _threadJson({

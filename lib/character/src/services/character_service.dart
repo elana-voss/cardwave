@@ -685,9 +685,12 @@ class CharacterService extends ChangeNotifier {
   Future<void> exportAsPng(CharacterFile characterFile) async {
     try {
       await UtilsPng.exportAsPng(characterFile);
-    } on PlatformException {
-      throw const CharacterExportException(
-        'Failed to export PNG (platform error).',
+    } on PlatformException catch (_, st) {
+      Error.throwWithStackTrace(
+        const CharacterExportException(
+          'Failed to export PNG (platform error).',
+        ),
+        st,
       );
     }
   }
@@ -700,9 +703,12 @@ class CharacterService extends ChangeNotifier {
   }) async {
     try {
       await UtilsPng.exportAsJson(characterFile, asV2: asV2);
-    } on PlatformException {
-      throw const CharacterExportException(
-        'Failed to export JSON (platform error).',
+    } on PlatformException catch (_, st) {
+      Error.throwWithStackTrace(
+        const CharacterExportException(
+          'Failed to export JSON (platform error).',
+        ),
+        st,
       );
     }
   }

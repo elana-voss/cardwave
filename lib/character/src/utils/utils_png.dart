@@ -69,8 +69,8 @@ class UtilsPng {
           return CharacterCardV3.fromJson(envelope.data);
         }
         return CharacterCardV2.fromJson(decodedData).toV3();
-      } on CheckedFromJsonException catch (e) {
-        throw PngParseException(e, decodedData);
+      } on CheckedFromJsonException catch (e, st) {
+        Error.throwWithStackTrace(PngParseException(e, decodedData), st);
       }
     }
 

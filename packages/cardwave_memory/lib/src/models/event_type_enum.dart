@@ -33,8 +33,9 @@ enum EventTypeEnum {
       name.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}');
 
   /// Maps a model-returned wire string back to a type, falling back to [other]
-  /// for anything unrecognised or missing.
-  static EventTypeEnum fromWireName(String? wire) =>
+  /// for anything unrecognised (including the empty string callers use for
+  /// a missing field).
+  static EventTypeEnum fromWireName(String wire) =>
       values.firstWhere((e) => e.wireName == wire, orElse: () => other);
 
   /// One-line definition shown to the extraction model.

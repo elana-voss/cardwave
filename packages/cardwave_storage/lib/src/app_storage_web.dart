@@ -59,7 +59,7 @@ class AppStorageWeb extends AppStorage {
     try {
       return await op();
     } on FileSystemException catch (e, st) {
-      throw StorageException(e.message, cause: e, causeStackTrace: st);
+      Error.throwWithStackTrace(StorageException(e.message, cause: e), st);
     }
   }
 
