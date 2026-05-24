@@ -68,6 +68,8 @@ class EditorViewState extends State<EditorView> {
     );
   }
 
+  // Reached via GlobalKey<EditorViewState> from the parent route.
+  // ignore: qcheck/prefer_widget_private_members
   void applyCleaner(String Function(String) processor) {
     if (!mounted) return;
     widget.characterFile.card.transformAllStrings(processor);
@@ -76,6 +78,8 @@ class EditorViewState extends State<EditorView> {
     setState(() {});
   }
 
+  // Reached via GlobalKey<EditorViewState> from the parent route.
+  // ignore: qcheck/prefer_widget_private_members
   Future<void> runGlobalAiAction(AiActionEnum action) async {
     final newCard = await context
         .read<EditorPageController>()

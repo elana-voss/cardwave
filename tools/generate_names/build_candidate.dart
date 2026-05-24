@@ -232,6 +232,8 @@ void _upgradeIfSentinel(
   Set<SentinelField> existingSentinels,
   Set<SentinelField> incomingSentinels,
   SentinelField field,
+  // Pure-Dart CLI script; `dart:ui`'s VoidCallback is Flutter-only.
+  // ignore: qcheck/prefer_void_callback
   void Function() apply,
 ) {
   if (existingSentinels.contains(field) &&

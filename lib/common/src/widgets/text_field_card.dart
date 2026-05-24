@@ -110,7 +110,7 @@ class TextFieldCard extends StatefulWidget {
 }
 
 class TextFieldCardState extends State<TextFieldCard> {
-  static final FilteringTextInputFormatter onlyDigits =
+  static final FilteringTextInputFormatter _onlyDigits =
       FilteringTextInputFormatter.allow(RegExp('[0-9]'));
   Timer? _debounceTimer;
   FocusNode? _focusNode;
@@ -140,7 +140,7 @@ class TextFieldCardState extends State<TextFieldCard> {
   }
 
   void _onControllerTextChanged() {
-    updateTokenCount(widget.controller.text);
+    _updateTokenCount(widget.controller.text);
   }
 
   Future<void> _initTokenCount() async {
@@ -162,7 +162,7 @@ class TextFieldCardState extends State<TextFieldCard> {
     super.dispose();
   }
 
-  void updateTokenCount(String text) {
+  void _updateTokenCount(String text) {
     if (!widget.showTokenCount) return;
 
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
@@ -175,7 +175,7 @@ class TextFieldCardState extends State<TextFieldCard> {
     });
   }
 
-  void showExpandedEditor(BuildContext context) {
+  void _showExpandedEditor(BuildContext context) {
     unawaited(
       Navigator.of(context)
           .push(
@@ -203,7 +203,7 @@ class TextFieldCardState extends State<TextFieldCard> {
               }
             }
             if (widget.showTokenCount) {
-              updateTokenCount(widget.controller.text);
+              _updateTokenCount(widget.controller.text);
             }
             if (mounted) {
               // Rebuild after the (external) controller's text changed —
@@ -238,7 +238,7 @@ class TextFieldCardState extends State<TextFieldCard> {
       keyboardType: widget.keyboardType,
       enabled: widget.enabled,
       inputFormatters: widget.keyboardType == TextInputType.number
-          ? [onlyDigits]
+          ? [_onlyDigits]
           : [],
     );
 
@@ -280,7 +280,7 @@ class TextFieldCardState extends State<TextFieldCard> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.fullscreen, color: Colors.grey),
-                      onPressed: () => showExpandedEditor(context),
+                      onPressed: () => _showExpandedEditor(context),
                     ),
                     if (widget.trailing != null) widget.trailing!,
                   ],

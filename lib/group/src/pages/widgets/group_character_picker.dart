@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 class GroupCharacterPicker extends StatefulWidget {
   const GroupCharacterPicker({super.key});
 
+  // Public entry point — `Dialog.show(ctx)` is the dialog-opening convention.
+  // ignore: qcheck/prefer_widget_private_members
   static Future<void> show(BuildContext context) {
     final controller = context.read<GroupChatController>();
     return showDialog<void>(

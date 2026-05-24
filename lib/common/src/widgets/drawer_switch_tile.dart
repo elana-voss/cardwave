@@ -28,22 +28,18 @@ class DrawerSwitchTile extends StatelessWidget {
       leading: leading,
       title: title,
       subtitle: subtitle,
-      trailing: SizedBox(
+      trailing: Container(
         width: 160,
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Transform.scale(
-            scale: 0.7,
-            // Pivots the scale around the child's right edge so the painted
-            // Switch ends flush with the layout box's right edge — keeps the
-            // toggle in the same vertical line as adjacent text/icon trailings.
-            alignment: Alignment.centerRight,
-            child: Switch(
-              value: value,
-              onChanged: cb,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
+        alignment: Alignment.centerRight,
+        transform: Matrix4.diagonal3Values(0.7, 0.7, 1),
+        // Pivots the scale around the child's right edge so the painted
+        // Switch ends flush with the layout box's right edge — keeps the
+        // toggle in the same vertical line as adjacent text/icon trailings.
+        transformAlignment: Alignment.centerRight,
+        child: Switch(
+          value: value,
+          onChanged: cb,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       enabled: cb != null,

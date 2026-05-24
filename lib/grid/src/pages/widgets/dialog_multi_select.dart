@@ -190,41 +190,40 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: displayItems.map((entry) {
-              final isSelected = _currentSelection.contains(entry.key);
-              final count = entry.value;
-              final isDisabled = count == 0 && !isSelected;
-
-              return FilterChip(
-                showCheckmark: false,
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
-                  children: [
-                    Text(entry.key),
-                    Container(
-                      width: 34,
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '$count',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+            children: [
+              for (final entry in displayItems)
+                FilterChip(
+                  showCheckmark: false,
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 8,
+                    children: [
+                      Text(entry.key),
+                      Container(
+                        width: 34,
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${entry.value}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  selected: _currentSelection.contains(entry.key),
+                  onSelected:
+                      (entry.value == 0 &&
+                          !_currentSelection.contains(entry.key))
+                      ? null
+                      : (selected) => _toggleSelection(entry.key, selected),
                 ),
-                selected: isSelected,
-                onSelected: isDisabled
-                    ? null
-                    : (selected) => _toggleSelection(entry.key, selected),
-              );
-            }).toList(),
+            ],
           ),
           if (hasMore) ...[
             const SizedBox(height: 16),

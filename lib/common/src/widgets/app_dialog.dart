@@ -23,6 +23,7 @@ class AppDialog extends StatelessWidget {
   /// in the bottom action row on desktop. Tests use `find.byKey(AppDialog
   /// .dismissKey)` and `.last` to dismiss the topmost dialog when multiple
   /// AppDialogs are stacked.
+  // ignore: qcheck/prefer_widget_private_members
   static const dismissKey = Key('app-dialog-dismiss');
 
   @override

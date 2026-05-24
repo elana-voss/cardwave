@@ -13,6 +13,8 @@ class ImageFullScreenViewer extends StatelessWidget {
   const ImageFullScreenViewer({required this.imagePath, super.key});
   final String imagePath;
 
+  // Public entry point — `Viewer.show(ctx, path)` is the call-site convention.
+  // ignore: qcheck/prefer_widget_private_members
   static void show(BuildContext context, String imagePath) {
     unawaited(
       showDialog<void>(

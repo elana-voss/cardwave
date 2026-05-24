@@ -199,6 +199,8 @@ Future<void> _classifyAll({
   required String model,
   required HttpClient client,
   required _TokenTotals totals,
+  // Pure-Dart CLI script; `dart:ui`'s VoidCallback is Flutter-only.
+  // ignore: qcheck/prefer_void_callback
   required void Function() saveProgress,
 }) async {
   final startIndex = done.length;

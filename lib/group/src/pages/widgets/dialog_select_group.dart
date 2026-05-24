@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 class DialogSelectGroup extends StatefulWidget {
   const DialogSelectGroup({super.key});
 
+  // Public entry point — `Dialog.show(ctx)` is the dialog-opening convention.
+  // ignore: qcheck/prefer_widget_private_members
   static Future<GroupFile?> show(BuildContext context) {
     final groupFileService = context.read<GroupFileService>();
     return showDialog<GroupFile>(

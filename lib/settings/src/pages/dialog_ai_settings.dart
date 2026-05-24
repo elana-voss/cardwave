@@ -47,6 +47,8 @@ class DialogAiSettings extends StatelessWidget {
   final CharacterFile? character;
   final ChatPageController? chatPageController;
 
+  // Public entry point — `Dialog.show(ctx)` is the dialog-opening convention.
+  // ignore: qcheck/prefer_widget_private_members
   static Future<void> show(
     BuildContext context, {
     DialogAiSettingsTab initialTab = DialogAiSettingsTab.aiProviders,

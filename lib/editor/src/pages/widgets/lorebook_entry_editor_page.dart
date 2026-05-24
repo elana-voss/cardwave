@@ -249,20 +249,18 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Lorebook Entry'),
+        actionsPadding: const EdgeInsets.only(right: 16),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: FilterChip(
-              label: const Text('Advanced'),
-              selected: _isAdvancedMode,
-              onSelected: (value) {
-                setState(() {
-                  _isAdvancedMode = value;
-                });
-                widget.onAdvancedModeToggled(value);
-              },
-              visualDensity: VisualDensity.compact,
-            ),
+          FilterChip(
+            label: const Text('Advanced'),
+            selected: _isAdvancedMode,
+            onSelected: (value) {
+              setState(() {
+                _isAdvancedMode = value;
+              });
+              widget.onAdvancedModeToggled(value);
+            },
+            visualDensity: VisualDensity.compact,
           ),
         ],
       ),

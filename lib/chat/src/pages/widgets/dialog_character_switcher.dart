@@ -18,6 +18,8 @@ class DialogCharacterSwitcher extends StatefulWidget {
   });
   final CharacterFile currentCharacterFile;
 
+  // Public entry point — `Dialog.show(ctx)` is the dialog-opening convention.
+  // ignore: qcheck/prefer_widget_private_members
   static Future<CharacterFile?> show(
     BuildContext context, {
     required CharacterFile currentCharacterFile,
