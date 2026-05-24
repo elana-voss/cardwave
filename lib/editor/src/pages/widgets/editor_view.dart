@@ -216,7 +216,7 @@ class _PanelNavigationTabs extends StatelessWidget {
   final PanelEnum selected;
   final ValueChanged<PanelEnum> onSelectionChanged;
 
-  final List<PanelEnum> _panels = const [
+  static const List<PanelEnum> _panels = [
     PanelEnum.basic,
     PanelEnum.greetings,
     PanelEnum.prompts,

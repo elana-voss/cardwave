@@ -13,9 +13,9 @@ class DialogGroupOverrides extends StatefulWidget {
 }
 
 class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
-  late final TextEditingController _scenarioController;
-  late final TextEditingController _systemPromptController;
-  late final TextEditingController _mesExampleController;
+  TextEditingController? _scenarioController;
+  TextEditingController? _systemPromptController;
+  TextEditingController? _mesExampleController;
 
   @override
   void initState() {
@@ -34,17 +34,17 @@ class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
 
   @override
   void dispose() {
-    _scenarioController.dispose();
-    _systemPromptController.dispose();
-    _mesExampleController.dispose();
+    _scenarioController?.dispose();
+    _systemPromptController?.dispose();
+    _mesExampleController?.dispose();
     super.dispose();
   }
 
   void _save() {
     context.read<GroupChatController>().updateGroupData(
-      overrideScenario: _scenarioController.text,
-      overrideSystemPrompt: _systemPromptController.text,
-      overrideMesExample: _mesExampleController.text,
+      overrideScenario: _scenarioController!.text,
+      overrideSystemPrompt: _systemPromptController!.text,
+      overrideMesExample: _mesExampleController!.text,
     );
     Navigator.of(context).pop();
   }
@@ -73,19 +73,19 @@ class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
           _OverrideField(
             label: 'Scenario',
             hint: 'Shared setting for the group (e.g. "In a cafe in Paris")',
-            controller: _scenarioController,
+            controller: _scenarioController!,
           ),
           const SizedBox(height: 16),
           _OverrideField(
             label: 'Main Prompt',
             hint: 'System prompt applied during every turn',
-            controller: _systemPromptController,
+            controller: _systemPromptController!,
           ),
           const SizedBox(height: 16),
           _OverrideField(
             label: 'Example Dialogue',
             hint: 'Shared example messages for tone / formatting',
-            controller: _mesExampleController,
+            controller: _mesExampleController!,
           ),
         ],
       ),

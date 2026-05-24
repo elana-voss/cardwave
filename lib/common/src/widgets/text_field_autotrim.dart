@@ -109,9 +109,9 @@ class TextFieldAutotrim extends StatefulWidget {
 }
 
 class _TextFieldAutotrimState extends State<TextFieldAutotrim> {
-  // Not `late final`: `_setupFocusNode` reassigns it from `didUpdateWidget`
-  // when the parent swaps the passed-in `focusNode`.
-  late FocusNode _focusNode;
+  // Reassigned by `_setupFocusNode` from `didUpdateWidget` when the parent
+  // swaps the passed-in `focusNode`.
+  FocusNode? _focusNode;
   bool _isInternalFocusNode = false;
 
   @override
@@ -124,9 +124,9 @@ class _TextFieldAutotrimState extends State<TextFieldAutotrim> {
   void didUpdateWidget(TextFieldAutotrim oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.focusNode != oldWidget.focusNode) {
-      _focusNode.removeListener(_onFocusChange);
+      _focusNode?.removeListener(_onFocusChange);
       if (_isInternalFocusNode) {
-        _focusNode.dispose();
+        _focusNode?.dispose();
       }
       _setupFocusNode();
     }
@@ -140,11 +140,11 @@ class _TextFieldAutotrimState extends State<TextFieldAutotrim> {
       _focusNode = FocusNode();
       _isInternalFocusNode = true;
     }
-    _focusNode.addListener(_onFocusChange);
+    _focusNode!.addListener(_onFocusChange);
   }
 
   void _onFocusChange() {
-    if (!_focusNode.hasFocus && widget.autoTrim && widget.controller != null) {
+    if (!_focusNode!.hasFocus && widget.autoTrim && widget.controller != null) {
       final currentText = widget.controller!.text;
       final trimmed = currentText.trim();
       if (currentText != trimmed) {
@@ -155,9 +155,9 @@ class _TextFieldAutotrimState extends State<TextFieldAutotrim> {
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
+    _focusNode?.removeListener(_onFocusChange);
     if (_isInternalFocusNode) {
-      _focusNode.dispose();
+      _focusNode?.dispose();
     }
     super.dispose();
   }

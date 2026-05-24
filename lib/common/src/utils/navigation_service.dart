@@ -25,6 +25,9 @@ class NavigationService {
   NavigationService._internal();
   static final NavigationService _instance = NavigationService._internal();
 
+  // Wired to MaterialApp at lib/main.dart:611 (cross-file); the lint
+  // only sees usage as a `key:` arg inside this class.
+  // ignore: qcheck/always_pass_global_key
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// Internal helper to show a dialog using the global navigator key.

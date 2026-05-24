@@ -17,10 +17,10 @@ class EditorPrompts extends StatefulWidget {
 }
 
 class EditorPromptsState extends State<EditorPrompts> {
-  late final TextEditingController _systemPromptController;
-  late final TextEditingController _postHistoryInstructionsController;
-  late final TextEditingController _depthPromptController;
-  late final TextEditingController _depthController;
+  TextEditingController? _systemPromptController;
+  TextEditingController? _postHistoryInstructionsController;
+  TextEditingController? _depthPromptController;
+  TextEditingController? _depthController;
   late DepthPromptRoleEnum _depthRole;
 
   @override
@@ -29,17 +29,17 @@ class EditorPromptsState extends State<EditorPrompts> {
     _systemPromptController = TextEditingController(
       text: widget.characterFile.card.systemPrompt,
     );
-    _systemPromptController.onTextChanged(() {
-      widget.characterFile.card.systemPrompt = _systemPromptController.text;
+    _systemPromptController!.onTextChanged(() {
+      widget.characterFile.card.systemPrompt = _systemPromptController!.text;
       widget.onChanged();
     });
 
     _postHistoryInstructionsController = TextEditingController(
       text: widget.characterFile.card.postHistoryInstructions,
     );
-    _postHistoryInstructionsController.onTextChanged(() {
+    _postHistoryInstructionsController!.onTextChanged(() {
       widget.characterFile.card.postHistoryInstructions =
-          _postHistoryInstructionsController.text;
+          _postHistoryInstructionsController!.text;
       widget.onChanged();
     });
 
@@ -47,23 +47,23 @@ class EditorPromptsState extends State<EditorPrompts> {
     _depthPromptController = TextEditingController(
       text: initialDepthPrompt?.prompt ?? '',
     );
-    _depthPromptController.onTextChanged(_updateDepthPrompt);
+    _depthPromptController!.onTextChanged(_updateDepthPrompt);
 
     _depthController = TextEditingController(
       text: (initialDepthPrompt?.depth ?? 4).toString(),
     );
-    _depthController.onTextChanged(_updateDepthPrompt);
+    _depthController!.onTextChanged(_updateDepthPrompt);
 
     _depthRole = initialDepthPrompt?.role ?? DepthPromptRoleEnum.system;
   }
 
   void _updateDepthPrompt() {
-    final prompt = _depthPromptController.text;
+    final prompt = _depthPromptController!.text;
 
     if (prompt.isEmpty) {
       widget.characterFile.card.depthPrompt = null;
     } else {
-      final depth = int.tryParse(_depthController.text) ?? 4;
+      final depth = int.tryParse(_depthController!.text) ?? 4;
       final role = _depthRole;
       widget.characterFile.card.depthPrompt = DepthPrompt(
         prompt: prompt,
@@ -76,10 +76,10 @@ class EditorPromptsState extends State<EditorPrompts> {
 
   @override
   void dispose() {
-    _systemPromptController.dispose();
-    _postHistoryInstructionsController.dispose();
-    _depthPromptController.dispose();
-    _depthController.dispose();
+    _systemPromptController?.dispose();
+    _postHistoryInstructionsController?.dispose();
+    _depthPromptController?.dispose();
+    _depthController?.dispose();
     super.dispose();
   }
 
@@ -88,14 +88,14 @@ class EditorPromptsState extends State<EditorPrompts> {
     return Column(
       children: [
         TextFieldCard.multiLine(
-          controller: _systemPromptController,
+          controller: _systemPromptController!,
           label: 'System Prompt',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _systemPromptController.text,
+            currentText: () => _systemPromptController!.text,
             onApply: aiPopupApply(
               this,
-              _systemPromptController,
+              _systemPromptController!,
               'System Prompt',
             ),
             fieldName: 'System Prompt',
@@ -104,14 +104,14 @@ class EditorPromptsState extends State<EditorPrompts> {
         ),
         const SizedBox(height: 8),
         TextFieldCard.multiLine(
-          controller: _postHistoryInstructionsController,
+          controller: _postHistoryInstructionsController!,
           label: 'Post History Instructions',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _postHistoryInstructionsController.text,
+            currentText: () => _postHistoryInstructionsController!.text,
             onApply: aiPopupApply(
               this,
-              _postHistoryInstructionsController,
+              _postHistoryInstructionsController!,
               'Post History Instructions',
             ),
             fieldName: 'Post History Instructions',
@@ -120,12 +120,12 @@ class EditorPromptsState extends State<EditorPrompts> {
         ),
         const SizedBox(height: 16),
         TextFieldCard.multiLine(
-          controller: _depthPromptController,
+          controller: _depthPromptController!,
           label: 'Depth Prompt (Character Notes)',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _depthPromptController.text,
-            onApply: aiPopupApply(this, _depthPromptController, 'Depth Prompt'),
+            currentText: () => _depthPromptController!.text,
+            onApply: aiPopupApply(this, _depthPromptController!, 'Depth Prompt'),
             fieldName: 'Depth Prompt',
             contextCard: widget.characterFile.card,
           ),
@@ -136,7 +136,7 @@ class EditorPromptsState extends State<EditorPrompts> {
           children: [
             Expanded(
               child: TextFieldCard.singleLine(
-                controller: _depthController,
+                controller: _depthController!,
                 label: 'Insertion Depth',
                 keyboardType: TextInputType.number,
               ),

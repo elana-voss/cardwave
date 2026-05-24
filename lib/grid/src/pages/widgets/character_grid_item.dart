@@ -121,7 +121,7 @@ class _AiProcessingOverlayState extends State<_AiProcessingOverlay>
   final double _aiOverlayOpacityHighlight = 0.4;
   final double _aiOverlayBandSize = 0.2;
 
-  late final AnimationController _controller;
+  AnimationController? _controller;
   late final Animation<double> _animation;
 
   @override
@@ -131,17 +131,17 @@ class _AiProcessingOverlayState extends State<_AiProcessingOverlay>
       vsync: this,
       duration: Duration(milliseconds: _aiOverlayAnimationDurationMs),
     );
-    unawaited(_controller.repeat());
+    unawaited(_controller!.repeat());
 
     _animation = Tween<double>(
       begin: -_aiOverlayBandSize,
       end: 1.0 + _aiOverlayBandSize,
-    ).animate(_controller);
+    ).animate(_controller!);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 

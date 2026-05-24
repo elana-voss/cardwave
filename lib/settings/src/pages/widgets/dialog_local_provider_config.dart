@@ -33,8 +33,8 @@ class DialogLocalProviderConfig extends StatefulWidget {
 
 class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _apiKeyController;
-  late final TextEditingController _baseUrlController;
+  TextEditingController? _apiKeyController;
+  TextEditingController? _baseUrlController;
 
   bool _isFetching = false;
   String? _fetchError;
@@ -75,8 +75,8 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   @override
   void dispose() {
     _isDisposed = true;
-    _apiKeyController.dispose();
-    _baseUrlController.dispose();
+    _apiKeyController?.dispose();
+    _baseUrlController?.dispose();
     super.dispose();
   }
 
@@ -91,11 +91,11 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   }
 
   Future<void> _connectAndFetch() async {
-    final url = _normalizeUrl(_baseUrlController.text);
+    final url = _normalizeUrl(_baseUrlController!.text);
     if (url.isEmpty) return;
     // Push the normalized form back into the field so the user sees what
     // we'll persist.
-    _baseUrlController.text = url;
+    _baseUrlController!.text = url;
 
     setState(() {
       _isFetching = true;
@@ -106,7 +106,7 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
     try {
       final fetched = await context.read<LlmPureHelpers>().fetchModels(
         provider: LLMProviderEnum.localOpenAi,
-        apiKey: _apiKeyController.text,
+        apiKey: _apiKeyController!.text,
         baseUrl: url,
       );
       if (_isDisposed) return;
@@ -171,8 +171,8 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   void _saveAdd() {
     final profile = LlmProviderConfig(
       id: UtilsApp.generateId(LLMProviderEnum.localOpenAi.name),
-      apiKey: _apiKeyController.text,
-      baseUrl: _normalizeUrl(_baseUrlController.text),
+      apiKey: _apiKeyController!.text,
+      baseUrl: _normalizeUrl(_baseUrlController!.text),
       providerEnum: LLMProviderEnum.localOpenAi,
       models: [],
     );
@@ -185,8 +185,8 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   Future<void> _saveEdit() async {
     final updated = LlmProviderConfig(
       id: _profile.id,
-      apiKey: _apiKeyController.text,
-      baseUrl: _normalizeUrl(_baseUrlController.text),
+      apiKey: _apiKeyController!.text,
+      baseUrl: _normalizeUrl(_baseUrlController!.text),
       providerEnum: LLMProviderEnum.localOpenAi,
       // Pass the OLD adopted models in. If a refresh runs below, the
       // refresher reads .models for preset-preservation by id, then

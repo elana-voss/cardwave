@@ -22,7 +22,7 @@ class DialogTextInput extends StatefulWidget {
 }
 
 class _DialogTextInputState extends State<DialogTextInput> {
-  late final TextEditingController _controller;
+  TextEditingController? _controller;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _DialogTextInputState extends State<DialogTextInput> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -56,7 +56,7 @@ class _DialogTextInputState extends State<DialogTextInput> {
         ),
         FilledButton(
           key: const Key('dialog-save'),
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          onPressed: () => Navigator.pop(context, _controller!.text.trim()),
           child: Text(widget.confirmText),
         ),
       ],

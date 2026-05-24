@@ -12,8 +12,8 @@ class DialogPersona extends StatefulWidget {
 
 class _DialogPersonaState extends State<DialogPersona> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameController;
-  late final TextEditingController _descriptionController;
+  TextEditingController? _nameController;
+  TextEditingController? _descriptionController;
 
   @override
   void initState() {
@@ -26,8 +26,8 @@ class _DialogPersonaState extends State<DialogPersona> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
+    _nameController?.dispose();
+    _descriptionController?.dispose();
     super.dispose();
   }
 
@@ -35,8 +35,8 @@ class _DialogPersonaState extends State<DialogPersona> {
     if (_formKey.currentState?.validate() ?? false) {
       final newPersona = ChatPersona(
         id: widget.persona?.id,
-        name: _nameController.text,
-        description: _descriptionController.text,
+        name: _nameController!.text,
+        description: _descriptionController!.text,
       );
       Navigator.pop(context, newPersona);
     }

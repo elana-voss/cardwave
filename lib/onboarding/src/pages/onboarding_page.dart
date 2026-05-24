@@ -17,7 +17,7 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  late final OnboardingController _controller;
+  OnboardingController? _controller;
   final TextEditingController _apiKeyController = TextEditingController();
   final TextEditingController _personaNameController = TextEditingController();
 
@@ -29,30 +29,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
       pureHelpers: context.read<LlmPureHelpers>(),
       llmManagementService: context.read<LlmManagementService>(),
     );
-    _controller.init();
-    _personaNameController.text = _controller.personaName;
+    _controller!.init();
+    _personaNameController.text = _controller!.personaName;
   }
 
   @override
   void dispose() {
     _apiKeyController.dispose();
     _personaNameController.dispose();
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   void _onStepContinue() {
-    if (_controller.currentStep == _controller.storageStepIndex) {
-      _controller.nextStep();
+    if (_controller!.currentStep == _controller!.storageStepIndex) {
+      _controller!.nextStep();
       return;
     }
-    if (_controller.currentStep == _controller.setupStepIndex) {
+    if (_controller!.currentStep == _controller!.setupStepIndex) {
       unawaited(_finishOnboarding());
     }
   }
 
   void _onStepCancel() {
-    _controller.previousStep();
+    _controller!.previousStep();
   }
 
   void _snack(String message) {
@@ -61,7 +61,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   Future<void> _finishOnboarding() async {
     try {
-      await _controller.finishOnboarding();
+      await _controller!.finishOnboarding();
       if (mounted) {
         await Navigator.of(
           context,
@@ -87,13 +87,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
       body: FocusTraversalGroup(
         policy: WidgetOrderTraversalPolicy(),
         child: ListenableBuilder(
-          listenable: _controller,
+          listenable: _controller!,
           builder: (context, _) {
-            return _controller.hasMultipleSteps
+            return _controller!.hasMultipleSteps
                 ? _buildSteppedLayout()
                 : _OnboardingSinglePageLayout(
                     setupBody: _buildSetupBody(),
-                    canFinish: _controller.canFinish,
+                    canFinish: _controller!.canFinish,
                     onFinish: _onStepContinue,
                   );
           },
@@ -108,14 +108,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // ignore: qcheck/avoid_returning_widgets
   Widget _buildSteppedLayout() {
     return Stepper(
-      currentStep: _controller.currentStep,
+      currentStep: _controller!.currentStep,
       onStepContinue: _onStepContinue,
       onStepCancel: _onStepCancel,
       controlsBuilder: (context, details) => _OnboardingStepperControls(
         details: details,
-        currentStep: _controller.currentStep,
-        setupStepIndex: _controller.setupStepIndex,
-        canFinish: _controller.canFinish,
+        currentStep: _controller!.currentStep,
+        setupStepIndex: _controller!.setupStepIndex,
+        canFinish: _controller!.canFinish,
       ),
       steps: [_buildStorageStep(), _buildSetupStep()],
     );
@@ -129,18 +129,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
     const SizedBox(height: 24),
     _OnboardingPersonaSection(
       personaNameController: _personaNameController,
-      onChanged: _controller.updatePersonaName,
+      onChanged: _controller!.updatePersonaName,
     ),
     const SizedBox(height: 24),
     _OnboardingDisclaimerRow(
-      accepted: _controller.acceptedDisclaimer,
-      onChanged: _controller.updateAcceptedDisclaimer,
+      accepted: _controller!.acceptedDisclaimer,
+      onChanged: _controller!.updateAcceptedDisclaimer,
     ),
   ];
 
   Step _buildStorageStep() {
-    final storageIndex = _controller.storageStepIndex;
-    final current = _controller.currentStep;
+    final storageIndex = _controller!.storageStepIndex;
+    final current = _controller!.currentStep;
     return Step(
       title: const Text('Character Storage'),
       subtitle: const Text('Where should we save your character cards?'),
@@ -160,12 +160,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
               FilledButton.icon(
                 icon: const Icon(Icons.rocket_launch),
                 label: const Text('Start fresh'),
-                onPressed: _controller.selectDefaultPath,
+                onPressed: _controller!.selectDefaultPath,
               ),
               OutlinedButton.icon(
                 icon: const Icon(Icons.folder_open),
                 label: const Text('I already have cards'),
-                onPressed: _controller.pickDirectory,
+                onPressed: _controller!.pickDirectory,
               ),
             ],
           ),
@@ -176,8 +176,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
           const SizedBox(height: 16),
           _OnboardingStorageSelection(
-            selectedPath: _controller.selectedPath,
-            useDefaultPath: _controller.useDefaultPath,
+            selectedPath: _controller!.selectedPath,
+            useDefaultPath: _controller!.useDefaultPath,
           ),
         ],
       ),
@@ -185,10 +185,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Step _buildSetupStep() {
-    final setupIndex = _controller.setupStepIndex;
+    final setupIndex = _controller!.setupStepIndex;
     return Step(
       title: const Text('AI & Persona'),
-      isActive: _controller.currentStep >= setupIndex,
+      isActive: _controller!.currentStep >= setupIndex,
       state: StepState.editing,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,27 +220,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
             hintText: 'Paste your key (or skip for now)',
           ),
           obscureText: true,
-          onChanged: _controller.updateApiKey,
+          onChanged: _controller!.updateApiKey,
         ),
         const SizedBox(height: 8),
         _OnboardingAiStatus(
-          isFetchingModels: _controller.isFetchingModels,
-          fetchError: _controller.fetchError,
-          hasAiConnected: _controller.hasAiConnected,
-          selectedProvider: _controller.selectedProvider,
-          apiKey: _controller.apiKey,
+          isFetchingModels: _controller!.isFetchingModels,
+          fetchError: _controller!.fetchError,
+          hasAiConnected: _controller!.hasAiConnected,
+          selectedProvider: _controller!.selectedProvider,
+          apiKey: _controller!.apiKey,
         ),
         const SizedBox(height: 4),
         const Text(
           'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.',
           style: TextStyle(fontSize: 11, color: Colors.grey),
         ),
-        if (_controller.selectedProvider == LLMProviderEnum.openrouter)
+        if (_controller!.selectedProvider == LLMProviderEnum.openrouter)
           SwitchTileZdr(
-            value: _controller.requireZdr,
-            onChanged: _controller.isFetchingModels
+            value: _controller!.requireZdr,
+            onChanged: _controller!.isFetchingModels
                 ? null
-                : _controller.updateRequireZdr,
+                : _controller!.updateRequireZdr,
           ),
       ],
     );

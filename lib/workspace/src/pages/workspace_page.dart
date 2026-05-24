@@ -47,18 +47,22 @@ class WorkspacePage extends StatefulWidget {
 }
 
 class _WorkspacePageState extends State<WorkspacePage> {
+  // Passed to EditorView via the `editorKey:` prop at line 204 and used
+  // at lines 184/187 to call methods on EditorViewState. The lint only
+  // recognises the literal `key:` arg name.
+  // ignore: qcheck/always_pass_global_key
   final GlobalKey<EditorViewState> _editorKey = GlobalKey<EditorViewState>();
 
-  late final WorkspaceController _workspaceController;
-  late final ChatPageController _primaryChatController;
-  late final ChatPageController _assistantChatController;
-  late final EditorPageController _editorController;
+  WorkspaceController? _workspaceController;
+  ChatPageController? _primaryChatController;
+  ChatPageController? _assistantChatController;
+  EditorPageController? _editorController;
 
   @override
   void initState() {
     super.initState();
     _workspaceController = WorkspaceController(initialBase: widget.initialBase);
-    _workspaceController.addListener(_onWorkspaceModeChanged);
+    _workspaceController!.addListener(_onWorkspaceModeChanged);
 
     _primaryChatController = ChatPageController(
       characterFile: widget.characterFile,
@@ -88,11 +92,11 @@ class _WorkspacePageState extends State<WorkspacePage> {
 
   @override
   void dispose() {
-    _workspaceController.removeListener(_onWorkspaceModeChanged);
-    _workspaceController.dispose();
-    _primaryChatController.dispose();
-    _assistantChatController.dispose();
-    _editorController.dispose();
+    _workspaceController?.removeListener(_onWorkspaceModeChanged);
+    _workspaceController?.dispose();
+    _primaryChatController?.dispose();
+    _assistantChatController?.dispose();
+    _editorController?.dispose();
     super.dispose();
   }
 
@@ -117,9 +121,9 @@ class _WorkspacePageState extends State<WorkspacePage> {
           },
           child: MultiProvider(
             providers: [
-              ChangeNotifierProvider.value(value: _workspaceController),
-              ChangeNotifierProvider.value(value: _primaryChatController),
-              ChangeNotifierProvider.value(value: _editorController),
+              ChangeNotifierProvider.value(value: _workspaceController!),
+              ChangeNotifierProvider.value(value: _primaryChatController!),
+              ChangeNotifierProvider.value(value: _editorController!),
             ],
             child:
                 Consumer3<
@@ -138,11 +142,11 @@ class _WorkspacePageState extends State<WorkspacePage> {
                         final mode = workspace.effectiveMode(isWideScreen);
                         final visibleChatController =
                             mode == ChatPageModeEnum.splitEditorAssistant
-                            ? _assistantChatController
+                            ? _assistantChatController!
                             : primaryChatController;
                         final activeCharacterFile =
                             mode == ChatPageModeEnum.splitEditorAssistant
-                            ? _assistantChatController.characterFile
+                            ? _assistantChatController!.characterFile
                             : widget.characterFile;
 
                         final settingsService = context
@@ -204,7 +208,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
                               editorKey: _editorKey,
                             ),
                             assistantChat: _AssistantChat(
-                              assistantChatController: _assistantChatController,
+                              assistantChatController: _assistantChatController!,
                               editorController: editorController,
                             ),
                           ),

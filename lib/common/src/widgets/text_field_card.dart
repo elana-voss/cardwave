@@ -113,7 +113,7 @@ class TextFieldCardState extends State<TextFieldCard> {
   static final FilteringTextInputFormatter onlyDigits =
       FilteringTextInputFormatter.allow(RegExp('[0-9]'));
   Timer? _debounceTimer;
-  late final FocusNode _focusNode;
+  FocusNode? _focusNode;
   bool _isInternalFocusNode = false;
   final ValueNotifier<int> _tokenCount = ValueNotifier<int>(0);
 
@@ -122,7 +122,7 @@ class TextFieldCardState extends State<TextFieldCard> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _isInternalFocusNode = widget.focusNode == null;
-    _focusNode.addListener(_onFocusChange);
+    _focusNode!.addListener(_onFocusChange);
     if (widget.showTokenCount) {
       unawaited(_initTokenCount());
       widget.controller.addListener(_onControllerTextChanged);
@@ -130,7 +130,7 @@ class TextFieldCardState extends State<TextFieldCard> {
   }
 
   void _onFocusChange() {
-    if (!_focusNode.hasFocus && widget.autoTrim) {
+    if (!_focusNode!.hasFocus && widget.autoTrim) {
       final currentText = widget.controller.text;
       final trimmed = currentText.trim();
       if (currentText != trimmed) {
@@ -150,9 +150,9 @@ class TextFieldCardState extends State<TextFieldCard> {
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
+    _focusNode?.removeListener(_onFocusChange);
     if (_isInternalFocusNode) {
-      _focusNode.dispose();
+      _focusNode?.dispose();
     }
     if (widget.showTokenCount) {
       widget.controller.removeListener(_onControllerTextChanged);
@@ -297,7 +297,7 @@ class TextFieldCardState extends State<TextFieldCard> {
 
 class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
   Timer? _localDebounce;
-  late final ValueNotifier<int> _localTokenCount;
+  ValueNotifier<int>? _localTokenCount;
 
   @override
   void initState() {
@@ -312,7 +312,7 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
   Future<void> _initTokenCount() async {
     final count = await UtilsLlm.countTokens(widget.controller.text);
     if (!mounted) return;
-    _localTokenCount.value = count;
+    _localTokenCount!.value = count;
   }
 
   void _onControllerTextChanged() {
@@ -324,7 +324,7 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
         if (!widget.showTokenCount) return;
         final count = await UtilsLlm.countTokens(widget.controller.text);
         if (!mounted) return;
-        _localTokenCount.value = count;
+        _localTokenCount!.value = count;
       }());
     });
   }
@@ -332,7 +332,7 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
   @override
   void dispose() {
     _localDebounce?.cancel();
-    _localTokenCount.dispose();
+    _localTokenCount?.dispose();
     if (widget.showTokenCount) {
       widget.controller.removeListener(_onControllerTextChanged);
     }
@@ -362,7 +362,7 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Center(
                     child: ValueListenableBuilder<int>(
-                      valueListenable: _localTokenCount,
+                      valueListenable: _localTokenCount!,
                       builder: (context, count, child) {
                         return Text(
                           '$count t',

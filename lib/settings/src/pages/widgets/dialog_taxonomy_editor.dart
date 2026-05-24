@@ -50,8 +50,8 @@ class DialogTaxonomyEditor extends StatefulWidget {
 }
 
 class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
-  late final TaxonomyEditorController _controller;
-  late final TreeController<_TaxonomyNode> _treeController;
+  TaxonomyEditorController? _controller;
+  TreeController<_TaxonomyNode>? _treeController;
 
   @override
   void initState() {
@@ -67,19 +67,19 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
 
   @override
   void dispose() {
-    _treeController.dispose();
-    _controller.dispose();
+    _treeController?.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   List<_TaxonomyNode> _buildRoots() =>
-      _controller.getRootGroups().map(_GroupNode.new).toList();
+      _controller!.getRootGroups().map(_GroupNode.new).toList();
 
   Iterable<_TaxonomyNode> _childrenOf(_TaxonomyNode node) {
     return switch (node) {
       _GroupNode(:final group) => [
-        ..._controller.getChildGroups(group.groupId).map(_GroupNode.new),
-        ..._controller.getTagsInGroup(group.groupId).map(_TagNode.new),
+        ..._controller!.getChildGroups(group.groupId).map(_GroupNode.new),
+        ..._controller!.getTagsInGroup(group.groupId).map(_TagNode.new),
       ],
       _TagNode() => const [],
     };
@@ -90,8 +90,8 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
   /// header) rebuilds too.
   void _refreshTree() {
     setState(() {
-      _treeController.roots = _buildRoots();
-      _treeController.rebuild();
+      _treeController!.roots = _buildRoots();
+      _treeController!.rebuild();
     });
   }
 
@@ -107,16 +107,16 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
 
     switch ((dragged, target)) {
       case (_TagNode(:final tag), _GroupNode(:final group)):
-        final error = await _controller.moveTag(tag.tagId, group.groupId);
+        final error = await _controller!.moveTag(tag.tagId, group.groupId);
         if (error != null) {
           _toast(error);
           return;
         }
-        _treeController.expand(target);
+        _treeController!.expand(target);
         _refreshTree();
       case (_GroupNode(:final group), _GroupNode(group: final destGroup)):
         if (group.groupId == destGroup.groupId) return;
-        final error = await _controller.moveGroup(
+        final error = await _controller!.moveGroup(
           group.groupId,
           destGroup.groupId,
         );
@@ -124,7 +124,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
           _toast(error);
           return;
         }
-        _treeController.expand(target);
+        _treeController!.expand(target);
         _refreshTree();
       default:
         return;
@@ -141,7 +141,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       builder: (_) => const _GroupFormDialog(initial: null),
     );
     if (result == null || !mounted) return;
-    final error = await _controller.addGroup(
+    final error = await _controller!.addGroup(
       groupId: result.groupId,
       name: result.name,
       groupExplain: result.groupExplain,
@@ -152,8 +152,8 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       return;
     }
     if (parentGroupId != null) {
-      final parent = _controller.getGroup(parentGroupId);
-      if (parent != null) _treeController.expand(_GroupNode(parent));
+      final parent = _controller!.getGroup(parentGroupId);
+      if (parent != null) _treeController!.expand(_GroupNode(parent));
     }
     _refreshTree();
   }
@@ -164,7 +164,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       builder: (_) => _GroupFormDialog(initial: group),
     );
     if (result == null || !mounted) return;
-    final error = await _controller.updateGroup(
+    final error = await _controller!.updateGroup(
       oldGroupId: group.groupId,
       newGroupId: result.groupId,
       name: result.name,
@@ -179,8 +179,8 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
 
   Future<void> _confirmDeleteGroup(TaxonomyGroup group) async {
     final descendantCount =
-        _controller.getChildGroups(group.groupId).length +
-        _controller.getTagsInGroup(group.groupId).length;
+        _controller!.getChildGroups(group.groupId).length +
+        _controller!.getTagsInGroup(group.groupId).length;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -207,7 +207,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    final error = await _controller.deleteGroup(group.groupId);
+    final error = await _controller!.deleteGroup(group.groupId);
     if (error != null) {
       _toast(error);
       return;
@@ -221,11 +221,11 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       builder: (_) => _TagFormDialog(
         initial: null,
         defaultGroupId: groupId,
-        controller: _controller,
+        controller: _controller!,
       ),
     );
     if (result == null || !mounted) return;
-    final error = await _controller.addTag(
+    final error = await _controller!.addTag(
       tagId: result.tagId,
       tagName: result.tagName,
       tagExplain: result.tagExplain,
@@ -237,8 +237,8 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       _toast(error);
       return;
     }
-    final parent = _controller.getGroup(result.groupId);
-    if (parent != null) _treeController.expand(_GroupNode(parent));
+    final parent = _controller!.getGroup(result.groupId);
+    if (parent != null) _treeController!.expand(_GroupNode(parent));
     _refreshTree();
   }
 
@@ -248,11 +248,11 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       builder: (_) => _TagFormDialog(
         initial: tag,
         defaultGroupId: tag.groupId,
-        controller: _controller,
+        controller: _controller!,
       ),
     );
     if (result == null || !mounted) return;
-    final error = await _controller.updateTag(
+    final error = await _controller!.updateTag(
       oldTagId: tag.tagId,
       newTagId: result.tagId,
       tagName: result.tagName,
@@ -290,7 +290,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    final error = await _controller.deleteTag(tag.tagId);
+    final error = await _controller!.deleteTag(tag.tagId);
     if (error != null) {
       _toast(error);
       return;
@@ -299,7 +299,7 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
   }
 
   Future<void> _openDataFolder() async {
-    final filePath = _controller.getSavedFilePath();
+    final filePath = _controller!.getSavedFilePath();
     if (filePath == null) {
       _toast('Saved-file location is not exposed on this platform.');
       return;
@@ -353,8 +353,8 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
                 ),
                 const SizedBox(width: 8),
                 ListenableBuilder(
-                  listenable: _controller,
-                  builder: (_, _) => _SaveStatusText(controller: _controller),
+                  listenable: _controller!,
+                  builder: (_, _) => _SaveStatusText(controller: _controller!),
                 ),
               ],
             ),
@@ -370,10 +370,10 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
             const Divider(height: 1),
             Expanded(
               child: AnimatedTreeView<_TaxonomyNode>(
-                treeController: _treeController,
+                treeController: _treeController!,
                 nodeBuilder: (context, entry) => _NodeRow(
                   entry: entry,
-                  treeController: _treeController,
+                  treeController: _treeController!,
                   onDropped: _onNodeDropped,
                   onAddSubGroup: (id) => _showAddGroupDialog(parentGroupId: id),
                   onAddTag: _showAddTagDialog,
@@ -722,9 +722,9 @@ class _GroupFormDialog extends StatefulWidget {
 }
 
 class _GroupFormDialogState extends State<_GroupFormDialog> {
-  late final TextEditingController _idController;
-  late final TextEditingController _nameController;
-  late final TextEditingController _explainController;
+  TextEditingController? _idController;
+  TextEditingController? _nameController;
+  TextEditingController? _explainController;
 
   @override
   void initState() {
@@ -742,22 +742,22 @@ class _GroupFormDialogState extends State<_GroupFormDialog> {
 
   @override
   void dispose() {
-    _idController.dispose();
-    _nameController.dispose();
-    _explainController.dispose();
+    _idController?.dispose();
+    _nameController?.dispose();
+    _explainController?.dispose();
     super.dispose();
   }
 
   void _submit() {
-    final id = _idController.text.trim();
-    final name = _nameController.text.trim();
+    final id = _idController!.text.trim();
+    final name = _nameController!.text.trim();
     if (id.isEmpty || name.isEmpty) return;
     Navigator.pop(
       context,
       _GroupFormResult(
         groupId: id,
         name: name,
-        groupExplain: _explainController.text.trim(),
+        groupExplain: _explainController!.text.trim(),
       ),
     );
   }
@@ -840,10 +840,10 @@ class _TagFormDialog extends StatefulWidget {
 }
 
 class _TagFormDialogState extends State<_TagFormDialog> {
-  late final TextEditingController _idController;
-  late final TextEditingController _nameController;
-  late final TextEditingController _explainController;
-  late final TextEditingController _synonymsController;
+  TextEditingController? _idController;
+  TextEditingController? _nameController;
+  TextEditingController? _explainController;
+  TextEditingController? _synonymsController;
   late String _groupId;
   late bool _isExclusive;
 
@@ -863,10 +863,10 @@ class _TagFormDialogState extends State<_TagFormDialog> {
 
   @override
   void dispose() {
-    _idController.dispose();
-    _nameController.dispose();
-    _explainController.dispose();
-    _synonymsController.dispose();
+    _idController?.dispose();
+    _nameController?.dispose();
+    _explainController?.dispose();
+    _synonymsController?.dispose();
     super.dispose();
   }
 
@@ -880,10 +880,10 @@ class _TagFormDialogState extends State<_TagFormDialog> {
   }
 
   void _submit() {
-    final id = _idController.text.trim();
-    final name = _nameController.text.trim();
+    final id = _idController!.text.trim();
+    final name = _nameController!.text.trim();
     if (id.isEmpty || name.isEmpty) return;
-    final synonyms = _synonymsController.text
+    final synonyms = _synonymsController!.text
         .split(',')
         .map((s) => s.trim())
         .where((s) => s.isNotEmpty)
@@ -893,7 +893,7 @@ class _TagFormDialogState extends State<_TagFormDialog> {
       _TagFormResult(
         tagId: id,
         tagName: name,
-        tagExplain: _explainController.text.trim(),
+        tagExplain: _explainController!.text.trim(),
         synonyms: synonyms,
         groupId: _groupId,
         isExclusive: _isExclusive,

@@ -16,8 +16,8 @@ class EditorAppData extends StatefulWidget {
 }
 
 class EditorAppDataState extends State<EditorAppData> {
-  late final TextEditingController _notesController;
-  late final TextEditingController _previewDescriptionController;
+  TextEditingController? _notesController;
+  TextEditingController? _previewDescriptionController;
 
   @override
   void initState() {
@@ -25,17 +25,17 @@ class EditorAppDataState extends State<EditorAppData> {
     _notesController = TextEditingController(
       text: widget.characterFile.appCardVariantNotes,
     );
-    _notesController.onTextChanged(() {
-      widget.characterFile.appCardVariantNotes = _notesController.text;
+    _notesController!.onTextChanged(() {
+      widget.characterFile.appCardVariantNotes = _notesController!.text;
       widget.onChanged();
     });
 
     _previewDescriptionController = TextEditingController(
       text: widget.characterFile.card.cardwaveData.previewDescription,
     );
-    _previewDescriptionController.onTextChanged(() {
+    _previewDescriptionController!.onTextChanged(() {
       final cwData = widget.characterFile.card.cardwaveData;
-      cwData.previewDescription = _previewDescriptionController.text;
+      cwData.previewDescription = _previewDescriptionController!.text;
       widget.characterFile.card.cardwaveData = cwData;
       widget.onChanged();
     });
@@ -43,8 +43,8 @@ class EditorAppDataState extends State<EditorAppData> {
 
   @override
   void dispose() {
-    _notesController.dispose();
-    _previewDescriptionController.dispose();
+    _notesController?.dispose();
+    _previewDescriptionController?.dispose();
     super.dispose();
   }
 
@@ -54,25 +54,25 @@ class EditorAppDataState extends State<EditorAppData> {
       spacing: 8,
       children: [
         TextFieldCard.multiLine(
-          controller: _notesController,
+          controller: _notesController!,
           label: 'Variant Notes',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _notesController.text,
-            onApply: aiPopupApply(this, _notesController, 'Variant Notes'),
+            currentText: () => _notesController!.text,
+            onApply: aiPopupApply(this, _notesController!, 'Variant Notes'),
             fieldName: 'Variant Notes',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.multiLine(
-          controller: _previewDescriptionController,
+          controller: _previewDescriptionController!,
           label: 'Description Preview',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _previewDescriptionController.text,
+            currentText: () => _previewDescriptionController!.text,
             onApply: aiPopupApply(
               this,
-              _previewDescriptionController,
+              _previewDescriptionController!,
               'Description Preview',
             ),
             fieldName: 'Description Preview',

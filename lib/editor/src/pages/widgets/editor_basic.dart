@@ -16,12 +16,12 @@ class EditorBasic extends StatefulWidget {
 }
 
 class EditorBasicState extends State<EditorBasic> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _nicknameController;
-  late final TextEditingController _descriptionController;
-  late final TextEditingController _personalityController;
-  late final TextEditingController _scenarioController;
-  late final TextEditingController _mesExampleController;
+  TextEditingController? _nameController;
+  TextEditingController? _nicknameController;
+  TextEditingController? _descriptionController;
+  TextEditingController? _personalityController;
+  TextEditingController? _scenarioController;
+  TextEditingController? _mesExampleController;
 
   @override
   void initState() {
@@ -29,62 +29,62 @@ class EditorBasicState extends State<EditorBasic> {
     _nameController = TextEditingController(
       text: widget.characterFile.card.name,
     );
-    _nameController.onTextChanged(() {
-      widget.characterFile.card.name = _nameController.text;
+    _nameController!.onTextChanged(() {
+      widget.characterFile.card.name = _nameController!.text;
       widget.onChanged();
     });
 
     _nicknameController = TextEditingController(
       text: widget.characterFile.card.nickname ?? '',
     );
-    _nicknameController.onTextChanged(() {
-      widget.characterFile.card.nickname = _nicknameController.text.isEmpty
+    _nicknameController!.onTextChanged(() {
+      widget.characterFile.card.nickname = _nicknameController!.text.isEmpty
           ? null
-          : _nicknameController.text;
+          : _nicknameController!.text;
       widget.onChanged();
     });
 
     _descriptionController = TextEditingController(
       text: widget.characterFile.card.description,
     );
-    _descriptionController.onTextChanged(() {
-      widget.characterFile.card.description = _descriptionController.text;
+    _descriptionController!.onTextChanged(() {
+      widget.characterFile.card.description = _descriptionController!.text;
       widget.onChanged();
     });
 
     _personalityController = TextEditingController(
       text: widget.characterFile.card.personality,
     );
-    _personalityController.onTextChanged(() {
-      widget.characterFile.card.personality = _personalityController.text;
+    _personalityController!.onTextChanged(() {
+      widget.characterFile.card.personality = _personalityController!.text;
       widget.onChanged();
     });
 
     _scenarioController = TextEditingController(
       text: widget.characterFile.card.scenario,
     );
-    _scenarioController.onTextChanged(() {
-      widget.characterFile.card.scenario = _scenarioController.text;
+    _scenarioController!.onTextChanged(() {
+      widget.characterFile.card.scenario = _scenarioController!.text;
       widget.onChanged();
     });
 
     _mesExampleController = TextEditingController(
       text: widget.characterFile.card.mesExample,
     );
-    _mesExampleController.onTextChanged(() {
-      widget.characterFile.card.mesExample = _mesExampleController.text;
+    _mesExampleController!.onTextChanged(() {
+      widget.characterFile.card.mesExample = _mesExampleController!.text;
       widget.onChanged();
     });
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _nicknameController.dispose();
-    _descriptionController.dispose();
-    _personalityController.dispose();
-    _scenarioController.dispose();
-    _mesExampleController.dispose();
+    _nameController?.dispose();
+    _nicknameController?.dispose();
+    _descriptionController?.dispose();
+    _personalityController?.dispose();
+    _scenarioController?.dispose();
+    _mesExampleController?.dispose();
     super.dispose();
   }
 
@@ -94,69 +94,69 @@ class EditorBasicState extends State<EditorBasic> {
       spacing: 8,
       children: [
         TextFieldCard.singleLine(
-          controller: _nameController,
+          controller: _nameController!,
           label: 'Name',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _nameController.text,
-            onApply: aiPopupApply(this, _nameController, 'Name'),
+            currentText: () => _nameController!.text,
+            onApply: aiPopupApply(this, _nameController!, 'Name'),
             fieldName: 'Name',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.singleLine(
-          controller: _nicknameController,
+          controller: _nicknameController!,
           label: 'Nickname (CCv3)',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _nicknameController.text,
-            onApply: aiPopupApply(this, _nicknameController, 'Nickname (CCv3)'),
+            currentText: () => _nicknameController!.text,
+            onApply: aiPopupApply(this, _nicknameController!, 'Nickname (CCv3)'),
             fieldName: 'Nickname (CCv3)',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.multiLine(
-          controller: _descriptionController,
+          controller: _descriptionController!,
           label: 'Description',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _descriptionController.text,
-            onApply: aiPopupApply(this, _descriptionController, 'Description'),
+            currentText: () => _descriptionController!.text,
+            onApply: aiPopupApply(this, _descriptionController!, 'Description'),
             fieldName: 'Description',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.multiLine(
-          controller: _personalityController,
+          controller: _personalityController!,
           label: 'Personality',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _personalityController.text,
-            onApply: aiPopupApply(this, _personalityController, 'Personality'),
+            currentText: () => _personalityController!.text,
+            onApply: aiPopupApply(this, _personalityController!, 'Personality'),
             fieldName: 'Personality',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.multiLine(
-          controller: _scenarioController,
+          controller: _scenarioController!,
           label: 'Scenario',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _scenarioController.text,
-            onApply: aiPopupApply(this, _scenarioController, 'Scenario'),
+            currentText: () => _scenarioController!.text,
+            onApply: aiPopupApply(this, _scenarioController!, 'Scenario'),
             fieldName: 'Scenario',
             contextCard: widget.characterFile.card,
           ),
         ),
         TextFieldCard.multiLine(
-          controller: _mesExampleController,
+          controller: _mesExampleController!,
           label: 'Message Example',
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
-            currentText: () => _mesExampleController.text,
+            currentText: () => _mesExampleController!.text,
             onApply: aiPopupApply(
               this,
-              _mesExampleController,
+              _mesExampleController!,
               'Message Example',
             ),
             fieldName: 'Message Example',

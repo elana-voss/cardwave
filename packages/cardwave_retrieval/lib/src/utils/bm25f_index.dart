@@ -112,6 +112,10 @@ class Bm25fIndex<F extends Enum> {
     if (kIsWeb) {
       return _buildWeb<F>(snapshots, fields, fieldWeights);
     }
+    // See class doc above: kIsWeb branch handles web with chunked yields;
+    // this line is native-only. `compute()` would silence the lint but
+    // would lose the per-chunk yields the web path depends on.
+    // ignore: qcheck/prefer_compute_over_isolate_run
     return Isolate.run(() => _buildSync<F>(snapshots, fields, fieldWeights));
   }
 

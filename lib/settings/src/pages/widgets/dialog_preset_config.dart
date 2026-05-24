@@ -41,7 +41,7 @@ class DialogPresetConfig extends StatefulWidget {
 class _DialogPresetConfigState extends State<DialogPresetConfig> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _nameFocusNode = FocusNode();
-  late final DialogPresetConfigController _controller;
+  DialogPresetConfigController? _controller;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     _nameFocusNode.dispose();
     super.dispose();
   }
@@ -69,20 +69,20 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
     final selected = await showDialog<String>(
       context: context,
       builder: (context) => DialogModelSelection(
-        models: _controller.availableModels,
+        models: _controller!.availableModels,
         provider: widget.connectionProfile.providerEnum,
       ),
     );
     if (selected != null) {
-      _controller.applySelectedModel(selected);
+      _controller!.applySelectedModel(selected);
     }
   }
 
   void _onSave() {
     if (_formKey.currentState?.validate() != true) return;
-    final model = _controller.resolvedSelectedModel;
+    final model = _controller!.resolvedSelectedModel;
     if (model == null) return;
-    final preset = _controller.buildSavedPreset();
+    final preset = _controller!.buildSavedPreset();
     Navigator.pop<DialogPresetResult>(
       context,
       (model: model, preset: preset),
@@ -91,11 +91,11 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
 
   Future<void> _onTest() async {
     if (_formKey.currentState?.validate() != true) return;
-    await _controller.sendTestMessage();
+    await _controller!.sendTestMessage();
   }
 
   Future<void> _onDelete() async {
-    final name = _controller.configurationName;
+    final name = _controller!.configurationName;
     if (name == null) return;
     final confirmed = await NavigationService().showConfirmCancelDialog(
       title: 'Delete Model?',
@@ -104,14 +104,14 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
-    await _controller.performDeletion();
+    await _controller!.performDeletion();
     if (mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<DialogPresetConfigController>.value(
-      value: _controller,
+      value: _controller!,
       child: Consumer<DialogPresetConfigController>(
         builder: (context, controller, _) {
           final showDelete =

@@ -36,7 +36,7 @@ class DialogCharacterSwitcher extends StatefulWidget {
 }
 
 class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
-  late final FilterController _filterController;
+  FilterController? _filterController;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
 
   @override
   void dispose() {
-    _filterController.dispose();
+    _filterController?.dispose();
     super.dispose();
   }
 
@@ -59,7 +59,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
       isScrollable: false,
       builder: (context, isMobile) {
         return ListenableBuilder(
-          listenable: _filterController,
+          listenable: _filterController!,
           builder: (context, _) {
             final allGroups = <String, List<CharacterFile>>{};
             for (final file
@@ -86,7 +86,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
             }
 
             final filteredCharacters =
-                List<CharacterFile>.of(_filterController.filteredFiles)
+                List<CharacterFile>.of(_filterController!.filteredFiles)
                   ..sort((a, b) {
                     final aTime =
                         (a.appCardTimestampLastChatted ?? 0) >
@@ -108,19 +108,19 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                   children: [
                     Expanded(
                       child: AppSearchField(
-                        controller: _filterController.searchController,
+                        controller: _filterController!.searchController,
                       ),
                     ),
                     ToggleButtons(
                       isSelected: [
-                        _filterController.filterFavorites,
-                        _filterController.prioritizeRecent,
+                        _filterController!.filterFavorites,
+                        _filterController!.prioritizeRecent,
                       ],
                       onPressed: (index) {
                         if (index == 0) {
-                          _filterController.toggleFilterFavorites();
+                          _filterController!.toggleFilterFavorites();
                         } else {
-                          _filterController.togglePrioritizeRecent();
+                          _filterController!.togglePrioritizeRecent();
                         }
                       },
                       borderRadius: const BorderRadius.all(Radius.circular(8)),

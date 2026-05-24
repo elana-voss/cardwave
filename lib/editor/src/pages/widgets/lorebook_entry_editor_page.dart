@@ -100,7 +100,7 @@ class LorebookEntryEditorPage extends StatefulWidget {
 }
 
 class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
-  late EntryControllers _controllers;
+  EntryControllers? _controllers;
   late bool _isAdvancedMode;
 
   @override
@@ -114,7 +114,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
   void didUpdateWidget(covariant LorebookEntryEditorPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.entry != oldWidget.entry) {
-      _controllers.dispose();
+      _controllers?.dispose();
       _controllers = _createEntryController(widget.entry);
     }
     if (widget.isAdvancedMode != oldWidget.isAdvancedMode) {
@@ -124,7 +124,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
 
   @override
   void dispose() {
-    _controllers.dispose();
+    _controllers?.dispose();
     super.dispose();
   }
 
@@ -274,7 +274,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
           children: [
             _EntryTopSection(
               entry: widget.entry,
-              controller: _controllers,
+              controller: _controllers!,
               onUpdate: () {
                 setState(() {});
                 widget.onChanged();
@@ -282,7 +282,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
             ),
             _EntryKeywordsSection(
               entry: widget.entry,
-              controller: _controllers,
+              controller: _controllers!,
               onUpdate: () {
                 setState(() {});
                 widget.onChanged();
@@ -291,18 +291,18 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
             if (_isAdvancedMode)
               _EntryScanRow(
                 entry: widget.entry,
-                controller: _controllers,
+                controller: _controllers!,
                 onUpdate: () {
                   setState(() {});
                   widget.onChanged();
                 },
               ),
             _EntryContentSection(
-              content: _controllers.content,
-              currentText: () => _controllers.content.text,
+              content: _controllers!.content,
+              currentText: () => _controllers!.content.text,
               onApplyAi: aiPopupApply(
                 this,
-                _controllers.content,
+                _controllers!.content,
                 'Lorebook Entry Content',
               ),
               contextCard: widget.contextCard,
@@ -317,16 +317,16 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
               ),
               _EntryInclusionGroupRow(
                 entry: widget.entry,
-                controller: _controllers,
+                controller: _controllers!,
                 onUpdate: () {
                   setState(() {});
                   widget.onChanged();
                 },
               ),
             ],
-            _EntryTimedEffectsRow(controller: _controllers),
+            _EntryTimedEffectsRow(controller: _controllers!),
             if (_isAdvancedMode) ...[
-              _EntryFilterRow(controller: _controllers),
+              _EntryFilterRow(controller: _controllers!),
               _EntryMatchingOptionsRow(
                 entry: widget.entry,
                 onUpdate: () {

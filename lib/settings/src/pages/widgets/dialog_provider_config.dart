@@ -26,7 +26,7 @@ class DialogProviderConfig extends StatefulWidget {
 
 class _DialogProviderConfigState extends State<DialogProviderConfig> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _apiKeyController;
+  TextEditingController? _apiKeyController;
 
   bool _isFetching = false;
   String? _fetchError;
@@ -45,7 +45,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   LlmProviderConfig get _profile => widget.profile!;
 
   LLMProviderEnum? get _keyOwner =>
-      LlmProvider.detectFromApiKey(_apiKeyController.text);
+      LlmProvider.detectFromApiKey(_apiKeyController!.text);
 
   LLMProviderEnum? get _detectedProvider =>
       _isEdit ? _profile.providerEnum : _keyOwner;
@@ -63,7 +63,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   void dispose() {
     _isDisposed = true;
     _fetchDebounce?.cancel();
-    _apiKeyController.dispose();
+    _apiKeyController?.dispose();
     super.dispose();
   }
 
@@ -94,7 +94,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
     try {
       final fetched = await context.read<LlmPureHelpers>().fetchModels(
         provider: _detectedProvider!,
-        apiKey: _apiKeyController.text,
+        apiKey: _apiKeyController!.text,
         requireZdr: _requireZdr,
       );
       if (_isDisposed) return;
@@ -121,7 +121,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   /// different provider.
   bool get _editKeyMismatch =>
       _isEdit &&
-      _apiKeyController.text.isNotEmpty &&
+      _apiKeyController!.text.isNotEmpty &&
       _keyOwner != _profile.providerEnum;
 
   bool get _zdrDirty => _isEdit && _requireZdr != _profile.requireZdr;
@@ -159,7 +159,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   }
 
   bool get _canSave {
-    if (_apiKeyController.text.isEmpty) return false;
+    if (_apiKeyController!.text.isEmpty) return false;
     if (_isEdit) {
       if (_editKeyMismatch) return false;
       // If the ZDR flag changed, we must have refetched the model list
@@ -203,7 +203,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
         : _profile.models;
     final updated = LlmProviderConfig(
       id: _profile.id,
-      apiKey: _apiKeyController.text,
+      apiKey: _apiKeyController!.text,
       providerEnum: _profile.providerEnum,
       models: models,
       requireZdr: _requireZdr,
@@ -217,7 +217,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
     final detectedProvider = _detectedProvider!;
     final profile = LlmProviderConfig(
       id: UtilsApp.generateId(detectedProvider.name),
-      apiKey: _apiKeyController.text,
+      apiKey: _apiKeyController!.text,
       providerEnum: detectedProvider,
       models: [],
       requireZdr: _requireZdr,
@@ -285,7 +285,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
                     detectedProvider: _detectedProvider,
                     keyOwner: _keyOwner,
                     profileProviderEnum: _profile.providerEnum,
-                    apiKeyText: _apiKeyController.text,
+                    apiKeyText: _apiKeyController!.text,
                   ),
                   const SizedBox(height: 4),
                   const Text(
@@ -313,7 +313,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
       _models = [];
       _fetchError = null;
     });
-    if (_apiKeyController.text.isNotEmpty) unawaited(_fetchModels());
+    if (_apiKeyController!.text.isNotEmpty) unawaited(_fetchModels());
   }
 
 }

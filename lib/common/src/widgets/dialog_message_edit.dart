@@ -11,7 +11,7 @@ class DialogMessageEdit extends StatefulWidget {
 }
 
 class _DialogMessageEditState extends State<DialogMessageEdit> {
-  late final TextEditingController _controller;
+  TextEditingController? _controller;
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -31,7 +31,7 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
       actions: [
         FilledButton(
           key: const Key('dialog-save'),
-          onPressed: () => Navigator.pop(context, _controller.text),
+          onPressed: () => Navigator.pop(context, _controller!.text),
           child: const Text('Save'),
         ),
       ],
