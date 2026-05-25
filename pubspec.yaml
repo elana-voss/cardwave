@@ -11,6 +11,7 @@ workspace:
   - packages/cardwave_retrieval
   - packages/cardwave_emotion
   - packages/cardwave_memory
+  - packages/cardwave_nodes
 
 environment:
   sdk: ^3.10.8
@@ -69,6 +70,13 @@ dependencies:
   # into the app in a later phase.
   cardwave_memory:
     path: packages/cardwave_memory
+
+  # The cardwave_nodes package owns the character immersion engine: state
+  # model (emotions, physical, relationship, knowledge, scene, event log),
+  # node pool, predicates, firing logic, and the director LLM call. No app
+  # deps. Wired into the app in a later phase.
+  cardwave_nodes:
+    path: packages/cardwave_nodes
 
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.

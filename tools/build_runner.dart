@@ -19,6 +19,7 @@ const _members = [
   'packages/cardwave_llm',
   'packages/cardwave_names',
   'packages/cardwave_memory',
+  'packages/cardwave_nodes',
 ];
 
 Future<void> main(List<String> args) async {
