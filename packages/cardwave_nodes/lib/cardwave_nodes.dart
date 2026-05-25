@@ -28,4 +28,5 @@ export 'src/nodes/node_origin_enum.dart';
 export 'src/nodes/node_pool.dart';
 export 'src/nodes/node_scope_enum.dart';
 export 'src/nodes/node_type_enum.dart';
+export 'src/observability/firing_log_event.dart';
 export 'src/utils/constants.dart';

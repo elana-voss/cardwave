@@ -7,6 +7,8 @@ import 'package:cardwave_nodes/src/nodes/node.dart';
 import 'package:cardwave_nodes/src/nodes/node_pool.dart';
 import 'package:cardwave_nodes/src/nodes/node_scope_enum.dart';
 import 'package:cardwave_nodes/src/nodes/node_type_enum.dart';
+import 'package:cardwave_nodes/src/observability/firing_log_event.dart';
+import 'package:cardwave_nodes/src/observability/firing_logger.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_ast.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_evaluator.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_parser.dart';
@@ -55,14 +57,45 @@ class FiringEngine {
       for (final t in NodeTypeEnum.values) t: [],
     };
     for (final node in pool.active) {
-      if (node.currentDelay > 0) continue;
-      if (node.currentCooldown > 0) continue;
+      if (node.currentDelay > 0) {
+        logNodeSkipped(
+          turn: state.turn,
+          nodeId: node.id,
+          reason: NodeSkipReason.delayActive,
+        );
+        continue;
+      }
+      if (node.currentCooldown > 0) {
+        logNodeSkipped(
+          turn: state.turn,
+          nodeId: node.id,
+          reason: NodeSkipReason.cooldownActive,
+        );
+        continue;
+      }
       final predicate = _predicateCache[node.predicate] ??=
           parsePredicate(node.predicate);
-      if (!evaluatePredicate(predicate, state)) continue;
+      if (!evaluatePredicate(predicate, state)) {
+        logNodeSkipped(
+          turn: state.turn,
+          nodeId: node.id,
+          reason: NodeSkipReason.predicateFalse,
+        );
+        continue;
+      }
       final pressure = pool.pressureFor(node.type);
       final effective = (node.triggerProb + pressure).clamp(0.0, 1.0);
-      if (_random.nextDouble() < effective) {
+      final draw = _random.nextDouble();
+      final won = draw < effective;
+      logNodeRolled(
+        turn: state.turn,
+        nodeId: node.id,
+        triggerProb: node.triggerProb,
+        pressure: pressure,
+        draw: draw,
+        won: won,
+      );
+      if (won) {
         winners[node.type]!.add(node);
       }
     }
@@ -95,6 +128,11 @@ class FiringEngine {
     if (node.scope == NodeScopeEnum.oneShot) {
       pool.active.remove(node);
     }
+    logNodeFired(
+      turn: state.turn,
+      nodeId: node.id,
+      narrativePayload: node.narrativePayload,
+    );
   }
 
   void _applyEffectsToState(Node node, SessionState state) {
