@@ -3,8 +3,11 @@
 // Cross-package consumers MUST import this barrel, not src/ paths.
 
 export 'src/director/director_output.dart';
+export 'src/director/director_output_schema.dart';
 export 'src/director/director_output_validation_error.dart';
 export 'src/director/director_output_validator.dart';
+export 'src/director/director_prompt_builder.dart';
+export 'src/director/director_runner.dart';
 export 'src/director/event_log_append.dart';
 export 'src/engine/firing_engine.dart';
 export 'src/engine/value_math.dart';

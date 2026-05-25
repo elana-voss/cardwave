@@ -1,11 +1,10 @@
 import 'package:cardwave_nodes/src/observability/firing_log_event.dart';
+import 'package:cardwave_nodes/src/utils/constants.dart';
 import 'package:logging/logging.dart';
 
 /// Package-wide logger. Each record carries a [FiringLogEvent] as its
-/// `LogRecord.object`, which the app routes to its debug panel. The name
-/// sits under the `cardwave.` namespace that the app's log router
-/// forwards; a plain `cardwave_nodes` would be filtered out.
-final Logger _logger = Logger('cardwave.nodes');
+/// `LogRecord.object`, which the app routes to its debug panel.
+final Logger _logger = Logger(packageLoggerName);
 
 /// Skip/roll events are noisy (one per node per turn). The level guard
 /// short-circuits before the event is constructed so production builds

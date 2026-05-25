@@ -66,3 +66,9 @@ const double injectionBudgetFraction = 0.10;
 /// is suspicious model noise and rejected before reaching the engine.
 const double directorDeltaMin = -1.0;
 const double directorDeltaMax = 1.0;
+
+/// Logger name shared by the package's observability emitters. Sits
+/// under the `cardwave.` namespace so the app's log router (which
+/// forwards `cardwave.*`) picks it up. A plain `cardwave_nodes` name
+/// would be filtered out.
+const String packageLoggerName = 'cardwave.nodes';
