@@ -58,4 +58,5 @@ const _$LLMProviderEnumEnumMap = {
   LLMProviderEnum.google: 'google',
   LLMProviderEnum.openai: 'openai',
   LLMProviderEnum.localOpenAi: 'localOpenAi',
+  LLMProviderEnum.localGguf: 'localGguf',
 };

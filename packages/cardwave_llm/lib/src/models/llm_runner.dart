@@ -14,13 +14,18 @@ import 'package:schemantic/schemantic.dart';
 // requests cannot be cancelled mid-flight because genkit owns the HTTP client.
 class LlmRunner {
   const LlmRunner({
-    required Model<Object?> model,
+    required ModelRef<Object?> model,
     required Genkit genkit,
     Object? config,
   }) : _model = model,
        _genkit = genkit,
        _config = config;
-  final Model<Object?> _model;
+  // `ModelRef` instead of `Model` because some plugins (genkit_llamadart)
+  // don't implement `GenkitPlugin.resolve`; their actions are materialised
+  // lazily by the registry on first `generate`. `Model` extends `Action`
+  // and implements `ModelRef`, so cloud callers that pass a resolved
+  // `Model` still type-check.
+  final ModelRef<Object?> _model;
   final Genkit _genkit;
   final Object? _config;
 

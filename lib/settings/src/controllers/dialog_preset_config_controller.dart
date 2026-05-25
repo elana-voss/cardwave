@@ -337,6 +337,10 @@ class DialogPresetConfigController extends ChangeNotifier {
         apiKey: connectionProfile.apiKey,
         model: modelObj,
         paramValues: parameterValues,
+        baseUrl: connectionProfile.baseUrl,
+        modelPath: connectionProfile.modelPath,
+        contextSize: connectionProfile.contextSize,
+        kvCacheType: connectionProfile.kvCacheType,
       );
 
       final reply = await runner.complete(promptRepository.testMessage);

@@ -1,7 +1,10 @@
 import 'package:cardwave_llm/src/models/llm_model.dart';
 import 'package:cardwave_llm/src/models/llm_preset_config.dart';
+import 'package:cardwave_llm/src/models/llm_provider.dart';
 import 'package:cardwave_llm/src/models/llm_provider_enum.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:llamadart/llamadart.dart' show KvCacheType;
+import 'package:path/path.dart' as p;
 
 part 'llm_provider_config.g.dart';
 
@@ -16,6 +19,9 @@ class LlmProviderConfig {
     required this.providerEnum,
     required this.models,
     this.baseUrl,
+    this.modelPath,
+    this.contextSize,
+    this.kvCacheType,
     this.requireZdr = false,
   });
 
@@ -25,6 +31,20 @@ class LlmProviderConfig {
   String apiKey;
   @JsonKey(includeIfNull: false)
   String? baseUrl;
+
+  /// Filesystem path to a GGUF file. Set only on `localGguf` profiles.
+  @JsonKey(includeIfNull: false)
+  String? modelPath;
+
+  /// Loaded context size in tokens. Set only on `localGguf` profiles.
+  @JsonKey(includeIfNull: false)
+  int? contextSize;
+
+  /// KV-cache quantization for the loaded model. Null = llama.cpp default
+  /// (fp16). Set only on `localGguf` profiles.
+  @JsonKey(includeIfNull: false)
+  KvCacheType? kvCacheType;
+
   @JsonKey(
     name: 'provider',
     defaultValue: LLMProviderEnum.nanogpt,
@@ -46,7 +66,24 @@ class LlmProviderConfig {
   @JsonKey(includeFromJson: false, includeToJson: false)
   Iterable<({LlmModel model, LlmPresetConfig preset})> get allModelPresets => [
     for (final m in models)
-      for (final p in m.presets) (model: m, preset: p),
+      for (final pres in m.presets) (model: m, preset: pres),
   ];
+
+  /// User-facing name for this profile's section header. Generic
+  /// providers (OpenAI, Anthropic) use the provider type label. Local
+  /// GGUF profiles use the filename of `modelPath` minus the `.gguf`
+  /// extension — each profile is one model file, and the type label
+  /// repeats identically across every locally-added profile.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  String get displayLabel {
+    if (providerEnum == LLMProviderEnum.localGguf) {
+      final path = modelPath;
+      if (path != null && path.isNotEmpty) {
+        return p.basenameWithoutExtension(path);
+      }
+    }
+    return LlmProvider.of(providerEnum).label;
+  }
+
   Map<String, dynamic> toJson() => _$LlmProviderConfigToJson(this);
 }

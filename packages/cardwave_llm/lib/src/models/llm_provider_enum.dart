@@ -7,4 +7,5 @@ enum LLMProviderEnum {
   google,
   openai,
   localOpenAi,
+  localGguf,
 }

@@ -35,6 +35,14 @@ void main() {
   // video-test preview dialog. Must run before any `Player` is constructed
   // or the first `Player()` on Windows/Linux throws a missing-plugin error.
   MediaKit.ensureInitialized();
+  // Surface llamadart's Dart-side log records to stdout so model-load
+  // events (path, success/failure) and backend-load diagnostics appear in
+  // the running console. Native llama.cpp logs (load_tensors offload
+  // counts, vulkan device discovery) come from the worker isolate's own
+  // default log level — that side is configured per-engine.
+  if (kDebugMode) {
+    LlamaEngine.configureLogging(level: LlamaLogLevel.info);
+  }
   runApp(const AppBootstrapper());
 }
 
@@ -225,6 +233,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         embedder: _cardwaveEmbeddingsModule.embedder,
       );
       unawaited(_searchService.initEmbedder());
+      unawaited(_logLlamadartBackendStatus());
 
       _memoryService = MemoryService(
         repository: MemoryRepository(
@@ -457,6 +466,42 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     }
   }
 
+  /// Prints (once, at startup) the list of llamadart backend modules
+  /// available on this machine and the backend the embedder loaded onto.
+  /// Used to disambiguate "model loads to RAM" between three failure
+  /// modes: the vulkan DLL is not detected as a module (available list
+  /// has no Vulkan), the DLL is detected but no device is reachable
+  /// (embedder also falls back to CPU), or the runtime sees Vulkan but
+  /// the localGguf path declines it (embedder is on Vulkan, only the
+  /// localGguf model is on CPU).
+  Future<void> _logLlamadartBackendStatus() async {
+    // Banner makes the probe trivially greppable in long startup logs.
+    debugPrint('===== [llamadart] backend probe (start) =====');
+    try {
+      final embedder = _cardwaveEmbeddingsModule.embedder;
+      await embedder.init();
+      final backend = embedder.backend;
+      if (backend == null) {
+        debugPrint('[llamadart] backend probe: embedder backend is null');
+        return;
+      }
+      final active = await backend.getBackendName();
+      final available = backend is BackendAvailability
+          ? await (backend as BackendAvailability).getAvailableBackends()
+          : 'unavailable';
+      final layers = backend is BackendRuntimeDiagnostics
+          ? await (backend as BackendRuntimeDiagnostics).getResolvedGpuLayers()
+          : null;
+      debugPrint(
+        '[llamadart] available backends: $available; '
+        'embedder loaded on: $active (gpu layers: $layers)',
+      );
+    } on Exception catch (e, st) {
+      debugPrint('[llamadart] backend probe failed: $e\n$st');
+    }
+    debugPrint('===== [llamadart] backend probe (end) =====');
+  }
+
   /// Fans the four diagnostic-level enum members from any package out to
   /// the matching `LoggingService` method. Both `LlmDiagnosticLevel` and
   /// `EmbeddingsDiagnosticLevel` use the same four `.name` strings.
@@ -558,6 +603,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         ),
         Provider<LlmPureHelpers>.value(value: _pureHelpers),
         Provider<LlmManagementService>.value(value: _llmManagementService),
+        Provider<Embedder>.value(value: _cardwaveEmbeddingsModule.embedder),
         ChangeNotifierProvider<SearchService>.value(value: _searchService),
         Provider<CardwaveMemoryModule>.value(value: _cardwaveMemoryModule),
         ChangeNotifierProvider<TextToSpeechController>.value(

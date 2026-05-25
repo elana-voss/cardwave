@@ -436,17 +436,10 @@ class GrokProvider extends LlmProvider {
   }
 
   @override
-  LlmRunner buildRunner({
-    required String apiKey,
-    required String modelId,
-    required LlmModel model,
-    required Map<LlmParameterDefinitionIdEnum, double> paramValues,
-    LlmPresetConfigReasoningEffortEnum reasoningEffort =
-        LlmPresetConfigReasoningEffortEnum.off,
-    String? baseUrl,
-  }) {
+  LlmRunner buildRunner(BuildRunnerInputs inputs) {
+    final BuildRunnerInputs(:apiKey, :modelId, :model, :paramValues) = inputs;
     final r = LlmParameterResolver(model: model, userValues: paramValues);
-    final url = baseUrl ?? defaultBaseUrl;
+    final url = inputs.baseUrl ?? defaultBaseUrl;
     final genkitModel = _modelFor(
       providerEnum: enumValue,
       apiKey: apiKey,

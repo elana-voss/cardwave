@@ -161,6 +161,7 @@ class ImageGenerationService {
       case LLMProviderEnum.anthropic:
       case LLMProviderEnum.google:
       case LLMProviderEnum.localOpenAi:
+      case LLMProviderEnum.localGguf:
         throw ImageGenerationServiceException(
           '${providerEnum.name} is not supported for image generation yet.',
         );

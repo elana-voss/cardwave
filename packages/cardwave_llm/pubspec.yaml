@@ -17,6 +17,10 @@ dependencies:
   genkit_google_genai: ^0.2.4
   genkit_openai: ^0.3.1
   genkit_anthropic: ^0.2.4
+  # Pinned to 1.1.x — 1.2.x requires llamadart APIs added after 0.6.12
+  # (ModelSource, ModelCacheEntry, etc.) and our fork is on 0.6.12-era.
+  genkit_llamadart: '>=1.1.0 <1.2.0'
+  llamadart: ^0.6.11
   schemantic: ^0.1.1
 
   http: ^1.2.0

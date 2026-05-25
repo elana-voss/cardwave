@@ -53,9 +53,27 @@ class OnboardingController extends ChangeNotifier {
   bool get hasAiConnected =>
       selectedProvider != null && selectedModelId != null;
 
+  /// Set after the user opens the in-process GGUF dialog and confirms a
+  /// loaded model. Onboarding finish persists this profile to settings the
+  /// same way it persists a cloud-API profile.
+  LlmProviderConfig? localGgufProfile;
+
+  bool get hasLocalGgufConfigured => localGgufProfile != null;
+
   /// Mirrors the Finish Setup button's enabled state.
   bool get canFinish =>
       !isFetchingModels && personaName.trim().isNotEmpty && acceptedDisclaimer;
+
+  /// Opens the in-process GGUF add dialog. Same dialog as Settings, so the
+  /// detection / recommendation / load flow stays in one place. Result is
+  /// stored on the controller and surfaced in the onboarding page; final
+  /// persistence happens in [finishOnboarding].
+  Future<void> pickLocalGguf() async {
+    final profile = await NavigationService().showLocalGgufProviderAddDialog();
+    if (profile == null) return;
+    localGgufProfile = profile;
+    _safeNotify();
+  }
 
   void init() {
     final existingPath = settingsService.settings.characterPath;
@@ -216,6 +234,12 @@ class OnboardingController extends ChangeNotifier {
         trigger: ModelRefreshTriggerEnum.manual,
         preFetchedModels: models,
       );
+    }
+
+    if (localGgufProfile != null) {
+      // The dialog already warmed the model and built the LlmModel stub —
+      // no remote refresh needed, just persist.
+      settingsService.settings.providerConfigs.add(localGgufProfile!);
     }
 
     settingsService.settings.activePersona.name = personaName;

@@ -1,6 +1,22 @@
 // Top-level barrel for the cardwave_llm module.
 // Files under src/ are package-internal; consumers import this barrel.
 
+// Re-export llamadart types that appear in our public API
+// (so app/ callers don't need a direct llamadart import). LlamaEngine /
+// LlamaLogLevel are exported so main.dart can call configureLogging at
+// startup — surfacing model-load diagnostics from the Dart side of
+// llamadart to the running console. BackendAvailability /
+// BackendRuntimeDiagnostics are the optional capability interfaces the
+// startup probe casts to in order to read available-backend list and
+// resolved GPU layer count.
+export 'package:llamadart/llamadart.dart'
+    show
+        BackendAvailability,
+        BackendRuntimeDiagnostics,
+        KvCacheType,
+        LlamaEngine,
+        LlamaLogLevel;
+
 export 'src/audio/services/text_to_speech_service.dart';
 export 'src/dispatcher/cardwave_llm_module.dart';
 export 'src/image/clients/image_http_client.dart';
@@ -9,6 +25,7 @@ export 'src/image/llm_image_result.dart';
 export 'src/image/image_options.dart';
 export 'src/image/llm_image_prompt_request.dart';
 export 'src/image/services/image_generation_service.dart';
+export 'src/models/build_runner_inputs.dart';
 export 'src/models/llm_model.dart';
 export 'src/models/llm_model_capabilities_enum.dart';
 export 'src/models/llm_parameter_definition.dart';
@@ -44,6 +61,7 @@ export 'src/tools/tool_definition.dart';
 export 'src/tools/tool_dispatcher.dart';
 export 'src/tools/tool_registry.dart';
 export 'src/tools/tool_result.dart';
+export 'src/utils/gguf_metadata_probe.dart';
 export 'src/utils/llm_constants.dart';
 export 'src/utils/utils_id.dart';
 export 'src/utils/utils_llm.dart';

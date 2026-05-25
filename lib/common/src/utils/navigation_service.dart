@@ -262,6 +262,14 @@ class NavigationService {
     );
   }
 
+  /// Opens the in-process GGUF add dialog. Returns the constructed
+  /// [LlmProviderConfig] on Save, `null` on dismiss.
+  Future<LlmProviderConfig?> showLocalGgufProviderAddDialog() {
+    return _showAppDialog<LlmProviderConfig>(
+      builder: (_) => const DialogLocalGgufProviderConfig(),
+    );
+  }
+
   /// Opens a multi-select picker (used by the grid's tag and creator
   /// filters). [items] is a `key → count` map; the selected keys come back as
   /// a `Set<String>?`, null on cancel. [dynamicItemsCallback] lets the dialog

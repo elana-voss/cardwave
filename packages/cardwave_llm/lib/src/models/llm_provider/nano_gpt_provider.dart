@@ -470,22 +470,14 @@ class NanoGptProvider extends LlmProvider {
   }
 
   @override
-  LlmRunner buildRunner({
-    required String apiKey,
-    required String modelId,
-    required LlmModel model,
-    required Map<LlmParameterDefinitionIdEnum, double> paramValues,
-    LlmPresetConfigReasoningEffortEnum reasoningEffort =
-        LlmPresetConfigReasoningEffortEnum.off,
-    String? baseUrl,
-  }) {
+  LlmRunner buildRunner(BuildRunnerInputs inputs) {
     return _openAiCompatibleAggregatorRunner(
       providerEnum: enumValue,
-      apiKey: apiKey,
-      modelId: modelId,
-      model: model,
-      paramValues: paramValues,
-      baseUrl: baseUrl ?? defaultBaseUrl,
+      apiKey: inputs.apiKey,
+      modelId: inputs.modelId,
+      model: inputs.model,
+      paramValues: inputs.paramValues,
+      baseUrl: inputs.baseUrl ?? defaultBaseUrl,
     );
   }
 }

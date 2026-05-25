@@ -4,7 +4,8 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/onboarding/src/controllers/onboarding_controller.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -235,6 +236,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
           'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.',
           style: TextStyle(fontSize: 11, color: Colors.grey),
         ),
+        if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android) ...[
+          const SizedBox(height: 8),
+          _OnboardingLocalGgufRow(
+            profile: _controller!.localGgufProfile,
+            onPick: _controller!.pickLocalGguf,
+          ),
+        ],
         if (_controller!.selectedProvider == LLMProviderEnum.openrouter)
           SwitchTileZdr(
             value: _controller!.requireZdr,
@@ -243,6 +251,73 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 : _controller!.updateRequireZdr,
           ),
       ],
+    );
+  }
+}
+
+/// Subordinate affordance on the onboarding LLM step for users who want to
+/// run an in-process local GGUF instead of (or in addition to) a cloud API.
+/// Hidden on web and Android because the in-process provider is desktop-only.
+class _OnboardingLocalGgufRow extends StatelessWidget {
+  const _OnboardingLocalGgufRow({required this.profile, required this.onPick});
+  final LlmProviderConfig? profile;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = profile;
+    return ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: EdgeInsets.zero,
+      initiallyExpanded: p != null,
+      title: const Text(
+        kHaveLocalGgufExpanderTitle,
+        style: TextStyle(fontSize: 13),
+      ),
+      children: [
+        if (p != null)
+          _LoadedRow(profile: p, onChange: onPick)
+        else
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.folder_open),
+              label: const Text(kPickFileLabel),
+              onPressed: onPick,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _LoadedRow extends StatelessWidget {
+  const _LoadedRow({required this.profile, required this.onChange});
+  final LlmProviderConfig profile;
+  final VoidCallback onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final firstModel = profile.models.firstOrNull;
+    final modelName = firstModel?.name ?? '(unknown model)';
+    final ctx = profile.contextSize;
+    final kv = profile.kvCacheType;
+    final ctxText = ctx == null ? 'ctx —' : 'ctx $ctx';
+    final kvText = kv == null ? '' : ' · KV ${kv.name}';
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.check_circle, color: Colors.green),
+      title: Text(
+        modelName,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text('$ctxText$kvText'),
+      trailing: TextButton(
+        onPressed: onChange,
+        child: const Text('Change'),
+      ),
     );
   }
 }

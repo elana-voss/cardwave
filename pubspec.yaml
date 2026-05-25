@@ -121,10 +121,10 @@ dev_dependencies:
 # (works around NVIDIA Blackwell + AMD AMDVLK iGPU driver crashes).
 # See app/README.md "Windows: GPU compatibility".
 dependency_overrides:
+  # Temporary local path override during patch/vram-kv-mmap work.
+  # Revert to git ref (af4cbce + new VRAM patch commit) once the branch is pushed.
   llamadart:
-    git:
-      url: https://github.com/elana-voss/llamadart.git
-      ref: af4cbce20d54235dedf00dd741794cec2632a712
+    path: ../../llamadart
 
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate

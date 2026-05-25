@@ -17,12 +17,18 @@ class TileDomainModel extends StatelessWidget {
     this.placeholderTitle = '',
     this.onTap,
     this.trailing,
+    this.subtitleOverride,
   });
   final Widget? leading;
   final LlmModel? model;
   final String placeholderTitle;
   final VoidCallback? onTap;
   final Widget? trailing;
+
+  /// Replaces the default `contextLabel · priceLabel` subtitle. Used by
+  /// local-GGUF rows to show "<loaded> ctx (max <native>)" since the
+  /// loaded context size lives on the profile, not on `LlmModel`.
+  final String? subtitleOverride;
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +54,11 @@ class TileDomainModel extends StatelessWidget {
     }
 
     final muted = theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7);
-    final metaLine = <String>[
-      activeModel.contextLabel,
-      ?activeModel.priceLabel,
-    ].join(' · ');
+    final metaLine = subtitleOverride ??
+        <String>[
+          activeModel.contextLabel,
+          ?activeModel.priceLabel,
+        ].join(' · ');
 
     return ListTile(
       onTap: onTap,

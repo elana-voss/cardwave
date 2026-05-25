@@ -1,0 +1,151 @@
+part of '../llm_provider.dart';
+
+/// In-process local-GGUF chat provider via `genkit_llamadart`. Loads the model
+/// into VRAM in the same process — no separate server. The dialog/onboarding
+/// flow chooses contextSize and kvCacheType based on detected free VRAM and
+/// the file's metadata; those values come in through buildRunner.
+class LocalGgufProvider extends LlmProvider {
+  const LocalGgufProvider();
+
+  @override
+  LLMProviderEnum get enumValue => LLMProviderEnum.localGguf;
+
+  @override
+  String get label => 'Local GGUF (in-process)';
+
+  @override
+  String get defaultBaseUrl => ''; // unused — file path lives on the profile
+
+  @override
+  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {};
+
+  @override
+  Future<List<dynamic>> fetchRawModels({
+    required http.Client client,
+    required String apiKey,
+    required String baseUrl,
+  }) async {
+    // The "model" is the file the user picked. The caller passes the path
+    // through `baseUrl` here only because that's the contract; the real model
+    // discovery happens in the picker dialog.
+    if (baseUrl.isEmpty) return const [];
+    return [
+      {'id': p.basename(baseUrl), 'path': baseUrl},
+    ];
+  }
+
+  @override
+  LlmModel parseModel(
+    Map<String, dynamic> json, {
+    Map<String, Map<String, dynamic>>? openRouterLookup,
+  }) {
+    final rawId = json['id'];
+    if (rawId is! String || rawId.isEmpty) {
+      throw FormatException(
+        'Local GGUF model entry missing or invalid id: $json',
+      );
+    }
+    return LlmModel(
+      id: rawId,
+      name: rawId,
+      supportedParameters: const [
+        LlmParameterDefinitionIdEnum.temperature,
+        LlmParameterDefinitionIdEnum.topP,
+        LlmParameterDefinitionIdEnum.topK,
+        LlmParameterDefinitionIdEnum.minP,
+        LlmParameterDefinitionIdEnum.maxResponseLength,
+        LlmParameterDefinitionIdEnum.repetitionPenalty,
+      ],
+    );
+  }
+
+  @override
+  LlmRunner buildRunner(BuildRunnerInputs inputs) {
+    final BuildRunnerInputs(
+      :modelId,
+      :model,
+      :paramValues,
+      kvCacheType: kvType,
+    ) = inputs;
+    final path = inputs.modelPath!;
+    final ctx = inputs.contextSize!;
+    final r = LlmParameterResolver(model: model, userValues: paramValues);
+    // Cache key encodes path + ctx + kv so changing any of them yields a
+    // fresh plugin (and `disposeRuntimeFor(path)` finds stale entries via
+    // path substring match).
+    final cacheKey = '${enumValue.name}:$path|ctx=$ctx|kv=${kvType?.name ?? ''}';
+    // Backend defaults to `auto` (the embedder's working setup).
+    // `useMmap: false` materializes weights into VRAM eagerly, matching
+    // kobold-cpp for this same model.
+    // `batchSize: 512` caps the GPU compute buffer at around 310 MiB.
+    // The llama.cpp default `n_batch == contextSize` allocates a
+    // scratch buffer scaled to processing every context token in one
+    // shot. At ctx 4608 that balloons to roughly 2.4 GiB, which
+    // overflows an 8 GiB GPU on top of a 7 GiB Q4 12B model. Kobold
+    // uses `blasbatchsize 1024`; 512 is safer for tight VRAM.
+    // flash-attn stays enabled so non-fp16 KV cache types remain legal
+    // (`ModelParams.validate` enforces this).
+    const kSafeBatchSize = 512;
+    final modelParams = kvType == null
+        ? ModelParams(
+            contextSize: ctx,
+            gpuLayers: ModelParams.maxGpuLayers,
+            flashAttention: FlashAttention.enabled,
+            useMmap: false,
+            batchSize: kSafeBatchSize,
+            microBatchSize: kSafeBatchSize,
+          )
+        : ModelParams(
+            contextSize: ctx,
+            gpuLayers: ModelParams.maxGpuLayers,
+            flashAttention: FlashAttention.enabled,
+            useMmap: false,
+            batchSize: kSafeBatchSize,
+            microBatchSize: kSafeBatchSize,
+            cacheTypeK: kvType,
+            cacheTypeV: kvType,
+          );
+    // Trace the exact ModelParams we hand to llamadart. With native logs
+    // enabled at info level inside the worker, the immediate llama.cpp
+    // output that follows ("ggml_backend_load: ...", "load_tensors:
+    // offloaded N/M layers to GPU") is the diagnostic for whether the
+    // Vulkan backend actually picked up the request.
+    debugPrint(
+      '[LocalGgufProvider] loading via genkit_llamadart: '
+      'path=$path, ctx=$ctx, '
+      'kv=${kvType?.name ?? 'f16'}, '
+      'preferredBackend=${modelParams.preferredBackend.name}, '
+      'gpuLayers=${modelParams.gpuLayers}, '
+      'flashAttn=${modelParams.flashAttention.name}, '
+      'mmap=${modelParams.useMmap}',
+    );
+    // LlamaDartPlugin doesn't override `GenkitPlugin.resolve` — its actions
+    // are materialised by the registry on first generate(). So we skip
+    // `_modelFor` (which expects synchronous resolve) and hand `LlmRunner`
+    // a `ModelRef` instead; genkit's generate() resolves it lazily.
+    _pluginByConfig.putIfAbsent(cacheKey, () {
+      final p = llamaDart(
+        models: [
+          LlamaModelDefinition(
+            name: modelId,
+            modelPath: path,
+            modelParams: modelParams,
+            supportsEmbeddings: false,
+          ),
+        ],
+      );
+      _genkit.registry.registerPlugin(p);
+      return p;
+    });
+    final ModelRef<Object?> genkitModel = llamaDart.model(modelId);
+    final opts = LlamaDartGenerationConfig(
+      temperature: r.resolve(LlmParameterDefinitionIdEnum.temperature),
+      topP: r.resolve(LlmParameterDefinitionIdEnum.topP),
+      topK: r.resolveInt(LlmParameterDefinitionIdEnum.topK),
+      minP: r.resolve(LlmParameterDefinitionIdEnum.minP),
+      penalty: r.resolve(LlmParameterDefinitionIdEnum.repetitionPenalty),
+      maxTokens: r.resolveInt(LlmParameterDefinitionIdEnum.maxResponseLength),
+    );
+    return LlmRunner(model: genkitModel, genkit: _genkit, config: opts);
+  }
+}

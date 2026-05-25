@@ -1,3 +1,4 @@
+import 'package:cardwave_llm/src/models/build_runner_inputs.dart';
 import 'package:cardwave_llm/src/models/llm_model.dart';
 import 'package:cardwave_llm/src/models/llm_model_capabilities_enum.dart';
 import 'package:cardwave_llm/src/models/llm_parameter_definition_id_enum.dart';
@@ -13,6 +14,7 @@ import 'package:cardwave_llm/src/observability/llm_log_event.dart';
 import 'package:cardwave_llm/src/observability/llm_loggers.dart';
 import 'package:cardwave_llm/src/repositories/llm_model_repository.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:llamadart/llamadart.dart' show KvCacheType;
 
 typedef ResolvedPreset = ({
   LlmProviderConfig provider,
@@ -232,12 +234,17 @@ class LlmPureHelpers {
       ...?paramOverrides,
     };
     return LlmProvider.of(provider.providerEnum).buildRunner(
-      apiKey: provider.apiKey,
-      modelId: model.id,
-      model: model,
-      paramValues: params,
-      reasoningEffort: preset.reasoningEffort,
-      baseUrl: provider.baseUrl,
+      BuildRunnerInputs(
+        apiKey: provider.apiKey,
+        modelId: model.id,
+        model: model,
+        paramValues: params,
+        reasoningEffort: preset.reasoningEffort,
+        baseUrl: provider.baseUrl,
+        modelPath: provider.modelPath,
+        contextSize: provider.contextSize,
+        kvCacheType: provider.kvCacheType,
+      ),
     );
   }
 
@@ -252,14 +259,22 @@ class LlmPureHelpers {
     LlmPresetConfigReasoningEffortEnum reasoningEffort =
         LlmPresetConfigReasoningEffortEnum.off,
     String? baseUrl,
+    String? modelPath,
+    int? contextSize,
+    KvCacheType? kvCacheType,
   }) {
     return LlmProvider.of(providerEnum).buildRunner(
-      apiKey: apiKey,
-      modelId: model.id,
-      model: model,
-      paramValues: paramValues,
-      reasoningEffort: reasoningEffort,
-      baseUrl: baseUrl,
+      BuildRunnerInputs(
+        apiKey: apiKey,
+        modelId: model.id,
+        model: model,
+        paramValues: paramValues,
+        reasoningEffort: reasoningEffort,
+        baseUrl: baseUrl,
+        modelPath: modelPath,
+        contextSize: contextSize,
+        kvCacheType: kvCacheType,
+      ),
     );
   }
 

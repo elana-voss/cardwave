@@ -7,6 +7,7 @@ import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_provide
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -82,6 +83,8 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
 
   Future<void> _addLocalProvider() => _addProviderWithSpinner(isLocal: true);
 
+  Future<void> _addLocalGgufProvider() => _addProviderWithGgufFlow();
+
   /// Opens the add-provider dialog, then runs the post-dialog persistence
   /// under the "Adding provider..." spinner. The split is deliberate: the
   /// spinner only flips on AFTER the dialog closes — while the dialog is up
@@ -102,6 +105,27 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
         settingsService: _settingsService,
         mgmt: mgmt,
         added: added,
+      );
+    } finally {
+      if (mounted) setState(() => _isAdding = false);
+    }
+  }
+
+  /// In-process GGUF add flow. The dialog has already warmed the model
+  /// and constructed the [LlmModel] stub. Persistence reuses
+  /// [ProvidersController.applyProviderAdd] so the localGguf branch of
+  /// `refreshProviderModels` seeds default presets (without that step the
+  /// new profile would render as "No Models configured").
+  Future<void> _addProviderWithGgufFlow() async {
+    final profile = await ProvidersController.openLocalGgufProviderAddDialog();
+    if (profile == null || !mounted) return;
+    final mgmt = context.read<LlmManagementService>();
+    setState(() => _isAdding = true);
+    try {
+      await ProvidersController.applyProviderAdd(
+        settingsService: _settingsService,
+        mgmt: mgmt,
+        added: (profile: profile, fetchedModels: profile.models),
       );
     } finally {
       if (mounted) setState(() => _isAdding = false);
@@ -154,6 +178,12 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
                     icon: const Icon(Icons.computer),
                     label: const Text('New Local Provider'),
                   ),
+                  if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android)
+                    OutlinedButton.icon(
+                      onPressed: _isAdding ? null : _addLocalGgufProvider,
+                      icon: const Icon(Icons.memory),
+                      label: const Text('New Local GGUF'),
+                    ),
                   _RefreshMenuButton(
                     policy: settings.refreshPolicy,
                     lastRefreshMillis: settings.lastModelRefreshAtMillis,

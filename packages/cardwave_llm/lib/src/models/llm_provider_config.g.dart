@@ -23,6 +23,12 @@ LlmProviderConfig _$LlmProviderConfigFromJson(Map<String, dynamic> json) =>
               .toList() ??
           [],
       baseUrl: json['base_url'] as String?,
+      modelPath: json['model_path'] as String?,
+      contextSize: (json['context_size'] as num?)?.toInt(),
+      kvCacheType: $enumDecodeNullable(
+        _$KvCacheTypeEnumMap,
+        json['kv_cache_type'],
+      ),
       requireZdr: json['require_zdr'] as bool? ?? false,
     );
 
@@ -31,6 +37,9 @@ Map<String, dynamic> _$LlmProviderConfigToJson(LlmProviderConfig instance) =>
       'id': instance.id,
       'api_key': instance.apiKey,
       'base_url': ?instance.baseUrl,
+      'model_path': ?instance.modelPath,
+      'context_size': ?instance.contextSize,
+      'kv_cache_type': ?_$KvCacheTypeEnumMap[instance.kvCacheType],
       'provider': _$LLMProviderEnumEnumMap[instance.providerEnum]!,
       'models': instance.models.map((e) => e.toJson()).toList(),
       'require_zdr': instance.requireZdr,
@@ -44,4 +53,11 @@ const _$LLMProviderEnumEnumMap = {
   LLMProviderEnum.google: 'google',
   LLMProviderEnum.openai: 'openai',
   LLMProviderEnum.localOpenAi: 'localOpenAi',
+  LLMProviderEnum.localGguf: 'localGguf',
+};
+
+const _$KvCacheTypeEnumMap = {
+  KvCacheType.f16: 'f16',
+  KvCacheType.q8_0: 'q8_0',
+  KvCacheType.q4_0: 'q4_0',
 };

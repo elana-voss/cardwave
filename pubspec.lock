@@ -514,6 +514,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.7"
+  genkit_llamadart:
+    dependency: transitive
+    description:
+      name: genkit_llamadart
+      sha256: d59345bf12ff524beb4bec6a634d4e7d4cc357a507710a924e0490e1b89bb105
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   genkit_openai:
     dependency: transitive
     description:
@@ -770,11 +778,9 @@ packages:
   llamadart:
     dependency: "direct overridden"
     description:
-      path: "."
-      ref: af4cbce20d54235dedf00dd741794cec2632a712
-      resolved-ref: af4cbce20d54235dedf00dd741794cec2632a712
-      url: "https://github.com/elana-voss/llamadart.git"
-    source: git
+      path: "../../llamadart"
+      relative: true
+    source: path
     version: "0.6.12"
   logging:
     dependency: "direct main"

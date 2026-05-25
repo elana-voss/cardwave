@@ -26,6 +26,22 @@ class ProvidersController {
     return NavigationService().showProviderAddDialog(isLocal: isLocal);
   }
 
+  /// Opens the in-process GGUF add dialog. Returns the constructed profile on
+  /// Save, null on cancel. Persistence is handled by the caller (the dialog
+  /// already does the model-load warmup, so no post-dialog network refresh
+  /// is needed — unlike [applyProviderAdd]).
+  static Future<LlmProviderConfig?> openLocalGgufProviderAddDialog() {
+    return NavigationService().showLocalGgufProviderAddDialog();
+  }
+
+  /// Frees the in-process llamadart plugin (and its VRAM) for `modelPath`.
+  /// Call BEFORE persisting an edit that changes the context size or KV
+  /// quant on a `localGguf` profile, and BEFORE deleting a `localGguf`
+  /// profile, so the old runtime releases its slot.
+  static Future<void> disposeLocalGgufRuntime(String modelPath) {
+    return LlmProvider.disposeRuntimeFor(modelPath);
+  }
+
   /// Persists a confirmed provider add: appends [added].profile to settings,
   /// refreshes the new provider's model roster (using the dialog's
   /// pre-fetched models so the network round-trip already paid for inside

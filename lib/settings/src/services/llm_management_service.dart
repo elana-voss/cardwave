@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/settings/src/models/app_settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -134,6 +136,21 @@ class LlmManagementService {
     required ModelRefreshTriggerEnum trigger,
     List<LlmModel>? preFetchedModels,
   }) async {
+    // In-process GGUF profiles have no remote catalog — the model IS the
+    // file the user picked. Skip the fetch + rebuild path (it would call
+    // fetchModels(baseUrl: null) and drop the model when its preset list
+    // is empty). Still run the preset-seeding step so a fresh add yields
+    // a usable chat-domain preset; otherwise the profile renders as
+    // "No Models configured" in the providers list.
+    if (profile.providerEnum == LLMProviderEnum.localGguf) {
+      _seedDefaultDomainPresetsIfEmpty(settings: settings, profile: profile);
+      return (
+        updated: 0,
+        rematched: 0,
+        markedUnavailable: 0,
+        error: null,
+      );
+    }
     final label =
         '${profile.providerEnum.name} (profile ${profile.id}) '
         '[trigger: ${trigger.label}]';
@@ -435,11 +452,22 @@ class LlmManagementService {
     required AppSettings settings,
     required String providerId,
   }) {
-    final dropped = settings.providerConfigs
+    final matching = settings.providerConfigs
         .where((p) => p.id == providerId)
+        .toList();
+    final dropped = matching
         .expand((p) => p.allPresets)
         .map((c) => c.id)
         .toSet();
+    // For an in-process GGUF profile, free its plugin (and VRAM) before
+    // we drop the profile that references it; otherwise the plugin sits
+    // in the per-runtime cache with no owner until app restart.
+    for (final p in matching) {
+      if (p.providerEnum == LLMProviderEnum.localGguf &&
+          p.modelPath != null) {
+        unawaited(LlmProvider.disposeRuntimeFor(p.modelPath!));
+      }
+    }
     final lengthBefore = settings.providerConfigs.length;
     settings.providerConfigs.removeWhere((p) => p.id == providerId);
     _clearAppDomainAssignmentsMatching(settings, dropped);

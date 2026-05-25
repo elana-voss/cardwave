@@ -30,6 +30,11 @@ class Embedder {
 
   bool get isReady => _engine != null;
 
+  /// Exposes the underlying backend so the in-process LLM dialog can query
+  /// VRAM info without spinning up a separate engine. Null before [init]
+  /// completes.
+  LlamaBackend? get backend => _engine?.backend;
+
   /// Caller must serialize: do not call while `embed` / `chunkByTokens` are
   /// in flight, or the native engine could free model weights mid-inference.
   Future<void> dispose() async {

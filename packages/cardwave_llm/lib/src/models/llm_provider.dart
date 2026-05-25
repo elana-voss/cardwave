@@ -9,6 +9,7 @@
 import 'dart:convert';
 
 import 'package:cardwave_llm/src/image/image_options.dart';
+import 'package:cardwave_llm/src/models/build_runner_inputs.dart';
 import 'package:cardwave_llm/src/models/llm_model.dart';
 import 'package:cardwave_llm/src/models/llm_model_capabilities_enum.dart';
 import 'package:cardwave_llm/src/models/llm_parameter_definition_id_enum.dart';
@@ -27,8 +28,11 @@ import 'package:genkit/genkit.dart';
 import 'package:genkit/plugin.dart' show GenkitPlugin;
 import 'package:genkit_anthropic/genkit_anthropic.dart';
 import 'package:genkit_google_genai/genkit_google_genai.dart' as gg;
+import 'package:genkit_llamadart/genkit_llamadart.dart';
 import 'package:genkit_openai/genkit_openai.dart';
 import 'package:http/http.dart' as http;
+import 'package:llamadart/llamadart.dart' show FlashAttention;
+import 'package:path/path.dart' as p;
 
 part 'llm_provider/llm_fetch_exception.dart';
 part 'llm_provider/open_ai_provider.dart';
@@ -38,6 +42,7 @@ part 'llm_provider/nano_gpt_provider.dart';
 part 'llm_provider/anthropic_provider.dart';
 part 'llm_provider/google_provider.dart';
 part 'llm_provider/local_open_ai_provider.dart';
+part 'llm_provider/local_gguf_provider.dart';
 
 /// Per-provider knowledge: how to hit the API, how to parse one model entry
 /// into an [LlmModel], how to build a genkit-backed [LlmRunner], and which
@@ -151,15 +156,7 @@ sealed class LlmProvider {
     Map<String, Map<String, dynamic>>? openRouterLookup,
   });
 
-  LlmRunner buildRunner({
-    required String apiKey,
-    required String modelId,
-    required LlmModel model,
-    required Map<LlmParameterDefinitionIdEnum, double> paramValues,
-    LlmPresetConfigReasoningEffortEnum reasoningEffort =
-        LlmPresetConfigReasoningEffortEnum.off,
-    String? baseUrl,
-  });
+  LlmRunner buildRunner(BuildRunnerInputs inputs);
 
   /// Static list of BCP-47 language codes the provider's TTS supports, for
   /// providers that don't expose a runtime endpoint. Override per provider.
@@ -241,10 +238,29 @@ sealed class LlmProvider {
     LLMProviderEnum.anthropic: const AnthropicProvider(),
     LLMProviderEnum.google: const GoogleProvider(),
     LLMProviderEnum.localOpenAi: const LocalOpenAiProvider(),
+    LLMProviderEnum.localGguf: const LocalGgufProvider(),
   };
 
   static LlmProvider of(LLMProviderEnum e) => _all[e]!;
   static Iterable<LlmProvider> all() => _all.values;
+
+  /// Disposes any in-process plugins (and frees their VRAM) whose cache key
+  /// references `modelPath`. Called by `ProvidersController` BEFORE saving a
+  /// `localGguf` profile edit that changes context / KV quant, so the old
+  /// plugin frees its slot before the new one loads. No-op for non-local
+  /// providers because their cache keys never contain a filesystem path.
+  static Future<void> disposeRuntimeFor(String modelPath) async {
+    final prefix = '${LLMProviderEnum.localGguf.name}:';
+    final stale = _pluginByConfig.keys
+        .where((k) => k.startsWith(prefix) && k.contains(modelPath))
+        .toList();
+    for (final key in stale) {
+      final plugin = _pluginByConfig.remove(key);
+      if (plugin is LlamaDartPlugin) {
+        await plugin.dispose();
+      }
+    }
+  }
 
   /// Deterministic provider detection from an API key alone. All six
   /// supported providers have distinctive signatures — see
@@ -275,8 +291,15 @@ Model<Object?> _modelFor({
   required String? baseUrl,
   required String modelId,
   required GenkitPlugin Function(String pluginName) buildPlugin,
+  String? cacheKeyOverride,
 }) {
-  final cacheKey = '${providerEnum.name}:$apiKey:${baseUrl ?? ''}';
+  // Default key composes from the URL + auth shape every cloud provider uses.
+  // `cacheKeyOverride` exists for providers (currently `localGguf`) whose
+  // plugin identity isn't a URL — they pass a synthetic key here and leave
+  // `baseUrl` to mean only "the URL field".
+  final cacheKey = cacheKeyOverride != null
+      ? '${providerEnum.name}:$cacheKeyOverride'
+      : '${providerEnum.name}:$apiKey:${baseUrl ?? ''}';
   final plugin = _pluginByConfig.putIfAbsent(cacheKey, () {
     final p = buildPlugin(providerEnum.name);
     _genkit.registry.registerPlugin(p);

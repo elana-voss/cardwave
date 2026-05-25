@@ -51,7 +51,7 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AiTabSectionHeader(
-          title: LlmProvider.of(widget.profile.providerEnum).label,
+          title: widget.profile.displayLabel,
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -164,7 +164,7 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
   }
 
   Future<void> _resetDomainsToDefaults() async {
-    final providerLabel = LlmProvider.of(widget.profile.providerEnum).label;
+    final providerLabel = widget.profile.displayLabel;
     final confirmed = await NavigationService().showConfirmCancelDialog(
       title: 'Set $providerLabel as the default for every AI feature?',
       message:
@@ -243,6 +243,7 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
             ? null
             : _DomainPillsColumn(domains: widget.assignedDomains),
         model: widget.model,
+        subtitleOverride: _localGgufSubtitle(widget.profile, widget.model),
         onTap: () => _menuController.isOpen
             ? _menuController.close()
             : _menuController.open(),
@@ -262,6 +263,22 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
     );
   }
 
+}
+
+/// Builds the meta line for a local-GGUF inventory row: `<loaded> ctx
+/// (max <native>) · KV <type>`. The native cap comes from the GGUF
+/// metadata via [LlmModel.contextLength]; the loaded value and KV
+/// quantization live on the profile. Returns null for any other
+/// provider type so the default `contextLabel · priceLabel` line shows.
+String? _localGgufSubtitle(LlmProviderConfig profile, LlmModel model) {
+  if (profile.providerEnum != LLMProviderEnum.localGguf) return null;
+  final loaded = profile.contextSize;
+  if (loaded == null) return null;
+  final native = model.contextLength;
+  final nativeLabel = native >= 1000 ? '${native ~/ 1000}k' : '$native';
+  final kv = profile.kvCacheType;
+  final kvLabel = kv == null ? 'fp16' : kv.name;
+  return '$loaded ctx (max $nativeLabel) · KV $kvLabel';
 }
 
 class _DomainCheckboxItem extends StatelessWidget {

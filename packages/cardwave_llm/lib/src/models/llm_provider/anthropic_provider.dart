@@ -103,15 +103,14 @@ class AnthropicProvider extends LlmProvider {
   }
 
   @override
-  LlmRunner buildRunner({
-    required String apiKey,
-    required String modelId,
-    required LlmModel model,
-    required Map<LlmParameterDefinitionIdEnum, double> paramValues,
-    LlmPresetConfigReasoningEffortEnum reasoningEffort =
-        LlmPresetConfigReasoningEffortEnum.off,
-    String? baseUrl,
-  }) {
+  LlmRunner buildRunner(BuildRunnerInputs inputs) {
+    final BuildRunnerInputs(
+      :apiKey,
+      :modelId,
+      :model,
+      :paramValues,
+      :reasoningEffort,
+    ) = inputs;
     final r = LlmParameterResolver(model: model, userValues: paramValues);
     final genkitModel = _modelFor(
       providerEnum: enumValue,
