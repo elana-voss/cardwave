@@ -136,7 +136,8 @@ class MemoryExtractor {
       );
     } on Exception catch (error, stackTrace) {
       logMemoryWarning(
-        'Memory extraction failed; window will be retried next pass.',
+        'Memory extraction failed via model "${runner.modelName}"; window '
+        'will be retried next pass.',
         error,
         stackTrace,
       );
