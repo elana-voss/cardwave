@@ -13,6 +13,7 @@ export 'src/engine/firing_engine.dart';
 export 'src/engine/value_math.dart';
 export 'src/models/character_state.dart';
 export 'src/predicates/field_schema.dart';
+export 'src/prompt/prompt_assembler.dart';
 export 'src/predicates/namespace_segments.dart';
 export 'src/predicates/predicate_ast.dart';
 export 'src/predicates/predicate_evaluator.dart';
