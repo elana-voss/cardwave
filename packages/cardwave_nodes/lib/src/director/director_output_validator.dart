@@ -3,10 +3,9 @@ import 'package:cardwave_nodes/src/director/director_output_validation_error.dar
 import 'package:cardwave_nodes/src/director/event_log_append.dart';
 import 'package:cardwave_nodes/src/models/knowledge_record.dart';
 import 'package:cardwave_nodes/src/nodes/node.dart';
-import 'package:cardwave_nodes/src/predicates/predicate_parse_exception.dart';
-import 'package:cardwave_nodes/src/predicates/predicate_parser.dart';
-import 'package:cardwave_nodes/src/predicates/predicate_validator.dart';
+import 'package:cardwave_nodes/src/predicates/predicate_check.dart';
 import 'package:cardwave_nodes/src/utils/constants.dart';
+import 'package:cardwave_nodes/src/utils/value_bounds.dart';
 
 /// Walks [output] and returns every semantic problem found. An empty
 /// list means the output is well-formed and can be applied as-is. Type
@@ -34,10 +33,11 @@ void _checkEnumDeltas<E extends Enum>(
 ) {
   outer.forEach((characterId, deltas) {
     deltas.forEach((field, value) {
-      if (value < directorDeltaMin || value > directorDeltaMax) {
+      final problem = boundsProblem(value, directorDeltaMin, directorDeltaMax);
+      if (problem != null) {
         errors.add(DirectorOutputValidationError(
           path: '$basePath.$characterId.${field.name}',
-          message: 'value $value is out of bounds [$directorDeltaMin, $directorDeltaMax]',
+          message: problem,
         ));
       }
     });
@@ -58,11 +58,11 @@ void _checkKnowledgeWrites(
           message: 'topic must not be empty',
         ));
       }
-      if (record.confidence < 0.0 || record.confidence > 1.0) {
+      final confidenceProblem = boundsProblem(record.confidence, 0.0, 1.0);
+      if (confidenceProblem != null) {
         errors.add(DirectorOutputValidationError(
           path: '$path.confidence',
-          message:
-              'confidence ${record.confidence} is out of bounds [0.0, 1.0]',
+          message: confidenceProblem,
         ));
       }
     }
@@ -82,11 +82,11 @@ void _checkEventLogAppend(
         message: 'text must not be empty',
       ));
     }
-    if (entry.significance < 0.0 || entry.significance > 1.0) {
+    final significanceProblem = boundsProblem(entry.significance, 0.0, 1.0);
+    if (significanceProblem != null) {
       errors.add(DirectorOutputValidationError(
         path: '$path.significance',
-        message:
-            'significance ${entry.significance} is out of bounds [0.0, 1.0]',
+        message: significanceProblem,
       ));
     }
   }
@@ -99,26 +99,17 @@ void _checkGeneratedNodes(
   for (var i = 0; i < nodes.length; i++) {
     final node = nodes[i];
     final path = 'generatedNodes[$i]';
-    if (node.triggerProb < 0.0 || node.triggerProb > 1.0) {
+    final triggerProblem = boundsProblem(node.triggerProb, 0.0, 1.0);
+    if (triggerProblem != null) {
       errors.add(DirectorOutputValidationError(
         path: '$path.triggerProb',
-        message:
-            'triggerProb ${node.triggerProb} is out of bounds [0.0, 1.0]',
+        message: triggerProblem,
       ));
     }
-    try {
-      final ast = parsePredicate(node.predicate);
-      final predicateErrors = validatePredicate(ast);
-      for (final pe in predicateErrors) {
-        errors.add(DirectorOutputValidationError(
-          path: '$path.predicate',
-          message: 'unknown field path: ${pe.path}',
-        ));
-      }
-    } on PredicateParseException catch (e) {
+    for (final problem in findPredicateProblems(node.predicate)) {
       errors.add(DirectorOutputValidationError(
         path: '$path.predicate',
-        message: 'parse error: ${e.message}',
+        message: problem,
       ));
     }
   }
