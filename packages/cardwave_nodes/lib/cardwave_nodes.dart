@@ -2,6 +2,7 @@
 // Files under src/ are private to this package (enforced by import_lint).
 // Cross-package consumers MUST import this barrel, not src/ paths.
 
+export 'src/engine/firing_engine.dart';
 export 'src/engine/value_math.dart';
 export 'src/models/character_state.dart';
 export 'src/predicates/field_schema.dart';
