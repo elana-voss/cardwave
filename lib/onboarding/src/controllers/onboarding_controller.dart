@@ -237,9 +237,21 @@ class OnboardingController extends ChangeNotifier {
     }
 
     if (localGgufProfile != null) {
-      // The dialog already warmed the model and built the LlmModel stub —
-      // no remote refresh needed, just persist.
+      // The dialog already warmed the model and built the LlmModel
+      // stub, so no remote fetch is needed — `refreshProviderModels`
+      // short-circuits for localGguf, but its preset-seeding step
+      // (`_seedDefaultDomainPresetsIfEmpty`) is still required. Without
+      // it the new profile shows up in providerConfigs but has no
+      // chat/assistant/system preset assigned, and the user lands on
+      // an empty chat after finishing onboarding. Same call the
+      // Settings "Add Local GGUF" flow makes via `applyProviderAdd`.
       settingsService.settings.providerConfigs.add(localGgufProfile!);
+      await _llmManagementService.refreshProviderModels(
+        settings: settingsService.settings,
+        profile: localGgufProfile!,
+        trigger: ModelRefreshTriggerEnum.manual,
+        preFetchedModels: localGgufProfile!.models,
+      );
     }
 
     settingsService.settings.activePersona.name = personaName;
