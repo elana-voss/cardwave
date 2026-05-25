@@ -52,11 +52,13 @@ void main() {
       await tester.tap(find.byKey(const Key('settings-ai-providers')));
       await tester.pumpAndSettle();
 
-      // AI Settings → New Local Provider button (OutlinedButton sibling
-      // of the FilledButton "New Provider"; disambiguated by the icon).
-      await tester.tap(
-        find.widgetWithText(OutlinedButton, 'New Local Provider'),
-      );
+      // AI Settings → open the "New Provider" dropdown then tap
+      // "Local Provider" inside it. The three add-provider variants
+      // were consolidated into one FilledButton + MenuAnchor; opening
+      // the menu and clicking the menu item is the new flow.
+      await tester.tap(find.widgetWithText(FilledButton, 'New Provider'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MenuItemButton, 'Local Provider'));
       await tester.pumpAndSettle();
 
       expect(

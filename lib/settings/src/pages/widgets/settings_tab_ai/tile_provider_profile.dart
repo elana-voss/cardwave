@@ -6,9 +6,8 @@ import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai.dart'
     show SettingsTabAi;
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_tts.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_video.dart';
-import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/domain_pill.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/ai_tab_section_header.dart';
-import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_domain_model.dart';
+import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/domain_pill.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -34,18 +33,13 @@ class TileProviderProfile extends StatefulWidget {
 }
 
 class _TileProviderProfileState extends State<TileProviderProfile> {
+  /// `LlmPresetConfig.id` of the row whose domain-assignment chips are
+  /// currently revealed. `null` = all rows collapsed.
+  String? _expandedPresetId;
+
   @override
   Widget build(BuildContext context) {
     final presets = widget.profile.allModelPresets.toList();
-    final settings = context.watch<SettingsService>().settings;
-    final domainsByPresetId = <String, List<LlmProviderDomainEnum>>{};
-
-    for (final domain in LlmProviderDomainEnum.values) {
-      final id = settings.getAppDomainPresetId(domain);
-      if (id == null || id.isEmpty) continue;
-      domainsByPresetId.putIfAbsent(id, () => []).add(domain);
-    }
-
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -97,7 +91,12 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
               profile: widget.profile,
               model: mp.model,
               preset: mp.preset,
-              assignedDomains: domainsByPresetId[mp.preset.id] ?? const [],
+              isExpanded: _expandedPresetId == mp.preset.id,
+              onToggleExpanded: () => setState(() {
+                _expandedPresetId = _expandedPresetId == mp.preset.id
+                    ? null
+                    : mp.preset.id;
+              }),
               onEditPreset: () => _openPresetEditor(
                 existingModel: mp.model,
                 config: mp.preset,
@@ -184,23 +183,25 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
 }
 
 /// Inventory row for one (model, preset) under a provider. Tapping the
-/// row opens a `MenuAnchor` with one checkbox per domain so the user can
-/// assign/unassign this preset without leaving the page. Capability-gated
-/// rows are disabled. Owns its own [MenuController] so each row's menu
-/// closes independently.
+/// row toggles the FilterChip strip beneath it via the parent's
+/// `_expandedPresetId` so only one strip shows at a time. Capable-but-
+/// not-assigned pills filtered out of the title so stale assignments
+/// (model lost a capability) don't render misleading badges.
 class _PresetInventoryRow extends StatefulWidget {
   const _PresetInventoryRow({
     required this.profile,
     required this.model,
     required this.preset,
-    required this.assignedDomains,
+    required this.isExpanded,
+    required this.onToggleExpanded,
     required this.onEditPreset,
     super.key,
   });
   final LlmProviderConfig profile;
   final LlmModel model;
   final LlmPresetConfig preset;
-  final List<LlmProviderDomainEnum> assignedDomains;
+  final bool isExpanded;
+  final VoidCallback onToggleExpanded;
   final VoidCallback onEditPreset;
 
   @override
@@ -208,10 +209,8 @@ class _PresetInventoryRow extends StatefulWidget {
 }
 
 class _PresetInventoryRowState extends State<_PresetInventoryRow> {
-  final MenuController _menuController = MenuController();
-
-  // Stateless helper provided once at app scope — grab it here rather
-  // than re-reading it from `context` on every build.
+  // App-scope stateless helper — read once and cache so the build path
+  // doesn't trip the avoid_read_inside_build lint.
   late final LlmPureHelpers _llm;
 
   @override
@@ -224,45 +223,110 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
   Widget build(BuildContext context) {
     final service = context.watch<SettingsService>();
     final settings = service.settings;
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7);
 
-    return MenuAnchor(
-      controller: _menuController,
-      menuChildren: [
-        for (final domain in LlmProviderDomainEnum.values)
-          _DomainCheckboxItem(
-            domain: domain,
-            capable: _llm.canServeDomain(widget.model, domain),
-            isAssigned:
-                settings.getAppDomainPresetId(domain) == widget.preset.id,
-            onToggle: (on) =>
-                service.setDomainPreset(domain, on ? widget.preset.id : null),
+    final capableDomains = [
+      for (final d in LlmProviderDomainEnum.values)
+        if (_llm.canServeDomain(widget.model, d)) d,
+    ];
+    final assignedDomains = [
+      for (final d in capableDomains)
+        if (settings.getAppDomainPresetId(d) == widget.preset.id) d,
+    ];
+    final metaLine =
+        _localGgufSubtitle(widget.profile, widget.model) ??
+        <String>[
+          widget.model.contextLabel,
+          ?widget.model.priceLabel,
+        ].join(' · ');
+    // Temperature is the per-preset knob users most often tune to tell
+    // two presets of the same model apart, so it gets a primary-colored
+    // semibold tail on the subtitle. Hidden when the preset uses the
+    // resolver default (nothing for the user to distinguish on yet).
+    final temperature =
+        widget.preset.parameterValues[LlmParameterDefinitionIdEnum.temperature];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          onTap: capableDomains.isEmpty ? null : widget.onToggleExpanded,
+          title: Row(
+            spacing: 6,
+            children: [
+              if (widget.model.isUnavailable) const BadgeModelUnavailable(),
+              Flexible(
+                child: Text(widget.model.name, overflow: TextOverflow.ellipsis),
+              ),
+              for (final d in assignedDomains) DomainPill(domain: d),
+            ],
           ),
-      ],
-      child: TileDomainModel(
-        leading: widget.assignedDomains.isEmpty
-            ? null
-            : _DomainPillsColumn(domains: widget.assignedDomains),
-        model: widget.model,
-        subtitleOverride: _localGgufSubtitle(widget.profile, widget.model),
-        onTap: () => _menuController.isOpen
-            ? _menuController.close()
-            : _menuController.open(),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ButtonTestTts(profile: widget.profile, model: widget.model),
-            ButtonTestVideo(profile: widget.profile, model: widget.model),
-            IconButton(
-              icon: const Icon(Icons.settings, size: 20),
-              tooltip: 'Edit Model',
-              onPressed: widget.onEditPreset,
+          subtitle: Text.rich(
+            TextSpan(
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
+              children: [
+                TextSpan(text: metaLine),
+                if (temperature != null) ...[
+                  const TextSpan(text: ' · '),
+                  TextSpan(
+                    text: 'Temp ${temperature.toStringAsFixed(1)}',
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
             ),
-          ],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ButtonTestTts(profile: widget.profile, model: widget.model),
+              ButtonTestVideo(profile: widget.profile, model: widget.model),
+              IconButton(
+                icon: const Icon(Icons.settings, size: 20),
+                tooltip: 'Edit Model',
+                onPressed: widget.onEditPreset,
+              ),
+            ],
+          ),
         ),
-      ),
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 200),
+          crossFadeState: widget.isExpanded && capableDomains.isNotEmpty
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          firstChild: const SizedBox.shrink(),
+          secondChild: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            color: theme.colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                for (final domain in capableDomains)
+                  FilterChip(
+                    label: Text(domain.label),
+                    selected:
+                        settings.getAppDomainPresetId(domain) ==
+                        widget.preset.id,
+                    onSelected: (on) => service.setDomainPreset(
+                      domain,
+                      on ? widget.preset.id : null,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
-
 }
 
 /// Builds the meta line for a local-GGUF inventory row: `<loaded> ctx
@@ -281,49 +345,3 @@ String? _localGgufSubtitle(LlmProviderConfig profile, LlmModel model) {
   return '$loaded ctx (max $nativeLabel) · KV $kvLabel';
 }
 
-class _DomainCheckboxItem extends StatelessWidget {
-  const _DomainCheckboxItem({
-    required this.domain,
-    required this.capable,
-    required this.isAssigned,
-    required this.onToggle,
-  });
-  final LlmProviderDomainEnum domain;
-  final bool capable;
-  final bool isAssigned;
-  final ValueChanged<bool> onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    return CheckboxMenuButton(
-      value: isAssigned,
-      closeOnActivate: false,
-      onChanged: capable ? (v) => onToggle(v ?? false) : null,
-      child: Text(domain.label),
-    );
-  }
-}
-
-/// Vertical stack of [DomainPill] chips fitting inside the 80px label
-/// column. One pill per assigned domain; if the list is empty the row
-/// passes `null` so the column reserves its width without rendering a
-/// placeholder chip.
-class _DomainPillsColumn extends StatelessWidget {
-  const _DomainPillsColumn({required this.domains});
-  final List<LlmProviderDomainEnum> domains;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final d in domains)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 2),
-            child: DomainPill(domain: d),
-          ),
-      ],
-    );
-  }
-}

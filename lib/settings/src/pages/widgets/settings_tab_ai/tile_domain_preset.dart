@@ -62,6 +62,7 @@ class TileDomainPreset extends StatelessWidget {
     return TileDomainModel(
       leading: d != null ? _DomainTextLabel(domain: d) : null,
       model: activeEntry?.model,
+      preset: activeEntry?.config,
       placeholderTitle: validPresets.isEmpty
           ? (d == null ? 'No Models' : 'No compatible models')
           : 'Tap to choose',

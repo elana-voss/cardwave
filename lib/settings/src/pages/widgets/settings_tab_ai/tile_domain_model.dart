@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 
 const double _kLabelColumnWidth = 80;
 
-/// Renders the model name + meta line (context, pricing) with a fixed-width
-/// label column on the left. Caller decides what goes in the column —
-/// the dashboard passes plain small-caps domain text, the inventory rows
-/// pass a stack of [DomainPill] status chips. Width is reserved either way
-/// so rows align across both surfaces.
+/// Dashboard row: model name + meta line with a fixed-width label
+/// column on the left. When the active model is null the title flips
+/// to a warning icon + error-color placeholder so unassigned domain
+/// slots stand out.
 class TileDomainModel extends StatelessWidget {
   const TileDomainModel({
     required this.model,
@@ -18,6 +17,7 @@ class TileDomainModel extends StatelessWidget {
     this.onTap,
     this.trailing,
     this.subtitleOverride,
+    this.preset,
   });
   final Widget? leading;
   final LlmModel? model;
@@ -30,21 +30,37 @@ class TileDomainModel extends StatelessWidget {
   /// loaded context size lives on the profile, not on `LlmModel`.
   final String? subtitleOverride;
 
+  /// Active preset for this row. When non-null and its
+  /// `parameterValues` carries a temperature, the subtitle gets a
+  /// primary-color `Temp <value>` tail so users can tell presets of
+  /// the same model apart at a glance.
+  final LlmPresetConfig? preset;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final activeModel = model;
 
     if (activeModel == null) {
+      // No preset assigned (or no compatible model exists). Surface the
+      // gap with a warning icon + error-color text so the user notices
+      // domains that still need a model picked — same tone the rest of
+      // M3 uses for "this slot needs your attention".
       return ListTile(
         onTap: onTap,
         title: Row(
+          spacing: 6,
           children: [
             _LabelColumn(leading: leading),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: theme.colorScheme.error,
+              size: 18,
+            ),
             Expanded(
               child: Text(
                 placeholderTitle,
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                style: TextStyle(color: theme.colorScheme.error),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -59,6 +75,8 @@ class TileDomainModel extends StatelessWidget {
           activeModel.contextLabel,
           ?activeModel.priceLabel,
         ].join(' · ');
+    final temperature =
+        preset?.parameterValues[LlmParameterDefinitionIdEnum.temperature];
 
     return ListTile(
       onTap: onTap,
@@ -79,9 +97,23 @@ class TileDomainModel extends StatelessWidget {
         children: [
           const SizedBox(width: _kLabelColumnWidth),
           Expanded(
-            child: Text(
-              metaLine,
-              style: theme.textTheme.bodySmall?.copyWith(color: muted),
+            child: Text.rich(
+              TextSpan(
+                style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                children: [
+                  TextSpan(text: metaLine),
+                  if (temperature != null) ...[
+                    const TextSpan(text: ' · '),
+                    TextSpan(
+                      text: 'Temp ${temperature.toStringAsFixed(1)}',
+                      style: TextStyle(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

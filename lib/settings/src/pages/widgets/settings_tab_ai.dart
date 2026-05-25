@@ -159,31 +159,69 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Wrap (not Row) so the labels don't have to truncate on narrow
-            // phone widths — the second button drops to a new line instead.
+            // M3 split-button: trigger + dropdown for "New Provider"
+            // variants; refresh as low-emphasis utility on the right.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
+              child: Row(
                 children: [
-                  FilledButton.icon(
-                    onPressed: _isAdding ? null : _addProvider,
-                    icon: const Icon(Icons.add),
-                    label: const Text('New Provider'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _isAdding ? null : _addLocalProvider,
-                    icon: const Icon(Icons.computer),
-                    label: const Text('New Local Provider'),
-                  ),
-                  if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android)
-                    OutlinedButton.icon(
-                      onPressed: _isAdding ? null : _addLocalGgufProvider,
-                      icon: const Icon(Icons.memory),
-                      label: const Text('New Local GGUF'),
+                  MenuAnchor(
+                    // Position the dropdown a few pixels below the
+                    // button's bottom edge per M3 menu spec.
+                    alignmentOffset: const Offset(0, 4),
+                    style: MenuStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        Theme.of(context).colorScheme.surfaceContainer,
+                      ),
+                      shape: WidgetStateProperty.all(
+                        const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        ),
+                      ),
+                      elevation: WidgetStateProperty.all(8),
                     ),
+                    builder: (context, controller, _) => FilledButton.icon(
+                      onPressed: _isAdding
+                          ? null
+                          : () => controller.isOpen
+                              ? controller.close()
+                              : controller.open(),
+                      icon: const Icon(Icons.add),
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 8,
+                        children: [
+                          const Text('New Provider'),
+                          Icon(
+                            controller.isOpen
+                                ? Icons.arrow_drop_up
+                                : Icons.arrow_drop_down,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ),
+                    menuChildren: [
+                      _AddProviderMenuItem(
+                        icon: Icons.cloud_queue,
+                        label: 'Cloud Provider',
+                        onPressed: _addProvider,
+                      ),
+                      _AddProviderMenuItem(
+                        icon: Icons.desktop_windows,
+                        label: 'Local Provider',
+                        onPressed: _addLocalProvider,
+                      ),
+                      if (!kIsWeb &&
+                          defaultTargetPlatform != TargetPlatform.android)
+                        _AddProviderMenuItem(
+                          icon: Icons.memory,
+                          label: 'Local GGUF',
+                          onPressed: _addLocalGgufProvider,
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
                   _RefreshMenuButton(
                     policy: settings.refreshPolicy,
                     lastRefreshMillis: settings.lastModelRefreshAtMillis,
@@ -250,6 +288,32 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// One row of the "New Provider" dropdown. Pulls the shared `leadingIcon`
+/// (20-px) + 8-dp horizontal padding + 14-pt label sizing out of the
+/// three call sites so adding a fourth provider type stays one line.
+class _AddProviderMenuItem extends StatelessWidget {
+  const _AddProviderMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return MenuItemButton(
+      leadingIcon: Icon(icon, size: 20),
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Text(label, style: const TextStyle(fontSize: 14)),
       ),
     );
   }
