@@ -60,3 +60,9 @@ const double pressureIncrementPerTurn = 0.1;
 
 /// Injection budget as fraction of the model's `max_context`. Fixed.
 const double injectionBudgetFraction = 0.10;
+
+/// Director-output validation bounds. Per-call delta values are clamped at
+/// the state layer to `0..1`, but a director output of `+5.0` or `-100`
+/// is suspicious model noise and rejected before reaching the engine.
+const double directorDeltaMin = -1.0;
+const double directorDeltaMax = 1.0;
