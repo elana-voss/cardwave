@@ -28,12 +28,18 @@ class AppDialogActionRow extends StatelessWidget {
       rowChildren = actions;
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(paddingValue),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: rowChildren,
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(height: 1, thickness: 0.5),
+        Padding(
+          padding: const EdgeInsets.all(paddingValue),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: rowChildren,
+          ),
+        ),
+      ],
     );
   }
 }

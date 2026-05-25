@@ -82,34 +82,51 @@ class _PresetPickerBodyState extends State<_PresetPickerBody> {
                 entry.config.name.toLowerCase().contains(query);
           }).toList();
 
-    Widget buildRow(
+    // Group by provider in first-appearance order, then build a flat list of
+    // widgets: a section header above each provider's run, followed by its
+    // preset rows. Same flat list feeds both the short-list Column and the
+    // long-list ListView so the two render identically.
+    final groups = <LLMProviderEnum, List<
       ({LlmProviderConfig profile, LlmModel model, LlmPresetConfig config})
-      entry,
-    ) => _PresetRow(
-      profile: entry.profile,
-      preset: entry.config,
-      model: entry.model,
-      activeDomains: _domainsByPresetId[entry.config.id] ?? const [],
-      selected: entry.config.id == widget.activePresetId,
-      onTap: () => Navigator.pop(context, entry.config.id),
-    );
+    >>{};
+    for (final entry in filtered) {
+      groups.putIfAbsent(entry.profile.providerEnum, () => []).add(entry);
+    }
+    final rowWidgets = <Widget>[];
+    for (final group in groups.entries) {
+      rowWidgets.add(DrawerSectionHeader(group.key.name.toUpperCase()));
+      for (final entry in group.value) {
+        rowWidgets.add(
+          _PresetRow(
+            preset: entry.config,
+            model: entry.model,
+            activeDomains: _domainsByPresetId[entry.config.id] ?? const [],
+            selected: entry.config.id == widget.activePresetId,
+            onTap: () => Navigator.pop(context, entry.config.id),
+          ),
+        );
+      }
+    }
 
     return AppDialog(
       // When search is shown, pin search at top and scroll the list inside
       // a bounded area so the dialog doesn't shrink/jump as results filter.
       isScrollable: !_showSearch,
       builder: (ctx, _) {
-        final titleWidget = Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: widget.title,
+        final titleWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: widget.title,
+            ),
+            const Divider(height: 1, thickness: 0.5),
+          ],
         );
         if (!_showSearch) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              titleWidget,
-              for (final entry in filtered) buildRow(entry),
-            ],
+            children: [titleWidget, ...rowWidgets],
           );
         }
         return Column(
@@ -131,8 +148,8 @@ class _PresetPickerBodyState extends State<_PresetPickerBody> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: filtered.length,
-                itemBuilder: (_, i) => buildRow(filtered[i]),
+                itemCount: rowWidgets.length,
+                itemBuilder: (_, i) => rowWidgets[i],
               ),
             ),
           ],
