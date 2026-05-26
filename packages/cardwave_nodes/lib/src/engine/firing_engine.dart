@@ -33,7 +33,10 @@ class FiringEngine {
   final Map<String, PredicateNode> _predicateCache = {};
 
   FiringResult runTurn(NodePool pool, SessionState state) {
-    final winnersByPool = _rollEligible(pool, state);
+    final skipped = <NodeSkipRecord>[];
+    final rolled = <NodeRollRecord>[];
+    final firedRecords = <NodeFireRecord>[];
+    final winnersByPool = _rollEligible(pool, state, skipped, rolled);
     final fired = <Node>[];
     for (final type in NodeTypeEnum.values) {
       final winners = winnersByPool[type] ?? const [];
@@ -44,57 +47,65 @@ class FiringEngine {
       final chosen = _weightedPick(winners, (n) => n.triggerProb);
       _fireNode(chosen, pool, state);
       fired.add(chosen);
+      firedRecords.add(NodeFireRecord(
+        nodeId: chosen.id,
+        narrativePayload: chosen.narrativePayload,
+      ));
       pool.resetPressure(type);
     }
+    logTurnFiring(TurnFiringEvent(
+      turn: state.turn,
+      skipped: skipped,
+      rolled: rolled,
+      fired: firedRecords,
+    ));
     return (fired: fired);
   }
 
   Map<NodeTypeEnum, List<Node>> _rollEligible(
     NodePool pool,
     SessionState state,
+    List<NodeSkipRecord> skipped,
+    List<NodeRollRecord> rolled,
   ) {
     final winners = <NodeTypeEnum, List<Node>>{
       for (final t in NodeTypeEnum.values) t: [],
     };
     for (final node in pool.active) {
       if (node.currentDelay > 0) {
-        logNodeSkipped(
-          turn: state.turn,
+        skipped.add(NodeSkipRecord(
           nodeId: node.id,
           reason: NodeSkipReason.delayActive,
-        );
+        ));
         continue;
       }
       if (node.currentCooldown > 0) {
-        logNodeSkipped(
-          turn: state.turn,
+        skipped.add(NodeSkipRecord(
           nodeId: node.id,
           reason: NodeSkipReason.cooldownActive,
-        );
+        ));
         continue;
       }
       final predicate = _predicateCache[node.predicate] ??=
           parsePredicate(node.predicate);
       if (!evaluatePredicate(predicate, state)) {
-        logNodeSkipped(
-          turn: state.turn,
+        skipped.add(NodeSkipRecord(
           nodeId: node.id,
           reason: NodeSkipReason.predicateFalse,
-        );
+        ));
         continue;
       }
       final pressure = pool.pressureFor(node.type);
       final effective = (node.triggerProb + pressure).clamp(0.0, 1.0);
       final draw = _random.nextDouble();
       final won = draw < effective;
-      logNodeRolled(
-        turn: state.turn,
+      rolled.add(NodeRollRecord(
         nodeId: node.id,
         triggerProb: node.triggerProb,
         pressure: pressure,
         draw: draw,
         won: won,
-      );
+      ));
       if (won) {
         winners[node.type]!.add(node);
       }
@@ -128,11 +139,6 @@ class FiringEngine {
     if (node.scope == NodeScopeEnum.oneShot) {
       pool.active.remove(node);
     }
-    logNodeFired(
-      turn: state.turn,
-      nodeId: node.id,
-      narrativePayload: node.narrativePayload,
-    );
   }
 
   void _applyEffectsToState(Node node, SessionState state) {
