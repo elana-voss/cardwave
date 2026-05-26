@@ -207,20 +207,21 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                       visibleChatController: visibleChatController,
                     ),
                     // NODES debug snapshot — development/tuning tool per
-                    // spec §10, not intended for end-user interaction.
-                    ListTile(
-                      leading: const Icon(Icons.bug_report_outlined),
-                      title: const Text('NODES Engine'),
-                      subtitle: const Text('Debug snapshot'),
-                      onTap: () {
-                        Navigator.of(navContext, rootNavigator: true).pop();
-                        unawaited(
-                          NodesDebugController.show(
-                            nodesService: nodesService,
-                          ),
-                        );
-                      },
-                    ),
+                    // spec §10, hidden from release builds.
+                    if (kDebugMode)
+                      ListTile(
+                        leading: const Icon(Icons.bug_report_outlined),
+                        title: const Text('NODES Engine'),
+                        subtitle: const Text('Debug snapshot'),
+                        onTap: () {
+                          Navigator.of(navContext, rootNavigator: true).pop();
+                          unawaited(
+                            NodesDebugController.show(
+                              nodesService: nodesService,
+                            ),
+                          );
+                        },
+                      ),
                   ]
                   // ------------------------------------------------------------------
                   // EDITOR
