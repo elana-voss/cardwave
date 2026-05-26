@@ -31,6 +31,10 @@ class NodesService {
   final FiringEngine _firingEngine = FiringEngine();
   final PromptAssembler _assembler;
 
+  /// Key under which authored nodes + emotion baseline + initial
+  /// goal/scene live in a SillyTavern v3 card's `extensions` map.
+  static const String _cardExtensionKey = 'cardwave_nodes';
+
   String? _currentSessionId;
   SessionState? _state;
   NodePool? _pool;
@@ -144,7 +148,7 @@ class NodesService {
   }
 
   void _seedFromCardExtension(CharacterFile file) {
-    final extJson = file.card.extensions['cardwave_nodes'];
+    final extJson = file.card.extensions[_cardExtensionKey];
     if (extJson is! Map<String, dynamic>) return;
     final result = loadCardNodesExtension(extJson);
     if (result.errors.isNotEmpty) {
