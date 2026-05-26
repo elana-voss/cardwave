@@ -387,6 +387,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         promptRepository: _promptRepository,
         toolRegistry: _toolRegistry,
         memoryService: _memoryService,
+        nodesService: _nodesService,
       );
 
       _imageGenerationService = ImageGenerationService(

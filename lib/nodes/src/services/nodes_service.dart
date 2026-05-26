@@ -9,10 +9,10 @@ import 'package:cardwave_nodes/cardwave_nodes.dart';
 /// Owns the NODES engine state for the chat the user is in: opens a
 /// chat lazily on first use (loading session state and rebuilding the
 /// pool from disk, seeding authored nodes from the card's extension
-/// on a fresh chat), runs per-turn engine progression and prompt
-/// assembly, applies director output back onto state, and persists
-/// after each turn. One chat's state is held at a time; opening a
-/// different chat drops the previous one.
+/// on a fresh chat), runs the per-turn engine pass + dynamic-section
+/// assembly for the actor prompt, applies director output back onto
+/// state, and persists after each turn. One chat's state is held at a
+/// time; opening a different chat drops the previous one.
 ///
 /// The director LLM call is NOT made here — the chat orchestrator
 /// owns that (it already owns the actor call) and hands the
@@ -45,60 +45,50 @@ class NodesService {
   /// The currently-loaded pool, or null when no chat is open.
   NodePool? get pool => _currentSessionId == null ? null : _pool;
 
-  /// Bumps the turn counter, ticks the pool, runs one firing pass.
-  /// Lazy-opens the chat on first call (loads persisted state + seeds
-  /// authored nodes on a fresh chat). Returns the nodes that fired
-  /// this turn so the caller can relay them to the director.
-  Future<List<Node>> advanceTurn(
-    ChatSession session,
-    CharacterFile file,
-  ) async {
-    await _ensureOpen(session, file);
-    return _runEngineTurn();
-  }
-
-  /// Fire-and-forget per-turn step for the chat controller: advances
-  /// the engine and persists, catching and logging any failure so a
-  /// disk error never blocks the reply. The next turn retries; until
-  /// then the on-disk state lags one turn behind the in-memory copy.
-  Future<void> tickTurn(ChatSession session, CharacterFile file) async {
-    try {
-      await advanceTurn(session, file);
-      await persist(session, file);
-    } on Exception catch (error, stackTrace) {
-      loggingService.warning(
-        'NODES per-turn tick failed; retrying next turn.',
-        error,
-        stackTrace,
-      );
-    }
-  }
-
-  /// Same engine pass as [advanceTurn] plus assembling the actor
-  /// prompt against the resulting state. Use when the caller intends
-  /// to inject the prompt into the actor LLM call.
-  Future<NodesActorContext> assembleActorContext({
+  /// Pre-reply work: lazy-opens the chat, bumps the turn counter,
+  /// ticks the pool, runs one firing pass, and assembles the dynamic
+  /// NODES sections (scene + state slice + sticky directives + this-
+  /// turn payloads + surfaced memories) for injection into the actor
+  /// prompt. Returns the assembled section together with the fired
+  /// list (relayed to the director on the same turn once that call is
+  /// wired).
+  ///
+  /// Any failure (disk, embedder, engine) is caught and returned as
+  /// an empty context, with a warning logged — a NODES problem must
+  /// never block the reply. The chat replies without NODES injection
+  /// for that turn.
+  Future<NodesActorContext> assembleNodesPrompt({
     required ChatSession session,
     required CharacterFile file,
     required String userInput,
     required int maxContextTokens,
   }) async {
-    await _ensureOpen(session, file);
-    final fired = _runEngineTurn();
-    final prompt = await _assembler.assemble(
-      cardDefinition: _renderCardDefinition(file),
-      state: _state!,
-      pool: _pool!,
-      firedThisTurn: fired,
-      userInput: userInput,
-      maxContextTokens: maxContextTokens,
-    );
-    return NodesActorContext(prompt: prompt, firedThisTurn: fired);
+    try {
+      await _ensureOpen(session, file);
+      final fired = _runEngineTurn();
+      final promptSection = await _assembler.assembleDynamicSections(
+        state: _state!,
+        pool: _pool!,
+        firedThisTurn: fired,
+        userInput: userInput,
+        maxContextTokens: maxContextTokens,
+      );
+      return NodesActorContext(
+        promptSection: promptSection,
+        firedThisTurn: fired,
+      );
+    } on Exception catch (error, stackTrace) {
+      loggingService.warning(
+        'NODES turn assembly failed; replying without NODES context.',
+        error,
+        stackTrace,
+      );
+      return const NodesActorContext(promptSection: '', firedThisTurn: []);
+    }
   }
 
   /// Applies [output] to the open chat's state + pool, then persists.
-  /// Lazy-opens the chat if not already open (so callers that skip the
-  /// actor pass can still record director output).
+  /// Lazy-opens the chat if not already open.
   Future<void> recordDirectorOutput({
     required ChatSession session,
     required CharacterFile file,
@@ -109,13 +99,21 @@ class NodesService {
     await _persistCurrent(file, session.id);
   }
 
-  /// Writes the current in-memory state to disk. For callers that
-  /// advanced the engine (via [advanceTurn] or [assembleActorContext])
-  /// but skipped the director call, persistence still has to land so
-  /// the new turn counter and pool tick survive a restart.
-  Future<void> persist(ChatSession session, CharacterFile file) async {
-    await _ensureOpen(session, file);
-    await _persistCurrent(file, session.id);
+  /// Post-reply fire-and-forget: persists the in-memory state so the
+  /// just-advanced turn survives a restart. Internal try/catch logs
+  /// IO failures and retries on the next turn rather than surfacing
+  /// the error.
+  Future<void> recordTurn(ChatSession session, CharacterFile file) async {
+    try {
+      await _ensureOpen(session, file);
+      await _persistCurrent(file, session.id);
+    } on Exception catch (error, stackTrace) {
+      loggingService.warning(
+        'NODES per-turn persist failed; retrying next turn.',
+        error,
+        stackTrace,
+      );
+    }
   }
 
   /// Drops the in-memory state when the chat closes. No-op when
@@ -186,22 +184,19 @@ class NodesService {
         sessionId,
         ChatNodesState(state: _state!, activeNodes: _pool!.active.toList()),
       );
-
-  static String _renderCardDefinition(CharacterFile file) {
-    final card = file.card;
-    final parts = <String>['## ${card.name}'];
-    if (card.description.isNotEmpty) parts.add(card.description);
-    return parts.join('\n');
-  }
 }
 
-/// The return shape of [NodesService.assembleActorContext]: the
-/// assembled actor prompt to inject into the LLM call, plus the
-/// nodes that fired this turn (relayed to the director on the same
-/// turn so it can react to them).
+/// What [NodesService.assembleNodesPrompt] returns: the dynamic NODES
+/// prompt block to inject into the actor LLM call's system message
+/// (empty when there is nothing to inject — failure or quiet turn),
+/// and the list of nodes that fired this turn so the caller can
+/// relay them to the director on the same turn.
 class NodesActorContext {
-  const NodesActorContext({required this.prompt, required this.firedThisTurn});
+  const NodesActorContext({
+    required this.promptSection,
+    required this.firedThisTurn,
+  });
 
-  final String prompt;
+  final String promptSection;
   final List<Node> firedThisTurn;
 }

@@ -666,12 +666,13 @@ class ChatController extends BaseChatViewController
         unawaited(memoryService.recordTurn(chatSession, characterFile));
       }
 
-      // NODES engine ticks per turn so authored beats progress, the pool
-      // ages, and the event log catches up. Skipped for the assistant chat
-      // (it has no character interiority to model). Director call is gated
-      // on user review of the system prompt.
+      // NODES engine advanced + assembled before the reply (in
+      // chat_execution_service); persist the post-advance state here so
+      // the new turn counter and pool tick survive a restart. Skipped
+      // for the assistant chat (it has no character interiority to
+      // model). Director call is gated on user review of the system prompt.
       if (!chatSession.isAssistant) {
-        unawaited(nodesService.tickTurn(chatSession, characterFile));
+        unawaited(nodesService.recordTurn(chatSession, characterFile));
       }
 
       cancelToken?.dispose();

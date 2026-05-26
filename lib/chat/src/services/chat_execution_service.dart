@@ -11,6 +11,7 @@ import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/memory/memory.dart';
+import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_names/cardwave_names.dart';
@@ -40,6 +41,7 @@ class ChatExecutionService {
     required this.promptRepository,
     required this.toolRegistry,
     required this.memoryService,
+    required this.nodesService,
   });
   final LlmPureHelpers pureHelpers;
   final SettingsService settingsService;
@@ -47,6 +49,7 @@ class ChatExecutionService {
   final PromptRepository promptRepository;
   final ToolRegistry toolRegistry;
   final MemoryService memoryService;
+  final NodesService nodesService;
 
   /// Generates a chat reply, running the manual tool loop when the
   /// model emits tool calls. Pass [dispatchToolCalls] when the chat
@@ -157,6 +160,22 @@ class ChatExecutionService {
               ? await memoryService.retrieveContext(session, characterFile)
               : const <String>[];
 
+          // NODES — advances the engine and assembles the dynamic section
+          // (scene + state slice + sticky directives + fired payloads +
+          // surfaced memories) for the <situation> section. Skipped for the
+          // assistant chat (no character interiority to model). Returns an
+          // empty context on any failure, so it never blocks the reply.
+          final NodesActorContext nodesContext = session.isAssistant
+              ? const NodesActorContext(promptSection: '', firedThisTurn: [])
+              : await nodesService.assembleNodesPrompt(
+                  session: session,
+                  file: characterFile,
+                  userInput: session.messages.isEmpty
+                      ? ''
+                      : session.messages.last.content,
+                  maxContextTokens: contextSize,
+                );
+
           final builder = ChatPromptBuilder(
             contextSize: contextSize,
             maxResponseLength: maxResponseLength,
@@ -168,6 +187,9 @@ class ChatExecutionService {
             isImpersonating: isImpersonating,
             dataContext: dataContext,
             memoryContext: memoryLines.isEmpty ? null : memoryLines.join('\n'),
+            nodesContext: nodesContext.promptSection.isEmpty
+                ? null
+                : nodesContext.promptSection,
             enabledTools: enabledTools,
             toolRegistry: toolRegistry,
           );

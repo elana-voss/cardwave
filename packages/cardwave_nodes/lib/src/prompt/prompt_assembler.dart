@@ -49,25 +49,65 @@ class PromptAssembler {
     required String userInput,
     required int maxContextTokens,
   }) async {
+    final blocks = await _buildSceneAndVariableBlocks(
+      state: state,
+      pool: pool,
+      firedThisTurn: firedThisTurn,
+      userInput: userInput,
+      maxContextTokens: maxContextTokens,
+    );
+    return <String>[
+      blocks.scene,
+      cardDefinition,
+      blocks.variable,
+      'User: $userInput',
+    ].where((s) => s.isNotEmpty).join('\n\n');
+  }
+
+  /// Returns just the per-turn dynamic content — world/scene block,
+  /// session state slice, sticky directives, fired payloads, surfaced
+  /// memories — joined as one string. Excludes the character
+  /// definition and the user input, which the host's own prompt
+  /// builder already places. Use this when the actor prompt is
+  /// assembled outside the package and NODES only contributes its
+  /// dynamic context as one injected section.
+  Future<String> assembleDynamicSections({
+    required SessionState state,
+    required NodePool pool,
+    required List<Node> firedThisTurn,
+    required String userInput,
+    required int maxContextTokens,
+  }) async {
+    final blocks = await _buildSceneAndVariableBlocks(
+      state: state,
+      pool: pool,
+      firedThisTurn: firedThisTurn,
+      userInput: userInput,
+      maxContextTokens: maxContextTokens,
+    );
+    return <String>[blocks.scene, blocks.variable]
+        .where((s) => s.isNotEmpty)
+        .join('\n\n');
+  }
+
+  Future<({String scene, String variable})> _buildSceneAndVariableBlocks({
+    required SessionState state,
+    required NodePool pool,
+    required List<Node> firedThisTurn,
+    required String userInput,
+    required int maxContextTokens,
+  }) async {
     final budgetChars =
         (maxContextTokens * injectionBudgetFraction * _charsPerToken).round();
-
-    final sceneSection = _renderSceneAndWorld(state);
-    final variableSections = await _renderVariableSections(
+    final scene = _renderSceneAndWorld(state);
+    final variable = await _renderVariableSections(
       state: state,
       pool: pool,
       firedThisTurn: firedThisTurn,
       userInput: userInput,
       budgetChars: budgetChars,
     );
-    final userSection = 'User: $userInput';
-
-    return <String>[
-      sceneSection,
-      cardDefinition,
-      variableSections,
-      userSection,
-    ].where((s) => s.isNotEmpty).join('\n\n');
+    return (scene: scene, variable: variable);
   }
 
   String _renderSceneAndWorld(SessionState state) {

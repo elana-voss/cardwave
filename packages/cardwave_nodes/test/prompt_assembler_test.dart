@@ -133,6 +133,51 @@ void main() {
     });
   });
 
+  group('assembleDynamicSections', () {
+    test('returns scene + variable blocks; omits cardDefinition and user',
+        () async {
+      final state = _seedState();
+      final pool = NodePool()..add(_stickyNode(payload: 'still cool'));
+      final assembler = PromptAssembler();
+      final dynamic_ = await assembler.assembleDynamicSections(
+        state: state,
+        pool: pool,
+        firedThisTurn: [_firedNode(payload: 'she sighs')],
+        userInput: 'Hello',
+        maxContextTokens: 8000,
+      );
+      expect(dynamic_, contains('## Scene'));
+      expect(dynamic_, contains('## State'));
+      expect(dynamic_, contains('## Lingering'));
+      expect(dynamic_, contains('still cool'));
+      expect(dynamic_, contains('## Now'));
+      expect(dynamic_, contains('she sighs'));
+      expect(dynamic_, isNot(contains('## Alice')),
+          reason: 'cardDefinition is the host\'s responsibility');
+      expect(dynamic_, isNot(contains('User: Hello')),
+          reason: 'user input is the host\'s responsibility');
+    });
+
+    test('empty world: only the always-on state slice (phase) survives',
+        () async {
+      final dynamic_ = await PromptAssembler().assembleDynamicSections(
+        state: SessionState()..characters['alice'] = CharacterState(),
+        pool: NodePool(),
+        firedThisTurn: const [],
+        userInput: 'hi',
+        maxContextTokens: 8000,
+      );
+      // No scene, no goal, no prominent emotions, no nodes — but the
+      // phase line is part of the state slice and always emits.
+      expect(dynamic_, isNot(contains('## Scene')));
+      expect(dynamic_, isNot(contains('## Lingering')));
+      expect(dynamic_, isNot(contains('## Now')));
+      expect(dynamic_, isNot(contains('## Earlier')));
+      expect(dynamic_, contains('## State'));
+      expect(dynamic_, contains('Phase:'));
+    });
+  });
+
   group('sticky directives', () {
     test('only currentSticky > 0 nodes contribute', () async {
       final pool = NodePool()
