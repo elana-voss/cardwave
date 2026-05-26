@@ -10,6 +10,7 @@ import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
 import 'package:cardwave/memory/memory.dart';
+import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave_names/cardwave_names.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
@@ -80,6 +81,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
   late final CardwaveEmbeddingsModule _cardwaveEmbeddingsModule;
   late final MemoryService _memoryService;
   late final CardwaveMemoryModule _cardwaveMemoryModule;
+  late final NodesService _nodesService;
+  late final CardwaveNodesModule _cardwaveNodesModule;
   late final GroupRepository _groupRepository;
   late final GroupFileService _groupFileService;
   late final GroupChatService _groupChatService;
@@ -247,6 +250,18 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       );
       _cardwaveMemoryModule = CardwaveMemoryModule(
         memoryService: _memoryService,
+      );
+
+      _nodesService = NodesService(
+        repository: NodesRepository(
+          loggingService: _loggingService,
+          appStorage: _appStorage,
+        ),
+        embedder: _cardwaveEmbeddingsModule.embedder,
+        loggingService: _loggingService,
+      );
+      _cardwaveNodesModule = CardwaveNodesModule(
+        nodesService: _nodesService,
       );
 
       _textToSpeechService = const TextToSpeechService();
@@ -606,6 +621,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         Provider<Embedder>.value(value: _cardwaveEmbeddingsModule.embedder),
         ChangeNotifierProvider<SearchService>.value(value: _searchService),
         Provider<CardwaveMemoryModule>.value(value: _cardwaveMemoryModule),
+        Provider<CardwaveNodesModule>.value(value: _cardwaveNodesModule),
         ChangeNotifierProvider<TextToSpeechController>.value(
           value: _textToSpeechController,
         ),
