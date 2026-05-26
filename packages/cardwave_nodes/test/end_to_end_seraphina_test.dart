@@ -192,6 +192,30 @@ void main() {
     expect(loaded.errors, isEmpty);
   });
 
+  test('director emotion delta past lockout threshold locks the Plutchik opposite',
+      () {
+    final state = SessionState();
+    state.characters['alice'] = CharacterState();
+    // +0.5 to joy: magnitude exceeds lockoutThreshold (0.4) — the applier
+    // must lock sadness (joy's Plutchik opposite) for lockoutDurationTurns.
+    applyDirectorOutput(
+      DirectorOutput(
+        emotionDeltas: {
+          'alice': {EmotionEnum.joy: 0.5},
+        },
+      ),
+      state,
+    );
+    final sadness =
+        state.characters['alice']!.emotion[EmotionEnum.sadness]!;
+    expect(sadness.lockoutTurnsRemaining, 3,
+        reason: 'lockout on sadness should be set to lockoutDurationTurns');
+    // Sadness itself wasn't mutated (only the lockout counter).
+    expect(sadness.value, 0.0);
+    // Joy itself moved (resistance damping at value=0 → full delta).
+    expect(state.characters['alice']!.emotion[EmotionEnum.joy]!.value, 0.5);
+  });
+
   test('director emotion delta and event-log append survive a round-trip',
       () {
     final state = SessionState();
