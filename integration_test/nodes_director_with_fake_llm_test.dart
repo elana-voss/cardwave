@@ -214,6 +214,24 @@ void main() {
       expect(state.eventLog, isNotEmpty,
           reason: 'director event-log append should be on the state');
       expect(state.eventLog.first.text, 'first hello');
+
+      // 4. The router in main.dart forwards FiringLogEvent records into
+      // LoggingService. The seeded `greeting` node has predicate `true`
+      // and triggerProb 1.0, so it fires every turn — the in-app log
+      // viewer should now show a `[NODES] turn N: fired "greeting"`
+      // entry. Catches a future regression where the router branch
+      // gets deleted or the message format drifts.
+      final logs = LoggingService().logsNotifier.value;
+      expect(
+        logs.any((e) =>
+            e.message.contains('[NODES]') &&
+            e.message.contains('fired "greeting"')),
+        isTrue,
+        reason:
+            'router should have forwarded the NodeFiredEvent into the in-app '
+            'log; seen messages: '
+            '${logs.where((e) => e.message.contains("[NODES]")).map((e) => e.message).toList()}',
+      );
     },
   );
 }
