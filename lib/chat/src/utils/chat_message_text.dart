@@ -21,11 +21,11 @@ String _latestTextWhere(
   List<ChatMessage> messages,
   bool Function(ChatMessage) matches,
 ) {
-  String? text;
+  var text = '';
   for (final message in messages) {
     if (matches(message) && message.content.isNotEmpty) {
       text = message.content;
     }
   }
-  return text ?? '';
+  return text;
 }
