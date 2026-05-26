@@ -83,7 +83,7 @@ class NodesService {
         error,
         stackTrace,
       );
-      return const NodesActorContext(promptSection: '', firedThisTurn: []);
+      return NodesActorContext.empty;
     }
   }
 
@@ -196,6 +196,14 @@ class NodesActorContext {
     required this.promptSection,
     required this.firedThisTurn,
   });
+
+  /// The fallback used when NODES has nothing to contribute — assistant
+  /// chats (no character interiority to model) and any error path that
+  /// degrades to "reply without NODES context".
+  static const NodesActorContext empty = NodesActorContext(
+    promptSection: '',
+    firedThisTurn: [],
+  );
 
   final String promptSection;
   final List<Node> firedThisTurn;

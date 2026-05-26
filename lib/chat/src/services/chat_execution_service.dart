@@ -171,7 +171,7 @@ class ChatExecutionService {
           // reply, and the embedder needs to rank memories against the
           // user's question, not the bot's prior answer.
           final NodesActorContext nodesContext = session.isAssistant
-              ? const NodesActorContext(promptSection: '', firedThisTurn: [])
+              ? NodesActorContext.empty
               : await nodesService.assembleNodesPrompt(
                   session: session,
                   file: characterFile,
