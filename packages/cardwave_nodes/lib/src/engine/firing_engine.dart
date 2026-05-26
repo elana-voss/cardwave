@@ -35,7 +35,6 @@ class FiringEngine {
   FiringResult runTurn(NodePool pool, SessionState state) {
     final skipped = <NodeSkipRecord>[];
     final rolled = <NodeRollRecord>[];
-    final firedRecords = <NodeFireRecord>[];
     final winnersByPool = _rollEligible(pool, state, skipped, rolled);
     final fired = <Node>[];
     for (final type in NodeTypeEnum.values) {
@@ -47,17 +46,19 @@ class FiringEngine {
       final chosen = _weightedPick(winners, (n) => n.triggerProb);
       _fireNode(chosen, pool, state);
       fired.add(chosen);
-      firedRecords.add(NodeFireRecord(
-        nodeId: chosen.id,
-        narrativePayload: chosen.narrativePayload,
-      ));
       pool.resetPressure(type);
     }
     logTurnFiring(TurnFiringEvent(
       turn: state.turn,
       skipped: skipped,
       rolled: rolled,
-      fired: firedRecords,
+      fired: [
+        for (final node in fired)
+          NodeFireRecord(
+            nodeId: node.id,
+            narrativePayload: node.narrativePayload,
+          ),
+      ],
     ));
     return (fired: fired);
   }
