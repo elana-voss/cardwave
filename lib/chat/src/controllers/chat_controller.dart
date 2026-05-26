@@ -17,6 +17,7 @@ import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/memory/memory.dart';
+import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -40,6 +41,7 @@ class ChatController extends BaseChatViewController
     required this.toolDispatcher,
     required this.chatRepository,
     required this.memoryService,
+    required this.nodesService,
     this.dataContextProvider,
   }) {
     scrollController.addListener(_onScroll);
@@ -68,6 +70,7 @@ class ChatController extends BaseChatViewController
   final PromptRepository promptRepository;
   final ChatExecutionService chatExecutionService;
   final MemoryService memoryService;
+  final NodesService nodesService;
   final TextToSpeechController textToSpeechService;
   @override
   final ImageGenerationService imageGenerationService;
@@ -209,6 +212,7 @@ class ChatController extends BaseChatViewController
     focusNode.dispose();
     streamingContent.dispose();
     memoryService.releaseChat(chatSession.id);
+    nodesService.releaseChat(chatSession.id);
     super.dispose();
   }
 
@@ -662,11 +666,24 @@ class ChatController extends BaseChatViewController
         unawaited(memoryService.recordTurn(chatSession, characterFile));
       }
 
+      // NODES engine ticks per turn so authored beats progress, the pool
+      // ages, and the event log catches up. Skipped for the assistant chat
+      // (it has no character interiority to model). Director call is not
+      // wired yet — that's the next step and is gated on prompt review.
+      if (!chatSession.isAssistant) {
+        unawaited(_advanceAndPersistNodes());
+      }
+
       cancelToken?.dispose();
       cancelToken = null;
       isGenerating = false;
       _notify();
     }
+  }
+
+  Future<void> _advanceAndPersistNodes() async {
+    await nodesService.advanceTurn(chatSession, characterFile);
+    await nodesService.persist(chatSession, characterFile);
   }
 
   @override
