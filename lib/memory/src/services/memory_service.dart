@@ -59,7 +59,7 @@ class MemoryService {
       await _ensureLoaded(session, file);
       final retriever = _retriever;
       if (retriever == null) return const [];
-      final query = _latestUserText(session.messages);
+      final query = latestUserText(session.messages);
       if (query.isEmpty) return const [];
       final events = await retriever.retrieve(query);
       // Facts carry current state ("what's true now"); threads carry what's
@@ -274,16 +274,6 @@ class MemoryService {
 
   static int _resolvedThreadCount(MemoryGraph graph) =>
       graph.threads.where((thread) => thread.resolvedAt != null).length;
-
-  static String _latestUserText(List<ChatMessage> messages) {
-    String? text;
-    for (final message in messages) {
-      if (message.role == ChatRoleEnum.user && message.content.isNotEmpty) {
-        text = message.content;
-      }
-    }
-    return text ?? '';
-  }
 
   // Returns the whole "- …" block, leading dash included, so the caller joins
   // these as-is — an event can span three lines and must not be re-prefixed.

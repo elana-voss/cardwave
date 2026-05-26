@@ -3,7 +3,9 @@ import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/nodes/src/models/chat_nodes_state.dart';
 import 'package:cardwave/nodes/src/repositories/nodes_repository.dart';
+import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 
 /// Owns the NODES engine state for the chat the user is in: opens a
@@ -23,11 +25,15 @@ class NodesService {
     required this.repository,
     required this.embedder,
     required this.loggingService,
+    required this.settingsService,
+    required this.pureHelpers,
   }) : _assembler = PromptAssembler(embedder: embedder);
 
   final NodesRepository repository;
   final Embedder embedder;
   final LoggingService loggingService;
+  final SettingsService settingsService;
+  final LlmPureHelpers pureHelpers;
   final FiringEngine _firingEngine = FiringEngine();
   final PromptAssembler _assembler;
 
@@ -99,17 +105,31 @@ class NodesService {
     await _persistCurrent(file, session.id);
   }
 
-  /// Post-reply fire-and-forget: persists the in-memory state so the
-  /// just-advanced turn survives a restart. Internal try/catch logs
-  /// IO failures and retries on the next turn rather than surfacing
-  /// the error.
+  /// Post-reply fire-and-forget: calls the director with the just-
+  /// completed turn (user input + actor reply + current state),
+  /// applies the returned `DirectorOutput` to state + pool, then
+  /// persists. When no system-domain LLM preset is configured the
+  /// director call is skipped and only persistence runs — the engine
+  /// still ticks, just without state writeback that turn. Internal
+  /// try/catch logs failures and retries on the next turn rather
+  /// than surfacing.
   Future<void> recordTurn(ChatSession session, CharacterFile file) async {
     try {
       await _ensureOpen(session, file);
+      final runner = _resolveSystemRunner();
+      if (runner != null) {
+        final director = DirectorRunner(runner: runner);
+        final output = await director.run(
+          state: _state!,
+          actorLastOutput: latestAssistantText(session.messages),
+          userInput: latestUserText(session.messages),
+        );
+        applyDirectorOutput(output, _state!, pool: _pool!);
+      }
       await _persistCurrent(file, session.id);
     } on Exception catch (error, stackTrace) {
       loggingService.warning(
-        'NODES per-turn persist failed; retrying next turn.',
+        'NODES per-turn director/persist failed; retrying next turn.',
         error,
         stackTrace,
       );
@@ -184,6 +204,34 @@ class NodesService {
         sessionId,
         ChatNodesState(state: _state!, activeNodes: _pool!.active.toList()),
       );
+
+  /// Builds the system-domain runner the director uses, or null when
+  /// no system preset is set or it can't be resolved (logged) — the
+  /// engine then ticks without director writeback for that turn.
+  LlmRunner? _resolveSystemRunner() {
+    final presetId = settingsService.settings.getAppDomainPresetId(
+      LlmProviderDomainEnum.system,
+    );
+    if (presetId == null) return null;
+    try {
+      final resolved = pureHelpers.resolvePreset(
+        configId: presetId,
+        providers: settingsService.settings.providerConfigs,
+      );
+      return pureHelpers.createRunner(
+        provider: resolved.provider,
+        model: resolved.model,
+        preset: resolved.preset,
+      );
+    } on Exception catch (error, stackTrace) {
+      loggingService.warning(
+        'NODES: system model unresolved; director writeback off this turn.',
+        error,
+        stackTrace,
+      );
+      return null;
+    }
+  }
 }
 
 /// What [NodesService.assembleNodesPrompt] returns: the dynamic NODES

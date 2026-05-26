@@ -8,6 +8,7 @@ import 'package:cardwave/chat/src/models/chat_tool_call_record.dart';
 import 'package:cardwave/chat/src/models/generation_event.dart';
 import 'package:cardwave/chat/src/services/chat_prompt_builder.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
+import 'package:cardwave/chat/src/utils/chat_message_text.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/memory/memory.dart';
@@ -175,7 +176,7 @@ class ChatExecutionService {
               : await nodesService.assembleNodesPrompt(
                   session: session,
                   file: characterFile,
-                  userInput: _latestUserText(session.messages),
+                  userInput: latestUserText(session.messages),
                   maxContextTokens: contextSize,
                 );
 
@@ -661,17 +662,4 @@ class ChatExecutionService {
     return 'History message';
   }
 
-  /// The latest user message text in [messages]. Walks the list (not
-  /// just `last`) so reroll / swipe / continue — where the trailing
-  /// message is the assistant's reply — still resolves to the user's
-  /// most recent question. Empty string when no user message exists.
-  static String _latestUserText(List<ChatMessage> messages) {
-    String? text;
-    for (final message in messages) {
-      if (message.role == ChatRoleEnum.user && message.content.isNotEmpty) {
-        text = message.content;
-      }
-    }
-    return text ?? '';
-  }
 }

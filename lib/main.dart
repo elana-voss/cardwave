@@ -259,6 +259,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         ),
         embedder: _cardwaveEmbeddingsModule.embedder,
         loggingService: _loggingService,
+        settingsService: _settingsService,
+        pureHelpers: _pureHelpers,
       );
       _cardwaveNodesModule = CardwaveNodesModule(
         nodesService: _nodesService,

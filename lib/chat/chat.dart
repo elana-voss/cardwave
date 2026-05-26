@@ -48,3 +48,4 @@ export 'src/services/chat_execution_service.dart';
 export 'src/services/chat_prompt_builder.dart';
 export 'src/services/chat_service.dart';
 export 'src/services/lorebook_service.dart';
+export 'src/utils/chat_message_text.dart';
