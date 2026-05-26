@@ -10,10 +10,9 @@ enum NodeSkipReason {
   predicateFalse,
 }
 
-/// Per-node entries packaged inside a [TurnFiringEvent]. They are data
-/// shapes, not log records themselves — the engine emits one
-/// [TurnFiringEvent] for the turn, and the host (in-app log viewer,
-/// debug panel) reads these lists off it.
+/// Node was not rolled this turn because an eligibility gate stopped
+/// it (delay countdown, cooldown, or predicate false). The reason
+/// tells the debug view which gate fired.
 class NodeSkipRecord {
   const NodeSkipRecord({required this.nodeId, required this.reason});
 

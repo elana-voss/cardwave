@@ -19,6 +19,15 @@ typedef FiringResult = ({
   List<Node> fired,
 });
 
+/// Outcome of `_rollEligible`: per-type winners pulled off the pool,
+/// plus the per-node skip/roll records the engine then bundles into a
+/// [TurnFiringEvent] for the host.
+typedef _RollResult = ({
+  Map<NodeTypeEnum, List<Node>> winners,
+  List<NodeSkipRecord> skipped,
+  List<NodeRollRecord> rolled,
+});
+
 /// Runs one firing pass per turn: filter eligible, roll, pick at most
 /// one winner per pool, apply effects, update node countdowns and pool
 /// pressure. Pool's [NodePool.tick] must run separately before this
@@ -33,12 +42,10 @@ class FiringEngine {
   final Map<String, PredicateNode> _predicateCache = {};
 
   FiringResult runTurn(NodePool pool, SessionState state) {
-    final skipped = <NodeSkipRecord>[];
-    final rolled = <NodeRollRecord>[];
-    final winnersByPool = _rollEligible(pool, state, skipped, rolled);
+    final roll = _rollEligible(pool, state);
     final fired = <Node>[];
     for (final type in NodeTypeEnum.values) {
-      final winners = winnersByPool[type] ?? const [];
+      final winners = roll.winners[type] ?? const [];
       if (winners.isEmpty) {
         pool.incrementPressure(type);
         continue;
@@ -50,8 +57,8 @@ class FiringEngine {
     }
     logTurnFiring(TurnFiringEvent(
       turn: state.turn,
-      skipped: skipped,
-      rolled: rolled,
+      skipped: roll.skipped,
+      rolled: roll.rolled,
       fired: [
         for (final node in fired)
           NodeFireRecord(
@@ -63,12 +70,9 @@ class FiringEngine {
     return (fired: fired);
   }
 
-  Map<NodeTypeEnum, List<Node>> _rollEligible(
-    NodePool pool,
-    SessionState state,
-    List<NodeSkipRecord> skipped,
-    List<NodeRollRecord> rolled,
-  ) {
+  _RollResult _rollEligible(NodePool pool, SessionState state) {
+    final skipped = <NodeSkipRecord>[];
+    final rolled = <NodeRollRecord>[];
     final winners = <NodeTypeEnum, List<Node>>{
       for (final t in NodeTypeEnum.values) t: [],
     };
@@ -111,7 +115,7 @@ class FiringEngine {
         winners[node.type]!.add(node);
       }
     }
-    return winners;
+    return (winners: winners, skipped: skipped, rolled: rolled);
   }
 
   T _weightedPick<T>(List<T> items, double Function(T) weight) {
