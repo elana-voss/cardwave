@@ -165,14 +165,17 @@ class ChatExecutionService {
           // surfaced memories) for the <situation> section. Skipped for the
           // assistant chat (no character interiority to model). Returns an
           // empty context on any failure, so it never blocks the reply.
+          //
+          // `userInput` is the latest user turn (not just `messages.last`):
+          // on reroll/swipe/continue the last message is the assistant's
+          // reply, and the embedder needs to rank memories against the
+          // user's question, not the bot's prior answer.
           final NodesActorContext nodesContext = session.isAssistant
               ? const NodesActorContext(promptSection: '', firedThisTurn: [])
               : await nodesService.assembleNodesPrompt(
                   session: session,
                   file: characterFile,
-                  userInput: session.messages.isEmpty
-                      ? ''
-                      : session.messages.last.content,
+                  userInput: _latestUserText(session.messages),
                   maxContextTokens: contextSize,
                 );
 
@@ -656,5 +659,19 @@ class ChatExecutionService {
             .every((x) => x.role != LlmRunnerMessageRoleEnum.user);
     if (isLastUser) return 'New user message';
     return 'History message';
+  }
+
+  /// The latest user message text in [messages]. Walks the list (not
+  /// just `last`) so reroll / swipe / continue — where the trailing
+  /// message is the assistant's reply — still resolves to the user's
+  /// most recent question. Empty string when no user message exists.
+  static String _latestUserText(List<ChatMessage> messages) {
+    String? text;
+    for (final message in messages) {
+      if (message.role == ChatRoleEnum.user && message.content.isNotEmpty) {
+        text = message.content;
+      }
+    }
+    return text ?? '';
   }
 }
