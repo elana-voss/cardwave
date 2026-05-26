@@ -3,6 +3,7 @@
 // Cross-package consumers MUST import this barrel, not src/ paths.
 
 export 'src/director/director_output.dart';
+export 'src/director/director_output_applier.dart';
 export 'src/director/director_output_schema.dart';
 export 'src/director/director_output_validation_error.dart';
 export 'src/director/director_output_validator.dart';
