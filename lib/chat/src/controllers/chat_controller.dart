@@ -668,10 +668,10 @@ class ChatController extends BaseChatViewController
 
       // NODES engine ticks per turn so authored beats progress, the pool
       // ages, and the event log catches up. Skipped for the assistant chat
-      // (it has no character interiority to model). Director call is not
-      // wired yet — that's the next step and is gated on prompt review.
+      // (it has no character interiority to model). Director call is gated
+      // on user review of the system prompt.
       if (!chatSession.isAssistant) {
-        unawaited(_advanceAndPersistNodes());
+        unawaited(nodesService.tickTurn(chatSession, characterFile));
       }
 
       cancelToken?.dispose();
@@ -679,11 +679,6 @@ class ChatController extends BaseChatViewController
       isGenerating = false;
       _notify();
     }
-  }
-
-  Future<void> _advanceAndPersistNodes() async {
-    await nodesService.advanceTurn(chatSession, characterFile);
-    await nodesService.persist(chatSession, characterFile);
   }
 
   @override

@@ -53,6 +53,23 @@ class NodesService {
     return _runEngineTurn();
   }
 
+  /// Fire-and-forget per-turn step for the chat controller: advances
+  /// the engine and persists, catching and logging any failure so a
+  /// disk error never blocks the reply. The next turn retries; until
+  /// then the on-disk state lags one turn behind the in-memory copy.
+  Future<void> tickTurn(ChatSession session, CharacterFile file) async {
+    try {
+      await advanceTurn(session, file);
+      await persist(session, file);
+    } on Exception catch (error, stackTrace) {
+      loggingService.warning(
+        'NODES per-turn tick failed; retrying next turn.',
+        error,
+        stackTrace,
+      );
+    }
+  }
+
   /// Same engine pass as [advanceTurn] plus assembling the actor
   /// prompt against the resulting state. Use when the caller intends
   /// to inject the prompt into the actor LLM call.
