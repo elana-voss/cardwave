@@ -11,6 +11,7 @@ import 'package:cardwave/common/src/widgets/dialog_text_input.dart';
 import 'package:cardwave/editor/editor.dart';
 import 'package:cardwave/grid/grid.dart';
 import 'package:cardwave/group/group.dart';
+import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/workspace.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -222,6 +223,14 @@ class NavigationService {
       builder: (_) => TestVideoPreviewDialog(file: file),
     );
   }
+
+  /// Opens the NODES debug snapshot dialog for the currently open chat.
+  /// Read-only, snapshot at the moment of opening — close and reopen
+  /// to refresh. Dev/tuning tool per spec §10.
+  Future<void> showNodesDebugDialog({required NodesService nodesService}) =>
+      _showAppDialog<void>(
+        builder: (_) => NodesDebugDialog(nodesService: nodesService),
+      );
 
 /// Opens the App Settings surface inside an [AppDialog]. Returns when the
   /// user closes the dialog.

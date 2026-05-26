@@ -215,11 +215,8 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.of(navContext, rootNavigator: true).pop();
                         unawaited(
-                          showDialog<void>(
-                            context: context,
-                            builder: (_) => NodesDebugDialog(
-                              nodesService: nodesService,
-                            ),
+                          NodesDebugController.show(
+                            nodesService: nodesService,
                           ),
                         );
                       },
