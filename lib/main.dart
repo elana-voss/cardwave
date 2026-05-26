@@ -11,6 +11,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
 import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave/nodes/nodes.dart';
+import 'package:cardwave_nodes/cardwave_nodes.dart' as cwn;
 import 'package:cardwave_names/cardwave_names.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
@@ -194,6 +195,35 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             obj.stackTrace,
             obj.dataContext,
           );
+        } else if (obj is cwn.FiringLogEvent) {
+          // NODES engine firings — surfaced into the same log viewer as
+          // memory/embeddings/LLM so the spec §10 firing-roll log is
+          // reachable without a dedicated debug panel. `[NODES]` prefix
+          // makes the entries grep-friendly in the viewer's search box.
+          switch (obj) {
+            case cwn.NodeFiredEvent(:final turn, :final nodeId, :final narrativePayload):
+              _loggingService.info(
+                '[NODES] turn $turn: fired "$nodeId" → $narrativePayload',
+              );
+            case cwn.NodeRolledEvent(
+                  :final turn,
+                  :final nodeId,
+                  :final triggerProb,
+                  :final pressure,
+                  :final draw,
+                  :final won,
+                ):
+              _loggingService.debug(
+                '[NODES] turn $turn: rolled "$nodeId" '
+                'prob=${triggerProb.toStringAsFixed(2)} '
+                '+ pressure=${pressure.toStringAsFixed(2)} '
+                'draw=${draw.toStringAsFixed(2)} → ${won ? "won" : "lost"}',
+              );
+            case cwn.NodeSkippedEvent(:final turn, :final nodeId, :final reason):
+              _loggingService.debug(
+                '[NODES] turn $turn: skipped "$nodeId" (${reason.name})',
+              );
+          }
         }
       });
 
