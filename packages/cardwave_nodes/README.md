@@ -87,6 +87,178 @@ Field meanings:
 `spawns` (not shown) lets a fired node drop new nodes into the pool, useful for
 multi-beat sequences.
 
+## Authoring guide (editor UI)
+
+The host app (cardwave) ships an editor for this block under
+**Character editor → Nodes panel**. The editor reads and writes the same
+`cardwave_nodes` JSON above; you never hand-edit the JSON.
+
+### Engine seed (top of the panel)
+
+The session starts with whatever you set here. All four fields are optional.
+
+- **Initial goal** — a short sentence saying what the character is trying to do
+  at the start of the chat (e.g. *"meet the stranger at the tavern"*). Read by
+  the actor LLM as part of its prompt; predicates can also read it as
+  `global.goal`. Cleared when a fired node's "Goal change" effect overwrites it.
+- **Emotion baseline** — starting value (chip + slider) for any emotion you
+  want set above zero at session open. Anything you don't list defaults to
+  zero. Use sparingly — the director will move these on every turn.
+- **Initial scene** — location, time of day, comma-separated lists of
+  "Present" entities and "Sensory hooks". These seed `global.scene.*` and feed
+  into the actor's scene block in the prompt.
+
+### The node list
+
+Below the engine seed, the panel shows one row per authored node:
+
+```
+  ≡  node_1780140681326   characterBehavior  session   🗑
+     character.alice.emotion.joy > 0.5
+```
+
+Drag handle reorders (display only; firing order is not affected). The trash
+icon deletes the node. Tap the row to open the per-node editor.
+
+The **Add Node** button creates a fresh node with sensible defaults
+(`triggerProb: 1.0`, `predicate: "true"`, `scope: session`, all countdowns
+at 0 except `alive: -1`).
+
+### The per-node editor
+
+**Type** (`characterBehavior` / `environmental` / `event` / `pacing`)
+The pool the node belongs to. Each pool fires *at most one node per turn*, so
+two character-behaviour nodes that win their roll on the same turn don't both
+fire — one is chosen. Rough guide:
+
+| Type | Use for |
+|---|---|
+| `characterBehavior` | beats the character performs (a smile, a comment, a withdrawal) |
+| `environmental` | beats the world produces (rain starts, a stranger walks in) |
+| `event` | discrete happenings, especially rare one-shots |
+| `pacing` | deliberate quiet beats (a beat of silence, a slow look) |
+
+**Scope** (`phase` / `scene` / `session` / `oneShot`)
+*When* the node leaves the pool, independent of `alive`:
+
+| Scope | Removed when |
+|---|---|
+| `oneShot` | the node fires once |
+| `scene` | the engine marks a scene transition |
+| `phase` | the engine marks a phase transition (scene ↔ sequel) |
+| `session` | never (until `alive` runs out, or the chat ends) |
+
+**Origin** (`authored` / `generated`)
+`authored` means you wrote it. `generated` means the director LLM produced it
+during a chat. Leave at `authored` for nodes you write — only change if
+you're capturing a director-generated node into the card.
+
+**Trigger prob** (slider + numeric field, 0.0–1.0)
+Base probability of firing on any turn where the node is eligible. The engine
+adds a small pressure bonus when the pool has been quiet (up to +0.3). For an
+"almost certainly fires when eligible" beat use 0.8–1.0; for a "sometimes
+flavour" beat use 0.2–0.4.
+
+**delay / cooldown / sticky / alive** (numeric field + helper line below)
+All four are *turn counts*. `-1` is a sentinel — its meaning differs per field
+(shown below the field as helper text in the editor):
+
+| Field | What 0 means | What `-1` means | "Set to never" button |
+|---|---|---|---|
+| **delay** | eligible immediately | acts as 0 | — |
+| **cooldown** | no cooldown | no cooldown (same as 0) | sets `-1` |
+| **sticky** | one-shot (payload only appears the turn it fires) | payload appears forever | sets `-1` |
+| **alive** | removed next tick | stays in the pool forever | sets `-1` |
+
+Authoring rules of thumb: `cooldown` matters when `triggerProb` is high —
+without it the beat repeats every turn. `sticky` makes the beat "stay in the
+character's head" for a few turns (it shows up under "Lingering" in the actor
+prompt).
+
+**Predicate** (multi-line text)
+Gate the node behind a boolean condition over state. Default is `true` (always
+eligible). Live problems list under the field flags syntax errors or unknown
+field references. Full reference under **Predicates** below.
+
+**Narrative payload** (multi-line text)
+The exact line that lands in the actor LLM's prompt when the node fires. Write
+it as a directive the actor will follow — *"She finally returns the smile."*
+rather than *"smile event"*. If `sticky > 0`, this line will also appear in
+later turns' "Lingering" section.
+
+**Effects** (collapsible categories, one per effect type)
+Optional state changes the node applies when it fires. Empty by default.
+
+- **Emotion / Physical / Relationship deltas** — small numeric nudges per
+  field (slider + numeric, range `-1.0` to `+1.0`). The character is the
+  card's own id; multi-character target is preserved in the schema for
+  future use but hidden from the UI.
+- **Knowledge writes** — fact-teaching. Each entry has a topic, a value
+  (string / number / bool — pick the type from the dropdown), and a
+  confidence (0–1). Stored under `character.<id>.knowledge.<topic>`.
+- **Flag set** — key/value pairs into `character.<id>.flags`. Useful for
+  one-bit state ("met_stranger", "knows_password").
+- **Scene & flow** — one-shot transitions:
+  - *goalChange* (string) replaces `global.goal` (empty clears it).
+  - *phaseChange* (none / `scene` / `sequel`) flips `global.phase`.
+  - *sceneTransition* (toggle) tells the engine the next director pass should
+    seed new scene context.
+
+**Spawns** (mini list at the bottom)
+Child nodes that get dropped into the pool when this one fires. Tap a spawn
+row to push another full editor onto the navigation stack (recursive — a
+spawn can have its own spawns). The app-bar subtitle on a nested page shows
+the path back to the root node.
+
+Use spawns for multi-beat chains: "if X fires, set up the follow-up beat Y so
+that Y can fire next turn or in a few turns once its predicate matches."
+
+### When a node fires (per turn)
+
+For each node in the pool, the engine runs this sequence:
+
+1. **Tick countdowns** — `delay`, `cooldown`, `sticky`, `alive` decrement.
+2. **Remove expired** — nodes whose `alive` hit zero, or whose scope was
+   violated by a transition, are dropped.
+3. **Check eligibility** — `delay == 0`, not in cooldown, predicate evaluates
+   true.
+4. **Roll** — random number vs `triggerProb` + pool pressure.
+5. **Pick at most one winner per pool** — weighted by `triggerProb` if
+   multiple won.
+6. **Fire** — apply effects, push the payload into the prompt, start the
+   `cooldown` and `sticky` timers, drop spawns into the pool, remove the node
+   if `scope == oneShot`.
+7. **Pressure bookkeeping** — if no node in a pool fired, that pool's pressure
+   creeps up; if any did, that pool's pressure resets.
+
+### Common authoring patterns
+
+**One-shot beat** (a single beat that fires once when conditions are met):
+- `scope: oneShot`
+- `triggerProb: 1.0`
+- `predicate`: the condition (e.g. `character.alice.relationship.trust > 0.4`)
+
+**Recurring background flavour** (fires sometimes when no specific condition):
+- `scope: session`
+- `triggerProb: 0.2`, `cooldown: 5`
+- `predicate: true`
+
+**Sticky directive** (a tonal note that influences several turns):
+- `triggerProb: 1.0`, `cooldown: 20`, `sticky: 4`
+- `narrative_payload`: *"She's still distant — answers are short, eyes
+  averted."*
+- `predicate`: when the tonal shift should start.
+
+**Multi-beat chain via spawns**:
+- Parent node fires once when conditions are met.
+- Its `spawns` list contains the next beat with its own `delay` (so it
+  can't fire on the same turn) and `predicate` (so it only fires when the
+  follow-up makes sense).
+
+**Conditional reaction** (fires only after a flag is set by an earlier beat):
+- Earlier beat's `Effects → Flag set`: `met_stranger = true`.
+- Reaction node's `predicate`: `character.alice.flags.met_stranger == true`.
+
 ## Predicates
 
 A small expression language over the state namespace. Examples:
