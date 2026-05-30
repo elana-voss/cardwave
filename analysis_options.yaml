@@ -2,6 +2,7 @@ include:
   - ../../qcheck/app/lib/recommended.yaml
   - ../../qcheck/app/lib/provider.yaml
   - ../../qcheck/app/lib/flutter.yaml
+  - ../../qcheck/app/lib/pub.yaml
 
 analyzer:
   exclude:
