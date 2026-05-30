@@ -4,6 +4,7 @@ enum PanelEnum {
   creatorMetadata,
   prompts,
   lorebook,
+  nodes,
   groupSettings,
   appData,
 }

@@ -2,6 +2,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/nodes/src/models/chat_nodes_state.dart';
+import 'package:cardwave/nodes/src/nodes_card_extension_key.dart';
 import 'package:cardwave/nodes/src/repositories/nodes_repository.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
@@ -36,10 +37,6 @@ class NodesService {
   final LlmPureHelpers pureHelpers;
   final FiringEngine _firingEngine = FiringEngine();
   final PromptAssembler _assembler;
-
-  /// Key under which authored nodes + emotion baseline + initial
-  /// goal/scene live in a SillyTavern v3 card's `extensions` map.
-  static const String _cardExtensionKey = 'cardwave_nodes';
 
   String? _currentSessionId;
   SessionState? _state;
@@ -188,7 +185,7 @@ class NodesService {
   }
 
   void _seedFromCardExtension(CharacterFile file) {
-    final extJson = file.card.extensions[_cardExtensionKey];
+    final extJson = file.card.extensions[nodesCardExtensionKey];
     if (extJson is! Map<String, dynamic>) return;
     final result = loadCardNodesExtension(extJson);
     if (result.errors.isNotEmpty) {

@@ -13,6 +13,7 @@ class _PanelNavigationRail extends StatelessWidget {
     PanelEnum.greetings,
     PanelEnum.prompts,
     PanelEnum.lorebook,
+    PanelEnum.nodes,
     PanelEnum.groupSettings,
     PanelEnum.creatorMetadata,
     PanelEnum.appData,
@@ -57,6 +58,11 @@ class _PanelNavigationRail extends StatelessWidget {
                     icon: Icon(Icons.menu_book_outlined),
                     selectedIcon: Icon(Icons.menu_book),
                     label: Text('Lorebook'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.hub_outlined),
+                    selectedIcon: Icon(Icons.hub),
+                    label: Text('Nodes'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.groups_outlined),

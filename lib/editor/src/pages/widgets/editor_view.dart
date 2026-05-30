@@ -9,6 +9,7 @@ import 'package:cardwave/editor/src/pages/widgets/editor_basic.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_creator_metadata.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_group_greetings.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_lorebook.dart';
+import 'package:cardwave/editor/src/pages/widgets/editor_nodes.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_prompts.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_scrollable_panel.dart';
 import 'package:cardwave/editor/src/pages/widgets/panel_enum.dart';
@@ -106,6 +107,14 @@ class EditorViewState extends State<EditorView> {
             characterFile: widget.characterFile,
             isAdvancedMode: _isAdvancedMode,
             onAdvancedModeToggled: (v) => setState(() => _isAdvancedMode = v),
+            onChanged: _triggerJsonCacheAutoSave,
+          ),
+        );
+      case PanelEnum.nodes:
+        return Expanded(
+          key: ValueKey(_editorVersion),
+          child: EditorNodes(
+            characterFile: widget.characterFile,
             onChanged: _triggerJsonCacheAutoSave,
           ),
         );
@@ -225,6 +234,7 @@ class _PanelNavigationTabs extends StatelessWidget {
     PanelEnum.greetings,
     PanelEnum.prompts,
     PanelEnum.lorebook,
+    PanelEnum.nodes,
     PanelEnum.groupSettings,
     PanelEnum.creatorMetadata,
     PanelEnum.appData,
@@ -250,6 +260,7 @@ class _PanelNavigationTabs extends StatelessWidget {
           Tab(text: 'Greetings'),
           Tab(text: 'Prompts'),
           Tab(text: 'Lorebook'),
+          Tab(text: 'Nodes'),
           Tab(text: 'Group'),
           Tab(text: 'Creator'),
           Tab(text: 'App Data'),
