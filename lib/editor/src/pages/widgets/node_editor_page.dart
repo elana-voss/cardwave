@@ -171,9 +171,32 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isSpawn = widget.breadcrumb.isNotEmpty;
+    // The current node's path-trail used by nested spawn editors.
+    // Title-bar shows a friendly label; synthetic ids like
+    // `node_1780140681326` only appear in the path crumbs when the
+    // user actually navigates into a spawn.
     final crumbs = [...widget.breadcrumb, _node.id];
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(crumbs.join(' › '))),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(isSpawn ? 'Edit spawn' : 'Edit node'),
+            if (isSpawn)
+              Text(
+                widget.breadcrumb.join(' › '),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -196,6 +219,7 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
             TextFieldCard.multiLine(
               controller: _controllers.narrativePayload,
               label: 'Narrative payload',
+              minLines: 2,
             ),
             _EffectsSection(
               effects: _node.effects,
@@ -453,18 +477,10 @@ class _BasicFieldsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
       children: [
-        Text(
-          'ID: ${node.id}',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontFamily: 'monospace',
-          ),
-        ),
         Wrap(
           spacing: 16,
           runSpacing: 12,
@@ -604,38 +620,40 @@ class _CountdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
+    // Two-row layout. Phones are too narrow to fit
+    // `[label] [field] [Set to never] [helper text]` side-by-side
+    // without the helper Expanded being squeezed to a column of one
+    // word per line. Helper text wraps full-width below the controls.
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8,
       children: [
-        SizedBox(
-          width: 110,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Text(field.name),
-          ),
-        ),
-        SizedBox(
-          width: 100,
-          child: TextFieldCard.singleLine(
-            controller: controller,
-            label: '',
-            keyboardType: const TextInputType.numberWithOptions(signed: true),
-          ),
-        ),
-        if (onSetNever != null)
-          TextButton(
-            onPressed: onSetNever,
-            child: const Text('Set to never'),
-          ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8, top: 14),
-            child: Text(
-              helper,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 8,
+          children: [
+            SizedBox(width: 110, child: Text(field.name)),
+            SizedBox(
+              width: 100,
+              child: TextFieldCard.singleLine(
+                controller: controller,
+                label: '',
+                keyboardType:
+                    const TextInputType.numberWithOptions(signed: true),
               ),
+            ),
+            if (onSetNever != null)
+              TextButton(
+                onPressed: onSetNever,
+                child: const Text('Set to never'),
+              ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 118, top: 4, bottom: 4),
+          child: Text(
+            helper,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -1569,6 +1587,7 @@ class _PredicateField extends StatelessWidget {
         TextFieldCard.multiLine(
           controller: controller,
           label: 'Predicate',
+          minLines: 2,
         ),
         ValueListenableBuilder<List<String>>(
           valueListenable: problems,

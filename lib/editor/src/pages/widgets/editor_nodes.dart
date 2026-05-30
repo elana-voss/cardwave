@@ -297,25 +297,13 @@ class _EditorNodesState extends State<EditorNodes> {
                   onAdd: _addBaseline,
                 ),
                 const _SectionLabel('Initial scene'),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: [
-                    SizedBox(
-                      width: 280,
-                      child: TextFieldCard.singleLine(
-                        controller: _locationController,
-                        label: 'Location',
-                      ),
-                    ),
-                    SizedBox(
-                      width: 200,
-                      child: TextFieldCard.singleLine(
-                        controller: _timeOfDayController,
-                        label: 'Time of day',
-                      ),
-                    ),
-                  ],
+                TextFieldCard.singleLine(
+                  controller: _locationController,
+                  label: 'Location',
+                ),
+                TextFieldCard.singleLine(
+                  controller: _timeOfDayController,
+                  label: 'Time of day',
                 ),
                 TextFieldCard.singleLine(
                   controller: _presentEntitiesController,
