@@ -35,22 +35,19 @@ class ObjectValueEditor extends StatefulWidget {
 
 class _ObjectValueEditorState extends State<ObjectValueEditor> {
   late ObjectValueType _type;
-  late final TextEditingController _stringController;
-  late final TextEditingController _numberController;
+  final TextEditingController _stringController = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
   late bool _boolValue;
 
   @override
   void initState() {
     super.initState();
     _type = _typeOf(widget.value);
-    _stringController = TextEditingController(
-      text: _type == ObjectValueType.string
-          ? (widget.value?.toString() ?? '')
-          : '',
-    );
-    _numberController = TextEditingController(
-      text: _type == ObjectValueType.number ? widget.value.toString() : '',
-    );
+    _stringController.text = _type == ObjectValueType.string
+        ? (widget.value?.toString() ?? '')
+        : '';
+    _numberController.text =
+        _type == ObjectValueType.number ? widget.value.toString() : '';
     _boolValue = widget.value is bool ? widget.value! as bool : false;
 
     _stringController.onTextChanged(() {
@@ -104,6 +101,7 @@ class _ObjectValueEditorState extends State<ObjectValueEditor> {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: 8,
       children: [
         SizedBox(
           width: 110,
@@ -127,20 +125,48 @@ class _ObjectValueEditorState extends State<ObjectValueEditor> {
             onChanged: _onTypeChanged,
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(child: _valueInput()),
+        Expanded(
+          child: _ObjectValueInput(
+            type: _type,
+            stringController: _stringController,
+            numberController: _numberController,
+            boolValue: _boolValue,
+            onBoolChanged: _onBoolChanged,
+          ),
+        ),
       ],
     );
   }
+}
 
-  Widget _valueInput() {
-    return switch (_type) {
+/// The right-hand value widget whose shape follows the type dropdown.
+/// Extracted from `_ObjectValueEditorState` so the type swap rebuilds
+/// only this subtree (and so the analyzer's `avoid_returning_widgets`
+/// rule is satisfied).
+class _ObjectValueInput extends StatelessWidget {
+  const _ObjectValueInput({
+    required this.type,
+    required this.stringController,
+    required this.numberController,
+    required this.boolValue,
+    required this.onBoolChanged,
+  });
+
+  final ObjectValueType type;
+  final TextEditingController stringController;
+  final TextEditingController numberController;
+  final bool boolValue;
+  final ValueChanged<bool> onBoolChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (type) {
       ObjectValueType.string => TextFieldCard.singleLine(
-          controller: _stringController,
+          controller: stringController,
           label: '',
         ),
       ObjectValueType.number => TextFieldCard.singleLine(
-          controller: _numberController,
+          controller: numberController,
           label: '',
           keyboardType: const TextInputType.numberWithOptions(
             decimal: true,
@@ -150,8 +176,8 @@ class _ObjectValueEditorState extends State<ObjectValueEditor> {
       ObjectValueType.boolean => Align(
           alignment: Alignment.centerLeft,
           child: Switch(
-            value: _boolValue,
-            onChanged: _onBoolChanged,
+            value: boolValue,
+            onChanged: onBoolChanged,
           ),
         ),
     };

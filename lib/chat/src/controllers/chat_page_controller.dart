@@ -15,9 +15,6 @@ import 'package:flutter/material.dart';
 /// switch on a typed value.
 enum NewChatPromptActionEnum { cancel, deleteCurrent, keepCurrent }
 
-const String _kBadConnection =
-    'Active AI connection is missing or invalid. Please check your App Settings.';
-
 class ChatPageController extends ChangeNotifier {
   ChatPageController({
     required CharacterFile characterFile,
@@ -97,6 +94,20 @@ class ChatPageController extends ChangeNotifier {
   }
 
   Future<void> _loadLatestChatOrNew() async {
+    // No provider configured: nothing to load with. Skip the attempt
+    // entirely — the onboarding banner above the chat already prompts
+    // the user to connect an AI. Trying anyway would just log an
+    // error for an expected state.
+    if (settingsService.settings.domainPresetIds.isEmpty) {
+      if (_isDisposed) return;
+      _selectedChat = null;
+      chatService.setActiveChat(null);
+      _isLoading = false;
+      _isRebuildingIndex = false;
+      notifyListeners();
+      return;
+    }
+
     final chat = await chatService.getLatestChatForCharacterOrNew(
       characterFile,
       isAssistant: isAssistant,
@@ -111,11 +122,7 @@ class ChatPageController extends ChangeNotifier {
 
     if (chat != null) {
       final connection = _checkAndHealConnection(chat);
-      // Error-first `else if` chain — swapping would nest the healed-case
-      // handling under the valid case, which reads worse.
-      // ignore: qcheck/avoid_negated_conditions
       if (!connection.isValid) {
-        NavigationService().showSnackBar(_kBadConnection);
         _log.warning(
           '_loadLatestChatOrNew: connection invalid for chat id=${chat.id} '
           'isAssistant=$isAssistant',
@@ -134,7 +141,8 @@ class ChatPageController extends ChangeNotifier {
     _isRebuildingIndex = false;
 
     if (chat == null) {
-      NavigationService().showSnackBar(_kBadConnection);
+      // Providers exist but chat creation still failed — real problem
+      // (assistant lookup failure, preset desync, etc.).
       _log.error(
         '_loadLatestChatOrNew: chat is null after getLatestChatForCharacterOrNew '
         'isAssistant=$isAssistant file="${characterFile.card.name}"',
@@ -149,16 +157,10 @@ class ChatPageController extends ChangeNotifier {
     if (_isDisposed) return;
 
     if (newChat == null) {
-      NavigationService().showSnackBar(_kBadConnection);
       notifyListeners();
     } else {
       final connection = _checkAndHealConnection(newChat);
-      // Error-first `else if` chain — swapping would nest the healed-case
-      // handling under the valid case, which reads worse.
-      // ignore: qcheck/avoid_negated_conditions
-      if (!connection.isValid) {
-        NavigationService().showSnackBar(_kBadConnection);
-      } else if (connection.wasHealed) {
+      if (connection.wasHealed) {
         await chatService.updateChat(characterFile, newChat);
       }
       _selectedChat = newChat;
@@ -173,12 +175,7 @@ class ChatPageController extends ChangeNotifier {
 
     if (fullChat != null) {
       final connection = _checkAndHealConnection(fullChat);
-      // Error-first `else if` chain — swapping would nest the healed-case
-      // handling under the valid case, which reads worse.
-      // ignore: qcheck/avoid_negated_conditions
-      if (!connection.isValid) {
-        NavigationService().showSnackBar(_kBadConnection);
-      } else if (connection.wasHealed) {
+      if (connection.wasHealed) {
         await chatService.updateChat(characterFile, fullChat);
       }
       _selectedChat = fullChat;

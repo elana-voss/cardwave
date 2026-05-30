@@ -6,6 +6,7 @@ import 'package:cardwave/editor/src/pages/widgets/dropdown_labeled.dart';
 import 'package:cardwave/editor/src/pages/widgets/object_value_editor.dart';
 import 'package:cardwave/editor/src/pages/widgets/tag_chip.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,39 +47,53 @@ class NodeEditorPage extends StatefulWidget {
 
 class _NodeEditorPageState extends State<NodeEditorPage> {
   late Node _node;
-  late final _NodeControllers _controllers;
-  late List<String> _predicateProblems;
+  final _NodeControllers _controllers = _NodeControllers();
+
+  /// Live predicate problems published on every keystroke. Held in a
+  /// `ValueNotifier` so `_PredicateField` can rebuild only its problems
+  /// list via `ValueListenableBuilder` — without `setState` on this
+  /// page.
+  ///
+  /// ⚠️ DO NOT call `setState` from inside any text-controller listener
+  /// on this page (notably `_onAnyTextChanged`). A page-wide rebuild on
+  /// every keystroke triggers a Flutter framework race on the Android
+  /// emulator: the real platform IME asynchronously pushes its cached
+  /// field value back through the platform channel during the rebuild,
+  /// overwriting whatever was just typed. Burned multiple hours debugging
+  /// this on 2026-05-30 — the `editor_nodes_round_trip_test` flake
+  /// disappeared the moment the per-keystroke setState was removed.
+  /// Reach for this `ValueNotifier` pattern for any future per-keystroke
+  /// derived display state on this page (problem lists, token counts,
+  /// computed previews).
+  final ValueNotifier<List<String>> _predicateProblems =
+      ValueNotifier(const []);
 
   @override
   void initState() {
     super.initState();
     _node = widget.node;
-    _controllers = _NodeControllers.from(_node);
-    _predicateProblems = findPredicateProblems(_node.predicate);
+    _controllers.loadFrom(_node);
+    _predicateProblems.value = findPredicateProblems(_node.predicate);
 
-    _controllers.predicate.onTextChanged(_onPredicateChanged);
-    _controllers.narrativePayload.onTextChanged(_onNarrativePayloadChanged);
-    _controllers.triggerProb.onTextChanged(_onTriggerProbChanged);
-    _controllers.delay.onTextChanged(
-      () => _onIntCountdownChanged(_controllers.delay, _CountdownField.delay),
-    );
-    _controllers.cooldown.onTextChanged(
-      () => _onIntCountdownChanged(
-        _controllers.cooldown,
-        _CountdownField.cooldown,
-      ),
-    );
-    _controllers.sticky.onTextChanged(
-      () => _onIntCountdownChanged(_controllers.sticky, _CountdownField.sticky),
-    );
-    _controllers.alive.onTextChanged(
-      () => _onIntCountdownChanged(_controllers.alive, _CountdownField.alive),
-    );
+    // One shared listener on every controller — same shape as
+    // lorebook_entry_editor_page.dart's `_onTextChanged`. Each
+    // keystroke rebuilds the Node from ALL controller texts, so a
+    // single field change can't leave the others stale.
+    for (final controller in _controllers.all) {
+      controller.onTextChanged(_onAnyTextChanged);
+    }
+  }
+
+  void _onAnyTextChanged() {
+    _replace(_buildFromCurrentState());
+    _predicateProblems.value =
+        findPredicateProblems(_controllers.predicate.text);
   }
 
   @override
   void dispose() {
     _controllers.dispose();
+    _predicateProblems.dispose();
     super.dispose();
   }
 
@@ -87,40 +102,41 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
     widget.onUpdated(updated);
   }
 
-  void _onPredicateChanged() {
-    final text = _controllers.predicate.text;
-    _replace(_rebuild(_node, predicate: text));
-    setState(() {
-      _predicateProblems = findPredicateProblems(text);
-    });
-  }
-
-  void _onNarrativePayloadChanged() {
-    _replace(_rebuild(_node, narrativePayload: _controllers.narrativePayload.text));
-  }
-
-  void _onTriggerProbChanged() {
-    final parsed = double.tryParse(_controllers.triggerProb.text);
-    if (parsed == null) return;
-    final clamped = parsed.clamp(0.0, 1.0);
-    _replace(_rebuild(_node, triggerProb: clamped));
+  /// Builds a Node from the CURRENT controller text on every text
+  /// field plus the in-state non-controller fields (type, scope,
+  /// origin, effects, spawns) on `_node`. Used by every text-field
+  /// listener so a stale `_node` can never revert a field that was
+  /// typed by the user: the controllers are the source of truth.
+  Node _buildFromCurrentState() {
+    final triggerProb = double.tryParse(_controllers.triggerProb.text);
+    final delay = int.tryParse(_controllers.delay.text);
+    final cooldown = int.tryParse(_controllers.cooldown.text);
+    final sticky = int.tryParse(_controllers.sticky.text);
+    final alive = int.tryParse(_controllers.alive.text);
+    return Node(
+      id: _node.id,
+      origin: _node.origin,
+      type: _node.type,
+      triggerProb:
+          (triggerProb ?? _node.triggerProb).clamp(0.0, 1.0).toDouble(),
+      delay: delay ?? _node.delay,
+      cooldown: cooldown ?? _node.cooldown,
+      sticky: sticky ?? _node.sticky,
+      alive: alive ?? _node.alive,
+      scope: _node.scope,
+      predicate: _controllers.predicate.text,
+      narrativePayload: _controllers.narrativePayload.text,
+      effects: _node.effects,
+      spawns: _node.spawns,
+    );
   }
 
   void _onSliderTriggerProbChanged(double value) {
-    // Setting controller text fires `_onTriggerProbChanged` which
-    // already runs `_replace`. We only need `setState` for the
-    // slider's own redraw.
+    // Setting the controller text fires `_onAnyTextChanged`, which
+    // rebuilds the Node. The `setState` here is just so the parent
+    // re-passes the new `node.triggerProb` down to the slider widget.
     _controllers.triggerProb.text = value.toStringAsFixed(2);
     setState(() {});
-  }
-
-  void _onIntCountdownChanged(
-    TextEditingController controller,
-    _CountdownField field,
-  ) {
-    final parsed = int.tryParse(controller.text);
-    if (parsed == null) return;
-    _replace(_rebuild(_node, countdown: (field: field, value: parsed)));
   }
 
   void _setNeverFor(_CountdownField field) {
@@ -130,8 +146,9 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
       _CountdownField.sticky => _controllers.sticky,
       _CountdownField.alive => _controllers.alive,
     };
+    // Setting the text fires `_onAnyTextChanged` via the controller's
+    // listener — that runs `_replace`. No explicit call needed here.
     controller.text = '-1';
-    _replace(_rebuild(_node, countdown: (field: field, value: -1)));
   }
 
   void _onTypeChanged(NodeTypeEnum? value) {
@@ -332,31 +349,42 @@ enum _CountdownField { delay, cooldown, sticky, alive }
 /// Bag of text controllers for one node edit session. Disposed
 /// alongside the page state.
 class _NodeControllers {
-  _NodeControllers.from(Node n)
-      : predicate = TextEditingController(text: n.predicate),
-        narrativePayload = TextEditingController(text: n.narrativePayload),
-        triggerProb = TextEditingController(text: n.triggerProb.toStringAsFixed(2)),
-        delay = TextEditingController(text: n.delay.toString()),
-        cooldown = TextEditingController(text: n.cooldown.toString()),
-        sticky = TextEditingController(text: n.sticky.toString()),
-        alive = TextEditingController(text: n.alive.toString());
+  _NodeControllers();
 
-  final TextEditingController predicate;
-  final TextEditingController narrativePayload;
-  final TextEditingController triggerProb;
-  final TextEditingController delay;
-  final TextEditingController cooldown;
-  final TextEditingController sticky;
-  final TextEditingController alive;
+  final TextEditingController predicate = TextEditingController();
+  final TextEditingController narrativePayload = TextEditingController();
+  final TextEditingController triggerProb = TextEditingController();
+  final TextEditingController delay = TextEditingController();
+  final TextEditingController cooldown = TextEditingController();
+  final TextEditingController sticky = TextEditingController();
+  final TextEditingController alive = TextEditingController();
+
+  late final List<TextEditingController> all = [
+    predicate,
+    narrativePayload,
+    triggerProb,
+    delay,
+    cooldown,
+    sticky,
+    alive,
+  ];
+
+  /// Populate from [n]'s authoring fields. Called from `initState`
+  /// once the page's `_node` is assigned.
+  void loadFrom(Node n) {
+    predicate.text = n.predicate;
+    narrativePayload.text = n.narrativePayload;
+    triggerProb.text = n.triggerProb.toStringAsFixed(2);
+    delay.text = n.delay.toString();
+    cooldown.text = n.cooldown.toString();
+    sticky.text = n.sticky.toString();
+    alive.text = n.alive.toString();
+  }
 
   void dispose() {
-    predicate.dispose();
-    narrativePayload.dispose();
-    triggerProb.dispose();
-    delay.dispose();
-    cooldown.dispose();
-    sticky.dispose();
-    alive.dispose();
+    for (final controller in all) {
+      controller.dispose();
+    }
   }
 }
 
@@ -578,6 +606,7 @@ class _CountdownRow extends StatelessWidget {
     final theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         SizedBox(
           width: 110,
@@ -594,7 +623,6 @@ class _CountdownRow extends StatelessWidget {
             keyboardType: const TextInputType.numberWithOptions(signed: true),
           ),
         ),
-        const SizedBox(width: 8),
         if (onSetNever != null)
           TextButton(
             onPressed: onSetNever,
@@ -841,13 +869,12 @@ class _DeltaRow<E extends Enum> extends StatefulWidget {
 }
 
 class _DeltaRowState<E extends Enum> extends State<_DeltaRow<E>> {
-  late final TextEditingController _valueController;
+  final TextEditingController _valueController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _valueController =
-        TextEditingController(text: widget.value.toStringAsFixed(2));
+    _valueController.text = widget.value.toStringAsFixed(2);
     _valueController.onTextChanged(() {
       final parsed = double.tryParse(_valueController.text);
       if (parsed == null) return;
@@ -1027,12 +1054,12 @@ class _KnowledgeRow extends StatefulWidget {
 }
 
 class _KnowledgeRowState extends State<_KnowledgeRow> {
-  late final TextEditingController _topicController;
+  final TextEditingController _topicController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _topicController = TextEditingController(text: widget.record.topic);
+    _topicController.text = widget.record.topic;
     _topicController.onTextChanged(
       () => widget.onTopicChanged(_topicController.text),
     );
@@ -1058,6 +1085,7 @@ class _KnowledgeRowState extends State<_KnowledgeRow> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 4,
         children: [
           Row(
             children: [
@@ -1074,12 +1102,10 @@ class _KnowledgeRowState extends State<_KnowledgeRow> {
               ),
             ],
           ),
-          const SizedBox(height: 4),
           ObjectValueEditor(
             value: widget.record.value,
             onChanged: widget.onValueChanged,
           ),
-          const SizedBox(height: 4),
           Row(
             children: [
               const SizedBox(width: 100, child: Text('confidence')),
@@ -1207,17 +1233,17 @@ class _FlagRow extends StatefulWidget {
 }
 
 class _FlagRowState extends State<_FlagRow> {
-  late final TextEditingController _keyController;
-  late final FocusNode _keyFocusNode;
+  final TextEditingController _keyController = TextEditingController();
+  final FocusNode _keyFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _keyController = TextEditingController(text: widget.flagKey);
+    _keyController.text = widget.flagKey;
     // Commit on focus loss rather than on every keystroke: a partial
     // key like "user_" mid-typing would otherwise overwrite the map
     // key, breaking widget identity and stealing the user's focus.
-    _keyFocusNode = FocusNode()..addListener(_onFocusChanged);
+    _keyFocusNode.addListener(_onFocusChanged);
   }
 
   @override
@@ -1242,6 +1268,7 @@ class _FlagRowState extends State<_FlagRow> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 8,
         children: [
           SizedBox(
             width: 160,
@@ -1251,7 +1278,6 @@ class _FlagRowState extends State<_FlagRow> {
               label: 'key',
             ),
           ),
-          const SizedBox(width: 8),
           Expanded(
             child: ObjectValueEditor(
               value: widget.value,
@@ -1291,12 +1317,12 @@ class _SceneAndFlowSection extends StatefulWidget {
 }
 
 class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
-  late final TextEditingController _goalController;
+  final TextEditingController _goalController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _goalController = TextEditingController(text: widget.goal ?? '');
+    _goalController.text = widget.goal ?? '';
     _goalController.onTextChanged(() {
       final text = _goalController.text;
       widget.onGoalChanged(text.isEmpty ? null : text);
@@ -1450,6 +1476,7 @@ class _SpawnRow extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
+                  spacing: 8,
                   children: [
                     Expanded(
                       child: Text(
@@ -1460,7 +1487,6 @@ class _SpawnRow extends StatelessWidget {
                       ),
                     ),
                     TagChip(label: spawn.type.name),
-                    const SizedBox(width: 8),
                     Icon(
                       Icons.chevron_right,
                       color: theme.colorScheme.onSurfaceVariant,
@@ -1532,7 +1558,7 @@ class _PredicateField extends StatelessWidget {
   const _PredicateField({required this.controller, required this.problems});
 
   final TextEditingController controller;
-  final List<String> problems;
+  final ValueListenable<List<String>> problems;
 
   @override
   Widget build(BuildContext context) {
@@ -1544,23 +1570,28 @@ class _PredicateField extends StatelessWidget {
           controller: controller,
           label: 'Predicate',
         ),
-        if (problems.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final problem in problems)
-                  Text(
-                    '• $problem',
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
+        ValueListenableBuilder<List<String>>(
+          valueListenable: problems,
+          builder: (context, list, _) {
+            if (list.isEmpty) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final problem in list)
+                    Text(
+                      '• $problem',
+                      style: TextStyle(
+                        color: theme.colorScheme.error,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-              ],
-            ),
-          ),
+                ],
+              ),
+            );
+          },
+        ),
       ],
     );
   }

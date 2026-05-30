@@ -111,9 +111,10 @@ class EditorViewState extends State<EditorView> {
           ),
         );
       case PanelEnum.nodes:
-        return Expanded(
-          key: ValueKey(_editorVersion),
-          child: EditorNodes(
+        return EditorScrollablePanel(
+          panel: panel,
+          editorVersion: _editorVersion,
+          content: EditorNodes(
             characterFile: widget.characterFile,
             onChanged: _triggerJsonCacheAutoSave,
           ),

@@ -46,11 +46,12 @@ class _EditorNodesState extends State<EditorNodes> {
   late CardNodesExtension _extension;
   late List<CardExtensionLoadError> _loadErrors;
 
-  late final TextEditingController _goalController;
-  late final TextEditingController _locationController;
-  late final TextEditingController _timeOfDayController;
-  late final TextEditingController _presentEntitiesController;
-  late final TextEditingController _sensoryHooksController;
+  final TextEditingController _goalController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _timeOfDayController = TextEditingController();
+  final TextEditingController _presentEntitiesController =
+      TextEditingController();
+  final TextEditingController _sensoryHooksController = TextEditingController();
 
   /// Which emotion currently has its inline-slider expanded. Tap the
   /// chip again to collapse.
@@ -60,14 +61,12 @@ class _EditorNodesState extends State<EditorNodes> {
   void initState() {
     super.initState();
     _loadExtension();
-    _goalController = TextEditingController(text: _extension.initialGoal);
+    _goalController.text = _extension.initialGoal;
     final scene = _extension.initialScene ?? Scene();
-    _locationController = TextEditingController(text: scene.location);
-    _timeOfDayController = TextEditingController(text: scene.timeOfDay);
-    _presentEntitiesController =
-        TextEditingController(text: scene.presentEntities.join(', '));
-    _sensoryHooksController =
-        TextEditingController(text: scene.sensoryHooks.join(', '));
+    _locationController.text = scene.location;
+    _timeOfDayController.text = scene.timeOfDay;
+    _presentEntitiesController.text = scene.presentEntities.join(', ');
+    _sensoryHooksController.text = scene.sensoryHooks.join(', ');
 
     _goalController.onTextChanged(_onGoalChanged);
     _locationController.onTextChanged(_onSceneChanged);
@@ -189,9 +188,8 @@ class _EditorNodesState extends State<EditorNodes> {
     _persist();
   }
 
-  void _onReorder(int oldIndex, int newIndex) {
+  void _onReorderItem(int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) newIndex -= 1;
       final node = _extension.authoredNodes.removeAt(oldIndex);
       _extension.authoredNodes.insert(newIndex, node);
     });
@@ -260,20 +258,23 @@ class _EditorNodesState extends State<EditorNodes> {
         .where((e) => !_extension.emotionBaseline.containsKey(e))
         .toList();
     final nodes = _extension.authoredNodes;
+    // Horizontal padding inside this panel is intentionally zero —
+    // `EditorScrollablePanel` (the parent in `editor_view.dart`) adds
+    // the outer horizontal padding and centers within a max width. Any
+    // padding added here would double up against that.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (_loadErrors.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.only(bottom: 12),
             child: _LoadErrorBanner(errors: _loadErrors),
           ),
         ExpansionTile(
           title: const Text('Engine seed'),
           initiallyExpanded: nodes.isEmpty,
-          tilePadding: const EdgeInsets.only(left: 16, right: 16),
-          childrenPadding:
-              const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(bottom: 16),
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -329,11 +330,15 @@ class _EditorNodesState extends State<EditorNodes> {
           ],
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: FilledButton.tonalIcon(
-            onPressed: _addNode,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Node'),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.tonalIcon(
+              key: const Key('editor-nodes-add-button'),
+              onPressed: _addNode,
+              icon: const Icon(Icons.add),
+              label: const Text('Add Node'),
+            ),
           ),
         ),
         if (nodes.isEmpty)
@@ -342,22 +347,21 @@ class _EditorNodesState extends State<EditorNodes> {
             child: Center(child: Text('No authored nodes yet.')),
           )
         else
-          Expanded(
-            child: ReorderableListView.builder(
-              buildDefaultDragHandles: false,
-              itemCount: nodes.length,
-              onReorder: _onReorder,
-              itemBuilder: (context, index) {
-                final node = nodes[index];
-                return NodeListTile(
-                  key: ValueKey(identityHashCode(node)),
-                  node: node,
-                  index: index,
-                  onTap: () => _openNodeEditor(node),
-                  onDelete: () => unawaited(_deleteNode(index)),
-                );
-              },
-            ),
+          ReorderableListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            onReorderItem: _onReorderItem,
+            children: [
+              for (int i = 0; i < nodes.length; i++)
+                NodeListTile(
+                  key: ValueKey(identityHashCode(nodes[i])),
+                  node: nodes[i],
+                  index: i,
+                  onTap: () => _openNodeEditor(nodes[i]),
+                  onDelete: () => unawaited(_deleteNode(i)),
+                ),
+            ],
           ),
       ],
     );

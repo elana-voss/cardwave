@@ -380,6 +380,52 @@ Future<void> dismissKeyboard(WidgetTester tester) async {
   await tester.pumpAndSettle(const Duration(milliseconds: 300));
 }
 
+/// Clears any active SnackBar via `ScaffoldMessenger.clearSnackBars`.
+/// A snackbar sits at the bottom of the screen and intercepts hit-tests
+/// on UI rendered behind it — call before tapping any widget near the
+/// bottom of the viewport, as a defensive cleanup. No-op when no
+/// `ScaffoldMessenger` is in the tree.
+///
+/// Uses `tester.state<ScaffoldMessengerState>` rather than
+/// `ScaffoldMessenger.of(context)` — `of` walks UP the tree from the
+/// given context, so passing the ScaffoldMessenger's own element
+/// returns its ancestor (if any) or throws.
+Future<void> clearSnackBars(WidgetTester tester) async {
+  final messengerFinder = find.byType(ScaffoldMessenger);
+  if (messengerFinder.evaluate().isEmpty) return;
+  final messenger =
+      tester.state<ScaffoldMessengerState>(messengerFinder);
+  messenger.clearSnackBars();
+  await tester.pumpAndSettle();
+}
+
+/// In debug builds, `OverlayError` shows a small red FAB whenever any
+/// Flutter error level message is logged (`LoggingService.captureUnhandledErrors`
+/// pipes every `FlutterError.onError` into the log). Some framework
+/// widgets — notably `Tooltip` mounted during a route transition —
+/// log a one-shot "No Overlay widget found" error that's harmless to
+/// the running app but leaves the FAB sitting on top of real UI for
+/// the rest of the test. The FAB then intercepts hit-tests on buttons
+/// in its vicinity and `tester.tap` silently misses.
+///
+/// `tester.tap` on the FAB is unreliable because `FloatingActionButton`
+/// wraps itself in a `Hero`, and during a route transition the Hero's
+/// rendered bounds can land far off-screen — `getCenter` then returns
+/// nonsense coordinates and `binding.handlePopRoute` ends up popping
+/// whatever real route the test was on. Trigger `onPressed` directly
+/// on the FAB widget so the dismiss runs even when the Hero is in
+/// transit, then pop the logging route that pressing the FAB pushed.
+/// No-op when the FAB is absent.
+Future<void> dismissDebugErrorFab(WidgetTester tester) async {
+  final logFabFinder = find.byKey(const Key('log_fab_true'));
+  if (logFabFinder.evaluate().isEmpty) return;
+  final fab = tester.widget<FloatingActionButton>(logFabFinder);
+  fab.onPressed?.call();
+  await tester.pumpAndSettle();
+  await tester.binding.handlePopRoute();
+  await tester.pumpAndSettle();
+}
+
 /// Waits until the app is fully ready for interaction. Two-phase:
 /// 1. `MultiProvider` mounts — `app.main()` returns immediately but
 ///    services initialize asynchronously in `_MyAppBootState._initServices`;
