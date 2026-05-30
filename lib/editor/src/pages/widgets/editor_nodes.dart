@@ -1,15 +1,23 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
+import 'package:cardwave/editor/src/pages/widgets/node_editor_page.dart';
+import 'package:cardwave/editor/src/pages/widgets/node_list_tile.dart';
 import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// Editor panel for a card's `cardwave_nodes` extension block: the
 /// engine seed (initial goal, scene, emotion baseline), the list of
-/// authored nodes, and the per-node editor opened via tap on a list row.
+/// authored nodes, and the per-node editor opened via tap on a list
+/// row.
 ///
-/// This step ships the engine-seed section end-to-end. The node list
-/// and per-node editor arrive in subsequent steps.
+/// This step adds the node list + per-node editor (basic fields,
+/// predicate, narrative payload). Effects sub-forms and spawns
+/// arrive in subsequent steps.
 class EditorNodes extends StatefulWidget {
   const EditorNodes({
     required this.characterFile,
@@ -25,6 +33,16 @@ class EditorNodes extends StatefulWidget {
 }
 
 class _EditorNodesState extends State<EditorNodes> {
+  /// Default starting `triggerProb` for a freshly-added node. 1.0 so
+  /// the node fires every turn it is eligible, matching the most
+  /// common authoring intent (the author can lower it afterward).
+  static const double _newNodeTriggerProb = 1.0;
+
+  /// Default `alive` for a freshly-added node. -1 means the node stays
+  /// in the pool forever unless explicitly removed; safest default
+  /// for handcrafted content.
+  static const int _newNodeAlive = -1;
+
   late CardNodesExtension _extension;
   late List<CardExtensionLoadError> _loadErrors;
 
@@ -136,9 +154,85 @@ class _EditorNodesState extends State<EditorNodes> {
     });
   }
 
+  void _addNode() {
+    final id = 'node_${DateTime.now().millisecondsSinceEpoch}';
+    final node = Node(
+      id: id,
+      origin: NodeOriginEnum.authored,
+      type: NodeTypeEnum.characterBehavior,
+      triggerProb: _newNodeTriggerProb,
+      delay: 0,
+      cooldown: 0,
+      sticky: 0,
+      alive: _newNodeAlive,
+      scope: NodeScopeEnum.session,
+      predicate: 'true',
+      narrativePayload: '',
+    );
+    _extension.authoredNodes.add(node);
+    _persist();
+    setState(() {});
+  }
+
+  Future<void> _deleteNode(int index) async {
+    final controller = context.read<EditorPageController>();
+    final errorColor = Theme.of(context).colorScheme.error;
+    final confirmed = await controller.confirmDelete(
+      title: 'Delete node',
+      message: 'Remove this authored node from the card?',
+      confirmColor: errorColor,
+    );
+    if (!confirmed || !mounted) return;
+    setState(() {
+      _extension.authoredNodes.removeAt(index);
+    });
+    _persist();
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) newIndex -= 1;
+      final node = _extension.authoredNodes.removeAt(oldIndex);
+      _extension.authoredNodes.insert(newIndex, node);
+    });
+    _persist();
+  }
+
+  void _openNodeEditor(Node node) {
+    unawaited(Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => NodeEditorPage(
+          node: node,
+          characterId: widget.characterFile.appCardId,
+          // Lookup by `id` is the stable key: the editor cannot
+          // change a node's id (it is shown read-only), so a string
+          // match always finds the same entry even after reorder.
+          onUpdated: (updated) => _onNodeUpdated(node.id, updated),
+        ),
+      ),
+    ));
+  }
+
+  void _onNodeUpdated(String nodeId, Node updated) {
+    final idx =
+        _extension.authoredNodes.indexWhere((n) => n.id == nodeId);
+    if (idx < 0) return;
+    _extension.authoredNodes[idx] = updated;
+    _persist();
+    setState(() {});
+  }
+
   void _persist() {
     if (_hasContent(_extension)) {
-      widget.characterFile.card.extensions[nodesCardExtensionKey] = _extension.toJson();
+      final stripped = CardNodesExtension(
+        authoredNodes:
+            _extension.authoredNodes.map(_stripRuntime).toList(),
+        emotionBaseline: _extension.emotionBaseline,
+        initialGoal: _extension.initialGoal,
+        initialScene: _extension.initialScene,
+      );
+      widget.characterFile.card.extensions[nodesCardExtensionKey] =
+          stripped.toJson();
     } else {
       widget.characterFile.card.extensions.remove(nodesCardExtensionKey);
     }
@@ -165,66 +259,135 @@ class _EditorNodesState extends State<EditorNodes> {
     final remainingEmotions = EmotionEnum.values
         .where((e) => !_extension.emotionBaseline.containsKey(e))
         .toList();
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
-        children: [
-          if (_loadErrors.isNotEmpty) _LoadErrorBanner(errors: _loadErrors),
-          const _SectionHeader('Engine seed'),
-          TextFieldCard.singleLine(
-            controller: _goalController,
-            label: 'Initial goal',
+    final nodes = _extension.authoredNodes;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_loadErrors.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: _LoadErrorBanner(errors: _loadErrors),
           ),
-          _BaselineSection(
-            baseline: _extension.emotionBaseline,
-            remaining: remainingEmotions,
-            expanded: _expandedBaseline,
-            onChipTapped: (e) => setState(
-              () => _expandedBaseline = _expandedBaseline == e ? null : e,
+        ExpansionTile(
+          title: const Text('Engine seed'),
+          initiallyExpanded: nodes.isEmpty,
+          tilePadding: const EdgeInsets.only(left: 16, right: 16),
+          childrenPadding:
+              const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16,
+              children: [
+                TextFieldCard.singleLine(
+                  controller: _goalController,
+                  label: 'Initial goal',
+                ),
+                _BaselineSection(
+                  baseline: _extension.emotionBaseline,
+                  remaining: remainingEmotions,
+                  expanded: _expandedBaseline,
+                  onChipTapped: (e) => setState(
+                    () =>
+                        _expandedBaseline = _expandedBaseline == e ? null : e,
+                  ),
+                  onValueChanged: _setBaseline,
+                  onRemove: _removeBaseline,
+                  onAdd: _addBaseline,
+                ),
+                const _SectionLabel('Initial scene'),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    SizedBox(
+                      width: 280,
+                      child: TextFieldCard.singleLine(
+                        controller: _locationController,
+                        label: 'Location',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: TextFieldCard.singleLine(
+                        controller: _timeOfDayController,
+                        label: 'Time of day',
+                      ),
+                    ),
+                  ],
+                ),
+                TextFieldCard.singleLine(
+                  controller: _presentEntitiesController,
+                  label: 'Present (comma-separated)',
+                ),
+                TextFieldCard.singleLine(
+                  controller: _sensoryHooksController,
+                  label: 'Sensory hooks (comma-separated)',
+                ),
+              ],
             ),
-            onValueChanged: _setBaseline,
-            onRemove: _removeBaseline,
-            onAdd: _addBaseline,
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: FilledButton.tonalIcon(
+            onPressed: _addNode,
+            icon: const Icon(Icons.add),
+            label: const Text('Add Node'),
           ),
-          const _SectionHeader('Initial scene'),
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              SizedBox(
-                width: 280,
-                child: TextFieldCard.singleLine(
-                  controller: _locationController,
-                  label: 'Location',
-                ),
-              ),
-              SizedBox(
-                width: 200,
-                child: TextFieldCard.singleLine(
-                  controller: _timeOfDayController,
-                  label: 'Time of day',
-                ),
-              ),
-            ],
+        ),
+        if (nodes.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: Text('No authored nodes yet.')),
+          )
+        else
+          Expanded(
+            child: ReorderableListView.builder(
+              buildDefaultDragHandles: false,
+              itemCount: nodes.length,
+              onReorder: _onReorder,
+              itemBuilder: (context, index) {
+                final node = nodes[index];
+                return NodeListTile(
+                  key: ValueKey(identityHashCode(node)),
+                  node: node,
+                  index: index,
+                  onTap: () => _openNodeEditor(node),
+                  onDelete: () => unawaited(_deleteNode(index)),
+                );
+              },
+            ),
           ),
-          TextFieldCard.singleLine(
-            controller: _presentEntitiesController,
-            label: 'Present (comma-separated)',
-          ),
-          TextFieldCard.singleLine(
-            controller: _sensoryHooksController,
-            label: 'Sensory hooks (comma-separated)',
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.title);
+/// Returns a copy of [node] with runtime countdown fields reset to
+/// constructor defaults so the saved JSON looks like a freshly
+/// authored node (per plan: runtime state must not leak into the
+/// authored card). Recurses into `spawns`.
+Node _stripRuntime(Node node) {
+  return Node(
+    id: node.id,
+    origin: node.origin,
+    type: node.type,
+    triggerProb: node.triggerProb,
+    delay: node.delay,
+    cooldown: node.cooldown,
+    sticky: node.sticky,
+    alive: node.alive,
+    scope: node.scope,
+    predicate: node.predicate,
+    narrativePayload: node.narrativePayload,
+    effects: node.effects,
+    spawns: node.spawns.map(_stripRuntime).toList(),
+  );
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.title);
 
   final String title;
 
