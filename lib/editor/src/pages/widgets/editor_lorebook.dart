@@ -92,11 +92,8 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
     });
   }
 
-  void _onReorder(int oldIndex, int newIndex) {
+  void _onReorderItem(int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final entries = _lorebook.entries;
       final item = entries.removeAt(oldIndex);
       entries.insert(newIndex, item);
@@ -171,7 +168,7 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
               child: ReorderableListView.builder(
                 buildDefaultDragHandles: false,
                 itemCount: entries.length,
-                onReorder: _onReorder,
+                onReorderItem: _onReorderItem,
                 itemBuilder: (context, index) {
                   final entry = entries[index];
                   return LorebookEntryListTile(

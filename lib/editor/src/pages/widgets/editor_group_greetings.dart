@@ -92,11 +92,8 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
     });
   }
 
-  void _onReorder(int oldIndex, int newIndex) {
+  void _onReorderItem(int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final controller = _controllers.removeAt(oldIndex);
       _controllers.insert(newIndex, controller);
       _updateCard();
@@ -122,7 +119,7 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           buildDefaultDragHandles: false,
-          onReorder: _onReorder,
+          onReorderItem: _onReorderItem,
           children: [
             for (int i = 0; i < _controllers.length; i++)
               Padding(
