@@ -115,6 +115,14 @@ A thread works the same way. On an open thread the last two lines are empty. Whe
 
 The lists of numbers used to search by meaning are large and not readable, so they sit in a separate file next to this one and are left out here.
 
+## What is read in, and what comes back
+
+Two shapes cross the edge of this package, and neither is saved. The chat itself stays the only record of them.
+
+Going in, each chat turn is handed over as a small bundle: who said it (you, or the character), the words, when they were said, and an id that ties the bundle back to the real message in the chat. The learning step reads these to find new events, facts and threads. Nothing about the bundle is kept afterwards, because the chat already holds it.
+
+Coming back, a lookup returns a short handful of the very same events, facts and threads shown in the file above, only the ones that fit the current moment, and already in the order they happened. They come back as the full records, not as text. Turning them into the few plain lines the character reads is the app's job, not this package's.
+
 ## If you are reading the code
 
 The package is small and each file is named for its job.
