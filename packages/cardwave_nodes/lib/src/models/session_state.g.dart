@@ -22,6 +22,9 @@ SessionState _$SessionStateFromJson(Map<String, dynamic> json) => SessionState(
       ?.map((e) => EventLogEntry.fromJson(e as Map<String, dynamic>))
       .toList(),
   turn: (json['turn'] as num?)?.toInt() ?? 0,
+  pendingDirectives: (json['pending_directives'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$SessionStateToJson(SessionState instance) =>
@@ -33,6 +36,7 @@ Map<String, dynamic> _$SessionStateToJson(SessionState instance) =>
       'flags': instance.flags,
       'event_log': instance.eventLog.map((e) => e.toJson()).toList(),
       'turn': instance.turn,
+      'pending_directives': instance.pendingDirectives,
     };
 
 const _$PhaseEnumEnumMap = {

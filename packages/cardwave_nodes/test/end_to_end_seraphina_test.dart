@@ -112,10 +112,12 @@ void main() {
         maxContextTokens: 8000,
       );
 
-      // Mock director: small per-turn trust nudge + an event-log line.
+      // Mock director: per-turn trust nudge + an event-log line. The
+      // nudge sits above the emotion's per-turn decay rate so net
+      // movement is positive over the run.
       final directorOutput = DirectorOutput(
         emotionDeltas: {
-          'seraphina': {EmotionEnum.trust: 0.03},
+          'seraphina': {EmotionEnum.trust: 0.10},
         },
         eventLogAppend: [
           EventLogAppend(
@@ -139,8 +141,9 @@ void main() {
     final trustAfter =
         state.characters['seraphina']!.emotion[EmotionEnum.trust]!.value;
     expect(trustAfter, greaterThan(0.3),
-        reason: 'six director nudges of +0.03 should raise trust above '
-            'the 0.3 baseline (resistance damps but does not zero them)');
+        reason: 'six director nudges of +0.10 should raise trust above '
+            'the 0.3 baseline; resistance and per-turn decay damp the '
+            'accumulation but do not zero it');
     expect(state.eventLog, hasLength(6));
     expect(state.eventLog.first.turn, 1);
     expect(state.eventLog.last.turn, 6);

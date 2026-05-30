@@ -44,6 +44,9 @@ class NodesService {
   String? _currentSessionId;
   SessionState? _state;
   NodePool? _pool;
+  StateChangeLog _changeLog = StateChangeLog();
+  DirectorOutput? _lastDirectorOutput;
+  PromptBreakdown _lastPromptBreakdown = PromptBreakdown.empty;
 
   /// The currently-loaded session state, or null when no chat is open.
   SessionState? get state => _currentSessionId == null ? null : _state;
@@ -51,13 +54,26 @@ class NodesService {
   /// The currently-loaded pool, or null when no chat is open.
   NodePool? get pool => _currentSessionId == null ? null : _pool;
 
+  /// Per-mutation log for the debug panel. Reset on chat swap. Spec
+  /// §10 calls for "a log of every state change"; this is it.
+  StateChangeLog get changeLog => _changeLog;
+
+  /// The director's JSON output from the previous turn, or null if no
+  /// director call has run yet on the current chat. Spec §10.
+  DirectorOutput? get lastDirectorOutput => _lastDirectorOutput;
+
+  /// Section-by-section character counts from the previous
+  /// `assembleDynamicSections` call. Spec §10's "actor prompt
+  /// assembly breakdown" surface.
+  PromptBreakdown get lastPromptBreakdown => _lastPromptBreakdown;
+
   /// Pre-reply work: lazy-opens the chat, bumps the turn counter,
   /// ticks the pool, runs one firing pass, and assembles the dynamic
-  /// NODES sections (scene + state slice + sticky directives + this-
-  /// turn payloads + surfaced memories) for injection into the actor
-  /// prompt. Returns the assembled section together with the fired
-  /// list (relayed to the director on the same turn once that call is
-  /// wired).
+  /// NODES sections (scene + state slice + sticky directives +
+  /// director directives + this-turn payloads + surfaced memories)
+  /// for injection into the actor prompt. Returns the assembled
+  /// section together with the fired list (relayed to the director on
+  /// the same turn once that call is wired).
   ///
   /// Any failure (disk, embedder, engine) is caught and returned as
   /// an empty context, with a warning logged — a NODES problem must
@@ -72,15 +88,19 @@ class NodesService {
     try {
       await _ensureOpen(session, file);
       final fired = _runEngineTurn();
-      final promptSection = await _assembler.assembleDynamicSections(
+      final pending = List<String>.of(_state!.pendingDirectives);
+      final result = await _assembler.assembleDynamicSections(
         state: _state!,
         pool: _pool!,
         firedThisTurn: fired,
         userInput: userInput,
         maxContextTokens: maxContextTokens,
+        pendingDirectives: pending,
       );
+      _state!.pendingDirectives.clear();
+      _lastPromptBreakdown = result.breakdown;
       return NodesActorContext(
-        promptSection: promptSection,
+        promptSection: result.text,
         firedThisTurn: fired,
       );
     } on Exception catch (error, stackTrace) {
@@ -101,7 +121,7 @@ class NodesService {
     required DirectorOutput output,
   }) async {
     await _ensureOpen(session, file);
-    applyDirectorOutput(output, _state!, pool: _pool!);
+    _applyAndStashDirective(output);
     await _persistCurrent(file, session.id);
   }
 
@@ -124,7 +144,7 @@ class NodesService {
           actorLastOutput: latestAssistantText(session.messages),
           userInput: latestUserText(session.messages),
         );
-        applyDirectorOutput(output, _state!, pool: _pool!);
+        _applyAndStashDirective(output);
       }
       await _persistCurrent(file, session.id);
     } on Exception catch (error, stackTrace) {
@@ -141,6 +161,7 @@ class NodesService {
   /// swapped it out).
   void releaseChat(String sessionId) {
     if (_currentSessionId != sessionId) return;
+    _resetTransientDebugState();
     _currentSessionId = null;
     _state = null;
     _pool = null;
@@ -153,6 +174,7 @@ class NodesService {
   /// already the open chat.
   Future<void> _ensureOpen(ChatSession session, CharacterFile file) async {
     if (_currentSessionId == session.id) return;
+    _resetTransientDebugState();
     final loaded = await repository.loadState(file, session.id);
     _state = loaded.state;
     _pool = NodePool();
@@ -195,7 +217,28 @@ class NodesService {
   List<Node> _runEngineTurn() {
     _state!.turn += 1;
     _pool!.tick();
-    return _firingEngine.runTurn(_pool!, _state!).fired;
+    return _firingEngine
+        .runTurn(_pool!, _state!, changeLog: _changeLog)
+        .fired;
+  }
+
+  /// Applies the director's output to state + pool while keeping the
+  /// directive lines for the next prompt assembly and remembering the
+  /// last output for the debug panel.
+  void _applyAndStashDirective(DirectorOutput output) {
+    applyDirectorOutput(output, _state!, pool: _pool!, changeLog: _changeLog);
+    if (output.directiveLines.isNotEmpty) {
+      _state!.pendingDirectives
+        ..clear()
+        ..addAll(output.directiveLines);
+    }
+    _lastDirectorOutput = output;
+  }
+
+  void _resetTransientDebugState() {
+    _changeLog = StateChangeLog();
+    _lastDirectorOutput = null;
+    _lastPromptBreakdown = PromptBreakdown.empty;
   }
 
   Future<void> _persistCurrent(CharacterFile file, String sessionId) =>

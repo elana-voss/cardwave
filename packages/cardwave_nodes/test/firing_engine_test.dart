@@ -250,6 +250,129 @@ void main() {
     });
   });
 
+  group('per-turn decay and lockout tick', () {
+    test('emotion fades by its decay rate each turn when not reinforced', () {
+      final state = _seedState();
+      // Seed alice's joy at 1.0 so decay is visible.
+      state.characters['alice']!.emotion[EmotionEnum.joy]!.value = 1.0;
+      final pool = NodePool();
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      // joy decay rate is 0.08; after one runTurn, joy drops by that.
+      expect(
+        state.characters['alice']!.emotion[EmotionEnum.joy]!.value,
+        closeTo(1.0 - emotionDecayRates[EmotionEnum.joy]!, 1e-9),
+      );
+    });
+
+    test('lockout countdown decrements once per turn', () {
+      final state = _seedState();
+      state.characters['alice']!.emotion[EmotionEnum.joy]!
+          .lockoutTurnsRemaining = 3;
+      final pool = NodePool();
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      expect(
+        state.characters['alice']!.emotion[EmotionEnum.joy]!
+            .lockoutTurnsRemaining,
+        2,
+      );
+    });
+
+    test('physical state decays the same way', () {
+      final state = _seedState();
+      state.characters['alice']!.physical[PhysicalEnum.tiredness]!.value = 0.8;
+      final pool = NodePool();
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      expect(
+        state.characters['alice']!.physical[PhysicalEnum.tiredness]!.value,
+        closeTo(0.8 - physicalDecayRates[PhysicalEnum.tiredness]!, 1e-9),
+      );
+    });
+  });
+
+  group('scope cleanup on fired-node effects', () {
+    test('phase-scoped nodes are removed when a fired node changes phase', () {
+      final state = _seedState();
+      final pool = NodePool()
+        ..add(_node(
+          id: 'transition',
+          effects: NodeEffects(phaseChange: PhaseEnum.sequel),
+        ))
+        ..add(_node(
+          id: 'phase-only',
+          scope: NodeScopeEnum.phase,
+          triggerProb: 0.0, // make sure it doesn't fire this turn
+        ));
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      expect(pool.active.map((n) => n.id),
+          isNot(contains('phase-only')));
+    });
+
+    test('scene-scoped nodes are removed on sceneTransition', () {
+      final state = _seedState();
+      final pool = NodePool()
+        ..add(_node(
+          id: 'transition',
+          effects: NodeEffects(sceneTransition: true),
+        ))
+        ..add(_node(
+          id: 'scene-only',
+          scope: NodeScopeEnum.scene,
+          triggerProb: 0.0,
+        ));
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      expect(pool.active.map((n) => n.id),
+          isNot(contains('scene-only')));
+    });
+
+    test('session-scoped nodes survive a phase change', () {
+      final state = _seedState();
+      final pool = NodePool()
+        ..add(_node(
+          id: 'transition',
+          effects: NodeEffects(phaseChange: PhaseEnum.sequel),
+        ))
+        ..add(_node(
+          id: 'session-only',
+          scope: NodeScopeEnum.session,
+          triggerProb: 0.0,
+        ));
+      FiringEngine(random: Random(1)).runTurn(pool, state);
+      expect(pool.active.map((n) => n.id), contains('session-only'));
+    });
+  });
+
+  group('state-change log', () {
+    test('decay records show up when a value actually moved', () {
+      final state = _seedState();
+      state.characters['alice']!.emotion[EmotionEnum.joy]!.value = 0.5;
+      final log = StateChangeLog();
+      FiringEngine(random: Random(1))
+          .runTurn(NodePool(), state, changeLog: log);
+      expect(
+        log.entries.any((e) =>
+            e.category == StateChangeCategory.decay &&
+            e.description.contains('alice.emotion.joy')),
+        isTrue,
+      );
+    });
+
+    test('node firing records show up under nodeFiring category', () {
+      final state = _seedState();
+      final pool = NodePool()
+        ..add(_node(effects: NodeEffects(emotionDeltas: {
+          'alice': {EmotionEnum.anger: 0.30},
+        })));
+      final log = StateChangeLog();
+      FiringEngine(random: Random(1)).runTurn(pool, state, changeLog: log);
+      expect(
+        log.entries.any((e) =>
+            e.category == StateChangeCategory.nodeFiring &&
+            e.description.contains('alice.emotion.anger')),
+        isTrue,
+      );
+    });
+  });
+
   group('pressure boost', () {
     test('pressure raises effective triggerProb above the random draw', () {
       // FakeRandom returns 0.25. triggerProb 0.05 alone → 0.25 < 0.05

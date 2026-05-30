@@ -17,15 +17,62 @@ const double _charsPerToken = 4.0;
 /// actor's prompt. Below it, the emotion is too quiet to mention.
 const double _prominentEmotionThreshold = 0.5;
 
+/// Per-section character counts for the assembled dynamic block, plus
+/// the running total and the budget the assembler was given. The debug
+/// view shows this so a developer can see which section ate the budget
+/// and which got dropped under pressure.
+class PromptBreakdown {
+  const PromptBreakdown({
+    required this.sceneChars,
+    required this.stateChars,
+    required this.lingeringChars,
+    required this.directivesChars,
+    required this.nowChars,
+    required this.earlierChars,
+    required this.totalChars,
+    required this.budgetChars,
+  });
+
+  static const PromptBreakdown empty = PromptBreakdown(
+    sceneChars: 0,
+    stateChars: 0,
+    lingeringChars: 0,
+    directivesChars: 0,
+    nowChars: 0,
+    earlierChars: 0,
+    totalChars: 0,
+    budgetChars: 0,
+  );
+
+  final int sceneChars;
+  final int stateChars;
+  final int lingeringChars;
+  final int directivesChars;
+  final int nowChars;
+  final int earlierChars;
+  final int totalChars;
+  final int budgetChars;
+}
+
+/// What [PromptAssembler.assembleDynamicSections] returns: the dynamic
+/// text the host splices into the actor's system prompt, and the
+/// breakdown of section sizes for the debug view.
+typedef DynamicSectionsResult = ({
+  String text,
+  PromptBreakdown breakdown,
+});
+
 /// Builds the actor's per-turn prompt by stacking, in spec §8.1 order:
 ///   1. world and scene state
 ///   2. character definition (caller-supplied)
 ///   3. session state slice (goal, phase, prominent emotions)
 ///   4. active sticky directives from previously fired nodes
-///   5. narrative payloads from nodes firing this turn
-///   6. the user's input
+///   5. director's directives for THIS reply (spec §6.2)
+///   6. narrative payloads from nodes firing this turn
+///   7. relevant earlier memories
+///   8. the user's input
 ///
-/// Sections 3–5 share an injection budget of `injectionBudgetFraction *
+/// Sections 3–7 share an injection budget of `injectionBudgetFraction *
 /// maxContextTokens`. Memory surfacing uses [embedder] when provided
 /// (ranks event-log entries by cosine similarity to the user input).
 /// Falls back to recency if [embedder] is null.
@@ -48,11 +95,13 @@ class PromptAssembler {
     required List<Node> firedThisTurn,
     required String userInput,
     required int maxContextTokens,
+    List<String> pendingDirectives = const [],
   }) async {
     final blocks = await _buildSceneAndVariableBlocks(
       state: state,
       pool: pool,
       firedThisTurn: firedThisTurn,
+      pendingDirectives: pendingDirectives,
       userInput: userInput,
       maxContextTokens: maxContextTokens,
     );
@@ -64,50 +113,73 @@ class PromptAssembler {
     ].where((s) => s.isNotEmpty).join('\n\n');
   }
 
-  /// Returns just the per-turn dynamic content — world/scene block,
-  /// session state slice, sticky directives, fired payloads, surfaced
-  /// memories — joined as one string. Excludes the character
+  /// Returns the per-turn dynamic content as one string for the host
+  /// to splice into the actor prompt, plus a [PromptBreakdown] of
+  /// section sizes for the debug view. Excludes the character
   /// definition and the user input, which the host's own prompt
-  /// builder already places. Use this when the actor prompt is
-  /// assembled outside the package and NODES only contributes its
-  /// dynamic context as one injected section.
-  Future<String> assembleDynamicSections({
+  /// builder already places.
+  Future<DynamicSectionsResult> assembleDynamicSections({
     required SessionState state,
     required NodePool pool,
     required List<Node> firedThisTurn,
     required String userInput,
     required int maxContextTokens,
+    List<String> pendingDirectives = const [],
   }) async {
     final blocks = await _buildSceneAndVariableBlocks(
       state: state,
       pool: pool,
       firedThisTurn: firedThisTurn,
+      pendingDirectives: pendingDirectives,
       userInput: userInput,
       maxContextTokens: maxContextTokens,
     );
-    return <String>[blocks.scene, blocks.variable]
-        .where((s) => s.isNotEmpty)
-        .join('\n\n');
+    final parts = <String>[
+      blocks.scene,
+      blocks.variable,
+    ].where((s) => s.isNotEmpty);
+    return (text: parts.join('\n\n'), breakdown: blocks.breakdown);
   }
 
-  Future<({String scene, String variable})> _buildSceneAndVariableBlocks({
+  Future<
+      ({
+        String scene,
+        String variable,
+        PromptBreakdown breakdown,
+      })> _buildSceneAndVariableBlocks({
     required SessionState state,
     required NodePool pool,
     required List<Node> firedThisTurn,
+    required List<String> pendingDirectives,
     required String userInput,
     required int maxContextTokens,
   }) async {
     final budgetChars =
         (maxContextTokens * injectionBudgetFraction * _charsPerToken).round();
     final scene = _renderSceneAndWorld(state);
-    final variable = await _renderVariableSections(
+    final variableParts = await _renderVariableSections(
       state: state,
       pool: pool,
       firedThisTurn: firedThisTurn,
+      pendingDirectives: pendingDirectives,
       userInput: userInput,
       budgetChars: budgetChars,
     );
-    return (scene: scene, variable: variable);
+    final variable = variableParts.text;
+    final totalChars = scene.length +
+        (scene.isNotEmpty && variable.isNotEmpty ? 2 : 0) +
+        variable.length;
+    final breakdown = PromptBreakdown(
+      sceneChars: scene.length,
+      stateChars: variableParts.stateChars,
+      lingeringChars: variableParts.lingeringChars,
+      directivesChars: variableParts.directivesChars,
+      nowChars: variableParts.nowChars,
+      earlierChars: variableParts.earlierChars,
+      totalChars: totalChars,
+      budgetChars: budgetChars,
+    );
+    return (scene: scene, variable: variable, breakdown: breakdown);
   }
 
   String _renderSceneAndWorld(SessionState state) {
@@ -125,47 +197,58 @@ class PromptAssembler {
     return '## Scene\n${parts.join("\n")}';
   }
 
-  Future<String> _renderVariableSections({
+  Future<
+      ({
+        String text,
+        int stateChars,
+        int lingeringChars,
+        int directivesChars,
+        int nowChars,
+        int earlierChars,
+      })> _renderVariableSections({
     required SessionState state,
     required NodePool pool,
     required List<Node> firedThisTurn,
+    required List<String> pendingDirectives,
     required String userInput,
     required int budgetChars,
   }) async {
     final parts = <String>[];
     var used = 0;
 
+    int addRendered(String block) {
+      if (block.isEmpty) return 0;
+      parts.add(block);
+      used += block.length;
+      return block.length;
+    }
+
+    int addBullets(String title, Iterable<String> items) {
+      final lines = items.where((p) => p.isNotEmpty).toList();
+      if (lines.isEmpty) return 0;
+      return addRendered(_renderBulletSection(title, lines));
+    }
+
     // 1. Session state slice (goal, phase, prominent per-character emotions)
-    final stateSlice = _renderStateSlice(state);
-    if (stateSlice.isNotEmpty) {
-      parts.add(stateSlice);
-      used += stateSlice.length;
-    }
+    final stateChars = addRendered(_renderStateSlice(state));
 
-    // 2. Sticky directives (lingering from prior firings).
-    final stickyLines = pool.active
-        .where((n) => n.currentSticky > 0 || n.currentSticky == -1)
-        .map((n) => n.narrativePayload)
-        .where((p) => p.isNotEmpty)
-        .toList();
-    if (stickyLines.isNotEmpty) {
-      final block = _renderBulletSection('Lingering', stickyLines);
-      parts.add(block);
-      used += block.length;
-    }
+    // 2. Sticky directives (lingering payloads from prior firings).
+    final lingeringChars = addBullets(
+      'Lingering',
+      pool.active
+          .where((n) => n.currentSticky > 0 || n.currentSticky == -1)
+          .map((n) => n.narrativePayload),
+    );
 
-    // 3. New firings this turn.
-    final newLines = firedThisTurn
-        .map((n) => n.narrativePayload)
-        .where((p) => p.isNotEmpty)
-        .toList();
-    if (newLines.isNotEmpty) {
-      final block = _renderBulletSection('Now', newLines);
-      parts.add(block);
-      used += block.length;
-    }
+    // 3. Director directives for THIS reply (spec §6.2).
+    final directivesChars = addBullets('Directives', pendingDirectives);
 
-    // 4. Event-log memories, only if budget remains.
+    // 4. New firings this turn.
+    final nowChars =
+        addBullets('Now', firedThisTurn.map((n) => n.narrativePayload));
+
+    // 5. Event-log memories, only if budget remains.
+    var earlierChars = 0;
     final remaining = budgetChars - used;
     if (remaining > 0 && state.eventLog.isNotEmpty) {
       final memoryLines = await _surfaceMemories(
@@ -173,12 +256,17 @@ class PromptAssembler {
         userInput: userInput,
         budgetChars: remaining,
       );
-      if (memoryLines.isNotEmpty) {
-        parts.add(_renderBulletSection('Earlier', memoryLines));
-      }
+      earlierChars = addBullets('Earlier', memoryLines);
     }
 
-    return parts.join('\n\n');
+    return (
+      text: parts.join('\n\n'),
+      stateChars: stateChars,
+      lingeringChars: lingeringChars,
+      directivesChars: directivesChars,
+      nowChars: nowChars,
+      earlierChars: earlierChars,
+    );
   }
 
   String _renderBulletSection(String title, Iterable<String> items) =>

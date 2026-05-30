@@ -139,28 +139,33 @@ void main() {
       final state = _seedState();
       final pool = NodePool()..add(_stickyNode(payload: 'still cool'));
       final assembler = PromptAssembler();
-      final dynamic_ = await assembler.assembleDynamicSections(
+      final result = await assembler.assembleDynamicSections(
         state: state,
         pool: pool,
         firedThisTurn: [_firedNode(payload: 'she sighs')],
         userInput: 'Hello',
         maxContextTokens: 8000,
       );
-      expect(dynamic_, contains('## Scene'));
-      expect(dynamic_, contains('## State'));
-      expect(dynamic_, contains('## Lingering'));
-      expect(dynamic_, contains('still cool'));
-      expect(dynamic_, contains('## Now'));
-      expect(dynamic_, contains('she sighs'));
-      expect(dynamic_, isNot(contains('## Alice')),
+      expect(result.text, contains('## Scene'));
+      expect(result.text, contains('## State'));
+      expect(result.text, contains('## Lingering'));
+      expect(result.text, contains('still cool'));
+      expect(result.text, contains('## Now'));
+      expect(result.text, contains('she sighs'));
+      expect(result.text, isNot(contains('## Alice')),
           reason: 'cardDefinition is the host\'s responsibility');
-      expect(dynamic_, isNot(contains('User: Hello')),
+      expect(result.text, isNot(contains('User: Hello')),
           reason: 'user input is the host\'s responsibility');
+      expect(result.breakdown.sceneChars, greaterThan(0));
+      expect(result.breakdown.stateChars, greaterThan(0));
+      expect(result.breakdown.lingeringChars, greaterThan(0));
+      expect(result.breakdown.nowChars, greaterThan(0));
+      expect(result.breakdown.totalChars, greaterThan(0));
     });
 
     test('empty world: only the always-on state slice (phase) survives',
         () async {
-      final dynamic_ = await PromptAssembler().assembleDynamicSections(
+      final result = await PromptAssembler().assembleDynamicSections(
         state: SessionState()..characters['alice'] = CharacterState(),
         pool: NodePool(),
         firedThisTurn: const [],
@@ -169,12 +174,26 @@ void main() {
       );
       // No scene, no goal, no prominent emotions, no nodes — but the
       // phase line is part of the state slice and always emits.
-      expect(dynamic_, isNot(contains('## Scene')));
-      expect(dynamic_, isNot(contains('## Lingering')));
-      expect(dynamic_, isNot(contains('## Now')));
-      expect(dynamic_, isNot(contains('## Earlier')));
-      expect(dynamic_, contains('## State'));
-      expect(dynamic_, contains('Phase:'));
+      expect(result.text, isNot(contains('## Scene')));
+      expect(result.text, isNot(contains('## Lingering')));
+      expect(result.text, isNot(contains('## Now')));
+      expect(result.text, isNot(contains('## Earlier')));
+      expect(result.text, contains('## State'));
+      expect(result.text, contains('Phase:'));
+    });
+
+    test('pending directives surface as a ## Directives block', () async {
+      final result = await PromptAssembler().assembleDynamicSections(
+        state: SessionState()..characters['alice'] = CharacterState(),
+        pool: NodePool(),
+        firedThisTurn: const [],
+        userInput: 'hi',
+        maxContextTokens: 8000,
+        pendingDirectives: const ['she is still cool, softening only slightly'],
+      );
+      expect(result.text, contains('## Directives'));
+      expect(result.text, contains('softening only slightly'));
+      expect(result.breakdown.directivesChars, greaterThan(0));
     });
   });
 

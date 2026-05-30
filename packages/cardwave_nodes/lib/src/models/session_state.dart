@@ -20,10 +20,12 @@ class SessionState {
     Map<String, Object?>? flags,
     List<EventLogEntry>? eventLog,
     this.turn = 0,
+    List<String>? pendingDirectives,
   })  : characters = characters ?? {},
         currentScene = currentScene ?? Scene(),
         flags = flags ?? {},
-        eventLog = eventLog ?? [];
+        eventLog = eventLog ?? [],
+        pendingDirectives = pendingDirectives ?? [];
 
   factory SessionState.fromJson(Map<String, dynamic> json) =>
       _$SessionStateFromJson(json);
@@ -35,6 +37,12 @@ class SessionState {
   final Map<String, Object?> flags;
   final List<EventLogEntry> eventLog;
   int turn;
+
+  /// Short authorial directives the director wrote at the end of the
+  /// previous turn (spec §6.2: "inject into the actor's prompt this
+  /// turn"). The next prompt assembly reads and clears them; one
+  /// turn's lifetime, no carryover.
+  final List<String> pendingDirectives;
 
   Map<String, dynamic> toJson() => _$SessionStateToJson(this);
 }

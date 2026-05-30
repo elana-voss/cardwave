@@ -9,6 +9,7 @@ import 'package:cardwave_nodes/src/nodes/node_scope_enum.dart';
 import 'package:cardwave_nodes/src/nodes/node_type_enum.dart';
 import 'package:cardwave_nodes/src/observability/firing_log_event.dart';
 import 'package:cardwave_nodes/src/observability/firing_logger.dart';
+import 'package:cardwave_nodes/src/observability/state_change_record.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_ast.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_evaluator.dart';
 import 'package:cardwave_nodes/src/predicates/predicate_parser.dart';
@@ -41,7 +42,18 @@ class FiringEngine {
   /// every evaluation. Filled on demand as nodes are seen.
   final Map<String, PredicateNode> _predicateCache = {};
 
-  FiringResult runTurn(NodePool pool, SessionState state) {
+  /// Runs decay+lockout-tick across every tracked value, rolls the
+  /// pool, fires at most one winner per type, applies effects.
+  ///
+  /// [changeLog] is optional; when supplied, every mutation (decay,
+  /// delta, flag write, goal/phase change, knowledge write) is
+  /// captured as a [StateChangeRecord] for the debug panel.
+  FiringResult runTurn(
+    NodePool pool,
+    SessionState state, {
+    StateChangeLog? changeLog,
+  }) {
+    _decayAndTickLockouts(state, changeLog);
     final roll = _rollEligible(pool, state);
     final fired = <Node>[];
     for (final type in NodeTypeEnum.values) {
@@ -51,7 +63,7 @@ class FiringEngine {
         continue;
       }
       final chosen = _weightedPick(winners, (n) => n.triggerProb);
-      _fireNode(chosen, pool, state);
+      _fireNode(chosen, pool, state, changeLog);
       fired.add(chosen);
       pool.resetPressure(type);
     }
@@ -68,6 +80,65 @@ class FiringEngine {
       ],
     ));
     return (fired: fired);
+  }
+
+  /// Per-spec §3.1/§3.2: every tracked value fades a little each turn
+  /// (`applyDecay`) and the lockout countdown decrements
+  /// (`tickLockout`). Runs once at the start of every turn, before
+  /// firing rolls — so a node firing this turn sees the post-decay
+  /// values, not stale ones.
+  void _decayAndTickLockouts(SessionState state, StateChangeLog? changeLog) {
+    for (final entry in state.characters.entries) {
+      final characterId = entry.key;
+      final character = entry.value;
+      _decayTrackedMap(
+        characterId,
+        'emotion',
+        character.emotion,
+        (k) => emotionDecayRates[k] ?? 0.0,
+        state.turn,
+        changeLog,
+      );
+      _decayTrackedMap(
+        characterId,
+        'physical',
+        character.physical,
+        (k) => physicalDecayRates[k] ?? 0.0,
+        state.turn,
+        changeLog,
+      );
+      _decayTrackedMap(
+        characterId,
+        'relationship',
+        character.relationship,
+        (k) => relationshipDecayRates[k] ?? 0.0,
+        state.turn,
+        changeLog,
+      );
+    }
+  }
+
+  void _decayTrackedMap<E extends Enum>(
+    String characterId,
+    String category,
+    Map<E, TrackedValue> map,
+    double Function(E) rateFor,
+    int turn,
+    StateChangeLog? changeLog,
+  ) {
+    map.forEach((key, value) {
+      tickLockout(value);
+      final before = value.value;
+      applyDecay(value, rateFor(key));
+      recordValueChange(
+        changeLog: changeLog,
+        category: StateChangeCategory.decay,
+        turn: turn,
+        path: '$characterId.$category.${key.name}',
+        before: before,
+        after: value.value,
+      );
+    });
   }
 
   _RollResult _rollEligible(NodePool pool, SessionState state) {
@@ -137,24 +208,53 @@ class FiringEngine {
     return items.last;
   }
 
-  void _fireNode(Node node, NodePool pool, SessionState state) {
-    _applyEffectsToState(node, state);
+  void _fireNode(
+    Node node,
+    NodePool pool,
+    SessionState state,
+    StateChangeLog? changeLog,
+  ) {
+    _applyEffectsToState(node, state, changeLog);
     _setCooldownAndSticky(node);
+    // Spec §4.6: phase/scene transitions retire all nodes whose scope
+    // is bound to the old context. Done before adding spawns so a
+    // spawn whose scope matches the new context survives.
+    if (node.effects.phaseChange != null) {
+      pool.removeByScope(NodeScopeEnum.phase);
+    }
+    if (node.effects.sceneTransition) {
+      pool.removeByScope(NodeScopeEnum.scene);
+    }
     _addSpawnsToPool(node, pool);
     if (node.scope == NodeScopeEnum.oneShot) {
       pool.active.remove(node);
     }
   }
 
-  void _applyEffectsToState(Node node, SessionState state) {
+  void _applyEffectsToState(
+    Node node,
+    SessionState state,
+    StateChangeLog? changeLog,
+  ) {
     final effects = node.effects;
+    final nodeId = node.id;
     effects.emotionDeltas.forEach((characterId, deltas) {
       final character = state.characters[characterId];
       if (character == null) return;
       deltas.forEach((emotion, delta) {
         final value = character.emotion[emotion];
         if (value == null) return;
+        final before = value.value;
         final outcome = applyDelta(value, delta);
+        recordValueChange(
+          changeLog: changeLog,
+          category: StateChangeCategory.nodeFiring,
+          turn: state.turn,
+          path: '$characterId.emotion.${emotion.name}',
+          before: before,
+          after: value.value,
+          note: 'fired "$nodeId"',
+        );
         if (outcome.shouldLockOpposite) {
           final opposite = character.emotion[emotion.opposite];
           if (opposite != null) setLockout(opposite, lockoutDurationTurns);
@@ -162,34 +262,101 @@ class FiringEngine {
       });
     });
     effects.physicalDeltas.forEach((characterId, deltas) {
-      _applyEnumDeltas(state.characters[characterId]?.physical, deltas);
+      _applyEnumDeltas(
+        characterId: characterId,
+        category: 'physical',
+        trackedMap: state.characters[characterId]?.physical,
+        deltas: deltas,
+        state: state,
+        nodeId: nodeId,
+        changeLog: changeLog,
+      );
     });
     effects.relationshipDeltas.forEach((characterId, deltas) {
-      _applyEnumDeltas(state.characters[characterId]?.relationship, deltas);
+      _applyEnumDeltas(
+        characterId: characterId,
+        category: 'relationship',
+        trackedMap: state.characters[characterId]?.relationship,
+        deltas: deltas,
+        state: state,
+        nodeId: nodeId,
+        changeLog: changeLog,
+      );
     });
-    state.flags.addAll(effects.flagSet);
+    effects.flagSet.forEach((key, value) {
+      final before = state.flags[key];
+      state.flags[key] = value;
+      if (changeLog != null && before != value) {
+        changeLog.add(StateChangeRecord(
+          turn: state.turn,
+          category: StateChangeCategory.nodeFiring,
+          description:
+              'flags.$key: ${before ?? 'null'} -> ${value ?? 'null'} '
+              '(fired "$nodeId")',
+        ));
+      }
+    });
     final goalChange = effects.goalChange;
-    if (goalChange != null) state.currentGoal = goalChange;
+    if (goalChange != null && goalChange != state.currentGoal) {
+      final before = state.currentGoal;
+      state.currentGoal = goalChange;
+      changeLog?.add(StateChangeRecord(
+        turn: state.turn,
+        category: StateChangeCategory.nodeFiring,
+        description: 'goal: "$before" -> "$goalChange" (fired "$nodeId")',
+      ));
+    }
     final phaseChange = effects.phaseChange;
-    if (phaseChange != null) state.currentPhase = phaseChange;
+    if (phaseChange != null && phaseChange != state.currentPhase) {
+      final before = state.currentPhase;
+      state.currentPhase = phaseChange;
+      changeLog?.add(StateChangeRecord(
+        turn: state.turn,
+        category: StateChangeCategory.nodeFiring,
+        description:
+            'phase: ${before.name} -> ${phaseChange.name} (fired "$nodeId")',
+      ));
+    }
     effects.knowledgeWrites.forEach((characterId, records) {
       final character = state.characters[characterId];
       if (character == null) return;
       for (final record in records) {
         character.knowledge[record.topic] = record;
+        changeLog?.add(StateChangeRecord(
+          turn: state.turn,
+          category: StateChangeCategory.nodeFiring,
+          description:
+              '$characterId.knowledge.${record.topic} = ${record.value ?? 'null'} '
+              '(conf ${record.confidence.toStringAsFixed(2)}, fired "$nodeId")',
+        ));
       }
     });
   }
 
-  void _applyEnumDeltas<E extends Enum>(
-    Map<E, TrackedValue>? trackedMap,
-    Map<E, double> deltas,
-  ) {
+  void _applyEnumDeltas<E extends Enum>({
+    required String characterId,
+    required String category,
+    required Map<E, TrackedValue>? trackedMap,
+    required Map<E, double> deltas,
+    required SessionState state,
+    required String nodeId,
+    required StateChangeLog? changeLog,
+  }) {
     if (trackedMap == null) return;
     deltas.forEach((key, delta) {
       final value = trackedMap[key];
       if (value == null) return;
+      final before = value.value;
       applyDelta(value, delta);
+      recordValueChange(
+        changeLog: changeLog,
+        category: StateChangeCategory.nodeFiring,
+        turn: state.turn,
+        path: '$characterId.$category.${key.name}',
+        before: before,
+        after: value.value,
+        note: 'fired "$nodeId"',
+      );
     });
   }
 
