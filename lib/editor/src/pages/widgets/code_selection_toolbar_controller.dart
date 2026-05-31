@@ -12,6 +12,12 @@ import 'package:re_editor/re_editor.dart';
 /// whole-document select, which is how mobile gets a working select-all: the
 /// phone keyboard otherwise only ever sees, and selects, the current line.
 ///
+/// This deliberately works around two open re_editor bugs from the app side
+/// instead of patching the editor's internals: its mobile select-all only
+/// covers the current line, and its own selection menu can land in a screen
+/// corner. Supplying our own menu sidesteps both and leaves re_editor's
+/// keyboard and toolbar code untouched.
+///
 /// Holds one overlay entry. The editor page must call [dispose] so a menu
 /// left open when the page closes does not linger.
 class CodeSelectionToolbarController implements SelectionToolbarController {
