@@ -143,18 +143,14 @@ dependency_overrides:
     git:
       url: https://github.com/elana-voss/llamadart.git
       ref: af4cbce20d54235dedf00dd741794cec2632a712
-  # Fork of re_editor 0.8.0: the published version fails to compile on Flutter
-  # 3.44 (TextInputClient gained onFocusReceived, which the package does not
-  # implement). The fork adds the one-line override. Drop this and return to
-  # the published version once upstream ships the fix (reqable/re-editor #105).
+  # Maintained fork of re_editor: upstream (reqable/re-editor) is stale and not
+  # merging fixes. Our fork carries the Flutter 3.44 onFocusReceived fix, the
+  # wasm-safe isolate_manager bump (so no app-side override is needed), and a
+  # find-panel listener-disposal fix. Keep the fork public for the public CI.
   re_editor:
     git:
       url: https://github.com/elana-voss/re-editor.git
-      ref: dbdcfb5eab4a4b72d99139632b4c1b10050d3be4
-  # re_editor pins isolate_manager ^4.x, whose isolate_contactor uses
-  # dart:html and will not compile to wasm. Force the wasm-safe 6.x line
-  # (re_editor works with it; see reqable/re-editor#79).
-  isolate_manager: ^6.1.2
+      ref: 69be8c55a34972cb1523f064b588cc72f3c5db99
 
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate

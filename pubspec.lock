@@ -712,7 +712,7 @@ packages:
     source: hosted
     version: "1.0.5"
   isolate_manager:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: isolate_manager
       sha256: "806b6195a60f17bcb23e3c6d2f4da1f29e7376c4295b061d135f59613586ad1d"
@@ -1140,8 +1140,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: dbdcfb5eab4a4b72d99139632b4c1b10050d3be4
-      resolved-ref: dbdcfb5eab4a4b72d99139632b4c1b10050d3be4
+      ref: "69be8c55a34972cb1523f064b588cc72f3c5db99"
+      resolved-ref: "69be8c55a34972cb1523f064b588cc72f3c5db99"
       url: "https://github.com/elana-voss/re-editor.git"
     source: git
     version: "0.8.0"
