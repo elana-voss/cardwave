@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.1.1
+version: 0.2.0
 
 workspace:
   - packages/cardwave_llm
@@ -109,6 +109,13 @@ dependencies:
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
 
+  # Native code editor for the nodes raw-JSON editor (bracket folding,
+  # find/replace, large-document performance). re_highlight is pulled
+  # transitively but declared because the JSON language and atom-one
+  # theme maps are imported directly.
+  re_editor: ^0.8.0
+  re_highlight: ^0.0.3
+
 
 dev_dependencies:
   flutter_test:
@@ -129,10 +136,21 @@ dev_dependencies:
 # (works around NVIDIA Blackwell + AMD AMDVLK iGPU driver crashes).
 # See app/README.md "Windows: GPU compatibility".
 dependency_overrides:
-  # Temporary local path override during patch/vram-kv-mmap work.
-  # Revert to git ref (af4cbce + new VRAM patch commit) once the branch is pushed.
+  # Stable ref shipped at v0.1.1 (Vulkan native-bundle workaround, see the
+  # note above). A local `path: ../../llamadart` is used transiently for
+  # native patch work; releases pin the git ref.
   llamadart:
-    path: ../../llamadart
+    git:
+      url: https://github.com/elana-voss/llamadart.git
+      ref: af4cbce20d54235dedf00dd741794cec2632a712
+  # Fork of re_editor 0.8.0: the published version fails to compile on Flutter
+  # 3.44 (TextInputClient gained onFocusReceived, which the package does not
+  # implement). The fork adds the one-line override. Drop this and return to
+  # the published version once upstream ships the fix (reqable/re-editor #105).
+  re_editor:
+    git:
+      url: https://github.com/elana-voss/re-editor.git
+      ref: dbdcfb5eab4a4b72d99139632b4c1b10050d3be4
 
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate

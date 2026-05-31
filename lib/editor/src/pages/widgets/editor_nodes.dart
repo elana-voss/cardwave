@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_editor_page.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_list_tile.dart';
+import 'package:cardwave/editor/src/pages/widgets/nodes_raw_editor_page.dart';
 import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/material.dart';
@@ -61,12 +63,7 @@ class _EditorNodesState extends State<EditorNodes> {
   void initState() {
     super.initState();
     _loadExtension();
-    _goalController.text = _extension.initialGoal;
-    final scene = _extension.initialScene ?? Scene();
-    _locationController.text = scene.location;
-    _timeOfDayController.text = scene.timeOfDay;
-    _presentEntitiesController.text = scene.presentEntities.join(', ');
-    _sensoryHooksController.text = scene.sensoryHooks.join(', ');
+    _loadSeedControllers();
 
     _goalController.onTextChanged(_onGoalChanged);
     _locationController.onTextChanged(_onSceneChanged);
@@ -95,6 +92,18 @@ class _EditorNodesState extends State<EditorNodes> {
       _extension = CardNodesExtension();
       _loadErrors = const [];
     }
+  }
+
+  /// Copies the engine-seed fields from [_extension] into their text
+  /// controllers. Runs on first build and after a raw-editor save so the
+  /// structured form mirrors the loaded extension.
+  void _loadSeedControllers() {
+    _goalController.text = _extension.initialGoal;
+    final scene = _extension.initialScene ?? Scene();
+    _locationController.text = scene.location;
+    _timeOfDayController.text = scene.timeOfDay;
+    _presentEntitiesController.text = scene.presentEntities.join(', ');
+    _sensoryHooksController.text = scene.sensoryHooks.join(', ');
   }
 
   void _onGoalChanged() {
@@ -220,15 +229,49 @@ class _EditorNodesState extends State<EditorNodes> {
     setState(() {});
   }
 
-  void _persist() {
-    if (_hasContent(_extension)) {
-      final stripped = CardNodesExtension(
-        authoredNodes:
-            _extension.authoredNodes.map(_stripRuntime).toList(),
+  void _openRawEditor() {
+    final initialJson = const JsonEncoder.withIndent('  ')
+        .convert(_strippedExtension(withEmptyScene: true).toJson());
+    unawaited(Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (ctx) => NodesRawEditorPage(
+          initialJson: initialJson,
+          onSaved: _onRawSaved,
+        ),
+      ),
+    ));
+  }
+
+  /// Applies a raw-editor save. The raw page hands back a parsed
+  /// extension; this writes it through the panel's own persist path and
+  /// re-seeds the form's text controllers so the structured view matches
+  /// what was just saved.
+  void _onRawSaved(CardNodesExtension cleaned) {
+    _extension = cleaned;
+    _persist();
+    _loadExtension();
+    _loadSeedControllers();
+    setState(() {});
+  }
+
+  /// The extension as written to the card: a copy with each node's runtime
+  /// countdown fields reset. [withEmptyScene] forces a non-null initial
+  /// scene (an empty [Scene] when the card has none) so the raw editor
+  /// shows the complete structure; the persist path passes the scene
+  /// through unchanged.
+  CardNodesExtension _strippedExtension({bool withEmptyScene = false}) =>
+      CardNodesExtension(
+        authoredNodes: _extension.authoredNodes.map(_stripRuntime).toList(),
         emotionBaseline: _extension.emotionBaseline,
         initialGoal: _extension.initialGoal,
-        initialScene: _extension.initialScene,
+        initialScene: withEmptyScene
+            ? (_extension.initialScene ?? Scene())
+            : _extension.initialScene,
       );
+
+  void _persist() {
+    final stripped = _strippedExtension();
+    if (_hasContent(stripped)) {
       widget.characterFile.card.extensions[nodesCardExtensionKey] =
           stripped.toJson();
     } else {
@@ -271,7 +314,18 @@ class _EditorNodesState extends State<EditorNodes> {
             child: _LoadErrorBanner(errors: _loadErrors),
           ),
         ExpansionTile(
-          title: const Text('Engine seed'),
+          title: Row(
+            children: [
+              const Text('Engine seed'),
+              const Spacer(),
+              IconButton(
+                key: const Key('editor-nodes-raw-button'),
+                tooltip: 'Edit JSON',
+                icon: const Icon(Icons.data_object),
+                onPressed: _openRawEditor,
+              ),
+            ],
+          ),
           initiallyExpanded: nodes.isEmpty,
           tilePadding: EdgeInsets.zero,
           childrenPadding: const EdgeInsets.only(bottom: 16),

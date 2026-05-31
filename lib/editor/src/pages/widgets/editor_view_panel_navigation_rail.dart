@@ -13,10 +13,10 @@ class _PanelNavigationRail extends StatelessWidget {
     PanelEnum.greetings,
     PanelEnum.prompts,
     PanelEnum.lorebook,
-    PanelEnum.nodes,
     PanelEnum.groupSettings,
     PanelEnum.creatorMetadata,
     PanelEnum.appData,
+    PanelEnum.nodes,
   ];
 
   @override
@@ -60,11 +60,6 @@ class _PanelNavigationRail extends StatelessWidget {
                     label: Text('Lorebook'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.hub_outlined),
-                    selectedIcon: Icon(Icons.hub),
-                    label: Text('Nodes'),
-                  ),
-                  NavigationRailDestination(
                     icon: Icon(Icons.groups_outlined),
                     selectedIcon: Icon(Icons.groups),
                     label: Text('Group'),
@@ -78,6 +73,11 @@ class _PanelNavigationRail extends StatelessWidget {
                     icon: Icon(Icons.data_object_outlined),
                     selectedIcon: Icon(Icons.data_object),
                     label: Text('App Data'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.hub_outlined),
+                    selectedIcon: Icon(Icons.hub),
+                    label: Text('Nodes'),
                   ),
                 ],
                 // trailingAtBottom: true,

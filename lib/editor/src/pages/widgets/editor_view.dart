@@ -235,10 +235,10 @@ class _PanelNavigationTabs extends StatelessWidget {
     PanelEnum.greetings,
     PanelEnum.prompts,
     PanelEnum.lorebook,
-    PanelEnum.nodes,
     PanelEnum.groupSettings,
     PanelEnum.creatorMetadata,
     PanelEnum.appData,
+    PanelEnum.nodes,
   ];
 
   @override
@@ -261,10 +261,10 @@ class _PanelNavigationTabs extends StatelessWidget {
           Tab(text: 'Greetings'),
           Tab(text: 'Prompts'),
           Tab(text: 'Lorebook'),
-          Tab(text: 'Nodes'),
           Tab(text: 'Group'),
           Tab(text: 'Creator'),
           Tab(text: 'App Data'),
+          Tab(text: 'Nodes'),
         ],
       ),
     );

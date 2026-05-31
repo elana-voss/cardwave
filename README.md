@@ -7,10 +7,11 @@ AI character cards editor + chat. Author SillyTavern-compatible cards, chat with
 ## Features
 
 - Character card editor (PNG + JSON, SillyTavern format)
+- Behavior nodes: author rule-driven character reactions, edited as a form or raw JSON
 - Multi-provider chat: xAI Grok, OpenAI, Anthropic, Gemini, NanoGPT, KoboldCPP (local)
 - Image generation, TTS, video generation
 - Group chats with multiple characters
-- On-device embeddings for character search
+- On-device search by meaning for character cards and chat memory recall. Currently English only.
 - Offline-capable via local LLMs (KoboldCPP)
 
 ## Install
