@@ -42,6 +42,7 @@ class ChatMessageBubble extends StatelessWidget {
     this.chatSession,
     this.onSwipeChanged,
     this.characterFile,
+    this.streamingFreezeText,
   });
 
   /// Nullable for group chats where no single session applies.
@@ -53,6 +54,12 @@ class ChatMessageBubble extends StatelessWidget {
   /// Null when the controller does not support swipes (e.g. group chats).
   final VoidCallback? onSwipeChanged;
   final ValueNotifier<String>? contentNotifier;
+
+  /// Streamed-so-far text to show statically while the reader has scrolled up
+  /// mid-stream. Freezing it (instead of blanking the bubble) keeps the
+  /// bubble's height stable, so the list does not collapse and clamp the
+  /// reader back to the bottom.
+  final String? streamingFreezeText;
   final VoidCallback? onRegenerate;
 
   /// Nullable for group chats where character info is resolved per-message.
@@ -148,7 +155,7 @@ class ChatMessageBubble extends StatelessWidget {
     );
 
     final markdownWidget = MessageMarkdownRenderer(
-      content: message.content,
+      content: streamingFreezeText ?? message.content,
       contentNotifier: contentNotifier,
       messageStyle: messageStyle,
       theme: theme,

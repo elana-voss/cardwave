@@ -188,6 +188,13 @@ class _ChatViewState extends State<ChatView> {
                       (isLastAndGenerating && !_controller.userDetached)
                       ? _controller.streamingContent
                       : null,
+                  // While the reader has scrolled up mid-stream, show the text
+                  // streamed so far frozen, not the live feed: a blanked bubble
+                  // collapses the list and snaps them back to the bottom.
+                  streamingFreezeText:
+                      (isLastAndGenerating && _controller.userDetached)
+                      ? _controller.streamingContent.value
+                      : null,
                   onEdit: (newContent) =>
                       _controller.updateMessage(message, newContent),
                   onDelete: () => _deleteMessage(message),
