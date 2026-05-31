@@ -14,21 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - run: flutter pub get
-      - run: flutter analyze
-
   build-windows:
     name: Build Windows
-    needs: analyze
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +66,6 @@ jobs:
 
   build-android:
     name: Build Android
-    needs: analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

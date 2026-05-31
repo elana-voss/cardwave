@@ -151,6 +151,10 @@ dependency_overrides:
     git:
       url: https://github.com/elana-voss/re-editor.git
       ref: dbdcfb5eab4a4b72d99139632b4c1b10050d3be4
+  # re_editor pins isolate_manager ^4.x, whose isolate_contactor uses
+  # dart:html and will not compile to wasm. Force the wasm-safe 6.x line
+  # (re_editor works with it; see reqable/re-editor#79).
+  isolate_manager: ^6.1.2
 
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate
