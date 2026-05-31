@@ -8,6 +8,8 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/main.dart' as app;
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
+import 'package:cardwave_storage/cardwave_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:genkit/genkit.dart' as gk;
@@ -36,10 +38,13 @@ void main() {
 
       await wipeAppData();
 
-      final dir = await getApplicationDocumentsDirectory();
+      // Web has no real filesystem; seed settings through AppStorage
+      // (IndexedDB) instead of a dart:io file, same as app_test_helpers.
+      final docsPath =
+          kIsWeb ? '' : (await getApplicationDocumentsDirectory()).path;
       const presetId = 'fake-preset';
       final settings = AppSettings(
-        characterPath: dir.path,
+        characterPath: docsPath,
         onboardingComplete: true,
         connectionProfiles: [
           LlmProviderConfig(
@@ -62,9 +67,19 @@ void main() {
         },
         refreshPolicy: ModelRefreshPolicyEnum.never,
       );
-      await File(
-        '${dir.path}${Platform.pathSeparator}${AppConstants.settingsFileName}',
-      ).writeAsString(jsonEncode(settings.toJson()));
+      final settingsJson = jsonEncode(settings.toJson());
+      if (kIsWeb) {
+        await AppStorage.instance.init((_) => '');
+        await AppStorage.instance.writeString(
+          StorageDomainEnum.settings,
+          AppConstants.settingsFileName,
+          settingsJson,
+        );
+      } else {
+        await File(
+          '$docsPath${Platform.pathSeparator}${AppConstants.settingsFileName}',
+        ).writeAsString(settingsJson);
+      }
 
       // Every reply streams ~40 lines at ~150ms/line (~6s window) so the
       // bubble grows well past the viewport and there is time to scroll.
@@ -102,6 +117,7 @@ void main() {
           'pixels=${sc.position.pixels} detached=${controller.userDetached} '
           'maxExtent=${sc.position.maxScrollExtent}');
 
+      var assertedTrials = 0;
       // Scroll up to [offset] mid-stream and confirm the position holds. The
       // bug blanked the bubble on detach, collapsing the list (maxScrollExtent
       // -> 0) and clamping pixels back to 0 with detached flipping to false.
@@ -125,6 +141,7 @@ void main() {
         // Only assert while the reply is still streaming and the target is
         // clearly past the stick threshold — that is the broken window.
         if (gen && target > AppConstants.chatScrollStickThreshold * 4) {
+          assertedTrials++;
           expect(detached, isTrue,
               reason: '$label: reader should stay detached mid-stream');
           expect(maxAfterDetach, greaterThan(target),
@@ -139,6 +156,10 @@ void main() {
       await trial('small', 60);
       await trial('medium', 150);
       await trial('large', 500);
+
+      expect(assertedTrials, greaterThan(0),
+          reason: 'no trial ran while the reply was streaming — the test would '
+              'pass without exercising the bug (did the fake reply stream?)');
 
       await awaitChatIdle(tester, timeout: const Duration(seconds: 20));
     },
