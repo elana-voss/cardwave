@@ -180,12 +180,17 @@ class SendSelfieTool extends ToolDefinition {
     final caption = captionsOn ? args['caption'] as String? : null;
 
     final intent = _composeIntent(args);
-    await data.generateImage(
+    final attached = await data.generateImage(
       mode: ImageGenerationModeEnum.selfie,
       freePrompt: intent,
       caption: caption,
     );
-    return const ToolResult.ok();
+    return attached
+        ? const ToolResult.ok()
+        // false covers a real failure, a declined prompt review, and a
+        // busy-skip, so the wording stays neutral: the model isn't told
+        // "failed" when nothing crashed.
+        : const ToolResult.failure('No image was attached.');
   }
 
   /// Packs the schema fields into one comma-separated intent string that

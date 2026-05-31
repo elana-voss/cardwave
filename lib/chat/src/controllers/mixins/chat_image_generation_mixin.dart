@@ -91,18 +91,18 @@ mixin ChatImageGenerationMixin
   /// tool-triggered and the session-layer tool-review flag is the gate;
   /// otherwise the session-layer wand-review flag is used. Both live on the
   /// session's media config — see the read inside [generateImage].
-  Future<void> generateImage(
+  Future<bool> generateImage(
     ImageGenerationModeEnum mode, {
     String? freePrompt,
     String? caption,
     ChatMessage? targetMessage,
   }) async {
-    if (_isGeneratingImage) return;
+    if (_isGeneratingImage) return false;
 
     if (mode.requiresFreePrompt &&
         (freePrompt == null || freePrompt.trim().isEmpty)) {
       NavigationService().showSnackBar('Enter a prompt to generate an image.');
-      return;
+      return false;
     }
 
     final character = imageGenTargetCharacter;
@@ -110,7 +110,7 @@ mixin ChatImageGenerationMixin
       NavigationService().showSnackBar(
         'No character available for image generation.',
       );
-      return;
+      return false;
     }
 
     final session = imageGenSession;
@@ -128,7 +128,7 @@ mixin ChatImageGenerationMixin
     final imagePreset = resolved.imagePreset;
     if (imagePreset == null) {
       NavigationService().showSnackBar('Image generation is not configured.');
-      return;
+      return false;
     }
 
     final systemPresetId =
@@ -137,7 +137,7 @@ mixin ChatImageGenerationMixin
       NavigationService().showSnackBar(
         'No system model is configured. Set one in Settings → AI.',
       );
-      return;
+      return false;
     }
     final ResolvedPreset systemPreset;
     try {
@@ -149,7 +149,7 @@ mixin ChatImageGenerationMixin
       NavigationService().showSnackBar(
         UtilsLlm.extractUserFriendlyError(e),
       );
-      return;
+      return false;
     }
 
     final isToolTriggered = targetMessage != null;
@@ -219,7 +219,7 @@ mixin ChatImageGenerationMixin
           }
           _isGeneratingImage = false;
           notifyListeners();
-          return;
+          return false;
         }
         imagePrompt = reviewed;
       }
@@ -236,6 +236,16 @@ mixin ChatImageGenerationMixin
         imagePrompt: imagePrompt,
         aspectRatioId: resolved.imageAspectRatioId,
       );
+
+      if (isToolTriggered && cancelToken?.value == true) {
+        // Stop pressed during generation: discard. The image is neither
+        // saved nor attached (the spend already happened); the controller
+        // drops the cancelled reply.
+        workingMessage.waitingFor = BubbleWaitingForEnum.complete;
+        _isGeneratingImage = false;
+        notifyListeners();
+        return false;
+      }
 
       final relativePath = await imageGenChatRepository.saveMessageImage(
         chatDirectoryPath: imageGenChatDirectoryPath,
@@ -262,6 +272,7 @@ mixin ChatImageGenerationMixin
       _isGeneratingImage = false;
       notifyListeners();
       imageGenPersistSession();
+      return true;
     } on Exception catch (e, st) {
       LoggingService().error('ChatImageGenerationMixin.generateImage', e, st);
       if (isToolTriggered) {
@@ -278,6 +289,7 @@ mixin ChatImageGenerationMixin
             : UtilsLlm.extractUserFriendlyError(e),
       );
       notifyListeners();
+      return false;
     }
   }
 
@@ -330,7 +342,7 @@ mixin ChatImageGenerationMixin
         ),
         confirmFetchImpl: _confirmUrlFetch,
       );
-      final ctx = ToolCallContext(appData: appData);
+      final ctx = ToolCallContext(appData: appData, cancelToken: cancelToken);
 
       // Partition calls into three buckets so card-edit writes can go
       // through the propose/gate/apply flow without disrupting the
@@ -434,6 +446,12 @@ mixin ChatImageGenerationMixin
     Map<String, int> callCounts,
     ChatBuiltinToolAppData appData,
   ) async {
+    if (ctx.isCancelled) {
+      // User stopped before the card-edit approval dialog; don't open it.
+      return [
+        for (final _ in writes) const ToolResult.failure('Cancelled by user.'),
+      ];
+    }
     appData.beginCardEditBatch();
     final writeRaw = await toolDispatcher.dispatch(
       writes,

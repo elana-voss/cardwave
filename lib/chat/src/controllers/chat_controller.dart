@@ -394,7 +394,7 @@ class ChatController extends BaseChatViewController
       );
 
       await for (final event in stream) {
-        if (isDisposed) break;
+        if (isDisposed || cancelToken?.value == true) break;
         if (event is GenerationTokenEvent) {
           bufferedText += event.token;
           if (bufferedText.trimLeft().isEmpty) {
@@ -423,17 +423,21 @@ class ChatController extends BaseChatViewController
         NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));
       }
     } finally {
-      var finalContent = bufferedText.trimRight();
-
-      if (chatSession.removeTrailingSentences) {
-        finalContent = chatService.trimTrailingParagraph(finalContent);
-      }
-
       if (!isDisposed) {
-        inputController.value = TextEditingValue(
-          text: finalContent,
-          selection: TextSelection.collapsed(offset: finalContent.length),
-        );
+        if (cancelToken?.value == true) {
+          // Stop pressed: discard the impersonated draft (it was streaming
+          // into the input box) rather than leaving a half-written line.
+          inputController.clear();
+        } else {
+          var finalContent = bufferedText.trimRight();
+          if (chatSession.removeTrailingSentences) {
+            finalContent = chatService.trimTrailingParagraph(finalContent);
+          }
+          inputController.value = TextEditingValue(
+            text: finalContent,
+            selection: TextSelection.collapsed(offset: finalContent.length),
+          );
+        }
       }
 
       cancelToken?.dispose();
@@ -551,7 +555,7 @@ class ChatController extends BaseChatViewController
       );
 
       await for (final event in stream) {
-        if (isDisposed) break;
+        if (isDisposed || cancelToken?.value == true) break;
         if (event is GenerationTokenEvent) {
           bufferedText += event.token;
           assistantMessageToBeFilled.waitingFor =
@@ -623,7 +627,8 @@ class ChatController extends BaseChatViewController
       assistantMessageToBeFilled.waitingFor = BubbleWaitingForEnum.complete;
       assistantMessageToBeFilled.waitingForLabel = null;
 
-      if (assistantMessageToBeFilled.content.isEmpty &&
+      if (cancelToken?.value != true &&
+          assistantMessageToBeFilled.content.isEmpty &&
           bufferedText.isNotEmpty) {
         var finalContent = bufferedText.trimRight();
         if (chatSession.removeTrailingSentences) {

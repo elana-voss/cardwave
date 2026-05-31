@@ -18,13 +18,20 @@ abstract class BuiltinToolSchemaContext {
 /// fetches against the in-flight bubble. The package treats the cast
 /// type as opaque inside `ToolCallContext.appData`.
 abstract class BuiltinToolAppData implements BuiltinToolSchemaContext {
-  Future<void> generateImage({
+  /// Generates and attaches a selfie image to the in-flight reply. Returns
+  /// true when an image was attached; false when generation failed, was
+  /// skipped (another generation already running), or was discarded because
+  /// the user stopped. The caller turns false into a tool failure so the
+  /// model is told and can react instead of claiming a photo it didn't send.
+  Future<bool> generateImage({
     required ImageGenerationModeEnum mode,
     String? freePrompt,
     String? caption,
   });
 
-  Future<void> generateVideo({
+  /// Generates and attaches a video clip to the in-flight reply. Same
+  /// true/false contract as [generateImage].
+  Future<bool> generateVideo({
     required VideoGenerationModeEnum mode,
     String? freePrompt,
   });

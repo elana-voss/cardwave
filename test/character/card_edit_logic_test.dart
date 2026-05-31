@@ -37,14 +37,14 @@ class _FakeBuiltinToolAppData implements BuiltinToolAppData {
   bool get imageToolSelfieCaptionsAllowed => false;
 
   @override
-  Future<void> generateImage({
+  Future<bool> generateImage({
     required ImageGenerationModeEnum mode,
     String? freePrompt,
     String? caption,
   }) => throw UnimplementedError();
 
   @override
-  Future<void> generateVideo({
+  Future<bool> generateVideo({
     required VideoGenerationModeEnum mode,
     String? freePrompt,
   }) => throw UnimplementedError();

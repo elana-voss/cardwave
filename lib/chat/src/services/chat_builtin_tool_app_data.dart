@@ -13,13 +13,13 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
     required this.session,
     required this.character,
     required this.targetMessage,
-    required Future<void> Function({
+    required Future<bool> Function({
       required ImageGenerationModeEnum mode,
       String? freePrompt,
       String? caption,
     })
     generateImageImpl,
-    required Future<void> Function({
+    required Future<bool> Function({
       required VideoGenerationModeEnum mode,
       String? freePrompt,
     })
@@ -34,13 +34,13 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
   final CharacterFile? character;
   final ChatMessage targetMessage;
 
-  final Future<void> Function({
+  final Future<bool> Function({
     required ImageGenerationModeEnum mode,
     String? freePrompt,
     String? caption,
   })
   _generateImageImpl;
-  final Future<void> Function({
+  final Future<bool> Function({
     required VideoGenerationModeEnum mode,
     String? freePrompt,
   })
@@ -54,7 +54,7 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
       session.configMedia?.imageToolSelfieCaptionsAllowed ?? false;
 
   @override
-  Future<void> generateImage({
+  Future<bool> generateImage({
     required ImageGenerationModeEnum mode,
     String? freePrompt,
     String? caption,
@@ -62,7 +62,7 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
       _generateImageImpl(mode: mode, freePrompt: freePrompt, caption: caption);
 
   @override
-  Future<void> generateVideo({
+  Future<bool> generateVideo({
     required VideoGenerationModeEnum mode,
     String? freePrompt,
   }) => _generateVideoImpl(mode: mode, freePrompt: freePrompt);

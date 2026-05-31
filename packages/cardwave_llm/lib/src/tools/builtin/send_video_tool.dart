@@ -181,11 +181,15 @@ class SendVideoTool extends ToolDefinition {
 
     final data = ctx.appData as BuiltinToolAppData;
     final intent = _composeIntent(args);
-    await data.generateVideo(
+    final attached = await data.generateVideo(
       mode: VideoGenerationModeEnum.selfie,
       freePrompt: intent,
     );
-    return const ToolResult.ok();
+    return attached
+        ? const ToolResult.ok()
+        // Neutral wording: false also covers a declined review or a busy-skip,
+        // not only a real failure.
+        : const ToolResult.failure('No video was attached.');
   }
 
   /// Packs the schema fields into one comma-separated intent string that

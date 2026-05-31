@@ -116,6 +116,9 @@ class FetchWebsiteTool extends ToolDefinition {
     final purpose = purposeRaw is String ? purposeRaw : null;
     final data = ctx.appData as BuiltinToolAppData;
     final allowed = await data.confirmFetch(url, purpose: purpose);
+    if (ctx.isCancelled) {
+      return const ToolResult.failure('Cancelled by user.');
+    }
     if (!allowed) {
       return const ToolResult.failure('User declined fetch.');
     }
@@ -133,6 +136,9 @@ class FetchWebsiteTool extends ToolDefinition {
         ),
       );
       return ToolResult.failure('Network error fetching $url: $e');
+    }
+    if (ctx.isCancelled) {
+      return const ToolResult.failure('Cancelled by user.');
     }
 
     if (response.statusCode != 200) {

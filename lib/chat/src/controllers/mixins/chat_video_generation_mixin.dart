@@ -47,17 +47,17 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
 
   bool get isGeneratingVideo => _isGeneratingVideo;
 
-  Future<void> generateVideo(
+  Future<bool> generateVideo(
     VideoGenerationModeEnum mode, {
     String? freePrompt,
     ChatMessage? targetMessage,
   }) async {
-    if (_isGeneratingVideo) return;
+    if (_isGeneratingVideo) return false;
 
     if (mode.requiresFreePrompt &&
         (freePrompt == null || freePrompt.trim().isEmpty)) {
       NavigationService().showSnackBar('Enter a prompt to generate a video.');
-      return;
+      return false;
     }
 
     final character = videoGenTargetCharacter;
@@ -65,7 +65,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
       NavigationService().showSnackBar(
         'No character available for video generation.',
       );
-      return;
+      return false;
     }
 
     final session = videoGenSession;
@@ -82,7 +82,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
     );
     if (resolved.videoPreset == null) {
       NavigationService().showSnackBar('Video generation is not configured.');
-      return;
+      return false;
     }
 
     final isToolTriggered = targetMessage != null;
@@ -159,7 +159,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
           }
           _isGeneratingVideo = false;
           notifyListeners();
-          return;
+          return false;
         }
         finalPrompt = reviewed;
       }
@@ -178,6 +178,19 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
         characterFile: character,
       );
 
+      if (isToolTriggered && cancelToken?.value == true) {
+        // Stop pressed during generation: discard. The clip is not attached
+        // (the spend already happened) and the controller drops the cancelled
+        // reply. The downloaded file is intentionally left on disk: the
+        // poll-and-download finished before this point, and a rare orphaned
+        // clip from a Stopped video is accepted rather than worth a cleanup
+        // path. Reviewed and left on purpose; do not re-flag.
+        workingMessage.waitingFor = BubbleWaitingForEnum.complete;
+        _isGeneratingVideo = false;
+        notifyListeners();
+        return false;
+      }
+
       workingMessage.activeSwipe.videoPath = result.relativePath;
       if (!isToolTriggered) {
         // Narrator-style text describes the video so the LLM sees meaningful
@@ -189,6 +202,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
       _isGeneratingVideo = false;
       notifyListeners();
       videoGenPersistSession();
+      return true;
     } on Exception catch (e, st) {
       LoggingService().error('ChatVideoGenerationMixin.generateVideo', e, st);
       if (isToolTriggered) {
@@ -203,6 +217,7 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
             : UtilsLlm.extractUserFriendlyError(e),
       );
       notifyListeners();
+      return false;
     }
   }
 }

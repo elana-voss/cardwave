@@ -216,7 +216,6 @@ class ChatExecutionService {
           final startTime = DateTime.now();
           final accumulatedRecords = <ChatToolCallRecord>[];
           final callCounts = <String, int>{};
-          var lastText = '';
 
           // Trims the trailing-paragraph (if the session has it on and
           // we're not impersonating), counts tokens, emits the Complete
@@ -261,8 +260,11 @@ class ChatExecutionService {
                   streamController.add(GenerationTokenEvent(content)),
               tools: genkitTools,
             );
-            lastText = result.text;
-
+            // Stop pressed during the (streaming) generate: drop this reply
+            // instead of emitting partial text or dispatching tool calls the
+            // model captured mid-stream. The loop-bound exit below emits an
+            // empty reply, which the controller turns into a dropped bubble.
+            if (cancelToken.value) break;
             final iterMs = DateTime.now().difference(startTime).inMilliseconds;
             _logIncoming(
               characterName: characterFile.card.name,
@@ -309,6 +311,10 @@ class ChatExecutionService {
               result.toolCalls,
               callCounts,
             );
+            // Stop pressed while the tools ran: drop the reply rather than
+            // emit the model's pre-tool prose. Any in-progress media was
+            // already discarded inside the generation path.
+            if (cancelToken.value) break;
             assert(
               toolResults.length == result.toolCalls.length,
               'dispatchToolCalls must return one result per call',
@@ -389,25 +395,28 @@ class ChatExecutionService {
             );
           }
 
-          // Loop bound exceeded (or cancelled) — emit the last text we
-          // saw as the final reply with a warning.
+          // Loop bound exceeded (or cancelled). The only text on hand is the
+          // model's intermediate prose from the last tool round (e.g. "let me
+          // check that"), never a real answer, so emit nothing. The controller
+          // drops an empty bubble that attached no media and keeps one that
+          // did.
           if (!cancelToken.value) {
             LoggingService().warning(
               'generateChatReply: tool loop hit '
               '${AppConstants.toolLoopMaxIterations} iterations; '
-              'emitting last partial as final.',
+              'emitting an empty reply.',
             );
             LoggingService().logLlm(
               '[TOOL-LOOP]',
               '\nLoop bound exceeded after '
                   '${AppConstants.toolLoopMaxIterations} iterations. '
-                  'Cumulative call counts: $callCounts. Emitting last '
-                  "iteration's text as final.",
+                  'Cumulative call counts: $callCounts. Emitting an empty '
+                  'reply (intermediate tool-round prose suppressed).',
             );
           }
           final totalMs = DateTime.now().difference(startTime).inMilliseconds;
           await emitComplete(
-            text: lastText,
+            text: '',
             applyTrim: false,
             generationMs: totalMs,
           );

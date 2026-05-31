@@ -27,6 +27,13 @@ class ToolDispatcher {
   }) async {
     final results = <ToolResult>[];
     for (final call in calls) {
+      if (ctx.isCancelled) {
+        // User stopped the reply mid-batch — don't start any further tool
+        // work (e.g. opening the card-edit approval dialog). The caller
+        // discards the whole turn, so these results are never shown.
+        results.add(const ToolResult.failure('Cancelled by user.'));
+        continue;
+      }
       final tool = registry.get(call.name);
       if (tool == null) {
         toolsLogger.warning(
