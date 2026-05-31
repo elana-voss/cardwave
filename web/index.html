@@ -17,6 +17,11 @@
   -->
   <base href="$FLUTTER_BASE_HREF">
 
+  <!-- Cross-origin isolation (SharedArrayBuffer) via service worker, for
+       hosts that cannot send COOP/COEP response headers (e.g. GitHub Pages).
+       The llamadart WebGPU embedder bridge requires it; loads before the app. -->
+  <script src="coi-serviceworker.js"></script>
+
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Cardwave web app. A character card editor and chat client running in the browser. Bring any AI provider you already use. Cards and chats stay on your device.">
