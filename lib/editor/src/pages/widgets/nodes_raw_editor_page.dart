@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cardwave/editor/src/pages/widgets/code_find_panel_view.dart';
+import 'package:cardwave/editor/src/pages/widgets/code_selection_toolbar_controller.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,10 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
   final CodeLineEditingController _controller = CodeLineEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  /// Supplies the cut/copy/paste/select-all menu re_editor leaves to the host.
+  final CodeSelectionToolbarController _selectionToolbar =
+      CodeSelectionToolbarController();
+
   /// Live problems, republished on every edit. Held in a [ValueNotifier]
   /// so only the list beneath the editor rebuilds. A page-wide setState
   /// per keystroke would let the platform IME push its cached value back
@@ -62,6 +67,7 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
     _controller.dispose();
     _focusNode.dispose();
     _problems.dispose();
+    _selectionToolbar.dispose();
     super.dispose();
   }
 
@@ -133,6 +139,7 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
             child: CodeEditor(
               controller: _controller,
               focusNode: _focusNode,
+              toolbarController: _selectionToolbar,
               autofocus: true,
               wordWrap: false,
               style: CodeEditorStyle(
