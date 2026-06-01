@@ -3,6 +3,7 @@
 /// name matching `CharacterCardV3` JSON keys.
 enum CardFieldScalar {
   name('name'),
+  nickname('nickname'),
   description('description'),
   personality('personality'),
   scenario('scenario'),

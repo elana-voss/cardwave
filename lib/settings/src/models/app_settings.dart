@@ -29,8 +29,8 @@ class AppSettings {
     this.editorImageVisible = false,
     this.memoryEnabled = true,
     this.showRecalledMemory = false,
-    this.assistantCardEditRequireApprovalForEdits = false,
-    this.assistantCardEditRequireApprovalForAdditions = false,
+    this.assistantCardEditRequireApprovalForEdits = true,
+    this.assistantCardEditRequireApprovalForAdditions = true,
     this.assistantCardEditRequireApprovalForDeletions = true,
     Map<String, bool>? drawerSectionAdvanced,
     this.refreshPolicy = ModelRefreshPolicyEnum.daily,
@@ -129,14 +129,14 @@ class AppSettings {
 
   /// Gate flags for assistant-chat tool-driven card edits. When false the
   /// modality auto-applies; when true the user sees the approval dialog
-  /// before any change of that modality lands. Aggressive defaults: only
-  /// destructive changes (deletions, clearing a scalar) require approval
-  /// out of the box; less destructive ones auto-apply until the user
-  /// opts in via the assistant chat drawer.
-  @JsonKey(defaultValue: false)
+  /// before any change of that modality lands. All three default to true so
+  /// the user reviews a before/after diff before the assistant changes any
+  /// card field; a modality can be switched off from the assistant chat
+  /// drawer.
+  @JsonKey(defaultValue: true)
   bool assistantCardEditRequireApprovalForEdits;
 
-  @JsonKey(defaultValue: false)
+  @JsonKey(defaultValue: true)
   bool assistantCardEditRequireApprovalForAdditions;
 
   @JsonKey(defaultValue: true)

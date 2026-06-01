@@ -262,6 +262,18 @@ void main() {
       expect(card.tags, ['fantasy']);
     });
 
+    test('tag append dedup is case-insensitive against mixed-case entries',
+        () {
+      final card = _buildCard();
+      // Mixed-case in memory, as if just typed in the editor and not yet
+      // round-tripped through a reload (which would lowercase it).
+      card.tags = ['Fantasy'];
+      applyCardEditProposals(card, const [
+        CardListAppendProposal(field: CardFieldList.tag, newValue: 'fantasy'),
+      ]);
+      expect(card.tags, ['Fantasy']);
+    });
+
     test('list delete removes the entry', () {
       final card = _buildCard(alternateGreetings: ['a', 'b', 'c']);
       applyCardEditProposals(card, const [
@@ -596,6 +608,118 @@ void main() {
       final batch = fake.takeBatch();
       expect(batch, hasLength(1));
       expect((batch.first as CardListDeleteProposal).index, 0);
+    });
+  });
+
+  group('tool argument guards', () {
+    test('set: non-text content → failure, not a crash', () async {
+      final fake = _FakeBuiltinToolAppData(_buildCard());
+      final ctx = ToolCallContext(appData: fake);
+      const tool = CardFieldSetTool(maxCallsPerTurn: 1);
+      final result = await tool.execute(ctx, {
+        'field': 'description',
+        'content': 42,
+      });
+      expect(result.success, isFalse);
+    });
+
+    test('list_append: non-text content → failure', () async {
+      final fake = _FakeBuiltinToolAppData(_buildCard());
+      final ctx = ToolCallContext(appData: fake);
+      const tool = CardFieldListAppendTool(maxCallsPerTurn: 1);
+      final result =
+          await tool.execute(ctx, {'field': 'tag', 'content': true});
+      expect(result.success, isFalse);
+    });
+
+    test('list_get: non-finite index → failure, not a crash', () async {
+      final fake = _FakeBuiltinToolAppData(
+        _buildCard(alternateGreetings: ['a', 'b']),
+      );
+      final ctx = ToolCallContext(appData: fake);
+      const tool = CardFieldListGetTool(maxCallsPerTurn: 1);
+      final result = await tool.execute(ctx, {
+        'field': 'alternate_greeting',
+        'index': double.infinity,
+      });
+      expect(result.success, isFalse);
+    });
+
+    test('list_set: NaN index → failure', () async {
+      final fake = _FakeBuiltinToolAppData(
+        _buildCard(alternateGreetings: ['a', 'b']),
+      );
+      final ctx = ToolCallContext(appData: fake);
+      const tool = CardFieldListSetTool(maxCallsPerTurn: 1);
+      final result = await tool.execute(ctx, {
+        'field': 'alternate_greeting',
+        'index': double.nan,
+        'content': 'x',
+      });
+      expect(result.success, isFalse);
+    });
+
+    test('list_delete: infinite index → failure', () async {
+      final fake = _FakeBuiltinToolAppData(
+        _buildCard(alternateGreetings: ['a', 'b']),
+      );
+      final ctx = ToolCallContext(appData: fake);
+      const tool = CardFieldListDeleteTool(maxCallsPerTurn: 1);
+      final result = await tool.execute(ctx, {
+        'field': 'alternate_greeting',
+        'index': double.infinity,
+      });
+      expect(result.success, isFalse);
+    });
+  });
+
+  group('cardScalarWriteError', () {
+    test('blank or whitespace name rejected', () {
+      expect(cardScalarWriteError(CardFieldScalar.name, ''), isNotNull);
+      expect(cardScalarWriteError(CardFieldScalar.name, '   '), isNotNull);
+    });
+
+    test('non-blank name allowed', () {
+      expect(cardScalarWriteError(CardFieldScalar.name, 'Bob'), isNull);
+    });
+
+    test('blank non-name field allowed (clearing)', () {
+      expect(cardScalarWriteError(CardFieldScalar.description, ''), isNull);
+    });
+  });
+
+  group('nickname field', () {
+    test('reads empty when unset; write sets it, empty write clears it', () {
+      final card = _buildCard();
+      expect(readScalarField(card, CardFieldScalar.nickname), '');
+      applyCardEditProposals(card, const [
+        CardScalarSetProposal(
+          field: CardFieldScalar.nickname,
+          oldValue: '',
+          newValue: 'Nick',
+        ),
+      ]);
+      expect(card.nickname, 'Nick');
+      applyCardEditProposals(card, const [
+        CardScalarSetProposal(
+          field: CardFieldScalar.nickname,
+          oldValue: 'Nick',
+          newValue: '',
+        ),
+      ]);
+      expect(card.nickname, isNull);
+    });
+
+    test('whitespace-only nickname clears to null, not a blank label', () {
+      final card = _buildCard();
+      applyCardEditProposals(card, const [
+        CardScalarSetProposal(
+          field: CardFieldScalar.nickname,
+          oldValue: '',
+          newValue: '   ',
+        ),
+      ]);
+      expect(card.nickname, isNull);
     });
   });
 }

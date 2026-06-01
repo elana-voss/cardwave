@@ -53,11 +53,11 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) =>
         showRecalledMemory: json['show_recalled_memory'] as bool? ?? false,
         assistantCardEditRequireApprovalForEdits:
             json['assistant_card_edit_require_approval_for_edits'] as bool? ??
-            false,
+            true,
         assistantCardEditRequireApprovalForAdditions:
             json['assistant_card_edit_require_approval_for_additions']
                 as bool? ??
-            false,
+            true,
         assistantCardEditRequireApprovalForDeletions:
             json['assistant_card_edit_require_approval_for_deletions']
                 as bool? ??

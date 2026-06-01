@@ -323,6 +323,10 @@ mixin ChatImageGenerationMixin
   /// so the bubble shows "Thinking…" while waiting for the next LLM
   /// iteration after the tools finish (or after an exception).
   ToolDispatchCallback buildToolDispatch({required ChatMessage targetMessage}) {
+    // Lives for one assistant reply (the closure is built once per reply and
+    // invoked each tool-loop round): remembers card edits the user declined
+    // so a re-proposal can't reopen the approval dialog round after round.
+    final cardEditDeniedKeys = <String>{};
     return (calls, callCounts) async {
       final appData = ChatBuiltinToolAppData(
         session: imageGenSession,
@@ -379,7 +383,13 @@ mixin ChatImageGenerationMixin
 
         final writeResults = writes.isEmpty
             ? const <ToolResult>[]
-            : await _runWriteBatch(writes, ctx, callCounts, appData);
+            : await _runWriteBatch(
+                writes,
+                ctx,
+                callCounts,
+                appData,
+                cardEditDeniedKeys,
+              );
 
         final otherResults = others.isEmpty
             ? const <ToolResult>[]
@@ -431,20 +441,17 @@ mixin ChatImageGenerationMixin
     CardFieldListDeleteTool.toolName,
   };
 
-  /// Two-pass propose / gate / apply for the card-edit write tools.
-  /// Tools' execute records proposals on [appData] without mutating the
-  /// card; this method then opens the approval dialog (filtered by the
-  /// per-modality require-approval settings), applies the approved
-  /// proposals through [CharacterService.applyExternalCardEdits], and
-  /// returns one result per input call: a generic "edit applied" success
-  /// for approved writes, the user's denial reason as failure for denied
-  /// writes, and the raw at-execute failure for writes that errored
-  /// before producing a proposal (out-of-bounds index, etc.).
+  /// Dispatches the card-edit write tools (their execute records a proposal
+  /// on [appData] without mutating the card), then delegates the gate/apply
+  /// decision to [resolveCardEditApprovals], passing the per-modality
+  /// approval settings and the cache-save hook. [deniedKeys] persists across
+  /// rounds of one reply so a re-proposed-and-declined change isn't re-asked.
   Future<List<ToolResult>> _runWriteBatch(
     List<ToolCall> writes,
     ToolCallContext ctx,
     Map<String, int> callCounts,
     ChatBuiltinToolAppData appData,
+    Set<String> deniedKeys,
   ) async {
     if (ctx.isCancelled) {
       // User stopped before the card-edit approval dialog; don't open it.
@@ -459,68 +466,24 @@ mixin ChatImageGenerationMixin
       callCounts: callCounts,
     );
     final proposals = appData.takeBatch();
-
-    // Walk writes and writeRaw together; proposals were appended in the
-    // order of successful executes, so the n-th successful write maps to
-    // proposals[n].
-    final proposalIdxForWrite = <int, int>{};
-    var pIdx = 0;
-    for (var i = 0; i < writes.length; i++) {
-      // i is bounded by writes.length; writeRaw came back from dispatch
-      // and has the same length.
-      // ignore: qcheck/avoid_unsafe_collection_methods
-      if (writeRaw[i].success) {
-        proposalIdxForWrite[i] = pIdx++;
-      }
-    }
-
     final s = imageGenSettingsService.settings;
-    final decisions = await CardEditGateController.askUser(
-      proposals,
+    return resolveCardEditApprovals(
+      writeRaw: writeRaw,
+      proposals: proposals,
+      ctx: ctx,
+      deniedKeys: deniedKeys,
       requireApprovalForEdits: s.assistantCardEditRequireApprovalForEdits,
       requireApprovalForAdditions:
           s.assistantCardEditRequireApprovalForAdditions,
       requireApprovalForDeletions:
           s.assistantCardEditRequireApprovalForDeletions,
-    );
-
-    final approved = <CardEditProposal>[];
-    for (var i = 0; i < proposals.length; i++) {
-      // i bounded by proposals.length; askUser returns same-length list.
-      // ignore: qcheck/avoid_unsafe_collection_methods
-      if (decisions[i].approved) approved.add(proposals[i]);
-    }
-
-    if (approved.isNotEmpty) {
-      final file = imageGenTargetCharacter;
-      if (file != null) {
+      applyApproved: (approved) async {
+        final file = imageGenTargetCharacter;
+        if (file == null) return;
         await characterService.applyExternalCardEdits(file, () {
           appData.applyApprovedProposals(approved);
         });
-      }
-    }
-
-    final results = <ToolResult>[];
-    for (var i = 0; i < writes.length; i++) {
-      final pi = proposalIdxForWrite[i];
-      if (pi == null) {
-        // ignore: qcheck/avoid_unsafe_collection_methods
-        results.add(writeRaw[i]);
-        continue;
-      }
-      // pi was set above only when pIdx < proposals.length, and pIdx grew
-      // by one per insert — so pi is in range for both proposals and
-      // decisions.
-      // ignore: qcheck/avoid_unsafe_collection_methods
-      final decision = decisions[pi];
-      if (decision.approved) {
-        results.add(const ToolResult.ok(data: 'edit applied'));
-      } else {
-        results.add(ToolResult.failure(
-          'user denied: ${decision.reason ?? "(no reason)"}',
-        ));
-      }
-    }
-    return results;
+      },
+    );
   }
 }

@@ -24,9 +24,8 @@ import 'app_test_helpers.dart';
 /// provider-backed one. The test verifies:
 ///
 /// - The fake runner is invoked through the assistant chat path.
-/// - The dispatcher records the proposal and the approval dialog appears
-///   (because `assistantCardEditRequireApprovalForEdits` is on).
-/// - Approve-all + Confirm applies the proposed value to the open card.
+/// - With edit approval turned off for this test, the proposed scalar set
+///   auto-applies with no dialog.
 /// - The mutation lands on the character file held by `CharacterService`.
 ///
 /// No `GROK_API_KEY` is required.
@@ -89,6 +88,10 @@ void main() {
         // provider's real model list overwrites our fake model and the
         // preset id no longer resolves.
         refreshPolicy: ModelRefreshPolicyEnum.never,
+        // Keep edits auto-applying for this end-to-end check so it verifies
+        // the write reaches CharacterService without driving the approval
+        // dialog (the dialog flow is covered by the widget test).
+        assistantCardEditRequireApprovalForEdits: false,
       );
       final settingsFile = File(
         '${dir.path}${Platform.pathSeparator}${AppConstants.settingsFileName}',

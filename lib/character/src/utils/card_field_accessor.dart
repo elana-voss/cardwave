@@ -7,6 +7,8 @@ String readScalarField(CharacterCardV3 card, CardFieldScalar field) {
   switch (field) {
     case CardFieldScalar.name:
       return card.name;
+    case CardFieldScalar.nickname:
+      return card.nickname ?? '';
     case CardFieldScalar.description:
       return card.description;
     case CardFieldScalar.personality:
@@ -24,6 +26,17 @@ String readScalarField(CharacterCardV3 card, CardFieldScalar field) {
     case CardFieldScalar.creatorNotes:
       return card.creatorNotes;
   }
+}
+
+/// Validation error for a proposed scalar write, or null when allowed. The
+/// name must not be blank: a blank name leaves the card with no label in the
+/// library grid. Guards the assistant tool write path only; the editor's own
+/// field handling is separate.
+String? cardScalarWriteError(CardFieldScalar field, String content) {
+  if (field == CardFieldScalar.name && content.trim().isEmpty) {
+    return 'name cannot be empty; provide a non-blank name.';
+  }
+  return null;
 }
 
 /// Returns the mutable list backing the named list field on [card].
@@ -50,9 +63,10 @@ List<String> listFieldOf(CharacterCardV3 card, CardFieldList field) {
 ///      would duplicate an existing entry are skipped (the deserializer
 ///      dedups too, but skipping here keeps the in-memory state matching
 ///      what the user will see after the next reload). The contains-check
-///      compares against entries the deserializer already lowercased and
-///      against new values normalized at propose time, so a "Fantasy"
-///      append against an existing "fantasy" collapses correctly.
+///      normalizes both the existing entries and the new value, so a
+///      "Fantasy" append collapses against an existing "fantasy" even when
+///      that existing entry is still mixed-case in memory (just typed in the
+///      editor, not yet reloaded).
 ///   4. List deletes — deduplicated by (field, index), then applied in
 ///      descending index order so removing one entry doesn't shift the
 ///      index of a later removal.
@@ -96,7 +110,13 @@ void applyCardEditProposals(
   }
   for (final p in appends) {
     final list = listFieldOf(card, p.field);
-    if (p.field == CardFieldList.tag && list.contains(p.newValue)) continue;
+    // The new tag value was normalized at propose time, but a tag typed in
+    // the editor and not yet reloaded can still be mixed-case in memory, so
+    // normalize both sides before the duplicate check.
+    if (p.field == CardFieldList.tag &&
+        list.map(normalizeTagEntry).contains(p.newValue)) {
+      continue;
+    }
     list.add(p.newValue);
   }
 
@@ -129,6 +149,11 @@ void _writeScalarField(
   switch (field) {
     case CardFieldScalar.name:
       card.name = value;
+    case CardFieldScalar.nickname:
+      // Blank (empty or whitespace-only) clears the nickname so display
+      // falls back to the name; a non-empty whitespace nickname would
+      // render as a blank speaker label in chat.
+      card.nickname = value.trim().isEmpty ? null : value;
     case CardFieldScalar.description:
       card.description = value;
     case CardFieldScalar.personality:

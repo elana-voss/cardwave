@@ -107,6 +107,8 @@ class ChatBuiltinToolAppData implements BuiltinToolAppData {
   @override
   ToolResult proposeScalarSet(CardFieldScalar field, String content) {
     if (character == null) return const ToolResult.failure('no card open');
+    final err = cardScalarWriteError(field, content);
+    if (err != null) return ToolResult.failure(err);
     _cardEditBatch.add(CardScalarSetProposal(
       field: field,
       oldValue: readScalar(field),

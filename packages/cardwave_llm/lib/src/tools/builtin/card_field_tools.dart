@@ -69,8 +69,8 @@ class CardFieldGetTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
-    if (fieldKey == null) {
+    final fieldKey = args['field'];
+    if (fieldKey is! String) {
       return const ToolResult.failure('card_field_get missing field.');
     }
     final field = CardFieldScalar.fromJsonKey(fieldKey);
@@ -132,11 +132,11 @@ class CardFieldSetTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
-    final content = args['content'] as String?;
-    if (fieldKey == null || content == null) {
+    final fieldKey = args['field'];
+    final content = args['content'];
+    if (fieldKey is! String || content is! String) {
       return const ToolResult.failure(
-        'card_field_set missing field / content.',
+        'card_field_set field and content must be text.',
       );
     }
     final field = CardFieldScalar.fromJsonKey(fieldKey);
@@ -200,8 +200,8 @@ class CardFieldListGetTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
-    if (fieldKey == null) {
+    final fieldKey = args['field'];
+    if (fieldKey is! String) {
       return const ToolResult.failure('card_field_list_get missing field.');
     }
     final field = CardFieldList.fromJsonKey(fieldKey);
@@ -216,10 +216,16 @@ class CardFieldListGetTool extends ToolDefinition {
       return ToolResult.ok(data: data.listSize(field).toString());
     }
     // Accept any numeric type (some providers emit `2.0` for an integer
-    // slot); truncate to int. Non-numeric → failure.
+    // slot); truncate to int. Non-numeric or non-finite (infinity/NaN, which
+    // would throw on toInt) → failure.
     if (indexRaw is! num) {
       return const ToolResult.failure(
         'card_field_list_get index must be an integer.',
+      );
+    }
+    if (!indexRaw.isFinite) {
+      return const ToolResult.failure(
+        'card_field_list_get index must be a finite integer.',
       );
     }
     final index = indexRaw.toInt();
@@ -286,14 +292,20 @@ class CardFieldListSetTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
+    final fieldKey = args['field'];
     final indexRaw = args['index'];
-    final content = args['content'] as String?;
+    final content = args['content'];
     // Accept any numeric type for index (some providers emit `2.0` for an
-    // integer slot); reject anything that isn't a number.
-    if (fieldKey == null || indexRaw is! num || content == null) {
+    // integer slot); reject non-numbers and non-finite values (infinity/NaN
+    // would throw on toInt).
+    if (fieldKey is! String || indexRaw is! num || content is! String) {
       return const ToolResult.failure(
-        'card_field_list_set missing field / index / content.',
+        'card_field_list_set field/index/content invalid.',
+      );
+    }
+    if (!indexRaw.isFinite) {
+      return const ToolResult.failure(
+        'card_field_list_set index must be a finite integer.',
       );
     }
     final field = CardFieldList.fromJsonKey(fieldKey);
@@ -354,11 +366,11 @@ class CardFieldListAppendTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
-    final content = args['content'] as String?;
-    if (fieldKey == null || content == null) {
+    final fieldKey = args['field'];
+    final content = args['content'];
+    if (fieldKey is! String || content is! String) {
       return const ToolResult.failure(
-        'card_field_list_append missing field / content.',
+        'card_field_list_append field and content must be text.',
       );
     }
     final field = CardFieldList.fromJsonKey(fieldKey);
@@ -420,13 +432,19 @@ class CardFieldListDeleteTool extends ToolDefinition {
     ToolCallContext ctx,
     Map<String, dynamic> args,
   ) async {
-    final fieldKey = args['field'] as String?;
+    final fieldKey = args['field'];
     final indexRaw = args['index'];
     // Accept any numeric type for index (some providers emit `2.0` for an
-    // integer slot); reject anything that isn't a number.
-    if (fieldKey == null || indexRaw is! num) {
+    // integer slot); reject non-numbers and non-finite values (infinity/NaN
+    // would throw on toInt).
+    if (fieldKey is! String || indexRaw is! num) {
       return const ToolResult.failure(
         'card_field_list_delete missing field / index.',
+      );
+    }
+    if (!indexRaw.isFinite) {
+      return const ToolResult.failure(
+        'card_field_list_delete index must be a finite integer.',
       );
     }
     final field = CardFieldList.fromJsonKey(fieldKey);
