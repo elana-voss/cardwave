@@ -62,7 +62,7 @@ class _OverlayErrorState extends State<OverlayError> {
                   ? FloatingActionButton.small(
                       key: ValueKey('log_fab_$_hasError'),
                       heroTag: 'error_overlay_fab',
-                      tooltip: 'Open logs',
+                      // tooltip: 'Open logs',
                       backgroundColor: Theme.of(context).colorScheme.error,
                       elevation: 6,
                       onPressed: () {
