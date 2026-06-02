@@ -204,7 +204,30 @@ class LocalGgufDialogController extends ChangeNotifier {
   void setKvCacheType(KvCacheType? value) {
     _kvCacheType = value;
     _modelLoaded = false;
+    // Re-seed the context for the newly chosen quant. An explicit quant gets
+    // the most that fits at it (cheaper KV → more tokens), floored to 512 so
+    // it lands on the same number the recommendation would. Auto restores the
+    // original recommended context, so reselecting Auto always returns to the
+    // value shown right after the file was picked.
+    final inputs = _recInputs;
+    if (inputs != null) {
+      if (value == null) {
+        _contextSize = _recommendedContextSize(inputs) ?? _contextSize;
+      } else {
+        final max = maxContextAt(inputs: inputs, kvCacheType: value);
+        if (max > 0) _contextSize = floorContextTo512(max);
+      }
+    }
     notifyListeners();
+  }
+
+  int? _recommendedContextSize(RecommendationInputs inputs) {
+    final rec = recommendLocalGgufConfig(inputs);
+    return switch (rec) {
+      RecommendationOk(contextSize: final ctx) ||
+      RecommendationWarning(contextSize: final ctx) => ctx,
+      RecommendationError() => null,
+    };
   }
 
   /// Performs a real model load via `LocalGgufProvider.buildRunner` and a
@@ -259,7 +282,10 @@ class LocalGgufDialogController extends ChangeNotifier {
     final ctx = _contextSize;
     if (!_modelLoaded || path == null || ctx == null) return null;
     final provider = LlmProvider.of(LLMProviderEnum.localGguf);
-    final model = provider.parseModel({'id': p.basename(path)});
+    final model = provider.parseModel({
+      'id': p.basename(path),
+      'context_length': ctx,
+    });
     return LlmProviderConfig(
       id: UtilsApp.generateId(LLMProviderEnum.localGguf.name),
       apiKey: '',

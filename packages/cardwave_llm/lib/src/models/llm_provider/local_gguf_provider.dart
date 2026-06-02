@@ -45,9 +45,18 @@ class LocalGgufProvider extends LlmProvider {
         'Local GGUF model entry missing or invalid id: $json',
       );
     }
+    // A local model's usable context is whatever it was loaded with, not a
+    // notional native maximum. The add dialog passes the loaded size through
+    // `context_length` so prompt budgeting and the model label reflect what
+    // actually fits in VRAM; without it the model would claim the 128k
+    // fallback and overflow the in-VRAM context when composing a prompt.
+    final rawCtx = json['context_length'];
     return LlmModel(
       id: rawId,
       name: rawId,
+      contextLength: rawCtx is int && rawCtx > 0
+          ? rawCtx
+          : LlmConstants.fallbackContextLength,
       supportedParameters: const [
         LlmParameterDefinitionIdEnum.temperature,
         LlmParameterDefinitionIdEnum.topP,

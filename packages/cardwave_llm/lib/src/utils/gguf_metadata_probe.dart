@@ -1,37 +1,13 @@
 import 'package:llamadart/llamadart.dart';
 import 'package:path/path.dart' as p;
 
-/// GGUF metadata keys we read (spec-defined; not all GGUF files set all keys).
-const _kContextLengthKeys = <String>[
-  'llama.context_length',
-  'llm.context_length',
-  'model.context_length',
-  'n_ctx',
-];
-
-const _kBlockCountKeys = <String>[
-  'llama.block_count',
-  'llm.block_count',
-  'model.block_count',
-];
-
-const _kEmbeddingLengthKeys = <String>[
-  'llama.embedding_length',
-  'llm.embedding_length',
-  'model.embedding_length',
-];
-
-const _kHeadCountKvKeys = <String>[
-  'llama.attention.head_count_kv',
-  'llm.attention.head_count_kv',
-  'model.attention.head_count_kv',
-];
-
-const _kHeadCountKeys = <String>[
-  'llama.attention.head_count',
-  'llm.attention.head_count',
-  'model.attention.head_count',
-];
+// GGUF metadata keys are prefixed by the model's architecture, e.g. a gemma
+// model stores its trained context length under `gemma4.context_length`, not
+// `llama.context_length`. We read `general.architecture` first and build the
+// real key from it. `llama`/`llm`/`model` stay as fallbacks for files that
+// use a generic prefix; reaching the hardcoded defaults instead would size
+// the whole VRAM estimate off 4096 ctx / 32 layers for every non-llama model.
+const _kFallbackPrefixes = <String>['llama', 'llm', 'model'];
 
 const _kArchKey = 'general.architecture';
 const _kNameKey = 'general.name';
@@ -83,12 +59,16 @@ class GgufMetadataProbe {
         ),
       );
       final meta = await engine.getMetadata();
+      final arch = meta[_kArchKey] ?? 'unknown';
 
-      final nativeCtx = _firstInt(meta, _kContextLengthKeys) ?? 4096;
-      final layers = _firstInt(meta, _kBlockCountKeys) ?? 32;
-      final embedding = _firstInt(meta, _kEmbeddingLengthKeys) ?? 4096;
-      final headCount = _firstInt(meta, _kHeadCountKeys) ?? 32;
-      final headCountKv = _firstInt(meta, _kHeadCountKvKeys) ?? headCount;
+      final nativeCtx =
+          _archInt(meta, arch, 'context_length', extra: const ['n_ctx']) ??
+          4096;
+      final layers = _archInt(meta, arch, 'block_count') ?? 32;
+      final embedding = _archInt(meta, arch, 'embedding_length') ?? 4096;
+      final headCount = _archInt(meta, arch, 'attention.head_count') ?? 32;
+      final headCountKv =
+          _archInt(meta, arch, 'attention.head_count_kv') ?? headCount;
       // Embedding-size per token for K (and V separately): embedding × kv/head.
       // For MHA models headCountKv == headCount so this equals embedding.
       final kvSize = headCount > 0
@@ -99,7 +79,7 @@ class GgufMetadataProbe {
         nativeContext: nativeCtx,
         layerCount: layers,
         embeddingKvSize: kvSize,
-        architecture: meta[_kArchKey] ?? 'unknown',
+        architecture: arch,
         displayName: meta[_kNameKey] ?? p.basenameWithoutExtension(modelPath),
       );
     } finally {
@@ -107,7 +87,20 @@ class GgufMetadataProbe {
     }
   }
 
-  static int? _firstInt(Map<String, String> meta, List<String> keys) {
+  /// Reads an int metadata value, trying the architecture-prefixed key
+  /// (`<arch>.<suffix>`) first, then the generic fallback prefixes, then any
+  /// `extra` unprefixed keys. Returns null when no key holds a parseable int.
+  static int? _archInt(
+    Map<String, String> meta,
+    String arch,
+    String suffix, {
+    List<String> extra = const [],
+  }) {
+    final keys = [
+      '$arch.$suffix',
+      for (final prefix in _kFallbackPrefixes) '$prefix.$suffix',
+      ...extra,
+    ];
     for (final k in keys) {
       final v = meta[k];
       if (v == null) continue;

@@ -100,7 +100,7 @@ LocalGgufRecommendation recommendLocalGgufConfig(RecommendationInputs i) {
   }
   if (ctxAtFp16 >= _kFp16MinContext) {
     return RecommendationOk(
-      contextSize: _floorTo512(ctxAtFp16),
+      contextSize: floorContextTo512(ctxAtFp16),
       kvCacheType: KvCacheType.f16,
     );
   }
@@ -119,7 +119,7 @@ LocalGgufRecommendation recommendLocalGgufConfig(RecommendationInputs i) {
   }
   if (ctxAtQ40 >= _kMinContextFloor) {
     return RecommendationOk(
-      contextSize: _floorTo512(ctxAtQ40),
+      contextSize: floorContextTo512(ctxAtQ40),
       kvCacheType: KvCacheType.q4_0,
     );
   }
@@ -175,4 +175,7 @@ int _maxCtxAt({
   return (availableForKv / perToken).floor();
 }
 
-int _floorTo512(int v) => (v ~/ 512) * 512;
+/// Rounds a token count down to the nearest 512 — context sizes are kept on
+/// 512 boundaries so the recommended value and an explicit KV pick land on
+/// the same number when they resolve to the same quant.
+int floorContextTo512(int v) => (v ~/ 512) * 512;

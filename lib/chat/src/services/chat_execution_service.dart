@@ -102,9 +102,19 @@ class ChatExecutionService {
             model: model,
             userValues: preset.parameterValues,
           );
-          final contextSize =
+          final resolvedContext =
               resolver.resolveInt(LlmParameterDefinitionIdEnum.contextSize) ??
               model.contextLength;
+          // A local GGUF only serves the context it was loaded with. Cap the
+          // prompt budget to that size so composition never overflows the
+          // in-VRAM context, even if an older preset stored a larger value.
+          final loadedCtx = provider.contextSize;
+          final contextSize =
+              provider.providerEnum == LLMProviderEnum.localGguf &&
+                  loadedCtx != null &&
+                  loadedCtx < resolvedContext
+              ? loadedCtx
+              : resolvedContext;
           final maxResponseLength = resolver.resolveInt(
             LlmParameterDefinitionIdEnum.maxResponseLength,
           );

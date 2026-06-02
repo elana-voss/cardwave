@@ -38,7 +38,7 @@ class DialogPresetConfigController extends ChangeNotifier {
       var defaultVal = paramDefinition.defaultValue;
 
       if (paramDefinition.id == LlmParameterDefinitionIdEnum.contextSize) {
-        max = seedModel.contextLength.toDouble();
+        max = _contextLimitFor(seedModel);
         defaultVal = max;
       } else if (paramDefinition.id ==
           LlmParameterDefinitionIdEnum.maxResponseLength) {
@@ -91,6 +91,20 @@ class DialogPresetConfigController extends ChangeNotifier {
   final SettingsService settingsService;
   final LlmManagementService llmManagementService;
   final PromptRepository promptRepository;
+
+  /// Upper bound for the Context Size slider. A local GGUF can only serve the
+  /// context it was loaded with, so its limit is the size stored on the
+  /// profile — not the model's notional native length, which would let the
+  /// user pick a value that overflows the in-VRAM context. Cloud models use
+  /// their advertised native length.
+  double _contextLimitFor(LlmModel model) {
+    final loaded = connectionProfile.contextSize;
+    if (connectionProfile.providerEnum == LLMProviderEnum.localGguf &&
+        loaded != null) {
+      return loaded.toDouble();
+    }
+    return model.contextLength.toDouble();
+  }
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController modelTextController = TextEditingController();
@@ -187,7 +201,7 @@ class DialogPresetConfigController extends ChangeNotifier {
 
       // Update Context Size Limit (Client-side)
       if (paramDefinition.id == LlmParameterDefinitionIdEnum.contextSize) {
-        max = model.contextSize.toDouble();
+        max = _contextLimitFor(model);
         defaultVal = max;
       }
       // Update Max Response Limit (API)

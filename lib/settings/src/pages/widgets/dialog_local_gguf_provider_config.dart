@@ -78,20 +78,40 @@ class _DialogLocalGgufProviderConfigState
         return PopScope(
             canPop: !c.isProbing && !c.isLoadingModel,
             child: AppDialog(
+              actions: c.metadata != null
+                  ? [
+                      FilledButton.icon(
+                        icon: c.isLoadingModel
+                            ? const SizedBox.square(
+                                dimension: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.memory),
+                        label: const Text(kLoadModelLabel),
+                        onPressed: (c.canLoadModel && !c.isLoadingModel)
+                            ? _loadAndSave
+                            : null,
+                      ),
+                    ]
+                  : null,
               builder: (context, isMobile) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.folder_open),
-                    label: Text(
-                      c.pickedPath == null
-                          ? kPickFileLabel
-                          : _shortenPath(c.pickedPath!),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.folder_open),
+                      label: Text(
+                        c.pickedPath == null
+                            ? kPickFileLabel
+                            : _shortenPath(c.pickedPath!),
+                      ),
+                      onPressed: (c.isProbing || c.isLoadingModel)
+                          ? null
+                          : c.pickFile,
                     ),
-                    onPressed: (c.isProbing || c.isLoadingModel)
-                        ? null
-                        : c.pickFile,
                   ),
                   if (c.isProbing) ...[
                     const SizedBox(height: 12),
@@ -138,19 +158,6 @@ class _DialogLocalGgufProviderConfigState
                       value: c.kvCacheType,
                       onChanged: c.setKvCacheType,
                     ),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      icon: c.isLoadingModel
-                          ? const SizedBox.square(
-                              dimension: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.memory),
-                      label: const Text(kLoadModelLabel),
-                      onPressed: (c.canLoadModel && !c.isLoadingModel)
-                          ? _loadAndSave
-                          : null,
-                    ),
                   ],
                   if (c.error != null) ...[
                     const SizedBox(height: 12),
@@ -161,6 +168,10 @@ class _DialogLocalGgufProviderConfigState
                       ),
                     ),
                   ],
+                  // The dialog shell zeroes the body's bottom padding when an
+                  // action row is present; restore a gap so content doesn't
+                  // sit flush against the divider above Close / Load model.
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
