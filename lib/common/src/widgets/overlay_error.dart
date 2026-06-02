@@ -59,7 +59,10 @@ class _OverlayErrorState extends State<OverlayError> {
               transitionBuilder: (child, animation) =>
                   ScaleTransition(scale: animation, child: child),
               child: (_hasError && kDebugMode)
-                  ? FloatingActionButton.small(
+                  ?
+                    // tooltip causes error due to the way the FAB is shown/hidden, so we will skip it for now
+                    // ignore: qcheck/prefer_action_button_tooltip
+                    FloatingActionButton.small(
                       key: ValueKey('log_fab_$_hasError'),
                       heroTag: 'error_overlay_fab',
                       // tooltip: 'Open logs',
