@@ -29,6 +29,7 @@ LlmProviderConfig _$LlmProviderConfigFromJson(Map<String, dynamic> json) =>
         _$KvCacheTypeEnumMap,
         json['kv_cache_type'],
       ),
+      gpuDeviceIndex: (json['gpu_device_index'] as num?)?.toInt(),
       requireZdr: json['require_zdr'] as bool? ?? false,
     );
 
@@ -40,6 +41,7 @@ Map<String, dynamic> _$LlmProviderConfigToJson(LlmProviderConfig instance) =>
       'model_path': ?instance.modelPath,
       'context_size': ?instance.contextSize,
       'kv_cache_type': ?_$KvCacheTypeEnumMap[instance.kvCacheType],
+      'gpu_device_index': ?instance.gpuDeviceIndex,
       'provider': _$LLMProviderEnumEnumMap[instance.providerEnum]!,
       'models': instance.models.map((e) => e.toJson()).toList(),
       'require_zdr': instance.requireZdr,

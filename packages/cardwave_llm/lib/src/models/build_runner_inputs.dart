@@ -6,7 +6,8 @@ import 'package:llamadart/llamadart.dart' show KvCacheType;
 /// Inputs passed to `LlmProvider.buildRunner`. Bundles the shared chat-side
 /// configuration (auth, model id, parameter values) plus any
 /// provider-specific extras (currently `localGguf` carries `modelPath`,
-/// `contextSize`, `kvCacheType` — cloud providers leave those null).
+/// `contextSize`, `kvCacheType`, `gpuDeviceIndex` — cloud providers leave
+/// those null).
 class BuildRunnerInputs {
   const BuildRunnerInputs({
     required this.apiKey,
@@ -18,6 +19,7 @@ class BuildRunnerInputs {
     this.modelPath,
     this.contextSize,
     this.kvCacheType,
+    this.gpuDeviceIndex,
   });
 
   final String apiKey;
@@ -29,4 +31,9 @@ class BuildRunnerInputs {
   final String? modelPath;
   final int? contextSize;
   final KvCacheType? kvCacheType;
+
+  /// GPU to pin offload to, as a backend device index. Set only on `localGguf`
+  /// profiles where a discrete GPU was detected; null means default device
+  /// handling.
+  final int? gpuDeviceIndex;
 }

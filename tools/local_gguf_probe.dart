@@ -50,6 +50,8 @@ void main(List<String> args) async {
     contextSize: flags.ctx,
     gpuLayers: ModelParams.maxGpuLayers,
     preferredBackend: backend,
+    mainGpu: flags.mainGpu,
+    splitMode: flags.splitMode,
     flashAttention: flags.flashAttention,
     cacheTypeK: flags.kv,
     cacheTypeV: flags.kv,
@@ -155,6 +157,8 @@ class _Flags {
     required this.flashAttention,
     required this.useMmap,
     required this.batch,
+    required this.mainGpu,
+    required this.splitMode,
   });
 
   final GpuBackend backend;
@@ -163,6 +167,8 @@ class _Flags {
   final FlashAttention flashAttention;
   final bool useMmap;
   final int batch;
+  final int mainGpu;
+  final ModelSplitMode splitMode;
 }
 
 _Flags _parseFlags(Iterable<String> raw) {
@@ -172,6 +178,8 @@ _Flags _parseFlags(Iterable<String> raw) {
   FlashAttention flashAttention = FlashAttention.auto;
   bool useMmap = true;
   int batch = 512;
+  int mainGpu = 0;
+  ModelSplitMode splitMode = ModelSplitMode.layer;
 
   for (final arg in raw) {
     if (!arg.startsWith('--')) continue;
@@ -201,6 +209,13 @@ _Flags _parseFlags(Iterable<String> raw) {
         useMmap = val == 'true' || val == '1';
       case 'batch':
         batch = int.parse(val);
+      case 'maingpu':
+        mainGpu = int.parse(val);
+      case 'split':
+        splitMode = ModelSplitMode.values.firstWhere(
+          (s) => s.name == val,
+          orElse: () => throw ArgumentError('Unknown split: $val'),
+        );
     }
   }
   return _Flags(
@@ -210,5 +225,7 @@ _Flags _parseFlags(Iterable<String> raw) {
     flashAttention: flashAttention,
     useMmap: useMmap,
     batch: batch,
+    mainGpu: mainGpu,
+    splitMode: splitMode,
   );
 }

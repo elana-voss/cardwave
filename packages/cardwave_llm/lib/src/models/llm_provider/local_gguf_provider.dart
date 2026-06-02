@@ -70,10 +70,20 @@ class LocalGgufProvider extends LlmProvider {
     final path = inputs.modelPath!;
     final ctx = inputs.contextSize!;
     final r = LlmParameterResolver(model: model, userValues: paramValues);
-    // Cache key encodes path + ctx + kv so changing any of them yields a
-    // fresh plugin (and `disposeRuntimeFor(path)` finds stale entries via
-    // path substring match).
-    final cacheKey = '${enumValue.name}:$path|ctx=$ctx|kv=${kvType?.name ?? ''}';
+    // On Windows the cpu+vulkan bundle enumerates both the integrated and the
+    // discrete GPU. Without pinning, llama.cpp spreads layers across all of
+    // them, and the integrated GPU's memory is shared system RAM — so the
+    // model ends up in RAM instead of the discrete card's VRAM. When the
+    // dialog detected a discrete GPU, pin offload to it: select Vulkan, point
+    // main_gpu at that device, and turn off layer splitting so only it is
+    // used. Off Windows (Metal, mobile) we leave the default auto handling.
+    final pinnedGpu = Platform.isWindows ? inputs.gpuDeviceIndex : null;
+    // Cache key encodes path + ctx + kv + pinned GPU so changing any of them
+    // yields a fresh plugin (and `disposeRuntimeFor(path)` finds stale entries
+    // via path substring match).
+    final cacheKey =
+        '${enumValue.name}:$path|ctx=$ctx|kv=${kvType?.name ?? ''}'
+        '|gpu=${pinnedGpu ?? ''}';
     // Backend defaults to `auto` (the embedder's working setup).
     // `useMmap: false` materializes weights into VRAM eagerly, matching
     // kobold-cpp for this same model.
@@ -86,10 +96,20 @@ class LocalGgufProvider extends LlmProvider {
     // flash-attn stays enabled so non-fp16 KV cache types remain legal
     // (`ModelParams.validate` enforces this).
     const kSafeBatchSize = 512;
+    final preferredBackend = pinnedGpu != null
+        ? GpuBackend.vulkan
+        : GpuBackend.auto;
+    final splitMode = pinnedGpu != null
+        ? ModelSplitMode.none
+        : ModelSplitMode.layer;
+    final mainGpu = pinnedGpu ?? 0;
     final modelParams = kvType == null
         ? ModelParams(
             contextSize: ctx,
             gpuLayers: ModelParams.maxGpuLayers,
+            preferredBackend: preferredBackend,
+            splitMode: splitMode,
+            mainGpu: mainGpu,
             flashAttention: FlashAttention.enabled,
             useMmap: false,
             batchSize: kSafeBatchSize,
@@ -98,6 +118,9 @@ class LocalGgufProvider extends LlmProvider {
         : ModelParams(
             contextSize: ctx,
             gpuLayers: ModelParams.maxGpuLayers,
+            preferredBackend: preferredBackend,
+            splitMode: splitMode,
+            mainGpu: mainGpu,
             flashAttention: FlashAttention.enabled,
             useMmap: false,
             batchSize: kSafeBatchSize,
@@ -116,6 +139,8 @@ class LocalGgufProvider extends LlmProvider {
       'kv=${kvType?.name ?? 'f16'}, '
       'preferredBackend=${modelParams.preferredBackend.name}, '
       'gpuLayers=${modelParams.gpuLayers}, '
+      'mainGpu=${modelParams.mainGpu}, '
+      'splitMode=${modelParams.splitMode.name}, '
       'flashAttn=${modelParams.flashAttention.name}, '
       'mmap=${modelParams.useMmap}',
     );

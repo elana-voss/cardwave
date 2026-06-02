@@ -244,6 +244,7 @@ class LlmPureHelpers {
         modelPath: provider.modelPath,
         contextSize: provider.contextSize,
         kvCacheType: provider.kvCacheType,
+        gpuDeviceIndex: provider.gpuDeviceIndex,
       ),
     );
   }
@@ -262,6 +263,7 @@ class LlmPureHelpers {
     String? modelPath,
     int? contextSize,
     KvCacheType? kvCacheType,
+    int? gpuDeviceIndex,
   }) {
     return LlmProvider.of(providerEnum).buildRunner(
       BuildRunnerInputs(
@@ -274,6 +276,7 @@ class LlmPureHelpers {
         modelPath: modelPath,
         contextSize: contextSize,
         kvCacheType: kvCacheType,
+        gpuDeviceIndex: gpuDeviceIndex,
       ),
     );
   }

@@ -22,6 +22,7 @@ class LlmProviderConfig {
     this.modelPath,
     this.contextSize,
     this.kvCacheType,
+    this.gpuDeviceIndex,
     this.requireZdr = false,
   });
 
@@ -44,6 +45,12 @@ class LlmProviderConfig {
   /// (fp16). Set only on `localGguf` profiles.
   @JsonKey(includeIfNull: false)
   KvCacheType? kvCacheType;
+
+  /// Backend device index to pin offload to (the discrete GPU chosen when the
+  /// model was added). Null = default device handling. Set only on `localGguf`
+  /// profiles, and used only on Windows.
+  @JsonKey(includeIfNull: false)
+  int? gpuDeviceIndex;
 
   @JsonKey(
     name: 'provider',

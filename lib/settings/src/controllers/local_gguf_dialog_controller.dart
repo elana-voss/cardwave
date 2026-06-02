@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/settings/src/utils/gpu_device_selection.dart';
 import 'package:cardwave/settings/src/utils/local_gguf_recommendation.dart';
 import 'package:cardwave/settings/src/utils/vram_probe.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
@@ -36,6 +37,10 @@ class LocalGgufDialogController extends ChangeNotifier {
   /// llamadart's default (fp16) is used.
   KvCacheType? _kvCacheType;
   KvCacheType? get kvCacheType => _kvCacheType;
+
+  /// Discrete GPU to pin offload to, detected at file-pick time. Null when the
+  /// machine has no discrete GPU (offload stays on default device handling).
+  int? _gpuDeviceIndex;
 
   bool _probing = false;
   bool get isProbing => _probing;
@@ -110,6 +115,7 @@ class LocalGgufDialogController extends ChangeNotifier {
     _pickedPath = file.path;
     _metadata = null;
     _vram = null;
+    _gpuDeviceIndex = null;
     _recommendation = null;
     _modelLoaded = false;
     _error = null;
@@ -119,10 +125,12 @@ class LocalGgufDialogController extends ChangeNotifier {
     try {
       // Probes are independent; run them in parallel so the file-pick step
       // doesn't pay the metadata-load + embedder-warmup latencies serially.
-      final (probed, vramSnapshot) = await (
+      final (probed, vramSnapshot, gpuIndex) = await (
         GgufMetadataProbe.probe(file.path),
         VramProbe(_embedder).read(),
+        _detectDiscreteGpuIndex(),
       ).wait;
+      _gpuDeviceIndex = gpuIndex;
       final inputs = RecommendationInputs(
         nativeContext: probed.nativeContext,
         layerCount: probed.layerCount,
@@ -165,6 +173,23 @@ class LocalGgufDialogController extends ChangeNotifier {
     }
   }
 
+  /// Enumerates the backend's GPUs (via the embedder's warmed backend) and
+  /// returns the discrete GPU to pin offload to, or null when there's none.
+  Future<int?> _detectDiscreteGpuIndex() async {
+    await _embedder.init();
+    final backend = _embedder.backend;
+    if (backend == null) return null;
+    final devices = await backend.listGpuDevices();
+    final picked = pickDiscreteGpuIndex(devices);
+    LoggingService().info(
+      '[LocalGgufDialog] GPU devices: '
+      '${devices.map((d) => '#${d.index} ${d.name} (${d.type.name}, '
+          'free ${d.memoryFreeBytes ~/ (1024 * 1024)} MiB)').join('; ')} '
+      '-> pinned ${picked ?? 'none (default device handling)'}',
+    );
+    return picked;
+  }
+
   void setContextSize(int value) {
     _contextSize = value;
     _modelLoaded = false; // any change invalidates a prior load
@@ -203,6 +228,7 @@ class LocalGgufDialogController extends ChangeNotifier {
           modelPath: path,
           contextSize: ctx,
           kvCacheType: effectiveKvCacheType,
+          gpuDeviceIndex: _gpuDeviceIndex,
         ),
       );
       // Tiny test inference to confirm the model actually serves tokens.
@@ -241,6 +267,7 @@ class LocalGgufDialogController extends ChangeNotifier {
       // with. Storing null/Auto would force the runtime to fall
       // back to llama.cpp's fp16 default, breaking tight-fit loads.
       kvCacheType: effectiveKvCacheType,
+      gpuDeviceIndex: _gpuDeviceIndex,
     );
   }
 

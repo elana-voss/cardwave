@@ -7,6 +7,7 @@
 // ignore_for_file: qcheck/avoid_unused_parameters
 
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:cardwave_llm/src/image/image_options.dart';
 import 'package:cardwave_llm/src/models/build_runner_inputs.dart';
@@ -31,7 +32,8 @@ import 'package:genkit_google_genai/genkit_google_genai.dart' as gg;
 import 'package:genkit_llamadart/genkit_llamadart.dart';
 import 'package:genkit_openai/genkit_openai.dart';
 import 'package:http/http.dart' as http;
-import 'package:llamadart/llamadart.dart' show FlashAttention;
+import 'package:llamadart/llamadart.dart'
+    show FlashAttention, GpuBackend, ModelSplitMode;
 import 'package:path/path.dart' as p;
 
 part 'llm_provider/llm_fetch_exception.dart';
