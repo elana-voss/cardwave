@@ -123,6 +123,11 @@ class LocalGgufDialogController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Free any chat GGUF already resident so the VRAM reading reflects a
+      // card with no model loaded — otherwise the new model is measured
+      // against the leftovers of the old one and wrongly refused. The freed
+      // model lazily reloads on the next chat send if the user cancels.
+      await LlmProvider.disposeAllLocalGgufRuntimes();
       // Probes are independent; run them in parallel so the file-pick step
       // doesn't pay the metadata-load + embedder-warmup latencies serially.
       final (probed, vramSnapshot, gpuIndex) = await (

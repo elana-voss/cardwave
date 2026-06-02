@@ -251,10 +251,30 @@ sealed class LlmProvider {
   /// `localGguf` profile edit that changes context / KV quant, so the old
   /// plugin frees its slot before the new one loads. No-op for non-local
   /// providers because their cache keys never contain a filesystem path.
-  static Future<void> disposeRuntimeFor(String modelPath) async {
+  static Future<void> disposeRuntimeFor(String modelPath) =>
+      _disposeLocalGgufWhere((key) => key.contains(modelPath));
+
+  /// Frees every loaded in-process GGUF EXCEPT the one for `keepModelPath`.
+  /// Enforces "one local model in VRAM at a time" at the moment a chat is
+  /// about to run: switching to a different GGUF profile (or reassigning a
+  /// domain to a different GGUF) leaves the previous model resident
+  /// otherwise, so the next load lands on top of it and runs out of memory.
+  static Future<void> disposeOtherLocalGgufRuntimes(String keepModelPath) =>
+      _disposeLocalGgufWhere((key) => !key.contains(keepModelPath));
+
+  /// Frees every loaded in-process GGUF. Called by the add dialog before it
+  /// measures free VRAM, so the reading reflects a card with no chat model
+  /// resident (otherwise the new model is judged against the leftovers of
+  /// the old one and wrongly refused).
+  static Future<void> disposeAllLocalGgufRuntimes() =>
+      _disposeLocalGgufWhere((_) => true);
+
+  static Future<void> _disposeLocalGgufWhere(
+    bool Function(String key) test,
+  ) async {
     final prefix = '${LLMProviderEnum.localGguf.name}:';
     final stale = _pluginByConfig.keys
-        .where((k) => k.startsWith(prefix) && k.contains(modelPath))
+        .where((k) => k.startsWith(prefix) && test(k))
         .toList();
     for (final key in stale) {
       final plugin = _pluginByConfig.remove(key);

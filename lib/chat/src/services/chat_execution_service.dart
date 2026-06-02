@@ -52,6 +52,17 @@ class ChatExecutionService {
   final MemoryService memoryService;
   final NodesService nodesService;
 
+  /// Before running a local-GGUF chat, free any other GGUF still resident in
+  /// VRAM (a different profile, or one a domain was just reassigned away
+  /// from). Only one local model fits at a time on a typical card; without
+  /// this the new model loads on top of the old and runs out of memory.
+  Future<void> _evictOtherLocalGgufRuntimes(LlmProviderConfig provider) async {
+    if (provider.providerEnum == LLMProviderEnum.localGguf &&
+        provider.modelPath != null) {
+      await LlmProvider.disposeOtherLocalGgufRuntimes(provider.modelPath!);
+    }
+  }
+
   /// Generates a chat reply, running the manual tool loop when the
   /// model emits tool calls. Pass [dispatchToolCalls] when the chat
   /// session has tools enabled — the closure runs the tool dispatcher
@@ -80,6 +91,7 @@ class ChatExecutionService {
           final model = resolvedPreset.model;
           final preset = resolvedPreset.preset;
 
+          await _evictOtherLocalGgufRuntimes(provider);
           final runner = pureHelpers.createRunner(
             provider: provider,
             model: model,
@@ -451,6 +463,7 @@ class ChatExecutionService {
           final model = resolved.model;
           final preset = resolved.preset;
 
+          await _evictOtherLocalGgufRuntimes(provider);
           final runner = pureHelpers.createRunner(
             provider: provider,
             model: model,
