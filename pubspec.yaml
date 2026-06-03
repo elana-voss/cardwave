@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.4.4
+version: 0.4.5
 
 workspace:
   - packages/cardwave_llm
@@ -142,7 +142,7 @@ dependency_overrides:
   llamadart:
     git:
       url: https://github.com/elana-voss/llamadart.git
-      ref: b789fa98820dea64c8d0a5f16fac9206aef1d4e2
+      ref: 6042b287783484849d83f2ca686fb8789913ae90
   # Maintained fork of re_editor: upstream (reqable/re-editor) is stale and not
   # merging fixes. Our fork carries the Flutter 3.44 onFocusReceived fix, the
   # wasm-safe isolate_manager bump (so no app-side override is needed), and a

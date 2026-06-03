@@ -51,12 +51,23 @@ class LocalGgufProvider extends LlmProvider {
     // actually fits in VRAM; without it the model would claim the 128k
     // fallback and overflow the in-VRAM context when composing a prompt.
     final rawCtx = json['context_length'];
+    // llama.cpp grammar-constrains any local model's reply into a required
+    // JSON shape regardless of how the model was trained, so structured output
+    // is always available — this is what makes a local file eligible for the
+    // system domain. Tool calling, by contrast, only works when the file's own
+    // chat template emits tool-call markers; that signal is detected from the
+    // gguf metadata at add time and arrives here as `supports_tools`.
+    final supportsTools = json['supports_tools'] == true;
     return LlmModel(
       id: rawId,
       name: rawId,
       contextLength: rawCtx is int && rawCtx > 0
           ? rawCtx
           : LlmConstants.fallbackContextLength,
+      capabilities: LlmCapabilities(
+        structuredOutput: true,
+        toolCalling: supportsTools,
+      ),
       supportedParameters: const [
         LlmParameterDefinitionIdEnum.temperature,
         LlmParameterDefinitionIdEnum.topP,

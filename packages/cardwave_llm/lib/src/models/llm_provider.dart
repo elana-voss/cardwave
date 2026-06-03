@@ -33,7 +33,7 @@ import 'package:genkit_llamadart/genkit_llamadart.dart';
 import 'package:genkit_openai/genkit_openai.dart';
 import 'package:http/http.dart' as http;
 import 'package:llamadart/llamadart.dart'
-    show FlashAttention, GpuBackend, ModelSplitMode;
+    show FlashAttention, GpuBackend, LlamaEngine, ModelSplitMode;
 import 'package:path/path.dart' as p;
 
 part 'llm_provider/llm_fetch_exception.dart';
@@ -268,6 +268,14 @@ sealed class LlmProvider {
   /// the old one and wrongly refused).
   static Future<void> disposeAllLocalGgufRuntimes() =>
       _disposeLocalGgufWhere((_) => true);
+
+  /// Stops the in-process GGUF generation currently running, if any. A
+  /// system-domain call (auto-tag / memory / director) hands off to a worker
+  /// that keeps generating after a timed-out wait; this flips llamadart's
+  /// native cancel token so the worker stops instead of pegging the GPU until
+  /// it finishes on its own. No-op when no local generation is in flight.
+  static void cancelActiveLocalGeneration() =>
+      LlamaEngine.cancelActiveGenerations();
 
   static Future<void> _disposeLocalGgufWhere(
     bool Function(String key) test,

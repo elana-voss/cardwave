@@ -285,6 +285,7 @@ class LocalGgufDialogController extends ChangeNotifier {
     final model = provider.parseModel({
       'id': p.basename(path),
       'context_length': ctx,
+      'supports_tools': _metadata!.supportsTools,
     });
     return LlmProviderConfig(
       id: UtilsApp.generateId(LLMProviderEnum.localGguf.name),

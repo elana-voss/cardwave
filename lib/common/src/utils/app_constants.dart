@@ -108,6 +108,20 @@ class AppConstants {
   static const int fallbackMaxRetries = 3;
   static const int fallbackLlmTimeoutSeconds = 60;
 
+  /// The in-process local GGUF model generates far slower than a cloud API,
+  /// so a system-domain call against it gets one generous attempt instead of
+  /// the cloud 60s-times-3 budget. Sized so a small quantized model can finish
+  /// a full constrained reply (e.g. the auto-tag JSON) before the wait is
+  /// abandoned and the run cancelled.
+  static const int localLlmTimeoutSeconds = 480;
+
+  /// Output-token ceiling for auto-tagging. The reply carries a key for every
+  /// taxonomy group (strict schema), so a large taxonomy needs well over 1000
+  /// tokens to close the JSON; too low a cap truncates the reply into unclosed
+  /// JSON the parser rejects. A grammar-constrained model stops at the natural
+  /// end of the JSON well before this, so it only bounds a runaway.
+  static const int autoTagMaxResponseTokens = 2500;
+
   /// Per-turn cap on `send_selfie` calls. The selfie tool is side-effect
   /// only — one selfie per assistant turn is the documented UX contract.
   static const int toolSendSelfieMaxPerTurn = 1;

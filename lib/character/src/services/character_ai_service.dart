@@ -69,6 +69,10 @@ class CharacterAiService extends ChangeNotifier {
       taskState.isCancelled = true;
     }
     _processingAiTaskStatuses.clear();
+    // The in-process local model keeps generating after its Dart wait is
+    // abandoned; stop the worker so cancel frees the GPU instead of letting
+    // the run finish. No-op for cloud models (nothing is registered).
+    LlmProvider.cancelActiveLocalGeneration();
     loggingService.info('[CANCEL] User cancelled all active AI tasks');
   }
 
@@ -104,8 +108,29 @@ class CharacterAiService extends ChangeNotifier {
     );
   }
 
+  /// True when the system-domain model is the in-process local GGUF. It
+  /// generates minutes-slow, so callers give it one long attempt with no
+  /// retries (a retried timeout would only start a second slow run) instead
+  /// of the cloud retry budget.
+  bool _isSystemModelLocalInProcess() {
+    final configId =
+        settingsService.settings.domainPresetIds[LlmProviderDomainEnum.system];
+    if (configId == null) return false;
+    final resolved = pureHelpers.resolvePresetOrNull(
+      configId: configId,
+      providers: settingsService.settings.providerConfigs,
+    );
+    return resolved?.provider.providerEnum == LLMProviderEnum.localGguf;
+  }
+
   Future<String> _runSimpleAiTask(String prompt) async {
-    const maxRetries = AppConstants.fallbackMaxRetries;
+    final isLocal = _isSystemModelLocalInProcess();
+    final maxRetries = isLocal ? 0 : AppConstants.fallbackMaxRetries;
+    final timeout = Duration(
+      seconds: isLocal
+          ? AppConstants.localLlmTimeoutSeconds
+          : AppConstants.fallbackLlmTimeoutSeconds,
+    );
     _simpleTaskCounter++;
     final taskId =
         'simple_task_${DateTime.now().millisecondsSinceEpoch}_$_simpleTaskCounter';
@@ -120,13 +145,10 @@ class CharacterAiService extends ChangeNotifier {
         try {
           if (taskState.isCancelled) throw const AiCancelledException();
 
-          final result = await runner
-              .complete(prompt)
-              .timeout(
-                const Duration(seconds: AppConstants.fallbackLlmTimeoutSeconds),
-              );
+          final result = await runner.complete(prompt).timeout(timeout);
           return result.trim();
         } on Exception catch (e, st) {
+          if (isLocal) LlmProvider.cancelActiveLocalGeneration();
           if (e is AiCancelledException) rethrow;
           if (taskState.isCancelled) {
             Error.throwWithStackTrace(const AiCancelledException(), st);
@@ -200,7 +222,13 @@ class CharacterAiService extends ChangeNotifier {
     required Future<void> Function(LlmRunner runner) task,
     int? maxResponseTokens,
   }) async {
-    const maxRetries = AppConstants.fallbackMaxRetries;
+    final isLocal = _isSystemModelLocalInProcess();
+    final maxRetries = isLocal ? 0 : AppConstants.fallbackMaxRetries;
+    final timeout = Duration(
+      seconds: isLocal
+          ? AppConstants.localLlmTimeoutSeconds
+          : AppConstants.fallbackLlmTimeoutSeconds,
+    );
     final path = _normalize(file.appCardImagePath);
     if (_processingAiTaskStatuses.containsKey(path)) {
       throw Exception('A task is already processing for ${file.card.name}.');
@@ -224,12 +252,13 @@ class CharacterAiService extends ChangeNotifier {
             break;
           }
 
-          await task(runner).timeout(
-            const Duration(seconds: AppConstants.fallbackLlmTimeoutSeconds),
-          );
+          await task(runner).timeout(timeout);
           loggingService.info('[$taskName] Success: ${file.card.name}');
           break;
         } on Exception catch (e, stackTrace) {
+          // A timed-out local attempt leaves the worker generating; stop it so
+          // the GPU frees now instead of finishing the abandoned run.
+          if (isLocal) LlmProvider.cancelActiveLocalGeneration();
           if (taskState.isCancelled) {
             loggingService.info('[$taskName] Cancelled: ${file.card.name}');
             break;
@@ -502,7 +531,7 @@ class CharacterAiService extends ChangeNotifier {
     return _executeCharacterAiTask(
       file,
       taskName: 'AUTO-TAG',
-      maxResponseTokens: 1000,
+      maxResponseTokens: AppConstants.autoTagMaxResponseTokens,
       task: (runner) async {
         final sb = StringBuffer();
         if (file.card.name.isNotEmpty) {
