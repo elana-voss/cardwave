@@ -518,10 +518,10 @@ packages:
     dependency: transitive
     description:
       name: genkit_llamadart
-      sha256: d59345bf12ff524beb4bec6a634d4e7d4cc357a507710a924e0490e1b89bb105
+      sha256: "7f52ee16303811a10f39c2840716d7284d20ab9d7febe47eb2f3c3b3fbd84fb2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.3.0"
   genkit_openai:
     dependency: transitive
     description:
@@ -787,11 +787,11 @@ packages:
     dependency: "direct overridden"
     description:
       path: "."
-      ref: "6042b287783484849d83f2ca686fb8789913ae90"
-      resolved-ref: "6042b287783484849d83f2ca686fb8789913ae90"
+      ref: "089244892c1c0ebd0b37239f2caa632c6c91db00"
+      resolved-ref: "089244892c1c0ebd0b37239f2caa632c6c91db00"
       url: "https://github.com/elana-voss/llamadart.git"
     source: git
-    version: "0.6.12"
+    version: "0.6.17"
   logging:
     dependency: "direct main"
     description:

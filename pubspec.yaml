@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.4.5
+version: 0.4.6
 
 workspace:
   - packages/cardwave_llm
@@ -129,20 +129,19 @@ dev_dependencies:
   # block in analysis_options.yaml; it resolves its own deps separately and
   # does NOT need to be a dev_dependency here.
 
-# Pinned to a cardwave fork of llamadart at b9016 (upstream commit
-# fc98c90b, PR #121 merge). The fork redirects the windows-x64 native
-# bundle to elana-voss/llamadart-native-overrides, which ships a
-# rebuilt ggml-vulkan.dll without cooperative-matrix property queries
-# (works around NVIDIA Blackwell + AMD AMDVLK iGPU driver crashes).
-# See app/README.md "Windows: GPU compatibility".
+# Pinned to a cardwave fork of llamadart at v0.6.17 (native bundle b9371). The
+# fork redirects the windows-x64 native bundle to elana-voss/llamadart-native-
+# overrides, which ships a rebuilt ggml-vulkan.dll without cooperative-matrix
+# property queries (works around NVIDIA Blackwell + AMD AMDVLK iGPU driver
+# crashes). See app/README.md "Windows: GPU compatibility".
 dependency_overrides:
-  # Stable ref shipped at v0.1.1 (Vulkan native-bundle workaround, see the
-  # note above). A local `path: ../../llamadart` is used transiently for
-  # native patch work; releases pin the git ref.
+  # cardwave fork at v0.6.17 (Vulkan native-bundle workaround + listGpuDevices).
+  # A local `path: ../../llamadart` is used transiently for native patch work;
+  # releases pin the git ref.
   llamadart:
     git:
       url: https://github.com/elana-voss/llamadart.git
-      ref: 6042b287783484849d83f2ca686fb8789913ae90
+      ref: 089244892c1c0ebd0b37239f2caa632c6c91db00
   # Maintained fork of re_editor: upstream (reqable/re-editor) is stale and not
   # merging fixes. Our fork carries the Flutter 3.44 onFocusReceived fix, the
   # wasm-safe isolate_manager bump (so no app-side override is needed), and a
