@@ -125,6 +125,31 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
                 ),
               ),
             ),
+            ListTile(
+              leading: const Icon(Icons.palette_outlined),
+              title: const Text('Theme Style'),
+              trailing: SegmentedButton<ThemeStyleEnum>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: ThemeStyleEnum.standard,
+                    icon: const Icon(Icons.format_paint, size: 18),
+                    label: isNarrow ? null : const Text('Default'),
+                  ),
+                  ButtonSegment(
+                    value: ThemeStyleEnum.neon,
+                    icon: const Icon(Icons.auto_awesome, size: 18),
+                    label: isNarrow ? null : const Text('Neon'),
+                  ),
+                ],
+                selected: {settingsDisplay.themeStyle},
+                onSelectionChanged: (newSelection) {
+                  settingsDisplay.themeStyle = newSelection.first;
+                  settingsService.settings.themeStyle = newSelection.first;
+                  unawaited(settingsService.saveSettings());
+                },
+              ),
+            ),
           ],
         ),
         _MenuGroupCard(

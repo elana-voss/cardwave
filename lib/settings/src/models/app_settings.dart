@@ -15,6 +15,7 @@ class AppSettings {
     this.characterPath,
     List<LlmProviderConfig>? connectionProfiles,
     this.themeMode = ThemeMode.dark,
+    this.themeStyle = ThemeStyleEnum.standard,
     this.chatTheme = ChatTheme.azure,
     Map<LlmProviderDomainEnum, String>? domainPresetIds,
     this.configMedia,
@@ -67,6 +68,8 @@ class AppSettings {
   List<LlmProviderConfig> providerConfigs;
 
   ThemeMode themeMode;
+
+  ThemeStyleEnum themeStyle;
 
   ChatTheme chatTheme;
 

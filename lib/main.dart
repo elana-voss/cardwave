@@ -288,6 +288,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
       _settingsDisplay = ThemeNotifier();
       _settingsDisplay.themeMode = _settingsService.settings.themeMode;
+      _settingsDisplay.themeStyle = _settingsService.settings.themeStyle;
 
       _characterService = CharacterService(
         characterRepository: _characterRepository,
@@ -722,6 +723,7 @@ class _MyAppState extends State<MyApp> {
     );
     final navigationService = context.watch<NavigationService>();
     final settingsDisplay = context.watch<ThemeNotifier>();
+    final isNeon = settingsDisplay.themeStyle == ThemeStyleEnum.neon;
 
     final isFirstLaunch = !onboardingComplete;
 
@@ -734,6 +736,20 @@ class _MyAppState extends State<MyApp> {
 
         return Stack(
           children: [
+            // App-wide neon backdrop, only for the neon theme family. Sits
+            // behind every route; the neon themes make scaffolds and app bars
+            // transparent so it shows through. Pastel in light mode, deep
+            // synthwave in dark mode, so the active text tone stays readable.
+            if (isNeon)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: Theme.of(context).brightness == Brightness.dark
+                        ? kCardwaveBackdropDark
+                        : kCardwaveBackdropLight,
+                  ),
+                ),
+              ),
             appContent,
             // Character grid scan / file load after the user lands on
             // home. Consumer (not Selector) because the status text
@@ -773,8 +789,8 @@ class _MyAppState extends State<MyApp> {
         },
       ),
       debugShowCheckedModeBanner: false,
-      theme: compactLightTheme,
-      darkTheme: compactDarkTheme,
+      theme: isNeon ? neonLightTheme : compactLightTheme,
+      darkTheme: isNeon ? neonDarkTheme : compactDarkTheme,
       themeMode: settingsDisplay.themeMode,
       initialRoute: isFirstLaunch
           ? AppRoutesEnum.onboarding.name

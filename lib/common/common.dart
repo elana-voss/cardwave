@@ -3,6 +3,7 @@
 // Cross-domain consumers MUST import this barrel, not src/ paths.
 
 export 'src/theme/compact_theme.dart';
+export 'src/theme/theme_style_enum.dart';
 export 'src/utils/app_constants.dart';
 export 'src/utils/logging_service.dart';
 export 'src/utils/navigation_service.dart';
@@ -29,6 +30,7 @@ export 'src/widgets/drawer_section_header.dart';
 export 'src/widgets/drawer_show_advanced.dart';
 export 'src/widgets/drawer_switch_tile.dart';
 export 'src/widgets/drawer_trailing_value.dart';
+export 'src/widgets/gradient_text.dart';
 export 'src/widgets/image_background_blurred.dart';
 export 'src/widgets/image_character.dart';
 export 'src/widgets/image_full_screen_viewer.dart';

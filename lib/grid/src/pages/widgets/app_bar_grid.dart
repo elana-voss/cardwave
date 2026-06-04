@@ -13,6 +13,9 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final service = context.watch<CharacterService>();
+    final isNeon = context.select<ThemeNotifier, bool>(
+      (t) => t.themeStyle == ThemeStyleEnum.neon,
+    );
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -36,6 +39,15 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
               ? Row(
                   spacing: 8,
                   children: [
+                    if (isNeon)
+                      const GradientText(
+                        'Cardwave',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
                     FilledButton.icon(
                       key: const Key('grid-create-new-button'),
                       onPressed: () => RouteCreateCharacter().execute(context),

@@ -12,6 +12,9 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) =>
         themeMode:
             $enumDecodeNullable(_$ThemeModeEnumMap, json['theme_mode']) ??
             ThemeMode.dark,
+        themeStyle:
+            $enumDecodeNullable(_$ThemeStyleEnumEnumMap, json['theme_style']) ??
+            ThemeStyleEnum.standard,
         chatTheme: json['chat_theme'] == null
             ? ChatTheme.azure
             : ChatTheme.fromJson(json['chat_theme'] as Map<String, dynamic>),
@@ -88,6 +91,7 @@ Map<String, dynamic> _$AppSettingsToJson(
   'character_path': instance.characterPath,
   'provider_configs': instance.providerConfigs.map((e) => e.toJson()).toList(),
   'theme_mode': _$ThemeModeEnumMap[instance.themeMode]!,
+  'theme_style': _$ThemeStyleEnumEnumMap[instance.themeStyle]!,
   'chat_theme': instance.chatTheme.toJson(),
   'domain_preset_ids': instance.domainPresetIds.map(
     (k, e) => MapEntry(_$LlmProviderDomainEnumEnumMap[k]!, e),
@@ -121,6 +125,11 @@ const _$ThemeModeEnumMap = {
   ThemeMode.system: 'system',
   ThemeMode.light: 'light',
   ThemeMode.dark: 'dark',
+};
+
+const _$ThemeStyleEnumEnumMap = {
+  ThemeStyleEnum.standard: 'standard',
+  ThemeStyleEnum.neon: 'neon',
 };
 
 const _$LlmProviderDomainEnumEnumMap = {
