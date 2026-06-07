@@ -50,12 +50,13 @@ void main() {
       const modelId = 'fake-model';
       const providerId = 'fake-provider';
       final dir = await getApplicationDocumentsDirectory();
-      // memoryEnabled defaults true (memory runs) and showRecalledMemory
-      // defaults false (footnote starts hidden) — exactly what this test wants,
-      // so neither is set here.
+      // memoryEnabled must be turned on explicitly now that the app defaults
+      // it off; showRecalledMemory stays at its default-off so the footnote
+      // starts hidden, and the test toggles it on later.
       final settings = AppSettings(
         characterPath: dir.path,
         onboardingComplete: true,
+        memoryEnabled: true,
         connectionProfiles: [
           LlmProviderConfig(
             id: providerId,

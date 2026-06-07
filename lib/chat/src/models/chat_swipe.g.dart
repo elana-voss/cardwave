@@ -26,6 +26,11 @@ ChatSwipe _$ChatSwipeFromJson(Map<String, dynamic> json) => ChatSwipe(
           ?.map((e) => e as String)
           .toList() ??
       [],
+  promptBreakdown: json['prompt_breakdown'] == null
+      ? null
+      : PromptContextBreakdown.fromJson(
+          json['prompt_breakdown'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$ChatSwipeToJson(ChatSwipe instance) => <String, dynamic>{
@@ -36,4 +41,5 @@ Map<String, dynamic> _$ChatSwipeToJson(ChatSwipe instance) => <String, dynamic>{
   'video_path': ?instance.videoPath,
   'tool_calls': instance.toolCalls.map((e) => e.toJson()).toList(),
   'recalled_memory': instance.recalledMemory,
+  'prompt_breakdown': ?instance.promptBreakdown?.toJson(),
 };

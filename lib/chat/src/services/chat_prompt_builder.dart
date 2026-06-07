@@ -64,6 +64,8 @@ class ChatPromptBuilder {
   final ToolRegistry toolRegistry;
 
   int _currentTokenCount = 0;
+  final List<PromptSegmentEntry> _segments = [];
+  int _reservedReply = 0;
   final List<LlmRunnerMessage> _messages = [];
   final List<({LlmRunnerMessage msg, int depth})> _depthInsertionMessages = [];
   LlmRunnerMessage? _postHistoryMsg;
@@ -82,12 +84,47 @@ class ChatPromptBuilder {
     buffer.writeln('</$tag>');
   }
 
+  /// Writes a section and records its token cost as a breakdown segment. The
+  /// recorded count is for display only — `_currentTokenCount` stays the
+  /// single budgeting truth, counted once over the assembled system message.
+  Future<void> _addCountedSection(
+    StringBuffer buffer,
+    PromptSegmentKindEnum kind,
+    String tag,
+    String content,
+  ) async {
+    if (content.isEmpty) return;
+    _addSection(buffer, tag, content);
+    _segments.add(
+      PromptSegmentEntry(kind: kind, tokens: await UtilsLlm.countTokens(content)),
+    );
+  }
+
+  /// Counts a standalone prompt message's tokens, adds them to the running
+  /// budget, and records the part as a breakdown segment. For messages emitted
+  /// outside the combined system buffer (post-history, depth, injected,
+  /// examples); [_addCountedSection] handles the buffered sections.
+  Future<void> _recordSegment(PromptSegmentKindEnum kind, String content) async {
+    final tokens = await UtilsLlm.countTokens(content);
+    _currentTokenCount += tokens;
+    _segments.add(PromptSegmentEntry(kind: kind, tokens: tokens));
+  }
+
+  /// The per-part context breakdown gathered while assembling the prompt. The
+  /// real input-token total is filled in by the caller after generation.
+  PromptContextBreakdown get breakdown => PromptContextBreakdown(
+    contextSize: contextSize,
+    reservedReply: _reservedReply,
+    segments: List.of(_segments),
+  );
+
   Future<List<LlmRunnerMessage>> build() async {
     final reservation = (contextSize * _defaultMaxResponseReserveRatio).toInt();
     _currentTokenCount = reservation;
     if (maxResponseLength != null && maxResponseLength! > reservation) {
       _currentTokenCount = maxResponseLength!;
     }
+    _reservedReply = _currentTokenCount;
 
     await _buildStaticData();
     await _buildLorebook();
@@ -102,46 +139,89 @@ class ChatPromptBuilder {
     final systemBuffer = StringBuffer();
 
     if (characterFile.card.name.isNotEmpty) {
-      _addSection(
+      await _addCountedSection(
         systemBuffer,
+        PromptSegmentKindEnum.identity,
         'identity',
         'You are ${characterFile.card.name}.',
       );
     }
 
-    _addSection(systemBuffer, 'system_prompt', characterFile.card.systemPrompt);
+    await _addCountedSection(
+      systemBuffer,
+      PromptSegmentKindEnum.systemPrompt,
+      'system_prompt',
+      characterFile.card.systemPrompt,
+    );
     if (session.isNsfw) {
-      _addSection(
+      await _addCountedSection(
         systemBuffer,
+        PromptSegmentKindEnum.nsfwMode,
         'unlimited_nsfw_mode',
         promptRepository.unlimitedMode,
       );
     }
     if (session.isScenario) {
-      _addSection(systemBuffer, 'scenario_mode', promptRepository.scenarioMode);
+      await _addCountedSection(
+        systemBuffer,
+        PromptSegmentKindEnum.scenarioMode,
+        'scenario_mode',
+        promptRepository.scenarioMode,
+      );
     }
-    _addSection(systemBuffer, 'description', characterFile.card.description);
-    _addSection(systemBuffer, 'personality', characterFile.card.personality);
-    _addSection(systemBuffer, 'scenario', characterFile.card.scenario);
+    await _addCountedSection(
+      systemBuffer,
+      PromptSegmentKindEnum.description,
+      'description',
+      characterFile.card.description,
+    );
+    await _addCountedSection(
+      systemBuffer,
+      PromptSegmentKindEnum.personality,
+      'personality',
+      characterFile.card.personality,
+    );
+    await _addCountedSection(
+      systemBuffer,
+      PromptSegmentKindEnum.scenario,
+      'scenario',
+      characterFile.card.scenario,
+    );
 
     if (session.personaDescription.isNotEmpty) {
-      _addSection(
+      await _addCountedSection(
         systemBuffer,
+        PromptSegmentKindEnum.userPersona,
         'user_persona',
         'Name: ${session.personaName.trim()}\n${session.personaDescription.trim()}',
       );
     }
 
     if (memoryContext != null && memoryContext!.isNotEmpty) {
-      _addSection(systemBuffer, 'memory', memoryContext!);
+      await _addCountedSection(
+        systemBuffer,
+        PromptSegmentKindEnum.memory,
+        'memory',
+        memoryContext!,
+      );
     }
 
     if (nodesContext != null && nodesContext!.isNotEmpty) {
-      _addSection(systemBuffer, 'situation', nodesContext!);
+      await _addCountedSection(
+        systemBuffer,
+        PromptSegmentKindEnum.situation,
+        'situation',
+        nodesContext!,
+      );
     }
 
     if (dataContext != null && dataContext!.isNotEmpty) {
-      _addSection(systemBuffer, 'supplemental_data_context', dataContext!);
+      await _addCountedSection(
+        systemBuffer,
+        PromptSegmentKindEnum.cardData,
+        'supplemental_data_context',
+        dataContext!,
+      );
     }
 
     if (enabledTools.isNotEmpty) {
@@ -149,7 +229,12 @@ class ChatPromptBuilder {
         enabledTools,
       );
       if (advertisement.isNotEmpty) {
-        _addSection(systemBuffer, 'available_tools', advertisement);
+        await _addCountedSection(
+          systemBuffer,
+          PromptSegmentKindEnum.tools,
+          'available_tools',
+          advertisement,
+        );
       }
     }
 
@@ -184,7 +269,10 @@ class ChatPromptBuilder {
       );
       final postHistoryMsg = LlmRunnerMessage.system(content);
       _postHistoryMsg = postHistoryMsg;
-      _currentTokenCount += await UtilsLlm.countTokens(postHistoryMsg.content);
+      await _recordSegment(
+        PromptSegmentKindEnum.postHistory,
+        postHistoryMsg.content,
+      );
     }
 
     final depthPrompt =
@@ -219,7 +307,10 @@ class ChatPromptBuilder {
         }
         _depthPromptMsg = depthMsg;
         _depthPromptDepth = depth;
-        _currentTokenCount += await UtilsLlm.countTokens(depthMsg.content);
+        await _recordSegment(
+          PromptSegmentKindEnum.depthPrompt,
+          depthMsg.content,
+        );
       }
     }
 
@@ -241,7 +332,7 @@ class ChatPromptBuilder {
         case ChatRoleEnum.system:
           _lcInjectedMsg = LlmRunnerMessage.system(content);
       }
-      _currentTokenCount += await UtilsLlm.countTokens(content);
+      await _recordSegment(PromptSegmentKindEnum.injected, content);
     }
   }
 
@@ -252,6 +343,7 @@ class ChatPromptBuilder {
 
     final lorebookBudget = characterFile.card.lorebook?.tokenBudget ?? 0;
     var usedLorebookTokens = 0;
+    var worldInfoTokens = 0;
 
     for (final candidate in lorebookCandidates) {
       final entry = candidate.entry;
@@ -279,6 +371,7 @@ class ChatPromptBuilder {
       acceptedLore.add((candidate: candidate, processedContent: content));
 
       _currentTokenCount += cost;
+      worldInfoTokens += cost;
       if (!ignoreBudget) {
         usedLorebookTokens += cost;
       }
@@ -360,10 +453,24 @@ class ChatPromptBuilder {
       }
       _depthInsertionMessages.add((msg: msg, depth: injection.depth));
     }
+
+    if (worldInfoTokens > 0) {
+      _segments.add(
+        PromptSegmentEntry(
+          kind: PromptSegmentKindEnum.worldInfo,
+          tokens: worldInfoTokens,
+        ),
+      );
+    }
   }
 
   Future<List<LlmRunnerMessage>> _buildHistory() async {
     final historyMessages = <LlmRunnerMessage>[];
+    final latestUserIndex = session.messages.lastIndexWhere(
+      (m) => m.role == ChatRoleEnum.user,
+    );
+    var historyTokens = 0;
+    var currentMessageTokens = 0;
     for (var i = session.messages.length - 1; i >= 0; i--) {
       final msg = session.messages[i];
 
@@ -398,6 +505,11 @@ class ChatPromptBuilder {
       }
 
       _currentTokenCount += tokenCount;
+      if (i == latestUserIndex) {
+        currentMessageTokens += tokenCount;
+      } else {
+        historyTokens += tokenCount;
+      }
 
       switch (msg.role) {
         case ChatRoleEnum.system:
@@ -408,6 +520,23 @@ class ChatPromptBuilder {
         case ChatRoleEnum.character:
           historyMessages.add(LlmRunnerMessage.assistant(content));
       }
+    }
+
+    if (currentMessageTokens > 0) {
+      _segments.add(
+        PromptSegmentEntry(
+          kind: PromptSegmentKindEnum.currentMessage,
+          tokens: currentMessageTokens,
+        ),
+      );
+    }
+    if (historyTokens > 0) {
+      _segments.add(
+        PromptSegmentEntry(
+          kind: PromptSegmentKindEnum.history,
+          tokens: historyTokens,
+        ),
+      );
     }
     return historyMessages;
   }
@@ -451,7 +580,10 @@ class ChatPromptBuilder {
 
           final insertIndex = _messages.isNotEmpty ? 1 : 0;
           _messages.insert(insertIndex, examplesMsg);
-          _currentTokenCount += await UtilsLlm.countTokens(examplesMsg.content);
+          await _recordSegment(
+            PromptSegmentKindEnum.exampleDialogue,
+            examplesMsg.content,
+          );
         }
       }
     }

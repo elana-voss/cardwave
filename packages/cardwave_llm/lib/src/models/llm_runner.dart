@@ -113,9 +113,11 @@ class LlmRunner {
       // streamed chunks. Pull tool calls from the final response too, then
       // dedupe by `ref` so we end up with one entry per call regardless of
       // which path delivered it.
+      int? streamInputTokens;
       if (cancelToken?.value != true) {
         try {
           final finalResponse = await actionStream.onResult;
+          streamInputTokens = finalResponse.usage?.inputTokens?.round();
           final finalMessage = finalResponse.message;
           if (finalMessage != null) {
             for (final part in finalMessage.content) {
@@ -140,6 +142,7 @@ class LlmRunner {
         reasoning: reasoning.toString(),
         finishReason: cancelToken?.value == true ? 'cancelled' : 'stream',
         toolCalls: _dedupeToolCalls(toolCalls),
+        inputTokens: streamInputTokens,
       );
     }
 
@@ -153,6 +156,7 @@ class LlmRunner {
       maxTurns: hasTools ? 1 : null,
     );
     final finishReason = response.finishReason?.value ?? 'unknown';
+    final inputTokens = response.usage?.inputTokens?.round();
     final message = response.message;
     if (message == null) {
       return _buildResult(
@@ -160,6 +164,7 @@ class LlmRunner {
         reasoning: '',
         finishReason: finishReason,
         toolCalls: const [],
+        inputTokens: inputTokens,
       );
     }
     final visible = StringBuffer();
@@ -179,6 +184,7 @@ class LlmRunner {
       reasoning: reasoning.toString(),
       finishReason: finishReason,
       toolCalls: toolCalls,
+      inputTokens: inputTokens,
     );
   }
 
@@ -280,6 +286,7 @@ class LlmRunner {
     required String reasoning,
     required String finishReason,
     required List<ToolCall> toolCalls,
+    int? inputTokens,
   }) {
     return LlmRunnerResult(
       text: _wrapReasoning(visible: visible, reasoning: reasoning),
@@ -290,6 +297,7 @@ class LlmRunner {
       configType: _config?.runtimeType.toString() ?? 'null',
       configRepr: _stringifyConfig(_config),
       toolCalls: toolCalls,
+      inputTokens: inputTokens,
     );
   }
 
@@ -329,6 +337,7 @@ class LlmRunnerResult {
     required this.configType,
     required this.configRepr,
     required this.toolCalls,
+    this.inputTokens,
   });
   final String text;
   final int visibleLen;
@@ -343,6 +352,11 @@ class LlmRunnerResult {
   /// [LlmRunner.generate]. The chat controller hands these to the
   /// `ToolDispatcher` after the stream finalizes.
   final List<ToolCall> toolCalls;
+
+  /// The provider's reported prompt (input) token count for this generation,
+  /// or null when the provider returned no usage. Used to anchor the prompt
+  /// breakdown's filled width to the real number rather than the estimate.
+  final int? inputTokens;
 
   int get reasoningLen => reasoning.length;
 }

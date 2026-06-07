@@ -193,7 +193,8 @@ class ChatExecutionService {
           // on reroll/swipe/continue the last message is the assistant's
           // reply, and the embedder needs to rank memories against the
           // user's question, not the bot's prior answer.
-          final NodesActorContext nodesContext = session.isAssistant
+          final NodesActorContext nodesContext =
+              session.isAssistant || !settingsService.settings.nodesEnabled
               ? NodesActorContext.empty
               : await nodesService.assembleNodesPrompt(
                   session: session,
@@ -221,6 +222,7 @@ class ChatExecutionService {
           );
 
           final messages = await builder.build();
+          final breakdownTemplate = builder.breakdown;
 
           LoggingService().info(
             'generateChatReply: characterFile="${characterFile.card.name}" '
@@ -248,6 +250,7 @@ class ChatExecutionService {
             required String text,
             required bool applyTrim,
             required int generationMs,
+            required int? inputTokens,
           }) async {
             final trimmed =
                 applyTrim && session.removeTrailingSentences && !isImpersonating
@@ -263,6 +266,9 @@ class ChatExecutionService {
                 modelUsed: model.id,
                 toolCallRecords: accumulatedRecords,
                 recalledMemory: memoryLines,
+                promptBreakdown: breakdownTemplate.withRealInputTokens(
+                  inputTokens,
+                ),
               ),
             );
           }
@@ -302,6 +308,7 @@ class ChatExecutionService {
                 text: result.text,
                 applyTrim: true,
                 generationMs: iterMs,
+                inputTokens: result.inputTokens,
               );
               return;
             }
@@ -383,6 +390,7 @@ class ChatExecutionService {
                 text: result.text,
                 applyTrim: true,
                 generationMs: iterMs,
+                inputTokens: result.inputTokens,
               );
               return;
             }
@@ -441,6 +449,7 @@ class ChatExecutionService {
             text: '',
             applyTrim: false,
             generationMs: totalMs,
+            inputTokens: null,
           );
         } on Exception catch (e) {
           streamController.addError(e);

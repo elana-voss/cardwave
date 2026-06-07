@@ -4,8 +4,10 @@ import 'dart:io' show File;
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/src/utils/app_constants.dart';
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
+import 'package:cardwave/common/src/models/prompt_breakdown.dart';
 import 'package:cardwave/common/src/widgets/dialog_json_prompt.dart';
 import 'package:cardwave/common/src/widgets/dialog_message_edit.dart';
+import 'package:cardwave/common/src/widgets/dialog_prompt_breakdown.dart';
 import 'package:cardwave/common/src/widgets/dialog_progress.dart';
 import 'package:cardwave/common/src/widgets/dialog_text_input.dart';
 import 'package:cardwave/editor/editor.dart';
@@ -153,6 +155,16 @@ class NavigationService {
   Future<void> showJsonPromptDialog({String? rawPrompt}) async {
     await _showAppDialog<void>(
       builder: (context) => DialogJsonPrompt(rawContent: rawPrompt ?? ''),
+    );
+  }
+
+  /// Opens the read-only prompt-breakdown detail for a reply: each prompt part
+  /// with its token count, the reply reservation, free space, and totals.
+  Future<void> showPromptBreakdownDialog({
+    required PromptContextBreakdown breakdown,
+  }) async {
+    await _showAppDialog<void>(
+      builder: (_) => DialogPromptBreakdown(breakdown: breakdown),
     );
   }
 

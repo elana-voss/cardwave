@@ -1,4 +1,5 @@
 import 'package:cardwave/chat/src/models/chat_tool_call_record.dart';
+import 'package:cardwave/common/common.dart';
 
 abstract class GenerationEvent {}
 
@@ -35,6 +36,7 @@ class GenerationCompleteEvent extends GenerationEvent {
     this.rawPrompt,
     this.toolCallRecords = const [],
     this.recalledMemory = const [],
+    this.promptBreakdown,
   });
   final String finalContent;
   final String? rawPrompt;
@@ -52,4 +54,9 @@ class GenerationCompleteEvent extends GenerationEvent {
   /// line), carried so the controller can store them on the reply's swipe.
   /// Empty when memory was off or the path doesn't use memory.
   final List<String> recalledMemory;
+
+  /// How the prompt for this reply filled the model's context window, carried
+  /// so the controller can store it on the reply's swipe. Null on paths that
+  /// emit no reply (dropped empty turn).
+  final PromptContextBreakdown? promptBreakdown;
 }

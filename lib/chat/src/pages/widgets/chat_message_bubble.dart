@@ -238,6 +238,13 @@ class ChatMessageBubble extends StatelessWidget {
           (s) => s.settings.showRecalledMemory,
         );
 
+    // Only assistant replies carry a breakdown; null on user/system bubbles
+    // and on replies generated before the feature shipped.
+    final promptBreakdown =
+        message.role == ChatRoleEnum.assistant && message.swipes.isNotEmpty
+        ? message.activeSwipe.promptBreakdown
+        : null;
+
     final contentWithVideo =
         videoPath == null && message.role != ChatRoleEnum.assistant
         ? contentWidget
@@ -250,6 +257,14 @@ class ChatMessageBubble extends StatelessWidget {
                 _RecalledMemoryFootnote(
                   lines: recalledMemory,
                   metaStyle: metaStyle,
+                ),
+              if (promptBreakdown != null &&
+                  context.select<SettingsService, bool>(
+                    (s) => s.settings.showPromptBreakdown,
+                  ))
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: PromptBreakdownBar(breakdown: promptBreakdown),
                 ),
               if (message.role == ChatRoleEnum.assistant)
                 _BubbleWaitingIndicator(message: message, metaStyle: metaStyle),

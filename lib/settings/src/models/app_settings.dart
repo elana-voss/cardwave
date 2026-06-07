@@ -28,8 +28,10 @@ class AppSettings {
     this.onboardingComplete = false,
     this.chatImageVisible = true,
     this.editorImageVisible = false,
-    this.memoryEnabled = true,
+    this.memoryEnabled = false,
+    this.nodesEnabled = false,
     this.showRecalledMemory = false,
+    this.showPromptBreakdown = false,
     this.assistantCardEditRequireApprovalForEdits = true,
     this.assistantCardEditRequireApprovalForAdditions = true,
     this.assistantCardEditRequireApprovalForDeletions = true,
@@ -120,8 +122,15 @@ class AppSettings {
   /// brings the relevant ones back into the prompt during long conversations.
   /// Gates both retrieval and background extraction. A power feature surfaced
   /// in Settings, not onboarding.
-  @JsonKey(defaultValue: true)
+  @JsonKey(defaultValue: false)
   bool memoryEnabled;
+
+  /// Narrative engine (NODES): when on, the app tracks the scene and character
+  /// state for a chat and moves the story forward between turns (an extra
+  /// background LLM call per turn). Gated like [memoryEnabled]; off disables
+  /// the situation prompt section and the director entirely. A power feature.
+  @JsonKey(defaultValue: false)
+  bool nodesEnabled;
 
   /// When on, each AI reply shows, beneath its text, the story-memory lines
   /// that informed it (dimmed footnotes). An insight aid for power users; off
@@ -129,6 +138,12 @@ class AppSettings {
   /// [memoryEnabled] is on.
   @JsonKey(defaultValue: false)
   bool showRecalledMemory;
+
+  /// When on, each AI reply shows a thin bar beneath it breaking down how its
+  /// prompt filled the model's context window. A power-user insight aid; off
+  /// by default. Independent of any other feature and applies to every chat.
+  @JsonKey(defaultValue: false)
+  bool showPromptBreakdown;
 
   /// Gate flags for assistant-chat tool-driven card edits. When false the
   /// modality auto-applies; when true the user sees the approval dialog

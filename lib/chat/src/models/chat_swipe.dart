@@ -1,5 +1,6 @@
 import 'package:cardwave/chat/src/models/bubble_waiting_for_enum.dart';
 import 'package:cardwave/chat/src/models/chat_tool_call_record.dart';
+import 'package:cardwave/common/common.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'chat_swipe.g.dart';
@@ -14,6 +15,7 @@ class ChatSwipe {
     this.videoPath,
     List<ChatToolCallRecord>? toolCalls,
     List<String>? recalledMemory,
+    this.promptBreakdown,
     this.waitingFor = BubbleWaitingForEnum.complete,
     this.waitingForLabel,
   }) : attachedImages = attachedImages ?? <String>[],
@@ -64,6 +66,14 @@ class ChatSwipe {
   /// it renders is gated by the app-wide `showRecalledMemory` setting.
   @JsonKey(defaultValue: <String>[])
   List<String> recalledMemory;
+
+  /// How this swipe's prompt filled the model's context window — each part's
+  /// estimated token size, the reply reservation, the context window, and the
+  /// provider's real input-token count when reported. Captured at generation
+  /// time so the breakdown bar can show it after the fact. Null for swipes
+  /// generated before the feature existed or when no breakdown was produced.
+  @JsonKey(includeIfNull: false)
+  PromptContextBreakdown? promptBreakdown;
 
   /// Drives the bubble's progress indicator. Single source of truth for
   /// "is this swipe in flight, and on what". Runtime-only — never persisted.

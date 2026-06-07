@@ -687,6 +687,7 @@ class GroupChatController extends BaseChatViewController
       );
 
       List<ChatToolCallRecord> capturedRecords = const [];
+      PromptContextBreakdown? capturedBreakdown;
       await for (final event in stream) {
         if (isDisposed || cancelToken?.value == true) break;
         if (event is GenerationTokenEvent) {
@@ -713,6 +714,7 @@ class GroupChatController extends BaseChatViewController
         } else if (event is GenerationCompleteEvent) {
           bufferedText = event.finalContent;
           capturedRecords = event.toolCallRecords;
+          capturedBreakdown = event.promptBreakdown;
         }
       }
 
@@ -735,6 +737,9 @@ class GroupChatController extends BaseChatViewController
         replyMessage.waitingForLabel = null;
         if (capturedRecords.isNotEmpty && replyMessage.swipes.isNotEmpty) {
           replyMessage.activeSwipe.toolCalls.addAll(capturedRecords);
+        }
+        if (capturedBreakdown != null && replyMessage.swipes.isNotEmpty) {
+          replyMessage.activeSwipe.promptBreakdown = capturedBreakdown;
         }
         streamingContent.value = finalContent;
         _lastSpeakerId = targetCharacter.appCardId;

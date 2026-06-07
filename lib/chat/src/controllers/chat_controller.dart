@@ -604,6 +604,12 @@ class ChatController extends BaseChatViewController
                 event.recalledMemory;
           }
 
+          if (event.promptBreakdown != null &&
+              assistantMessageToBeFilled.swipes.isNotEmpty) {
+            assistantMessageToBeFilled.activeSwipe.promptBreakdown =
+                event.promptBreakdown;
+          }
+
           if (assistantMessageToBeFilled.content.isNotEmpty) {
             characterFile.appCardTimestampLastChatted =
                 DateTime.now().millisecondsSinceEpoch;
@@ -676,7 +682,7 @@ class ChatController extends BaseChatViewController
       // the new turn counter and pool tick survive a restart. Skipped
       // for the assistant chat (it has no character interiority to
       // model). Director call is gated on user review of the system prompt.
-      if (!chatSession.isAssistant) {
+      if (settingsService.settings.nodesEnabled && !chatSession.isAssistant) {
         unawaited(nodesService.recordTurn(chatSession, characterFile));
       }
 

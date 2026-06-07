@@ -167,6 +167,32 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
                 unawaited(settingsService.saveSettings());
               },
             ),
+            SwitchListTile(
+              secondary: const Icon(Icons.auto_stories),
+              title: const Text('Narrative Engine'),
+              subtitle: const Text(
+                'Track the scene and characters and move the story along as '
+                'you chat.',
+              ),
+              value: settings.nodesEnabled,
+              onChanged: (value) {
+                settings.nodesEnabled = value;
+                unawaited(settingsService.saveSettings());
+              },
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.data_usage),
+              title: const Text('Show Prompt Breakdown'),
+              subtitle: const Text(
+                'Show a bar under each reply breaking down how the prompt '
+                'filled the model context window.',
+              ),
+              value: settings.showPromptBreakdown,
+              onChanged: (value) {
+                settings.showPromptBreakdown = value;
+                unawaited(settingsService.saveSettings());
+              },
+            ),
           ],
         ),
         _MenuGroupCard(
