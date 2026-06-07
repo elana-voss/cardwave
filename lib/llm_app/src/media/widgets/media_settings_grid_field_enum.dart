@@ -123,9 +123,11 @@ enum MediaSettingsGridCellType { preset, dropdown, tristate, text }
 /// overridden vs inheriting) and write dispatch.
 enum MediaSettingsGridLayer { app, character, session }
 
-/// Which column(s) the page renders. Set by the entry point.
-///   - [sessionOnly]: legacy single-column view; no live entry point today.
-///   - [allColumns]: chat-drawer "Configure all" — app + character + session.
-///   - [appOnly]: gear-menu "Media Defaults" — app column only.
-///   - [appAndCharacter]: editor-drawer "Configure media" — app + character.
+/// The entry point that opened the grid. All three columns always render;
+/// this only picks which column the narrow-layout switcher opens on
+/// (app / character / session).
+///   - [sessionOnly]: legacy; no live entry point today.
+///   - [allColumns]: chat-drawer "Configure all" — opens on session.
+///   - [appOnly]: gear-menu "Media Defaults" — opens on app.
+///   - [appAndCharacter]: editor-drawer "Configure media" — opens on character.
 enum MediaSettingsGridFocus { sessionOnly, allColumns, appOnly, appAndCharacter }
