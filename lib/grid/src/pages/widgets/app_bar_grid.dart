@@ -40,9 +40,13 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
                   spacing: 8,
                   children: [
                     if (isNeon)
-                      const GradientText(
+                      GradientText(
                         'Cardwave',
-                        style: TextStyle(
+                        gradient:
+                            Theme.of(context).brightness == Brightness.light
+                            ? kCardwaveWordmarkGradientLight
+                            : kCardwaveWordmarkGradient,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.5,

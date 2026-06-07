@@ -242,6 +242,57 @@ class ChatTheme {
     shadowWidth: 3,
   );
 
+  // Neon wave bubbles: hot-pink edge + cyan glow on dark glass; inline roles
+  // glow (cyan actions, pink speech). Pairs with the neon ThemeData.
+  static const ChatTheme cardwaveNeon = ChatTheme(
+    name: 'Cardwave Neon',
+    layoutType: ChatLayoutTypeEnum.bubbles,
+    backgroundColor: 0x73070316,
+    userBackgroundColor: 0xCC2A0E3A,
+    assistantBackgroundColor: 0xCC140A2E,
+    userTextColor: 0xFFF2F0FF,
+    assistantTextColor: 0xFFF2F0FF,
+    italicColor: 0xFF7FE3FF,
+    underlineColor: 0xFF00F8FF,
+    quoteColor: 0xFFFF8FD0,
+    asteriskColor: 0xFF7FE3FF,
+    dividerColor: 0x55FFFFFF,
+    userMetaColor: 0xB3F2F0FF,
+    assistantMetaColor: 0xB3F2F0FF,
+    blurTintColor: 0x99120A2E,
+    // MessageLayoutBubble draws the glow using shadowWidth as the blur radius.
+    shadowColor: 0x6600F8FF,
+    textShadowColor: 0xCC000000,
+    borderColor: 0xCCFF2DA8,
+    blurStrength: 12,
+    shadowWidth: 8,
+  );
+
+  // Same neon palette, flat layout: full-width turns, no bubble/border/glow.
+  // The neon reads from the inline accents + a pink hairline between turns.
+  static const ChatTheme cardwaveNeonFlat = ChatTheme(
+    name: 'Cardwave Neon (Flat)',
+    layoutType: ChatLayoutTypeEnum.flat,
+    backgroundColor: 0x59070316,
+    userBackgroundColor: 0x4D2A0E3A,
+    assistantBackgroundColor: 0x40140A2E,
+    userTextColor: 0xFFF2F0FF,
+    assistantTextColor: 0xFFF2F0FF,
+    italicColor: 0xFF7FE3FF,
+    underlineColor: 0xFF00F8FF,
+    quoteColor: 0xFFFF8FD0,
+    asteriskColor: 0xFF7FE3FF,
+    dividerColor: 0x4DFF2DA8,
+    userMetaColor: 0xB3F2F0FF,
+    assistantMetaColor: 0xB3F2F0FF,
+    blurTintColor: 0x99100A26,
+    shadowColor: 0x00000000,
+    textShadowColor: 0xCC000000,
+    borderColor: 0x00000000,
+    blurStrength: 12,
+    shadowWidth: 0,
+  );
+
   static List<ChatTheme> get presets => [
     azure,
     cappuccino,
@@ -250,6 +301,8 @@ class ChatTheme {
     darkV1,
     glimmer,
     moonlitEchoes,
+    cardwaveNeon,
+    cardwaveNeonFlat,
     nativeLight(),
     nativeDark(),
   ];

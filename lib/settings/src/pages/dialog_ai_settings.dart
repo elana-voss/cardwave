@@ -77,6 +77,10 @@ class DialogAiSettings extends StatelessWidget {
       length: DialogAiSettingsTab.values.length,
       initialIndex: initialTab.index,
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+
+        // opaque → the chromeless media table reads; light in light, dark in dark.
+        // (The bright wave stays on grid/chat, which keep the transparent scaffold.)
         body: SafeArea(
           child: Column(
             children: [
