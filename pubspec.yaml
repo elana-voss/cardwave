@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.4.9
+version: 0.4.10
 
 workspace:
   - packages/cardwave_llm

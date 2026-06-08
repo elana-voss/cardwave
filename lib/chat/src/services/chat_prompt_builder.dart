@@ -188,12 +188,17 @@ class ChatPromptBuilder {
       characterFile.card.scenario,
     );
 
-    if (session.personaDescription.isNotEmpty) {
+    final personaName = session.personaName.trim();
+    final personaDescription = session.personaDescription.trim();
+    if (personaName.isNotEmpty || personaDescription.isNotEmpty) {
+      final personaText = personaDescription.isEmpty
+          ? 'Name: $personaName'
+          : 'Name: $personaName\n$personaDescription';
       await _addCountedSection(
         systemBuffer,
         PromptSegmentKindEnum.userPersona,
         'user_persona',
-        'Name: ${session.personaName.trim()}\n${session.personaDescription.trim()}',
+        personaText,
       );
     }
 

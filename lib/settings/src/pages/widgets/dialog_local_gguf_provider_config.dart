@@ -168,10 +168,6 @@ class _DialogLocalGgufProviderConfigState
                       ),
                     ),
                   ],
-                  // The dialog shell zeroes the body's bottom padding when an
-                  // action row is present; restore a gap so content doesn't
-                  // sit flush against the divider above Close / Load model.
-                  const SizedBox(height: 16),
                 ],
               ),
             ),

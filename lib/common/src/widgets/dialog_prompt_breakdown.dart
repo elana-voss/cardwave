@@ -41,7 +41,6 @@ class DialogPromptBreakdown extends StatelessWidget {
             tokens: breakdown.contextSize,
             bold: true,
           ),
-          const SizedBox(height: 8),
         ],
       ),
     );
