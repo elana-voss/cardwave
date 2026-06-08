@@ -67,12 +67,10 @@ class ChatSwipe {
   @JsonKey(defaultValue: <String>[])
   List<String> recalledMemory;
 
-  /// How this swipe's prompt filled the model's context window — each part's
-  /// estimated token size, the reply reservation, the context window, and the
-  /// provider's real input-token count when reported. Captured at generation
-  /// time so the breakdown bar can show it after the fact. Null for swipes
-  /// generated before the feature existed or when no breakdown was produced.
-  @JsonKey(includeIfNull: false)
+  /// How this swipe's prompt filled the model's context window. Transient —
+  /// held only for the live turn so the breakdown bar can show under the last
+  /// reply, never written to or read from disk. Null after a reload.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   PromptContextBreakdown? promptBreakdown;
 
   /// Drives the bubble's progress indicator. Single source of truth for

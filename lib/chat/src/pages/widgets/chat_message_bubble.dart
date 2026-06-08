@@ -238,10 +238,13 @@ class ChatMessageBubble extends StatelessWidget {
           (s) => s.settings.showRecalledMemory,
         );
 
-    // Only assistant replies carry a breakdown; null on user/system bubbles
-    // and on replies generated before the feature shipped.
+    // The breakdown bar shows only under the last assistant reply — it reflects
+    // the live context state of the most recent turn. Earlier replies and
+    // user/system bubbles never show it.
     final promptBreakdown =
-        message.role == ChatRoleEnum.assistant && message.swipes.isNotEmpty
+        message.role == ChatRoleEnum.assistant &&
+            isLastMessage &&
+            message.swipes.isNotEmpty
         ? message.activeSwipe.promptBreakdown
         : null;
 

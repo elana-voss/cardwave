@@ -96,7 +96,11 @@ class ChatPromptBuilder {
     if (content.isEmpty) return;
     _addSection(buffer, tag, content);
     _segments.add(
-      PromptSegmentEntry(kind: kind, tokens: await UtilsLlm.countTokens(content)),
+      PromptSegmentEntry(
+        kind: kind,
+        tokens: await UtilsLlm.countTokens(content),
+        text: content,
+      ),
     );
   }
 
@@ -107,7 +111,9 @@ class ChatPromptBuilder {
   Future<void> _recordSegment(PromptSegmentKindEnum kind, String content) async {
     final tokens = await UtilsLlm.countTokens(content);
     _currentTokenCount += tokens;
-    _segments.add(PromptSegmentEntry(kind: kind, tokens: tokens));
+    _segments.add(
+      PromptSegmentEntry(kind: kind, tokens: tokens, text: content),
+    );
   }
 
   /// The per-part context breakdown gathered while assembling the prompt. The
@@ -349,6 +355,7 @@ class ChatPromptBuilder {
     final lorebookBudget = characterFile.card.lorebook?.tokenBudget ?? 0;
     var usedLorebookTokens = 0;
     var worldInfoTokens = 0;
+    final worldInfoText = StringBuffer();
 
     for (final candidate in lorebookCandidates) {
       final entry = candidate.entry;
@@ -377,6 +384,8 @@ class ChatPromptBuilder {
 
       _currentTokenCount += cost;
       worldInfoTokens += cost;
+      if (worldInfoText.isNotEmpty) worldInfoText.writeln();
+      worldInfoText.writeln(content);
       if (!ignoreBudget) {
         usedLorebookTokens += cost;
       }
@@ -464,6 +473,7 @@ class ChatPromptBuilder {
         PromptSegmentEntry(
           kind: PromptSegmentKindEnum.worldInfo,
           tokens: worldInfoTokens,
+          text: worldInfoText.toString().trim(),
         ),
       );
     }
@@ -476,6 +486,8 @@ class ChatPromptBuilder {
     );
     var historyTokens = 0;
     var currentMessageTokens = 0;
+    var historyText = '';
+    var currentMessageText = '';
     for (var i = session.messages.length - 1; i >= 0; i--) {
       final msg = session.messages[i];
 
@@ -512,8 +524,12 @@ class ChatPromptBuilder {
       _currentTokenCount += tokenCount;
       if (i == latestUserIndex) {
         currentMessageTokens += tokenCount;
+        currentMessageText = content;
       } else {
         historyTokens += tokenCount;
+        // The loop runs newest-first; prepend so the inspect text reads
+        // oldest-to-newest like the chat does.
+        historyText = historyText.isEmpty ? content : '$content\n\n$historyText';
       }
 
       switch (msg.role) {
@@ -532,6 +548,7 @@ class ChatPromptBuilder {
         PromptSegmentEntry(
           kind: PromptSegmentKindEnum.currentMessage,
           tokens: currentMessageTokens,
+          text: currentMessageText,
         ),
       );
     }
@@ -540,6 +557,7 @@ class ChatPromptBuilder {
         PromptSegmentEntry(
           kind: PromptSegmentKindEnum.history,
           tokens: historyTokens,
+          text: historyText,
         ),
       );
     }

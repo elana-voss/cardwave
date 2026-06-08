@@ -1,29 +1,20 @@
 import 'package:cardwave/common/src/models/prompt_segment_kind_enum.dart';
-import 'package:json_annotation/json_annotation.dart';
 
-part 'prompt_breakdown.g.dart';
-
-/// One assembled part of a chat prompt and its token cost. The cost is the
-/// character-based estimate; exact per-part counts aren't available across
-/// providers, so these get scaled to the real prompt total at render time
-/// when the provider reported one.
-@JsonSerializable(explicitToJson: true)
+/// One assembled part of a chat prompt: its kind, its character-based token
+/// estimate, and the exact text it contributed. Runtime-only — held for the
+/// live turn so the breakdown bar and inspect view can read it; never persisted.
 class PromptSegmentEntry {
-  PromptSegmentEntry({required this.kind, required this.tokens});
-
-  factory PromptSegmentEntry.fromJson(Map<String, dynamic> json) =>
-      _$PromptSegmentEntryFromJson(json);
+  PromptSegmentEntry({required this.kind, required this.tokens, this.text = ''});
   final PromptSegmentKindEnum kind;
   final int tokens;
-  Map<String, dynamic> toJson() => _$PromptSegmentEntryToJson(this);
+  final String text;
 }
 
 /// A snapshot of how one generated reply's prompt filled the model's context
-/// window: each part and its estimated size, the space held back for the
-/// reply, the context window, and the provider's real input-token count when
-/// it reported one. Stored per swipe so the breakdown bar can show, after the
-/// fact, what the context looked like for that exact generation.
-@JsonSerializable(explicitToJson: true)
+/// window: each part and its estimated size, the space held back for the reply,
+/// the context window, and the provider's real input-token count when reported.
+/// Runtime-only — held on the live reply's swipe so the bar can show under the
+/// last reply; never written to or read from disk, so it vanishes on reload.
 class PromptContextBreakdown {
   PromptContextBreakdown({
     required this.contextSize,
@@ -31,9 +22,6 @@ class PromptContextBreakdown {
     required this.segments,
     this.realInputTokens,
   });
-
-  factory PromptContextBreakdown.fromJson(Map<String, dynamic> json) =>
-      _$PromptContextBreakdownFromJson(json);
 
   /// The model's context window in tokens — the full width of the bar.
   final int contextSize;
@@ -44,26 +32,21 @@ class PromptContextBreakdown {
   /// The provider's actual prompt-token count for this generation, or null
   /// when the provider reported none. When set it is the exact filled width
   /// and the per-segment estimates are scaled to sum to it.
-  @JsonKey(includeIfNull: false)
   final int? realInputTokens;
 
   final List<PromptSegmentEntry> segments;
 
   /// Sum of the per-part character estimates.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   int get estimatedTotal => segments.fold(0, (sum, s) => sum + s.tokens);
 
   /// Best available figure for tokens actually sent: the provider's real
   /// count when present, else the summed estimate.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   int get promptTokens => realInputTokens ?? estimatedTotal;
 
   /// Prompt plus the reply reservation — the filled part of the window.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   int get usedTokens => promptTokens + reservedReply;
 
   /// Unfilled context to the right of the bar.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   int get freeTokens {
     final free = contextSize - usedTokens;
     return free < 0 ? 0 : free;
@@ -93,13 +76,13 @@ class PromptContextBreakdown {
   /// to the real total, then the reply reservation, then free space. [kind] is
   /// null only for the free slice. One source of truth so the bar, its legend,
   /// and the dialog never drift.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   List<PromptBreakdownRow> get displayRows => [
     for (final segment in segments)
       PromptBreakdownRow(
         label: segment.kind.label,
         tokens: scaledTokensFor(segment),
         kind: segment.kind,
+        text: segment.text,
       ),
     PromptBreakdownRow(
       label: PromptSegmentKindEnum.reservedReply.label,
@@ -109,7 +92,9 @@ class PromptContextBreakdown {
     PromptBreakdownRow(label: 'Free', tokens: freeTokens),
   ];
 
-  Map<String, dynamic> toJson() => _$PromptContextBreakdownToJson(this);
+  /// A row's share of the whole context window, as a 0–100 percentage.
+  double percentOfWindow(int tokens) =>
+      contextSize == 0 ? 0 : (tokens / contextSize) * 100;
 }
 
 /// A single labelled, sized slice for the breakdown bar and detail dialog.
@@ -120,8 +105,13 @@ class PromptBreakdownRow {
     required this.label,
     required this.tokens,
     this.kind,
+    this.text = '',
   });
   final String label;
   final int tokens;
   final PromptSegmentKindEnum? kind;
+
+  /// The exact text this part contributed, for the inspect view. Empty for the
+  /// reply reservation and free slices.
+  final String text;
 }
