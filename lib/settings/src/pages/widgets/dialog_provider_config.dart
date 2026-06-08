@@ -284,7 +284,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
                     hasModels: _models.isNotEmpty,
                     detectedProvider: _detectedProvider,
                     keyOwner: _keyOwner,
-                    profileProviderEnum: _profile.providerEnum,
+                    profileProviderEnum: _isEdit ? _profile.providerEnum : null,
                     apiKeyText: _apiKeyController!.text,
                   ),
                   const SizedBox(height: 4),
@@ -337,7 +337,7 @@ class _ProviderStatusLine extends StatelessWidget {
   final bool hasModels;
   final LLMProviderEnum? detectedProvider;
   final LLMProviderEnum? keyOwner;
-  final LLMProviderEnum profileProviderEnum;
+  final LLMProviderEnum? profileProviderEnum;
   final String apiKeyText;
 
   @override
@@ -348,7 +348,7 @@ class _ProviderStatusLine extends StatelessWidget {
       final ownerLabel = owner != null
           ? LlmProvider.of(owner).label
           : 'another provider';
-      final profileLabel = LlmProvider.of(profileProviderEnum).label;
+      final profileLabel = LlmProvider.of(profileProviderEnum!).label;
       return Text(
         'This key belongs to $ownerLabel, but this profile is $profileLabel. '
         'Delete this profile and add a new one instead.',
