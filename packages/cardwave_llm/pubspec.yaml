@@ -40,4 +40,5 @@ dev_dependencies:
 
 flutter:
   assets:
+    - assets/llm_defaults.json
     - assets/prompts/

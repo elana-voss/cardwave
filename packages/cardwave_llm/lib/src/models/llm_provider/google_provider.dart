@@ -15,18 +15,6 @@ class GoogleProvider extends LlmProvider {
       'https://generativelanguage.googleapis.com/v1beta';
 
   @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'gemini-2.5-flash',
-    LlmProviderDomainEnum.system: 'gemini-2.5-flash-lite',
-    LlmProviderDomainEnum.assistant: 'gemini-2.5-pro',
-    LlmProviderDomainEnum.image: 'gemini-3.1-flash-image-preview',
-    LlmProviderDomainEnum.audioTts: 'gemini-2.5-flash-preview-tts',
-    LlmProviderDomainEnum.video: 'veo-3.1-lite-generate-preview',
-  };
-
-  @override
   Future<List<dynamic>> fetchRawModels({
     required http.Client client,
     required String apiKey,

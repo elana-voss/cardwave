@@ -6,9 +6,10 @@ part of '../llm_provider.dart';
 /// other backend that speaks the OpenAI chat-completions shape.
 ///
 /// Chat domain only — local backends don't expose OpenAI's image, TTS, or
-/// video endpoints. `defaultModelIds` is empty because we don't know what
-/// model the user has loaded; the seeder skips empty entries and the user
-/// creates presets manually after the first model fetch.
+/// video endpoints. No default model ids ship for this provider (the defaults
+/// asset has no entry) because we don't know what model the user has loaded;
+/// the seeder skips empty entries and the user creates presets manually after
+/// the first model fetch.
 class LocalOpenAiProvider extends LlmProvider {
   const LocalOpenAiProvider();
 
@@ -25,9 +26,6 @@ class LocalOpenAiProvider extends LlmProvider {
 
   @override
   String get defaultBaseUrl => 'http://localhost:5001/v1';
-
-  @override
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {};
 
   @override
   LlmModel parseModel(

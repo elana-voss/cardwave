@@ -17,9 +17,6 @@ class LocalGgufProvider extends LlmProvider {
   String get defaultBaseUrl => ''; // unused — file path lives on the profile
 
   @override
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {};
-
-  @override
   Future<List<dynamic>> fetchRawModels({
     required http.Client client,
     required String apiKey,

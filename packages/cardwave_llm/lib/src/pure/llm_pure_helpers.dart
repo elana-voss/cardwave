@@ -12,6 +12,7 @@ import 'package:cardwave_llm/src/models/llm_runner.dart';
 import 'package:cardwave_llm/src/models/tts_option.dart';
 import 'package:cardwave_llm/src/observability/llm_log_event.dart';
 import 'package:cardwave_llm/src/observability/llm_loggers.dart';
+import 'package:cardwave_llm/src/repositories/llm_defaults_repository.dart';
 import 'package:cardwave_llm/src/repositories/llm_model_repository.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:llamadart/llamadart.dart' show KvCacheType;
@@ -44,9 +45,13 @@ LlmRunner Function({
 /// client and the on-disk model cache. Everything else is closed over the
 /// arguments.
 class LlmPureHelpers {
-  const LlmPureHelpers({required LlmModelRepository repository})
-    : _repository = repository;
+  const LlmPureHelpers({
+    required LlmModelRepository repository,
+    required LlmDefaultsRepository defaultsRepository,
+  }) : _repository = repository,
+       _defaultsRepository = defaultsRepository;
   final LlmModelRepository _repository;
+  final LlmDefaultsRepository _defaultsRepository;
 
   Future<List<LlmModel>> fetchModels({
     required LLMProviderEnum provider,
@@ -151,7 +156,7 @@ class LlmPureHelpers {
   String? getDefaultModelIdForDomain(
     LLMProviderEnum providerEnum,
     LlmProviderDomainEnum domain,
-  ) => LlmProvider.of(providerEnum).defaultModelIds[domain];
+  ) => _defaultsRepository.forProvider(providerEnum)[domain];
 
   LlmModelCapabilitiesEnum getRequiredOutputModality(
     LlmProviderDomainEnum domain,

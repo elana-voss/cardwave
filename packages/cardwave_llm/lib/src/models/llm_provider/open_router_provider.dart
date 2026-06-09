@@ -13,18 +13,6 @@ class OpenRouterProvider extends LlmProvider {
   @override
   String get defaultBaseUrl => 'https://openrouter.ai/api/v1';
 
-  @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'meta-llama/llama-3.3-70b-instruct',
-    LlmProviderDomainEnum.system: 'google/gemini-2.5-flash',
-    LlmProviderDomainEnum.assistant: 'anthropic/claude-3.7-sonnet',
-    LlmProviderDomainEnum.image: 'google/gemini-3.1-flash-image-preview',
-    LlmProviderDomainEnum.audioTts: 'openai/gpt-audio',
-    // OpenRouter does not expose any video-output models.
-  };
-
   /// Voice rosters for OpenRouter's OpenAI-family audio models. OR does not
   /// expose a `/voices` endpoint; it routes to OpenAI under the hood so the
   /// same voice set applies. Non-OpenAI vendors on OR (e.g. `elevenlabs/*`)

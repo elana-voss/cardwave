@@ -14,15 +14,6 @@ class AnthropicProvider extends LlmProvider {
   String get defaultBaseUrl => 'https://api.anthropic.com/v1';
 
   @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'claude-3-5-haiku-20241022',
-    LlmProviderDomainEnum.system: 'claude-3-5-haiku-20241022',
-    LlmProviderDomainEnum.assistant: 'claude-3-7-sonnet-20250219',
-  };
-
-  @override
   Future<List<dynamic>> fetchRawModels({
     required http.Client client,
     required String apiKey,

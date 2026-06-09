@@ -25,18 +25,6 @@ class OpenAiProvider extends LlmProvider {
   @override
   String get defaultBaseUrl => 'https://api.openai.com/v1';
 
-  @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'gpt-4o-mini',
-    LlmProviderDomainEnum.system: 'gpt-4o-mini',
-    LlmProviderDomainEnum.assistant: 'gpt-4o',
-    LlmProviderDomainEnum.image: 'dall-e-3',
-    LlmProviderDomainEnum.audioTts: 'gpt-4o-mini-tts',
-    LlmProviderDomainEnum.video: 'sora-2',
-  };
-
   /// Sora 2 exposes `size` as a single packed value (e.g. `1280x720` or
   /// `720x1280`). Our data model splits resolution + aspect into separate
   /// rosters; the submit path recombines them.

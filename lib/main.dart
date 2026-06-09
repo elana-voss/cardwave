@@ -55,6 +55,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
   late final LoggingService _loggingService;
   late final SettingsService _settingsService;
   late final LlmModelRepository _llmModelRepository;
+  late final LlmDefaultsRepository _llmDefaultsRepository;
   late final TaxonomyRepository _taxonomyRepository;
   late final CharacterRepository _characterRepository;
   late final ChatRepository _chatRepository;
@@ -219,6 +220,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
       _appStorage = AppStorage.instance;
       _llmModelRepository = LlmModelRepository();
+      _llmDefaultsRepository = LlmDefaultsRepository();
+      await _llmDefaultsRepository.init();
 
       _taxonomyRepository = TaxonomyRepository(loggingService: _loggingService);
       await _taxonomyRepository.init();
@@ -237,7 +240,10 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
       _navigationService = NavigationService();
 
-      _pureHelpers = LlmPureHelpers(repository: _llmModelRepository);
+      _pureHelpers = LlmPureHelpers(
+        repository: _llmModelRepository,
+        defaultsRepository: _llmDefaultsRepository,
+      );
       _llmManagementService = LlmManagementService(pureHelpers: _pureHelpers);
 
       _cardwaveEmbeddingsModule = CardwaveEmbeddingsModule();

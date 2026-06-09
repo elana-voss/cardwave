@@ -47,6 +47,7 @@ export 'src/models/video_option.dart';
 export 'src/observability/llm_log_event.dart';
 export 'src/observability/llm_loggers.dart';
 export 'src/pure/llm_pure_helpers.dart';
+export 'src/repositories/llm_defaults_repository.dart';
 export 'src/repositories/llm_model_repository.dart';
 export 'src/repositories/prompt_repository.dart';
 export 'src/tools/builtin/builtin_tool_app_data.dart';

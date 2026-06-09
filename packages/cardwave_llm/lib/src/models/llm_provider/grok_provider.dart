@@ -303,18 +303,6 @@ class GrokProvider extends LlmProvider {
   @override
   String get defaultBaseUrl => 'https://api.x.ai/v1';
 
-  @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'grok-4.3',
-    LlmProviderDomainEnum.system: 'grok-4-1-fast-non-reasoning',
-    LlmProviderDomainEnum.assistant: 'grok-4.3',
-    LlmProviderDomainEnum.image: 'grok-imagine-image',
-    LlmProviderDomainEnum.audioTts: _xaiTtsId,
-    LlmProviderDomainEnum.video: 'grok-imagine-video',
-  };
-
   // xAI exposes three rich model-list endpoints; /v1/models is minimal
   // and lacks modalities + pricing. Hit all three and merge.
   @override

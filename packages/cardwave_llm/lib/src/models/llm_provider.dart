@@ -16,7 +16,6 @@ import 'package:cardwave_llm/src/models/llm_model_capabilities_enum.dart';
 import 'package:cardwave_llm/src/models/llm_parameter_definition_id_enum.dart';
 import 'package:cardwave_llm/src/models/llm_parameter_resolver.dart';
 import 'package:cardwave_llm/src/models/llm_preset_config_reasoning_effort_enum.dart';
-import 'package:cardwave_llm/src/models/llm_provider_domain_enum.dart';
 import 'package:cardwave_llm/src/models/llm_provider_enum.dart';
 import 'package:cardwave_llm/src/models/llm_runner.dart';
 import 'package:cardwave_llm/src/models/tts_option.dart';
@@ -32,8 +31,6 @@ import 'package:genkit_google_genai/genkit_google_genai.dart' as gg;
 import 'package:genkit_llamadart/genkit_llamadart.dart';
 import 'package:genkit_openai/genkit_openai.dart';
 import 'package:http/http.dart' as http;
-import 'package:llamadart/llamadart.dart'
-    show FlashAttention, GpuBackend, ModelSplitMode;
 import 'package:path/path.dart' as p;
 
 part 'llm_provider/llm_fetch_exception.dart';
@@ -58,7 +55,6 @@ sealed class LlmProvider {
   LLMProviderEnum get enumValue;
   String get label;
   String get defaultBaseUrl;
-  Map<LlmProviderDomainEnum, String> get defaultModelIds;
 
   Future<List<dynamic>> fetchRawModels({
     required http.Client client,

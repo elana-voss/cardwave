@@ -13,18 +13,6 @@ class NanoGptProvider extends LlmProvider {
   @override
   String get defaultBaseUrl => 'https://nano-gpt.com/api/v1';
 
-  @override
-  // Partial by design — this provider doesn't serve every domain; a missing key means "unsupported".
-  // ignore: qcheck/avoid_missing_enum_constant_in_map
-  Map<LlmProviderDomainEnum, String> get defaultModelIds => const {
-    LlmProviderDomainEnum.chat: 'moonshotai/kimi-k2.5',
-    LlmProviderDomainEnum.system: 'deepseek-ai/DeepSeek-V3.1-Terminus',
-    LlmProviderDomainEnum.assistant: 'moonshotai/kimi-k2.5',
-    LlmProviderDomainEnum.image: 'rev-animated',
-    LlmProviderDomainEnum.audioTts: 'gpt-4o-mini-tts-2025-03-20',
-    LlmProviderDomainEnum.video: 'bytedance-seedance-v1.5-pro',
-  };
-
   /// Voice rosters for NanoGpt's OpenAI-family TTS models. NanoGpt proxies
   /// OpenAI under the hood — same voice set applies. Non-OpenAI models on
   /// NanoGpt (Kokoro, ElevenLabs, MiniMax, Qwen-TTS) aren't covered here —
