@@ -126,6 +126,7 @@
 
       let totalCost = 0;
       let n = 0;
+      let unlimited = false;
       let cappedAtTurn = null;
       let firstTurnCost = 0;
       let cappedTurnCost = (maxAllowedInput * pIn) + (tOut * pOut);
@@ -144,6 +145,13 @@
           cappedAtTurn = nextTurn;
         }
 
+        // A turn that costs nothing repeats forever within any budget; stop
+        // rather than loop endlessly. Cost only grows, so this can only be turn 1.
+        if (currentTurnCost <= 0) {
+          unlimited = true;
+          break;
+        }
+
         if (totalCost + currentTurnCost > budget) {
           break;
         }
@@ -152,7 +160,7 @@
         n++;
       }
 
-      document.getElementById('resultTurns').innerText = n.toLocaleString();
+      document.getElementById('resultTurns').innerText = unlimited ? 'No limit' : n.toLocaleString();
       document.getElementById('resultCost').innerText = '$' + totalCost.toFixed(4);
       document.getElementById('firstTurnCost').innerText = '$' + firstTurnCost.toFixed(6);
       document.getElementById('cappedTurnCost').innerText = '$' + cappedTurnCost.toFixed(6);
