@@ -15,7 +15,7 @@ Node _node({
   String predicate = 'true',
   String narrativePayload = 'beat',
   NodeEffects? effects,
-  List<Node>? spawns,
+  List<String>? spawnIds,
 }) =>
     Node(
       id: id,
@@ -30,7 +30,7 @@ Node _node({
       predicate: predicate,
       narrativePayload: narrativePayload,
       effects: effects,
-      spawns: spawns,
+      spawnIds: spawnIds,
     );
 
 SessionState _seedState() {
@@ -204,27 +204,33 @@ void main() {
 
   group('spawns', () {
     test('spawn added to pool when parent fires', () {
-      final parent = _node(
-        id: 'parent',
-        spawns: [_node(id: 'child', delay: 2)],
-      );
-      final pool = NodePool()..add(parent);
+      final parent = _node(id: 'parent', spawnIds: ['child']);
+      final child = _node(id: 'child', delay: 2);
+      // The child is registered (resolvable by id) but not seeded —
+      // it enters the pool only when the parent fires.
+      final pool = NodePool()
+        ..registerAuthored(parent)
+        ..registerAuthored(child)
+        ..add(parent);
       FiringEngine(random: Random(1)).runTurn(pool, _seedState());
       expect(pool.active.map((n) => n.id),
           containsAll(['parent', 'child']));
     });
 
     test('spawn starts with fresh runtime countdowns', () {
-      final spawn = _node(id: 'child', delay: 3, alive: 10);
-      spawn.currentDelay = 1; // pretend something pre-set this
-      final parent = _node(spawns: [spawn]);
-      final pool = NodePool()..add(parent);
+      final child = _node(id: 'child', delay: 3, alive: 10);
+      child.currentDelay = 1; // pretend something pre-set this
+      final parent = _node(spawnIds: ['child']);
+      final pool = NodePool()
+        ..registerAuthored(parent)
+        ..registerAuthored(child)
+        ..add(parent);
       FiringEngine(random: Random(1)).runTurn(pool, _seedState());
-      final child = pool.active.firstWhere((n) => n.id == 'child');
-      expect(child.currentDelay, 3);
-      expect(child.currentAlive, 10);
-      expect(child.currentCooldown, 0);
-      expect(child.currentSticky, 0);
+      final fresh = pool.active.firstWhere((n) => n.id == 'child');
+      expect(fresh.currentDelay, 3);
+      expect(fresh.currentAlive, 10);
+      expect(fresh.currentCooldown, 0);
+      expect(fresh.currentSticky, 0);
     });
   });
 

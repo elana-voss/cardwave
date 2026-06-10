@@ -12,6 +12,19 @@ class NodePool {
   /// All nodes currently in the pool, regardless of eligibility.
   final List<Node> active = [];
 
+  /// Every authored node by id, including ones not yet in the pool.
+  /// Firing resolves a node's `spawnIds` against this so a spawned node
+  /// can be dropped into the pool even though it was never seeded.
+  /// Filled once at session open via [registerAuthored].
+  final Map<String, Node> authoredById = {};
+
+  /// Records an authored node so firing can resolve spawn links to it.
+  /// Independent of [add]: a node can be registered (spawnable) without
+  /// being seeded into the pool at start.
+  void registerAuthored(Node node) {
+    authoredById[node.id] = node;
+  }
+
   /// Pressure per node type. Cleared to 0 by [resetPressure]; bounded
   /// at [pressureCap] by [incrementPressure].
   final Map<NodeTypeEnum, double> _pressure = {

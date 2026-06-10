@@ -366,12 +366,17 @@ class FiringEngine {
   }
 
   void _addSpawnsToPool(Node parent, NodePool pool) {
-    for (final spawn in parent.spawns) {
-      final fresh = Node.fromJson(spawn.toJson())
-        ..currentDelay = spawn.delay < 0 ? 0 : spawn.delay
+    for (final spawnId in parent.spawnIds) {
+      final template = pool.authoredById[spawnId];
+      // The loader rejects dangling spawn ids, so a missing template
+      // means the pool was built without registering authored nodes —
+      // skip rather than crash the turn.
+      if (template == null) continue;
+      final fresh = Node.fromJson(template.toJson())
+        ..currentDelay = template.delay < 0 ? 0 : template.delay
         ..currentCooldown = 0
         ..currentSticky = 0
-        ..currentAlive = spawn.alive;
+        ..currentAlive = template.alive;
       pool.add(fresh);
     }
   }

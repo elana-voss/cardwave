@@ -61,10 +61,10 @@ packages:
     dependency: "direct main"
     description:
       name: audioplayers
-      sha256: "1d0c1b1f2095e59080e2d5046639096417a86687d89778da41b0c9a06d683dfd"
+      sha256: f16640453cc47487b7de72a2b28d37c7df1ac97999849f4a46d92b1d2b0f093d
       url: "https://pub.dev"
     source: hosted
-    version: "6.7.0"
+    version: "6.7.1"
   audioplayers_android:
     dependency: transitive
     description:
@@ -417,11 +417,27 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  fl_nodes:
+    dependency: "direct main"
+    description:
+      name: fl_nodes
+      sha256: "4597284f72369885e8b6bfc5221835a3a6472d9c61769b45c6c64b8f242b2b28"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0+1"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_context_menu:
+    dependency: "direct main"
+    description:
+      name: flutter_context_menu
+      sha256: "79fe00cd7e3ac3840a552cb3e653d8eb61d827b6c04c559e219973a1dc769165"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -459,6 +475,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.35"
+  flutter_shaders:
+    dependency: transitive
+    description:
+      name: flutter_shaders
+      sha256: "34794acadd8275d971e02df03afee3dee0f98dbfb8c4837082ad0034f612a3e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   flutter_speed_dial:
     dependency: "direct main"
     description:
@@ -518,10 +542,10 @@ packages:
     dependency: transitive
     description:
       name: genkit_llamadart
-      sha256: "7f52ee16303811a10f39c2840716d7284d20ab9d7febe47eb2f3c3b3fbd84fb2"
+      sha256: "965654259e4243ea92f16c7ced50c11b53950c173fc5668618db635653abb50f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.2"
   genkit_openai:
     dependency: transitive
     description:
@@ -747,10 +771,10 @@ packages:
     dependency: transitive
     description:
       name: json_schema_builder
-      sha256: "65035d48d028401ad0ffc8c2f173209c7b1441e465a942a0f909070fae33170c"
+      sha256: "9c45a80bc25d3b091e96a5a5da49dc7f80d5b0c8496cff60409f9739331ccefb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.3"
+    version: "0.1.5"
   json_serializable:
     dependency: "direct dev"
     description:
@@ -1189,10 +1213,10 @@ packages:
     dependency: transitive
     description:
       name: sembast
-      sha256: "03cafeaf71ed2d0e297272af969c2d7c0c618dcd00e809d4b3217850162fd2d5"
+      sha256: "9189258e31373c3e86e3f99889439e577c704f1acb9cedac4abf6f7a522040ba"
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.8"
+    version: "3.8.8+1"
   share_plus:
     dependency: "direct main"
     description:

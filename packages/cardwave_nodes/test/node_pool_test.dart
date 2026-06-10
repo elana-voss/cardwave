@@ -164,13 +164,13 @@ void main() {
       expect(restored.sceneTransition, true);
     });
 
-    test('Node with spawns and non-default runtime state', () {
+    test('Node with spawn links and non-default runtime state', () {
       final parent = _node(id: 'parent', delay: 5, alive: 20)
         ..currentDelay = 2
         ..currentAlive = 15
         ..currentCooldown = 3
-        ..currentSticky = 4;
-      parent.spawns.add(_node(id: 'child', delay: 1));
+        ..currentSticky = 4
+        ..spawnIds.add('child');
       final restored = Node.fromJson(
         jsonDecode(jsonEncode(parent.toJson())) as Map<String, dynamic>,
       );
@@ -178,8 +178,7 @@ void main() {
       expect(restored.currentAlive, 15);
       expect(restored.currentCooldown, 3);
       expect(restored.currentSticky, 4);
-      expect(restored.spawns, hasLength(1));
-      expect(restored.spawns.first.id, 'child');
+      expect(restored.spawnIds, ['child']);
     });
   });
 }

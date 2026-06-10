@@ -7,6 +7,7 @@ Map<String, dynamic> _validNodeJson({
   String id = 'n1',
   String predicate = 'true',
   String type = 'environmental',
+  List<String> spawnIds = const [],
 }) =>
     <String, dynamic>{
       'id': id,
@@ -21,7 +22,8 @@ Map<String, dynamic> _validNodeJson({
       'predicate': predicate,
       'narrative_payload': 'something happens',
       'effects': <String, dynamic>{},
-      'spawns': <dynamic>[],
+      'spawn_ids': spawnIds,
+      'visual_editor': {'x': 0.0, 'y': 0.0},
       'current_delay': 0,
       'current_cooldown': 0,
       'current_sticky': 0,
@@ -121,6 +123,44 @@ void main() {
       expect(result.errors, hasLength(3));
       expect(result.extension.authoredNodes, hasLength(3));
       expect(result.extension.initialGoal, 'do the thing');
+    });
+
+    test('spawn id with no matching node is reported', () {
+      final json = <String, dynamic>{
+        'authored_nodes': [
+          _validNodeJson(id: 'parent', spawnIds: ['ghost']),
+        ],
+      };
+      final result = loadCardNodesExtension(json);
+      expect(result.errors, hasLength(1));
+      expect(result.errors.first.path, 'authoredNodes[0].spawnIds[0]');
+      expect(result.errors.first.message, contains('ghost'));
+    });
+
+    test('duplicate node id is reported', () {
+      final json = <String, dynamic>{
+        'authored_nodes': [
+          _validNodeJson(id: 'twin'),
+          _validNodeJson(id: 'twin'),
+        ],
+      };
+      final result = loadCardNodesExtension(json);
+      expect(result.errors, hasLength(1));
+      expect(result.errors.first.path, 'authoredNodes[1]');
+      expect(result.errors.first.message, contains('duplicate'));
+    });
+
+    test('valid spawn link to an existing node loads clean', () {
+      final json = <String, dynamic>{
+        'authored_nodes': [
+          _validNodeJson(id: 'parent', spawnIds: ['child']),
+          _validNodeJson(id: 'child'),
+        ],
+      };
+      final result = loadCardNodesExtension(json);
+      expect(result.errors, isEmpty);
+      expect(result.extension.authoredNodes, hasLength(2));
+      expect(result.extension.authoredNodes.first.spawnIds, ['child']);
     });
 
     test('mis-shaped JSON returns default extension + single root error',

@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
-import 'package:cardwave/editor/src/pages/widgets/node_editor_page.dart';
+import 'package:cardwave/editor/src/pages/widgets/node_editor_form.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_list_tile.dart';
+import 'package:cardwave/editor/src/pages/widgets/nodes_canvas_page.dart';
 import 'package:cardwave/editor/src/pages/widgets/nodes_raw_editor_page.dart';
 import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
@@ -44,6 +45,10 @@ class _EditorNodesState extends State<EditorNodes> {
   /// in the pool forever unless explicitly removed; safest default
   /// for handcrafted content.
   static const int _newNodeAlive = -1;
+
+  /// Shape of generated node ids; the number feeds the enumeration in
+  /// [_createNode].
+  static final RegExp _generatedIdPattern = RegExp(r'^node_(\d+)$');
 
   late CardNodesExtension _extension;
   late List<CardExtensionLoadError> _loadErrors;
@@ -163,7 +168,25 @@ class _EditorNodesState extends State<EditorNodes> {
   }
 
   void _addNode() {
-    final id = 'node_${DateTime.now().millisecondsSinceEpoch}';
+    _createNode();
+    setState(() {});
+  }
+
+  /// Appends a fresh authored node with the default field values and
+  /// returns its id. Used both by the Add Node button and by the
+  /// per-node form's "Add new spawn", which needs the id to link it.
+  ///
+  /// Ids enumerate: one past the largest `node_<number>` already on the
+  /// card. Hand-written ids without that shape are ignored by the scan.
+  String _createNode() {
+    var maxNumber = 0;
+    for (final node in _extension.authoredNodes) {
+      final match = _generatedIdPattern.firstMatch(node.id);
+      if (match == null) continue;
+      final number = int.parse(match.group(1)!);
+      if (number > maxNumber) maxNumber = number;
+    }
+    final id = 'node_${maxNumber + 1}';
     final node = Node(
       id: id,
       origin: NodeOriginEnum.authored,
@@ -179,10 +202,10 @@ class _EditorNodesState extends State<EditorNodes> {
     );
     _extension.authoredNodes.add(node);
     _persist();
-    setState(() {});
+    return id;
   }
 
-  Future<void> _deleteNode(int index) async {
+  Future<void> _deleteNodeById(String nodeId) async {
     final controller = context.read<EditorPageController>();
     final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await controller.confirmDelete(
@@ -191,8 +214,22 @@ class _EditorNodesState extends State<EditorNodes> {
       confirmColor: errorColor,
     );
     if (!confirmed || !mounted) return;
+    final index = _indexOfNode(nodeId);
+    if (index < 0) return;
+    final removed = _extension.authoredNodes[index];
     setState(() {
       _extension.authoredNodes.removeAt(index);
+      // Links toward the deleted node die with it — a stale id would
+      // otherwise dangle and silently revive if its number is reused.
+      for (var i = 0; i < _extension.authoredNodes.length; i++) {
+        final other = _extension.authoredNodes[i];
+        if (!other.spawnIds.contains(removed.id)) continue;
+        _extension.authoredNodes[i] = _copyNode(
+          other,
+          spawnIds:
+              other.spawnIds.where((id) => id != removed.id).toList(),
+        );
+      }
     });
     _persist();
   }
@@ -205,20 +242,84 @@ class _EditorNodesState extends State<EditorNodes> {
     _persist();
   }
 
-  void _openNodeEditor(Node node) {
-    unawaited(Navigator.of(context).push(
+  Future<void> _openNodeEditor(Node node) {
+    return showNodeEditorDialog(
+      context,
+      node: node,
+      characterId: widget.characterFile.appCardId,
+      allNodes: _extension.authoredNodes,
+      onCreateSpawn: _createNode,
+      onOpenNode: _openNodeById,
+      // Lookup by `id` is the stable key: ids are generated once and
+      // never change (the author edits the free-text `name` instead), so
+      // a string match always finds the same entry even after reorder.
+      onUpdated: (updated) => _onNodeUpdated(node.id, updated),
+    );
+  }
+
+  Future<void> _openNodeById(String nodeId) {
+    for (final node in _extension.authoredNodes) {
+      if (node.id == nodeId) return _openNodeEditor(node);
+    }
+    return Future.value();
+  }
+
+  Future<void> _openCanvasPage() async {
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (ctx) => NodeEditorPage(
-          node: node,
-          characterId: widget.characterFile.appCardId,
-          // Lookup by `id` is the stable key: the editor cannot
-          // change a node's id (it is shown read-only), so a string
-          // match always finds the same entry even after reorder.
-          onUpdated: (updated) => _onNodeUpdated(node.id, updated),
+        builder: (ctx) => NodesCanvasPage(
+          nodes: _extension.authoredNodes,
+          onPositionChanged: _onNodeMoved,
+          onLink: _onLinkSpawn,
+          onUnlink: _onUnlinkSpawn,
+          onEditNode: _openNodeById,
+          onDeleteNode: _deleteNodeById,
+          onAddNode: () => _createNode(),
         ),
       ),
-    ));
+    );
+    // Nodes added or relinked on the canvas must show in the list when
+    // the author comes back.
+    if (mounted) setState(() {});
   }
+
+  // --- Canvas edits ---
+
+  void _onNodeMoved(String nodeId, double x, double y) {
+    final idx = _indexOfNode(nodeId);
+    if (idx < 0) return;
+    _extension.authoredNodes[idx] = _copyNode(
+      _extension.authoredNodes[idx],
+      visualEditor: VisualEditorSection(x: x, y: y),
+    );
+    _persist();
+  }
+
+  void _onLinkSpawn(String sourceId, String targetId) {
+    final idx = _indexOfNode(sourceId);
+    if (idx < 0) return;
+    final source = _extension.authoredNodes[idx];
+    if (source.spawnIds.contains(targetId)) return;
+    _extension.authoredNodes[idx] =
+        _copyNode(source, spawnIds: [...source.spawnIds, targetId]);
+    _persist();
+    setState(() {});
+  }
+
+  void _onUnlinkSpawn(String sourceId, String targetId) {
+    final idx = _indexOfNode(sourceId);
+    if (idx < 0) return;
+    final source = _extension.authoredNodes[idx];
+    _extension.authoredNodes[idx] = _copyNode(
+      source,
+      spawnIds: source.spawnIds.where((id) => id != targetId).toList(),
+    );
+    _persist();
+    setState(() {});
+  }
+
+  int _indexOfNode(String nodeId) =>
+      _extension.authoredNodes.indexWhere((n) => n.id == nodeId);
 
   void _onNodeUpdated(String nodeId, Node updated) {
     final idx =
@@ -319,6 +420,12 @@ class _EditorNodesState extends State<EditorNodes> {
               const Text('Engine seed'),
               const Spacer(),
               IconButton(
+                key: const Key('editor-nodes-canvas-button'),
+                tooltip: 'Visual editor',
+                icon: const Icon(Icons.account_tree),
+                onPressed: () => unawaited(_openCanvasPage()),
+              ),
+              IconButton(
                 key: const Key('editor-nodes-raw-button'),
                 tooltip: 'Edit JSON',
                 icon: const Icon(Icons.data_object),
@@ -400,8 +507,8 @@ class _EditorNodesState extends State<EditorNodes> {
                   key: ValueKey(identityHashCode(nodes[i])),
                   node: nodes[i],
                   index: i,
-                  onTap: () => _openNodeEditor(nodes[i]),
-                  onDelete: () => unawaited(_deleteNode(i)),
+                  onTap: () => unawaited(_openNodeEditor(nodes[i])),
+                  onDelete: () => unawaited(_deleteNodeById(nodes[i].id)),
                 ),
             ],
           ),
@@ -410,13 +517,41 @@ class _EditorNodesState extends State<EditorNodes> {
   }
 }
 
+/// Returns a copy of [node] with canvas position and/or spawn links
+/// replaced. Used by the canvas view's drag and link edits. All other
+/// fields, including runtime counters, pass through unchanged (`_persist`
+/// strips runtime on save).
+Node _copyNode(
+  Node node, {
+  VisualEditorSection? visualEditor,
+  List<String>? spawnIds,
+}) =>
+    Node(
+      id: node.id,
+      name: node.name,
+      origin: node.origin,
+      type: node.type,
+      triggerProb: node.triggerProb,
+      delay: node.delay,
+      cooldown: node.cooldown,
+      sticky: node.sticky,
+      alive: node.alive,
+      scope: node.scope,
+      predicate: node.predicate,
+      narrativePayload: node.narrativePayload,
+      effects: node.effects,
+      spawnIds: spawnIds ?? node.spawnIds,
+      visualEditor: visualEditor ?? node.visualEditor,
+    );
+
 /// Returns a copy of [node] with runtime countdown fields reset to
 /// constructor defaults so the saved JSON looks like a freshly
-/// authored node (per plan: runtime state must not leak into the
-/// authored card). Recurses into `spawns`.
+/// authored node (runtime state must not leak into the authored card).
+/// Spawn links and canvas position are authoring data and pass through.
 Node _stripRuntime(Node node) {
   return Node(
     id: node.id,
+    name: node.name,
     origin: node.origin,
     type: node.type,
     triggerProb: node.triggerProb,
@@ -428,7 +563,8 @@ Node _stripRuntime(Node node) {
     predicate: node.predicate,
     narrativePayload: node.narrativePayload,
     effects: node.effects,
-    spawns: node.spawns.map(_stripRuntime).toList(),
+    spawnIds: node.spawnIds,
+    visualEditor: node.visualEditor,
   );
 }
 

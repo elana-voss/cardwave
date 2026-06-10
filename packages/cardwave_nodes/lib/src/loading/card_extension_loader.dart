@@ -36,14 +36,36 @@ CardExtensionLoadResult loadCardNodesExtension(Map<String, dynamic> json) {
     return _rootError('parse failed: type mismatch — $e');
   }
 
-  for (var i = 0; i < extension.authoredNodes.length; i++) {
-    final node = extension.authoredNodes[i];
+  final nodes = extension.authoredNodes;
+  final knownIds = {for (final node in nodes) node.id};
+  final firstIndexById = <String, int>{};
+  for (var i = 0; i < nodes.length; i++) {
+    final node = nodes[i];
     final path = 'authoredNodes[$i]';
     for (final problem in findPredicateProblems(node.predicate)) {
       errors.add(CardExtensionLoadError(
         path: '$path.predicate',
         message: problem,
       ));
+    }
+    final firstIndex = firstIndexById[node.id];
+    if (firstIndex != null) {
+      errors.add(CardExtensionLoadError(
+        path: path,
+        message: 'duplicate node id "${node.id}" '
+            '(first defined at authoredNodes[$firstIndex])',
+      ));
+    } else {
+      firstIndexById[node.id] = i;
+    }
+    for (var j = 0; j < node.spawnIds.length; j++) {
+      final spawnId = node.spawnIds[j];
+      if (!knownIds.contains(spawnId)) {
+        errors.add(CardExtensionLoadError(
+          path: '$path.spawnIds[$j]',
+          message: 'spawn id "$spawnId" does not match any node',
+        ));
+      }
     }
   }
 

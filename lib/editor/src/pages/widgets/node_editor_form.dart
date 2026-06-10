@@ -1,34 +1,27 @@
-import 'dart:async';
-
 import 'package:cardwave/common/common.dart';
-import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
 import 'package:cardwave/editor/src/pages/widgets/dropdown_labeled.dart';
 import 'package:cardwave/editor/src/pages/widgets/object_value_editor.dart';
 import 'package:cardwave/editor/src/pages/widgets/tag_chip.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-/// Full-page editor for a single authored node. Receives the node by
-/// value, holds a working copy, calls [onUpdated] with a rebuilt
-/// `Node` on every field change. The parent panel replaces the node
-/// in the list and persists.
+/// Editor body for a single authored node, hosted inside an AppDialog
+/// (see [showNodeEditorDialog]). Receives the node by value, holds a
+/// working copy, calls [onUpdated] with a rebuilt `Node` on every field
+/// change. The parent panel replaces the node in the list and persists.
 ///
-/// [characterId] is the card's own `appCardId`. Per the plan, effects
-/// always target this single id (the schema's per-character map shape
-/// is preserved but the key is hidden from the UI).
-///
-/// This step covers basic fields, the predicate field with live
-/// validation, the narrative payload field, and the effects section
-/// (emotion / physical / relationship deltas, scene & flow).
-/// Knowledge writes, flag set, and spawns arrive in later steps.
-class NodeEditorPage extends StatefulWidget {
-  const NodeEditorPage({
+/// [characterId] is the card's own `appCardId`. Effects always target
+/// this single id (the schema's per-character map shape is preserved but
+/// the key is hidden from the UI).
+class NodeEditorForm extends StatefulWidget {
+  const NodeEditorForm({
     required this.node,
     required this.characterId,
     required this.onUpdated,
-    this.breadcrumb = const [],
+    required this.allNodes,
+    required this.onCreateSpawn,
+    required this.onOpenNode,
     super.key,
   });
 
@@ -36,16 +29,25 @@ class NodeEditorPage extends StatefulWidget {
   final String characterId;
   final ValueChanged<Node> onUpdated;
 
-  /// IDs of ancestor nodes leading to this one, oldest first. Empty
-  /// for the top-level edit; on each recursive push it grows with the
-  /// parent node's id so the app bar can render a path.
-  final List<String> breadcrumb;
+  /// Every node on the card, so the spawns section can show a linked
+  /// node's id and offer existing nodes as link targets. Spawns are
+  /// references to these flat nodes, not nested children.
+  final List<Node> allNodes;
+
+  /// Asks the panel to create a fresh top-level node and return its id,
+  /// so the spawns section can link it. The panel owns the node list;
+  /// the form only edits the link.
+  final String Function() onCreateSpawn;
+
+  /// Asks the panel to open the editor for the node with this id (a
+  /// linked spawn the author wants to edit).
+  final ValueChanged<String> onOpenNode;
 
   @override
-  State<NodeEditorPage> createState() => _NodeEditorPageState();
+  State<NodeEditorForm> createState() => _NodeEditorFormState();
 }
 
-class _NodeEditorPageState extends State<NodeEditorPage> {
+class _NodeEditorFormState extends State<NodeEditorForm> {
   late Node _node;
   final _NodeControllers _controllers = _NodeControllers();
 
@@ -115,6 +117,7 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
     final alive = int.tryParse(_controllers.alive.text);
     return Node(
       id: _node.id,
+      name: _controllers.name.text,
       origin: _node.origin,
       type: _node.type,
       triggerProb:
@@ -127,7 +130,8 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
       predicate: _controllers.predicate.text,
       narrativePayload: _controllers.narrativePayload.text,
       effects: _node.effects,
-      spawns: _node.spawns,
+      spawnIds: _node.spawnIds,
+      visualEditor: _node.visualEditor,
     );
   }
 
@@ -171,38 +175,18 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isSpawn = widget.breadcrumb.isNotEmpty;
-    // The current node's path-trail used by nested spawn editors.
-    // Title-bar shows a friendly label; synthetic ids like
-    // `node_1780140681326` only appear in the path crumbs when the
-    // user actually navigates into a spawn.
-    final crumbs = [...widget.breadcrumb, _node.id];
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(isSpawn ? 'Edit spawn' : 'Edit node'),
-            if (isSpawn)
-              Text(
-                widget.breadcrumb.join(' › '),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+    // Returns the form body only (no Scaffold/AppBar) so it can be hosted
+    // either full-page or inside an AppDialog. Hosts supply their own
+    // chrome.
+    return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 16,
           children: [
+            TextFieldCard.singleLine(
+              controller: _controllers.name,
+              label: 'Name',
+            ),
             _BasicFieldsSection(
               node: _node,
               controllers: _controllers,
@@ -233,67 +217,49 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
               onSceneTransitionChanged: _onSceneTransitionChanged,
             ),
             _SpawnsSection(
-              spawns: _node.spawns,
-              onAdd: _addSpawn,
-              onOpen: (spawn) => _openSpawnEditor(spawn, crumbs),
-              onDelete: _deleteSpawn,
+              spawnIds: _node.spawnIds,
+              allNodes: widget.allNodes,
+              currentNodeId: _node.id,
+              onAddNew: _addNewSpawn,
+              onLinkExisting: _linkSpawn,
+              onOpen: widget.onOpenNode,
+              onUnlink: _unlinkSpawn,
             ),
           ],
         ),
-      ),
     );
   }
 
-  void _addSpawn() {
-    final spawn = Node(
-      id: 'node_${DateTime.now().millisecondsSinceEpoch}',
-      origin: NodeOriginEnum.authored,
-      type: NodeTypeEnum.characterBehavior,
-      triggerProb: 1.0,
-      delay: 0,
-      cooldown: 0,
-      sticky: 0,
-      alive: -1,
-      scope: NodeScopeEnum.session,
-      predicate: 'true',
-      narrativePayload: '',
-    );
-    _node.spawns.add(spawn);
-    widget.onUpdated(_node);
+  void _addNewSpawn() {
+    final newId = widget.onCreateSpawn();
+    _replace(_rebuild(_node, spawnIds: [..._node.spawnIds, newId]));
     setState(() {});
   }
 
-  Future<void> _deleteSpawn(Node spawn) async {
-    final controller = context.read<EditorPageController>();
-    final errorColor = Theme.of(context).colorScheme.error;
-    final confirmed = await controller.confirmDelete(
-      title: 'Delete spawn',
-      message: 'Remove this spawn from the parent node?',
-      confirmColor: errorColor,
+  void _linkSpawn(String nodeId) {
+    if (_node.spawnIds.contains(nodeId)) return;
+    _replace(_rebuild(_node, spawnIds: [..._node.spawnIds, nodeId]));
+    setState(() {});
+  }
+
+  Future<void> _unlinkSpawn(String nodeId) async {
+    // Confirm through NavigationService's global navigator rather than
+    // an EditorPageController read: this form runs inside a dialog on
+    // the root navigator, above where that controller is provided, so a
+    // context read here would not find it.
+    final confirmed = await NavigationService().showConfirmCancelDialog(
+      title: 'Remove spawn link',
+      message: 'Stop this node from spawning "$nodeId"? '
+          'The node itself stays on the card.',
+      confirmText: 'Remove',
+      confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
-    _node.spawns.removeWhere((n) => n.id == spawn.id);
-    widget.onUpdated(_node);
-    setState(() {});
-  }
-
-  void _openSpawnEditor(Node spawn, List<String> parentCrumbs) {
-    unawaited(Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (ctx) => NodeEditorPage(
-          node: spawn,
-          characterId: widget.characterId,
-          breadcrumb: parentCrumbs,
-          onUpdated: (updated) {
-            final idx = _node.spawns.indexWhere((n) => n.id == spawn.id);
-            if (idx < 0) return;
-            _node.spawns[idx] = updated;
-            widget.onUpdated(_node);
-            setState(() {});
-          },
-        ),
-      ),
+    _replace(_rebuild(
+      _node,
+      spawnIds: _node.spawnIds.where((id) => id != nodeId).toList(),
     ));
+    setState(() {});
   }
 
   void _onEffectsMutated() {
@@ -341,6 +307,34 @@ class _NodeEditorPageState extends State<NodeEditorPage> {
   }
 }
 
+/// Opens the per-node editor as an AppDialog (modal on desktop,
+/// fullscreen on mobile). Both the node list and the canvas use this so
+/// editing a node always happens in place, over the view the author was
+/// in. Recursive opens (editing a spawned node from the spawns section)
+/// stack as further dialogs.
+Future<void> showNodeEditorDialog(
+  BuildContext context, {
+  required Node node,
+  required String characterId,
+  required List<Node> allNodes,
+  required ValueChanged<Node> onUpdated,
+  required String Function() onCreateSpawn,
+  required ValueChanged<String> onOpenNode,
+}) =>
+    showDialog<void>(
+      context: context,
+      builder: (context) => AppDialog(
+        builder: (context, isMobile) => NodeEditorForm(
+          node: node,
+          characterId: characterId,
+          allNodes: allNodes,
+          onUpdated: onUpdated,
+          onCreateSpawn: onCreateSpawn,
+          onOpenNode: onOpenNode,
+        ),
+      ),
+    );
+
 /// Sentinel for `_replaceEffects` so callers can distinguish "not
 /// touching this field" from "set it to null." A normal nullable
 /// parameter can't tell them apart.
@@ -375,6 +369,7 @@ enum _CountdownField { delay, cooldown, sticky, alive }
 class _NodeControllers {
   _NodeControllers();
 
+  final TextEditingController name = TextEditingController();
   final TextEditingController predicate = TextEditingController();
   final TextEditingController narrativePayload = TextEditingController();
   final TextEditingController triggerProb = TextEditingController();
@@ -384,6 +379,7 @@ class _NodeControllers {
   final TextEditingController alive = TextEditingController();
 
   late final List<TextEditingController> all = [
+    name,
     predicate,
     narrativePayload,
     triggerProb,
@@ -396,6 +392,7 @@ class _NodeControllers {
   /// Populate from [n]'s authoring fields. Called from `initState`
   /// once the page's `_node` is assigned.
   void loadFrom(Node n) {
+    name.text = n.name;
     predicate.text = n.predicate;
     narrativePayload.text = n.narrativePayload;
     triggerProb.text = n.triggerProb.toStringAsFixed(2);
@@ -426,9 +423,11 @@ Node _rebuild(
   String? predicate,
   String? narrativePayload,
   NodeEffects? effects,
+  List<String>? spawnIds,
 }) {
   return Node(
     id: current.id,
+    name: current.name,
     origin: origin ?? current.origin,
     type: type ?? current.type,
     triggerProb: triggerProb ?? current.triggerProb,
@@ -448,7 +447,8 @@ Node _rebuild(
     predicate: predicate ?? current.predicate,
     narrativePayload: narrativePayload ?? current.narrativePayload,
     effects: effects ?? current.effects,
-    spawns: current.spawns,
+    spawnIds: spawnIds ?? current.spawnIds,
+    visualEditor: current.visualEditor,
     currentDelay: current.currentDelay,
     currentCooldown: current.currentCooldown,
     currentSticky: current.currentSticky,
@@ -889,11 +889,19 @@ class _DeltaRow<E extends Enum> extends StatefulWidget {
 class _DeltaRowState<E extends Enum> extends State<_DeltaRow<E>> {
   final TextEditingController _valueController = TextEditingController();
 
+  /// True while [didUpdateWidget] mirrors the slider value into the text
+  /// field. The mirror text is rounded to two decimals, so the listener
+  /// would read it back as a DIFFERENT value and push a fresh edit —
+  /// mid-build, all the way up to the panel's setState. Programmatic
+  /// syncs must not count as user edits.
+  bool _syncingText = false;
+
   @override
   void initState() {
     super.initState();
     _valueController.text = widget.value.toStringAsFixed(2);
     _valueController.onTextChanged(() {
+      if (_syncingText) return;
       final parsed = double.tryParse(_valueController.text);
       if (parsed == null) return;
       final clamped = parsed.clamp(directorDeltaMin, directorDeltaMax);
@@ -907,7 +915,9 @@ class _DeltaRowState<E extends Enum> extends State<_DeltaRow<E>> {
     super.didUpdateWidget(old);
     final asText = widget.value.toStringAsFixed(2);
     if (_valueController.text != asText) {
+      _syncingText = true;
       _valueController.text = asText;
+      _syncingText = false;
     }
   }
 
@@ -1430,56 +1440,104 @@ class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
       (widget.sceneTransition ? 1 : 0);
 }
 
+/// The spawns a node fires. A spawn is a link by id to another node on
+/// the card (looked up in [allNodes]), not a nested child. "Add new"
+/// asks the panel to create a fresh node and link it; "Link existing"
+/// picks an already-authored node. Unlink removes the link only — the
+/// node itself stays on the card.
 class _SpawnsSection extends StatelessWidget {
   const _SpawnsSection({
-    required this.spawns,
-    required this.onAdd,
+    required this.spawnIds,
+    required this.allNodes,
+    required this.currentNodeId,
+    required this.onAddNew,
+    required this.onLinkExisting,
     required this.onOpen,
-    required this.onDelete,
+    required this.onUnlink,
   });
 
-  final List<Node> spawns;
-  final VoidCallback onAdd;
-  final ValueChanged<Node> onOpen;
-  final ValueChanged<Node> onDelete;
+  final List<String> spawnIds;
+  final List<Node> allNodes;
+  final String currentNodeId;
+  final VoidCallback onAddNew;
+  final ValueChanged<String> onLinkExisting;
+  final ValueChanged<String> onOpen;
+  final ValueChanged<String> onUnlink;
 
   @override
   Widget build(BuildContext context) {
+    // Nodes that can still be linked: every node except this one and
+    // those already linked. A node may not spawn itself.
+    final linkable = allNodes
+        .where((n) => n.id != currentNodeId && !spawnIds.contains(n.id))
+        .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const _SectionLabel('Spawns'),
-        for (final spawn in spawns)
+        for (final spawnId in spawnIds)
           _SpawnRow(
-            key: ValueKey(identityHashCode(spawn)),
-            spawn: spawn,
-            onOpen: () => onOpen(spawn),
-            onDelete: () => onDelete(spawn),
+            key: ValueKey(spawnId),
+            // A dangling link (target deleted) falls back to the raw id;
+            // the loader flags it on save.
+            label: _nodeFor(spawnId)?.displayLabel ?? spawnId,
+            type: _nodeFor(spawnId)?.type,
+            onOpen: () => onOpen(spawnId),
+            onUnlink: () => onUnlink(spawnId),
           ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ActionChip(
-            avatar: const Icon(Icons.add, size: 18),
-            label: const Text('Add spawn'),
-            onPressed: onAdd,
-          ),
+        Row(
+          spacing: 8,
+          children: [
+            ActionChip(
+              avatar: const Icon(Icons.add, size: 18),
+              label: const Text('Add new'),
+              onPressed: onAddNew,
+            ),
+            if (linkable.isNotEmpty)
+              PopupMenuButton<String>(
+                onSelected: onLinkExisting,
+                itemBuilder: (context) => [
+                  for (final n in linkable)
+                    PopupMenuItem(
+                      value: n.id,
+                      child: Text(n.displayLabel),
+                    ),
+                ],
+                child: const Chip(
+                  avatar: Icon(Icons.link, size: 18),
+                  label: Text('Link existing'),
+                ),
+              ),
+          ],
         ),
       ],
     );
+  }
+
+  Node? _nodeFor(String id) {
+    for (final n in allNodes) {
+      if (n.id == id) return n;
+    }
+    return null;
   }
 }
 
 class _SpawnRow extends StatelessWidget {
   const _SpawnRow({
-    required this.spawn,
+    required this.label,
+    required this.type,
     required this.onOpen,
-    required this.onDelete,
+    required this.onUnlink,
     super.key,
   });
 
-  final Node spawn;
+  final String label;
+
+  /// The linked node's type, or null when the link is dangling. The row
+  /// then just omits the chip.
+  final NodeTypeEnum? type;
   final VoidCallback onOpen;
-  final VoidCallback onDelete;
+  final VoidCallback onUnlink;
 
   @override
   Widget build(BuildContext context) {
@@ -1498,13 +1556,13 @@ class _SpawnRow extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        spawn.id,
+                        label,
                         style:
                             const TextStyle(fontWeight: FontWeight.w600),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    TagChip(label: spawn.type.name),
+                    if (type != null) TagChip(label: type!.name),
                     Icon(
                       Icons.chevron_right,
                       color: theme.colorScheme.onSurfaceVariant,
@@ -1515,9 +1573,9 @@ class _SpawnRow extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: onDelete,
-            tooltip: 'Remove',
+            icon: const Icon(Icons.link_off),
+            onPressed: onUnlink,
+            tooltip: 'Unlink',
           ),
         ],
       ),

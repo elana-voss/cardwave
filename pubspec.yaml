@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.4.12
+version: 0.4.13
 
 workspace:
   - packages/cardwave_llm
@@ -175,6 +175,12 @@ hooks:
 
 flutter:
   uses-material-design: true
+
+  # fl_nodes 0.5.0+1 ships its grid shader under lib/ but its own pubspec
+  # declares no shaders, so the app must bundle it or the canvas throws
+  # "Asset 'packages/fl_nodes/shaders/grid.frag' not found" at runtime.
+  shaders:
+    - packages/fl_nodes/shaders/grid.frag
 
   assets:
     - assets/images/default_character.png

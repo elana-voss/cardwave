@@ -164,50 +164,70 @@ class NodesService {
     _pool = null;
   }
 
-  /// Loads persisted state and rebuilds the pool. On a fresh chat
-  /// (turn 0 with no persisted nodes) seeds authored nodes + emotion
-  /// baseline + initial goal/scene from the card's
-  /// `extensions.cardwave_nodes` block. No-op when [session] is
-  /// already the open chat.
+  /// Loads persisted state and rebuilds the pool. The card's authored
+  /// nodes are registered on EVERY open — resumed sessions need them to
+  /// resolve spawn ids when a node fires. Only a fresh chat (turn 0 with
+  /// no persisted nodes) additionally seeds the pool + emotion baseline +
+  /// initial goal/scene. No-op when [session] is already the open chat.
   Future<void> _ensureOpen(ChatSession session, CharacterFile file) async {
     if (_currentSessionId == session.id) return;
     _resetTransientDebugState();
     final loaded = await repository.loadState(file, session.id);
     _state = loaded.state;
     _pool = NodePool();
+    final extension = _parseCardExtension(file);
+    if (extension != null) {
+      for (final node in extension.authoredNodes) {
+        _pool!.registerAuthored(node);
+      }
+    }
     for (final node in loaded.activeNodes) {
       _pool!.add(node);
     }
     _currentSessionId = session.id;
-    if (_state!.turn == 0 && loaded.activeNodes.isEmpty) {
-      _seedFromCardExtension(file);
+    if (extension != null &&
+        _state!.turn == 0 &&
+        loaded.activeNodes.isEmpty) {
+      _seedFromCardExtension(extension, file);
     }
   }
 
-  void _seedFromCardExtension(CharacterFile file) {
+  CardNodesExtension? _parseCardExtension(CharacterFile file) {
     final extJson = file.card.extensions[nodesCardExtensionKey];
-    if (extJson is! Map<String, dynamic>) return;
+    if (extJson is! Map<String, dynamic>) return null;
     final result = loadCardNodesExtension(extJson);
     if (result.errors.isNotEmpty) {
       loggingService.warning(
         'NODES extension on ${file.card.name} has '
-        '${result.errors.length} issue(s); seeding the valid pieces.',
+        '${result.errors.length} issue(s); using the valid pieces.',
       );
     }
+    return result.extension;
+  }
+
+  void _seedFromCardExtension(
+    CardNodesExtension extension,
+    CharacterFile file,
+  ) {
     final character = _state!.characters.putIfAbsent(
       file.appCardId,
       CharacterState.new,
     );
-    result.extension.emotionBaseline.forEach((emotion, value) {
+    extension.emotionBaseline.forEach((emotion, value) {
       character.emotion[emotion]!.value = value;
     });
-    if (result.extension.initialGoal.isNotEmpty) {
-      _state!.currentGoal = result.extension.initialGoal;
+    if (extension.initialGoal.isNotEmpty) {
+      _state!.currentGoal = extension.initialGoal;
     }
-    final initialScene = result.extension.initialScene;
+    final initialScene = extension.initialScene;
     if (initialScene != null) _state!.currentScene = initialScene;
-    for (final node in result.extension.authoredNodes) {
-      _pool!.add(node);
+    final nodes = extension.authoredNodes;
+    // Only nodes with no incoming spawn link are seeded into the pool at
+    // start — a spawned node waits for its parent to fire (mirrors the
+    // old top-level-vs-child distinction).
+    final spawnedIds = {for (final node in nodes) ...node.spawnIds};
+    for (final node in nodes) {
+      if (!spawnedIds.contains(node.id)) _pool!.add(node);
     }
   }
 

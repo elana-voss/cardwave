@@ -30,7 +30,7 @@ class NodeListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final spawnCount = node.spawns.length;
+    final spawnCount = node.spawnIds.length;
     return ListTile(
       key: ValueKey(identityHashCode(node)),
       leading: ReorderableDragStartListener(
@@ -44,7 +44,7 @@ class NodeListTile extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              node.id,
+              node.displayLabel,
               style: const TextStyle(fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),

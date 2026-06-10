@@ -3,7 +3,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_nodes.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_view.dart';
-import 'package:cardwave/editor/src/pages/widgets/node_editor_page.dart';
+import 'package:cardwave/editor/src/pages/widgets/node_editor_form.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_list_tile.dart';
 import 'package:cardwave/editor/src/pages/widgets/panel_enum.dart';
 import 'package:cardwave/grid/grid.dart';
@@ -27,7 +27,7 @@ import 'app_test_helpers.dart';
 ///   - PanelEnum.nodes wiring (tab + rail + switch case → EditorNodes)
 ///   - engine-seed goal field auto-save
 ///   - "Add Node" path: button → mutated authoredNodes → list row
-///   - tap on a NodeListTile opens NodeEditorPage
+///   - tap on a NodeListTile opens the NodeEditorForm dialog
 ///   - predicate field auto-save (live `findPredicateProblems` runs
 ///     on every keystroke; should not block persistence)
 ///   - narrative payload auto-save
@@ -137,13 +137,13 @@ void main() {
       await tester.ensureVisible(firstTile);
       await tester.pumpAndSettle();
 
-      // Open the per-node editor page.
+      // Open the per-node editor dialog.
       await tester.tap(firstTile);
       await tester.pumpAndSettle();
       expect(
-        find.byType(NodeEditorPage),
+        find.byType(NodeEditorForm),
         findsOneWidget,
-        reason: 'tapping the tile should push a NodeEditorPage',
+        reason: 'tapping the tile should open the NodeEditorForm dialog',
       );
 
       // Set the predicate + narrative payload directly on their
@@ -179,13 +179,13 @@ void main() {
           payloadSentinel;
       await tester.pump();
 
-      // Capture CharacterService BEFORE popping so the post-pop reload
-      // does not depend on the editor's element still being mounted.
+      // Capture CharacterService BEFORE dismissing so the reload does
+      // not depend on the editor's element still being mounted.
       final characterService = tester
-          .element(find.byType(NodeEditorPage))
+          .element(find.byType(NodeEditorForm))
           .read<CharacterService>();
 
-      // Pop the per-node editor page back to the Nodes panel.
+      // Dismiss the per-node editor dialog back to the Nodes panel.
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
