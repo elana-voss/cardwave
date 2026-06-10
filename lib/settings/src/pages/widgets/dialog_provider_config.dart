@@ -126,15 +126,19 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
   bool get _zdrDirty => _isEdit && _requireZdr != _profile.requireZdr;
 
-  bool get _isLocked {
-    if (!_isEdit) return false;
-    final activePresetIds = context
-        .read<SettingsService>()
-        .settings
-        .activeAppDomainPresetIds;
-    return _profile.allPresets.any(
-      (p) => activePresetIds.contains(p.id),
-    );
+  /// App-domain roles (Chat, Assistant, Image, …) currently backed by one of
+  /// this provider's presets. Non-empty means the provider can't be deleted —
+  /// a feature still points at it. Drives both the hidden Delete button and
+  /// the reason hint shown in its place.
+  List<String> get _lockingRoleLabels {
+    if (!_isEdit) return const [];
+    final settings = context.read<SettingsService>().settings;
+    final presetIds = _profile.allPresets.map((p) => p.id).toSet();
+    return [
+      for (final domain in LlmProviderDomainEnum.values)
+        if (presetIds.contains(settings.getAppDomainPresetId(domain)))
+          domain.label,
+    ];
   }
 
   Future<void> _confirmDelete() async {
@@ -230,17 +234,22 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
   @override
   Widget build(BuildContext context) {
+    final lockingRoles = _lockingRoleLabels;
+    final isLocked = lockingRoles.isNotEmpty;
+    final lockHint = isLocked
+        ? 'Cannot delete: in use by ${_joinRoles(lockingRoles)}.'
+        : null;
     return AppDialog(
       actions: [
-        if (_isEdit && !_isLocked)
+        if (_isEdit)
           TextButton(
-            onPressed: _confirmDelete,
+            onPressed: isLocked ? null : _confirmDelete,
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text('Delete'),
           ),
-        if (_isEdit && !_isLocked) const SizedBox(width: 24),
+        if (_isEdit) const SizedBox(width: 24),
         FilledButton(
           onPressed: _canSave ? _save : null,
           child: const Text('Save'),
@@ -292,6 +301,16 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
                     'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.',
                     style: TextStyle(fontSize: 11, color: Colors.grey),
                   ),
+                  if (lockHint != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      lockHint,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
                   if (_detectedProvider == LLMProviderEnum.openrouter)
                     SwitchTileZdr(
                       value: _requireZdr,
@@ -317,6 +336,11 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   }
 
 }
+
+/// "Chat", "Chat and Assistant", "Chat, Assistant and Image".
+String _joinRoles(List<String> roles) => roles.length == 1
+    ? roles.first
+    : '${roles.sublist(0, roles.length - 1).join(', ')} and ${roles.last}';
 
 class _ProviderStatusLine extends StatelessWidget {
   const _ProviderStatusLine({

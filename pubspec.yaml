@@ -1,7 +1,7 @@
 name: cardwave
 description: "AI Character Cards Manager."
 publish_to: 'none'
-version: 0.4.11
+version: 0.4.12
 
 workspace:
   - packages/cardwave_llm
@@ -115,8 +115,8 @@ dependencies:
   # theme maps are imported directly.
   re_editor: ^0.8.0
   re_highlight: ^0.0.3
-
-
+  fl_nodes: ^0.5.0+1
+  flutter_context_menu: ^0.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
