@@ -10,6 +10,15 @@ set(BINARY_NAME "cardwave")
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)
 
+# WORKAROUND (audioplayers_windows): the runner's MSVC (VS2026, 14.51+)
+# turns use of the deprecated <experimental/coroutine> header into a hard
+# error (STL1011 / C2338), which fails the Windows build. audioplayers_windows
+# still includes that header. This define downgrades it back to a warning for
+# every C++ target below (runner + plugins), since it is set before the
+# add_subdirectory / generated_plugins include. Remove once audioplayers_windows
+# migrates to C++20 <coroutine> (bluefireteam/audioplayers#1985).
+add_compile_definitions(_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 # Define build configuration option.
 get_property(IS_MULTICONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(IS_MULTICONFIG)
