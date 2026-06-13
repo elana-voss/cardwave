@@ -13,7 +13,7 @@ export 'src/utils/utils_app.dart';
 export 'src/utils/utils_app_text_trim.dart';
 export 'src/utils/utils_hash.dart';
 export 'src/utils/utils_image.dart';
-export 'src/utils/utils_prompt.dart';
+export 'package:cardwave_llm/cardwave_llm.dart' show UtilsPrompt;
 export 'src/models/prompt_breakdown.dart';
 export 'src/models/prompt_segment_kind_enum.dart';
 export 'src/widgets/ai_action_enum.dart';

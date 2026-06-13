@@ -66,9 +66,7 @@ export 'src/utils/gguf_metadata_probe.dart';
 export 'src/utils/llm_constants.dart';
 export 'src/utils/utils_id.dart';
 export 'src/utils/utils_llm.dart';
-// utils_prompt is intentionally not exported: it's a package-internal mirror
-// of lib/common/utils_prompt.dart used by the image/video prompt builders.
-// The app keeps using its own UtilsPrompt — exporting both would collide.
+export 'src/utils/utils_prompt.dart';
 export 'src/utils/utils_text.dart';
 export 'src/video/llm_video_prompt_request.dart';
 export 'src/video/services/video_generation_service.dart';
