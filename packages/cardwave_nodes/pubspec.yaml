@@ -13,7 +13,7 @@ dependencies:
 
   json_annotation: ^4.10.0
   logging: ^1.3.0
-  schemantic: ^0.1.1
+  schemantic: ^0.2.0
 
   cardwave_embeddings:
     path: ../cardwave_embeddings
@@ -31,4 +31,4 @@ dev_dependencies:
   # Test-only: subclassing LlmRunner to fake completeStructured needs
   # genkit's Model/Genkit for the parent constructor. The fake overrides
   # completeStructured, so the dummies are never used.
-  genkit: ^0.13.0
+  genkit: ^0.14.1

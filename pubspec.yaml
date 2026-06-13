@@ -80,7 +80,7 @@ dependencies:
 
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.
-  schemantic: ^0.1.1
+  schemantic: ^0.2.0
 
   http: ^1.2.0
   intl: ^0.20.2
