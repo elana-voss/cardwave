@@ -19,6 +19,10 @@ class UtilsPrompt {
     caseSensitive: false,
   );
   static final _ifHeadRegex = RegExp(r'^\s*if\b', caseSensitive: false);
+  static final _trimTagRegex = RegExp(
+    r'\{\{\s*(/)?\s*trim\s*\}\}',
+    caseSensitive: false,
+  );
   static final _condTagRegex = RegExp(
     r'\{\{\s*(?:(if)\b|(else)\s*\}\}|/\s*if\s*\}\})',
     caseSensitive: false,
@@ -117,6 +121,45 @@ class UtilsPrompt {
               depth,
             )
           : inner;
+
+      // {{trim}}...{{/trim}}: renders the block, strips all surrounding
+      // whitespace from the result. Standalone {{trim}} (no closing tag) leaks
+      // verbatim via the _evaluateMacro default branch below.
+      if (resolvedInner.trim().toLowerCase() == 'trim') {
+        final bodyStart = close + 2;
+        var blockDepth = 1;
+        var endStart = -1;
+        var endEnd = -1;
+        for (final tag in _trimTagRegex.allMatches(text, bodyStart)) {
+          if (tag.group(1) != null) {
+            blockDepth--;
+            if (blockDepth == 0) {
+              endStart = tag.start;
+              endEnd = tag.end;
+              break;
+            }
+          } else {
+            blockDepth++;
+          }
+        }
+        if (endStart != -1) {
+          buffer.write(
+            _render(
+              text.substring(bodyStart, endStart),
+              charName,
+              userName,
+              localVariables,
+              globalVariables,
+              trackingId,
+              nextPickIndex,
+              depth,
+            ).trim(),
+          );
+          i = endEnd;
+          continue;
+        }
+      }
+
       final value = _evaluateMacro(
         resolvedInner,
         charName,

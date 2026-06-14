@@ -52,6 +52,7 @@ in `AppSettings.globalVariables`.
 | `{{noop}}`, `{{hidden_key}}`, `{{comment}}` | Empty string. |
 | `{{reverse::text}}` | Reverses the argument. |
 | `{{// comment}}` | Comment (leading `//`); emits nothing. |
+| `{{trim}}...{{/trim}}` | Renders the block, then strips all leading/trailing whitespace (including newlines and spaces) from the result. Blocks nest. Standalone `{{trim}}` without a closing tag leaks verbatim. |
 
 ### Variable shorthand
 
@@ -128,14 +129,14 @@ the default branch. These do **not** resolve:
   `{{authorsNote}}`, `{{charAuthorsNote}}`, `{{defaultAuthorsNote}}`, all
   `{{instruct*}}` sequences, `{{chatSeparator}}`, `{{chatStart}}`,
   `{{reasoningPrefix}}`, `{{reasoningSuffix}}`, `{{reasoningSeparator}}`.
-- **Text utils:** `{{trim}}`, `{{banned::word}}`, `{{outlet::key}}`.
+- **Text utils:** `{{banned::word}}`, `{{outlet::key}}`.
 
 ## Known divergences and errors
 
 1. **Unknown macros leak into the model prompt.** The default branch returns the
    original `{{...}}` text, so every unimplemented macro above is sent to the LLM
-   verbatim. A card or preset template that uses, say, `{{description}}` or
-   `{{trim}}` emits the literal braces into the context.
+   verbatim. A card or preset template that uses, say, `{{description}}` emits
+   the literal braces into the context.
 
 2. **Most date/time variants beyond `{{time}}` / `{{date}}` / UTC offset leak.**
    `{{weekday}}`, `{{isotime}}`, `{{isodate}}`, `{{datetimeformat ...}}`,

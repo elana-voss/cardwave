@@ -37,8 +37,37 @@ void main() {
 
     test('unknown macros leak verbatim', () {
       expect(render('{{description}}'), '{{description}}');
-      expect(render('a {{trim}} b'), 'a {{trim}} b');
+      expect(render('{{trim}}'), '{{trim}}');
       expect(render('{{incvar::x}}'), '{{incvar::x}}');
+    });
+  });
+
+  group('trim', () {
+    test('scoped: trims all surrounding whitespace from block', () {
+      expect(render('{{trim}}  hello world  {{/trim}}'), 'hello world');
+    });
+
+    test('scoped: trims leading whitespace and newlines', () {
+      expect(render('{{trim}}\n\n  content{{/trim}}'), 'content');
+    });
+
+    test('scoped: trims trailing whitespace and newlines', () {
+      expect(render('{{trim}}content  \n\n{{/trim}}'), 'content');
+    });
+
+    test('scoped: resolves macros then trims', () {
+      expect(render('{{trim}}  Hello {{user}}  {{/trim}}'), 'Hello User');
+    });
+
+    test('scoped: nested scoped trim', () {
+      expect(
+        render('{{trim}}  outer {{trim}}  inner  {{/trim}} outer  {{/trim}}'),
+        'outer inner outer',
+      );
+    });
+
+    test('scoped: whitespace-only block becomes empty', () {
+      expect(render('{{trim}}   \n\n   {{/trim}}'), '');
     });
   });
 
