@@ -527,9 +527,19 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       final layers = backend is BackendRuntimeDiagnostics
           ? await (backend as BackendRuntimeDiagnostics).getResolvedGpuLayers()
           : null;
+      final devices = await backend.listGpuDevices();
+      final deviceList = devices.isEmpty
+          ? 'none enumerated'
+          : devices
+                .map(
+                  (d) => '${d.name} (${d.type.name}, '
+                      '${d.memoryTotalBytes ~/ (1024 * 1024)} MiB)',
+                )
+                .join('; ');
       debugPrint(
         '[llamadart] available backends: $available; '
-        'embedder loaded on: $active (gpu layers: $layers)',
+        'embedder loaded on: $active (gpu layers: $layers); '
+        'gpu devices: $deviceList',
       );
     } on Exception catch (e, st) {
       debugPrint('[llamadart] backend probe failed: $e\n$st');

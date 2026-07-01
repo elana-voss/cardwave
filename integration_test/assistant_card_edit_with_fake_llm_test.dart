@@ -150,7 +150,7 @@ void main() {
       final characterService = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final testCharFile = characterService.characterFiles.firstWhere(
+      final testCharFile = (await characterService.loadAll()).firstWhere(
         (f) => f.card.displayName != kCassName,
         orElse: () =>
             throw StateError('seedTestCharacter should have placed a 2nd card'),
@@ -177,7 +177,7 @@ void main() {
       // The assistant chat binds to Cass (bundled assistant) regardless of
       // which card we entered the workspace on, so verify the new
       // description landed on any character file rather than a specific one.
-      final files = characterService.characterFiles;
+      final files = await characterService.loadAll();
       expect(
         files.any((c) => c.card.description == newDescription),
         isTrue,

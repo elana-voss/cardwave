@@ -44,7 +44,7 @@ class IOCharacter {
   // - Initializes values
   // - Writes/reads JSON cache file.
   // ---------------------------------------------------------
-  Future<CharacterFile> _readCharacter(String imagePath) async {
+  Future<CharacterFile> readCharacter(String imagePath) async {
     late CharacterFile charFile;
 
     try {
@@ -179,12 +179,16 @@ class IOCharacter {
     }
   }
 
-  Future<List<CharacterFile>> readDirectory({
+  /// Scans the library folder and returns every PNG that holds a character
+  /// card, each tagged with its current modified-time and size. This is the
+  /// cheap pass: it never parses card bodies — the caller diffs these stats
+  /// against the library database to decide which cards to actually read. The
+  /// positive cache (a `card.json` sidecar means it's a card) and the negative
+  /// cache (unchanged non-card PNGs are skipped) work exactly as before.
+  Future<List<({String imagePath, int mtime, int size})>> scanValidCardStats({
     void Function(CharacterLoadingPhaseEnum phase, int current, int total)?
     onProgress,
   }) async {
-    final characterFiles = <CharacterFile>[];
-
     final allPngPaths = await appStorage.listDirectory(
       StorageDomainEnum.cards,
       '',
@@ -197,8 +201,7 @@ class IOCharacter {
     final loadedNonCardIndex = await _loadNonCardIndex();
     final newlySeenNonCards = <String, _NonCardEntry>{};
 
-    // --- Pass 1: Pre-scan to find valid character PNGs ---
-    final validPngPaths = <String>[];
+    final valid = <({String imagePath, int mtime, int size})>[];
     const preScanBatchSize = 10;
 
     for (var i = 0; i < allPngPaths.length; i += preScanBatchSize) {
@@ -209,6 +212,13 @@ class IOCharacter {
 
       final checkFutures = batch.map((imagePath) async {
         try {
+          final stat = await appStorage.statFile(
+            StorageDomainEnum.cards,
+            imagePath,
+          );
+          final mtime = stat?.modified.millisecondsSinceEpoch ?? 0;
+          final size = stat?.size ?? 0;
+
           // Fast path: positive cache (card.json sidecar exists).
           final jsonPath = p.posix.join(
             AppConstants.customCacheCharacterPath,
@@ -216,20 +226,14 @@ class IOCharacter {
             AppConstants.cardJsonFileName,
           );
           if (await appStorage.fileExists(StorageDomainEnum.cards, jsonPath)) {
-            return imagePath;
+            return (imagePath: imagePath, mtime: mtime, size: size);
           }
 
           // Fast path: negative cache (mtime+size unchanged since the last
           // confirmed not-a-card verdict).
-          final stat = await appStorage.statFile(
-            StorageDomainEnum.cards,
-            imagePath,
-          );
           if (stat != null) {
             final cached = loadedNonCardIndex[imagePath];
-            if (cached != null &&
-                cached.m == stat.modified.millisecondsSinceEpoch &&
-                cached.s == stat.size) {
+            if (cached != null && cached.m == mtime && cached.s == size) {
               return null;
             }
           }
@@ -240,14 +244,11 @@ class IOCharacter {
             imagePath,
           );
           if (UtilsPng.hasCharaChunk(Uint8List.fromList(bytes))) {
-            return imagePath;
+            return (imagePath: imagePath, mtime: mtime, size: size);
           }
 
           if (stat != null) {
-            newlySeenNonCards[imagePath] = (
-              m: stat.modified.millisecondsSinceEpoch,
-              s: stat.size,
-            );
+            newlySeenNonCards[imagePath] = (m: mtime, s: size);
           }
         } on Object {
           // Ignore errors during pre-scan (e.g., corrupted PNGs, locked files).
@@ -256,7 +257,9 @@ class IOCharacter {
       }).toList();
 
       final results = await Future.wait(checkFutures);
-      validPngPaths.addAll(results.whereType<String>());
+      valid.addAll(
+        results.whereType<({String imagePath, int mtime, int size})>(),
+      );
 
       // Report pre-scan progress. This may cause the progress indicator to
       // fill up, then reset for the second pass, which is expected.
@@ -289,47 +292,7 @@ class IOCharacter {
       await _writeNonCardIndex(mergedIndex);
     }
 
-    // --- Pass 2: Process only the valid paths ---
-    final total = validPngPaths.length;
-    var completed = 0;
-    const processBatchSize = 2;
-
-    onProgress?.call(CharacterLoadingPhaseEnum.processing, 0, total);
-
-    for (var i = 0; i < total; i += processBatchSize) {
-      final end = (i + processBatchSize < total) ? i + processBatchSize : total;
-      final batch = validPngPaths.sublist(i, end);
-
-      final futures = batch.map((imagePath) async {
-        try {
-          final character = await _readCharacter(imagePath);
-          completed++;
-          onProgress?.call(
-            CharacterLoadingPhaseEnum.processing,
-            completed,
-            total,
-          );
-          return character;
-        } on Object {
-          completed++;
-          onProgress?.call(
-            CharacterLoadingPhaseEnum.processing,
-            completed,
-            total,
-          );
-          return null;
-        }
-      });
-
-      final results = await Future.wait(futures);
-      for (final res in results) {
-        if (res != null) {
-          characterFiles.add(res);
-        }
-      }
-    }
-
-    return characterFiles;
+    return valid;
   }
 
   Future<CharacterFile> createCharacter({
@@ -473,7 +436,7 @@ class IOCharacter {
 
     try {
       await appStorage.writeBytes(StorageDomainEnum.cards, destPath, bytes);
-      return await _readCharacter(destPath);
+      return await readCharacter(destPath);
     } on Exception catch (e, stackTrace) {
       loggingService.error(
         '[IOCharacter] Error importing character $filename: $e',

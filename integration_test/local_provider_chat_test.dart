@@ -175,7 +175,7 @@ void main() {
       final cs = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final testCharFile = cs.characterFiles.firstWhere(
+      final testCharFile = (await cs.loadAll()).firstWhere(
         (f) => f.card.displayName != kCassName,
         orElse: () =>
             throw StateError('seedTestCharacter should have placed a 2nd card'),

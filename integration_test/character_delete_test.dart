@@ -51,11 +51,9 @@ void main() {
       final storage = gridContext.read<AppStorage>();
 
       // Capture Cass's on-disk filename BEFORE deletion so we can verify
-      // it's gone afterward. Reading from the live in-memory list keeps
-      // the test honest if the seed/asset filename ever changes.
-      final cassFile = service.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      // it's gone afterward. Reading via loadByName keeps the test honest
+      // if the seed/asset filename ever changes.
+      final cassFile = (await service.loadByName(kCassName))!;
       final cassImagePath = cassFile.appCardImagePath;
       expect(
         await storage.fileExists(StorageDomainEnum.cards, cassImagePath),
@@ -92,14 +90,14 @@ void main() {
         reason: 'grid should shrink to 1 card after deleting Cass',
       );
       expect(
-        service.characterFiles.length,
+        (await service.allCardPaths()).length,
         1,
-        reason: 'CharacterService should hold exactly one file',
+        reason: 'the library index should hold exactly one card',
       );
       expect(
-        service.characterFiles.any((f) => f.card.name == kCassName),
-        isFalse,
-        reason: 'Cass must NOT be in the in-memory list anymore',
+        await service.loadByName(kCassName),
+        isNull,
+        reason: 'Cass must no longer be in the library index',
       );
 
       // The load-bearing assertion: Cass's PNG is actually gone from disk.

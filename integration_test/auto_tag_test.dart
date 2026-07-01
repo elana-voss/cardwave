@@ -46,9 +46,7 @@ void main() {
       final pureHelpers = appCtx.read<LlmPureHelpers>();
       final settingsService = appCtx.read<SettingsService>();
 
-      final cassFile = characterService.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassFile = (await characterService.loadByName(kCassName))!;
       final cassPath = cassFile.appCardImagePath;
 
       // Pre-flight: the system preset must be assigned to a structured-output

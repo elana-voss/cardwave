@@ -285,12 +285,10 @@ class CharacterAiService extends ChangeNotifier {
     }
   }
 
-  /// Characters whose preview description is missing — work-list for batch generation.
-  List<CharacterFile> get charactersMissingPreview =>
-      characterService.characterFiles.where((f) {
-        final preview = f.card.cardwaveData.previewDescription;
-        return preview == null || preview.trim().isEmpty;
-      }).toList();
+  /// Characters whose preview description is missing — work-list for batch
+  /// generation. Queried from the library index, then loaded full.
+  Future<List<CharacterFile>> get charactersMissingPreview =>
+      characterService.cardsMissingPreview();
 
   /// Returns the AI-suggested replacement text for a single field action,
   /// or null for actions that mutate the card in place rather than returning
@@ -470,11 +468,10 @@ class CharacterAiService extends ChangeNotifier {
     }
   }
 
-  /// Characters with no app-tags — work-list for batch auto-tagging.
-  List<CharacterFile> get charactersMissingTags => characterService
-      .characterFiles
-      .where((f) => f.appCardTags.isEmpty)
-      .toList();
+  /// Characters with no app-tags — work-list for batch auto-tagging. Queried
+  /// from the library index, then loaded full.
+  Future<List<CharacterFile>> get charactersMissingTags =>
+      characterService.cardsMissingAppTags();
 
   Future<void> generateDescriptionPreview(CharacterFile file) {
     return _executeCharacterAiTask(

@@ -4,7 +4,7 @@ class AppConstants {
 
   static const String website = 'https://cardwave.cc';
   static const String disclaimer = '$website/disclaimer.html';
-  static const String version = 'https://cardwave.cc/version.json';
+  static const String version = 'https://app.cardwave.cc/version.json';
 
   static const String defaultPersonaName = 'Jax';
 
@@ -40,11 +40,6 @@ class AppConstants {
 
   /// Per-character thumbnail PNG inside `customCacheCharacterPath/<basename>/`.
   static const String cardThumbnailFileName = 'card.thumb.png';
-
-  /// Per-card sidecar file name under each character's cache folder.
-  /// The vector dimension, model id, and per-chunk token cap live with
-  /// the embeddings package — only the on-disk filename is app-side.
-  static const String embeddingsSidecarFilename = 'card.embedding.bin';
 
   static const Set<String> nsfwTriggers = {
     'nsfw',

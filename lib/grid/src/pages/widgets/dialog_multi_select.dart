@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/common/common.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,7 @@ class DialogMultiSelect extends StatefulWidget {
   final String title;
   final Map<String, int> items;
   final Set<String> selectedItems;
-  final Map<String, int> Function(Set<String>)? dynamicItemsCallback;
+  final Future<Map<String, int>> Function(Set<String>)? dynamicItemsCallback;
 
   @override
   State<DialogMultiSelect> createState() => _DialogMultiSelectState();
@@ -37,12 +39,9 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
     );
     _currentSelection = Set<String>.of(widget.selectedItems);
 
-    // Use the dynamic count for display, but anchor sort order to widget.items
-    // so chips don't leap around as the user toggles selection.
-    final initialDynamicItems = widget.dynamicItemsCallback != null
-        ? widget.dynamicItemsCallback!(widget.selectedItems)
-        : widget.items;
-    _sortedItems = _getSortedItems(initialDynamicItems);
+    // Sort order is anchored to widget.items so chips don't leap around as the
+    // user toggles selection; counts refresh via the (async) callback.
+    _sortedItems = _getSortedItems(widget.items);
 
     _searchController.addListener(_onSearchChanged);
   }
@@ -77,12 +76,8 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
       } else {
         _currentSelection.remove(key);
       }
-      if (widget.dynamicItemsCallback != null) {
-        _sortedItems = _getSortedItems(
-          widget.dynamicItemsCallback!(_currentSelection),
-        );
-      }
     });
+    unawaited(_refreshDynamicCounts());
   }
 
   void _clearSelection() {
@@ -90,10 +85,16 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
       _searchController.clear();
       _displayLimit = _initialDisplayLimit;
       _currentSelection = {};
-      if (widget.dynamicItemsCallback != null) {
-        _sortedItems = _getSortedItems(widget.dynamicItemsCallback!({}));
-      }
     });
+    unawaited(_refreshDynamicCounts());
+  }
+
+  Future<void> _refreshDynamicCounts() async {
+    final callback = widget.dynamicItemsCallback;
+    if (callback == null) return;
+    final items = await callback(_currentSelection);
+    if (!mounted) return;
+    setState(() => _sortedItems = _getSortedItems(items));
   }
 
   @override

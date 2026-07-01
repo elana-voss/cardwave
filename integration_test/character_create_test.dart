@@ -14,8 +14,8 @@ import 'app_test_helpers.dart';
 /// Verifies the full create-from-scratch path: dialog accepts a name,
 /// `CharacterRepository.createCharacter` writes a PNG (with the default
 /// asset bytes + JSON metadata) to `<name>.png` under StorageDomainEnum.cards,
-/// `CharacterService._characterFiles` adds the new entry and notifies,
-/// and the grid grows by one tile.
+/// the new card lands in the library index and notifies, and the grid grows
+/// by one tile.
 ///
 /// Pairs with character_import + character_delete to cover the full
 /// create/destroy lifecycle on Android (mobile path uses the dialog;
@@ -98,7 +98,7 @@ void main() {
         reason: 'grid should grow to 3 cards after creating a new one',
       );
 
-      final created = service.characterFiles
+      final created = (await service.loadAll())
           .where((f) => f.card.name == sentinelName)
           .toList();
       expect(

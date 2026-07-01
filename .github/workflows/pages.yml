@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'deploy/**'
       - 'lib/**'
       - 'web/**'
       - 'pubspec.yaml'
@@ -39,10 +38,6 @@ jobs:
           MAJOR_MINOR=$(echo "$RAW" | cut -d. -f1-2)
           echo "APP_VERSION_MM=$MAJOR_MINOR" >> $GITHUB_ENV
 
-      # On a landing-only push (only deploy/** changed), the cache key
-      # matches the previous build, build/web/ is restored, and the
-      # Flutter SDK setup + pub get + wasm build are all skipped. On
-      # any app change the hash differs and the full build runs.
       - name: Cache Flutter web build
         id: cache-web
         uses: actions/cache@v4
@@ -63,25 +58,22 @@ jobs:
 
       - name: Build web (wasm)
         if: steps.cache-web.outputs.cache-hit != 'true'
-        run: flutter build web --wasm --pwa-strategy=none --base-href=/app/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
+        run: flutter build web --wasm --pwa-strategy=none --base-href=/ --dart-define=APP_VERSION=${{ env.APP_VERSION_MM }}
 
-      - name: Compose site (landing + app)
+      - name: Stamp version and CNAME
         run: |
-          mkdir -p _site
-          cp -r deploy/public_landing_v5/* _site/
-          # Substitute the current pubspec version into version.json so the
-          # in-app updater detects new releases. release_notes ships with
-          # whatever the source file declares (edit manually per release).
+          # Substitute the current pubspec version into version.json (copied
+          # from web/ into build/web by the Flutter build) so the in-app
+          # updater detects new releases. release_notes ships with whatever
+          # the source file declares (edit web/version.json per release).
           RAW=$(grep '^version: ' pubspec.yaml | awk '{print $2}')
-          sed -i "s/\"latest_version\": \"[^\"]*\"/\"latest_version\": \"$RAW\"/" _site/version.json
-          mkdir -p _site/app
-          cp -r build/web/* _site/app/
-          echo cardwave.cc > _site/CNAME
+          sed -i "s/\"latest_version\": \"[^\"]*\"/\"latest_version\": \"$RAW\"/" build/web/version.json
+          echo app.cardwave.cc > build/web/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: build/web
 
   deploy:
     needs: build

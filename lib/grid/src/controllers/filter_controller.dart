@@ -4,7 +4,6 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 
 enum CharacterSortOptionEnum {
   relevance('Relevance ↓'),
@@ -24,20 +23,47 @@ enum CharacterSortOptionEnum {
   const CharacterSortOptionEnum(this.label);
 }
 
+/// One row: a card (loaded full) plus how many cards its variant group holds
+/// and whether this card is the group's oldest. In grouped mode (the grid) the
+/// card is always the group's display card, so [isOriginal] is true; in flat
+/// mode (the character switcher) every variant is its own row, so [isOriginal]
+/// distinguishes the ORIGINAL from the VARIANT rows.
+typedef GridEntry = ({CharacterFile file, int variantCount, bool isOriginal});
+
+/// Drives the character grid off the on-device library database. Filtering,
+/// sorting, variant grouping, and counting all happen as SQL queries; only the
+/// visible page of cards is loaded into memory at a time, so the grid stays
+/// flat however large the library is.
+///
+/// Two modes:
+/// - **Browse** (no query): pages variant groups straight from the database,
+///   loading more as the user scrolls.
+/// - **Search** (query of 2+ chars): the search service ranks the whole
+///   library to a bounded list of paths; those are grouped and ordered by
+///   score in memory (already small), then their cards are loaded.
 class FilterController extends ChangeNotifier {
   FilterController({
     required this.characterService,
     required this.searchService,
+    this.groupVariants = true,
   }) {
     searchController.addListener(_onSearchChanged);
     characterService.addListener(_onCharacterServiceUpdated);
     searchService.addListener(_onSearchIndexChanged);
-    _onCharacterServiceUpdated();
+    unawaited(_refreshLibraryCounters());
+    unawaited(_reload());
   }
+
   static const String allDirectories = 'Folders';
+  static const int _pageSize = 60;
 
   final CharacterService characterService;
   final SearchService searchService;
+
+  /// When false, browse and search list every variant as its own row ordered
+  /// by last activity (the character switcher) instead of collapsing each
+  /// variant group to one display card (the grid).
+  final bool groupVariants;
 
   final TextEditingController searchController = TextEditingController();
   Set<String> selectedTags = {};
@@ -51,36 +77,46 @@ class FilterController extends ChangeNotifier {
   String _lastSearchQuery = '';
   CharacterSortOptionEnum? _previousSortOption;
 
-  // Reqid discards stale rank results (user kept typing OR the controller
-  // was disposed mid-await).
+  // Per-card combined keyword + meaning score, set while a query is active.
+  Map<String, double> _rankScores = const {};
+  // The set of paths the active search matched, kept in step with _rankScores.
+  // Scopes counts, sort, and paging to the search result.
+  Set<String> _matchedPaths = {};
+
+  // Discards stale page loads when the filter/query changes mid-await.
+  int _loadToken = 0;
+  // Discards stale rank results when the user keeps typing.
   int _rankRequestId = 0;
 
-  // Per-card combined keyword + meaning score; consumed by the relevance
-  // branch of `_sortFiltered`. Empty when no query is active.
-  Map<String, double> _rankScores = const {};
+  List<GridEntry> _entries = [];
+  List<GridEntry> get entries => _entries;
 
-  List<CharacterFile> _filteredFiles = [];
-  List<CharacterFile> get filteredFiles => _filteredFiles;
+  int _groupTotal = 0; // total variant groups passing the filter (paging)
+  int _offset = 0; // groups consumed from the browse cursor
+  bool _hasMore = false;
+  bool get hasMore => _hasMore;
 
-  List<List<CharacterFile>> _groupedFiles = [];
-  List<List<CharacterFile>> get groupedFiles => _groupedFiles;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  int _cardTotal = 0; // all cards (count-pill denominator)
+  int get totalCount => _cardTotal;
+  int _filteredCardCount = 0;
+  int get filteredCount => _filteredCardCount;
+
+  bool _hasFolders = false;
+  bool get hasFolders => _hasFolders;
 
   Timer? _debounceTimer;
   Timer? _indexReRankTimer;
-
-  final Map<String, Set<String>> _tagIndex = {};
-  final Map<String, List<String>> _cardTags = {};
-  final Map<String, String> _cardDirectories = {};
-  final Set<String> _basePoolForTags = {};
-  final Set<String> _basePoolForCreators = {};
-  final Map<String, int> _variantCounts = {};
-  final Set<String> _basePoolForDirectories = {};
-  bool _needsIndexRebuild = true;
+  bool _disposed = false;
 
   @override
   void dispose() {
-    // Bump first so any in-flight async rank short-circuits on its id
-    // check before touching disposed state.
+    _disposed = true;
+    // Bump first so any in-flight async load/rank short-circuits before
+    // touching disposed state.
+    _loadToken++;
     _rankRequestId++;
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
@@ -91,24 +127,93 @@ class FilterController extends ChangeNotifier {
     super.dispose();
   }
 
-  // Re-rank during an active search so newly-ingested or edited cards
-  // surface without the user having to clear the field.
-  //
-  // Rate-limit, not debounce — SearchService notifies in continuous
-  // 30–200 ms bursts during indexing, so a debounce timer would never
-  // fire. Owns a separate timer so the typing debounce isn't cancelled.
-  void _onSearchIndexChanged() {
-    if (searchController.text.trim().length < 2) return;
-    if (_indexReRankTimer?.isActive ?? false) return;
-    _indexReRankTimer = Timer(const Duration(milliseconds: 250), () {
-      if (searchController.text.trim().length < 2) return;
-      unawaited(_resolveQueryAndUpdate());
-    });
+  bool get _isQueryActive => searchController.text.trim().length >= 2;
+
+  LibraryCardFilter get _filter => _buildFilter();
+
+  /// The active grid filter. While a search runs, [withSearchScope] narrows
+  /// every query to the cards the search matched, so counts, sort, and paging
+  /// all reflect the search result. The relevance load passes false because it
+  /// restricts to the ranked paths explicitly (and orders them by score).
+  LibraryCardFilter _buildFilter({
+    bool withSearchScope = true,
+    Set<String>? tags,
+  }) =>
+      LibraryCardFilter(
+        tags: tags ?? selectedTags,
+        creators: selectedCreators,
+        folder: selectedDirectory == allDirectories ? null : selectedDirectory,
+        favoritesOnly: filterFavorites,
+        variantsOnly: filterHasVariants,
+        recentOnly: prioritizeRecent,
+        restrictToPaths: (withSearchScope && _isQueryActive)
+            ? _matchedPaths
+            : null,
+      );
+
+  void _setRankScores(Map<String, double> scores) {
+    _rankScores = scores;
+    _matchedPaths = scores.keys.toSet();
   }
 
+  // Browse and column-sorted search results page in from the database; only a
+  // relevance-ordered search loads its whole (bounded) result set at once.
+  bool get _isPaged =>
+      !_isQueryActive || sortOption != CharacterSortOptionEnum.relevance;
+
+  (LibrarySortColumn, bool) get _sort {
+    switch (sortOption) {
+      case CharacterSortOptionEnum.nameAsc:
+        return (LibrarySortColumn.name, false);
+      case CharacterSortOptionEnum.nameDesc:
+        return (LibrarySortColumn.name, true);
+      case CharacterSortOptionEnum.importOldest:
+        return (LibrarySortColumn.imported, false);
+      case CharacterSortOptionEnum.modifiedNewest:
+        return (LibrarySortColumn.modified, true);
+      case CharacterSortOptionEnum.modifiedOldest:
+        return (LibrarySortColumn.modified, false);
+      case CharacterSortOptionEnum.interactedNewest:
+        return (LibrarySortColumn.interacted, true);
+      case CharacterSortOptionEnum.interactedOldest:
+        return (LibrarySortColumn.interacted, false);
+      case CharacterSortOptionEnum.tokensHigh:
+        return (LibrarySortColumn.tokens, true);
+      case CharacterSortOptionEnum.tokensLow:
+        return (LibrarySortColumn.tokens, false);
+      // Relevance ordering is applied in memory (search mode); the column here
+      // is only a fallback for the empty-query case, where importNewest shows.
+      case CharacterSortOptionEnum.relevance:
+      case CharacterSortOptionEnum.importNewest:
+        return (LibrarySortColumn.imported, true);
+    }
+  }
+
+  // ---- Listeners ----
+
   void _onCharacterServiceUpdated() {
-    _needsIndexRebuild = true;
-    updateFilteredList();
+    // The initial library scan upserts cards in bursts and notifies every ten
+    // of them. Reloading the grid on each tick would flash much of the library
+    // through the first page (newest-imported sorts the just-parsed cards to
+    // the top) and queue a thumbnail for every card that flickers past. The
+    // loading overlay covers the grid while the scan runs, so hold off and
+    // reload once when it finishes. In-app edits (create/clone/delete/import)
+    // don't set this flag, so they still refresh the grid immediately.
+    if (characterService.isLoading) return;
+    unawaited(_refreshLibraryCounters());
+    unawaited(_reload());
+  }
+
+  // Re-rank during an active search so newly-indexed or edited cards surface
+  // without the user clearing the field. Rate-limit, not debounce — the search
+  // service notifies in continuous bursts during indexing.
+  void _onSearchIndexChanged() {
+    if (!_isQueryActive) return;
+    if (_indexReRankTimer?.isActive ?? false) return;
+    _indexReRankTimer = Timer(const Duration(milliseconds: 250), () {
+      if (!_isQueryActive) return;
+      unawaited(_resolveQueryAndUpdate());
+    });
   }
 
   void _onSearchChanged() {
@@ -133,42 +238,7 @@ class FilterController extends ChangeNotifier {
     );
   }
 
-  /// Refreshes the grid for the current query: first with the keyword-only
-  /// ranking (so the user sees results immediately even if the meaning
-  /// engine is busy), then again with the combined ranking once the query
-  /// vector arrives.
-  Future<void> _resolveQueryAndUpdate() async {
-    final query = searchController.text.trim();
-
-    if (query.length < 2) {
-      _rankScores = const {};
-      updateFilteredList();
-      return;
-    }
-
-    final reqId = ++_rankRequestId;
-
-    // Show keyword-only ranking right away. RRF inside the service handles
-    // a single ranked list correctly, so dropping the meaning-search rank
-    // doesn't break the math — it just narrows the signal to the lexical
-    // channel until the embedder catches up.
-    //
-    // Pool sources the FULL character set. The rank gate
-    // (updateFilteredList) makes _filteredFiles the post-gate display —
-    // reading the pool from there would shrink it across queries. Tag,
-    // creator, and folder filters apply at display time independent of
-    // ranking, so the pool stays stable.
-    final pool = characterService.characterFiles
-        .map((f) => f.appCardImagePath)
-        .toList();
-    _rankScores = searchService.rankLexical(query, pool);
-    updateFilteredList();
-
-    final fused = await searchService.rank(query, pool);
-    if (reqId != _rankRequestId) return;
-    _rankScores = fused;
-    updateFilteredList();
-  }
+  // ---- Filter state ----
 
   bool get hasActiveFilters =>
       searchController.text.isNotEmpty ||
@@ -181,337 +251,422 @@ class FilterController extends ChangeNotifier {
 
   void clearAllFilters() {
     searchController.clear();
-    selectedTags.clear();
-    selectedCreators.clear();
+    selectedTags = {};
+    selectedCreators = {};
     selectedDirectory = allDirectories;
     filterFavorites = false;
     prioritizeRecent = false;
     filterHasVariants = false;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void setSortOption(CharacterSortOptionEnum option) {
     sortOption = option;
     _previousSortOption = null;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void togglePrioritizeRecent() {
     prioritizeRecent = !prioritizeRecent;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void toggleFilterFavorites() {
     filterFavorites = !filterFavorites;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void toggleFilterHasVariants() {
     filterHasVariants = !filterHasVariants;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void setTags(Set<String> tags) {
     selectedTags = tags;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void setCreators(Set<String> creators) {
     selectedCreators = creators;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
   void setDirectory(String directory) {
     selectedDirectory = directory;
-    updateFilteredList();
+    unawaited(_reload());
   }
 
-  /// Opens the creator multi-select dialog and applies the result. No-op on
-  /// cancel.
+  // ---- Filter dialogs ----
+
   Future<void> openCreatorFilterDialog() async {
     final newCreators = await NavigationService().showMultiSelectDialog(
       title: 'Filter Creators',
-      items: getCreatorCounts(),
+      items: await characterService.creatorCounts(_filter),
       selectedItems: selectedCreators,
     );
     if (newCreators != null) setCreators(newCreators);
   }
 
-  /// Opens the tag multi-select dialog and applies the result. Passes the
-  /// un-narrowed universe of tags as `items` so re-opening with tags already
-  /// selected still shows every option; [getTagCounts] runs as a dynamic
-  /// callback so visible counts narrow as the selection grows.
   Future<void> openTagFilterDialog() async {
     final newTags = await NavigationService().showMultiSelectDialog(
       title: 'Filter Tags',
-      items: getTagCounts({}),
+      items: await _tagCounts(selectedTags),
       selectedItems: selectedTags,
-      dynamicItemsCallback: getTagCounts,
+      dynamicItemsCallback: _tagCounts,
     );
     if (newTags != null) setTags(newTags);
   }
 
-  /// Opens the folder-tree picker and applies the result. No-op on cancel.
   Future<void> openDirectoryFilterDialog() async {
     final newDirectory = await NavigationService().showPickFolderDialog(
       title: 'Filter by Folder',
-      items: getDirectoryCounts(),
+      items: await _directoryCounts(),
       selectedItem: selectedDirectory,
       allFoldersKey: allDirectories,
     );
     if (newDirectory != null) setDirectory(newDirectory);
   }
 
-  Map<String, int> getCreatorCounts() {
-    final creatorCounts = <String, int>{};
-    for (final file in characterService.characterFiles) {
-      if (_basePoolForCreators.contains(file.appCardImagePath)) {
-        final creator = file.card.creator.toLowerCase();
-        final key = creator.isEmpty ? 'unknown' : creator;
-        creatorCounts[key] = (creatorCounts[key] ?? 0) + 1;
-      }
+  // Per-tag counts over the pool passing the current creator/folder/favorite/
+  // variant filters plus whatever tags are tentatively selected in the dialog.
+  Future<Map<String, int>> _tagCounts(Set<String> selected) async {
+    final counts = await characterService.tagCounts(_buildFilter(tags: selected));
+    for (final tag in selected) {
+      counts.putIfAbsent(tag, () => 0);
     }
-    return creatorCounts;
+    return counts;
   }
 
-  Map<String, int> getTagCounts([Set<String>? tempSelectedTags]) {
-    final tagsToEvaluate = tempSelectedTags ?? selectedTags;
-    final activePool = Set<String>.of(_basePoolForTags);
+  // Rolls the per-folder leaf counts up the folder tree (each card counts for
+  // every ancestor path), seeding all known folders to 0 so empty ones still
+  // appear in the picker.
+  Future<Map<String, int>> _directoryCounts() async {
+    final leaf = await characterService.folderLeafCounts(_filter);
 
-    for (final tag in tagsToEvaluate) {
-      final tagSet = _tagIndex[tag];
-      if (tagSet == null || tagSet.isEmpty) {
-        activePool.clear();
-        break;
-      }
-      activePool.retainAll(tagSet); // Blazing fast in-place modification
-      if (activePool.isEmpty) break;
-    }
-
-    final tagCounts = <String, int>{};
-    if (activePool.isNotEmpty) {
-      // O(N) fast tally instead of thousands of Set allocations
-      for (final id in activePool) {
-        final tags = _cardTags[id];
-        if (tags != null) {
-          for (final tag in tags) {
-            tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
-          }
-        }
-      }
-    }
-
-    // Ensure actively selected tags are always present in the map
-    for (final tag in tagsToEvaluate) {
-      tagCounts.putIfAbsent(tag, () => 0);
-    }
-
-    return tagCounts;
-  }
-
-  Map<String, int> getDirectoryCounts() {
+    // In browse mode, seed every folder to 0 so empty ones are still
+    // navigable. During a search, skip the seeding so only folders that hold a
+    // matching card appear — picking a folder with no results is then
+    // impossible.
     final counts = <String, int>{};
-
-    // Seed all existing directories to 0 so they don't jump/disappear
-    for (final dir in _cardDirectories.values) {
-      if (dir != '.') {
-        final parts = dir.split('/');
-        var currentPath = '';
-        for (final part in parts) {
-          currentPath = currentPath.isEmpty ? part : '$currentPath/$part';
-          counts.putIfAbsent(currentPath, () => 0);
+    if (!_isQueryActive) {
+      final allFolders = await characterService.distinctFolders();
+      for (final dir in allFolders) {
+        if (dir == '.') continue;
+        var current = '';
+        for (final part in dir.split('/')) {
+          current = current.isEmpty ? part : '$current/$part';
+          counts.putIfAbsent(current, () => 0);
         }
       }
     }
 
     var allCount = 0;
-    for (final id in _basePoolForDirectories) {
-      final dir = _cardDirectories[id];
-      if (dir != null && dir != '.') {
-        final parts = dir.split('/');
-        var currentPath = '';
-        for (final part in parts) {
-          currentPath = currentPath.isEmpty ? part : '$currentPath/$part';
-          counts[currentPath] = (counts[currentPath] ?? 0) + 1;
-        }
+    for (final entry in leaf.entries) {
+      allCount += entry.value;
+      if (entry.key == '.') continue;
+      var current = '';
+      for (final part in entry.key.split('/')) {
+        current = current.isEmpty ? part : '$current/$part';
+        counts[current] = (counts[current] ?? 0) + entry.value;
       }
-      allCount++;
     }
 
-    final result = <String, int>{FilterController.allDirectories: allCount};
-
-    final sortedDirs = counts.keys.toList()
+    final result = <String, int>{allDirectories: allCount};
+    final sorted = counts.keys.toList()
       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    for (final dir in sortedDirs) {
+    for (final dir in sorted) {
       result[dir] = counts[dir]!;
     }
-
     return result;
   }
 
-  void updateFilteredList() {
-    final allFiles = characterService.characterFiles;
+  // ---- Loading ----
 
-    if (_needsIndexRebuild) {
-      _tagIndex.clear();
-      _cardTags.clear();
-      _cardDirectories.clear();
-      _variantCounts.clear();
-      for (final file in allFiles) {
-        final id = file.appCardImagePath;
-        _cardTags[id] = file.card.tags;
-        _cardDirectories[id] = p.posix.dirname(id);
-        for (final tag in file.card.tags) {
-          _tagIndex.putIfAbsent(tag, () => {}).add(id);
-        }
-        _variantCounts[file.appCardRootId] =
-            (_variantCounts[file.appCardRootId] ?? 0) + 1;
-      }
-      _needsIndexRebuild = false;
-    }
-
-    final hasSelectedTags = selectedTags.isNotEmpty;
-    final hasSelectedCreators = selectedCreators.isNotEmpty;
-    final hasSelectedDirectory = selectedDirectory != allDirectories;
-
-    _basePoolForTags.clear();
-    _basePoolForCreators.clear();
-    _basePoolForDirectories.clear();
-
-    _filteredFiles = allFiles.where((file) {
-      final card = file.card;
-
-      if (prioritizeRecent) {
-        return file.isRecent;
-      }
-
-      if (filterFavorites && !card.cardwaveData.isFavorite) return false;
-
-      if (filterHasVariants && (_variantCounts[file.appCardRootId] ?? 0) < 2) {
-        return false;
-      }
-
-      var passesCreator = true;
-      if (hasSelectedCreators) {
-        final creator = card.creator.toLowerCase();
-        final key = creator.isEmpty ? 'unknown' : creator;
-        passesCreator = selectedCreators.contains(key);
-      }
-
-      var passesTags = true;
-      if (hasSelectedTags) {
-        for (final tag in selectedTags) {
-          if (!card.tags.contains(tag)) {
-            passesTags = false;
-            break;
-          }
-        }
-      }
-
-      var passesDirectory = true;
-      if (hasSelectedDirectory) {
-        final dir =
-            _cardDirectories[file.appCardImagePath] ??
-            p.posix.dirname(file.appCardImagePath);
-        if (dir != selectedDirectory &&
-            !dir.startsWith('$selectedDirectory/')) {
-          passesDirectory = false;
-        }
-      }
-
-      if (passesCreator && passesDirectory) {
-        _basePoolForTags.add(file.appCardImagePath);
-      }
-      if (passesTags && passesDirectory) {
-        _basePoolForCreators.add(file.appCardImagePath);
-      }
-      if (passesCreator && passesTags) {
-        _basePoolForDirectories.add(file.appCardImagePath);
-      }
-
-      return passesCreator && passesTags && passesDirectory;
-    }).toList();
-
-    // Drop cards that don't match the active query. Keyed on query length
-    // (not _rankScores.isNotEmpty) so an empty rank map with a non-empty
-    // query correctly empties the grid — a non-matching query should show
-    // "no results", not the whole library.
-    if (searchController.text.trim().length >= 2) {
-      _filteredFiles = _filteredFiles
-          .where((f) => _rankScores.containsKey(f.appCardImagePath))
-          .toList();
-    }
-
-    _sortFiltered();
-    _updateGroupedFiles();
+  // The unfiltered card total and whether any folders exist depend only on the
+  // library, not the active filter — so they're refreshed when the library
+  // changes (scan / create / clone / delete / import), not on every filter flip
+  // or search reload, where re-running a full COUNT / DISTINCT would be wasted.
+  Future<void> _refreshLibraryCounters() async {
+    final (folders, total) = await (
+      characterService.distinctFolders(),
+      characterService.countCards(const LibraryCardFilter()),
+    ).wait;
+    if (_disposed) return;
+    _hasFolders = folders.any((dir) => dir != '.');
+    _cardTotal = total;
     notifyListeners();
   }
 
-  void _sortFiltered() {
-    int Function(CharacterFile, CharacterFile) comparator;
+  Future<void> _reload() async {
+    final token = ++_loadToken;
+    _isLoading = true;
+    notifyListeners();
 
-    switch (sortOption) {
-      case CharacterSortOptionEnum.relevance:
-        comparator = (a, b) {
-          final scoreA = _rankScores[a.appCardImagePath] ?? 0.0;
-          final scoreB = _rankScores[b.appCardImagePath] ?? 0.0;
-          final scoreCompare = scoreB.compareTo(scoreA); // High to low
-          if (scoreCompare != 0) return scoreCompare;
-          return a.card.name.toLowerCase().compareTo(b.card.name.toLowerCase());
-        };
-      case CharacterSortOptionEnum.nameAsc:
-        comparator = (a, b) =>
-            a.card.name.toLowerCase().compareTo(b.card.name.toLowerCase());
-      case CharacterSortOptionEnum.nameDesc:
-        comparator = (a, b) =>
-            b.card.name.toLowerCase().compareTo(a.card.name.toLowerCase());
-      case CharacterSortOptionEnum.importNewest:
-        comparator = (a, b) =>
-            b.pngTimestampImported.compareTo(a.pngTimestampImported);
-      case CharacterSortOptionEnum.importOldest:
-        comparator = (a, b) =>
-            a.pngTimestampImported.compareTo(b.pngTimestampImported);
-      case CharacterSortOptionEnum.modifiedNewest:
-        comparator = (a, b) => (b.appCardTimestampLastSaved ?? 0).compareTo(
-          a.appCardTimestampLastSaved ?? 0,
-        );
-      case CharacterSortOptionEnum.modifiedOldest:
-        comparator = (a, b) => (a.appCardTimestampLastSaved ?? 0).compareTo(
-          b.appCardTimestampLastSaved ?? 0,
-        );
-      case CharacterSortOptionEnum.interactedNewest:
-        comparator = (a, b) => (b.appCardTimestampLastChatted ?? 0).compareTo(
-          a.appCardTimestampLastChatted ?? 0,
-        );
-      case CharacterSortOptionEnum.interactedOldest:
-        comparator = (a, b) => (a.appCardTimestampLastChatted ?? 0).compareTo(
-          b.appCardTimestampLastChatted ?? 0,
-        );
-      case CharacterSortOptionEnum.tokensHigh:
-        comparator = (a, b) =>
-            b.appCardTokenCountAll.compareTo(a.appCardTokenCountAll);
-      case CharacterSortOptionEnum.tokensLow:
-        comparator = (a, b) =>
-            a.appCardTokenCountAll.compareTo(b.appCardTokenCountAll);
+    // A relevance-ordered search is ordered by score in Dart; every other case
+    // (browse, or a search with an explicit sort column) pages from the
+    // database with the filter scoped to the search result.
+    if (_isQueryActive && sortOption == CharacterSortOptionEnum.relevance) {
+      await _loadSearch(token);
+    } else {
+      await _loadBrowseFirstPage(token);
     }
-
-    _filteredFiles.sort(comparator);
   }
 
-  void _updateGroupedFiles() {
-    final groups = <String, List<CharacterFile>>{};
-    for (final file in _filteredFiles) {
-      (groups[file.appCardRootId] ??= []).add(file);
+  Future<void> _loadBrowseFirstPage(int token) async {
+    final filter = _filter;
+
+    if (!groupVariants) {
+      final (cardCount, page) = await (
+        characterService.countCards(filter),
+        characterService.pageCardsByActivity(
+          filter: filter,
+          offset: 0,
+          limit: _pageSize,
+        ),
+      ).wait;
+      if (token != _loadToken) return;
+      final loaded = await _loadEntries([
+        for (final row in page)
+          (
+            path: row.item.appCardImagePath,
+            variantCount: row.item.variantCount,
+            isOriginal: row.isOriginal,
+          ),
+      ]);
+      if (token != _loadToken) return;
+
+      _groupTotal = cardCount;
+      _filteredCardCount = cardCount;
+      _entries = loaded;
+      _offset = page.length;
+      _hasMore = _offset < _groupTotal;
+      _isLoading = false;
+      notifyListeners();
+      return;
     }
 
-    final result = groups.values.toList();
-    for (final stack in result) {
-      if (stack.length > 1) {
-        stack.sort(
-          (a, b) => a.pngTimestampImported.compareTo(b.pngTimestampImported),
-        );
+    final (column, descending) = _sort;
+    // The two counts and the first page are independent reads of the same
+    // filter, so issue them together rather than one after another.
+    final (groupTotal, cardCount, page) = await (
+      characterService.countCardGroups(filter),
+      characterService.countCards(filter),
+      characterService.pageCards(
+        filter: filter,
+        sortColumn: column,
+        descending: descending,
+        offset: 0,
+        limit: _pageSize,
+      ),
+    ).wait;
+    if (token != _loadToken) return;
+    final loaded = await _loadEntries([
+      for (final item in page)
+        (
+          path: item.appCardImagePath,
+          variantCount: item.variantCount,
+          isOriginal: true,
+        ),
+    ]);
+    if (token != _loadToken) return;
+
+    _groupTotal = groupTotal;
+    _filteredCardCount = cardCount;
+    _entries = loaded;
+    _offset = page.length;
+    _hasMore = _offset < _groupTotal;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Loads the next browse page and appends it. No-op during a search (search
+  /// results are already fully loaded) or when nothing is left.
+  Future<void> loadMore() async {
+    if (_isLoading || !_hasMore || !_isPaged) return;
+    final token = _loadToken;
+    _isLoading = true;
+    notifyListeners();
+
+    if (!groupVariants) {
+      final page = await characterService.pageCardsByActivity(
+        filter: _filter,
+        offset: _offset,
+        limit: _pageSize,
+      );
+      if (token != _loadToken) return;
+      final loaded = await _loadEntries([
+        for (final row in page)
+          (
+            path: row.item.appCardImagePath,
+            variantCount: row.item.variantCount,
+            isOriginal: row.isOriginal,
+          ),
+      ]);
+      if (token != _loadToken) return;
+
+      _entries = [..._entries, ...loaded];
+      _offset += page.length;
+      _hasMore = _offset < _groupTotal;
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    final (column, descending) = _sort;
+    final page = await characterService.pageCards(
+      filter: _filter,
+      sortColumn: column,
+      descending: descending,
+      offset: _offset,
+      limit: _pageSize,
+    );
+    if (token != _loadToken) return;
+    final loaded = await _loadEntries([
+      for (final item in page)
+        (
+          path: item.appCardImagePath,
+          variantCount: item.variantCount,
+          isOriginal: true,
+        ),
+    ]);
+    if (token != _loadToken) return;
+
+    _entries = [..._entries, ...loaded];
+    _offset += page.length;
+    _hasMore = _offset < _groupTotal;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> _loadSearch(int token) async {
+    final ranked = _rankScores.keys.toList()
+      ..sort((a, b) => (_rankScores[b] ?? 0).compareTo(_rankScores[a] ?? 0));
+    // The ranked paths already restrict the result, so the filter passed here
+    // carries only the tag/creator/folder narrowing, not the search scope.
+    final filter = _buildFilter(withSearchScope: false);
+
+    if (!groupVariants) {
+      // Switcher: keep each matched card as its own row, in score order. Badges
+      // come from the whole-library variant info, so a matched variant shows
+      // VARIANT even when its original isn't a match. The two reads don't depend
+      // on each other, so issue them together.
+      final (rows, info) = await (
+        characterService.cardsByPaths(ranked, filter),
+        characterService.variantInfoForPaths(ranked),
+      ).wait;
+      if (token != _loadToken) return;
+      final byPath = {for (final row in rows) row.appCardImagePath: row};
+      final ordered = [
+        for (final path in ranked)
+          if (byPath[path] != null) byPath[path]!,
+      ];
+      final loaded = await _loadEntries([
+        for (final row in ordered)
+          (
+            path: row.appCardImagePath,
+            variantCount: info[row.appCardImagePath]!.variantCount,
+            isOriginal: info[row.appCardImagePath]!.isOriginal,
+          ),
+      ]);
+      if (token != _loadToken) return;
+
+      _entries = loaded;
+      _groupTotal = loaded.length;
+      _offset = loaded.length;
+      _hasMore = false;
+      _filteredCardCount = rows.length;
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    final rows = await characterService.cardsByPaths(ranked, filter);
+    if (token != _loadToken) return;
+
+    // Group by root id: the oldest variant represents the group; order groups
+    // by their best-scoring card.
+    final byRoot = <String, List<CardListItem>>{};
+    for (final row in rows) {
+      (byRoot[row.appCardRootId] ??= []).add(row);
+    }
+    final groups = <({CardListItem repr, int count, double score})>[];
+    for (final cards in byRoot.values) {
+      cards.sort(
+        (a, b) => a.pngTimestampImported.compareTo(b.pngTimestampImported),
+      );
+      var score = 0.0;
+      for (final card in cards) {
+        final cardScore = _rankScores[card.appCardImagePath] ?? 0;
+        if (cardScore > score) score = cardScore;
+      }
+      groups.add((repr: cards.first, count: cards.length, score: score));
+    }
+    groups.sort((a, b) => b.score.compareTo(a.score));
+
+    final loaded = await _loadEntries([
+      for (final group in groups)
+        (
+          path: group.repr.appCardImagePath,
+          variantCount: group.count,
+          isOriginal: true,
+        ),
+    ]);
+    if (token != _loadToken) return;
+
+    _entries = loaded;
+    _groupTotal = loaded.length;
+    _offset = loaded.length;
+    _hasMore = false;
+    _filteredCardCount = rows.length;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Loads each path's full card body into a grid entry, in order, skipping any
+  /// card that can't be read. Backs both the paged browse load and the ranked
+  /// search load — they differ only in where the variant count comes from.
+  Future<List<GridEntry>> _loadEntries(
+    Iterable<({String path, int variantCount, bool isOriginal})> items,
+  ) async {
+    final result = <GridEntry>[];
+    for (final item in items) {
+      try {
+        final file = await characterService.loadFull(item.path);
+        result.add((
+          file: file,
+          variantCount: item.variantCount,
+          isOriginal: item.isOriginal,
+        ));
+      } on Exception {
+        // Skip a card that can't be read.
       }
     }
-    _groupedFiles = result;
+    return result;
+  }
+
+  /// Refreshes the grid for the current query: first the keyword-only ranking
+  /// (instant), then the combined keyword + meaning ranking once the query
+  /// vector arrives.
+  Future<void> _resolveQueryAndUpdate() async {
+    final query = searchController.text.trim();
+    if (query.length < 2) {
+      _setRankScores(const {});
+      await _reload();
+      return;
+    }
+
+    final reqId = ++_rankRequestId;
+    final pool = await characterService.allCardPaths();
+    if (reqId != _rankRequestId) return;
+
+    final lexical = await searchService.rankLexical(query, pool);
+    if (reqId != _rankRequestId) return;
+    _setRankScores(lexical);
+    await _reload();
+
+    final fused = await searchService.rank(query, pool);
+    if (reqId != _rankRequestId) return;
+    _setRankScores(fused);
+    await _reload();
   }
 }

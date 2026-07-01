@@ -17,9 +17,8 @@ import 'app_test_helpers.dart';
 ///
 /// The disk reload is load-bearing: CharacterFile is a single in-memory
 /// object the editor mutates in place, so a naive leave+re-enter would
-/// pass even if the bytes never hit disk. loadCharacters() rebuilds
-/// _characterFiles from disk, so the post-reload value reflects ONLY
-/// what was persisted.
+/// pass even if the bytes never hit disk. The grid reloads each card from
+/// disk on demand, so the post-reload value reflects ONLY what was persisted.
 ///
 /// No API calls.
 void main() {

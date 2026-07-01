@@ -73,7 +73,7 @@ void main() {
       final cs = tester
           .element(find.byType(AppBarSwitcherTitle))
           .read<CharacterService>();
-      final targetFile = cs.characterFiles.firstWhere(
+      final targetFile = (await cs.loadAll()).firstWhere(
         (f) => f.card.displayName != sourceName,
         orElse: () => throw StateError('seed should have put a 2nd card in cs'),
       );

@@ -130,7 +130,7 @@ void main() {
       await characterService.loadCharacters();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      final files = characterService.characterFiles;
+      final files = await characterService.loadAll();
       expect(files, hasLength(1));
       final raw = files.first.card.extensions[nodesCardExtensionKey];
       expect(

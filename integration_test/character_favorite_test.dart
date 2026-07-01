@@ -52,9 +52,7 @@ void main() {
       // Capture initial favorite state from memory so we can assert on the
       // OPPOSITE value after the toggle. Don't hardcode "default = false"
       // — it's a card-asset detail that could drift.
-      final cassBefore = service.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassBefore = (await service.loadByName(kCassName))!;
       final initialFav = cassBefore.card.cardwaveData.isFavorite;
       final targetFav = !initialFav;
 
@@ -80,9 +78,7 @@ void main() {
       // GestureDetector); pumpAndSettle drains the microtask queue.
       await tester.pumpAndSettle();
 
-      final cassAfterTap = service.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassAfterTap = (await service.loadByName(kCassName))!;
       expect(
         cassAfterTap.card.cardwaveData.isFavorite,
         targetFav,
@@ -95,9 +91,7 @@ void main() {
       await service.loadCharacters();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      final cassAfterReload = service.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassAfterReload = (await service.loadByName(kCassName))!;
       expect(
         cassAfterReload.card.cardwaveData.isFavorite,
         targetFav,
@@ -114,8 +108,8 @@ void main() {
         identical(cassBefore, cassAfterReload),
         isFalse,
         reason:
-            'loadCharacters() should rebuild _characterFiles with fresh '
-            'instances; otherwise the persistence assertion is vacuous',
+            'loadByName re-reads the card from disk each call, returning a '
+            'fresh instance; otherwise the persistence assertion is vacuous',
       );
     },
   );

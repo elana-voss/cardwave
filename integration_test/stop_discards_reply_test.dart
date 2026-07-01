@@ -97,7 +97,7 @@ void main() {
       final characterService = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final testCharFile = characterService.characterFiles.firstWhere(
+      final testCharFile = (await characterService.loadAll()).firstWhere(
         (f) => f.card.displayName != kCassName,
         orElse: () => throw StateError('seedTestCharacter should add a card'),
       );

@@ -12,19 +12,23 @@ import 'package:provider/provider.dart';
 
 class CharacterGridItem extends StatelessWidget {
   const CharacterGridItem({
-    required this.characters,
+    required this.file,
+    required this.variantCount,
     super.key,
     this.variantStatus = VariantStatusEnum.none,
     this.showVariantNotes = false,
   });
-  final List<CharacterFile> characters;
+
+  /// The variant group's display card, already loaded full by the controller.
+  final CharacterFile file;
+
+  /// How many cards the group holds (1 = single card, >1 shows the badge).
+  final int variantCount;
   final VariantStatusEnum variantStatus;
   final bool showVariantNotes;
 
   void _showVariants(BuildContext context) {
-    // `characters` is always built non-empty (one entry per card stack).
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    final rootId = characters.first.appCardRootId;
+    final rootId = file.appCardRootId;
     unawaited(
       showModalBottomSheet(
         showDragHandle: false,
@@ -40,13 +44,10 @@ class CharacterGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // `characters` is always built non-empty (one entry per card stack).
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    final file = characters.first;
     final isAiTask = context.select<CharacterAiService, bool>(
       (service) => service.isProcessingAiTask(file.appCardImagePath),
     );
-    final isGroup = characters.length > 1;
+    final isGroup = variantCount > 1;
 
     return Stack(
       children: [
@@ -91,7 +92,7 @@ class CharacterGridItem extends StatelessWidget {
             bottom: 0,
             right: 0,
             child: CharacterGridItemVariantBadge(
-              count: characters.length,
+              count: variantCount,
               onTap: () => _showVariants(context),
             ),
           ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/grid.dart';
@@ -46,6 +48,10 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
     _filterController = FilterController(
       characterService: context.read<CharacterService>(),
       searchService: context.read<SearchService>(),
+      // List every variant as its own row, ordered by last activity, with the
+      // ORIGINAL / VARIANT badges — the switcher picks an exact card, not a
+      // group.
+      groupVariants: false,
     );
   }
 
@@ -63,45 +69,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
         return ListenableBuilder(
           listenable: _filterController!,
           builder: (context, _) {
-            final allGroups = <String, List<CharacterFile>>{};
-            for (final file
-                in context.watch<CharacterService>().characterFiles) {
-              (allGroups[file.appCardRootId] ??= []).add(file);
-            }
-
-            final originalIds = <String>{};
-            final variantIds = <String>{};
-
-            for (final stack in allGroups.values) {
-              if (stack.length > 1) {
-                final oldest = stack.reduce(
-                  (a, b) =>
-                      a.pngTimestampImported <= b.pngTimestampImported ? a : b,
-                );
-                originalIds.add(oldest.appCardImagePath);
-                for (final f in stack) {
-                  if (f.appCardImagePath != oldest.appCardImagePath) {
-                    variantIds.add(f.appCardImagePath);
-                  }
-                }
-              }
-            }
-
-            final filteredCharacters =
-                List<CharacterFile>.of(_filterController!.filteredFiles)
-                  ..sort((a, b) {
-                    final aTime =
-                        (a.appCardTimestampLastChatted ?? 0) >
-                            (a.appCardTimestampLastSaved ?? 0)
-                        ? (a.appCardTimestampLastChatted ?? 0)
-                        : (a.appCardTimestampLastSaved ?? 0);
-                    final bTime =
-                        (b.appCardTimestampLastChatted ?? 0) >
-                            (b.appCardTimestampLastSaved ?? 0)
-                        ? (b.appCardTimestampLastChatted ?? 0)
-                        : (b.appCardTimestampLastSaved ?? 0);
-                    return bTime.compareTo(aTime);
-                  });
+            final entries = _filterController!.entries;
             return Column(
               spacing: 8,
               children: [
@@ -145,18 +113,24 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: filteredCharacters.length,
+                    itemCount: entries.length,
                     itemBuilder: (context, index) {
-                      final file = filteredCharacters[index];
+                      // Pull the next page in as the last row builds.
+                      if (index >= entries.length - 1) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          unawaited(_filterController!.loadMore());
+                        });
+                      }
+                      final entry = entries[index];
+                      final file = entry.file;
+                      final hasVariants = entry.variantCount > 1;
                       return _CharacterSwitcherItem(
                         characterFile: file,
                         isSelected:
                             file.appCardImagePath ==
                             widget.currentCharacterFile.appCardImagePath,
-                        isOriginalVariant: originalIds.contains(
-                          file.appCardImagePath,
-                        ),
-                        isVariant: variantIds.contains(file.appCardImagePath),
+                        isOriginalVariant: hasVariants && entry.isOriginal,
+                        isVariant: hasVariants && !entry.isOriginal,
                       );
                     },
                   ),

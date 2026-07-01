@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
@@ -31,11 +33,18 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
   final TextEditingController _searchController = TextEditingController();
   bool _favoritesOnly = false;
   final Set<String> _selectedIds = {};
+  List<CharacterFile>? _allCharacters;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(() => setState(() {}));
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    final all = await context.read<CharacterService>().loadAll();
+    if (mounted) setState(() => _allCharacters = all);
   }
 
   @override
@@ -47,7 +56,10 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<GroupChatController>();
-    final allCharacters = context.watch<CharacterService>().characterFiles;
+    final allCharacters = _allCharacters;
+    if (allCharacters == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     final alreadyAdded = <String>{
       for (final c in controller.characters) c.appCardId,
     };

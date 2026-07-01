@@ -208,10 +208,10 @@ void main() {
       // `extensions[nodesCardExtensionKey]` via `CardNodesExtension.toJson`;
       // the disk reload parses the same key back via `fromJson`.
       // The test seeds onboarding-complete with only the bundled
-      // assistant, so `characterFiles` has exactly one entry — pull
-      // it directly. Asserting on the count gives a clear failure
+      // assistant, so the library holds exactly one card — pull it
+      // directly. Asserting on the count gives a clear failure
       // message if the reload state is wrong.
-      final files = characterService.characterFiles;
+      final files = await characterService.loadAll();
       expect(
         files,
         hasLength(1),

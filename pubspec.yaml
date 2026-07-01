@@ -117,6 +117,9 @@ dependencies:
   re_highlight: ^0.0.3
   fl_nodes: ^0.5.0+1
   flutter_context_menu: ^0.3.0
+  drift: ^2.34.0
+  drift_flutter: ^0.3.0
+  sqlite3: ^3.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -125,6 +128,7 @@ dev_dependencies:
   build_runner: ^2.4.6
   json_serializable: ^6.7.1
   import_lint: ^0.1.6
+  drift_dev: ^2.34.0
   # qcheck is wired as an analysis_server_plugin via the top-level `plugins:`
   # block in analysis_options.yaml; it resolves its own deps separately and
   # does NOT need to be a dev_dependency here.
@@ -141,7 +145,7 @@ dependency_overrides:
   llamadart:
     git:
       url: https://github.com/elana-voss/llamadart.git
-      ref: 089244892c1c0ebd0b37239f2caa632c6c91db00
+      ref: 2dc1af68752aa14eca708a185e48977047bcb956
   # Maintained fork of re_editor: upstream (reqable/re-editor) is stale and not
   # merging fixes. Our fork carries the Flutter 3.44 onFocusReceived fix, the
   # wasm-safe isolate_manager bump (so no app-side override is needed), and a

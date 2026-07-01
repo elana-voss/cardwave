@@ -12,7 +12,7 @@ import 'app_test_helpers.dart';
 
 // The grid is virtualized (off-viewport tiles aren't mounted), so widget
 // counts for the unfiltered ten-card pool would only show the ~4 visible
-// rows. Assert membership via FilterController.filteredFiles for the full
+// rows. Assert membership via FilterController.filteredCount for the full
 // pool; widget-count assertions only apply to small filtered result sets.
 
 /// Calibration probe for the search pipeline. Seeds nine diverse cards
@@ -74,12 +74,12 @@ void main() {
       var allIndexed = false;
       while (DateTime.now().isBefore(deadline)) {
         await tester.pump(const Duration(milliseconds: 500));
-        final files = characterService.characterFiles;
-        if (files.length < 10) continue;
-        final fully = files.every((f) {
-          final data = searchService.embeddingsFor(f.appCardImagePath);
-          return data != null &&
-              data.hashes.length == CardSearchFieldEnum.values.length;
+        final paths = await characterService.allCardPaths();
+        if (paths.length < 10) continue;
+        final fully = paths.every((path) {
+          final hashes = searchService.fieldHashesFor(path);
+          return hashes != null &&
+              hashes.length == CardSearchFieldEnum.values.length;
         });
         if (fully) {
           allIndexed = true;
@@ -94,7 +94,7 @@ void main() {
 
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(
-        filterController.filteredFiles.length,
+        filterController.filteredCount,
         equals(10),
         reason: 'seed + auto-copy should put ten cards in the filter pool',
       );
@@ -106,7 +106,7 @@ void main() {
       Future<int> probe(String query) async {
         await tester.enterText(searchField, query);
         await tester.pumpAndSettle(const Duration(milliseconds: 800));
-        return filterController.filteredFiles.length;
+        return filterController.filteredCount;
       }
 
       // --- Literal-token cutoff probes ---
@@ -197,7 +197,7 @@ void main() {
       await tester.enterText(searchField, '');
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(
-        filterController.filteredFiles.length,
+        filterController.filteredCount,
         equals(10),
         reason: 'clearing the search restores the full ten-card pool',
       );

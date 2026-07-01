@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item.dart';
@@ -5,34 +7,66 @@ import 'package:cardwave/grid/src/pages/widgets/character_grid_item/variant_stat
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CharacterGridItemVariantsSheet extends StatelessWidget {
+/// Bottom sheet listing every variant in one group, oldest first. Loads the
+/// group's cards from the library index on demand and reloads when the library
+/// changes, auto-dismissing once the last variant is deleted.
+class CharacterGridItemVariantsSheet extends StatefulWidget {
   const CharacterGridItemVariantsSheet({required this.rootId, super.key});
   final String rootId;
 
   @override
-  Widget build(BuildContext context) {
-    final characterService = context.watch<CharacterService>();
+  State<CharacterGridItemVariantsSheet> createState() =>
+      _CharacterGridItemVariantsSheetState();
+}
 
-    final currentStack =
-        characterService.characterFiles
-            .where((f) => f.appCardRootId == rootId)
-            .toList()
-          ..sort(
-            (a, b) => a.pngTimestampImported.compareTo(b.pngTimestampImported),
-          );
+class _CharacterGridItemVariantsSheetState
+    extends State<CharacterGridItemVariantsSheet> {
+  late final CharacterService _characterService;
+  List<CharacterFile>? _variants;
 
-    if (currentStack.isEmpty) {
-      // Auto-dismiss the sheet once its last variant has been deleted; the
-      // in-callback `mounted` / `canPop` guards make a repeated call (if
-      // build re-runs before the pop lands) harmless.
-      // ignore: qcheck/avoid_side_effects_in_build
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted && Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        }
-      });
-      return const SizedBox.shrink();
+  @override
+  void initState() {
+    super.initState();
+    _characterService = context.read<CharacterService>();
+    _characterService.addListener(_reload);
+    unawaited(_reload());
+  }
+
+  @override
+  void dispose() {
+    _characterService.removeListener(_reload);
+    super.dispose();
+  }
+
+  Future<void> _reload() async {
+    final items = await _characterService.cardsByRootId(widget.rootId);
+    final files = <CharacterFile>[];
+    for (final item in items) {
+      try {
+        files.add(await _characterService.loadFull(item.appCardImagePath));
+      } on Exception {
+        // Skip a variant that can't be read.
+      }
     }
+    if (!mounted) return;
+    setState(() => _variants = files);
+
+    // Auto-dismiss once the last variant is gone.
+    if (files.isEmpty && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final variants = _variants;
+    if (variants == null) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (variants.isEmpty) return const SizedBox.shrink();
 
     return FractionallySizedBox(
       heightFactor: 0.85,
@@ -61,10 +95,11 @@ class CharacterGridItemVariantsSheet extends StatelessWidget {
                 crossAxisSpacing: AppConstants.gridCrossAxisSpacing,
                 mainAxisSpacing: AppConstants.gridMainAxisSpacing,
               ),
-              itemCount: currentStack.length,
+              itemCount: variants.length,
               itemBuilder: (context, index) => CharacterGridItem(
-                key: ValueKey(currentStack[index].appCardImagePath),
-                characters: [currentStack[index]],
+                key: ValueKey(variants[index].appCardImagePath),
+                file: variants[index],
+                variantCount: 1,
                 variantStatus: index == 0
                     ? VariantStatusEnum.original
                     : VariantStatusEnum.variant,

@@ -64,7 +64,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
       // Ensure the global character list is populated before we resolve
       // group members — the user may open group chat before visiting the
       // character grid, in which case characterFiles would be empty.
-      if (characterService.characterFiles.isEmpty) {
+      if (!characterService.hasScanned) {
         await characterService.loadCharacters();
       }
 

@@ -61,17 +61,13 @@ void main() {
       final characterService = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final cassCard = characterService.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassCard = (await characterService.loadByName(kCassName))!;
+      final allPaths = await characterService.allCardPaths();
       final indexerDeadline = DateTime.now().add(const Duration(seconds: 45));
       var lexicalReady = false;
       while (DateTime.now().isBefore(indexerDeadline)) {
         await tester.pump(const Duration(milliseconds: 500));
-        final scores = searchService.rankLexical(
-          'assistant',
-          characterService.characterFiles.map((f) => f.appCardImagePath),
-        );
+        final scores = await searchService.rankLexical('assistant', allPaths);
         if (scores.containsKey(cassCard.appCardImagePath)) {
           lexicalReady = true;
           break;

@@ -1,4 +1,3 @@
-import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/controllers/filter_controller.dart';
 import 'package:cardwave/search/search.dart';
@@ -18,10 +17,8 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<FilterController>();
-    final characterService = context.watch<CharacterService>();
 
-    final hasDirectories =
-        characterService.directoriesWithCharacters.isNotEmpty;
+    final hasDirectories = controller.hasFolders;
 
     final hasActiveDirectory =
         controller.selectedDirectory != FilterController.allDirectories;
@@ -98,8 +95,8 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
               ),
               const SizedBox(width: 4),
               _CountPill(
-                filteredCount: controller.filteredFiles.length,
-                totalCount: characterService.characterFiles.length,
+                filteredCount: controller.filteredCount,
+                totalCount: controller.totalCount,
                 canClear: controller.hasActiveFilters,
                 onClear: controller.clearAllFilters,
               ),

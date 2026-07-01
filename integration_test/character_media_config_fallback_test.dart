@@ -111,9 +111,7 @@ void main() {
       // state without touching the editor UI. The validator path under
       // test runs when the editor opens — it doesn't care which UI
       // wrote the state.
-      final cassFile = characterService.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final cassFile = (await characterService.loadByName(kCassName))!;
       final appCardId = cassFile.appCardId;
 
       // Imperatively pin Cass's image preset to NanoGPT and flush so
@@ -176,9 +174,7 @@ void main() {
       await tapEditOnCharacterTile(tester, kCassName);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      final freshCass = characterService.characterFiles.firstWhere(
-        (f) => f.card.name == kCassName,
-      );
+      final freshCass = (await characterService.loadByName(kCassName))!;
       expect(
         freshCass.appCardId,
         appCardId,

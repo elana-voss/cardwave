@@ -96,6 +96,17 @@ if(PLUGIN_BUNDLED_LIBRARIES)
     COMPONENT Runtime)
 endif()
 
+# The sqlite-vec add-on (prebuilt loadable binary from the upstream release),
+# copied next to the exe so DynamicLibrary.open('vec0.dll') finds it at runtime
+# and the on-device search can use approximate-nearest vector matching. Optional
+# at build time: when absent, search runs the exact brute-force scan instead.
+set(VEC0_DLL "${CMAKE_CURRENT_SOURCE_DIR}/vec0.dll")
+if(EXISTS "${VEC0_DLL}")
+  install(FILES "${VEC0_DLL}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
+
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
 install(DIRECTORY "${NATIVE_ASSETS_DIR}"

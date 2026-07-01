@@ -5,7 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 class UpdateController {
   const UpdateController._();
 
-  static const String _releasesUrl = 'https://cardwave.cc/releases';
+  static const String _releasesUrl =
+      'https://github.com/elana-voss/cardwave/releases/latest';
 
   /// Runs the update check and drives the matching dialog through NavigationService.
   static Future<void> checkAndShow() async {

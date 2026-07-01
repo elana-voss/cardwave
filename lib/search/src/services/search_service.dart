@@ -1,45 +1,52 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math' as math;
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
-import 'package:cardwave/search/src/models/card_search_data.dart';
 import 'package:cardwave/search/src/models/card_search_field_enum.dart';
 import 'package:cardwave/search/src/observability/embeddings_loggers.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
 
-/// Top of the search pipeline. Owns the on-device embedder, per-card
-/// sidecar IO via [SearchRepository], and the in-memory keyword index.
-/// Listens to [CharacterService] so cards added / edited / removed
-/// stay in sync without the caller having to wire a second listener.
+/// Top of the search pipeline. Owns the on-device embedder and persists all
+/// search data — embedding vectors, keyword (FTS) index, change hashes — to
+/// the [SearchRepository]'s database, so memory stays flat regardless of
+/// library size. Listens to [CharacterService] so cards added / edited /
+/// removed stay in sync.
 ///
-/// Every search-related read flows through this service: the grid
-/// controller calls [rankLexical] for instant keyword-only ranking and
-/// [rank] once it can await the full keyword + meaning fusion.
+/// Every search-related read flows through this service: the grid controller
+/// calls [rankLexical] for fast keyword-only ranking and [rank] for the full
+/// keyword + meaning fusion.
 class SearchService extends ChangeNotifier {
   SearchService({
     required this.repository,
     required Embedder embedder,
   }) : _embedder = embedder;
 
-  /// Minimum best-field cosine for discovery — cards with no literal
-  /// token match enter the result set only when their best-field cosine
-  /// clears this bar. Calibrated against BGE-small-en-v1.5 on the
-  /// example-card pool: real matches land at 0.65–0.85, baseline noise
-  /// at 0.45–0.57; 0.6 leaves a small margin above the noise floor.
+  /// Minimum best-field cosine for discovery — cards with no literal token
+  /// match enter the result set only when their best-field cosine clears
+  /// this bar. Calibrated against BGE-small-en-v1.5 on the example-card
+  /// pool: real matches land at 0.65–0.85, baseline noise at 0.45–0.57.
   static const double _semanticThreshold = 0.6;
 
-  // Per-field BM25F boost = source weight / 10. Dividing by 10 keeps the
-  // boost in the range where BM25's saturation curve doesn't crush the gap
-  // between high- and low-weighted fields (scenario at weight 1 lands at
-  // 0.1 — quiet but still scored).
-  static final Map<CardSearchFieldEnum, double> _bm25FieldWeights = {
-    for (final f in CardSearchFieldEnum.values) f: f.weight / 10,
-  };
+  /// How many cards' vectors a single semantic pass reads from the database
+  /// at once. Bounds per-query memory: a vibe query over a 500K library
+  /// streams the pool in chunks instead of loading every vector into RAM.
+  static const int _semanticBatchSize = 1000;
+
+  /// Above this many fully-indexed candidates, a meaning query stops scanning
+  /// every candidate's vectors and switches to the approximate-nearest fast
+  /// path (Windows only, when the add-on is present). Below it the full scan is
+  /// already cheap. A starting guess — tune against a real large library.
+  static const int _annCandidateThreshold = 2000;
+
+  /// How many nearest chunk vectors the approximate search over-fetches before
+  /// mapping back to cards and reranking exactly. Bigger = more recall, more
+  /// work. A starting guess — tune against a real large library.
+  static const int _annNearestChunks = 4000;
 
   final SearchRepository repository;
   final Embedder _embedder;
@@ -48,19 +55,25 @@ class SearchService extends ChangeNotifier {
   // by deferring the back-pointer to init() (see main.dart).
   late final CharacterService _characterService;
 
-  // Per-card data + a parallel CharacterFile lookup so the worker can
-  // resolve a queue entry's cardPath in O(1) instead of scanning every
-  // loaded card.
-  final Map<String, CardSearchData> _byPath = {};
-  final Map<String, CharacterFile> _cardsByPath = {};
+  // Field texts for cards queued via an in-app edit (save / create / clone /
+  // import), so the drain skips re-reading them. Cards queued by a library
+  // scan carry no entry here and are loaded on demand during the drain. One
+  // small entry per queued-by-edit card, removed as each is drained.
+  final Map<String, Map<CardSearchFieldEnum, String>> _pendingText = {};
+
+  // Per-field change-detection hashes, mirrored from the database at startup
+  // and kept current as fields are indexed. Tiny next to the vectors (which
+  // live only in the database) and backs both change detection and the
+  // sync [fieldHashesFor] readiness check.
+  final Map<String, Map<CardSearchFieldEnum, String>> _hashes = {};
 
   // Worker removes the key on dequeue, so an edit landing mid-process
   // enqueues a fresh re-process instead of being swallowed as a duplicate.
   final Set<String> _queuedKeys = {};
   final Queue<({String cardPath, CardSearchFieldEnum field})> _queue = Queue();
 
-  // Cards whose in-memory state has diverged from disk; the drain loop
-  // flushes one sidecar write when the run of fields for a given card ends.
+  // Cards whose fields changed since their last keyword-row flush; the drain
+  // loop rewrites one FTS row when the run of fields for a card ends.
   final Set<String> _dirtyPaths = {};
 
   // Card-level progress for the chip. _cardsInBatch grows on enqueue, resets
@@ -71,23 +84,20 @@ class SearchService extends ChangeNotifier {
 
   bool _workerRunning = false;
 
-  // Coalesce notify storms (8000+ during cold start) to one tick per 50ms.
+  // Coalesce notify storms (thousands during cold start) to one tick per 50ms.
   bool _notifyScheduled = false;
   Timer? _notifyTimer;
+  bool _disposed = false;
 
-  // Built off the main thread (Isolate.run on native, chunked on web);
-  // null until the first build completes. Token storage marks _bm25Dirty
-  // so the rebuild loop keeps running while indexing proceeds; only one
-  // build is in flight at a time.
-  Bm25fIndex<CardSearchFieldEnum>? _bm25Index;
-  bool _bm25Building = false;
-  bool _bm25Dirty = false;
-  bool _bm25Disposed = false;
-
-  // Cache the most recent query embedding so a re-rank for the same
-  // query (filter change, manual sort flip) doesn't re-hit the embedder.
+  // Cache the most recent query embedding so a re-rank for the same query
+  // (filter change, manual sort flip) doesn't re-hit the embedder.
   String _lastEmbeddedQuery = '';
   Float32List? _lastQueryEmbedding;
+
+  // Completes once the saved change-hashes are read from the database. The
+  // indexer awaits this before its first scan so it never re-embeds cards
+  // that are already indexed.
+  Future<void>? _hashesLoaded;
 
   Future<void> initEmbedder() => _embedder.init();
 
@@ -99,77 +109,166 @@ class SearchService extends ChangeNotifier {
     return (done: total - pending, total: total);
   }
 
-  /// Cached search data for [cardImagePath], or null when the card
-  /// hasn't been ingested yet.
-  CardSearchData? embeddingsFor(String cardImagePath) =>
-      _byPath[cardImagePath];
+  /// Per-field change hashes for [cardImagePath], or null when the card hasn't
+  /// been ingested yet. A card is fully indexed once this holds an entry for
+  /// every [CardSearchFieldEnum]; the vectors themselves live in the database
+  /// and are read on demand during ranking.
+  Map<CardSearchFieldEnum, String>? fieldHashesFor(String cardImagePath) {
+    final hashes = _hashes[cardImagePath];
+    if (hashes == null) return null;
+    return Map.of(hashes);
+  }
 
-  /// Wires the back-pointer to `CharacterService` and starts discovery.
-  /// Idempotent.
+  /// Wires the back-pointer to `CharacterService` and loads change hashes from
+  /// the database. Re-indexing is driven afterward by [applyLibraryDiff] (the
+  /// library scan) and [queueReindex] (in-app edits). Idempotent.
   void init(CharacterService service) {
     _characterService = service;
-    _characterService.addListener(_onCharacterServiceChanged);
-    unawaited(_scanAndDrain());
+    _hashesLoaded = _loadHashes();
   }
 
   @override
   void dispose() {
+    _disposed = true;
     _notifyTimer?.cancel();
-    _bm25Disposed = true;
-    _characterService.removeListener(_onCharacterServiceChanged);
+    unawaited(repository.close());
     super.dispose();
   }
 
-  /// Called by `CharacterService` after a successful PNG write. Queues
-  /// only the fields whose hash changed.
+  /// Called by `CharacterService` after an in-app edit (save / create / clone /
+  /// import). Carries the card's field texts so the drain skips re-reading it;
+  /// only fields whose hash changed are queued.
   Future<void> queueReindex(CharacterFile card) async {
-    // Claim the slot in case the user saves before discovery has reached
-    // this card; _ingestCard's later merge keeps any sidecar data we read.
-    final existing = _byPath.putIfAbsent(
-      card.appCardImagePath,
-      CardSearchData.empty,
-    );
-    _cardsByPath[card.appCardImagePath] = card;
-
-    final liveHashes = _computeAllHashes(card);
+    final path = card.appCardImagePath;
+    final texts = {
+      for (final field in CardSearchFieldEnum.values)
+        field: _textOf(card.card, field),
+    };
+    final existing = _hashes[path] ?? const <CardSearchFieldEnum, String>{};
+    var queued = false;
     for (final field in CardSearchFieldEnum.values) {
-      if (liveHashes[field] != existing.hashes[field]) {
-        _enqueue(card.appCardImagePath, field);
+      if (UtilsHash.fnv1a64Hex(texts[field]!) != existing[field]) {
+        _enqueue(path, field);
+        queued = true;
       }
     }
+    if (queued) {
+      _pendingText[path] = texts;
+      await _drainQueue();
+    }
+  }
+
+  /// Applies a library scan's result: drops removed cards from the index and
+  /// queues every changed card for re-indexing. Changed cards are loaded on
+  /// demand during the drain, so this stays flat in memory at any library size.
+  void applyLibraryDiff({
+    required List<String> changed,
+    required List<String> removed,
+  }) {
+    unawaited(_applyLibraryDiff(changed, removed));
+  }
+
+  Future<void> _applyLibraryDiff(
+    List<String> changed,
+    List<String> removed,
+  ) async {
+    // Wait for the saved hashes so already-indexed fields are skipped instead
+    // of re-embedded.
+    await _hashesLoaded;
+    for (final path in removed) {
+      await _removeFromIndex(path);
+    }
+    final changedSet = changed.toSet();
+    for (final path in changed) {
+      for (final field in CardSearchFieldEnum.values) {
+        _enqueue(path, field);
+      }
+    }
+
+    // Reconcile against the whole library. A previous run may have been closed
+    // mid-index, leaving cards that are on disk (and in the light index) but
+    // never finished embedding — the light scan now sees them as unchanged and
+    // queues nothing, so the search index would stay permanently incomplete.
+    // Queue every card that isn't fully indexed yet; fields already embedded
+    // are skipped by their hash, so re-queuing a half-done card is cheap.
+    final fieldCount = CardSearchFieldEnum.values.length;
+    for (final path in await _characterService.allCardPaths()) {
+      if (changedSet.contains(path)) continue;
+      if ((_hashes[path]?.length ?? 0) < fieldCount) {
+        for (final field in CardSearchFieldEnum.values) {
+          _enqueue(path, field);
+        }
+      }
+    }
+
     await _drainQueue();
   }
 
-  /// Synchronous keyword-only ranking. Returns RRF scores from the
-  /// lexical channel alone. Caller uses this on the keystroke path so
-  /// the grid updates immediately while the meaning embedding is still
-  /// in flight.
-  Map<String, double> rankLexical(
+  /// Drops one card from the index (vectors, keyword row, hashes) after a
+  /// delete. Safe for a card that was never indexed.
+  void removeFromIndex(String cardPath) {
+    unawaited(_removeFromIndex(cardPath));
+  }
+
+  Future<void> _removeFromIndex(String path) async {
+    _hashes.remove(path);
+    _pendingText.remove(path);
+    _cardsInBatch.remove(path);
+    _pendingPerCard.remove(path);
+    _dirtyPaths.remove(path);
+    for (final field in CardSearchFieldEnum.values) {
+      _queuedKeys.remove(_queueKey(path, field));
+    }
+    _queue.removeWhere((entry) => entry.cardPath == path);
+    try {
+      await repository.removeCard(path);
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Could not remove $path from index: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+    }
+  }
+
+  /// Keyword-only ranking. Returns RRF scores from the lexical channel
+  /// alone. The grid uses this on the keystroke path so results update
+  /// quickly while the meaning embedding is still in flight. Async because
+  /// the keyword index is an FTS query (a worker query on web).
+  Future<Map<String, double>> rankLexical(
     String query,
     Iterable<String> candidateIds,
-  ) {
-    final candidates = candidateIds.toList();
+  ) async {
+    final candidates = candidateIds.toSet();
     final tokens = TextTokenizer.tokenize(query);
-    final lexical = _bm25Index?.rankAll(tokens, candidates) ?? const [];
-    final ids = lexical.map((e) => e.key).toList();
+    final ordered = await _lexicalPaths(tokens);
+    final ids = [
+      for (final path in ordered)
+        if (candidates.contains(path)) path,
+    ];
     final scores = ids.isEmpty
         ? <String, double>{}
         : reciprocalRankFusion([ids]);
     return _applyExactNameOverride(query, candidates, scores);
   }
 
-  /// Full keyword + meaning ranking. Embeds the query (cached across
-  /// repeats), runs the lexical channel, fuses both lists via RRF.
-  /// Falls back to lexical-only when the embedder isn't ready or its
-  /// call throws.
+  /// Full keyword + meaning ranking. Runs the lexical channel, embeds the
+  /// query (cached across repeats), scores the meaning channel by exact
+  /// cosine over the candidates' stored vectors, and fuses both via RRF.
   Future<Map<String, double>> rank(
     String query,
     Iterable<String> candidateIds,
   ) async {
-    final candidates = candidateIds.toList();
+    final candidates = candidateIds.toSet();
     final tokens = TextTokenizer.tokenize(query);
-    final lexicalEntries = _bm25Index?.rankAll(tokens, candidates) ?? const [];
-    final lexicalIds = lexicalEntries.map((e) => e.key).toList();
+    final lexicalOrdered = await _lexicalPaths(tokens);
+    final lexicalIds = [
+      for (final path in lexicalOrdered)
+        if (candidates.contains(path)) path,
+    ];
     final lexicalSet = lexicalIds.toSet();
 
     final queryEmbedding = await _resolveQueryEmbedding(query);
@@ -177,34 +276,16 @@ class SearchService extends ChangeNotifier {
     final rankedLists = <List<String>>[];
     if (lexicalIds.isNotEmpty) rankedLists.add(lexicalIds);
 
-    // Semantic admits cards via two paths: lexical-set membership (BM25
-    // already found a literal token match) OR best-field cosine clearing
-    // the discovery threshold. Cards with partial data (still mid-ingest)
-    // are skipped so noisy half-vectors don't sneak in.
     if (queryEmbedding != null) {
-      final semanticScores = <String, double>{};
-      for (final id in candidates) {
-        final data = _byPath[id];
-        if (data == null) continue;
-        if (data.hashes.length < CardSearchFieldEnum.values.length) continue;
-        var bestCosine = 0.0;
-        var orderingScore = 0.0;
-        for (final field in CardSearchFieldEnum.values) {
-          final chunks = data.byField[field] ?? const <Float32List>[];
-          if (chunks.isEmpty) continue;
-          final cos = maxCosine(queryEmbedding, chunks);
-          if (cos > bestCosine) bestCosine = cos;
-          orderingScore +=
-              (field.weight / CardSearchFieldEnum.totalWeight) * cos;
-        }
-        if (lexicalSet.contains(id) || bestCosine >= _semanticThreshold) {
-          semanticScores[id] = orderingScore;
-        }
-      }
+      final semanticScores = await _semanticScores(
+        queryEmbedding,
+        candidates,
+        lexicalSet,
+      );
       if (semanticScores.isNotEmpty) {
         final semanticIds = semanticScores.entries.toList()
           ..sort((a, b) => b.value.compareTo(a.value));
-        rankedLists.add(semanticIds.map((e) => e.key).toList());
+        rankedLists.add([for (final e in semanticIds) e.key]);
       }
     }
 
@@ -214,29 +295,151 @@ class SearchService extends ChangeNotifier {
     return _applyExactNameOverride(query, candidates, fused);
   }
 
+  Future<List<String>> _lexicalPaths(List<String> tokens) async {
+    try {
+      return await repository.rankLexicalPaths(tokens);
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Keyword query failed: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+      return const [];
+    }
+  }
+
+  // Admits a card via two paths: lexical-set membership (a literal token
+  // match) OR best-field cosine clearing the discovery threshold. Only
+  // fully-indexed cards are scored, so noisy half-vectors can't sneak in.
+  // Candidates are read from the database in batches to bound memory.
+  Future<Map<String, double>> _semanticScores(
+    Float32List queryEmbedding,
+    Set<String> candidates,
+    Set<String> lexicalSet,
+  ) async {
+    final fieldCount = CardSearchFieldEnum.values.length;
+    final ready = [
+      for (final path in candidates)
+        if ((_hashes[path]?.length ?? 0) == fieldCount) path,
+    ];
+
+    final scanList = await _narrowByAnn(queryEmbedding, ready, lexicalSet);
+
+    final scores = <String, double>{};
+    for (var start = 0; start < scanList.length; start += _semanticBatchSize) {
+      final end = math.min(start + _semanticBatchSize, scanList.length);
+      final Map<String, FieldVectors> batch;
+      try {
+        batch = await repository.vectorsForPaths(scanList.sublist(start, end));
+      } on Exception catch (e, st) {
+        searchLogger.warning(
+          EmbeddingsDiagnosticEvent(
+            level: EmbeddingsDiagnosticLevel.warning,
+            message: '[Search] Vector read failed: $e',
+            error: e,
+            stackTrace: st,
+          ),
+        );
+        continue;
+      }
+      for (final entry in batch.entries) {
+        var bestCosine = 0.0;
+        var orderingScore = 0.0;
+        for (final field in CardSearchFieldEnum.values) {
+          final chunks = entry.value[field];
+          if (chunks == null || chunks.isEmpty) continue;
+          final cos = maxCosine(queryEmbedding, chunks);
+          if (cos > bestCosine) bestCosine = cos;
+          orderingScore +=
+              (field.weight / CardSearchFieldEnum.totalWeight) * cos;
+        }
+        if (lexicalSet.contains(entry.key) || bestCosine >= _semanticThreshold) {
+          scores[entry.key] = orderingScore;
+        }
+      }
+    }
+    return scores;
+  }
+
+  // Narrows a large candidate pool to the approximate-nearest cards so a
+  // meaning query reads a few hundred cards' vectors instead of every
+  // candidate's. Literal keyword matches are always kept, so they still get a
+  // meaning score. Small or already-filtered pools, and platforms without the
+  // add-on, keep the full exact scan unchanged. Skipping the rest is the whole
+  // point of the fast path; the kept cards are still reranked exactly upstream.
+  Future<List<String>> _narrowByAnn(
+    Float32List queryEmbedding,
+    List<String> ready,
+    Set<String> lexicalSet,
+  ) async {
+    if (ready.length <= _annCandidateThreshold) {
+      LoggingService().info(
+        '[SEARCH-VEC] ANN skipped: ${ready.length} candidates ≤ threshold $_annCandidateThreshold',
+      );
+      return ready;
+    }
+    if (!await repository.vecAvailable()) {
+      LoggingService().info(
+        '[SEARCH-VEC] ANN skipped: add-on not available (${ready.length} candidates, brute-force scan)',
+      );
+      return ready;
+    }
+    final nearest = await repository.annNearestPaths(
+      queryEmbedding,
+      _annNearestChunks,
+    );
+    final narrowed = [
+      for (final path in ready)
+        if (nearest.contains(path) || lexicalSet.contains(path)) path,
+    ];
+    LoggingService().info(
+      '[SEARCH-VEC] ANN narrowed ${ready.length} → ${narrowed.length} candidates '
+      '(kept ${lexicalSet.length} lexical hits, fetched ${nearest.length} ANN results)',
+    );
+    return narrowed;
+  }
+
   /// Boosts an exact-name match to the top of the fused score map. Fires
   /// only when exactly one candidate's card name equals the trimmed query
   /// case-insensitively — multi-match (variants) and zero-match cases are
-  /// no-ops. The override inserts even when the card wasn't otherwise
-  /// scored, so the display-time gate still keeps it visible.
-  Map<String, double> _applyExactNameOverride(
+  /// no-ops. Inserts even when the card wasn't otherwise scored, so the
+  /// display-time gate still keeps it visible.
+  Future<Map<String, double>> _applyExactNameOverride(
     String query,
-    Iterable<String> candidates,
+    Set<String> candidates,
     Map<String, double> scores,
-  ) {
+  ) async {
     final normalized = query.trim().toLowerCase();
     if (normalized.isEmpty) return scores;
+
+    final List<String> matches;
+    try {
+      matches = await repository.exactNamePaths(normalized);
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Exact-name lookup failed: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+      return scores;
+    }
+
     String? singleMatch;
     var matchCount = 0;
-    for (final id in candidates) {
-      final card = _cardsByPath[id];
-      if (card == null) continue;
-      if (card.card.name.trim().toLowerCase() != normalized) continue;
-      singleMatch = id;
+    for (final path in matches) {
+      if (!candidates.contains(path)) continue;
+      singleMatch = path;
       matchCount++;
       if (matchCount > 1) return scores;
     }
     if (matchCount != 1 || singleMatch == null) return scores;
+
     var maxScore = 0.0;
     for (final v in scores.values) {
       if (v > maxScore) maxScore = v;
@@ -252,10 +455,7 @@ class SearchService extends ChangeNotifier {
     }
     if (!_embedder.isReady) return null;
     try {
-      final fresh = await _embedder.embedOne(
-        query,
-        task: EmbedTaskEnum.query,
-      );
+      final fresh = await _embedder.embedOne(query, task: EmbedTaskEnum.query);
       _lastQueryEmbedding = fresh;
       _lastEmbeddedQuery = query;
       return fresh;
@@ -264,71 +464,24 @@ class SearchService extends ChangeNotifier {
     }
   }
 
-  void _onCharacterServiceChanged() {
-    unawaited(_scanAndDrain());
-  }
-
-  Future<void> _scanAndDrain() async {
-    await _scanForChanges();
-    await _drainQueue();
-  }
-
-  Future<void> _scanForChanges() async {
-    final cards = _characterService.characterFiles;
-    final livePaths = {for (final c in cards) c.appCardImagePath};
-
-    final dropped = _byPath.keys.toSet().difference(livePaths);
-    if (dropped.isNotEmpty) {
-      for (final path in dropped) {
-        _byPath.remove(path);
-        _cardsByPath.remove(path);
-        _cardsInBatch.remove(path);
-        _pendingPerCard.remove(path);
-        _dirtyPaths.remove(path);
-        for (final field in CardSearchFieldEnum.values) {
-          _queuedKeys.remove(_queueKey(path, field));
+  Future<void> _loadHashes() async {
+    try {
+      final loaded = await repository.loadHashes();
+      for (final entry in loaded.entries) {
+        final target = _hashes.putIfAbsent(entry.key, () => {});
+        for (final fieldHash in entry.value.entries) {
+          target.putIfAbsent(fieldHash.key, () => fieldHash.value);
         }
       }
-      _queue.removeWhere((entry) => dropped.contains(entry.cardPath));
-      _scheduleBm25Rebuild();
-    }
-
-    for (final card in cards) {
-      // Claim the slot synchronously before any await so concurrent
-      // _scanForChanges invocations don't double-ingest the same card.
-      if (_byPath.containsKey(card.appCardImagePath)) continue;
-      _byPath[card.appCardImagePath] = CardSearchData.empty();
-      _cardsByPath[card.appCardImagePath] = card;
-      await _ingestCard(card);
-    }
-  }
-
-  Future<void> _ingestCard(CharacterFile card) async {
-    final loaded = await repository.read(_sidecarPathFor(card));
-    final existing = _byPath[card.appCardImagePath]!;
-    if (loaded != null) {
-      // Merge instead of overwrite — queueReindex could have populated
-      // some fields during the sidecar await; keep its work.
-      var mergedTokens = false;
-      for (final field in CardSearchFieldEnum.values) {
-        if (existing.hashes.containsKey(field)) continue;
-        final loadedHash = loaded.hashes[field];
-        final loadedChunks = loaded.byField[field];
-        final loadedTokens = loaded.tokens[field];
-        if (loadedHash != null) existing.hashes[field] = loadedHash;
-        if (loadedChunks != null) existing.byField[field] = loadedChunks;
-        if (loadedTokens != null) {
-          existing.tokens[field] = loadedTokens;
-          mergedTokens = true;
-        }
-      }
-      if (mergedTokens) _scheduleBm25Rebuild();
-    }
-    final liveHashes = _computeAllHashes(card);
-    for (final field in CardSearchFieldEnum.values) {
-      if (existing.hashes[field] != liveHashes[field]) {
-        _enqueue(card.appCardImagePath, field);
-      }
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Could not load change hashes: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
     }
   }
 
@@ -353,20 +506,25 @@ class SearchService extends ChangeNotifier {
     );
     final cardTimer = Stopwatch();
     String? activeCardPath;
+    Map<CardSearchFieldEnum, String>? currentTexts;
     try {
       while (_queue.isNotEmpty) {
         final entry = _queue.removeFirst();
         if (entry.cardPath != activeCardPath) {
           activeCardPath = entry.cardPath;
+          // Resolve the card's field texts once per card: from the in-app
+          // edit cache if present, else by loading the card from disk.
+          currentTexts = await _resolveTexts(entry.cardPath);
           cardTimer
             ..reset()
             ..start();
         }
         _queuedKeys.remove(_queueKey(entry.cardPath, entry.field));
-        final changed = await _processOneField(entry);
+        final changed = currentTexts == null
+            ? false
+            : await _processOneField(entry, currentTexts);
         if (changed) _dirtyPaths.add(entry.cardPath);
 
-        // Decrement pending count; remove when this card has no more queued.
         final remaining = (_pendingPerCard[entry.cardPath] ?? 1) - 1;
         if (remaining > 0) {
           _pendingPerCard[entry.cardPath] = remaining;
@@ -374,14 +532,13 @@ class SearchService extends ChangeNotifier {
           _pendingPerCard.remove(entry.cardPath);
         }
 
-        // Flush one write per card when the contiguous run of that card's
-        // fields ends (interleaved enqueues are written separately).
+        // Rewrite the keyword row once, when the contiguous run of a card's
+        // fields ends.
         final isLastForThisCard =
             _queue.isEmpty || _queue.first.cardPath != entry.cardPath;
         if (isLastForThisCard) {
-          if (_dirtyPaths.remove(entry.cardPath)) {
-            await _writeSidecarForPath(entry.cardPath);
-            _scheduleBm25Rebuild();
+          if (_dirtyPaths.remove(entry.cardPath) && currentTexts != null) {
+            await _flushKeywordRow(entry.cardPath, currentTexts);
           }
           cardTimer.stop();
           final prog = progress;
@@ -390,7 +547,8 @@ class SearchService extends ChangeNotifier {
               level: EmbeddingsDiagnosticLevel.info,
               message:
                   '[Search] Indexed ${entry.cardPath} '
-                  '(${prog.done}/${prog.total}) in ${cardTimer.elapsedMilliseconds}ms',
+                  '(${prog.done}/${prog.total}) in '
+                  '${cardTimer.elapsedMilliseconds}ms',
             ),
           );
           activeCardPath = null;
@@ -398,8 +556,6 @@ class SearchService extends ChangeNotifier {
 
         _scheduleNotify();
       }
-      // Batch complete — reset card tracking so the next session of work
-      // starts at 0 / N instead of accumulating across edits.
       _cardsInBatch.clear();
       searchLogger.info(
         const EmbeddingsDiagnosticEvent(
@@ -413,41 +569,31 @@ class SearchService extends ChangeNotifier {
     }
   }
 
-  /// Returns true when the in-memory data for [entry] actually changed
-  /// (caller marks the card dirty for the next sidecar write). Tokens
-  /// and embeddings land together — both are derived from the same
-  /// source text and live as one unit per field.
+  /// Returns true when the stored vectors for [entry] actually changed, so
+  /// the caller marks the card for a keyword-row rewrite. [texts] holds the
+  /// card's per-field source text, resolved once per card by the drain.
   Future<bool> _processOneField(
     ({String cardPath, CardSearchFieldEnum field}) entry,
+    Map<CardSearchFieldEnum, String> texts,
   ) async {
-    final card = _cardsByPath[entry.cardPath];
-    if (card == null) return false;
-
-    final text = _textOf(card.card, entry.field);
+    final text = texts[entry.field] ?? '';
     final newHash = UtilsHash.fnv1a64Hex(text);
-
-    final stored = _byPath[entry.cardPath]!;
-    if (stored.hashes[entry.field] == newHash) return false;
-
-    final tokens = TextTokenizer.tokenize(text);
+    if (_hashes[entry.cardPath]?[entry.field] == newHash) return false;
 
     final chunks = await _embedder.chunkByTokens(text);
-
     List<Float32List> vectors;
     if (chunks.isEmpty) {
       vectors = const [];
     } else {
       try {
-        vectors = await _embedder.embed(
-          chunks,
-          task: EmbedTaskEnum.passage,
-        );
+        vectors = await _embedder.embed(chunks, task: EmbedTaskEnum.passage);
       } on EmbeddingsException catch (e, st) {
         searchLogger.warning(
           EmbeddingsDiagnosticEvent(
             level: EmbeddingsDiagnosticLevel.warning,
             message:
-                '[Search] Embed failed for ${entry.field.name} on ${entry.cardPath}: $e',
+                '[Search] Embed failed for ${entry.field.name} on '
+                '${entry.cardPath}: $e',
             error: e,
             stackTrace: st,
           ),
@@ -456,93 +602,81 @@ class SearchService extends ChangeNotifier {
       }
     }
 
-    stored.byField[entry.field] = vectors;
-    stored.tokens[entry.field] = tokens;
-    stored.hashes[entry.field] = newHash;
+    try {
+      await repository.writeField(
+        entry.cardPath,
+        texts[CardSearchFieldEnum.name] ?? '',
+        entry.field,
+        vectors,
+        newHash,
+      );
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message:
+              '[Search] Could not store ${entry.field.name} for '
+              '${entry.cardPath}: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+      return false;
+    }
+
+    (_hashes[entry.cardPath] ??= {})[entry.field] = newHash;
     return true;
   }
 
-  Future<void> _writeSidecarForPath(String cardPath) async {
-    final data = _byPath[cardPath];
-    final card = _cardsByPath[cardPath];
-    if (data == null || card == null) return;
-    await repository.write(_sidecarPathFor(card), data);
-  }
-
-  /// Marks the keyword index dirty. If a build is already running, lets
-  /// it finish — the loop re-checks the dirty flag and starts another
-  /// build if needed. This way one build is in flight at a time, but
-  /// the index never falls more than one build behind the latest data.
-  /// Builds run in an isolate (native) or in yielding chunks (web), so
-  /// the main thread stays interactive during cold-start indexing.
-  void _scheduleBm25Rebuild() {
-    _bm25Dirty = true;
-    if (_bm25Building) return;
-    unawaited(_runBm25RebuildLoop());
-  }
-
-  Future<void> _runBm25RebuildLoop() async {
-    _bm25Building = true;
+  /// Resolves a card's per-field source text for indexing: from the in-app
+  /// edit cache if present, otherwise by loading the card from disk. Returns
+  /// null when the card can't be read (logged), so the drain skips it.
+  Future<Map<CardSearchFieldEnum, String>?> _resolveTexts(String path) async {
+    final pending = _pendingText.remove(path);
+    if (pending != null) return pending;
     try {
-      while (_bm25Dirty && !_bm25Disposed) {
-        _bm25Dirty = false;
-        final snapshots = _collectBm25Snapshots();
-        if (snapshots.isEmpty) continue;
-        final Bm25fIndex<CardSearchFieldEnum> fresh;
-        try {
-          fresh = await Bm25fIndex.buildFromSnapshots(
-            snapshots,
-            fields: CardSearchFieldEnum.values,
-            fieldWeights: _bm25FieldWeights,
-          );
-        } on Object catch (e, st) {
-          searchLogger.severe(
-            EmbeddingsDiagnosticEvent(
-              level: EmbeddingsDiagnosticLevel.error,
-              message: '[Search] Index build failed: $e',
-              error: e,
-              stackTrace: st,
-            ),
-          );
-          continue;
-        }
-        if (_bm25Disposed) return;
-        _bm25Index = fresh;
-        _scheduleNotify();
-      }
-    } finally {
-      _bm25Building = false;
+      final file = await _characterService.loadFull(path);
+      return {
+        for (final field in CardSearchFieldEnum.values)
+          field: _textOf(file.card, field),
+      };
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Could not load $path for indexing: $e',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+      return null;
     }
   }
 
-  List<TokenSnapshot<CardSearchFieldEnum>> _collectBm25Snapshots() {
-    final snapshots = <TokenSnapshot<CardSearchFieldEnum>>[];
-    for (final entry in _byPath.entries) {
-      final tokensByField = <CardSearchFieldEnum, List<String>>{};
-      for (final field in CardSearchFieldEnum.values) {
-        final tokens = entry.value.tokens[field];
-        if (tokens != null && tokens.isNotEmpty) {
-          tokensByField[field] = tokens;
-        }
-      }
-      if (tokensByField.isEmpty) continue;
-      snapshots.add(
-        TokenSnapshot<CardSearchFieldEnum>(
-          id: entry.key,
-          tokensByField: tokensByField,
+  Future<void> _flushKeywordRow(
+    String cardPath,
+    Map<CardSearchFieldEnum, String> texts,
+  ) async {
+    try {
+      await repository.writeFts(
+        cardPath,
+        texts[CardSearchFieldEnum.name] ?? '',
+        texts,
+      );
+    } on Exception catch (e, st) {
+      searchLogger.warning(
+        EmbeddingsDiagnosticEvent(
+          level: EmbeddingsDiagnosticLevel.warning,
+          message: '[Search] Could not write keyword row for $cardPath: $e',
+          error: e,
+          stackTrace: st,
         ),
       );
     }
-    return snapshots;
   }
 
   String _queueKey(String cardPath, CardSearchFieldEnum field) =>
       '$cardPath|${field.name}';
-
-  String _sidecarPathFor(CharacterFile card) => p.posix.join(
-    card.appCardCharacterFolder,
-    AppConstants.embeddingsSidecarFilename,
-  );
 
   String _textOf(CharacterCardV3 card, CardSearchFieldEnum field) {
     switch (field) {
@@ -559,18 +693,13 @@ class SearchService extends ChangeNotifier {
     }
   }
 
-  Map<CardSearchFieldEnum, String> _computeAllHashes(CharacterFile card) => {
-    for (final field in CardSearchFieldEnum.values)
-      field: UtilsHash.fnv1a64Hex(_textOf(card.card, field)),
-  };
-
   void _scheduleNotify() {
-    if (_notifyScheduled) return;
+    if (_notifyScheduled || _disposed) return;
     _notifyScheduled = true;
     _notifyTimer = Timer(const Duration(milliseconds: 50), () {
       _notifyScheduled = false;
       _notifyTimer = null;
-      notifyListeners();
+      if (!_disposed) notifyListeners();
     });
   }
 }

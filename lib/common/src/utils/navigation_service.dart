@@ -299,7 +299,7 @@ class NavigationService {
     required String title,
     required Map<String, int> items,
     required Set<String> selectedItems,
-    Map<String, int> Function(Set<String>)? dynamicItemsCallback,
+    Future<Map<String, int>> Function(Set<String>)? dynamicItemsCallback,
   }) {
     return _showAppDialog<Set<String>>(
       builder: (_) => DialogMultiSelect(

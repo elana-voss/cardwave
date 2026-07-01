@@ -30,7 +30,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final service = context.read<CharacterService>();
-      if (service.characterFiles.isEmpty) {
+      if (!service.hasScanned) {
         unawaited(service.loadCharacters());
       }
     });
@@ -45,7 +45,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
       ),
       child: Consumer<FilterController>(
         builder: (context, filterController, child) {
-          final groupedFiles = filterController.groupedFiles;
+          final entries = filterController.entries;
           return LayoutBuilder(
             builder: (context, constraints) {
               final isWideScreen =
@@ -101,8 +101,12 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
                       child: CharacterGridFilters(),
                     ),
                     Expanded(
-                      child: groupedFiles.isEmpty
-                          ? const ViewEmptyState()
+                      child: entries.isEmpty
+                          ? (filterController.isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : const ViewEmptyState())
                           : GridView.builder(
                               padding: const EdgeInsets.all(16),
                               gridDelegate:
@@ -116,27 +120,30 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
                                     mainAxisSpacing:
                                         AppConstants.gridMainAxisSpacing,
                                   ),
-                              itemCount: groupedFiles.length,
+                              itemCount: entries.length,
                               itemBuilder: (context, index) {
-                                final stack = groupedFiles[index];
-                                // Each grouped entry has at least one card.
-                                // ignore: qcheck/avoid_unsafe_collection_methods
-                                final first = stack.first;
-                                final name = first.card.name;
+                                // Pull the next page in as the last tile builds.
+                                if (index >= entries.length - 1) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    unawaited(filterController.loadMore());
+                                  });
+                                }
+                                final entry = entries[index];
+                                final name = entry.file.card.name;
                                 return KeyedSubtree(
-                                  // Test handle. The inner CharacterGridItem
-                                  // already has a functional ValueKey on the
-                                  // image path for state preservation; wrap
-                                  // here so tests can find a tile by the
-                                  // character's display name without
-                                  // colliding with that.
+                                  // Test handle by display name; the inner item
+                                  // keys on the image path for state
+                                  // preservation.
                                   key: ValueKey(
-                                    'grid-card-${name.isNotEmpty ? name : first.appCardImagePath}',
+                                    'grid-card-${name.isNotEmpty ? name : entry.file.appCardImagePath}',
                                   ),
                                   child: CharacterGridItem(
-                                    key: ValueKey(first.appCardImagePath),
-                                    characters: stack,
-                                    variantStatus: stack.length > 1
+                                    key: ValueKey(entry.file.appCardImagePath),
+                                    file: entry.file,
+                                    variantCount: entry.variantCount,
+                                    variantStatus: entry.variantCount > 1
                                         ? VariantStatusEnum.original
                                         : VariantStatusEnum.none,
                                   ),
@@ -202,31 +209,26 @@ class _GridDrawerMenu extends StatelessWidget {
                 key: Key('drawer-ai-action-${action.name}'),
                 leading: Icon(action.icon),
                 title: Text(action.label),
-                onTap: () {
+                onTap: () async {
                   Navigator.of(navContext, rootNavigator: true).pop();
                   final ai = outerContext.read<CharacterAiService>();
                   switch (action) {
                     case AiActionEnum.generatePreview:
-                      unawaited(
-                        AiActionController.runCharacterBatchAndShow(
-                          title: 'Batch Generate Previews',
-                          emptyMessage:
-                              'All characters already have previews.',
-                          targets: ai.charactersMissingPreview,
-                          operation: ai.generateDescriptionPreview,
-                          onCancel: ai.cancelAllActiveAiTasks,
-                          batchLogTag: 'Bulk',
-                        ),
+                      await AiActionController.runCharacterBatchAndShow(
+                        title: 'Batch Generate Previews',
+                        emptyMessage: 'All characters already have previews.',
+                        targets: await ai.charactersMissingPreview,
+                        operation: ai.generateDescriptionPreview,
+                        onCancel: ai.cancelAllActiveAiTasks,
+                        batchLogTag: 'Bulk',
                       );
                     case AiActionEnum.autoTag:
-                      unawaited(
-                        AiActionController.runCharacterBatchAndShow(
-                          title: 'Batch Auto-Tag',
-                          emptyMessage: 'All characters already have tags.',
-                          targets: ai.charactersMissingTags,
-                          operation: ai.autoTagCharacter,
-                          onCancel: ai.cancelAllActiveAiTasks,
-                        ),
+                      await AiActionController.runCharacterBatchAndShow(
+                        title: 'Batch Auto-Tag',
+                        emptyMessage: 'All characters already have tags.',
+                        targets: await ai.charactersMissingTags,
+                        operation: ai.autoTagCharacter,
+                        onCancel: ai.cancelAllActiveAiTasks,
                       );
                     default:
                       break;

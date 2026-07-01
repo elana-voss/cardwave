@@ -67,18 +67,16 @@ void main() {
       final characterService = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final vietnameseCard = characterService.characterFiles.firstWhere(
-        (f) => f.appCardImagePath.endsWith('Vietnamese_Desc_Character.png'),
+      final allPaths = await characterService.allCardPaths();
+      final vietnamesePath = allPaths.firstWhere(
+        (p) => p.endsWith('Vietnamese_Desc_Character.png'),
       );
       final indexerDeadline = DateTime.now().add(const Duration(seconds: 60));
       var lexicalReady = false;
       while (DateTime.now().isBefore(indexerDeadline)) {
         await tester.pump(const Duration(milliseconds: 500));
-        final scores = searchService.rankLexical(
-          'vietnamese',
-          characterService.characterFiles.map((f) => f.appCardImagePath),
-        );
-        if (scores.containsKey(vietnameseCard.appCardImagePath)) {
+        final scores = await searchService.rankLexical('vietnamese', allPaths);
+        if (scores.containsKey(vietnamesePath)) {
           lexicalReady = true;
           break;
         }

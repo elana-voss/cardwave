@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:cardwave/character/src/models/card_list_item.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
+import 'package:cardwave/character/src/models/library_card_filter.dart';
 import 'package:cardwave/character/src/repositories/character_repository.dart';
 import 'package:cardwave/character/src/repositories/io_character.dart';
 import 'package:cardwave/character/src/utils/utils_png.dart';
@@ -104,11 +106,19 @@ class CharacterService extends ChangeNotifier {
   AppLifecycleListener? _lifecycleListener;
   bool _isFlushingToPng = false;
 
-  List<CharacterFile> _characterFiles = [];
+  // Full cards loaded and edited this session that may have a cache-only save
+  // not yet flushed to PNG. Bounded to open/edited cards, so the background
+  // flush no longer needs the whole library in memory.
+  final Map<String, CharacterFile> _dirtyCards = {};
   final Map<String, Timer> _saveDebouncers = {};
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  // True once the first library scan has completed; lets the grid trigger the
+  // initial load exactly once instead of keying off an in-memory list size.
+  bool _hasScanned = false;
+  bool get hasScanned => _hasScanned;
 
   String _loadingStatus = 'Loading...';
   String get loadingStatus => _loadingStatus;
@@ -123,38 +133,109 @@ class CharacterService extends ChangeNotifier {
     super.dispose();
   }
 
-  /// Returns the list of characters held in memory.
-  /// Since this returns the direct list reference, modifications to this list
-  /// (like add/remove) will persist in memory for the session.
-  List<CharacterFile> get characterFiles => _characterFiles;
+  /// Reads one card's full body on demand (chat, editor, actions). The grid
+  /// renders light [CardListItem]s; everything that needs the heavy card body
+  /// loads it here.
+  Future<CharacterFile> loadFull(String imagePath) =>
+      characterRepository.loadFull(imagePath);
 
-  /// Returns a sorted list of unique directory paths that contain characters.
-  ///
-  /// Returns an empty list if all characters are in the root directory, as no
-  /// filtering is needed. The root directory is represented as 'Root'.
-  List<String> get directoriesWithCharacters {
-    if (_characterFiles.isEmpty) {
-      return [];
+  /// Loads the full card whose name equals [name] (first match), or null when
+  /// none. Convenience for callers that key off the display name.
+  Future<CharacterFile?> loadByName(String name) async {
+    final path = await characterRepository.pathByName(name);
+    if (path == null) return null;
+    return characterRepository.loadFull(path);
+  }
+
+  // ---- Library queries (grid + filters) ----
+  // Thin passthroughs to the repository so controllers/widgets keep talking to
+  // the service layer, never the repository directly.
+
+  Future<int> countCardGroups(LibraryCardFilter filter) =>
+      characterRepository.countCardGroups(filter);
+
+  Future<int> countCards(LibraryCardFilter filter) =>
+      characterRepository.countCards(filter);
+
+  Future<List<String>> allCardPaths() => characterRepository.allCardPaths();
+
+  Future<List<CardListItem>> pageCards({
+    required LibraryCardFilter filter,
+    required LibrarySortColumn sortColumn,
+    required bool descending,
+    required int offset,
+    required int limit,
+  }) => characterRepository.pageCards(
+    filter: filter,
+    sortColumn: sortColumn,
+    descending: descending,
+    offset: offset,
+    limit: limit,
+  );
+
+  Future<List<({CardListItem item, bool isOriginal})>> pageCardsByActivity({
+    required LibraryCardFilter filter,
+    required int offset,
+    required int limit,
+  }) => characterRepository.pageCardsByActivity(
+    filter: filter,
+    offset: offset,
+    limit: limit,
+  );
+
+  Future<Map<String, ({int variantCount, bool isOriginal})>> variantInfoForPaths(
+    List<String> paths,
+  ) => characterRepository.variantInfoForPaths(paths);
+
+  Future<List<CardListItem>> cardsByPaths(
+    List<String> paths,
+    LibraryCardFilter filter,
+  ) => characterRepository.cardsByPaths(paths, filter);
+
+  Future<List<CardListItem>> cardsByRootId(String rootId) =>
+      characterRepository.cardsByRootId(rootId);
+
+  Future<Map<String, int>> creatorCounts(LibraryCardFilter filter) =>
+      characterRepository.creatorCounts(filter);
+
+  Future<Map<String, int>> tagCounts(LibraryCardFilter filter) =>
+      characterRepository.tagCounts(filter);
+
+  Future<Map<String, int>> folderLeafCounts(LibraryCardFilter filter) =>
+      characterRepository.folderLeafCounts(filter);
+
+  Future<List<String>> distinctFolders() =>
+      characterRepository.distinctFolders();
+
+  /// Full cards with no preview description — batch-generate work-list. Loads
+  /// each matching card; bounded by how many are missing.
+  Future<List<CharacterFile>> cardsMissingPreview() =>
+      _loadPaths(characterRepository.pathsMissingPreview());
+
+  /// Full cards with no app-level tags — batch auto-tag work-list.
+  Future<List<CharacterFile>> cardsMissingAppTags() =>
+      _loadPaths(characterRepository.pathsMissingAppTags());
+
+  /// Loads every card in the library, full. Not paged — for the few power
+  /// surfaces (group picker, character switcher) that need the whole set.
+  Future<List<CharacterFile>> loadAll() =>
+      _loadPaths(characterRepository.allCardPaths());
+
+  /// Loads the full cards for the given app ids (e.g. a group's members).
+  Future<List<CharacterFile>> loadByAppCardIds(List<String> ids) =>
+      _loadPaths(characterRepository.pathsByAppCardIds(ids));
+
+  Future<List<CharacterFile>> _loadPaths(Future<List<String>> pathsFuture) async {
+    final paths = await pathsFuture;
+    final files = <CharacterFile>[];
+    for (final path in paths) {
+      try {
+        files.add(await characterRepository.loadFull(path));
+      } on Exception {
+        // Skip a card that can't be read.
+      }
     }
-    final dirs = _characterFiles
-        .map((file) => p.posix.dirname(file.appCardImagePath))
-        .toSet();
-
-    // If there's only one directory and it's the root, no filter is needed.
-    // `dirs` is non-empty here — it's derived from the non-empty
-    // `_characterFiles` list checked above — so `length <= 1` means exactly 1.
-    // ignore: qcheck/avoid_unsafe_collection_methods
-    if (dirs.length <= 1 && dirs.first == '.') {
-      return [];
-    }
-
-    final dirList = dirs.map((d) => d == '.' ? 'Root' : d).toList();
-    dirList.sort((a, b) {
-      if (a == 'Root') return -1;
-      if (b == 'Root') return 1;
-      return a.compareTo(b);
-    });
-    return dirList;
+    return files;
   }
 
   /// Absolute path to the configured library root for character cards, or
@@ -211,7 +292,8 @@ class CharacterService extends ChangeNotifier {
       name: name,
       targetDirectory: targetDirectory,
     );
-    _characterFiles.add(newChar);
+    await characterRepository.upsertLibraryRow(newChar);
+    unawaited(searchService.queueReindex(newChar));
     notifyListeners();
     return newChar;
   }
@@ -227,10 +309,13 @@ class CharacterService extends ChangeNotifier {
   // 3. Character JSON
   //
   Future<void> removeCharacterCompletely(CharacterFile characterFile) async {
-    // Remove from state immediately to update the UI and drop active file locks
-    _characterFiles.removeWhere(
-      (f) => f.appCardImagePath == characterFile.appCardImagePath,
-    );
+    // Drop from the light index + search index first so the grid stops showing
+    // it immediately and active file locks release; the heavy file deletes
+    // follow below.
+    final path = characterFile.appCardImagePath;
+    _dirtyCards.remove(path);
+    await characterRepository.deleteLibraryRow(path);
+    searchService.removeFromIndex(path);
     notifyListeners();
 
     PaintingBinding.instance.imageCache.clear();
@@ -275,7 +360,8 @@ class CharacterService extends ChangeNotifier {
 
   Future<void> cloneCharacter(CharacterFile original) async {
     final clonedFile = await characterRepository.cloneCharacter(original);
-    _characterFiles.add(clonedFile);
+    await characterRepository.upsertLibraryRow(clonedFile);
+    unawaited(searchService.queueReindex(clonedFile));
     notifyListeners();
   }
 
@@ -294,7 +380,7 @@ class CharacterService extends ChangeNotifier {
     _isFlushingToPng = true;
 
     try {
-      for (final characterFile in _characterFiles) {
+      for (final characterFile in _dirtyCards.values.toList()) {
         await flushJsonInCacheAndPngIfDirtyOrPending(characterFile);
       }
     } on Exception catch (e, stackTrace) {
@@ -369,6 +455,8 @@ class CharacterService extends ChangeNotifier {
       PaintingBinding.instance.imageCache.clear();
       PaintingBinding.instance.imageCache.clearLiveImages();
 
+      await characterRepository.upsertLibraryRow(characterFile);
+      _dirtyCards.remove(characterFile.appCardImagePath);
       unawaited(searchService.queueReindex(characterFile));
     } on Exception catch (e, stackTrace) {
       loggingService.error(
@@ -400,6 +488,8 @@ class CharacterService extends ChangeNotifier {
     try {
       await characterFile.updateTokenCounts();
       await characterRepository.saveJsonInCache(characterFile);
+      await characterRepository.upsertLibraryRow(characterFile);
+      _dirtyCards[characterFile.appCardImagePath] = characterFile;
     } on Exception catch (e, stackTrace) {
       loggingService.error(
         '[Storage] Error saving character JSON: $e',
@@ -484,7 +574,9 @@ class CharacterService extends ChangeNotifier {
   // LOAD
   // =========================================================================
 
-  CharacterFile? resolveAssistantFile() {
+  /// Loads the default assistant card on demand. The assistant id is its image
+  /// path (e.g. `Cass_Assistant.png`), so this reads it straight from disk.
+  Future<CharacterFile?> resolveAssistantFile() async {
     final assistantId = settingsService.settings.defaultAssistantId;
 
     if (assistantId == null || assistantId.isEmpty) {
@@ -492,25 +584,20 @@ class CharacterService extends ChangeNotifier {
       return null;
     }
 
-    final file = _characterFiles
-        .where(
-          (char) =>
-              char.appCardId == assistantId ||
-              char.appCardImagePath.endsWith(assistantId),
-        )
-        .firstOrNull;
-
-    if (file == null) {
+    try {
+      final file = await characterRepository.loadFull(assistantId);
+      loggingService.info(
+        'Resolved assistant character: ${file.card.name} (${file.appCardId})',
+      );
+      return file;
+    } on Exception catch (e, stackTrace) {
       loggingService.error(
-        'Failed to resolve assistant character with ID: $assistantId. Character not found in loaded files.',
+        'Failed to resolve assistant character with ID: $assistantId.',
+        e,
+        stackTrace,
       );
       return null;
     }
-
-    loggingService.info(
-      'Successfully resolved assistant character: ${file.card.name} (${file.appCardId})',
-    );
-    return file;
   }
 
   /// Loads characters from disk.
@@ -543,18 +630,21 @@ class CharacterService extends ChangeNotifier {
         };
 
     try {
-      _characterFiles = await characterRepository.readDirectory(
+      final diff = await characterRepository.scanLibrary(
         onProgress: onProgressCallback,
       );
       loggingService.info(
-        '[Init] Loaded ${_characterFiles.length} characters successfully.',
+        '[Init] Library indexed: ${diff.changed.length} changed, '
+        '${diff.removed.length} removed.',
+      );
+      searchService.applyLibraryDiff(
+        changed: diff.changed,
+        removed: diff.removed,
       );
     } on Exception catch (e, stackTrace) {
-      // Failure leaves `_characterFiles` empty and the grid renders the empty
-      // state. A snackbar would be lost during initial load (no Scaffold yet)
-      // and on user-triggered reloads the empty grid plus the log entry are
-      // sufficient. Callers are not given a typed signal here because the
-      // empty list IS the user-visible signal.
+      // Failure leaves the grid showing whatever the light index last held
+      // (empty on a first run). A snackbar would be lost during initial load
+      // (no Scaffold yet); the log entry is the durable record.
       loggingService.error(
         '[Init] Error loading characters: $e',
         e,
@@ -562,6 +652,7 @@ class CharacterService extends ChangeNotifier {
       );
     } finally {
       _isLoading = false;
+      _hasScanned = true;
       notifyListeners();
     }
   }
@@ -610,18 +701,16 @@ class CharacterService extends ChangeNotifier {
   /// with an existing character's PNG basename. Conflicts must be auto-renamed
   /// at import time to preserve both files; non-conflicts can be written
   /// straight through.
-  BulkImportCategorized categorizeImportFiles(List<XFile> validFiles) {
+  Future<BulkImportCategorized> categorizeImportFiles(
+    List<XFile> validFiles,
+  ) async {
     final conflicts = <XFile>[];
     final nonConflicts = <XFile>[];
 
+    // Imports are written into the library root, so a name collision means a
+    // PNG with that filename already sits there.
     for (final file in validFiles) {
-      final fileMatch = _characterFiles.any((characterFile) {
-        final existingFileName = p.posix.basename(
-          characterFile.appCardImagePath,
-        );
-        return existingFileName == file.name;
-      });
-      if (fileMatch) {
+      if (await characterPngExists(file.name)) {
         conflicts.add(file);
       } else {
         nonConflicts.add(file);
@@ -650,7 +739,8 @@ class CharacterService extends ChangeNotifier {
           file.name,
         );
         await characterRepository.ensureThumbnail(importedFile);
-        _characterFiles.add(importedFile);
+        await characterRepository.upsertLibraryRow(importedFile);
+        unawaited(searchService.queueReindex(importedFile));
         importedCount++;
       } on Exception catch (e, stackTrace) {
         loggingService.error(

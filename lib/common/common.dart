@@ -2,6 +2,8 @@
 // Files under src/ are private to this domain (enforced by import_lint).
 // Cross-domain consumers MUST import this barrel, not src/ paths.
 
+export 'src/db/cache_database_handle.dart';
+export 'src/db/drift_connection.dart';
 export 'src/theme/compact_theme.dart';
 export 'src/theme/theme_style_enum.dart';
 export 'src/utils/app_constants.dart';

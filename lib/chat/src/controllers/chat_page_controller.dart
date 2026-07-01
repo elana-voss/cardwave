@@ -22,13 +22,14 @@ class ChatPageController extends ChangeNotifier {
     required this.characterService,
     required this.settingsService,
     this.isAssistant = false,
-  }) : characterFile = isAssistant
-           ? (characterService.resolveAssistantFile() ?? characterFile)
-           : characterFile {
-    unawaited(_loadLatestChatOrNew());
+  }) : characterFile = characterFile {
+    unawaited(_init());
     characterService.addListener(_onCharacterUpdated);
   }
-  final CharacterFile characterFile;
+
+  /// For an assistant chat the target card is loaded from disk (async), so it
+  /// is swapped in after construction and listeners rebuild once it lands.
+  CharacterFile characterFile;
   final ChatService chatService;
   final CharacterService characterService;
   final SettingsService settingsService;
@@ -49,6 +50,17 @@ class ChatPageController extends ChangeNotifier {
     _isDisposed = true;
     characterService.removeListener(_onCharacterUpdated);
     super.dispose();
+  }
+
+  Future<void> _init() async {
+    if (isAssistant) {
+      final resolved = await characterService.resolveAssistantFile();
+      if (resolved != null && !_isDisposed) {
+        characterFile = resolved;
+        notifyListeners();
+      }
+    }
+    await _loadLatestChatOrNew();
   }
 
   Future<void> _onCharacterUpdated() async {

@@ -58,13 +58,7 @@ class GroupChatController extends BaseChatViewController
       providers: providers,
       pureHelpers: _llmService,
     );
-    for (final member in characters) {
-      validateConfigMediaCharacter(
-        character: member,
-        providers: providers,
-        pureHelpers: _llmService,
-      );
-    }
+    unawaited(_reloadMembers());
   }
   final GroupPromptService _groupPromptService;
   final GroupFileService _groupFileService;
@@ -217,14 +211,35 @@ class GroupChatController extends BaseChatViewController
   /// Members resolved from [GroupFile.group.memberAppCardIds] against the
   /// global [CharacterService]. Orphaned ids (characters that no longer
   /// exist) are silently skipped.
-  List<CharacterFile> get characters {
-    final all = _characterService.characterFiles;
-    final resolved = <CharacterFile>[];
-    for (final id in _groupFile.group.memberAppCardIds) {
-      final match = all.where((c) => c.appCardId == id).firstOrNull;
-      if (match != null) resolved.add(match);
+  // Members loaded full and cached; refreshed on init and on add/remove so the
+  // sync `characters` getter (used widely in the group view) keeps working
+  // without holding the whole library in memory.
+  final List<CharacterFile> _members = [];
+
+  List<CharacterFile> get characters => _members;
+
+  Future<void> _reloadMembers() async {
+    if (isDisposed) return;
+    final loaded = await _characterService.loadByAppCardIds(
+      _groupFile.group.memberAppCardIds,
+    );
+    if (isDisposed) return;
+    final byId = {for (final card in loaded) card.appCardId: card};
+    _members
+      ..clear()
+      ..addAll([
+        for (final id in _groupFile.group.memberAppCardIds)
+          if (byId[id] case final card?) card,
+      ]);
+    final providers = _settingsService.settings.providerConfigs;
+    for (final member in _members) {
+      validateConfigMediaCharacter(
+        character: member,
+        providers: providers,
+        pureHelpers: _llmService,
+      );
     }
-    return resolved;
+    notifyListeners();
   }
 
   bool get isAutoChatActive => _isAutoChatActive;
@@ -481,6 +496,7 @@ class GroupChatController extends BaseChatViewController
     if (isDisposed) return;
     if (_groupFile.group.memberAppCardIds.contains(character.appCardId)) return;
     _groupFile.group.memberAppCardIds.add(character.appCardId);
+    _members.add(character);
     unawaited(_saveGroupFile());
     notifyListeners();
   }
@@ -488,6 +504,7 @@ class GroupChatController extends BaseChatViewController
   void removeCharacter(String appCardId) {
     if (isDisposed) return;
     _groupFile.group.memberAppCardIds.remove(appCardId);
+    _members.removeWhere((c) => c.appCardId == appCardId);
     _mutedIds.remove(appCardId);
     unawaited(_saveGroupFile());
     _saveSession();

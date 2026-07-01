@@ -5,6 +5,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_grid_controller.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,12 @@ enum _GroupGridItemActionEnum { delete }
 /// Group grid card — mirrors the row layout of `CharacterGridItem`: a fixed
 /// thumbnail column on the left, an expanded details column on the right,
 /// with an edit icon and popup action menu in the title row.
-class GroupGridItem extends StatelessWidget {
+///
+/// Members load once when the tile mounts and reload only when the library
+/// changes or the group's member list does — a `FutureBuilder` here would
+/// re-read every member card from disk on each unrelated rebuild (scroll,
+/// theme, parent notify).
+class GroupGridItem extends StatefulWidget {
   const GroupGridItem({
     required this.group,
     required this.onTap,
@@ -25,16 +31,48 @@ class GroupGridItem extends StatelessWidget {
   final VoidCallback onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final memberIds = group.group.memberAppCardIds;
-    final allCharacters = context.watch<CharacterService>().characterFiles;
-    final byId = {for (final c in allCharacters) c.appCardId: c};
-    final resolvedMembers = <CharacterFile>[];
-    for (final id in memberIds) {
-      final found = byId[id];
-      if (found != null) resolvedMembers.add(found);
-    }
+  State<GroupGridItem> createState() => _GroupGridItemState();
+}
 
+class _GroupGridItemState extends State<GroupGridItem> {
+  late final CharacterService _characterService;
+  List<CharacterFile> _resolvedMembers = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _characterService = context.read<CharacterService>();
+    _characterService.addListener(_reloadMembers);
+    unawaited(_reloadMembers());
+  }
+
+  @override
+  void didUpdateWidget(GroupGridItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!listEquals(
+      oldWidget.group.group.memberAppCardIds,
+      widget.group.group.memberAppCardIds,
+    )) {
+      unawaited(_reloadMembers());
+    }
+  }
+
+  @override
+  void dispose() {
+    _characterService.removeListener(_reloadMembers);
+    super.dispose();
+  }
+
+  Future<void> _reloadMembers() async {
+    final members = await _characterService.loadByAppCardIds(
+      widget.group.group.memberAppCardIds,
+    );
+    if (!mounted) return;
+    setState(() => _resolvedMembers = members);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -42,15 +80,15 @@ class GroupGridItem extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _GroupGridItemThumbnail(members: resolvedMembers),
+            _GroupGridItemThumbnail(members: _resolvedMembers),
             _GroupGridItemDetails(
-              group: group,
-              resolvedMembers: resolvedMembers,
-              onChanged: onChanged,
+              group: widget.group,
+              resolvedMembers: _resolvedMembers,
+              onChanged: widget.onChanged,
             ),
           ],
         ),

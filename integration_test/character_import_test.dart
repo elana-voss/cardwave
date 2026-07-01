@@ -84,10 +84,10 @@ void main() {
         reason: 'after import the grid should show 3 cards',
       );
 
-      // Confirm the suffixed file landed in the service's list — proves
+      // Confirm the suffixed file landed in the library index — proves
       // loadCharacters picked it up, not just that bytes hit disk.
-      final hasSuffixed = service.characterFiles.any(
-        (f) => f.appCardImagePath == 'Test_Character_1.png',
+      final hasSuffixed = (await service.allCardPaths()).contains(
+        'Test_Character_1.png',
       );
       expect(
         hasSuffixed,

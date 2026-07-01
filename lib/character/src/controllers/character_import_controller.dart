@@ -22,7 +22,7 @@ class CharacterImportController {
     }
     if (parsed.validFiles.isEmpty) return;
 
-    final categorized = service.categorizeImportFiles(parsed.validFiles);
+    final categorized = await service.categorizeImportFiles(parsed.validFiles);
 
     if (categorized.conflicts.isNotEmpty) {
       final conflictingNames = categorized.conflicts
