@@ -2,7 +2,7 @@
 
 AI character cards editor + chat. Author SillyTavern-compatible cards, chat with them across multiple LLM providers. Flutter desktop / web / Android.
 
-![Cardwave screenshot](deploy/public_landing_v5/landing_desktop.jpg)
+![Cardwave screenshot](docs/landing_desktop.jpg)
 
 ## Features
 
