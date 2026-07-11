@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "Setup failed. See logs for details.",
+  "appBarTitle": "Quick Setup",
+  "webWarning": "Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.",
+  "finishButton": "Finish Setup",
+  "nextButton": "Next",
+  "backButton": "Back",
+  "storageStep": {
+    "title": "Character Storage",
+    "subtitle": "Where should we save your character cards?",
+    "description": "Saved in the app folder by default. Point to an existing PNG folder to import.",
+    "startFresh": "Start fresh",
+    "haveCards": "I already have cards",
+    "importLaterHint": "Import PNGs later via File → Import.",
+    "selectedPath": "Selected: $path",
+    "selectedDefaultFolder": "Selected: Default app folder",
+    "noFolderSelected": "No folder selected yet."
+  },
+  "setupStep": {
+    "title": "AI & Persona"
+  },
+  "aiSection": {
+    "heading": "AI Connection",
+    "optionalHint": "Optional — skip and add a key later in Settings (local providers can be added there too).",
+    "apiKeyLabel": "API Key",
+    "apiKeyHint": "Paste your key (or skip for now)",
+    "supportedProviders": "Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.",
+    "unknownModel": "(unknown model)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "Change"
+  },
+  "aiStatus": {
+    "connecting": "Connecting…",
+    "connected": "Connected to $provider. Default chat model selected.",
+    "detected": "Detected: $provider",
+    "unrecognizedKey": "Unrecognized key format."
+  },
+  "personaSection": {
+    "heading": "Your Persona",
+    "hint": "Your name in chats. More persona details in Settings.",
+    "nameLabel": "Your name"
+  },
+  "disclaimer": {
+    "prefix": "I have read and agree to the ",
+    "linkText": "Disclaimer"
+  },
+  "fetchError": {
+    "noModels": "No models returned. Check your API key.",
+    "connectionFailed": "Could not connect. Check your internet connection and API key."
+  }
+}

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/onboarding/src/controllers/onboarding_controller.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -74,7 +75,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         e,
         stackTrace,
       );
-      if (mounted) _snack('Setup failed. See logs for details.');
+      if (mounted) _snack(t.onboarding.finishFailedSnackbar);
     }
   }
 
@@ -82,7 +83,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quick Setup'),
+        title: Text(t.onboarding.appBarTitle),
         centerTitle: true,
       ),
       body: FocusTraversalGroup(
@@ -143,16 +144,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
     final storageIndex = _controller!.storageStepIndex;
     final current = _controller!.currentStep;
     return Step(
-      title: const Text('Character Storage'),
-      subtitle: const Text('Where should we save your character cards?'),
+      title: Text(t.onboarding.storageStep.title),
+      subtitle: Text(t.onboarding.storageStep.subtitle),
       isActive: current >= storageIndex,
       state: current > storageIndex ? StepState.complete : StepState.editing,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Saved in the app folder by default. Point to an existing PNG folder to import.',
-          ),
+          Text(t.onboarding.storageStep.description),
           const SizedBox(height: 16),
           Wrap(
             spacing: 16,
@@ -160,20 +159,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
             children: [
               FilledButton.icon(
                 icon: const Icon(Icons.rocket_launch),
-                label: const Text('Start fresh'),
+                label: Text(t.onboarding.storageStep.startFresh),
                 onPressed: _controller!.selectDefaultPath,
               ),
               OutlinedButton.icon(
                 icon: const Icon(Icons.folder_open),
-                label: const Text('I already have cards'),
+                label: Text(t.onboarding.storageStep.haveCards),
                 onPressed: _controller!.pickDirectory,
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Import PNGs later via File → Import.',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+          Text(
+            t.onboarding.storageStep.importLaterHint,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 16),
           _OnboardingStorageSelection(
@@ -188,7 +187,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Step _buildSetupStep() {
     final setupIndex = _controller!.setupStepIndex;
     return Step(
-      title: const Text('AI & Persona'),
+      title: Text(t.onboarding.setupStep.title),
       isActive: _controller!.currentStep >= setupIndex,
       state: StepState.editing,
       content: Column(
@@ -206,19 +205,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('AI Connection', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 4),
-        const Text(
-          'Optional — skip and add a key later in Settings (local providers can be added there too).',
+        Text(
+          t.onboarding.aiSection.heading,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
+        const SizedBox(height: 4),
+        Text(t.onboarding.aiSection.optionalHint),
         const SizedBox(height: 12),
         TextFieldAutotrim(
           key: const Key('onboarding-api-key'),
           controller: _apiKeyController,
-          decoration: const InputDecoration(
-            labelText: 'API Key',
-            border: OutlineInputBorder(),
-            hintText: 'Paste your key (or skip for now)',
+          decoration: InputDecoration(
+            labelText: t.onboarding.aiSection.apiKeyLabel,
+            border: const OutlineInputBorder(),
+            hintText: t.onboarding.aiSection.apiKeyHint,
           ),
           obscureText: true,
           onChanged: _controller!.updateApiKey,
@@ -232,9 +232,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           apiKey: _controller!.apiKey,
         ),
         const SizedBox(height: 4),
-        const Text(
-          'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.',
-          style: TextStyle(fontSize: 11, color: Colors.grey),
+        Text(
+          t.onboarding.aiSection.supportedProviders,
+          style: const TextStyle(fontSize: 11, color: Colors.grey),
         ),
         if (!kIsWeb && defaultTargetPlatform != TargetPlatform.android) ...[
           const SizedBox(height: 8),
@@ -299,11 +299,15 @@ class _LoadedRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firstModel = profile.models.firstOrNull;
-    final modelName = firstModel?.name ?? '(unknown model)';
+    final modelName = firstModel?.name ?? t.onboarding.aiSection.unknownModel;
     final ctx = profile.contextSize;
     final kv = profile.kvCacheType;
-    final ctxText = ctx == null ? 'ctx —' : 'ctx $ctx';
-    final kvText = kv == null ? '' : ' · KV ${kv.name}';
+    final ctxText = ctx == null
+        ? t.onboarding.aiSection.ctxUnknown
+        : t.onboarding.aiSection.ctxValue(ctx: ctx);
+    final kvText = kv == null
+        ? ''
+        : t.onboarding.aiSection.kvSuffix(kv: kv.name);
     return ListTile(
       dense: true,
       contentPadding: EdgeInsets.zero,
@@ -316,7 +320,7 @@ class _LoadedRow extends StatelessWidget {
       subtitle: Text('$ctxText$kvText'),
       trailing: TextButton(
         onPressed: onChange,
-        child: const Text('Change'),
+        child: Text(t.onboarding.aiSection.changeButton),
       ),
     );
   }
@@ -341,10 +345,9 @@ class _OnboardingSinglePageLayout extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       children: [
         if (kIsWeb) ...[
-          const Text(
-            'Experimental web build — browser storage may reset between updates. '
-            'Use desktop or Android for persistent data.',
-            style: TextStyle(color: Colors.orange, fontSize: 12),
+          Text(
+            t.onboarding.webWarning,
+            style: const TextStyle(color: Colors.orange, fontSize: 12),
           ),
           const SizedBox(height: 24),
         ],
@@ -355,7 +358,7 @@ class _OnboardingSinglePageLayout extends StatelessWidget {
           child: FilledButton(
             key: const Key('onboarding-finish'),
             onPressed: canFinish ? onFinish : null,
-            child: const Text('Finish Setup'),
+            child: Text(t.onboarding.finishButton),
           ),
         ),
       ],
@@ -392,12 +395,14 @@ class _OnboardingStepperControls extends StatelessWidget {
           FilledButton(
             key: Key(isLastStep ? 'onboarding-finish' : 'onboarding-next'),
             onPressed: blockContinue ? null : details.onStepContinue,
-            child: Text(isLastStep ? 'Finish Setup' : 'Next'),
+            child: Text(
+              isLastStep ? t.onboarding.finishButton : t.onboarding.nextButton,
+            ),
           ),
           if (currentStep > 0)
             TextButton(
               onPressed: details.onStepCancel,
-              child: const Text('Back'),
+              child: Text(t.onboarding.backButton),
             ),
         ],
       ),
@@ -420,7 +425,7 @@ class _OnboardingStorageSelection extends StatelessWidget {
     final successColor = Theme.of(context).colorScheme.primary;
     if (selectedPath != null) {
       return Text(
-        'Selected: $selectedPath',
+        t.onboarding.storageStep.selectedPath(path: selectedPath!),
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: successColor,
@@ -429,13 +434,13 @@ class _OnboardingStorageSelection extends StatelessWidget {
     }
     if (useDefaultPath) {
       return Text(
-        'Selected: Default app folder',
+        t.onboarding.storageStep.selectedDefaultFolder,
         style: TextStyle(fontWeight: FontWeight.bold, color: successColor),
       );
     }
-    return const Text(
-      'No folder selected yet.',
-      style: TextStyle(fontStyle: FontStyle.italic),
+    return Text(
+      t.onboarding.storageStep.noFolderSelected,
+      style: const TextStyle(fontStyle: FontStyle.italic),
     );
   }
 }
@@ -459,14 +464,17 @@ class _OnboardingAiStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isFetchingModels) {
-      return const Row(
+      return Row(
         spacing: 8,
         children: [
-          SizedBox.square(
+          const SizedBox.square(
             dimension: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          Text('Connecting…', style: TextStyle(fontSize: 12)),
+          Text(
+            t.onboarding.aiStatus.connecting,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       );
     }
@@ -481,8 +489,9 @@ class _OnboardingAiStatus extends StatelessWidget {
     }
     if (hasAiConnected) {
       return Text(
-        'Connected to ${LlmProvider.of(selectedProvider!).label}. '
-        'Default chat model selected.',
+        t.onboarding.aiStatus.connected(
+          provider: LlmProvider.of(selectedProvider!).label,
+        ),
         style: TextStyle(
           color: Theme.of(context).colorScheme.primary,
           fontSize: 12,
@@ -491,14 +500,16 @@ class _OnboardingAiStatus extends StatelessWidget {
     }
     if (selectedProvider != null) {
       return Text(
-        'Detected: ${LlmProvider.of(selectedProvider!).label}',
+        t.onboarding.aiStatus.detected(
+          provider: LlmProvider.of(selectedProvider!).label,
+        ),
         style: const TextStyle(fontSize: 12, color: Colors.grey),
       );
     }
     if (apiKey.isNotEmpty) {
-      return const Text(
-        'Unrecognized key format.',
-        style: TextStyle(color: Colors.orange, fontSize: 12),
+      return Text(
+        t.onboarding.aiStatus.unrecognizedKey,
+        style: const TextStyle(color: Colors.orange, fontSize: 12),
       );
     }
     return const SizedBox(height: 14);
@@ -519,15 +530,18 @@ class _OnboardingPersonaSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Your Persona', style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          t.onboarding.personaSection.heading,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 4),
-        const Text('Your name in chats. More persona details in Settings.'),
+        Text(t.onboarding.personaSection.hint),
         const SizedBox(height: 12),
         TextFieldAutotrim(
           controller: personaNameController,
-          decoration: const InputDecoration(
-            labelText: 'Your name',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: t.onboarding.personaSection.nameLabel,
+            border: const OutlineInputBorder(),
           ),
           onChanged: onChanged,
         ),
@@ -560,11 +574,11 @@ class _OnboardingDisclaimerRow extends StatelessWidget {
           child: Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const Text('I have read and agree to the '),
+              Text(t.onboarding.disclaimer.prefix),
               InkWell(
                 onTap: () => launchUrl(Uri.parse(AppConstants.disclaimer)),
                 child: Text(
-                  'Disclaimer',
+                  t.onboarding.disclaimer.linkText,
                   style: TextStyle(
                     color: linkColor,
                     decoration: TextDecoration.underline,

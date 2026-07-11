@@ -67,7 +67,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 ## Step 3 checklist (Sonnet) — one commit per row
 - [x] 1 `lib/grid/` → `grid`
 - [x] 2 `lib/routing/` → `routing`
-- [ ] 3 `lib/onboarding/` → `onboarding`
+- [x] 3 `lib/onboarding/` → `onboarding`
 - [ ] 4 `lib/common/` → `common`
 - [ ] 5 `lib/settings/` → `settings`
 - [ ] 6 `lib/llm_app/` → `llmApp`
@@ -123,6 +123,19 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   key whose value is identically "Cardwave" in all 9 locale files seemed like
   pure overhead with no behavior difference. Resolved (non-action / skip) —
   flagging so Step 4/5 know it was a deliberate call, not a miss.
+- **[onboarding] `kHaveLocalGgufExpanderTitle` / `kPickFileLabel`**
+  (`lib/onboarding/src/pages/onboarding_page.dart`, the local-GGUF
+  expander title and its "Pick GGUF file..." button, both rendered via
+  `const Text(kConstant)`): NOT extracted in row 3. Both constants are
+  declared in `lib/settings/src/utils/local_gguf_strings.dart` (row 5's
+  territory) and are also consumed by
+  `lib/settings/src/pages/widgets/dialog_local_gguf_provider_config.dart`.
+  Converting them to `t.` keys requires editing the settings source file
+  and removing `const` at every call site (including this onboarding
+  one) — deferred to row 5 so lib/settings/ isn't touched out of order.
+  Row 5: convert both constants to non-const `t.settings.*` getters and
+  drop `const` from the two `Text(...)` call sites (here and in
+  dialog_local_gguf_provider_config.dart).
 
 ## Parked observations (bugs noticed but out of scope)
 _(none yet)_

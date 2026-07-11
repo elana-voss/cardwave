@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -194,12 +195,11 @@ class OnboardingController extends ChangeNotifier {
             .firstOrNull;
         selectedModelId = matchedModel?.id ?? models.first.id;
       } else {
-        fetchError = 'No models returned. Check your API key.';
+        fetchError = t.onboarding.fetchError.noModels;
       }
     } on Exception catch (e, st) {
       LoggingService().error('Onboarding model fetch failed', e, st);
-      fetchError =
-          'Could not connect. Check your internet connection and API key.';
+      fetchError = t.onboarding.fetchError.connectionFailed;
     } finally {
       isFetchingModels = false;
       _safeNotify();

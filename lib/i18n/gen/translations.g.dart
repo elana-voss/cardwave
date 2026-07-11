@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 82 (9 per locale)
+/// Strings: 119 (13 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -285,6 +285,19 @@ class _TranslationsOnboardingEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	String get finishFailedSnackbar => 'Setup failed. See logs for details.';
+	String get appBarTitle => 'Quick Setup';
+	String get webWarning => 'Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.';
+	String get finishButton => 'Finish Setup';
+	String get nextButton => 'Next';
+	String get backButton => 'Back';
+	late final _TranslationsOnboardingStorageStepEn storageStep = _TranslationsOnboardingStorageStepEn._(_root);
+	late final _TranslationsOnboardingSetupStepEn setupStep = _TranslationsOnboardingSetupStepEn._(_root);
+	late final _TranslationsOnboardingAiSectionEn aiSection = _TranslationsOnboardingAiSectionEn._(_root);
+	late final _TranslationsOnboardingAiStatusEn aiStatus = _TranslationsOnboardingAiStatusEn._(_root);
+	late final _TranslationsOnboardingPersonaSectionEn personaSection = _TranslationsOnboardingPersonaSectionEn._(_root);
+	late final _TranslationsOnboardingDisclaimerEn disclaimer = _TranslationsOnboardingDisclaimerEn._(_root);
+	late final _TranslationsOnboardingFetchErrorEn fetchError = _TranslationsOnboardingFetchErrorEn._(_root);
 }
 
 // Path: routing
@@ -565,6 +578,100 @@ class _TranslationsGridControllerMessagesEn {
 	String get deleteCardTitle => 'Delete Card';
 	String get deleteCardMessage => 'Are you sure you want to delete this card?';
 	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
+}
+
+// Path: onboarding.storageStep
+class _TranslationsOnboardingStorageStepEn {
+	_TranslationsOnboardingStorageStepEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Character Storage';
+	String get subtitle => 'Where should we save your character cards?';
+	String get description => 'Saved in the app folder by default. Point to an existing PNG folder to import.';
+	String get startFresh => 'Start fresh';
+	String get haveCards => 'I already have cards';
+	String get importLaterHint => 'Import PNGs later via File → Import.';
+	String selectedPath({required Object path}) => 'Selected: ${path}';
+	String get selectedDefaultFolder => 'Selected: Default app folder';
+	String get noFolderSelected => 'No folder selected yet.';
+}
+
+// Path: onboarding.setupStep
+class _TranslationsOnboardingSetupStepEn {
+	_TranslationsOnboardingSetupStepEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'AI & Persona';
+}
+
+// Path: onboarding.aiSection
+class _TranslationsOnboardingAiSectionEn {
+	_TranslationsOnboardingAiSectionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get heading => 'AI Connection';
+	String get optionalHint => 'Optional — skip and add a key later in Settings (local providers can be added there too).';
+	String get apiKeyLabel => 'API Key';
+	String get apiKeyHint => 'Paste your key (or skip for now)';
+	String get supportedProviders => 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.';
+	String get unknownModel => '(unknown model)';
+	String get ctxUnknown => 'ctx —';
+	String ctxValue({required Object ctx}) => 'ctx ${ctx}';
+	String kvSuffix({required Object kv}) => ' · KV ${kv}';
+	String get changeButton => 'Change';
+}
+
+// Path: onboarding.aiStatus
+class _TranslationsOnboardingAiStatusEn {
+	_TranslationsOnboardingAiStatusEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get connecting => 'Connecting…';
+	String connected({required Object provider}) => 'Connected to ${provider}. Default chat model selected.';
+	String detected({required Object provider}) => 'Detected: ${provider}';
+	String get unrecognizedKey => 'Unrecognized key format.';
+}
+
+// Path: onboarding.personaSection
+class _TranslationsOnboardingPersonaSectionEn {
+	_TranslationsOnboardingPersonaSectionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get heading => 'Your Persona';
+	String get hint => 'Your name in chats. More persona details in Settings.';
+	String get nameLabel => 'Your name';
+}
+
+// Path: onboarding.disclaimer
+class _TranslationsOnboardingDisclaimerEn {
+	_TranslationsOnboardingDisclaimerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get prefix => 'I have read and agree to the ';
+	String get linkText => 'Disclaimer';
+}
+
+// Path: onboarding.fetchError
+class _TranslationsOnboardingFetchErrorEn {
+	_TranslationsOnboardingFetchErrorEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noModels => 'No models returned. Check your API key.';
+	String get connectionFailed => 'Could not connect. Check your internet connection and API key.';
 }
 
 // Path: routing.chatCharacter
@@ -2104,6 +2211,43 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
+			case 'onboarding.finishFailedSnackbar': return 'Setup failed. See logs for details.';
+			case 'onboarding.appBarTitle': return 'Quick Setup';
+			case 'onboarding.webWarning': return 'Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.';
+			case 'onboarding.finishButton': return 'Finish Setup';
+			case 'onboarding.nextButton': return 'Next';
+			case 'onboarding.backButton': return 'Back';
+			case 'onboarding.storageStep.title': return 'Character Storage';
+			case 'onboarding.storageStep.subtitle': return 'Where should we save your character cards?';
+			case 'onboarding.storageStep.description': return 'Saved in the app folder by default. Point to an existing PNG folder to import.';
+			case 'onboarding.storageStep.startFresh': return 'Start fresh';
+			case 'onboarding.storageStep.haveCards': return 'I already have cards';
+			case 'onboarding.storageStep.importLaterHint': return 'Import PNGs later via File → Import.';
+			case 'onboarding.storageStep.selectedPath': return ({required Object path}) => 'Selected: ${path}';
+			case 'onboarding.storageStep.selectedDefaultFolder': return 'Selected: Default app folder';
+			case 'onboarding.storageStep.noFolderSelected': return 'No folder selected yet.';
+			case 'onboarding.setupStep.title': return 'AI & Persona';
+			case 'onboarding.aiSection.heading': return 'AI Connection';
+			case 'onboarding.aiSection.optionalHint': return 'Optional — skip and add a key later in Settings (local providers can be added there too).';
+			case 'onboarding.aiSection.apiKeyLabel': return 'API Key';
+			case 'onboarding.aiSection.apiKeyHint': return 'Paste your key (or skip for now)';
+			case 'onboarding.aiSection.supportedProviders': return 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.';
+			case 'onboarding.aiSection.unknownModel': return '(unknown model)';
+			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
+			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
+			case 'onboarding.aiSection.kvSuffix': return ({required Object kv}) => ' · KV ${kv}';
+			case 'onboarding.aiSection.changeButton': return 'Change';
+			case 'onboarding.aiStatus.connecting': return 'Connecting…';
+			case 'onboarding.aiStatus.connected': return ({required Object provider}) => 'Connected to ${provider}. Default chat model selected.';
+			case 'onboarding.aiStatus.detected': return ({required Object provider}) => 'Detected: ${provider}';
+			case 'onboarding.aiStatus.unrecognizedKey': return 'Unrecognized key format.';
+			case 'onboarding.personaSection.heading': return 'Your Persona';
+			case 'onboarding.personaSection.hint': return 'Your name in chats. More persona details in Settings.';
+			case 'onboarding.personaSection.nameLabel': return 'Your name';
+			case 'onboarding.disclaimer.prefix': return 'I have read and agree to the ';
+			case 'onboarding.disclaimer.linkText': return 'Disclaimer';
+			case 'onboarding.fetchError.noModels': return 'No models returned. Check your API key.';
+			case 'onboarding.fetchError.connectionFailed': return 'Could not connect. Check your internet connection and API key.';
 			case 'routing.chatCharacter.navigationError': return ({required Object name}) => 'Navigation error to chat. Character: ${name}';
 			case 'routing.editCharacter.navigationError': return ({required Object name}) => 'Navigation error to edit. Character: ${name}';
 			case 'routing.editPreset.navigationError': return ({required Object presetId}) => 'Navigation error to edit preset: ${presetId}';
