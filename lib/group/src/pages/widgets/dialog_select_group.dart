@@ -2,6 +2,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/pages/widgets/dialog_create_group.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,11 +50,11 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
 
   Future<void> _confirmDelete(GroupFile group) async {
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete group?',
-      message:
-          '"${group.group.name}" and all of its chat sessions will be '
-          'permanently removed.',
-      confirmText: 'Delete',
+      title: t.group.dialogSelectGroup.deleteGroupTitle,
+      message: t.group.dialogSelectGroup.deleteGroupMessage(
+        name: group.group.name,
+      ),
+      confirmText: t.common.actions.delete,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
@@ -73,7 +74,7 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Groups',
+            t.group.dialogSelectGroup.title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
@@ -84,7 +85,7 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
               child: FilledButton.icon(
                 onPressed: _createNew,
                 icon: const Icon(Icons.add),
-                label: const Text('New group'),
+                label: Text(t.grid.groupAppBar.newGroup),
               ),
             ),
           ),
@@ -101,7 +102,10 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Failed to load groups:\n${snapshot.error ?? 'unknown error'}',
+                    t.group.groupGridPage.failedToLoadMessage(
+                      error:
+                          '${snapshot.error ?? t.group.groupGridPage.unknownErrorFallback}',
+                    ),
                   ),
                 );
               }
@@ -110,7 +114,7 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
                 return Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'No groups yet. Tap "New group" to create one.',
+                    t.group.dialogSelectGroup.noGroupsYetMessage,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -152,10 +156,12 @@ class _GroupRow extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.group),
       title: Text(group.group.name),
-      subtitle: Text(memberCount == 1 ? '1 member' : '$memberCount members'),
+      subtitle: Text(
+        t.group.dialogSelectGroup.memberCountLabel(n: memberCount),
+      ),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline),
-        tooltip: 'Delete',
+        tooltip: t.common.actions.delete,
         onPressed: onDelete,
       ),
       onTap: onTap,

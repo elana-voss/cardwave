@@ -1,6 +1,7 @@
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart' show Color;
 
 /// Stateless orchestrator for the per-group grid item actions — the rename
@@ -18,9 +19,9 @@ class GroupGridController {
     required GroupFile group,
   }) async {
     final newName = await NavigationService().showTextInputDialog(
-      title: 'Rename Group',
+      title: t.group.groupGridController.renameGroupTitle,
       initialText: group.group.name,
-      hintText: 'Group name',
+      hintText: t.group.groupGridController.groupNameHint,
       maxLines: 1,
     );
     if (newName == null) return false;
@@ -41,11 +42,11 @@ class GroupGridController {
     required Color confirmColor,
   }) async {
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Group',
-      message:
-          'Are you sure you want to delete "${group.group.name}"? '
-          'This cannot be undone.',
-      confirmText: 'Delete',
+      title: t.group.groupGridController.deleteGroupTitle,
+      message: t.group.groupGridController.deleteGroupMessage(
+        name: group.group.name,
+      ),
+      confirmText: t.common.actions.delete,
       confirmColor: confirmColor,
     );
     if (!confirmed) return false;

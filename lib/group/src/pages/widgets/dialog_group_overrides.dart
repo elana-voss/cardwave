@@ -1,5 +1,6 @@
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,34 +58,32 @@ class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Group overrides',
+            t.group.groupChatPageEndDrawer.groupOverridesTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'Unique to this chat. All group members use these values instead '
-            'of what their character cards define. Leave empty to fall back '
-            'to the card value.',
+            t.group.dialogGroupOverrides.explanationMessage,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 16),
           _OverrideField(
-            label: 'Scenario',
-            hint: 'Shared setting for the group (e.g. "In a cafe in Paris")',
+            label: t.common.promptSegmentKind.scenario,
+            hint: t.group.dialogGroupOverrides.scenarioHint,
             controller: _scenarioController!,
           ),
           const SizedBox(height: 16),
           _OverrideField(
-            label: 'Main Prompt',
-            hint: 'System prompt applied during every turn',
+            label: t.group.dialogGroupOverrides.mainPromptLabel,
+            hint: t.group.dialogGroupOverrides.mainPromptHint,
             controller: _systemPromptController!,
           ),
           const SizedBox(height: 16),
           _OverrideField(
-            label: 'Example Dialogue',
-            hint: 'Shared example messages for tone / formatting',
+            label: t.group.dialogGroupOverrides.exampleDialogueLabel,
+            hint: t.group.dialogGroupOverrides.exampleDialogueHint,
             controller: _mesExampleController!,
           ),
         ],
@@ -92,7 +91,7 @@ class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
       actions: [
         FilledButton(
           onPressed: _save,
-          child: const Text('Save'),
+          child: Text(t.common.actions.save),
         ),
       ],
     );
@@ -121,7 +120,7 @@ class _OverrideField extends StatelessWidget {
         border: const OutlineInputBorder(),
         suffixIcon: IconButton(
           icon: const Icon(Icons.clear),
-          tooltip: 'Clear',
+          tooltip: t.llmApp.mediaCellMenu.clear,
           onPressed: controller.clear,
         ),
       ),

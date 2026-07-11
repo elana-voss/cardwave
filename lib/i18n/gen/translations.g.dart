@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 790 (87 per locale)
+/// Strings: 870 (96 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -345,6 +345,20 @@ class _TranslationsGroupEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsGroupGroupGridControllerEn groupGridController = _TranslationsGroupGroupGridControllerEn._(_root);
+	late final _TranslationsGroupGroupChatPageEn groupChatPage = _TranslationsGroupGroupChatPageEn._(_root);
+	late final _TranslationsGroupGroupGridPageEn groupGridPage = _TranslationsGroupGroupGridPageEn._(_root);
+	late final _TranslationsGroupTileAutoChatDelayEn tileAutoChatDelay = _TranslationsGroupTileAutoChatDelayEn._(_root);
+	late final _TranslationsGroupTileActivationStrategyEn tileActivationStrategy = _TranslationsGroupTileActivationStrategyEn._(_root);
+	late final _TranslationsGroupGroupChatPageEndDrawerEn groupChatPageEndDrawer = _TranslationsGroupGroupChatPageEndDrawerEn._(_root);
+	late final _TranslationsGroupGroupCharacterPickerEn groupCharacterPicker = _TranslationsGroupGroupCharacterPickerEn._(_root);
+	late final _TranslationsGroupGroupCharacterTileEn groupCharacterTile = _TranslationsGroupGroupCharacterTileEn._(_root);
+	late final _TranslationsGroupDialogCreateGroupEn dialogCreateGroup = _TranslationsGroupDialogCreateGroupEn._(_root);
+	late final _TranslationsGroupDialogGroupOverridesEn dialogGroupOverrides = _TranslationsGroupDialogGroupOverridesEn._(_root);
+	late final _TranslationsGroupGroupCharacterPanelEn groupCharacterPanel = _TranslationsGroupGroupCharacterPanelEn._(_root);
+	late final _TranslationsGroupDialogSelectGroupEn dialogSelectGroup = _TranslationsGroupDialogSelectGroupEn._(_root);
+	late final _TranslationsGroupGroupGridItemEn groupGridItem = _TranslationsGroupGroupGridItemEn._(_root);
+	late final _TranslationsGroupGroupFileServiceEn groupFileService = _TranslationsGroupGroupFileServiceEn._(_root);
 }
 
 // Path: llmApp
@@ -1984,6 +1998,214 @@ class _TranslationsGridControllerMessagesEn {
 	String get deleteCardTitle => 'Delete Card';
 	String get deleteCardMessage => 'Are you sure you want to delete this card?';
 	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
+}
+
+// Path: group.groupGridController
+class _TranslationsGroupGroupGridControllerEn {
+	_TranslationsGroupGroupGridControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get renameGroupTitle => 'Rename Group';
+	String get groupNameHint => 'Group name';
+	String get deleteGroupTitle => 'Delete Group';
+	String deleteGroupMessage({required Object name}) => 'Are you sure you want to delete "${name}"? This cannot be undone.';
+}
+
+// Path: group.groupChatPage
+class _TranslationsGroupGroupChatPageEn {
+	_TranslationsGroupGroupChatPageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get defaultGroupName => 'Group Chat';
+	String failedToLoadMessage({required Object error}) => 'Failed to load group chat:\n${error}';
+	String get nextTurnTooltip => 'Next turn';
+	String get stopAutoChatTooltip => 'Stop auto-chat';
+	String get startAutoChatTooltip => 'Start auto-chat';
+	String get stopGenerationTooltip => 'Stop generation';
+	String get noCharactersYetMessage => 'This group has no characters yet.';
+	String get addCharacterButton => 'Add a character';
+	String get pickCharacterMessage => 'Pick a character from the list on the left.';
+}
+
+// Path: group.groupGridPage
+class _TranslationsGroupGroupGridPageEn {
+	_TranslationsGroupGroupGridPageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String failedToLoadMessage({required Object error}) => 'Failed to load groups:\n${error}';
+	String get unknownErrorFallback => 'unknown error';
+	String get noGroupsYetMessage => 'No groups yet — tap + to create one.';
+}
+
+// Path: group.tileAutoChatDelay
+class _TranslationsGroupTileAutoChatDelayEn {
+	_TranslationsGroupTileAutoChatDelayEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Auto-chat delay';
+	String secondsAbbrev({required Object seconds}) => '${seconds}s';
+}
+
+// Path: group.tileActivationStrategy
+class _TranslationsGroupTileActivationStrategyEn {
+	_TranslationsGroupTileActivationStrategyEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Speaker selection';
+	String get naturalOption => 'Natural';
+	String get roundRobinOption => 'Round-robin';
+	String get randomOption => 'Random';
+	String get changeSelectionTooltip => 'Change speaker selection';
+}
+
+// Path: group.groupChatPageEndDrawer
+class _TranslationsGroupGroupChatPageEndDrawerEn {
+	_TranslationsGroupGroupChatPageEndDrawerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get allowWebFetchTitle => 'Allow Web Fetch';
+	String get allowWebFetchSubtitle => 'Read public web pages when relevant';
+	String get reviewUrlTitle => 'Review URL Before Fetching';
+	String get reviewUrlSubtitle => 'Confirm each fetch';
+	String get suggestNpcNamesTitle => 'Suggest NPC Names';
+	String get suggestNpcNamesSubtitle => 'Pick names from the curated database';
+	String get unrestrictedImagesTitle => 'Unrestricted Images';
+	String get allowNsfwImagePromptsSubtitle => 'Allow NSFW image prompts';
+	String get characterCanSendSelfiesTitle => 'Character Can Send Selfies';
+	String get attachSelfieWhenNaturalSubtitle => 'Attach a selfie when natural';
+	String get reviewImagePromptTitle => 'Review Image Prompt';
+	String get editBeforeGeneratingSubtitle => 'Edit before generating';
+	String get reviewToolImagePromptsTitle => 'Review Tool Image Prompts';
+	String get editToolTriggeredPromptsSubtitle => 'Edit tool-triggered prompts';
+	String get allowSelfieCaptionsTitle => 'Allow Selfie Captions';
+	String get captionRenderedOnImageSubtitle => 'Caption rendered on the image';
+	String get groupOverridesTitle => 'Group overrides';
+	String get groupOverridesSubtitle => 'Shared scenario, main prompt, example dialogue';
+	String get chatSessionSubtitle => 'Chat session';
+	String get allChatsLabel => 'All Chats';
+	String get showImageLabel => 'Show Image';
+	String get groupSectionHeader => 'Group';
+	String get chatSectionHeader => 'Chat';
+	String get chatThemeSectionHeader => 'Chat Theme';
+	String get unrestrictedVideosTitle => 'Unrestricted Videos';
+	String get allowNsfwVideoPromptsSubtitle => 'Allow NSFW video prompts';
+	String get characterCanSendVideosTitle => 'Character Can Send Videos';
+	String get attachShortVideoWhenNaturalSubtitle => 'Attach a short video when natural';
+	String get reviewVideoPromptTitle => 'Review Video Prompt';
+}
+
+// Path: group.groupCharacterPicker
+class _TranslationsGroupGroupCharacterPickerEn {
+	_TranslationsGroupGroupCharacterPickerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get addButton => 'Add';
+	String addWithCountButton({required Object count}) => 'Add ${count}';
+	String get favoritesTooltip => 'Favorites';
+	String noMatchMessage({required Object query}) => 'No characters match "${query}"';
+	String get noFavoritesMessage => 'No favorited characters available';
+	String get allAddedMessage => 'All characters already added';
+}
+
+// Path: group.groupCharacterTile
+class _TranslationsGroupGroupCharacterTileEn {
+	_TranslationsGroupGroupCharacterTileEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get speakTooltip => 'Make this character speak';
+	String get removeFromChatTitle => 'Remove from chat';
+}
+
+// Path: group.dialogCreateGroup
+class _TranslationsGroupDialogCreateGroupEn {
+	_TranslationsGroupDialogCreateGroupEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'New Group';
+	String get nameLabel => 'Name';
+	String get nameHint => 'e.g. Bob & Alice';
+}
+
+// Path: group.dialogGroupOverrides
+class _TranslationsGroupDialogGroupOverridesEn {
+	_TranslationsGroupDialogGroupOverridesEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get explanationMessage => 'Unique to this chat. All group members use these values instead of what their character cards define. Leave empty to fall back to the card value.';
+	String get scenarioHint => 'Shared setting for the group (e.g. "In a cafe in Paris")';
+	String get mainPromptLabel => 'Main Prompt';
+	String get mainPromptHint => 'System prompt applied during every turn';
+	String get exampleDialogueLabel => 'Example Dialogue';
+	String get exampleDialogueHint => 'Shared example messages for tone / formatting';
+}
+
+// Path: group.groupCharacterPanel
+class _TranslationsGroupGroupCharacterPanelEn {
+	_TranslationsGroupGroupCharacterPanelEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get addCharacterButton => 'Add Character';
+	String get noCharactersYetMessage => 'No characters yet.\nTap + to add one.';
+}
+
+// Path: group.dialogSelectGroup
+class _TranslationsGroupDialogSelectGroupEn {
+	_TranslationsGroupDialogSelectGroupEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get deleteGroupTitle => 'Delete group?';
+	String deleteGroupMessage({required Object name}) => '"${name}" and all of its chat sessions will be permanently removed.';
+	String get title => 'Groups';
+	String get noGroupsYetMessage => 'No groups yet. Tap "New group" to create one.';
+	String memberCountLabel({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '${n} member',
+		other: '${n} members',
+	);
+}
+
+// Path: group.groupGridItem
+class _TranslationsGroupGroupGridItemEn {
+	_TranslationsGroupGroupGridItemEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String overflowCountBadge({required Object count}) => '+${count}';
+	String get noMembersYetMessage => 'No members yet';
+}
+
+// Path: group.groupFileService
+class _TranslationsGroupGroupFileServiceEn {
+	_TranslationsGroupGroupFileServiceEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get defaultGroupName => 'Group';
 }
 
 // Path: llmApp.mediaField
@@ -4498,6 +4720,88 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
+			case 'group.groupGridController.renameGroupTitle': return 'Rename Group';
+			case 'group.groupGridController.groupNameHint': return 'Group name';
+			case 'group.groupGridController.deleteGroupTitle': return 'Delete Group';
+			case 'group.groupGridController.deleteGroupMessage': return ({required Object name}) => 'Are you sure you want to delete "${name}"? This cannot be undone.';
+			case 'group.groupChatPage.defaultGroupName': return 'Group Chat';
+			case 'group.groupChatPage.failedToLoadMessage': return ({required Object error}) => 'Failed to load group chat:\n${error}';
+			case 'group.groupChatPage.nextTurnTooltip': return 'Next turn';
+			case 'group.groupChatPage.stopAutoChatTooltip': return 'Stop auto-chat';
+			case 'group.groupChatPage.startAutoChatTooltip': return 'Start auto-chat';
+			case 'group.groupChatPage.stopGenerationTooltip': return 'Stop generation';
+			case 'group.groupChatPage.noCharactersYetMessage': return 'This group has no characters yet.';
+			case 'group.groupChatPage.addCharacterButton': return 'Add a character';
+			case 'group.groupChatPage.pickCharacterMessage': return 'Pick a character from the list on the left.';
+			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Failed to load groups:\n${error}';
+			case 'group.groupGridPage.unknownErrorFallback': return 'unknown error';
+			case 'group.groupGridPage.noGroupsYetMessage': return 'No groups yet — tap + to create one.';
+			case 'group.tileAutoChatDelay.title': return 'Auto-chat delay';
+			case 'group.tileAutoChatDelay.secondsAbbrev': return ({required Object seconds}) => '${seconds}s';
+			case 'group.tileActivationStrategy.title': return 'Speaker selection';
+			case 'group.tileActivationStrategy.naturalOption': return 'Natural';
+			case 'group.tileActivationStrategy.roundRobinOption': return 'Round-robin';
+			case 'group.tileActivationStrategy.randomOption': return 'Random';
+			case 'group.tileActivationStrategy.changeSelectionTooltip': return 'Change speaker selection';
+			case 'group.groupChatPageEndDrawer.allowWebFetchTitle': return 'Allow Web Fetch';
+			case 'group.groupChatPageEndDrawer.allowWebFetchSubtitle': return 'Read public web pages when relevant';
+			case 'group.groupChatPageEndDrawer.reviewUrlTitle': return 'Review URL Before Fetching';
+			case 'group.groupChatPageEndDrawer.reviewUrlSubtitle': return 'Confirm each fetch';
+			case 'group.groupChatPageEndDrawer.suggestNpcNamesTitle': return 'Suggest NPC Names';
+			case 'group.groupChatPageEndDrawer.suggestNpcNamesSubtitle': return 'Pick names from the curated database';
+			case 'group.groupChatPageEndDrawer.unrestrictedImagesTitle': return 'Unrestricted Images';
+			case 'group.groupChatPageEndDrawer.allowNsfwImagePromptsSubtitle': return 'Allow NSFW image prompts';
+			case 'group.groupChatPageEndDrawer.characterCanSendSelfiesTitle': return 'Character Can Send Selfies';
+			case 'group.groupChatPageEndDrawer.attachSelfieWhenNaturalSubtitle': return 'Attach a selfie when natural';
+			case 'group.groupChatPageEndDrawer.reviewImagePromptTitle': return 'Review Image Prompt';
+			case 'group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle': return 'Edit before generating';
+			case 'group.groupChatPageEndDrawer.reviewToolImagePromptsTitle': return 'Review Tool Image Prompts';
+			case 'group.groupChatPageEndDrawer.editToolTriggeredPromptsSubtitle': return 'Edit tool-triggered prompts';
+			case 'group.groupChatPageEndDrawer.allowSelfieCaptionsTitle': return 'Allow Selfie Captions';
+			case 'group.groupChatPageEndDrawer.captionRenderedOnImageSubtitle': return 'Caption rendered on the image';
+			case 'group.groupChatPageEndDrawer.groupOverridesTitle': return 'Group overrides';
+			case 'group.groupChatPageEndDrawer.groupOverridesSubtitle': return 'Shared scenario, main prompt, example dialogue';
+			case 'group.groupChatPageEndDrawer.chatSessionSubtitle': return 'Chat session';
+			case 'group.groupChatPageEndDrawer.allChatsLabel': return 'All Chats';
+			case 'group.groupChatPageEndDrawer.showImageLabel': return 'Show Image';
+			case 'group.groupChatPageEndDrawer.groupSectionHeader': return 'Group';
+			case 'group.groupChatPageEndDrawer.chatSectionHeader': return 'Chat';
+			case 'group.groupChatPageEndDrawer.chatThemeSectionHeader': return 'Chat Theme';
+			case 'group.groupChatPageEndDrawer.unrestrictedVideosTitle': return 'Unrestricted Videos';
+			case 'group.groupChatPageEndDrawer.allowNsfwVideoPromptsSubtitle': return 'Allow NSFW video prompts';
+			case 'group.groupChatPageEndDrawer.characterCanSendVideosTitle': return 'Character Can Send Videos';
+			case 'group.groupChatPageEndDrawer.attachShortVideoWhenNaturalSubtitle': return 'Attach a short video when natural';
+			case 'group.groupChatPageEndDrawer.reviewVideoPromptTitle': return 'Review Video Prompt';
+			case 'group.groupCharacterPicker.addButton': return 'Add';
+			case 'group.groupCharacterPicker.addWithCountButton': return ({required Object count}) => 'Add ${count}';
+			case 'group.groupCharacterPicker.favoritesTooltip': return 'Favorites';
+			case 'group.groupCharacterPicker.noMatchMessage': return ({required Object query}) => 'No characters match "${query}"';
+			case 'group.groupCharacterPicker.noFavoritesMessage': return 'No favorited characters available';
+			case 'group.groupCharacterPicker.allAddedMessage': return 'All characters already added';
+			case 'group.groupCharacterTile.speakTooltip': return 'Make this character speak';
+			case 'group.groupCharacterTile.removeFromChatTitle': return 'Remove from chat';
+			case 'group.dialogCreateGroup.title': return 'New Group';
+			case 'group.dialogCreateGroup.nameLabel': return 'Name';
+			case 'group.dialogCreateGroup.nameHint': return 'e.g. Bob & Alice';
+			case 'group.dialogGroupOverrides.explanationMessage': return 'Unique to this chat. All group members use these values instead of what their character cards define. Leave empty to fall back to the card value.';
+			case 'group.dialogGroupOverrides.scenarioHint': return 'Shared setting for the group (e.g. "In a cafe in Paris")';
+			case 'group.dialogGroupOverrides.mainPromptLabel': return 'Main Prompt';
+			case 'group.dialogGroupOverrides.mainPromptHint': return 'System prompt applied during every turn';
+			case 'group.dialogGroupOverrides.exampleDialogueLabel': return 'Example Dialogue';
+			case 'group.dialogGroupOverrides.exampleDialogueHint': return 'Shared example messages for tone / formatting';
+			case 'group.groupCharacterPanel.addCharacterButton': return 'Add Character';
+			case 'group.groupCharacterPanel.noCharactersYetMessage': return 'No characters yet.\nTap + to add one.';
+			case 'group.dialogSelectGroup.deleteGroupTitle': return 'Delete group?';
+			case 'group.dialogSelectGroup.deleteGroupMessage': return ({required Object name}) => '"${name}" and all of its chat sessions will be permanently removed.';
+			case 'group.dialogSelectGroup.title': return 'Groups';
+			case 'group.dialogSelectGroup.noGroupsYetMessage': return 'No groups yet. Tap "New group" to create one.';
+			case 'group.dialogSelectGroup.memberCountLabel': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: '${n} member',
+				other: '${n} members',
+			);
+			case 'group.groupGridItem.overflowCountBadge': return ({required Object count}) => '+${count}';
+			case 'group.groupGridItem.noMembersYetMessage': return 'No members yet';
+			case 'group.groupFileService.defaultGroupName': return 'Group';
 			case 'llmApp.mediaField.imageModel': return 'Image model';
 			case 'llmApp.mediaField.imageAspectRatio': return 'Image aspect ratio';
 			case 'llmApp.mediaField.imageNsfwAllowed': return 'Image NSFW allowed';

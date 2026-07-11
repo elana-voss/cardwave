@@ -1,1 +1,112 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "Rename Group",
+    "groupNameHint": "Group name",
+    "deleteGroupTitle": "Delete Group",
+    "deleteGroupMessage": "Are you sure you want to delete \"$name\"? This cannot be undone."
+  },
+  "groupChatPage": {
+    "defaultGroupName": "Group Chat",
+    "failedToLoadMessage": "Failed to load group chat:\n$error",
+    "nextTurnTooltip": "Next turn",
+    "stopAutoChatTooltip": "Stop auto-chat",
+    "startAutoChatTooltip": "Start auto-chat",
+    "stopGenerationTooltip": "Stop generation",
+    "noCharactersYetMessage": "This group has no characters yet.",
+    "addCharacterButton": "Add a character",
+    "pickCharacterMessage": "Pick a character from the list on the left."
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "Failed to load groups:\n$error",
+    "unknownErrorFallback": "unknown error",
+    "noGroupsYetMessage": "No groups yet — tap + to create one."
+  },
+  "tileAutoChatDelay": {
+    "title": "Auto-chat delay",
+    "secondsAbbrev": "${seconds}s"
+  },
+  "tileActivationStrategy": {
+    "title": "Speaker selection",
+    "naturalOption": "Natural",
+    "roundRobinOption": "Round-robin",
+    "randomOption": "Random",
+    "changeSelectionTooltip": "Change speaker selection"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "Allow Web Fetch",
+    "allowWebFetchSubtitle": "Read public web pages when relevant",
+    "reviewUrlTitle": "Review URL Before Fetching",
+    "reviewUrlSubtitle": "Confirm each fetch",
+    "suggestNpcNamesTitle": "Suggest NPC Names",
+    "suggestNpcNamesSubtitle": "Pick names from the curated database",
+    "unrestrictedImagesTitle": "Unrestricted Images",
+    "allowNsfwImagePromptsSubtitle": "Allow NSFW image prompts",
+    "characterCanSendSelfiesTitle": "Character Can Send Selfies",
+    "attachSelfieWhenNaturalSubtitle": "Attach a selfie when natural",
+    "reviewImagePromptTitle": "Review Image Prompt",
+    "editBeforeGeneratingSubtitle": "Edit before generating",
+    "reviewToolImagePromptsTitle": "Review Tool Image Prompts",
+    "editToolTriggeredPromptsSubtitle": "Edit tool-triggered prompts",
+    "allowSelfieCaptionsTitle": "Allow Selfie Captions",
+    "captionRenderedOnImageSubtitle": "Caption rendered on the image",
+    "groupOverridesTitle": "Group overrides",
+    "groupOverridesSubtitle": "Shared scenario, main prompt, example dialogue",
+    "chatSessionSubtitle": "Chat session",
+    "allChatsLabel": "All Chats",
+    "showImageLabel": "Show Image",
+    "groupSectionHeader": "Group",
+    "chatSectionHeader": "Chat",
+    "chatThemeSectionHeader": "Chat Theme",
+    "unrestrictedVideosTitle": "Unrestricted Videos",
+    "allowNsfwVideoPromptsSubtitle": "Allow NSFW video prompts",
+    "characterCanSendVideosTitle": "Character Can Send Videos",
+    "attachShortVideoWhenNaturalSubtitle": "Attach a short video when natural",
+    "reviewVideoPromptTitle": "Review Video Prompt"
+  },
+  "groupCharacterPicker": {
+    "addButton": "Add",
+    "addWithCountButton": "Add $count",
+    "favoritesTooltip": "Favorites",
+    "noMatchMessage": "No characters match \"$query\"",
+    "noFavoritesMessage": "No favorited characters available",
+    "allAddedMessage": "All characters already added"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "Make this character speak",
+    "removeFromChatTitle": "Remove from chat"
+  },
+  "dialogCreateGroup": {
+    "title": "New Group",
+    "nameLabel": "Name",
+    "nameHint": "e.g. Bob & Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "Unique to this chat. All group members use these values instead of what their character cards define. Leave empty to fall back to the card value.",
+    "scenarioHint": "Shared setting for the group (e.g. \"In a cafe in Paris\")",
+    "mainPromptLabel": "Main Prompt",
+    "mainPromptHint": "System prompt applied during every turn",
+    "exampleDialogueLabel": "Example Dialogue",
+    "exampleDialogueHint": "Shared example messages for tone / formatting"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "Add Character",
+    "noCharactersYetMessage": "No characters yet.\nTap + to add one."
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "Delete group?",
+    "deleteGroupMessage": "\"$name\" and all of its chat sessions will be permanently removed.",
+    "title": "Groups",
+    "noGroupsYetMessage": "No groups yet. Tap \"New group\" to create one.",
+    "memberCountLabel(plural)": {
+      "one": "$n member",
+      "other": "$n members"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "No members yet"
+  },
+  "groupFileService": {
+    "defaultGroupName": "Group"
+  }
+}

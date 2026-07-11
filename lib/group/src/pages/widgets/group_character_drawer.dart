@@ -1,4 +1,5 @@
 import 'package:cardwave/group/src/pages/widgets/group_character_panel.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Wraps [GroupCharacterPanel] in a scaffold shell that visually mirrors
@@ -28,7 +29,7 @@ class GroupCharacterDrawer extends StatelessWidget {
               backgroundColor: embedded
                   ? Colors.transparent
                   : theme.colorScheme.surface,
-              title: const Text('Characters'),
+              title: Text(t.grid.groupAppBar.characters),
               automaticallyImplyLeading: false,
               actions: embedded
                   ? null
@@ -38,7 +39,7 @@ class GroupCharacterDrawer extends StatelessWidget {
                           flipX: true,
                           child: const Icon(Icons.menu_open),
                         ),
-                        tooltip: 'Close',
+                        tooltip: t.common.actions.close,
                         onPressed: () =>
                             Navigator.of(context, rootNavigator: true).pop(),
                       ),

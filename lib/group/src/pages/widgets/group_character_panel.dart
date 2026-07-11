@@ -1,6 +1,7 @@
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
 import 'package:cardwave/group/src/pages/widgets/group_character_picker.dart';
 import 'package:cardwave/group/src/pages/widgets/group_character_tile.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +42,7 @@ class GroupCharacterPanel extends StatelessWidget {
               key: const Key('group-add-character-drawer'),
               onPressed: () => GroupCharacterPicker.show(context),
               icon: const Icon(Icons.add),
-              label: const Text('Add Character'),
+              label: Text(t.group.groupCharacterPanel.addCharacterButton),
             ),
           ),
         ),
@@ -51,7 +52,7 @@ class GroupCharacterPanel extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      'No characters yet.\nTap + to add one.',
+                      t.group.groupCharacterPanel.noCharactersYetMessage,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,

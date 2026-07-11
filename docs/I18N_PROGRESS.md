@@ -74,7 +74,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 7 `lib/character/` → `character`
 - [x] 8 `lib/chat/` → `chat`
 - [x] 9 `lib/editor/` → `editor`
-- [ ] 10 `lib/group/` → `group`
+- [x] 10 `lib/group/` → `group`
 - [ ] 11 `lib/workspace/` → `workspace`
 - [ ] 12 `lib/nodes/` → `nodes`
 - [ ] 13 `lib/memory/` + `lib/search/`

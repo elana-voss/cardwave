@@ -9,6 +9,7 @@ import 'package:cardwave/group/src/services/group_chat_service.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
 import 'package:cardwave/group/src/services/group_prompt_service.dart';
 import 'package:cardwave/group/src/utils/group_speaker_selection.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -338,16 +339,14 @@ class GroupChatController extends BaseChatViewController
       final action = await showDialog<NewChatPromptActionEnum>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('New Chat'),
-          content: const Text(
-            'Would you like to delete the current chat or keep it in your history?',
-          ),
+          title: Text(t.chat.newChatLabel),
+          content: Text(t.chat.chatPageController.deleteOrKeepMessage),
           actions: [
             TextButton(
               key: const Key('dialog-cancel'),
               onPressed: () =>
                   Navigator.pop(context, NewChatPromptActionEnum.cancel),
-              child: const Text('Cancel'),
+              child: Text(t.common.actions.cancel),
             ),
             TextButton(
               key: const Key('new-chat-delete-current'),
@@ -356,7 +355,7 @@ class GroupChatController extends BaseChatViewController
                 NewChatPromptActionEnum.deleteCurrent,
               ),
               child: Text(
-                'Delete Current',
+                t.chat.chatPageController.deleteCurrentButton,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                 ),
@@ -366,7 +365,7 @@ class GroupChatController extends BaseChatViewController
               key: const Key('dialog-confirm'),
               onPressed: () =>
                   Navigator.pop(context, NewChatPromptActionEnum.keepCurrent),
-              child: const Text('Keep Current'),
+              child: Text(t.chat.chatPageController.keepCurrentButton),
             ),
           ],
         ),

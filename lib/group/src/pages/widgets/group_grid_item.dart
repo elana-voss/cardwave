@@ -5,6 +5,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_grid_controller.dart';
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -231,7 +232,7 @@ class _OverflowCell extends StatelessWidget {
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       alignment: Alignment.center,
       child: Text(
-        '+$count',
+        t.group.groupGridItem.overflowCountBadge(count: count),
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.bold,
@@ -354,7 +355,7 @@ class _GroupGridActionMenu extends StatelessWidget {
             children: [
               Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
               Text(
-                'Delete',
+                t.common.actions.delete,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
@@ -375,7 +376,7 @@ class _GroupGridItemDescription extends StatelessWidget {
     final memberNames = resolvedMembers.map((m) => m.card.name).join(', ');
     return Expanded(
       child: Text(
-        memberNames.isEmpty ? 'No members yet' : memberNames,
+        memberNames.isEmpty ? t.group.groupGridItem.noMembersYetMessage : memberNames,
         maxLines: 4,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -404,7 +405,8 @@ class _GroupGridItemFooter extends StatelessWidget {
             child: Icon(Icons.group, size: 14, color: Colors.grey),
           ),
           TextSpan(
-            text: ' ${memberCount == 1 ? "1 member" : "$memberCount members"}',
+            text:
+                ' ${t.group.dialogSelectGroup.memberCountLabel(n: memberCount)}',
           ),
           if (group.lastActive > 0) ...[
             const TextSpan(text: ' • '),

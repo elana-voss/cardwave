@@ -11,6 +11,7 @@ import 'package:cardwave/group/src/pages/widgets/tile_auto_chat_delay.dart';
 import 'package:cardwave/group/src/services/group_chat_service.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
 import 'package:cardwave/group/src/services/group_prompt_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/workspace.dart';
@@ -71,7 +72,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
       // Load (or create) the persistent group definition.
       final groupFile = await groupFileService.loadOrCreate(
         widget.groupId,
-        name: 'Group Chat',
+        name: t.group.groupChatPage.defaultGroupName,
       );
 
       // Load the latest chat session for this group; create a fresh one if
@@ -123,11 +124,13 @@ class _GroupChatPageState extends State<GroupChatPage> {
   Widget build(BuildContext context) {
     if (_loadError != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Group Chat')),
+        appBar: AppBar(title: Text(t.group.groupChatPage.defaultGroupName)),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('Failed to load group chat:\n$_loadError'),
+            child: Text(
+              t.group.groupChatPage.failedToLoadMessage(error: '$_loadError'),
+            ),
           ),
         ),
       );
@@ -193,14 +196,14 @@ class _GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             builder: (ctx) => IconButton(
               key: const Key('group-characters-drawer'),
               icon: const Icon(Icons.group),
-              tooltip: 'Characters',
+              tooltip: t.grid.groupAppBar.characters,
               onPressed: () => Scaffold.of(ctx).openDrawer(),
             ),
           ),
         IconButton(
           key: const Key('group-next-turn'),
           icon: const Icon(Icons.skip_next),
-          tooltip: 'Next turn',
+          tooltip: t.group.groupChatPage.nextTurnTooltip,
           onPressed: (hasCharacters && !isGenerating && !isAuto)
               ? controller.generateReply
               : null,
@@ -211,7 +214,9 @@ class _GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             isAuto ? Icons.stop_circle_outlined : Icons.play_circle_outline,
             color: isAuto ? errorColor : null,
           ),
-          tooltip: isAuto ? 'Stop auto-chat' : 'Start auto-chat',
+          tooltip: isAuto
+              ? t.group.groupChatPage.stopAutoChatTooltip
+              : t.group.groupChatPage.startAutoChatTooltip,
           onPressed: hasCharacters
               ? (isAuto
                     ? controller.stopAutoChat
@@ -221,7 +226,7 @@ class _GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (isGenerating)
           IconButton(
             icon: const Icon(Icons.cancel_outlined),
-            tooltip: 'Stop generation',
+            tooltip: t.group.groupChatPage.stopGenerationTooltip,
             onPressed: controller.stopGeneration,
           ),
         const SettingsGearMenu(),
@@ -229,7 +234,7 @@ class _GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           builder: (ctx) => IconButton(
             key: const Key('appbar-end-drawer'),
             icon: const Icon(Icons.menu),
-            tooltip: 'Settings',
+            tooltip: t.settings.gearMenu.settingsTooltip,
             onPressed: () => Scaffold.of(ctx).openEndDrawer(),
           ),
         ),
@@ -252,12 +257,12 @@ class _NarrowChatBody extends StatelessWidget {
     if (controller.characters.isEmpty) {
       return _GroupEmptyState(
         icon: Icons.group_add,
-        text: 'This group has no characters yet.',
+        text: t.group.groupChatPage.noCharactersYetMessage,
         action: Builder(
           builder: (context) => FilledButton.icon(
             key: const Key('group-add-character'),
             icon: const Icon(Icons.add),
-            label: const Text('Add a character'),
+            label: Text(t.group.groupChatPage.addCharacterButton),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
@@ -306,9 +311,9 @@ class _WideLayout extends StatelessWidget {
             Expanded(
               flex: 2,
               child: isEmpty
-                  ? const _GroupEmptyState(
+                  ? _GroupEmptyState(
                       icon: Icons.arrow_back,
-                      text: 'Pick a character from the list on the left.',
+                      text: t.group.groupChatPage.pickCharacterMessage,
                     )
                   : ChatView(theme: theme, onNewChat: controller.clearChat),
             ),

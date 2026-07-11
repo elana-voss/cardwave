@@ -7,6 +7,7 @@ import 'package:cardwave/group/src/models/group_data.dart' show GroupData;
 import 'package:cardwave/group/src/models/group_file.dart' show GroupFile;
 import 'package:cardwave/group/src/services/group_file_service.dart'
     show GroupFileService;
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
@@ -52,7 +53,7 @@ class GroupChatService extends ChangeNotifier {
       modelPresetId: chatPresetId,
       created: now,
       lastActive: now,
-      name: 'Group Chat',
+      name: t.group.groupChatPage.defaultGroupName,
       isStreaming: true,
       isNsfw: false,
       isScenario: false,

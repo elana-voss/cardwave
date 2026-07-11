@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class GroupCharacterTile extends StatelessWidget {
         trailing: IconButton(
           key: const Key('group-character-speak'),
           icon: const Icon(Icons.play_arrow),
-          tooltip: 'Make this character speak',
+          tooltip: t.group.groupCharacterTile.speakTooltip,
           onPressed: (isGenerating || isAuto || isMuted)
               ? null
               : () => controller.generateReplyFor(character),
@@ -63,7 +64,7 @@ class GroupCharacterTile extends StatelessWidget {
           ListTile(
             key: const Key('group-character-remove'),
             leading: const Icon(Icons.close),
-            title: const Text('Remove from chat'),
+            title: Text(t.group.groupCharacterTile.removeFromChatTitle),
             onTap: () => controller.removeCharacter(character.appCardId),
           ),
         ],

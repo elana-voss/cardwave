@@ -1,5 +1,6 @@
 import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,14 +50,14 @@ class _DialogCreateGroupState extends State<DialogCreateGroup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('New Group'),
+      title: Text(t.group.dialogCreateGroup.title),
       content: TextField(
         key: const Key('group-name-field'),
         controller: _nameController,
         autofocus: true,
-        decoration: const InputDecoration(
-          labelText: 'Name',
-          hintText: 'e.g. Bob & Alice',
+        decoration: InputDecoration(
+          labelText: t.group.dialogCreateGroup.nameLabel,
+          hintText: t.group.dialogCreateGroup.nameHint,
         ),
         onSubmitted: (_) => _create(),
       ),
@@ -64,12 +65,12 @@ class _DialogCreateGroupState extends State<DialogCreateGroup> {
         TextButton(
           key: const Key('dialog-cancel'),
           onPressed: _creating ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(t.common.actions.cancel),
         ),
         FilledButton(
           key: const Key('group-create-confirm'),
           onPressed: _creating ? null : _create,
-          child: const Text('Create'),
+          child: Text(t.grid.createCharacterDialog.createButton),
         ),
       ],
     );

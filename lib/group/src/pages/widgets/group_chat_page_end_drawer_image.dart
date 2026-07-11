@@ -19,12 +19,12 @@ class _GroupImageSection extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Image'),
+        DrawerSectionHeader(t.llmApp.mediaSection.image),
         _sessionSwitchTile(
           controller: controller,
           icon: Icons.shield,
-          title: 'Unrestricted Images',
-          subtitle: 'Allow NSFW image prompts',
+          title: t.group.groupChatPageEndDrawer.unrestrictedImagesTitle,
+          subtitle: t.group.groupChatPageEndDrawer.allowNsfwImagePromptsSubtitle,
           read: (s) => s.configMedia?.imageNsfwAllowed ?? false,
           write: (v) =>
               controller.updateSelectedChatSettings(imageNsfwAllowed: v),
@@ -32,8 +32,8 @@ class _GroupImageSection extends StatelessWidget {
         _sessionSwitchTile(
           controller: controller,
           icon: Icons.camera_alt,
-          title: 'Character Can Send Selfies',
-          subtitle: 'Attach a selfie when natural',
+          title: t.group.groupChatPageEndDrawer.characterCanSendSelfiesTitle,
+          subtitle: t.group.groupChatPageEndDrawer.attachSelfieWhenNaturalSubtitle,
           read: (s) => s.configMedia?.imageToolSelfieAllowed ?? false,
           write: (v) =>
               controller.updateSelectedChatSettings(imageToolSelfieAllowed: v),
@@ -42,8 +42,8 @@ class _GroupImageSection extends StatelessWidget {
           _sessionSwitchTile(
             controller: controller,
             icon: Icons.rate_review,
-            title: 'Review Image Prompt',
-            subtitle: 'Edit before generating',
+            title: t.group.groupChatPageEndDrawer.reviewImagePromptTitle,
+            subtitle: t.group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle,
             read: (s) => s.configMedia?.imagePromptReview ?? false,
             write: (v) =>
                 controller.updateSelectedChatSettings(imagePromptReview: v),
@@ -51,8 +51,9 @@ class _GroupImageSection extends StatelessWidget {
           _sessionSwitchTile(
             controller: controller,
             icon: Icons.rate_review_outlined,
-            title: 'Review Tool Image Prompts',
-            subtitle: 'Edit tool-triggered prompts',
+            title: t.group.groupChatPageEndDrawer.reviewToolImagePromptsTitle,
+            subtitle:
+                t.group.groupChatPageEndDrawer.editToolTriggeredPromptsSubtitle,
             read: (s) => s.configMedia?.imageToolPromptReview ?? false,
             write: (v) =>
                 controller.updateSelectedChatSettings(imageToolPromptReview: v),
@@ -60,8 +61,9 @@ class _GroupImageSection extends StatelessWidget {
           _sessionSwitchTile(
             controller: controller,
             icon: Icons.text_fields,
-            title: 'Allow Selfie Captions',
-            subtitle: 'Caption rendered on the image',
+            title: t.group.groupChatPageEndDrawer.allowSelfieCaptionsTitle,
+            subtitle:
+                t.group.groupChatPageEndDrawer.captionRenderedOnImageSubtitle,
             read: (s) =>
                 s.configMedia?.imageToolSelfieCaptionsAllowed ?? false,
             write: (v) => controller.updateSelectedChatSettings(

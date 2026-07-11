@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/src/controllers/group_chat_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -88,7 +89,13 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
           onPressed: selectedCount == 0
               ? null
               : () => _commitSelection(controller, allCharacters),
-          child: Text(selectedCount == 0 ? 'Add' : 'Add $selectedCount'),
+          child: Text(
+            selectedCount == 0
+                ? t.group.groupCharacterPicker.addButton
+                : t.group.groupCharacterPicker.addWithCountButton(
+                    count: selectedCount,
+                  ),
+          ),
         ),
       ],
       builder: (ctx, isMobile) {
@@ -110,10 +117,10 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
                     minHeight: 40,
                     minWidth: 48,
                   ),
-                  children: const [
+                  children: [
                     Tooltip(
-                      message: 'Favorites',
-                      child: Icon(Icons.favorite, size: 18),
+                      message: t.group.groupCharacterPicker.favoritesTooltip,
+                      child: const Icon(Icons.favorite, size: 18),
                     ),
                   ],
                 ),
@@ -152,9 +159,13 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
 
   String _emptyMessage() {
     final query = _searchController.text;
-    if (query.isNotEmpty) return 'No characters match "$query"';
-    if (_favoritesOnly) return 'No favorited characters available';
-    return 'All characters already added';
+    if (query.isNotEmpty) {
+      return t.group.groupCharacterPicker.noMatchMessage(query: query);
+    }
+    if (_favoritesOnly) {
+      return t.group.groupCharacterPicker.noFavoritesMessage;
+    }
+    return t.group.groupCharacterPicker.allAddedMessage;
   }
 
   void _toggle(String appCardId) {

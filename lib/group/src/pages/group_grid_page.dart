@@ -5,6 +5,7 @@ import 'package:cardwave/group/src/models/group_file.dart';
 import 'package:cardwave/group/src/pages/widgets/dialog_create_group.dart';
 import 'package:cardwave/group/src/pages/widgets/group_grid_item.dart';
 import 'package:cardwave/group/src/services/group_file_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/app_router_args_group_chat.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class _GroupGridPageState extends State<GroupGridPage> {
               : SpeedDial(
                   key: const Key('group-new-fab'),
                   icon: Icons.add,
-                  tooltip: 'New group',
+                  tooltip: t.grid.groupAppBar.newGroup,
                   onPress: _createGroup,
                 ),
           body: FutureBuilder<List<GroupFile>>(
@@ -75,17 +76,20 @@ class _GroupGridPageState extends State<GroupGridPage> {
                   padding: const EdgeInsets.all(16),
                   child: Center(
                     child: Text(
-                      'Failed to load groups:\n${snapshot.error ?? 'unknown error'}',
+                      t.group.groupGridPage.failedToLoadMessage(
+                        error:
+                            '${snapshot.error ?? t.group.groupGridPage.unknownErrorFallback}',
+                      ),
                     ),
                   ),
                 );
               }
               final groups = snapshot.data ?? const <GroupFile>[];
               if (groups.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text('No groups yet — tap + to create one.'),
+                    padding: const EdgeInsets.all(24),
+                    child: Text(t.group.groupGridPage.noGroupsYetMessage),
                   ),
                 );
               }

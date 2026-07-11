@@ -35,9 +35,9 @@ class _GroupChatEndDrawer extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.edit_note),
-                    title: const Text('Group overrides'),
-                    subtitle: const Text(
-                      'Shared scenario, main prompt, example dialogue',
+                    title: Text(t.group.groupChatPageEndDrawer.groupOverridesTitle),
+                    subtitle: Text(
+                      t.group.groupChatPageEndDrawer.groupOverridesSubtitle,
                     ),
                     onTap: () {
                       Navigator.of(navContext, rootNavigator: true).pop();
@@ -55,7 +55,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     builder: (context, _) {
                       final selectedChat = controller.selectedChat;
                       return MediaDefaultsDrawerEntry(
-                        subtitle: 'Chat session',
+                        subtitle: t.group.groupChatPageEndDrawer.chatSessionSubtitle,
                         onTap: () {
                           Navigator.of(context, rootNavigator: true).pop();
                           unawaited(
@@ -83,7 +83,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                           QuickAction(
                             tileKey: const Key('chat-menu-new-chat'),
                             icon: Icons.add_comment,
-                            label: 'New Chat',
+                            label: t.chat.newChatLabel,
                             onTap: () {
                               Navigator.of(
                                 navContext,
@@ -95,7 +95,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                           QuickAction(
                             tileKey: const Key('drawer-all-chats'),
                             icon: Icons.forum,
-                            label: 'All Chats',
+                            label: t.group.groupChatPageEndDrawer.allChatsLabel,
                             onTap: () => Navigator.of(
                               navContext,
                             ).pushNamed('/all_chats'),
@@ -104,7 +104,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                             icon: Icons.image_not_supported_outlined,
                             selectedIcon: Icons.image,
                             isSelected: imageVisible,
-                            label: 'Show Image',
+                            label: t.group.groupChatPageEndDrawer.showImageLabel,
                             onTap: () {
                               settings.chatImageVisible = !imageVisible;
                               unawaited(settingsService.saveSettings());
@@ -119,7 +119,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     },
                   ),
                   // ── Group ──
-                  const DrawerSectionHeader('Group'),
+                  DrawerSectionHeader(t.group.groupChatPageEndDrawer.groupSectionHeader),
                   ListenableBuilder(
                     listenable: controller,
                     builder: (context, _) => TileAutoChatDelay(
@@ -135,7 +135,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     },
                   ),
                   // ── Chat ──
-                  const DrawerSectionHeader('Chat'),
+                  DrawerSectionHeader(t.group.groupChatPageEndDrawer.chatSectionHeader),
                   ListenableBuilder(
                     listenable: controller,
                     builder: (context, _) => Column(
@@ -179,7 +179,9 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     onToggle: () => toggleAdv(_GroupSectionEnum.chat),
                   ),
                   // ── Chat Theme ──
-                  const DrawerSectionHeader('Chat Theme'),
+                  DrawerSectionHeader(
+                    t.group.groupChatPageEndDrawer.chatThemeSectionHeader,
+                  ),
                   TileChatTheme(
                     settings: settings,
                     onThemeChanged: (theme) {
@@ -188,7 +190,7 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     },
                   ),
                   // ── Speech ──
-                  const DrawerSectionHeader('Speech'),
+                  DrawerSectionHeader(t.common.modelCapability.speech),
                   ListenableBuilder(
                     listenable: controller,
                     builder: (context, _) => Column(
@@ -218,12 +220,13 @@ class _GroupChatEndDrawer extends StatelessWidget {
                   // Video Style (per-character `videoPromptPrefix`) is
                   // intentionally omitted: groups have multiple characters
                   // so there's no single character to attach the prefix to.
-                  const DrawerSectionHeader('Video'),
+                  DrawerSectionHeader(t.llmApp.mediaSection.video),
                   _sessionSwitchTile(
                     controller: controller,
                     icon: Icons.shield,
-                    title: 'Unrestricted Videos',
-                    subtitle: 'Allow NSFW video prompts',
+                    title: t.group.groupChatPageEndDrawer.unrestrictedVideosTitle,
+                    subtitle:
+                        t.group.groupChatPageEndDrawer.allowNsfwVideoPromptsSubtitle,
                     read: (s) => s.configMedia?.videoNsfwAllowed ?? false,
                     write: (v) => controller.updateSelectedChatSettings(
                       videoNsfwAllowed: v,
@@ -232,8 +235,10 @@ class _GroupChatEndDrawer extends StatelessWidget {
                   _sessionSwitchTile(
                     controller: controller,
                     icon: Icons.movie_creation,
-                    title: 'Character Can Send Videos',
-                    subtitle: 'Attach a short video when natural',
+                    title:
+                        t.group.groupChatPageEndDrawer.characterCanSendVideosTitle,
+                    subtitle: t
+                        .group.groupChatPageEndDrawer.attachShortVideoWhenNaturalSubtitle,
                     read: (s) => s.configMedia?.videoToolSendAllowed ?? false,
                     write: (v) => controller.updateSelectedChatSettings(
                       videoToolSendAllowed: v,
@@ -243,8 +248,9 @@ class _GroupChatEndDrawer extends StatelessWidget {
                     _sessionSwitchTile(
                       controller: controller,
                       icon: Icons.rate_review,
-                      title: 'Review Video Prompt',
-                      subtitle: 'Edit before generating',
+                      title: t.group.groupChatPageEndDrawer.reviewVideoPromptTitle,
+                      subtitle:
+                          t.group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle,
                       read: (s) => s.configMedia?.videoPromptReview ?? false,
                       write: (v) => controller.updateSelectedChatSettings(
                         videoPromptReview: v,
