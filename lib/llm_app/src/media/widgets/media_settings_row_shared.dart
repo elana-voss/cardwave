@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_cell_action.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
@@ -55,9 +56,15 @@ Future<MediaCellAction?> showMediaLayeredCellActionMenu(
   return showMenu<MediaCellAction>(
     context: cellContext,
     position: position,
-    items: const [
-      PopupMenuItem(value: MediaCellAction.change, child: Text('Change…')),
-      PopupMenuItem(value: MediaCellAction.clear, child: Text('Clear')),
+    items: [
+      PopupMenuItem(
+        value: MediaCellAction.change,
+        child: Text(t.llmApp.mediaCellMenu.change),
+      ),
+      PopupMenuItem(
+        value: MediaCellAction.clear,
+        child: Text(t.llmApp.mediaCellMenu.clear),
+      ),
     ],
   );
 }

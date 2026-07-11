@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "Image model",
+    "imageAspectRatio": "Image aspect ratio",
+    "imageNsfwAllowed": "Image NSFW allowed",
+    "imageToolSelfieAllowed": "Can send selfies",
+    "imageToolSelfieCaptionsAllowed": "Allow selfie captions",
+    "imagePromptPrefix": "Image style",
+    "videoModel": "Video model",
+    "videoResolution": "Video resolution",
+    "videoAspectRatio": "Video aspect ratio",
+    "videoDuration": "Video duration",
+    "videoNsfwAllowed": "Video NSFW allowed",
+    "videoToolSendAllowed": "Can send videos",
+    "videoPromptPrefix": "Video style",
+    "ttsModel": "TTS model",
+    "ttsVoice": "TTS voice",
+    "ttsLanguage": "TTS language",
+    "webToolFetchAllowed": "Allow web fetch",
+    "nameToolSuggestAllowed": "Can suggest NPC names"
+  },
+  "mediaSection": {
+    "image": "Image",
+    "video": "Video",
+    "tts": "TTS",
+    "web": "Web",
+    "names": "Names"
+  },
+  "tristate": {
+    "on": "On",
+    "off": "Off",
+    "inherit": "Inherit"
+  },
+  "mediaCellMenu": {
+    "change": "Change…",
+    "clear": "Clear"
+  },
+  "mediaHeader": {
+    "appDefault": "App default",
+    "character": "Character",
+    "currentChat": "Current chat",
+    "previousLayerTooltip": "Previous layer",
+    "nextLayerTooltip": "Next layer"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "Change app default?",
+    "changeAppDefaultMessage": "This affects every chat. Continue?",
+    "continueButton": "Continue",
+    "chooseModelTitle": "Choose a $domain model"
+  },
+  "mediaCell": {
+    "notApplicable": "Not applicable"
+  }
+}

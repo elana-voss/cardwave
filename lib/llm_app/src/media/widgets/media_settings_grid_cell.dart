@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Visual state of a single grid cell.
@@ -68,7 +69,7 @@ class MediaSettingsGridCell extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         semanticsLabel: state == MediaSettingsGridCellState.notApplicable
-            ? 'Not applicable'
+            ? t.llmApp.mediaCell.notApplicable
             : null,
       ),
     );

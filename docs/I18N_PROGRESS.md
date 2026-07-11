@@ -70,7 +70,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 3 `lib/onboarding/` → `onboarding`
 - [x] 4 `lib/common/` → `common`
 - [x] 5 `lib/settings/` → `settings`
-- [ ] 6 `lib/llm_app/` → `llmApp`
+- [x] 6 `lib/llm_app/` → `llmApp`
 - [ ] 7 `lib/character/` → `character`
 - [ ] 8 `lib/chat/` → `chat`
 - [ ] 9 `lib/editor/` → `editor`

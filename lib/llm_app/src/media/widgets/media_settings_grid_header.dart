@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
 import 'package:flutter/material.dart';
 
@@ -28,10 +29,11 @@ class MediaSettingsGridHeader extends StatelessWidget {
 
   String _labelFor(MediaSettingsGridLayer l) {
     return switch (l) {
-      MediaSettingsGridLayer.app => 'App default',
-      MediaSettingsGridLayer.character =>
-        characterName.isEmpty ? 'Character' : characterName,
-      MediaSettingsGridLayer.session => 'Current chat',
+      MediaSettingsGridLayer.app => t.llmApp.mediaHeader.appDefault,
+      MediaSettingsGridLayer.character => characterName.isEmpty
+          ? t.llmApp.mediaHeader.character
+          : characterName,
+      MediaSettingsGridLayer.session => t.llmApp.mediaHeader.currentChat,
     };
   }
 
@@ -65,7 +67,7 @@ class MediaSettingsGridHeader extends StatelessWidget {
                     icon: const Icon(Icons.chevron_left),
                     iconSize: 20,
                     onPressed: onCyclePrev,
-                    tooltip: 'Previous layer',
+                    tooltip: t.llmApp.mediaHeader.previousLayerTooltip,
                     color: theme.colorScheme.onSecondaryContainer,
                   ),
                   // Guarded by `layers.length == 1` above.
@@ -75,7 +77,7 @@ class MediaSettingsGridHeader extends StatelessWidget {
                     icon: const Icon(Icons.chevron_right),
                     iconSize: 20,
                     onPressed: onCycleNext,
-                    tooltip: 'Next layer',
+                    tooltip: t.llmApp.mediaHeader.nextLayerTooltip,
                     color: theme.colorScheme.onSecondaryContainer,
                   ),
                 ],

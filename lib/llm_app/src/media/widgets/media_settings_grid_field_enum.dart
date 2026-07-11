@@ -1,118 +1,122 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
+
 /// Identifies one of the 16 multi-layer media settings rendered in the
 /// grid. Order is the render order. Each row carries its label, cell type,
 /// and whether the App layer participates (only the three model-preset
 /// rows do).
 enum MediaSettingsGridField {
-  imageModel(
-    label: 'Image model',
-    cellType: MediaSettingsGridCellType.preset,
-    hasAppLayer: true,
-  ),
+  imageModel(cellType: MediaSettingsGridCellType.preset, hasAppLayer: true),
   imageAspectRatio(
-    label: 'Image aspect ratio',
     cellType: MediaSettingsGridCellType.dropdown,
     hasAppLayer: false,
   ),
   imageNsfwAllowed(
-    label: 'Image NSFW allowed',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   imageToolSelfieAllowed(
-    label: 'Can send selfies',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   imageToolSelfieCaptionsAllowed(
-    label: 'Allow selfie captions',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   imagePromptPrefix(
-    label: 'Image style',
     cellType: MediaSettingsGridCellType.text,
     hasAppLayer: false,
   ),
-  videoModel(
-    label: 'Video model',
-    cellType: MediaSettingsGridCellType.preset,
-    hasAppLayer: true,
-  ),
+  videoModel(cellType: MediaSettingsGridCellType.preset, hasAppLayer: true),
   videoResolution(
-    label: 'Video resolution',
     cellType: MediaSettingsGridCellType.dropdown,
     hasAppLayer: false,
   ),
   videoAspectRatio(
-    label: 'Video aspect ratio',
     cellType: MediaSettingsGridCellType.dropdown,
     hasAppLayer: false,
   ),
   videoDuration(
-    label: 'Video duration',
     cellType: MediaSettingsGridCellType.dropdown,
     hasAppLayer: false,
   ),
   videoNsfwAllowed(
-    label: 'Video NSFW allowed',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   videoToolSendAllowed(
-    label: 'Can send videos',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   videoPromptPrefix(
-    label: 'Video style',
     cellType: MediaSettingsGridCellType.text,
     hasAppLayer: false,
   ),
-  ttsModel(
-    label: 'TTS model',
-    cellType: MediaSettingsGridCellType.preset,
-    hasAppLayer: true,
-  ),
-  ttsVoice(
-    label: 'TTS voice',
-    cellType: MediaSettingsGridCellType.dropdown,
-    hasAppLayer: false,
-  ),
+  ttsModel(cellType: MediaSettingsGridCellType.preset, hasAppLayer: true),
+  ttsVoice(cellType: MediaSettingsGridCellType.dropdown, hasAppLayer: false),
   ttsLanguage(
-    label: 'TTS language',
     cellType: MediaSettingsGridCellType.dropdown,
     hasAppLayer: false,
   ),
   webToolFetchAllowed(
-    label: 'Allow web fetch',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   ),
   nameToolSuggestAllowed(
-    label: 'Can suggest NPC names',
     cellType: MediaSettingsGridCellType.tristate,
     hasAppLayer: false,
   );
 
   const MediaSettingsGridField({
-    required this.label,
     required this.cellType,
     required this.hasAppLayer,
   });
 
-  final String label;
   final MediaSettingsGridCellType cellType;
   final bool hasAppLayer;
+
+  String get label => switch (this) {
+    MediaSettingsGridField.imageModel => t.llmApp.mediaField.imageModel,
+    MediaSettingsGridField.imageAspectRatio =>
+      t.llmApp.mediaField.imageAspectRatio,
+    MediaSettingsGridField.imageNsfwAllowed =>
+      t.llmApp.mediaField.imageNsfwAllowed,
+    MediaSettingsGridField.imageToolSelfieAllowed =>
+      t.llmApp.mediaField.imageToolSelfieAllowed,
+    MediaSettingsGridField.imageToolSelfieCaptionsAllowed =>
+      t.llmApp.mediaField.imageToolSelfieCaptionsAllowed,
+    MediaSettingsGridField.imagePromptPrefix =>
+      t.llmApp.mediaField.imagePromptPrefix,
+    MediaSettingsGridField.videoModel => t.llmApp.mediaField.videoModel,
+    MediaSettingsGridField.videoResolution =>
+      t.llmApp.mediaField.videoResolution,
+    MediaSettingsGridField.videoAspectRatio =>
+      t.llmApp.mediaField.videoAspectRatio,
+    MediaSettingsGridField.videoDuration =>
+      t.llmApp.mediaField.videoDuration,
+    MediaSettingsGridField.videoNsfwAllowed =>
+      t.llmApp.mediaField.videoNsfwAllowed,
+    MediaSettingsGridField.videoToolSendAllowed =>
+      t.llmApp.mediaField.videoToolSendAllowed,
+    MediaSettingsGridField.videoPromptPrefix =>
+      t.llmApp.mediaField.videoPromptPrefix,
+    MediaSettingsGridField.ttsModel => t.llmApp.mediaField.ttsModel,
+    MediaSettingsGridField.ttsVoice => t.llmApp.mediaField.ttsVoice,
+    MediaSettingsGridField.ttsLanguage => t.llmApp.mediaField.ttsLanguage,
+    MediaSettingsGridField.webToolFetchAllowed =>
+      t.llmApp.mediaField.webToolFetchAllowed,
+    MediaSettingsGridField.nameToolSuggestAllowed =>
+      t.llmApp.mediaField.nameToolSuggestAllowed,
+  };
 
   /// Section label used to group rows in the page. Derived from the field
   /// name prefix.
   String get sectionLabel {
     final n = name;
-    if (n.startsWith('image')) return 'Image';
-    if (n.startsWith('video')) return 'Video';
-    if (n.startsWith('tts')) return 'TTS';
-    if (n.startsWith('web')) return 'Web';
-    if (n.startsWith('nameTool')) return 'Names';
+    if (n.startsWith('image')) return t.llmApp.mediaSection.image;
+    if (n.startsWith('video')) return t.llmApp.mediaSection.video;
+    if (n.startsWith('tts')) return t.llmApp.mediaSection.tts;
+    if (n.startsWith('web')) return t.llmApp.mediaSection.web;
+    if (n.startsWith('nameTool')) return t.llmApp.mediaSection.names;
     return n;
   }
 }

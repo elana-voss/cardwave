@@ -2,6 +2,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/src/media/media_settings_controller.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_cell_action.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
@@ -200,9 +201,9 @@ class _MediaSettingsDropdownRowState extends State<MediaSettingsDropdownRow> {
           ),
         if (layerHasOwn) const PopupMenuDivider(),
         if (layerHasOwn)
-          const PopupMenuItem<_ShortDropdownPick>(
-            value: _ShortDropdownClear(),
-            child: Text('Clear'),
+          PopupMenuItem<_ShortDropdownPick>(
+            value: const _ShortDropdownClear(),
+            child: Text(t.llmApp.mediaCellMenu.clear),
           ),
       ],
     );

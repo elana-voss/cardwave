@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 369 (41 per locale)
+/// Strings: 407 (45 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -281,6 +281,13 @@ class _TranslationsLlmAppEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsLlmAppMediaFieldEn mediaField = _TranslationsLlmAppMediaFieldEn._(_root);
+	late final _TranslationsLlmAppMediaSectionEn mediaSection = _TranslationsLlmAppMediaSectionEn._(_root);
+	late final _TranslationsLlmAppTristateEn tristate = _TranslationsLlmAppTristateEn._(_root);
+	late final _TranslationsLlmAppMediaCellMenuEn mediaCellMenu = _TranslationsLlmAppMediaCellMenuEn._(_root);
+	late final _TranslationsLlmAppMediaHeaderEn mediaHeader = _TranslationsLlmAppMediaHeaderEn._(_root);
+	late final _TranslationsLlmAppPresetRowEn presetRow = _TranslationsLlmAppPresetRowEn._(_root);
+	late final _TranslationsLlmAppMediaCellEn mediaCell = _TranslationsLlmAppMediaCellEn._(_root);
 }
 
 // Path: memory
@@ -884,6 +891,107 @@ class _TranslationsGridControllerMessagesEn {
 	String get deleteCardTitle => 'Delete Card';
 	String get deleteCardMessage => 'Are you sure you want to delete this card?';
 	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
+}
+
+// Path: llmApp.mediaField
+class _TranslationsLlmAppMediaFieldEn {
+	_TranslationsLlmAppMediaFieldEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get imageModel => 'Image model';
+	String get imageAspectRatio => 'Image aspect ratio';
+	String get imageNsfwAllowed => 'Image NSFW allowed';
+	String get imageToolSelfieAllowed => 'Can send selfies';
+	String get imageToolSelfieCaptionsAllowed => 'Allow selfie captions';
+	String get imagePromptPrefix => 'Image style';
+	String get videoModel => 'Video model';
+	String get videoResolution => 'Video resolution';
+	String get videoAspectRatio => 'Video aspect ratio';
+	String get videoDuration => 'Video duration';
+	String get videoNsfwAllowed => 'Video NSFW allowed';
+	String get videoToolSendAllowed => 'Can send videos';
+	String get videoPromptPrefix => 'Video style';
+	String get ttsModel => 'TTS model';
+	String get ttsVoice => 'TTS voice';
+	String get ttsLanguage => 'TTS language';
+	String get webToolFetchAllowed => 'Allow web fetch';
+	String get nameToolSuggestAllowed => 'Can suggest NPC names';
+}
+
+// Path: llmApp.mediaSection
+class _TranslationsLlmAppMediaSectionEn {
+	_TranslationsLlmAppMediaSectionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get image => 'Image';
+	String get video => 'Video';
+	String get tts => 'TTS';
+	String get web => 'Web';
+	String get names => 'Names';
+}
+
+// Path: llmApp.tristate
+class _TranslationsLlmAppTristateEn {
+	_TranslationsLlmAppTristateEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get on => 'On';
+	String get off => 'Off';
+	String get inherit => 'Inherit';
+}
+
+// Path: llmApp.mediaCellMenu
+class _TranslationsLlmAppMediaCellMenuEn {
+	_TranslationsLlmAppMediaCellMenuEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get change => 'Change…';
+	String get clear => 'Clear';
+}
+
+// Path: llmApp.mediaHeader
+class _TranslationsLlmAppMediaHeaderEn {
+	_TranslationsLlmAppMediaHeaderEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get appDefault => 'App default';
+	String get character => 'Character';
+	String get currentChat => 'Current chat';
+	String get previousLayerTooltip => 'Previous layer';
+	String get nextLayerTooltip => 'Next layer';
+}
+
+// Path: llmApp.presetRow
+class _TranslationsLlmAppPresetRowEn {
+	_TranslationsLlmAppPresetRowEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get changeAppDefaultTitle => 'Change app default?';
+	String get changeAppDefaultMessage => 'This affects every chat. Continue?';
+	String get continueButton => 'Continue';
+	String chooseModelTitle({required Object domain}) => 'Choose a ${domain} model';
+}
+
+// Path: llmApp.mediaCell
+class _TranslationsLlmAppMediaCellEn {
+	_TranslationsLlmAppMediaCellEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get notApplicable => 'Not applicable';
 }
 
 // Path: onboarding.storageStep
@@ -2886,6 +2994,44 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
+			case 'llmApp.mediaField.imageModel': return 'Image model';
+			case 'llmApp.mediaField.imageAspectRatio': return 'Image aspect ratio';
+			case 'llmApp.mediaField.imageNsfwAllowed': return 'Image NSFW allowed';
+			case 'llmApp.mediaField.imageToolSelfieAllowed': return 'Can send selfies';
+			case 'llmApp.mediaField.imageToolSelfieCaptionsAllowed': return 'Allow selfie captions';
+			case 'llmApp.mediaField.imagePromptPrefix': return 'Image style';
+			case 'llmApp.mediaField.videoModel': return 'Video model';
+			case 'llmApp.mediaField.videoResolution': return 'Video resolution';
+			case 'llmApp.mediaField.videoAspectRatio': return 'Video aspect ratio';
+			case 'llmApp.mediaField.videoDuration': return 'Video duration';
+			case 'llmApp.mediaField.videoNsfwAllowed': return 'Video NSFW allowed';
+			case 'llmApp.mediaField.videoToolSendAllowed': return 'Can send videos';
+			case 'llmApp.mediaField.videoPromptPrefix': return 'Video style';
+			case 'llmApp.mediaField.ttsModel': return 'TTS model';
+			case 'llmApp.mediaField.ttsVoice': return 'TTS voice';
+			case 'llmApp.mediaField.ttsLanguage': return 'TTS language';
+			case 'llmApp.mediaField.webToolFetchAllowed': return 'Allow web fetch';
+			case 'llmApp.mediaField.nameToolSuggestAllowed': return 'Can suggest NPC names';
+			case 'llmApp.mediaSection.image': return 'Image';
+			case 'llmApp.mediaSection.video': return 'Video';
+			case 'llmApp.mediaSection.tts': return 'TTS';
+			case 'llmApp.mediaSection.web': return 'Web';
+			case 'llmApp.mediaSection.names': return 'Names';
+			case 'llmApp.tristate.on': return 'On';
+			case 'llmApp.tristate.off': return 'Off';
+			case 'llmApp.tristate.inherit': return 'Inherit';
+			case 'llmApp.mediaCellMenu.change': return 'Change…';
+			case 'llmApp.mediaCellMenu.clear': return 'Clear';
+			case 'llmApp.mediaHeader.appDefault': return 'App default';
+			case 'llmApp.mediaHeader.character': return 'Character';
+			case 'llmApp.mediaHeader.currentChat': return 'Current chat';
+			case 'llmApp.mediaHeader.previousLayerTooltip': return 'Previous layer';
+			case 'llmApp.mediaHeader.nextLayerTooltip': return 'Next layer';
+			case 'llmApp.presetRow.changeAppDefaultTitle': return 'Change app default?';
+			case 'llmApp.presetRow.changeAppDefaultMessage': return 'This affects every chat. Continue?';
+			case 'llmApp.presetRow.continueButton': return 'Continue';
+			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Choose a ${domain} model';
+			case 'llmApp.mediaCell.notApplicable': return 'Not applicable';
 			case 'onboarding.finishFailedSnackbar': return 'Setup failed. See logs for details.';
 			case 'onboarding.appBarTitle': return 'Quick Setup';
 			case 'onboarding.webWarning': return 'Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.';

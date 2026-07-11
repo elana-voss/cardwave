@@ -1,6 +1,7 @@
 // Composes [MediaSettingsGridRow] (the layout widget) with field-type-specific cells.
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/src/media/media_settings_controller.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_field_enum.dart';
@@ -56,7 +57,7 @@ class _MediaSettingsTristateRowState extends State<MediaSettingsTristateRow> {
     // and session's fallback is whatever character set (or `false`).
     String labelForColumn(bool? own, bool inherited) {
       final v = own ?? inherited;
-      return v ? 'On' : 'Off';
+      return v ? t.llmApp.tristate.on : t.llmApp.tristate.off;
     }
 
     const appCell = kNotApplicableCell;
@@ -115,17 +116,17 @@ class _MediaSettingsTristateRowState extends State<MediaSettingsTristateRow> {
         CheckedPopupMenuItem(
           value: _TristatePick.on,
           checked: currentValue == true,
-          child: const Text('On'),
+          child: Text(t.llmApp.tristate.on),
         ),
         CheckedPopupMenuItem(
           value: _TristatePick.off,
           checked: currentValue == false,
-          child: const Text('Off'),
+          child: Text(t.llmApp.tristate.off),
         ),
         CheckedPopupMenuItem(
           value: _TristatePick.inherit,
           checked: currentValue == null,
-          child: const Text('Inherit'),
+          child: Text(t.llmApp.tristate.inherit),
         ),
       ],
     );

@@ -2,6 +2,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/src/media/media_settings_controller.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_cell_action.dart';
 import 'package:cardwave/llm_app/src/media/widgets/media_settings_grid_cell.dart';
@@ -151,9 +152,9 @@ class _MediaSettingsPresetRowState extends State<MediaSettingsPresetRow> {
   }) async {
     if (layer == MediaSettingsGridLayer.app) {
       final ok = await NavigationService().showConfirmCancelDialog(
-        title: 'Change app default?',
-        message: 'This affects every chat. Continue?',
-        confirmText: 'Continue',
+        title: t.llmApp.presetRow.changeAppDefaultTitle,
+        message: t.llmApp.presetRow.changeAppDefaultMessage,
+        confirmText: t.llmApp.presetRow.continueButton,
         confirmColor: Theme.of(context).colorScheme.primary,
       );
       if (!ok || !mounted) return;
@@ -197,7 +198,9 @@ class _MediaSettingsPresetRowState extends State<MediaSettingsPresetRow> {
     final pickedId = await DialogPresetPicker.show(
       context: context,
       title: Text(
-        'Choose a ${domain.label.toLowerCase()} model',
+        t.llmApp.presetRow.chooseModelTitle(
+          domain: domain.label.toLowerCase(),
+        ),
         style: Theme.of(context).textTheme.titleLarge,
       ),
       validPresets: validPresets,
