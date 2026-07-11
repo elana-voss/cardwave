@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogContentCleaner extends StatelessWidget {
@@ -13,18 +14,22 @@ class DialogContentCleaner extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirm $actionName'),
-        content: const Text(
-          'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.',
+        title: Text(
+          t.editor.dialogContentCleaner.confirmActionTitle(
+            actionName: actionName,
+          ),
+        ),
+        content: Text(
+          t.editor.findReplaceDialog.confirmReplaceAllMessage,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(t.common.actions.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Proceed'),
+            child: Text(t.editor.findReplaceDialog.proceedButton),
           ),
         ],
       ),
@@ -44,7 +49,7 @@ class DialogContentCleaner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Content Cleaner',
+              t.editor.dialogContentCleaner.title,
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
@@ -52,51 +57,56 @@ class DialogContentCleaner extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _confirmAndApply(
                 context,
-                'Normalize Fancy Chars',
+                t.editor.dialogContentCleaner.normalizeFancyCharsAction,
                 UtilsApp.normalizeFancyChars,
               ),
-              child: const Text(
-                'Normalize Fancy Chars (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)',
+              child: Text(
+                t.editor.dialogContentCleaner.normalizeFancyCharsButton,
               ),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () =>
-                  _confirmAndApply(context, 'Purge HTML', UtilsApp.purgeHtml),
-              child: const Text('Purge HTML Tags'),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _confirmAndApply(
                 context,
-                'Purge Markdown Links/Images',
+                t.editor.dialogContentCleaner.purgeHtmlAction,
+                UtilsApp.purgeHtml,
+              ),
+              child: Text(t.editor.dialogContentCleaner.purgeHtmlButton),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => _confirmAndApply(
+                context,
+                t.editor.dialogContentCleaner.purgeMarkdownAction,
                 UtilsApp.purgeMarkdownLinksImages,
               ),
-              child: const Text('Purge Markdown Links/Images'),
+              child: Text(t.editor.dialogContentCleaner.purgeMarkdownAction),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _confirmAndApply(
                 context,
-                'Purge Emojis',
+                t.editor.dialogContentCleaner.purgeEmojisAction,
                 UtilsApp.purgeEmojis,
               ),
-              child: const Text('Purge Emojis'),
+              child: Text(t.editor.dialogContentCleaner.purgeEmojisAction),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _confirmAndApply(
                 context,
-                'Purge Extra Spaces',
+                t.editor.dialogContentCleaner.purgeExtraSpacesAction,
                 UtilsApp.purgeExtraSpaces,
               ),
-              child: const Text('Purge Extra Spaces'),
+              child: Text(
+                t.editor.dialogContentCleaner.purgeExtraSpacesAction,
+              ),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _confirmAndApply(
                 context,
-                'Yolo Purge',
+                t.editor.dialogContentCleaner.yoloPurgeAction,
                 (text) => UtilsApp.purgeExtraSpaces(
                   UtilsApp.purgeEmojis(
                     UtilsApp.purgeMarkdownLinksImages(
@@ -107,7 +117,7 @@ class DialogContentCleaner extends StatelessWidget {
                   ),
                 ),
               ),
-              child: const Text('Apply All Above'),
+              child: Text(t.editor.dialogContentCleaner.applyAllAboveButton),
             ),
           ],
         ),

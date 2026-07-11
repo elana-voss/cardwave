@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -93,8 +94,8 @@ class EditorAlternateGreetingsState extends State<EditorAlternateGreetings> {
     final pageController = context.read<EditorPageController>();
     final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await pageController.confirmDelete(
-      title: 'Delete Greeting',
-      message: 'Are you sure you want to delete this greeting?',
+      title: t.editor.editorAlternateGreetings.deleteGreetingTitle,
+      message: t.editor.editorAlternateGreetings.deleteGreetingMessage,
       confirmColor: errorColor,
     );
     if (!confirmed || !mounted) return;
@@ -124,7 +125,7 @@ class EditorAlternateGreetingsState extends State<EditorAlternateGreetings> {
             child: FilledButton.tonalIcon(
               onPressed: _addGreeting,
               icon: const Icon(Icons.add),
-              label: const Text('Add Greeting'),
+              label: Text(t.editor.editorAlternateGreetings.addGreetingButton),
             ),
           ),
         ),
@@ -144,8 +145,9 @@ class EditorAlternateGreetingsState extends State<EditorAlternateGreetings> {
                       : null,
                   controller: _controllers[i],
                   label: i == 0
-                      ? 'Primary Greeting (first_mes)'
-                      : 'Alternate Greeting #$i',
+                      ? t.editor.editorAlternateGreetings.primaryGreetingLabel
+                      : t.editor.editorAlternateGreetings
+                            .alternateGreetingLabel(index: i),
                   showTokenCount: true,
                   headerLeading: ReorderableDragStartListener(
                     index: i,
@@ -155,7 +157,7 @@ class EditorAlternateGreetingsState extends State<EditorAlternateGreetings> {
                       ? IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () => unawaited(_removeGreeting(i)),
-                          tooltip: 'Remove',
+                          tooltip: t.editor.editorAlternateGreetings.removeTooltip,
                         )
                       : null,
                   trailing: Builder(

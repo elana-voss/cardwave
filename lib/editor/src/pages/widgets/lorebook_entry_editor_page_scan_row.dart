@@ -24,7 +24,7 @@ class _EntryScanRow extends StatelessWidget {
               width: 160,
               child: TextFieldCard.singleLine(
                 controller: controller.scanDepth,
-                label: 'Scan Depth',
+                label: t.editor.lorebookEntryEditorScanRow.scanDepthLabel,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -32,7 +32,7 @@ class _EntryScanRow extends StatelessWidget {
               width: 240,
               child: TextFieldCard.singleLine(
                 controller: controller.automationId,
-                label: 'Automation ID',
+                label: t.editor.lorebookEntryEditorScanRow.automationIdLabel,
               ),
             ),
           ],
@@ -42,7 +42,7 @@ class _EntryScanRow extends StatelessWidget {
           runSpacing: 4,
           children: [
             FilterChip(
-              label: const Text('Use Regex'),
+              label: Text(t.editor.lorebookEntryEditorScanRow.useRegexFilter),
               selected: entry.useRegex ?? false,
               onSelected: (v) {
                 entry.useRegex = v;
@@ -51,7 +51,9 @@ class _EntryScanRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Case Sensitive'),
+              label: Text(
+                t.editor.lorebookEntryEditorScanRow.caseSensitiveFilter,
+              ),
               selected: entry.caseSensitive ?? false,
               onSelected: (v) {
                 entry.caseSensitive = v;
@@ -60,7 +62,9 @@ class _EntryScanRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Whole Words'),
+              label: Text(
+                t.editor.lorebookEntryEditorScanRow.wholeWordsFilter,
+              ),
               selected: entry.extensions.matchWholeWords ?? false,
               onSelected: (v) {
                 entry.extensions.matchWholeWords = v;
@@ -69,7 +73,9 @@ class _EntryScanRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Group Scoring'),
+              label: Text(
+                t.editor.lorebookEntryEditorScanRow.groupScoringFilter,
+              ),
               selected: entry.extensions.useGroupScoring ?? false,
               onSelected: (v) {
                 entry.extensions.useGroupScoring = v;

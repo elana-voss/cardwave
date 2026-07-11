@@ -1,4 +1,5 @@
 import 'package:cardwave/character/character.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class LorebookEntryListTile extends StatelessWidget {
@@ -18,7 +19,7 @@ class LorebookEntryListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = (entry.comment?.isNotEmpty == true)
         ? entry.comment!
-        : 'Untitled Entry';
+        : t.editor.lorebookEntryListTile.untitledEntry;
     final keys = entry.keys.join(', ');
 
     return Card(
@@ -30,14 +31,14 @@ class LorebookEntryListTile extends StatelessWidget {
         ),
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         subtitle: Text(
-          keys.isNotEmpty ? keys : 'No keywords',
+          keys.isNotEmpty ? keys : t.editor.lorebookEntryListTile.noKeywords,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: onDelete,
-          tooltip: 'Delete Entry',
+          tooltip: t.editor.editorLorebook.deleteEntryTitle,
         ),
         onTap: onTap,
       ),

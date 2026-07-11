@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// What kind of value an [ObjectValueEditor] is currently editing.
@@ -108,18 +109,18 @@ class _ObjectValueEditorState extends State<ObjectValueEditor> {
           child: DropdownButton<ObjectValueType>(
             isExpanded: true,
             value: _type,
-            items: const [
+            items: [
               DropdownMenuItem(
                 value: ObjectValueType.string,
-                child: Text('string'),
+                child: Text(t.editor.objectValueEditor.stringType),
               ),
               DropdownMenuItem(
                 value: ObjectValueType.number,
-                child: Text('number'),
+                child: Text(t.editor.objectValueEditor.numberType),
               ),
               DropdownMenuItem(
                 value: ObjectValueType.boolean,
-                child: Text('bool'),
+                child: Text(t.editor.objectValueEditor.boolType),
               ),
             ],
             onChanged: _onTypeChanged,

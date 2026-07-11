@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class EditorBasic extends StatefulWidget {
@@ -95,7 +96,7 @@ class EditorBasicState extends State<EditorBasic> {
       children: [
         TextFieldCard.singleLine(
           controller: _nameController!,
-          label: 'Name',
+          label: t.editor.editorBasic.nameLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _nameController!.text,
@@ -106,7 +107,7 @@ class EditorBasicState extends State<EditorBasic> {
         ),
         TextFieldCard.singleLine(
           controller: _nicknameController!,
-          label: 'Nickname (CCv3)',
+          label: t.editor.editorBasic.nicknameLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _nicknameController!.text,
@@ -117,7 +118,7 @@ class EditorBasicState extends State<EditorBasic> {
         ),
         TextFieldCard.multiLine(
           controller: _descriptionController!,
-          label: 'Description',
+          label: t.editor.editorBasic.descriptionLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _descriptionController!.text,
@@ -128,7 +129,7 @@ class EditorBasicState extends State<EditorBasic> {
         ),
         TextFieldCard.multiLine(
           controller: _personalityController!,
-          label: 'Personality',
+          label: t.editor.editorBasic.personalityLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _personalityController!.text,
@@ -139,7 +140,7 @@ class EditorBasicState extends State<EditorBasic> {
         ),
         TextFieldCard.multiLine(
           controller: _scenarioController!,
-          label: 'Scenario',
+          label: t.editor.editorBasic.scenarioLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _scenarioController!.text,
@@ -150,7 +151,7 @@ class EditorBasicState extends State<EditorBasic> {
         ),
         TextFieldCard.multiLine(
           controller: _mesExampleController!,
-          label: 'Message Example',
+          label: t.editor.editorBasic.messageExampleLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _mesExampleController!.text,

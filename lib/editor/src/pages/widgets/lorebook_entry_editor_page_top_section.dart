@@ -79,7 +79,7 @@ class _EntryTopSection extends StatelessWidget {
       children: [
         TextFieldCard.singleLine(
           controller: controller.comment,
-          label: 'Title/Memo',
+          label: t.editor.lorebookEntryEditorTopSection.titleMemoLabel,
         ),
         Wrap(
           spacing: 16,
@@ -88,16 +88,21 @@ class _EntryTopSection extends StatelessWidget {
             SizedBox(
               width: 240,
               child: DropdownLabeled<String>(
-                label: 'Strategy',
+                label: t.editor.lorebookEntryEditorTopSection.strategyLabel,
                 value: _getStrategy(),
                 items: [
-                  const DropdownMenuItem(
+                  DropdownMenuItem(
                     value: 'Constant',
                     child: Row(
                       spacing: 8,
                       children: [
-                        Icon(Icons.circle, color: Colors.blue),
-                        Expanded(child: Text('Constant')),
+                        const Icon(Icons.circle, color: Colors.blue),
+                        Expanded(
+                          child: Text(
+                            t.editor.lorebookEntryEditorTopSection
+                                .strategyConstant,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -110,7 +115,12 @@ class _EntryTopSection extends StatelessWidget {
                           Icons.circle,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        const Expanded(child: Text('Enabled')),
+                        Expanded(
+                          child: Text(
+                            t.editor.lorebookEntryEditorTopSection
+                                .strategyEnabled,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -123,17 +133,27 @@ class _EntryTopSection extends StatelessWidget {
                           Icons.circle,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                        const Expanded(child: Text('Disabled')),
+                        Expanded(
+                          child: Text(
+                            t.editor.lorebookEntryEditorTopSection
+                                .strategyDisabled,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const DropdownMenuItem(
+                  DropdownMenuItem(
                     value: 'Vectorized',
                     child: Row(
                       spacing: 8,
                       children: [
-                        Icon(Icons.link),
-                        Expanded(child: Text('Vectorized')),
+                        const Icon(Icons.link),
+                        Expanded(
+                          child: Text(
+                            t.editor.lorebookEntryEditorTopSection
+                                .strategyVectorized,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -144,19 +164,71 @@ class _EntryTopSection extends StatelessWidget {
             SizedBox(
               width: 240,
               child: DropdownLabeled<String>(
-                label: 'Position',
+                label: t.editor.lorebookEntryEditorTopSection.positionLabel,
                 value: _getPositionValue(),
-                items: const [
-                  DropdownMenuItem(value: '0', child: Text('↑ Char')),
-                  DropdownMenuItem(value: '1', child: Text('↓ Char')),
-                  DropdownMenuItem(value: '2', child: Text('↑ AN')),
-                  DropdownMenuItem(value: '3', child: Text('↓ AN')),
-                  DropdownMenuItem(value: '4_0', child: Text('@D System')),
-                  DropdownMenuItem(value: '4_1', child: Text('@D User')),
-                  DropdownMenuItem(value: '4_2', child: Text('@D Assistant')),
-                  DropdownMenuItem(value: '5', child: Text('↑ EM')),
-                  DropdownMenuItem(value: '6', child: Text('↓ EM')),
-                  DropdownMenuItem(value: '7', child: Text('Outlet')),
+                items: [
+                  DropdownMenuItem(
+                    value: '0',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionUpChar,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '1',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionDownChar,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '2',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionUpAn,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '3',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionDownAn,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '4_0',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection
+                          .positionDepthSystem,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '4_1',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionDepthUser,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '4_2',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection
+                          .positionDepthAssistant,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '5',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionUpEm,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '6',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionDownEm,
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: '7',
+                    child: Text(
+                      t.editor.lorebookEntryEditorTopSection.positionOutlet,
+                    ),
+                  ),
                 ],
                 onChanged: (value) => _setPosition(value!),
               ),
@@ -171,7 +243,7 @@ class _EntryTopSection extends StatelessWidget {
               width: 120,
               child: TextFieldCard.singleLine(
                 controller: controller.depth,
-                label: 'Depth',
+                label: t.editor.lorebookEntryEditorTopSection.depthLabel,
                 keyboardType: TextInputType.number,
                 enabled: entry.extensions.position == 4,
               ),
@@ -180,7 +252,7 @@ class _EntryTopSection extends StatelessWidget {
               width: 120,
               child: TextFieldCard.singleLine(
                 controller: controller.order,
-                label: 'Order',
+                label: t.editor.lorebookEntryEditorTopSection.orderLabel,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -188,7 +260,7 @@ class _EntryTopSection extends StatelessWidget {
               width: 120,
               child: TextFieldCard.singleLine(
                 controller: controller.probability,
-                label: 'Trigger %',
+                label: t.editor.lorebookEntryEditorTopSection.triggerLabel,
                 keyboardType: TextInputType.number,
               ),
             ),

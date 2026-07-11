@@ -4,6 +4,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
 import 'package:cardwave/editor/src/pages/widgets/lorebook_entry_editor_page.dart';
 import 'package:cardwave/editor/src/pages/widgets/lorebook_entry_list_tile.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,7 +59,7 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
     entry.keys = [];
     entry.secondaryKeys = [];
     entry.content = '';
-    entry.comment = 'New Entry';
+    entry.comment = t.editor.editorLorebook.newEntryDefaultComment;
     entry.extensions = LorebookEntryExtensions(
       probability: _defaultProbability,
       depth: _defaultDepth,
@@ -81,8 +82,8 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
     final controller = context.read<EditorPageController>();
     final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await controller.confirmDelete(
-      title: 'Delete Entry',
-      message: 'Are you sure you want to delete this entry?',
+      title: t.editor.editorLorebook.deleteEntryTitle,
+      message: t.editor.editorLorebook.deleteEntryMessage,
       confirmColor: errorColor,
     );
     if (!confirmed || !mounted) return;
@@ -155,14 +156,16 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
                     key: const Key('lorebook-add-entry'),
                     onPressed: _addEntry,
                     icon: const Icon(Icons.add),
-                    label: const Text('Add New Entry'),
+                    label: Text(t.editor.editorLorebook.addNewEntryButton),
                   ),
                 ),
               ],
             ),
           ),
           if (entries == null || entries.isEmpty)
-            const Center(child: Text('No lorebook entries found.'))
+            Center(
+              child: Text(t.editor.editorLorebook.noEntriesFound),
+            )
           else
             Expanded(
               child: ReorderableListView.builder(

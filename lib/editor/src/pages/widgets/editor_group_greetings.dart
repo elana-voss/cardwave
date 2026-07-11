@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -79,8 +80,8 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
     final pageController = context.read<EditorPageController>();
     final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await pageController.confirmDelete(
-      title: 'Delete Greeting',
-      message: 'Are you sure you want to delete this greeting?',
+      title: t.editor.editorAlternateGreetings.deleteGreetingTitle,
+      message: t.editor.editorAlternateGreetings.deleteGreetingMessage,
       confirmColor: errorColor,
     );
     if (!confirmed || !mounted) return;
@@ -111,7 +112,7 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
             child: FilledButton.tonalIcon(
               onPressed: _addGreeting,
               icon: const Icon(Icons.add),
-              label: const Text('Add Greeting'),
+              label: Text(t.editor.editorAlternateGreetings.addGreetingButton),
             ),
           ),
         ),
@@ -130,7 +131,9 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
                       ? _newEntryFocusNode
                       : null,
                   controller: _controllers[i],
-                  label: 'Greeting ${i + 1}',
+                  label: t.editor.editorGroupGreetings.greetingLabel(
+                    index: i + 1,
+                  ),
                   showTokenCount: true,
                   headerLeading: ReorderableDragStartListener(
                     index: i,
@@ -139,7 +142,7 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
                   headerTrailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => unawaited(_removeGreeting(i)),
-                    tooltip: 'Remove',
+                    tooltip: t.editor.editorAlternateGreetings.removeTooltip,
                   ),
                   trailing: Builder(
                     builder: (_) {

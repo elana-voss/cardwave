@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class EditorAppData extends StatefulWidget {
@@ -55,7 +56,7 @@ class EditorAppDataState extends State<EditorAppData> {
       children: [
         TextFieldCard.multiLine(
           controller: _notesController!,
-          label: 'Variant Notes',
+          label: t.editor.editorAppData.variantNotesLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _notesController!.text,
@@ -66,7 +67,7 @@ class EditorAppDataState extends State<EditorAppData> {
         ),
         TextFieldCard.multiLine(
           controller: _previewDescriptionController!,
-          label: 'Description Preview',
+          label: t.editor.editorAppData.descriptionPreviewLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _previewDescriptionController!.text,

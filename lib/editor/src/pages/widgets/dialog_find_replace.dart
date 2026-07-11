@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogFindReplace extends StatefulWidget {
@@ -17,18 +18,18 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Replace All'),
-        content: const Text(
-          'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.',
+        title: Text(t.editor.findReplaceDialog.confirmReplaceAllTitle),
+        content: Text(
+          t.editor.findReplaceDialog.confirmReplaceAllMessage,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(t.common.actions.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Proceed'),
+            child: Text(t.editor.findReplaceDialog.proceedButton),
           ),
         ],
       ),
@@ -55,23 +56,23 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Find & Replace',
+              t.editor.findReplaceDialog.title,
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _findController,
-              decoration: const InputDecoration(
-                labelText: 'Find',
+              decoration: InputDecoration(
+                labelText: t.editor.findReplaceDialog.findLabel,
                 isDense: true,
               ),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _replaceController,
-              decoration: const InputDecoration(
-                labelText: 'Replace with',
+              decoration: InputDecoration(
+                labelText: t.editor.findReplaceDialog.replaceWithLabel,
                 isDense: true,
               ),
             ),
@@ -83,7 +84,7 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
                   _replaceController.text,
                 ),
               ),
-              child: const Text('Replace All'),
+              child: Text(t.editor.findReplaceDialog.replaceAllButton),
             ),
           ],
         ),

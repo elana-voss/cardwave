@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class EditorCreatorMetadata extends StatefulWidget {
@@ -91,7 +92,7 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
       children: [
         TextFieldCard.singleLine(
           controller: _systemNameController!,
-          label: 'System Name (CCv3)',
+          label: t.editor.editorCreatorMetadata.systemNameLabel,
         ),
         Wrap(
           spacing: 16,
@@ -101,21 +102,21 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
               width: 240,
               child: TextFieldCard.singleLine(
                 controller: _creatorController!,
-                label: 'Creator',
+                label: t.editor.editorCreatorMetadata.creatorLabel,
               ),
             ),
             SizedBox(
               width: 160,
               child: TextFieldCard.singleLine(
                 controller: _characterVersionController!,
-                label: 'Version',
+                label: t.editor.editorCreatorMetadata.versionLabel,
               ),
             ),
           ],
         ),
         TextFieldCard.multiLine(
           controller: _creatorNotesController!,
-          label: 'Creator Notes',
+          label: t.editor.editorCreatorMetadata.creatorNotesLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _creatorNotesController!.text,
@@ -130,7 +131,7 @@ class EditorCreatorMetadataState extends State<EditorCreatorMetadata> {
         ),
         TextFieldCard.multiLine(
           controller: _tagsController!,
-          label: 'Tags (Coma separated)',
+          label: t.editor.editorCreatorMetadata.tagsLabel,
         ),
       ],
     );

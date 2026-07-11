@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:re_editor/re_editor.dart';
 
@@ -69,7 +70,7 @@ class _FindRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final result = value.result == null
-        ? 'none'
+        ? t.editor.codeFindPanel.noneResult
         : '${value.result!.index + 1}/${value.result!.matches.length}';
     return Row(
       children: [
@@ -115,17 +116,17 @@ class _FindRow extends StatelessWidget {
             children: [
               _FindIconButton(
                 icon: Icons.arrow_upward,
-                tooltip: 'Previous',
+                tooltip: t.editor.codeFindPanel.previousTooltip,
                 onPressed: value.result == null ? null : controller.previousMatch,
               ),
               _FindIconButton(
                 icon: Icons.arrow_downward,
-                tooltip: 'Next',
+                tooltip: t.editor.codeFindPanel.nextTooltip,
                 onPressed: value.result == null ? null : controller.nextMatch,
               ),
               _FindIconButton(
                 icon: Icons.close,
-                tooltip: 'Close',
+                tooltip: t.editor.codeFindPanel.closeTooltip,
                 onPressed: controller.close,
               ),
             ],
@@ -156,12 +157,12 @@ class _ReplaceRow extends StatelessWidget {
         ),
         _FindIconButton(
           icon: Icons.done,
-          tooltip: 'Replace',
+          tooltip: t.editor.codeFindPanel.replaceTooltip,
           onPressed: value.result == null ? null : controller.replaceMatch,
         ),
         _FindIconButton(
           icon: Icons.done_all,
-          tooltip: 'Replace All',
+          tooltip: t.editor.codeFindPanel.replaceAllTooltip,
           onPressed: value.result == null ? null : controller.replaceAllMatches,
         ),
       ],

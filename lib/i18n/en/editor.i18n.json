@@ -1,1 +1,183 @@
-{}
+{
+  "panelLabels": {
+    "basic": "Basic",
+    "greetings": "Greetings",
+    "prompts": "Prompts",
+    "lorebook": "Lorebook",
+    "group": "Group",
+    "creator": "Creator",
+    "appData": "App Data",
+    "nodes": "Nodes"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "Hide assistant panel",
+    "showChatAssistantTooltip": "Show chat assistant side-by-side"
+  },
+  "codeFindPanel": {
+    "noneResult": "none",
+    "previousTooltip": "Previous",
+    "nextTooltip": "Next",
+    "closeTooltip": "Close",
+    "replaceTooltip": "Replace",
+    "replaceAllTooltip": "Replace All"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "Confirm Replace All",
+    "confirmReplaceAllMessage": "Are you sure you want to proceed?\nThis action is irreversible and affects all fields.",
+    "proceedButton": "Proceed",
+    "title": "Find & Replace",
+    "findLabel": "Find",
+    "replaceWithLabel": "Replace with",
+    "replaceAllButton": "Replace All"
+  },
+  "objectValueEditor": {
+    "stringType": "string",
+    "numberType": "number",
+    "boolType": "bool"
+  },
+  "editorBasic": {
+    "nameLabel": "Name",
+    "nicknameLabel": "Nickname (CCv3)",
+    "descriptionLabel": "Description",
+    "personalityLabel": "Personality",
+    "scenarioLabel": "Scenario",
+    "messageExampleLabel": "Message Example"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "System Name (CCv3)",
+    "creatorLabel": "Creator",
+    "versionLabel": "Version",
+    "creatorNotesLabel": "Creator Notes",
+    "tagsLabel": "Tags (Coma separated)"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "System Prompt",
+    "postHistoryInstructionsLabel": "Post History Instructions",
+    "depthPromptLabel": "Depth Prompt (Character Notes)",
+    "insertionDepthLabel": "Insertion Depth",
+    "roleLabel": "Role"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "Variant Notes",
+    "descriptionPreviewLabel": "Description Preview"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "Delete Greeting",
+    "deleteGreetingMessage": "Are you sure you want to delete this greeting?",
+    "addGreetingButton": "Add Greeting",
+    "primaryGreetingLabel": "Primary Greeting (first_mes)",
+    "alternateGreetingLabel": "Alternate Greeting #$index",
+    "removeTooltip": "Remove"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "Greeting $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "New Entry",
+    "deleteEntryTitle": "Delete Entry",
+    "deleteEntryMessage": "Are you sure you want to delete this entry?",
+    "addNewEntryButton": "Add New Entry",
+    "noEntriesFound": "No lorebook entries found."
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "Untitled Entry",
+    "noKeywords": "No keywords"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "Edit Lorebook Entry",
+    "advancedFilter": "Advanced",
+    "primaryKeywordsLabel": "Primary Keywords",
+    "logicLabel": "Logic",
+    "logicAndAny": "AND ANY",
+    "logicAndAll": "AND ALL",
+    "logicNotAny": "NOT ANY",
+    "logicNotAll": "NOT ALL",
+    "optionalFilterLabel": "Optional Filter",
+    "contentLabel": "Content",
+    "nonRecursableFilter": "Non-recursable",
+    "preventFurtherRecursionFilter": "Prevent Further Recursion",
+    "delayUntilRecursionFilter": "Delay Until Recursion",
+    "ignoreBudgetFilter": "Ignore Budget",
+    "prioritizeFilter": "Prioritize",
+    "inclusionGroupLabel": "Inclusion Group",
+    "groupWeightLabel": "Group Weight",
+    "stickyLabel": "Sticky",
+    "cooldownLabel": "Cooldown",
+    "delayLabel": "Delay",
+    "filterToCharactersLabel": "Filter to Characters or Tags",
+    "filterToTriggersLabel": "Filter to Generation Triggers",
+    "additionalMatchingSourcesLabel": "Additional Matching Sources:",
+    "personaFilter": "Persona",
+    "descriptionFilter": "Description",
+    "personalityFilter": "Personality",
+    "depthPromptFilter": "Depth Prompt",
+    "scenarioFilter": "Scenario",
+    "creatorNotesFilter": "Creator Notes"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "Title/Memo",
+    "strategyLabel": "Strategy",
+    "strategyConstant": "Constant",
+    "strategyEnabled": "Enabled",
+    "strategyDisabled": "Disabled",
+    "strategyVectorized": "Vectorized",
+    "positionLabel": "Position",
+    "positionUpChar": "↑ Char",
+    "positionDownChar": "↓ Char",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D System",
+    "positionDepthUser": "@D User",
+    "positionDepthAssistant": "@D Assistant",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Outlet",
+    "depthLabel": "Depth",
+    "orderLabel": "Order",
+    "triggerLabel": "Trigger %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "Scan Depth",
+    "automationIdLabel": "Automation ID",
+    "useRegexFilter": "Use Regex",
+    "caseSensitiveFilter": "Case Sensitive",
+    "wholeWordsFilter": "Whole Words",
+    "groupScoringFilter": "Group Scoring"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "Confirm $actionName",
+    "title": "Content Cleaner",
+    "normalizeFancyCharsAction": "Normalize Fancy Chars",
+    "normalizeFancyCharsButton": "Normalize Fancy Chars (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "Purge HTML",
+    "purgeHtmlButton": "Purge HTML Tags",
+    "purgeMarkdownAction": "Purge Markdown Links/Images",
+    "purgeEmojisAction": "Purge Emojis",
+    "purgeExtraSpacesAction": "Purge Extra Spaces",
+    "yoloPurgeAction": "Yolo Purge",
+    "applyAllAboveButton": "Apply All Above"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "Apply Changes",
+    "originalTextTitle": "Original Text",
+    "suggestedTextTitle": "Suggested Text"
+  },
+  "editorPageController": {
+    "globalActionTitle": "Global $action",
+    "globalAiActionFailed": "Global AI action failed. Check logs.",
+    "compositeName": "Name:\n$value\n",
+    "compositeDescription": "Description:\n$value\n",
+    "compositePersonality": "Personality:\n$value\n",
+    "compositeScenario": "Scenario:\n$value\n",
+    "compositeFirstMessage": "First Message:\n$value\n",
+    "compositeMessageExample": "Message Example:\n$value\n",
+    "compositeCreatorNotes": "Creator Notes:\n$value\n",
+    "compositeSystemPrompt": "System Prompt:\n$value\n",
+    "compositePostHistoryInstructions": "Post-History Instructions:\n$value\n",
+    "compositeAlternateGreeting": "Alternate Greeting #$index:\n$value\n",
+    "compositeGroupGreeting": "Group Greeting #$index:\n$value\n",
+    "compositeLorebookEntry": "Lorebook Entry #$index:\n$value\n",
+    "imageTooLargeMessage": "Selected image is too large. Maximum size is $maxSize.",
+    "invalidPngMessage": "Selected image is not a valid PNG or could not be read."
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/pages/widgets/dropdown_labeled.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class EditorPrompts extends StatefulWidget {
@@ -89,7 +90,7 @@ class EditorPromptsState extends State<EditorPrompts> {
       children: [
         TextFieldCard.multiLine(
           controller: _systemPromptController!,
-          label: 'System Prompt',
+          label: t.editor.editorPrompts.systemPromptLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _systemPromptController!.text,
@@ -105,7 +106,7 @@ class EditorPromptsState extends State<EditorPrompts> {
         const SizedBox(height: 8),
         TextFieldCard.multiLine(
           controller: _postHistoryInstructionsController!,
-          label: 'Post History Instructions',
+          label: t.editor.editorPrompts.postHistoryInstructionsLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _postHistoryInstructionsController!.text,
@@ -121,7 +122,7 @@ class EditorPromptsState extends State<EditorPrompts> {
         const SizedBox(height: 16),
         TextFieldCard.multiLine(
           controller: _depthPromptController!,
-          label: 'Depth Prompt (Character Notes)',
+          label: t.editor.editorPrompts.depthPromptLabel,
           showTokenCount: true,
           trailing: AiActionTextfieldPopup(
             currentText: () => _depthPromptController!.text,
@@ -137,14 +138,14 @@ class EditorPromptsState extends State<EditorPrompts> {
             Expanded(
               child: TextFieldCard.singleLine(
                 controller: _depthController!,
-                label: 'Insertion Depth',
+                label: t.editor.editorPrompts.insertionDepthLabel,
                 keyboardType: TextInputType.number,
               ),
             ),
             Expanded(
               flex: 2,
               child: DropdownLabeled<DepthPromptRoleEnum>(
-                label: 'Role',
+                label: t.editor.editorPrompts.roleLabel,
                 value: _depthRole,
                 items: DepthPromptRoleEnum.values.map((role) {
                   final label =

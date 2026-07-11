@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:diff_match_patch/diff_match_patch.dart';
 import 'package:flutter/material.dart';
@@ -56,17 +57,17 @@ class _DialogAiDiffConfirmationState extends State<DialogAiDiffConfirmation> {
       actions: [
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Apply Changes'),
+          child: Text(t.editor.dialogAiDiffConfirmation.applyChangesButton),
         ),
       ],
       builder: (context, isMobile) {
         final originalWidget = DiffPanel(
-          title: 'Original Text',
+          title: t.editor.dialogAiDiffConfirmation.originalTextTitle,
           spans: originalSpans,
           tokenCount: _originalTokens,
         );
         final suggestedWidget = DiffPanel(
-          title: 'Suggested Text',
+          title: t.editor.dialogAiDiffConfirmation.suggestedTextTitle,
           spans: suggestedSpans,
           tokenCount: _suggestedTokens,
         );

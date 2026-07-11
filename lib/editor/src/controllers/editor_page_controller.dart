@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/pages/widgets/panel_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -57,12 +58,12 @@ class EditorPageController extends ChangeNotifier {
     required String title,
     required String message,
     required Color confirmColor,
-    String confirmText = 'Delete',
+    String? confirmText,
   }) {
     return NavigationService().showConfirmCancelDialog(
       title: title,
       message: message,
-      confirmText: confirmText,
+      confirmText: confirmText ?? t.common.actions.delete,
       confirmColor: confirmColor,
     );
   }
@@ -79,7 +80,11 @@ class EditorPageController extends ChangeNotifier {
 
     try {
       proposedCard = await nav.runWithProgressDialog<CharacterCardV3?>(
-        title: action.isGlobalOnly ? action.label : 'Global ${action.label}',
+        title: action.isGlobalOnly
+            ? action.label
+            : t.editor.editorPageController.globalActionTitle(
+                action: action.label,
+              ),
         onCancel: characterAiService.cancelAllActiveAiTasks,
         task: (handle) => characterAiService.applyGlobalAiActionToCard(
           action: action,
@@ -92,7 +97,7 @@ class EditorPageController extends ChangeNotifier {
       return null;
     } on Exception catch (e, st) {
       LoggingService().error('[GLOBAL AI ACTION] Failed', e, st);
-      nav.showSnackBar('Global AI action failed. Check logs.');
+      nav.showSnackBar(t.editor.editorPageController.globalAiActionFailed);
       return null;
     }
 
@@ -111,52 +116,97 @@ class EditorPageController extends ChangeNotifier {
 
   String _buildCompositeString(CharacterCardV3 card) {
     final buffer = StringBuffer();
-    if (card.name.isNotEmpty) buffer.writeln('Name:\n${card.name}\n');
+    if (card.name.isNotEmpty) {
+      buffer.writeln(
+        t.editor.editorPageController.compositeName(value: card.name),
+      );
+    }
     if (card.description.isNotEmpty) {
-      buffer.writeln('Description:\n${card.description}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeDescription(
+          value: card.description,
+        ),
+      );
     }
     if (card.personality.isNotEmpty) {
-      buffer.writeln('Personality:\n${card.personality}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositePersonality(
+          value: card.personality,
+        ),
+      );
     }
     if (card.scenario.isNotEmpty) {
-      buffer.writeln('Scenario:\n${card.scenario}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeScenario(
+          value: card.scenario,
+        ),
+      );
     }
     if (card.firstMes.isNotEmpty) {
-      buffer.writeln('First Message:\n${card.firstMes}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeFirstMessage(
+          value: card.firstMes,
+        ),
+      );
     }
     if (card.mesExample.isNotEmpty) {
-      buffer.writeln('Message Example:\n${card.mesExample}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeMessageExample(
+          value: card.mesExample,
+        ),
+      );
     }
     if (card.creatorNotes.isNotEmpty) {
-      buffer.writeln('Creator Notes:\n${card.creatorNotes}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeCreatorNotes(
+          value: card.creatorNotes,
+        ),
+      );
     }
     if (card.systemPrompt.isNotEmpty) {
-      buffer.writeln('System Prompt:\n${card.systemPrompt}\n');
+      buffer.writeln(
+        t.editor.editorPageController.compositeSystemPrompt(
+          value: card.systemPrompt,
+        ),
+      );
     }
     if (card.postHistoryInstructions.isNotEmpty) {
       buffer.writeln(
-        'Post-History Instructions:\n${card.postHistoryInstructions}\n',
+        t.editor.editorPageController.compositePostHistoryInstructions(
+          value: card.postHistoryInstructions,
+        ),
       );
     }
 
     for (var i = 0; i < card.alternateGreetings.length; i++) {
       if (card.alternateGreetings[i].isNotEmpty) {
         buffer.writeln(
-          'Alternate Greeting #${i + 1}:\n${card.alternateGreetings[i]}\n',
+          t.editor.editorPageController.compositeAlternateGreeting(
+            index: i + 1,
+            value: card.alternateGreetings[i],
+          ),
         );
       }
     }
     for (var i = 0; i < card.groupOnlyGreetings.length; i++) {
       if (card.groupOnlyGreetings[i].isNotEmpty) {
         buffer.writeln(
-          'Group Greeting #${i + 1}:\n${card.groupOnlyGreetings[i]}\n',
+          t.editor.editorPageController.compositeGroupGreeting(
+            index: i + 1,
+            value: card.groupOnlyGreetings[i],
+          ),
         );
       }
     }
     final entries = card.lorebook?.entries ?? [];
     for (var i = 0; i < entries.length; i++) {
       if (entries[i].content?.isNotEmpty == true) {
-        buffer.writeln('Lorebook Entry #${i + 1}:\n${entries[i].content ?? ''}\n');
+        buffer.writeln(
+          t.editor.editorPageController.compositeLorebookEntry(
+            index: i + 1,
+            value: entries[i].content ?? '',
+          ),
+        );
       }
     }
 
@@ -181,14 +231,19 @@ class EditorPageController extends ChangeNotifier {
   ) async {
     final service = context.read<CharacterService>();
 
-    const typeGroup = XTypeGroup(label: 'PNG Images', extensions: ['png']);
+    final typeGroup = XTypeGroup(
+      label: t.character.createController.pngImagesTypeGroupLabel,
+      extensions: const ['png'],
+    );
     final file = await openFile(acceptedTypeGroups: [typeGroup]);
     if (file == null) return false;
 
     final fileLength = await file.length();
     if (fileLength > AppConstants.maxImageFileSizeBytes) {
       NavigationService().showSnackBar(
-        'Selected image is too large. Maximum size is ${AppConstants.maxImageFileSizeLabel}.',
+        t.editor.editorPageController.imageTooLargeMessage(
+          maxSize: AppConstants.maxImageFileSizeLabel,
+        ),
       );
       return false;
     }
@@ -206,7 +261,7 @@ class EditorPageController extends ChangeNotifier {
         stackTrace,
       );
       NavigationService().showSnackBar(
-        'Selected image is not a valid PNG or could not be read.',
+        t.editor.editorPageController.invalidPngMessage,
       );
       return false;
     }

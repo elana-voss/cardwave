@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 583 (64 per locale)
+/// Strings: 726 (80 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -286,6 +286,25 @@ class _TranslationsEditorEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsEditorPanelLabelsEn panelLabels = _TranslationsEditorPanelLabelsEn._(_root);
+	late final _TranslationsEditorAppBarEditorEn appBarEditor = _TranslationsEditorAppBarEditorEn._(_root);
+	late final _TranslationsEditorCodeFindPanelEn codeFindPanel = _TranslationsEditorCodeFindPanelEn._(_root);
+	late final _TranslationsEditorFindReplaceDialogEn findReplaceDialog = _TranslationsEditorFindReplaceDialogEn._(_root);
+	late final _TranslationsEditorObjectValueEditorEn objectValueEditor = _TranslationsEditorObjectValueEditorEn._(_root);
+	late final _TranslationsEditorEditorBasicEn editorBasic = _TranslationsEditorEditorBasicEn._(_root);
+	late final _TranslationsEditorEditorCreatorMetadataEn editorCreatorMetadata = _TranslationsEditorEditorCreatorMetadataEn._(_root);
+	late final _TranslationsEditorEditorPromptsEn editorPrompts = _TranslationsEditorEditorPromptsEn._(_root);
+	late final _TranslationsEditorEditorAppDataEn editorAppData = _TranslationsEditorEditorAppDataEn._(_root);
+	late final _TranslationsEditorEditorAlternateGreetingsEn editorAlternateGreetings = _TranslationsEditorEditorAlternateGreetingsEn._(_root);
+	late final _TranslationsEditorEditorGroupGreetingsEn editorGroupGreetings = _TranslationsEditorEditorGroupGreetingsEn._(_root);
+	late final _TranslationsEditorEditorLorebookEn editorLorebook = _TranslationsEditorEditorLorebookEn._(_root);
+	late final _TranslationsEditorLorebookEntryListTileEn lorebookEntryListTile = _TranslationsEditorLorebookEntryListTileEn._(_root);
+	late final _TranslationsEditorLorebookEntryEditorPageEn lorebookEntryEditorPage = _TranslationsEditorLorebookEntryEditorPageEn._(_root);
+	late final _TranslationsEditorLorebookEntryEditorTopSectionEn lorebookEntryEditorTopSection = _TranslationsEditorLorebookEntryEditorTopSectionEn._(_root);
+	late final _TranslationsEditorLorebookEntryEditorScanRowEn lorebookEntryEditorScanRow = _TranslationsEditorLorebookEntryEditorScanRowEn._(_root);
+	late final _TranslationsEditorDialogContentCleanerEn dialogContentCleaner = _TranslationsEditorDialogContentCleanerEn._(_root);
+	late final _TranslationsEditorDialogAiDiffConfirmationEn dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationEn._(_root);
+	late final _TranslationsEditorEditorPageControllerEn editorPageController = _TranslationsEditorEditorPageControllerEn._(_root);
 }
 
 // Path: grid
@@ -1304,6 +1323,320 @@ class _TranslationsCommonAppConstantsEn {
 	// Translations
 	String get maxImageFileSizeLabel => '10 MB';
 	String get exportFailedMessage => 'Export failed. See logs for details.';
+}
+
+// Path: editor.panelLabels
+class _TranslationsEditorPanelLabelsEn {
+	_TranslationsEditorPanelLabelsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get basic => 'Basic';
+	String get greetings => 'Greetings';
+	String get prompts => 'Prompts';
+	String get lorebook => 'Lorebook';
+	String get group => 'Group';
+	String get creator => 'Creator';
+	String get appData => 'App Data';
+	String get nodes => 'Nodes';
+}
+
+// Path: editor.appBarEditor
+class _TranslationsEditorAppBarEditorEn {
+	_TranslationsEditorAppBarEditorEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get hideAssistantPanelTooltip => 'Hide assistant panel';
+	String get showChatAssistantTooltip => 'Show chat assistant side-by-side';
+}
+
+// Path: editor.codeFindPanel
+class _TranslationsEditorCodeFindPanelEn {
+	_TranslationsEditorCodeFindPanelEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noneResult => 'none';
+	String get previousTooltip => 'Previous';
+	String get nextTooltip => 'Next';
+	String get closeTooltip => 'Close';
+	String get replaceTooltip => 'Replace';
+	String get replaceAllTooltip => 'Replace All';
+}
+
+// Path: editor.findReplaceDialog
+class _TranslationsEditorFindReplaceDialogEn {
+	_TranslationsEditorFindReplaceDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get confirmReplaceAllTitle => 'Confirm Replace All';
+	String get confirmReplaceAllMessage => 'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.';
+	String get proceedButton => 'Proceed';
+	String get title => 'Find & Replace';
+	String get findLabel => 'Find';
+	String get replaceWithLabel => 'Replace with';
+	String get replaceAllButton => 'Replace All';
+}
+
+// Path: editor.objectValueEditor
+class _TranslationsEditorObjectValueEditorEn {
+	_TranslationsEditorObjectValueEditorEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get stringType => 'string';
+	String get numberType => 'number';
+	String get boolType => 'bool';
+}
+
+// Path: editor.editorBasic
+class _TranslationsEditorEditorBasicEn {
+	_TranslationsEditorEditorBasicEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get nameLabel => 'Name';
+	String get nicknameLabel => 'Nickname (CCv3)';
+	String get descriptionLabel => 'Description';
+	String get personalityLabel => 'Personality';
+	String get scenarioLabel => 'Scenario';
+	String get messageExampleLabel => 'Message Example';
+}
+
+// Path: editor.editorCreatorMetadata
+class _TranslationsEditorEditorCreatorMetadataEn {
+	_TranslationsEditorEditorCreatorMetadataEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get systemNameLabel => 'System Name (CCv3)';
+	String get creatorLabel => 'Creator';
+	String get versionLabel => 'Version';
+	String get creatorNotesLabel => 'Creator Notes';
+	String get tagsLabel => 'Tags (Coma separated)';
+}
+
+// Path: editor.editorPrompts
+class _TranslationsEditorEditorPromptsEn {
+	_TranslationsEditorEditorPromptsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get systemPromptLabel => 'System Prompt';
+	String get postHistoryInstructionsLabel => 'Post History Instructions';
+	String get depthPromptLabel => 'Depth Prompt (Character Notes)';
+	String get insertionDepthLabel => 'Insertion Depth';
+	String get roleLabel => 'Role';
+}
+
+// Path: editor.editorAppData
+class _TranslationsEditorEditorAppDataEn {
+	_TranslationsEditorEditorAppDataEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get variantNotesLabel => 'Variant Notes';
+	String get descriptionPreviewLabel => 'Description Preview';
+}
+
+// Path: editor.editorAlternateGreetings
+class _TranslationsEditorEditorAlternateGreetingsEn {
+	_TranslationsEditorEditorAlternateGreetingsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get deleteGreetingTitle => 'Delete Greeting';
+	String get deleteGreetingMessage => 'Are you sure you want to delete this greeting?';
+	String get addGreetingButton => 'Add Greeting';
+	String get primaryGreetingLabel => 'Primary Greeting (first_mes)';
+	String alternateGreetingLabel({required Object index}) => 'Alternate Greeting #${index}';
+	String get removeTooltip => 'Remove';
+}
+
+// Path: editor.editorGroupGreetings
+class _TranslationsEditorEditorGroupGreetingsEn {
+	_TranslationsEditorEditorGroupGreetingsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String greetingLabel({required Object index}) => 'Greeting ${index}';
+}
+
+// Path: editor.editorLorebook
+class _TranslationsEditorEditorLorebookEn {
+	_TranslationsEditorEditorLorebookEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get newEntryDefaultComment => 'New Entry';
+	String get deleteEntryTitle => 'Delete Entry';
+	String get deleteEntryMessage => 'Are you sure you want to delete this entry?';
+	String get addNewEntryButton => 'Add New Entry';
+	String get noEntriesFound => 'No lorebook entries found.';
+}
+
+// Path: editor.lorebookEntryListTile
+class _TranslationsEditorLorebookEntryListTileEn {
+	_TranslationsEditorLorebookEntryListTileEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get untitledEntry => 'Untitled Entry';
+	String get noKeywords => 'No keywords';
+}
+
+// Path: editor.lorebookEntryEditorPage
+class _TranslationsEditorLorebookEntryEditorPageEn {
+	_TranslationsEditorLorebookEntryEditorPageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get editEntryTitle => 'Edit Lorebook Entry';
+	String get advancedFilter => 'Advanced';
+	String get primaryKeywordsLabel => 'Primary Keywords';
+	String get logicLabel => 'Logic';
+	String get logicAndAny => 'AND ANY';
+	String get logicAndAll => 'AND ALL';
+	String get logicNotAny => 'NOT ANY';
+	String get logicNotAll => 'NOT ALL';
+	String get optionalFilterLabel => 'Optional Filter';
+	String get contentLabel => 'Content';
+	String get nonRecursableFilter => 'Non-recursable';
+	String get preventFurtherRecursionFilter => 'Prevent Further Recursion';
+	String get delayUntilRecursionFilter => 'Delay Until Recursion';
+	String get ignoreBudgetFilter => 'Ignore Budget';
+	String get prioritizeFilter => 'Prioritize';
+	String get inclusionGroupLabel => 'Inclusion Group';
+	String get groupWeightLabel => 'Group Weight';
+	String get stickyLabel => 'Sticky';
+	String get cooldownLabel => 'Cooldown';
+	String get delayLabel => 'Delay';
+	String get filterToCharactersLabel => 'Filter to Characters or Tags';
+	String get filterToTriggersLabel => 'Filter to Generation Triggers';
+	String get additionalMatchingSourcesLabel => 'Additional Matching Sources:';
+	String get personaFilter => 'Persona';
+	String get descriptionFilter => 'Description';
+	String get personalityFilter => 'Personality';
+	String get depthPromptFilter => 'Depth Prompt';
+	String get scenarioFilter => 'Scenario';
+	String get creatorNotesFilter => 'Creator Notes';
+}
+
+// Path: editor.lorebookEntryEditorTopSection
+class _TranslationsEditorLorebookEntryEditorTopSectionEn {
+	_TranslationsEditorLorebookEntryEditorTopSectionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get titleMemoLabel => 'Title/Memo';
+	String get strategyLabel => 'Strategy';
+	String get strategyConstant => 'Constant';
+	String get strategyEnabled => 'Enabled';
+	String get strategyDisabled => 'Disabled';
+	String get strategyVectorized => 'Vectorized';
+	String get positionLabel => 'Position';
+	String get positionUpChar => '↑ Char';
+	String get positionDownChar => '↓ Char';
+	String get positionUpAn => '↑ AN';
+	String get positionDownAn => '↓ AN';
+	String get positionDepthSystem => '@D System';
+	String get positionDepthUser => '@D User';
+	String get positionDepthAssistant => '@D Assistant';
+	String get positionUpEm => '↑ EM';
+	String get positionDownEm => '↓ EM';
+	String get positionOutlet => 'Outlet';
+	String get depthLabel => 'Depth';
+	String get orderLabel => 'Order';
+	String get triggerLabel => 'Trigger %';
+}
+
+// Path: editor.lorebookEntryEditorScanRow
+class _TranslationsEditorLorebookEntryEditorScanRowEn {
+	_TranslationsEditorLorebookEntryEditorScanRowEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get scanDepthLabel => 'Scan Depth';
+	String get automationIdLabel => 'Automation ID';
+	String get useRegexFilter => 'Use Regex';
+	String get caseSensitiveFilter => 'Case Sensitive';
+	String get wholeWordsFilter => 'Whole Words';
+	String get groupScoringFilter => 'Group Scoring';
+}
+
+// Path: editor.dialogContentCleaner
+class _TranslationsEditorDialogContentCleanerEn {
+	_TranslationsEditorDialogContentCleanerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String confirmActionTitle({required Object actionName}) => 'Confirm ${actionName}';
+	String get title => 'Content Cleaner';
+	String get normalizeFancyCharsAction => 'Normalize Fancy Chars';
+	String get normalizeFancyCharsButton => 'Normalize Fancy Chars (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)';
+	String get purgeHtmlAction => 'Purge HTML';
+	String get purgeHtmlButton => 'Purge HTML Tags';
+	String get purgeMarkdownAction => 'Purge Markdown Links/Images';
+	String get purgeEmojisAction => 'Purge Emojis';
+	String get purgeExtraSpacesAction => 'Purge Extra Spaces';
+	String get yoloPurgeAction => 'Yolo Purge';
+	String get applyAllAboveButton => 'Apply All Above';
+}
+
+// Path: editor.dialogAiDiffConfirmation
+class _TranslationsEditorDialogAiDiffConfirmationEn {
+	_TranslationsEditorDialogAiDiffConfirmationEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get applyChangesButton => 'Apply Changes';
+	String get originalTextTitle => 'Original Text';
+	String get suggestedTextTitle => 'Suggested Text';
+}
+
+// Path: editor.editorPageController
+class _TranslationsEditorEditorPageControllerEn {
+	_TranslationsEditorEditorPageControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String globalActionTitle({required Object action}) => 'Global ${action}';
+	String get globalAiActionFailed => 'Global AI action failed. Check logs.';
+	String compositeName({required Object value}) => 'Name:\n${value}\n';
+	String compositeDescription({required Object value}) => 'Description:\n${value}\n';
+	String compositePersonality({required Object value}) => 'Personality:\n${value}\n';
+	String compositeScenario({required Object value}) => 'Scenario:\n${value}\n';
+	String compositeFirstMessage({required Object value}) => 'First Message:\n${value}\n';
+	String compositeMessageExample({required Object value}) => 'Message Example:\n${value}\n';
+	String compositeCreatorNotes({required Object value}) => 'Creator Notes:\n${value}\n';
+	String compositeSystemPrompt({required Object value}) => 'System Prompt:\n${value}\n';
+	String compositePostHistoryInstructions({required Object value}) => 'Post-History Instructions:\n${value}\n';
+	String compositeAlternateGreeting({required Object index, required Object value}) => 'Alternate Greeting #${index}:\n${value}\n';
+	String compositeGroupGreeting({required Object index, required Object value}) => 'Group Greeting #${index}:\n${value}\n';
+	String compositeLorebookEntry({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
+	String imageTooLargeMessage({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
+	String get invalidPngMessage => 'Selected image is not a valid PNG or could not be read.';
 }
 
 // Path: grid.emptyState
@@ -3760,6 +4093,149 @@ extension on Translations {
 			case 'common.characterImageSemanticLabel': return 'Character image';
 			case 'common.appConstants.maxImageFileSizeLabel': return '10 MB';
 			case 'common.appConstants.exportFailedMessage': return 'Export failed. See logs for details.';
+			case 'editor.panelLabels.basic': return 'Basic';
+			case 'editor.panelLabels.greetings': return 'Greetings';
+			case 'editor.panelLabels.prompts': return 'Prompts';
+			case 'editor.panelLabels.lorebook': return 'Lorebook';
+			case 'editor.panelLabels.group': return 'Group';
+			case 'editor.panelLabels.creator': return 'Creator';
+			case 'editor.panelLabels.appData': return 'App Data';
+			case 'editor.panelLabels.nodes': return 'Nodes';
+			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Hide assistant panel';
+			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Show chat assistant side-by-side';
+			case 'editor.codeFindPanel.noneResult': return 'none';
+			case 'editor.codeFindPanel.previousTooltip': return 'Previous';
+			case 'editor.codeFindPanel.nextTooltip': return 'Next';
+			case 'editor.codeFindPanel.closeTooltip': return 'Close';
+			case 'editor.codeFindPanel.replaceTooltip': return 'Replace';
+			case 'editor.codeFindPanel.replaceAllTooltip': return 'Replace All';
+			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirm Replace All';
+			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.';
+			case 'editor.findReplaceDialog.proceedButton': return 'Proceed';
+			case 'editor.findReplaceDialog.title': return 'Find & Replace';
+			case 'editor.findReplaceDialog.findLabel': return 'Find';
+			case 'editor.findReplaceDialog.replaceWithLabel': return 'Replace with';
+			case 'editor.findReplaceDialog.replaceAllButton': return 'Replace All';
+			case 'editor.objectValueEditor.stringType': return 'string';
+			case 'editor.objectValueEditor.numberType': return 'number';
+			case 'editor.objectValueEditor.boolType': return 'bool';
+			case 'editor.editorBasic.nameLabel': return 'Name';
+			case 'editor.editorBasic.nicknameLabel': return 'Nickname (CCv3)';
+			case 'editor.editorBasic.descriptionLabel': return 'Description';
+			case 'editor.editorBasic.personalityLabel': return 'Personality';
+			case 'editor.editorBasic.scenarioLabel': return 'Scenario';
+			case 'editor.editorBasic.messageExampleLabel': return 'Message Example';
+			case 'editor.editorCreatorMetadata.systemNameLabel': return 'System Name (CCv3)';
+			case 'editor.editorCreatorMetadata.creatorLabel': return 'Creator';
+			case 'editor.editorCreatorMetadata.versionLabel': return 'Version';
+			case 'editor.editorCreatorMetadata.creatorNotesLabel': return 'Creator Notes';
+			case 'editor.editorCreatorMetadata.tagsLabel': return 'Tags (Coma separated)';
+			case 'editor.editorPrompts.systemPromptLabel': return 'System Prompt';
+			case 'editor.editorPrompts.postHistoryInstructionsLabel': return 'Post History Instructions';
+			case 'editor.editorPrompts.depthPromptLabel': return 'Depth Prompt (Character Notes)';
+			case 'editor.editorPrompts.insertionDepthLabel': return 'Insertion Depth';
+			case 'editor.editorPrompts.roleLabel': return 'Role';
+			case 'editor.editorAppData.variantNotesLabel': return 'Variant Notes';
+			case 'editor.editorAppData.descriptionPreviewLabel': return 'Description Preview';
+			case 'editor.editorAlternateGreetings.deleteGreetingTitle': return 'Delete Greeting';
+			case 'editor.editorAlternateGreetings.deleteGreetingMessage': return 'Are you sure you want to delete this greeting?';
+			case 'editor.editorAlternateGreetings.addGreetingButton': return 'Add Greeting';
+			case 'editor.editorAlternateGreetings.primaryGreetingLabel': return 'Primary Greeting (first_mes)';
+			case 'editor.editorAlternateGreetings.alternateGreetingLabel': return ({required Object index}) => 'Alternate Greeting #${index}';
+			case 'editor.editorAlternateGreetings.removeTooltip': return 'Remove';
+			case 'editor.editorGroupGreetings.greetingLabel': return ({required Object index}) => 'Greeting ${index}';
+			case 'editor.editorLorebook.newEntryDefaultComment': return 'New Entry';
+			case 'editor.editorLorebook.deleteEntryTitle': return 'Delete Entry';
+			case 'editor.editorLorebook.deleteEntryMessage': return 'Are you sure you want to delete this entry?';
+			case 'editor.editorLorebook.addNewEntryButton': return 'Add New Entry';
+			case 'editor.editorLorebook.noEntriesFound': return 'No lorebook entries found.';
+			case 'editor.lorebookEntryListTile.untitledEntry': return 'Untitled Entry';
+			case 'editor.lorebookEntryListTile.noKeywords': return 'No keywords';
+			case 'editor.lorebookEntryEditorPage.editEntryTitle': return 'Edit Lorebook Entry';
+			case 'editor.lorebookEntryEditorPage.advancedFilter': return 'Advanced';
+			case 'editor.lorebookEntryEditorPage.primaryKeywordsLabel': return 'Primary Keywords';
+			case 'editor.lorebookEntryEditorPage.logicLabel': return 'Logic';
+			case 'editor.lorebookEntryEditorPage.logicAndAny': return 'AND ANY';
+			case 'editor.lorebookEntryEditorPage.logicAndAll': return 'AND ALL';
+			case 'editor.lorebookEntryEditorPage.logicNotAny': return 'NOT ANY';
+			case 'editor.lorebookEntryEditorPage.logicNotAll': return 'NOT ALL';
+			case 'editor.lorebookEntryEditorPage.optionalFilterLabel': return 'Optional Filter';
+			case 'editor.lorebookEntryEditorPage.contentLabel': return 'Content';
+			case 'editor.lorebookEntryEditorPage.nonRecursableFilter': return 'Non-recursable';
+			case 'editor.lorebookEntryEditorPage.preventFurtherRecursionFilter': return 'Prevent Further Recursion';
+			case 'editor.lorebookEntryEditorPage.delayUntilRecursionFilter': return 'Delay Until Recursion';
+			case 'editor.lorebookEntryEditorPage.ignoreBudgetFilter': return 'Ignore Budget';
+			case 'editor.lorebookEntryEditorPage.prioritizeFilter': return 'Prioritize';
+			case 'editor.lorebookEntryEditorPage.inclusionGroupLabel': return 'Inclusion Group';
+			case 'editor.lorebookEntryEditorPage.groupWeightLabel': return 'Group Weight';
+			case 'editor.lorebookEntryEditorPage.stickyLabel': return 'Sticky';
+			case 'editor.lorebookEntryEditorPage.cooldownLabel': return 'Cooldown';
+			case 'editor.lorebookEntryEditorPage.delayLabel': return 'Delay';
+			case 'editor.lorebookEntryEditorPage.filterToCharactersLabel': return 'Filter to Characters or Tags';
+			case 'editor.lorebookEntryEditorPage.filterToTriggersLabel': return 'Filter to Generation Triggers';
+			case 'editor.lorebookEntryEditorPage.additionalMatchingSourcesLabel': return 'Additional Matching Sources:';
+			case 'editor.lorebookEntryEditorPage.personaFilter': return 'Persona';
+			case 'editor.lorebookEntryEditorPage.descriptionFilter': return 'Description';
+			case 'editor.lorebookEntryEditorPage.personalityFilter': return 'Personality';
+			case 'editor.lorebookEntryEditorPage.depthPromptFilter': return 'Depth Prompt';
+			case 'editor.lorebookEntryEditorPage.scenarioFilter': return 'Scenario';
+			case 'editor.lorebookEntryEditorPage.creatorNotesFilter': return 'Creator Notes';
+			case 'editor.lorebookEntryEditorTopSection.titleMemoLabel': return 'Title/Memo';
+			case 'editor.lorebookEntryEditorTopSection.strategyLabel': return 'Strategy';
+			case 'editor.lorebookEntryEditorTopSection.strategyConstant': return 'Constant';
+			case 'editor.lorebookEntryEditorTopSection.strategyEnabled': return 'Enabled';
+			case 'editor.lorebookEntryEditorTopSection.strategyDisabled': return 'Disabled';
+			case 'editor.lorebookEntryEditorTopSection.strategyVectorized': return 'Vectorized';
+			case 'editor.lorebookEntryEditorTopSection.positionLabel': return 'Position';
+			case 'editor.lorebookEntryEditorTopSection.positionUpChar': return '↑ Char';
+			case 'editor.lorebookEntryEditorTopSection.positionDownChar': return '↓ Char';
+			case 'editor.lorebookEntryEditorTopSection.positionUpAn': return '↑ AN';
+			case 'editor.lorebookEntryEditorTopSection.positionDownAn': return '↓ AN';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthSystem': return '@D System';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthUser': return '@D User';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthAssistant': return '@D Assistant';
+			case 'editor.lorebookEntryEditorTopSection.positionUpEm': return '↑ EM';
+			case 'editor.lorebookEntryEditorTopSection.positionDownEm': return '↓ EM';
+			case 'editor.lorebookEntryEditorTopSection.positionOutlet': return 'Outlet';
+			case 'editor.lorebookEntryEditorTopSection.depthLabel': return 'Depth';
+			case 'editor.lorebookEntryEditorTopSection.orderLabel': return 'Order';
+			case 'editor.lorebookEntryEditorTopSection.triggerLabel': return 'Trigger %';
+			case 'editor.lorebookEntryEditorScanRow.scanDepthLabel': return 'Scan Depth';
+			case 'editor.lorebookEntryEditorScanRow.automationIdLabel': return 'Automation ID';
+			case 'editor.lorebookEntryEditorScanRow.useRegexFilter': return 'Use Regex';
+			case 'editor.lorebookEntryEditorScanRow.caseSensitiveFilter': return 'Case Sensitive';
+			case 'editor.lorebookEntryEditorScanRow.wholeWordsFilter': return 'Whole Words';
+			case 'editor.lorebookEntryEditorScanRow.groupScoringFilter': return 'Group Scoring';
+			case 'editor.dialogContentCleaner.confirmActionTitle': return ({required Object actionName}) => 'Confirm ${actionName}';
+			case 'editor.dialogContentCleaner.title': return 'Content Cleaner';
+			case 'editor.dialogContentCleaner.normalizeFancyCharsAction': return 'Normalize Fancy Chars';
+			case 'editor.dialogContentCleaner.normalizeFancyCharsButton': return 'Normalize Fancy Chars (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)';
+			case 'editor.dialogContentCleaner.purgeHtmlAction': return 'Purge HTML';
+			case 'editor.dialogContentCleaner.purgeHtmlButton': return 'Purge HTML Tags';
+			case 'editor.dialogContentCleaner.purgeMarkdownAction': return 'Purge Markdown Links/Images';
+			case 'editor.dialogContentCleaner.purgeEmojisAction': return 'Purge Emojis';
+			case 'editor.dialogContentCleaner.purgeExtraSpacesAction': return 'Purge Extra Spaces';
+			case 'editor.dialogContentCleaner.yoloPurgeAction': return 'Yolo Purge';
+			case 'editor.dialogContentCleaner.applyAllAboveButton': return 'Apply All Above';
+			case 'editor.dialogAiDiffConfirmation.applyChangesButton': return 'Apply Changes';
+			case 'editor.dialogAiDiffConfirmation.originalTextTitle': return 'Original Text';
+			case 'editor.dialogAiDiffConfirmation.suggestedTextTitle': return 'Suggested Text';
+			case 'editor.editorPageController.globalActionTitle': return ({required Object action}) => 'Global ${action}';
+			case 'editor.editorPageController.globalAiActionFailed': return 'Global AI action failed. Check logs.';
+			case 'editor.editorPageController.compositeName': return ({required Object value}) => 'Name:\n${value}\n';
+			case 'editor.editorPageController.compositeDescription': return ({required Object value}) => 'Description:\n${value}\n';
+			case 'editor.editorPageController.compositePersonality': return ({required Object value}) => 'Personality:\n${value}\n';
+			case 'editor.editorPageController.compositeScenario': return ({required Object value}) => 'Scenario:\n${value}\n';
+			case 'editor.editorPageController.compositeFirstMessage': return ({required Object value}) => 'First Message:\n${value}\n';
+			case 'editor.editorPageController.compositeMessageExample': return ({required Object value}) => 'Message Example:\n${value}\n';
+			case 'editor.editorPageController.compositeCreatorNotes': return ({required Object value}) => 'Creator Notes:\n${value}\n';
+			case 'editor.editorPageController.compositeSystemPrompt': return ({required Object value}) => 'System Prompt:\n${value}\n';
+			case 'editor.editorPageController.compositePostHistoryInstructions': return ({required Object value}) => 'Post-History Instructions:\n${value}\n';
+			case 'editor.editorPageController.compositeAlternateGreeting': return ({required Object index, required Object value}) => 'Alternate Greeting #${index}:\n${value}\n';
+			case 'editor.editorPageController.compositeGroupGreeting': return ({required Object index, required Object value}) => 'Group Greeting #${index}:\n${value}\n';
+			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
+			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
+			case 'editor.editorPageController.invalidPngMessage': return 'Selected image is not a valid PNG or could not be read.';
 			case 'grid.emptyState.noMatches': return 'No characters match your filters';
 			case 'grid.emptyState.noCharacters': return 'No characters imported yet';
 			case 'grid.emptyState.clearAllFilters': return 'Clear all filters';

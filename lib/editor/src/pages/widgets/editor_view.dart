@@ -13,6 +13,7 @@ import 'package:cardwave/editor/src/pages/widgets/editor_nodes.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_prompts.dart';
 import 'package:cardwave/editor/src/pages/widgets/editor_scrollable_panel.dart';
 import 'package:cardwave/editor/src/pages/widgets/panel_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -256,15 +257,15 @@ class _PanelNavigationTabs extends StatelessWidget {
         // TabBar only calls `onTap` with `index` in `[0, length)`.
         // ignore: qcheck/avoid_unsafe_collection_methods
         onTap: (index) => onSelectionChanged(_panels[index]),
-        tabs: const [
-          Tab(text: 'Basic'),
-          Tab(text: 'Greetings'),
-          Tab(text: 'Prompts'),
-          Tab(text: 'Lorebook'),
-          Tab(text: 'Group'),
-          Tab(text: 'Creator'),
-          Tab(text: 'App Data'),
-          Tab(text: 'Nodes'),
+        tabs: [
+          Tab(text: t.editor.panelLabels.basic),
+          Tab(text: t.editor.panelLabels.greetings),
+          Tab(text: t.editor.panelLabels.prompts),
+          Tab(text: t.editor.panelLabels.lorebook),
+          Tab(text: t.editor.panelLabels.group),
+          Tab(text: t.editor.panelLabels.creator),
+          Tab(text: t.editor.panelLabels.appData),
+          Tab(text: t.editor.panelLabels.nodes),
         ],
       ),
     );

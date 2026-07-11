@@ -1,6 +1,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/pages/widgets/dropdown_labeled.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 part 'lorebook_entry_editor_page_top_section.dart';
@@ -248,11 +249,11 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Lorebook Entry'),
+        title: Text(t.editor.lorebookEntryEditorPage.editEntryTitle),
         actionsPadding: const EdgeInsets.only(right: 16),
         actions: [
           FilterChip(
-            label: const Text('Advanced'),
+            label: Text(t.editor.lorebookEntryEditorPage.advancedFilter),
             selected: _isAdvancedMode,
             onSelected: (value) {
               setState(() {
@@ -358,16 +359,28 @@ class _EntryKeywordsSection extends StatelessWidget {
       children: [
         TextFieldCard.singleLine(
           controller: controller.keys,
-          label: 'Primary Keywords',
+          label: t.editor.lorebookEntryEditorPage.primaryKeywordsLabel,
         ),
         DropdownLabeled<int>(
-          label: 'Logic',
+          label: t.editor.lorebookEntryEditorPage.logicLabel,
           value: entry.selectiveLogic ?? 0,
-          items: const [
-            DropdownMenuItem(value: 0, child: Text('AND ANY')),
-            DropdownMenuItem(value: 3, child: Text('AND ALL')),
-            DropdownMenuItem(value: 2, child: Text('NOT ANY')),
-            DropdownMenuItem(value: 1, child: Text('NOT ALL')),
+          items: [
+            DropdownMenuItem(
+              value: 0,
+              child: Text(t.editor.lorebookEntryEditorPage.logicAndAny),
+            ),
+            DropdownMenuItem(
+              value: 3,
+              child: Text(t.editor.lorebookEntryEditorPage.logicAndAll),
+            ),
+            DropdownMenuItem(
+              value: 2,
+              child: Text(t.editor.lorebookEntryEditorPage.logicNotAny),
+            ),
+            DropdownMenuItem(
+              value: 1,
+              child: Text(t.editor.lorebookEntryEditorPage.logicNotAll),
+            ),
           ],
           onChanged: (value) {
             entry.selectiveLogic = value;
@@ -376,7 +389,7 @@ class _EntryKeywordsSection extends StatelessWidget {
         ),
         TextFieldCard.singleLine(
           controller: controller.secondaryKeys,
-          label: 'Optional Filter',
+          label: t.editor.lorebookEntryEditorPage.optionalFilterLabel,
         ),
       ],
     );
@@ -410,7 +423,7 @@ class _EntryContentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFieldCard.multiLine(
       controller: content,
-      label: 'Content',
+      label: t.editor.lorebookEntryEditorPage.contentLabel,
       showTokenCount: true,
       trailing: AiActionTextfieldPopup(
         currentText: currentText,
@@ -434,7 +447,7 @@ class _EntryRecursionRow extends StatelessWidget {
       runSpacing: 4,
       children: [
         FilterChip(
-          label: const Text('Non-recursable'),
+          label: Text(t.editor.lorebookEntryEditorPage.nonRecursableFilter),
           selected: entry.extensions.excludeRecursion ?? false,
           onSelected: (v) {
             entry.extensions.excludeRecursion = v;
@@ -443,7 +456,9 @@ class _EntryRecursionRow extends StatelessWidget {
           visualDensity: VisualDensity.compact,
         ),
         FilterChip(
-          label: const Text('Prevent Further Recursion'),
+          label: Text(
+            t.editor.lorebookEntryEditorPage.preventFurtherRecursionFilter,
+          ),
           selected: entry.extensions.preventRecursion ?? false,
           onSelected: (v) {
             entry.extensions.preventRecursion = v;
@@ -452,7 +467,9 @@ class _EntryRecursionRow extends StatelessWidget {
           visualDensity: VisualDensity.compact,
         ),
         FilterChip(
-          label: const Text('Delay Until Recursion'),
+          label: Text(
+            t.editor.lorebookEntryEditorPage.delayUntilRecursionFilter,
+          ),
           selected: (entry.extensions.delayUntilRecursion ?? 0) > 0,
           onSelected: (v) {
             entry.extensions.delayUntilRecursion = (v ? 1 : 0);
@@ -461,7 +478,7 @@ class _EntryRecursionRow extends StatelessWidget {
           visualDensity: VisualDensity.compact,
         ),
         FilterChip(
-          label: const Text('Ignore Budget'),
+          label: Text(t.editor.lorebookEntryEditorPage.ignoreBudgetFilter),
           selected: entry.extensions.ignoreBudget ?? false,
           onSelected: (v) {
             entry.extensions.ignoreBudget = v;
@@ -493,7 +510,7 @@ class _EntryInclusionGroupRow extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: FilterChip(
-            label: const Text('Prioritize'),
+            label: Text(t.editor.lorebookEntryEditorPage.prioritizeFilter),
             selected: entry.extensions.groupOverride ?? false,
             onSelected: (v) {
               entry.extensions.groupOverride = v;
@@ -510,14 +527,14 @@ class _EntryInclusionGroupRow extends StatelessWidget {
               width: 240,
               child: TextFieldCard.singleLine(
                 controller: controller.group,
-                label: 'Inclusion Group',
+                label: t.editor.lorebookEntryEditorPage.inclusionGroupLabel,
               ),
             ),
             SizedBox(
               width: 160,
               child: TextFieldCard.singleLine(
                 controller: controller.groupWeight,
-                label: 'Group Weight',
+                label: t.editor.lorebookEntryEditorPage.groupWeightLabel,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -542,7 +559,7 @@ class _EntryTimedEffectsRow extends StatelessWidget {
           width: 120,
           child: TextFieldCard.singleLine(
             controller: controller.sticky,
-            label: 'Sticky',
+            label: t.editor.lorebookEntryEditorPage.stickyLabel,
             keyboardType: TextInputType.number,
           ),
         ),
@@ -550,7 +567,7 @@ class _EntryTimedEffectsRow extends StatelessWidget {
           width: 120,
           child: TextFieldCard.singleLine(
             controller: controller.cooldown,
-            label: 'Cooldown',
+            label: t.editor.lorebookEntryEditorPage.cooldownLabel,
             keyboardType: TextInputType.number,
           ),
         ),
@@ -558,7 +575,7 @@ class _EntryTimedEffectsRow extends StatelessWidget {
           width: 120,
           child: TextFieldCard.singleLine(
             controller: controller.delay,
-            label: 'Delay',
+            label: t.editor.lorebookEntryEditorPage.delayLabel,
             keyboardType: TextInputType.number,
           ),
         ),
@@ -579,11 +596,11 @@ class _EntryFilterRow extends StatelessWidget {
       children: [
         TextFieldCard.singleLine(
           controller: controller.characterFilter,
-          label: 'Filter to Characters or Tags',
+          label: t.editor.lorebookEntryEditorPage.filterToCharactersLabel,
         ),
         TextFieldCard.singleLine(
           controller: controller.triggers,
-          label: 'Filter to Generation Triggers',
+          label: t.editor.lorebookEntryEditorPage.filterToTriggersLabel,
         ),
       ],
     );
@@ -601,16 +618,16 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,
       children: [
-        const Text(
-          'Additional Matching Sources:',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Text(
+          t.editor.lorebookEntryEditorPage.additionalMatchingSourcesLabel,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         Wrap(
           spacing: 8,
           runSpacing: 4,
           children: [
             FilterChip(
-              label: const Text('Persona'),
+              label: Text(t.editor.lorebookEntryEditorPage.personaFilter),
               selected: entry.extensions.matchPersonaDescription ?? false,
               onSelected: (v) {
                 entry.extensions.matchPersonaDescription = v;
@@ -619,7 +636,7 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Description'),
+              label: Text(t.editor.lorebookEntryEditorPage.descriptionFilter),
               selected: entry.extensions.matchCharacterDescription ?? false,
               onSelected: (v) {
                 entry.extensions.matchCharacterDescription = v;
@@ -628,7 +645,7 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Personality'),
+              label: Text(t.editor.lorebookEntryEditorPage.personalityFilter),
               selected: entry.extensions.matchCharacterPersonality ?? false,
               onSelected: (v) {
                 entry.extensions.matchCharacterPersonality = v;
@@ -637,7 +654,7 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Depth Prompt'),
+              label: Text(t.editor.lorebookEntryEditorPage.depthPromptFilter),
               selected: entry.extensions.matchCharacterDepthPrompt ?? false,
               onSelected: (v) {
                 entry.extensions.matchCharacterDepthPrompt = v;
@@ -646,7 +663,7 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Scenario'),
+              label: Text(t.editor.lorebookEntryEditorPage.scenarioFilter),
               selected: entry.extensions.matchScenario ?? false,
               onSelected: (v) {
                 entry.extensions.matchScenario = v;
@@ -655,7 +672,9 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
             FilterChip(
-              label: const Text('Creator Notes'),
+              label: Text(
+                t.editor.lorebookEntryEditorPage.creatorNotesFilter,
+              ),
               selected: entry.extensions.matchCreatorNotes ?? false,
               onSelected: (v) {
                 entry.extensions.matchCreatorNotes = v;
