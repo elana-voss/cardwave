@@ -77,7 +77,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 10 `lib/group/` → `group`
 - [x] 11 `lib/workspace/` → `workspace`
 - [x] 12 `lib/nodes/` → `nodes`
-- [ ] 13 `lib/memory/` + `lib/search/`
+- [x] 13 `lib/memory/` + `lib/search/`
 - [ ] 14 root files → `app`
 - [ ] 3.7 final leftover sweep done
 
