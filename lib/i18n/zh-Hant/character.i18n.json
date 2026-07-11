@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "風格關鍵字",
+    "imageTitle": "圖片風格",
+    "imageDescription": "會加在這個角色每次圖片生成提示詞的前面（例如「動漫風格、鮮豔色彩」）。",
+    "imageHint": "動漫風格、鮮豔色彩",
+    "videoTitle": "影片風格",
+    "videoDescription": "會加在這個角色每次影片生成提示詞的前面（例如「電影感、淺景深、24fps 底片顆粒」）。影片模型對動態與鏡頭詞彙反應較佳，請保持簡短。",
+    "videoHint": "電影感、淺景深"
+  },
+  "cardEditApproval": {
+    "denyAll": "全部拒絕",
+    "approveAll": "全部核准",
+    "confirm": "確認",
+    "dialogTitle": "助理提議的變更",
+    "dontAskAgainFor": "不再詢問$modality",
+    "modalityLabel": {
+      "edits": "編輯",
+      "additions": "新增",
+      "deletions": "刪除"
+    },
+    "modalityVerb": {
+      "edit": "編輯",
+      "addition": "新增至",
+      "deletion": "移除自"
+    },
+    "tapToDeny": "點一下拒絕",
+    "tapToApprove": "點一下核准",
+    "reasonLabel": "原因（選填，會傳回給助理）",
+    "newEntryTitle": "新條目",
+    "removingTitle": "正在移除",
+    "beforeTitle": "變更前",
+    "afterTitle": "變更後"
+  },
+  "requireApprovalTile": {
+    "edits": "需要核准：編輯",
+    "additions": "需要核准：新增",
+    "deletions": "需要核准：刪除"
+  },
+  "loadingStatus": {
+    "initial": "載入中…",
+    "copyingAssistant": "正在複製助理…",
+    "scanningForCharacters": "正在掃描角色…",
+    "scanningForCharactersProgress": "正在掃描角色…\n$current / $total",
+    "loadingCharactersProgress": "正在載入角色…\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "尚未設定庫資料夾。",
+    "mustBeInsideLibrary": "角色必須儲存在你的庫資料夾內。"
+  },
+  "characterFilesTypeGroupLabel": "角色檔案",
+  "createController": {
+    "pngImagesTypeGroupLabel": "PNG 圖片",
+    "invalidLocationTitle": "位置無效",
+    "creationFailedTitle": "建立失敗",
+    "creationFailedMessage": "無法建立角色。詳情請查看記錄。"
+  },
+  "importController": {
+    "failedToImport": "匯入 $fileName 失敗。",
+    "importedCount": "已匯入 $count 個角色"
+  },
+  "aiActionController": {
+    "aiActionFailed": "AI 動作失敗。詳情請查看記錄。",
+    "processingProgress": "正在處理 $name（$current/$total）…$eta",
+    "etaHoursMinutes": " 剩餘時間：${hours} 小時 ${minutes} 分",
+    "etaMinutesSeconds": " 剩餘時間：${minutes} 分 ${seconds} 秒",
+    "etaSeconds": " 剩餘時間：${seconds} 秒",
+    "processingField": "正在處理 $fieldName…"
+  }
+}

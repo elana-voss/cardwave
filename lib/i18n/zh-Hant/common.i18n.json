@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "刪除",
+    "ok": "確定",
+    "cancel": "取消",
+    "save": "儲存",
+    "tryAgain": "重試",
+    "close": "關閉"
+  },
+  "aiAction": {
+    "proofread": "校對",
+    "compact": "精簡文句",
+    "translate": "翻譯成英文",
+    "generatePreview": "生成預覽",
+    "autoTag": "自動標籤"
+  },
+  "aiActionsTooltip": "AI 動作",
+  "promptSegmentKind": {
+    "identity": "身分",
+    "systemPrompt": "系統提示詞",
+    "nsfwMode": "NSFW 模式",
+    "scenarioMode": "場景模式",
+    "description": "描述",
+    "personality": "個性",
+    "scenario": "場景",
+    "userPersona": "你的人設",
+    "memory": "記憶",
+    "situation": "情境",
+    "cardData": "卡片資料",
+    "tools": "工具",
+    "postHistory": "歷史後",
+    "depthPrompt": "深度提示詞",
+    "worldInfo": "世界資訊",
+    "injected": "已注入",
+    "exampleDialogue": "範例對白",
+    "history": "訊息歷史",
+    "currentMessage": "目前訊息",
+    "reservedReply": "保留回覆"
+  },
+  "promptBreakdown": {
+    "free": "剩餘"
+  },
+  "logs": {
+    "title": "記錄",
+    "filterTooltip": "篩選記錄",
+    "clearTooltip": "清除記錄",
+    "exportTooltip": "匯出記錄",
+    "searchHint": "搜尋記錄…",
+    "noLogsFound": "找不到記錄。",
+    "noLogsToExport": "沒有可匯出的記錄",
+    "exportedSuccessfully": "記錄匯出成功",
+    "exportFailed": "匯出記錄失敗。詳情請查看記錄。",
+    "copiedToClipboard": "已複製到剪貼簿",
+    "copyLogButton": "複製記錄",
+    "copiedEntryToClipboard": "已將記錄項目複製到剪貼簿",
+    "errorPrefix": "錯誤：$error"
+  },
+  "importErrorsDialog": {
+    "title": "匯入錯誤",
+    "message": "下列檔案無法匯入："
+  },
+  "updateDialog": {
+    "title": "有可用版本",
+    "body": "$appName 有更新版本可用。\n\n目前版本：$currentVersion\n最新版本：$latestVersion",
+    "releaseNotesLabel": "版本資訊：",
+    "viewReleasesButton": "查看版本"
+  },
+  "importConflictsDialog": {
+    "title": "匯入衝突",
+    "message": "下列 $count 個角色的檔名有衝突，將會自動重新命名："
+  },
+  "missingProviderBanner": {
+    "message": "請連線 AI 服務商。",
+    "setUpNowButton": "立即設定"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "搜尋模型",
+    "subscriptionOnlyToggle": "只顯示訂閱模型（$included/$total）"
+  },
+  "showAdvanced": {
+    "less": "收合",
+    "more": "更多"
+  },
+  "messageEditDialog": {
+    "title": "編輯訊息"
+  },
+  "promptBreakdownDialog": {
+    "title": "提示詞分析",
+    "breakdownTab": "分析",
+    "contentTab": "內容",
+    "promptTotalEstimated": "提示詞總計（估計）",
+    "promptTotalProvider": "提示詞總計（服務商）",
+    "contextWindowLabel": "上下文視窗",
+    "categoryHeader": "類別",
+    "tokensHeader": "TOKEN 數",
+    "usageHeader": "使用量",
+    "noContentToInspect": "這則回覆沒有可檢視的內容。",
+    "estimatedSuffix": " （估計）",
+    "usedSummary": "已使用 $used / $total"
+  },
+  "jsonPromptDialog": {
+    "title": "生成提示詞"
+  },
+  "progressDialog": {
+    "defaultMessage": "傳送中…",
+    "finished": "完成！"
+  },
+  "diffPanel": {
+    "tokenSuffix": " （$count 個 Token）"
+  },
+  "selectionDialog": {
+    "searchHint": "搜尋…"
+  },
+  "zdrSwitch": {
+    "title": "要求零資料保留（ZDR）",
+    "subtitle": "只顯示端點符合 ZDR 的 OR 模型。如果你的 openrouter.ai 帳號限定只用 ZDR 服務商，請啟用此項。"
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count 個 token",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "推理",
+    "vision": "視覺",
+    "tools": "工具",
+    "json": "JSON",
+    "files": "檔案",
+    "image": "圖片",
+    "video": "影片",
+    "speech": "語音",
+    "music": "音樂"
+  },
+  "modelUnavailableTooltip": "此模型的服務商已不再提供，請改選其他模型。",
+  "characterImageSemanticLabel": "角色圖片",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "匯出失敗。詳情請查看記錄。"
+  },
+  "timeAgo": {
+    "years": "${n} 年前",
+    "months": "${n} 個月前",
+    "days": "${n} 天前",
+    "hours": "${n} 小時前",
+    "minutes": "${n} 分鐘前",
+    "justNow": "剛剛"
+  }
+}

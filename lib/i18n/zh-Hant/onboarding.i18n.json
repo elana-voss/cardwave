@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "設定失敗。詳情請查看記錄。",
+  "appBarTitle": "快速設定",
+  "webWarning": "實驗性網頁版——瀏覽器儲存空間可能在更新之間重設。若需要持久保存資料，請使用桌面版或 Android。",
+  "finishButton": "完成設定",
+  "nextButton": "下一步",
+  "backButton": "上一步",
+  "storageStep": {
+    "title": "角色儲存空間",
+    "subtitle": "你的角色卡要儲存在哪裡？",
+    "description": "預設會儲存在 App 資料夾中。指向現有的 PNG 資料夾即可匯入。",
+    "startFresh": "從頭開始",
+    "haveCards": "我已經有卡片了",
+    "importLaterHint": "之後可透過「檔案 → 匯入」匯入 PNG。",
+    "selectedPath": "已選擇：$path",
+    "selectedDefaultFolder": "已選擇：預設 App 資料夾",
+    "noFolderSelected": "尚未選擇資料夾。"
+  },
+  "setupStep": {
+    "title": "AI 與人設"
+  },
+  "aiSection": {
+    "heading": "AI 連線",
+    "optionalHint": "選填——可先略過，之後在「設定」中新增金鑰（本機服務商也可在那裡新增）。",
+    "apiKeyLabel": "API 金鑰",
+    "apiKeyHint": "貼上你的金鑰（或先略過）",
+    "supportedProviders": "支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多請見「設定」。",
+    "unknownModel": "（未知模型）",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "變更"
+  },
+  "aiStatus": {
+    "connecting": "連線中…",
+    "connected": "已連線至 $provider。已選擇預設對話模型。",
+    "detected": "偵測到：$provider",
+    "unrecognizedKey": "無法辨識的金鑰格式。"
+  },
+  "personaSection": {
+    "heading": "你的人設",
+    "hint": "你在對話中的名字。更多人設細節請見「設定」。",
+    "nameLabel": "你的名字"
+  },
+  "disclaimer": {
+    "prefix": "我已閱讀並同意",
+    "linkText": "免責聲明"
+  },
+  "fetchError": {
+    "noModels": "沒有回傳任何模型。請檢查你的 API 金鑰。",
+    "connectionFailed": "無法連線。請檢查你的網際網路連線與 API 金鑰。"
+  }
+}

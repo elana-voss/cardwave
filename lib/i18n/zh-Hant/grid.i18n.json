@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "沒有符合篩選條件的角色",
+    "noCharacters": "尚未匯入任何角色",
+    "clearAllFilters": "清除所有篩選",
+    "importCharacters": "匯入角色",
+    "createNewCharacter": "建立新角色"
+  },
+  "appBar": {
+    "groups": "群組",
+    "createNew": "建立新的",
+    "import": "匯入",
+    "menuTooltip": "選單"
+  },
+  "fab": {
+    "addOrImportTooltip": "新增或匯入",
+    "import": "匯入",
+    "create": "建立"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "App",
+    "batchAiHeader": "批次 AI",
+    "batchGeneratePreviewsTitle": "批次生成預覽",
+    "batchGeneratePreviewsEmpty": "所有角色都已有預覽。",
+    "batchAutoTagTitle": "批次自動標籤",
+    "batchAutoTagEmpty": "所有角色都已有標籤。",
+    "libraryHeader": "庫",
+    "reloadCharacters": "重新載入角色"
+  },
+  "variantBadge": {
+    "tooltip": "$count 個變體"
+  },
+  "dialogActions": {
+    "clearAll": "全部清除",
+    "apply": "套用"
+  },
+  "tagFilterDialog": {
+    "title": "篩選標籤",
+    "searchHint": "搜尋標籤…"
+  },
+  "filters": {
+    "hideFiltersTooltip": "隱藏篩選",
+    "moreFiltersTooltip": "更多篩選",
+    "folderChip": "資料夾",
+    "creatorChip": "作者",
+    "tagChip": "標籤",
+    "recentTooltip": "最近",
+    "favoritesTooltip": "最愛",
+    "variantsTooltip": "變體",
+    "indexingProgress": "正在建立搜尋 $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "相關性 ↓",
+    "nameAsc": "名稱 ↓",
+    "nameDesc": "名稱 ↑",
+    "importNewest": "匯入時間 ↓",
+    "importOldest": "匯入時間 ↑",
+    "modifiedNewest": "修改時間 ↓",
+    "modifiedOldest": "修改時間 ↑",
+    "interactedNewest": "互動時間 ↓",
+    "interactedOldest": "互動時間 ↑",
+    "tokensHigh": "Token 數 ↓",
+    "tokensLow": "Token 數 ↑"
+  },
+  "filterController": {
+    "filterCreators": "篩選作者",
+    "filterTags": "篩選標籤",
+    "filterByFolder": "依資料夾篩選"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "目前沒有可顯示的內容。",
+    "noMatches": "沒有符合的項目。",
+    "showMore": "顯示更多"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "角色名稱不能是空的。",
+    "nameInvalidCharsError": "名稱含有無效字元 (<>:\"/\\|?*)。",
+    "nameExistsError": "已有同名的角色。",
+    "nameCheckFailedError": "無法驗證名稱。請檢查資料夾權限後再試一次。",
+    "title": "建立新角色",
+    "nameLabel": "角色名稱",
+    "createButton": "建立"
+  },
+  "variantsSheet": {
+    "title": "變體"
+  },
+  "groupAppBar": {
+    "characters": "角色",
+    "newGroup": "新群組"
+  },
+  "thumbnailBadges": {
+    "recent": "最近",
+    "original": "原始",
+    "variant": "變體"
+  },
+  "actionMenu": {
+    "editNotes": "編輯備註",
+    "dismissRecent": "移出最近",
+    "exportPngV2V3": "匯出為 PNG (V2/V3)",
+    "exportJsonV3": "匯出為 JSON (V3)",
+    "exportJsonV2": "匯出為 JSON (V2)",
+    "duplicate": "複製"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "無法複製角色。",
+    "editVariantNotesTitle": "編輯變體備註",
+    "editVariantNotesHint": "新增關於這個變體的備註…",
+    "deleteCardTitle": "刪除卡片",
+    "deleteCardMessage": "確定要刪除這張卡片嗎？",
+    "deletePartialFailure": "部分檔案無法刪除。詳情請查看記錄。"
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

@@ -90,7 +90,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] es-419 (kept es-419; Step 2 contingency not needed)
 - [x] ja
 - [x] zh-Hans
-- [ ] zh-Hant
+- [x] zh-Hant
 - [x] ko
 - [ ] hi
 - [ ] 4.5 self-review pass committed

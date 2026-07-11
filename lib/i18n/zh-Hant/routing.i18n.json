@@ -1,1 +1,11 @@
-{}
+{
+  "chatCharacter": {
+    "navigationError": "前往對話時發生導覽錯誤。角色：$name"
+  },
+  "editCharacter": {
+    "navigationError": "前往編輯時發生導覽錯誤。角色：$name"
+  },
+  "editPreset": {
+    "navigationError": "前往編輯預設時發生導覽錯誤：$presetId"
+  }
+}

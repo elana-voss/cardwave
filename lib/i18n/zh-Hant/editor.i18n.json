@@ -1,1 +1,259 @@
-{}
+{
+  "panelLabels": {
+    "basic": "基本",
+    "greetings": "開場白",
+    "prompts": "提示詞",
+    "lorebook": "世界書",
+    "group": "群組",
+    "creator": "作者",
+    "appData": "App 資料",
+    "nodes": "節點"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "隱藏助理面板",
+    "showChatAssistantTooltip": "並排顯示對話助理"
+  },
+  "codeFindPanel": {
+    "noneResult": "無",
+    "previousTooltip": "上一個",
+    "nextTooltip": "下一個",
+    "closeTooltip": "關閉",
+    "replaceTooltip": "取代",
+    "replaceAllTooltip": "全部取代"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "確認全部取代",
+    "confirmReplaceAllMessage": "確定要繼續嗎？\n此動作無法復原，且會影響所有欄位。",
+    "proceedButton": "繼續",
+    "title": "尋找與取代",
+    "findLabel": "尋找",
+    "replaceWithLabel": "取代為",
+    "replaceAllButton": "全部取代"
+  },
+  "objectValueEditor": {
+    "stringType": "字串",
+    "numberType": "數字",
+    "boolType": "布林"
+  },
+  "editorBasic": {
+    "nameLabel": "名稱",
+    "nicknameLabel": "暱稱 (CCv3)",
+    "descriptionLabel": "描述",
+    "personalityLabel": "個性",
+    "scenarioLabel": "場景",
+    "messageExampleLabel": "訊息範例"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "系統名稱 (CCv3)",
+    "creatorLabel": "作者",
+    "versionLabel": "版本",
+    "creatorNotesLabel": "作者備註",
+    "tagsLabel": "標籤（以逗號分隔）"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "系統提示詞",
+    "postHistoryInstructionsLabel": "歷史後指令",
+    "depthPromptLabel": "深度提示詞（角色備註）",
+    "insertionDepthLabel": "插入深度",
+    "roleLabel": "角色"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "變體備註",
+    "descriptionPreviewLabel": "描述預覽"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "刪除開場白",
+    "deleteGreetingMessage": "確定要刪除這則開場白嗎？",
+    "addGreetingButton": "新增開場白",
+    "primaryGreetingLabel": "主要開場白 (first_mes)",
+    "alternateGreetingLabel": "備用開場白 #$index",
+    "removeTooltip": "移除"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "開場白 $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "新條目",
+    "deleteEntryTitle": "刪除條目",
+    "deleteEntryMessage": "確定要刪除這個條目嗎？",
+    "addNewEntryButton": "新增條目",
+    "noEntriesFound": "找不到世界書條目。"
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "未命名條目",
+    "noKeywords": "沒有關鍵字"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "編輯世界書條目",
+    "advancedFilter": "進階",
+    "primaryKeywordsLabel": "主要關鍵字",
+    "logicLabel": "邏輯",
+    "logicAndAny": "AND 任一",
+    "logicAndAll": "AND 全部",
+    "logicNotAny": "NOT 任一",
+    "logicNotAll": "NOT 全部",
+    "optionalFilterLabel": "選用篩選",
+    "contentLabel": "內容",
+    "nonRecursableFilter": "不可遞迴",
+    "preventFurtherRecursionFilter": "防止進一步遞迴",
+    "delayUntilRecursionFilter": "延遲至遞迴",
+    "ignoreBudgetFilter": "忽略預算",
+    "prioritizeFilter": "優先",
+    "inclusionGroupLabel": "納入群組",
+    "groupWeightLabel": "群組權重",
+    "stickyLabel": "黏著",
+    "cooldownLabel": "冷卻",
+    "delayLabel": "延遲",
+    "filterToCharactersLabel": "篩選至角色或標籤",
+    "filterToTriggersLabel": "篩選至生成觸發",
+    "additionalMatchingSourcesLabel": "額外的比對來源：",
+    "personaFilter": "人設",
+    "descriptionFilter": "描述",
+    "personalityFilter": "個性",
+    "depthPromptFilter": "深度提示詞",
+    "scenarioFilter": "場景",
+    "creatorNotesFilter": "作者備註"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "標題／備忘",
+    "strategyLabel": "策略",
+    "strategyConstant": "常數",
+    "strategyEnabled": "啟用",
+    "strategyDisabled": "停用",
+    "strategyVectorized": "向量化",
+    "positionLabel": "位置",
+    "positionUpChar": "↑ Char",
+    "positionDownChar": "↓ Char",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D System",
+    "positionDepthUser": "@D User",
+    "positionDepthAssistant": "@D Assistant",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Outlet",
+    "depthLabel": "深度",
+    "orderLabel": "順序",
+    "triggerLabel": "觸發 %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "掃描深度",
+    "automationIdLabel": "自動化 ID",
+    "useRegexFilter": "使用 regex",
+    "caseSensitiveFilter": "區分大小寫",
+    "wholeWordsFilter": "完整字詞",
+    "groupScoringFilter": "群組計分"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "確認 $actionName",
+    "title": "內容清理器",
+    "normalizeFancyCharsAction": "正規化花俏字元",
+    "normalizeFancyCharsButton": "正規化花俏字元 (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "清除 HTML",
+    "purgeHtmlButton": "清除 HTML 標籤",
+    "purgeMarkdownAction": "清除 Markdown 連結／圖片",
+    "purgeEmojisAction": "清除表情符號",
+    "purgeExtraSpacesAction": "清除多餘空格",
+    "yoloPurgeAction": "Yolo 清除",
+    "applyAllAboveButton": "套用以上全部"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "套用變更",
+    "originalTextTitle": "原始文字",
+    "suggestedTextTitle": "建議文字"
+  },
+  "editorPageController": {
+    "globalActionTitle": "全域 $action",
+    "globalAiActionFailed": "全域 AI 動作失敗。請查看記錄。",
+    "compositeName": "名稱：\n$value\n",
+    "compositeDescription": "描述：\n$value\n",
+    "compositePersonality": "個性：\n$value\n",
+    "compositeScenario": "場景：\n$value\n",
+    "compositeFirstMessage": "第一則訊息：\n$value\n",
+    "compositeMessageExample": "訊息範例：\n$value\n",
+    "compositeCreatorNotes": "作者備註：\n$value\n",
+    "compositeSystemPrompt": "系統提示詞：\n$value\n",
+    "compositePostHistoryInstructions": "歷史後指令：\n$value\n",
+    "compositeAlternateGreeting": "備用開場白 #$index：\n$value\n",
+    "compositeGroupGreeting": "群組開場白 #$index：\n$value\n",
+    "compositeLorebookEntry": "世界書條目 #$index：\n$value\n",
+    "imageTooLargeMessage": "所選圖片太大。上限為 $maxSize。",
+    "invalidPngMessage": "所選圖片不是有效的 PNG，或無法讀取。"
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "刪除節點",
+    "deleteNodeMessage": "要從卡片中移除這個自訂節點嗎？",
+    "engineSeedTitle": "引擎種子",
+    "visualEditorTooltip": "視覺化編輯器",
+    "editJsonTooltip": "編輯 JSON",
+    "initialGoalLabel": "初始目標",
+    "initialSceneLabel": "初始場景",
+    "locationLabel": "地點",
+    "timeOfDayLabel": "時段",
+    "presentEntitiesLabel": "在場者（以逗號分隔）",
+    "sensoryHooksLabel": "感官提示（以逗號分隔）",
+    "addNodeButton": "新增節點",
+    "noAuthoredNodesYet": "尚無自訂節點。",
+    "loadErrorMessage(plural)": {
+      "other": "這張卡片的節點區塊有 $n 個問題；在此編輯時，儲存會覆寫損壞的部分。"
+    },
+    "moreErrorsSuffix": "… 還有 $n 個",
+    "emotionBaselineLabel": "情緒基準",
+    "emotionChipLabel": "情緒"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "衍生：$count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "最上層必須是 JSON 物件",
+    "editNodesJsonTitle": "編輯節點 JSON",
+    "fixProblemsMessage(plural)": {
+      "other": "修正 $n 個問題才能儲存。"
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "衍生來源",
+    "spawnsPort": "衍生",
+    "editNodeLabel": "編輯節點",
+    "addNodeTooltip": "新增節點"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "名稱",
+    "narrativePayloadLabel": "敘事內容",
+    "removeSpawnLinkTitle": "移除衍生連結",
+    "removeSpawnLinkMessage": "要讓這個節點不再衍生「$nodeId」嗎？節點本身仍會保留在卡片上。",
+    "removeButton": "移除",
+    "typeLabel": "類型",
+    "scopeLabel": "範圍",
+    "originLabel": "來源",
+    "triggerProbLabel": "觸發機率",
+    "delayHelper": "在符合條件前要等待的回合數。-1 等同於 0。",
+    "cooldownHelper": "觸發後鎖定的回合數。-1 表示無冷卻。",
+    "stickyHelper": "觸發後敘事內容以「殘留」形式持續出現的回合數。-1 表示永久。",
+    "aliveHelper": "節點在被移除前留在集區中的回合數。-1 表示永遠。",
+    "setToNeverButton": "設為永不",
+    "effectsSectionLabel": "效果",
+    "emotionDeltasTitle": "情緒變化量",
+    "physicalDeltasTitle": "生理變化量",
+    "relationshipDeltasTitle": "關係變化量",
+    "addDeltaChip": "新增變化量",
+    "knowledgeWritesTitle": "知識寫入",
+    "addFactChip": "新增事實",
+    "topicLabel": "主題",
+    "confidenceLabel": "信心度",
+    "flagSetTitle": "旗標設定",
+    "addFlagChip": "新增旗標",
+    "keyLabel": "鍵",
+    "sceneAndFlowTitle": "場景與流程",
+    "goalChangeLabel": "goalChange（留空時會清除目前的目標）",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "（無）",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "設為 true 時，引擎會將此次觸發標記為場景轉換。",
+    "spawnsSectionLabel": "衍生",
+    "addNewChip": "新增",
+    "linkExistingChip": "連結現有",
+    "unlinkTooltip": "解除連結",
+    "predicateLabel": "條件式"
+  }
+}

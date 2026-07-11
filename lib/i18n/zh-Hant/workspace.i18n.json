@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "圖片風格",
+    "noneValue": "無"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "影片風格"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "顯示",
+    "showCharacterImageTitle": "顯示角色圖片",
+    "wideScreenOnlySubtitle": "僅限寬螢幕編輯器"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "編輯"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "匯出",
+    "exportPngTitle": "匯出為 PNG (V2/V3)",
+    "exportJsonV3Title": "匯出為 JSON (V3)",
+    "exportJsonV2Title": "匯出為 JSON (V2)"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "重設圖片"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "助理卡片編輯"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "最愛",
+    "nodesEngineTitle": "NODES 引擎",
+    "debugSnapshotSubtitle": "除錯快照",
+    "characterSubtitle": "角色"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "未選擇任何風格"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "正在重建對話索引…",
+    "selectChatToStartMessagingMessage": "選擇一段對話開始傳訊",
+    "failedToLoadAssistantMessage": "載入助理失敗。"
+  }
+}

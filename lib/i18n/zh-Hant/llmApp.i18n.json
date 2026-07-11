@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "圖片模型",
+    "imageAspectRatio": "圖片長寬比",
+    "imageNsfwAllowed": "允許 NSFW 圖片",
+    "imageToolSelfieAllowed": "可傳自拍",
+    "imageToolSelfieCaptionsAllowed": "允許自拍字幕",
+    "imagePromptPrefix": "圖片風格",
+    "videoModel": "影片模型",
+    "videoResolution": "影片解析度",
+    "videoAspectRatio": "影片長寬比",
+    "videoDuration": "影片長度",
+    "videoNsfwAllowed": "允許 NSFW 影片",
+    "videoToolSendAllowed": "可傳影片",
+    "videoPromptPrefix": "影片風格",
+    "ttsModel": "TTS 模型",
+    "ttsVoice": "TTS 語音",
+    "ttsLanguage": "TTS 語言",
+    "webToolFetchAllowed": "允許網頁讀取",
+    "nameToolSuggestAllowed": "可建議 NPC 名稱"
+  },
+  "mediaSection": {
+    "image": "圖片",
+    "video": "影片",
+    "tts": "TTS",
+    "web": "網頁",
+    "names": "名稱"
+  },
+  "tristate": {
+    "on": "開啟",
+    "off": "關閉",
+    "inherit": "繼承"
+  },
+  "mediaCellMenu": {
+    "change": "變更…",
+    "clear": "清除"
+  },
+  "mediaHeader": {
+    "appDefault": "App 預設",
+    "character": "角色",
+    "currentChat": "目前對話",
+    "previousLayerTooltip": "上一層",
+    "nextLayerTooltip": "下一層"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "變更 App 預設？",
+    "changeAppDefaultMessage": "這會影響每一段對話。要繼續嗎？",
+    "continueButton": "繼續",
+    "chooseModelTitle": "選擇 $domain 模型"
+  },
+  "mediaCell": {
+    "notApplicable": "不適用"
+  }
+}
