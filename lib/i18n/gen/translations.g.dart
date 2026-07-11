@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 892 (99 per locale)
+/// Strings: 893 (99 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -177,6 +177,7 @@ class _TranslationsAppEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsAppAppBootstrapperEn appBootstrapper = _TranslationsAppAppBootstrapperEn._(_root);
 }
 
 // Path: character
@@ -480,6 +481,16 @@ class _TranslationsWorkspaceEn {
 	late final _TranslationsWorkspaceWorkspaceEndDrawerEn workspaceEndDrawer = _TranslationsWorkspaceWorkspaceEndDrawerEn._(_root);
 	late final _TranslationsWorkspaceStylePresetsDialogEn stylePresetsDialog = _TranslationsWorkspaceStylePresetsDialogEn._(_root);
 	late final _TranslationsWorkspaceWorkspacePageEn workspacePage = _TranslationsWorkspaceWorkspacePageEn._(_root);
+}
+
+// Path: app.appBootstrapper
+class _TranslationsAppAppBootstrapperEn {
+	_TranslationsAppAppBootstrapperEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String failedToInitializeMessage({required Object error}) => 'Failed to initialize app:\n\n${error}';
 }
 
 // Path: character.promptPrefixDialog
@@ -4295,6 +4306,7 @@ class _TranslationsWorkspaceZhHant extends _TranslationsWorkspaceEn {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
+			case 'app.appBootstrapper.failedToInitializeMessage': return ({required Object error}) => 'Failed to initialize app:\n\n${error}';
 			case 'character.promptPrefixDialog.styleKeywordsLabel': return 'Style keywords';
 			case 'character.promptPrefixDialog.imageTitle': return 'Image Style';
 			case 'character.promptPrefixDialog.imageDescription': return 'Prepended to every image generation prompt for this character (e.g. "anime style, vibrant colors").';

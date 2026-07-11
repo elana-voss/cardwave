@@ -653,7 +653,9 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                'Failed to initialize app:\n\n$_error',
+                t.app.appBootstrapper.failedToInitializeMessage(
+                  error: '$_error',
+                ),
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
                 textAlign: TextAlign.center,
               ),

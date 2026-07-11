@@ -78,7 +78,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 11 `lib/workspace/` → `workspace`
 - [x] 12 `lib/nodes/` → `nodes`
 - [x] 13 `lib/memory/` + `lib/search/`
-- [ ] 14 root files → `app`
+- [x] 14 root files → `app`
 - [ ] 3.7 final leftover sweep done
 
 ## Step 4 checklist (Opus) — one commit per language
