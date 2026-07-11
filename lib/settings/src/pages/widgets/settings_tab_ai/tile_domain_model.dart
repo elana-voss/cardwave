@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 
@@ -105,7 +106,9 @@ class TileDomainModel extends StatelessWidget {
                   if (temperature != null) ...[
                     const TextSpan(text: ' · '),
                     TextSpan(
-                      text: 'Temp ${temperature.toStringAsFixed(1)}',
+                      text: t.settings.aiTab.temperatureLabel(
+                        value: temperature.toStringAsFixed(1),
+                      ),
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w600,

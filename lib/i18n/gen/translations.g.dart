@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 212 (23 per locale)
+/// Strings: 369 (41 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -353,6 +353,19 @@ class _TranslationsSettingsEn {
 	// Translations
 	String get gearLanguage => 'Language';
 	String get languageSystemDefault => 'System default';
+	late final _TranslationsSettingsGearMenuEn gearMenu = _TranslationsSettingsGearMenuEn._(_root);
+	late final _TranslationsSettingsMediaDefaultsDrawerEntryEn mediaDefaultsDrawerEntry = _TranslationsSettingsMediaDefaultsDrawerEntryEn._(_root);
+	late final _TranslationsSettingsEndDrawerEn endDrawer = _TranslationsSettingsEndDrawerEn._(_root);
+	late final _TranslationsSettingsGeneralEn general = _TranslationsSettingsGeneralEn._(_root);
+	late final _TranslationsSettingsAiSettingsTabEn aiSettingsTab = _TranslationsSettingsAiSettingsTabEn._(_root);
+	late final _TranslationsSettingsAiTabEn aiTab = _TranslationsSettingsAiTabEn._(_root);
+	late final _TranslationsSettingsPresetConfigEn presetConfig = _TranslationsSettingsPresetConfigEn._(_root);
+	late final _TranslationsSettingsProviderConfigEn providerConfig = _TranslationsSettingsProviderConfigEn._(_root);
+	late final _TranslationsSettingsLocalProviderConfigEn localProviderConfig = _TranslationsSettingsLocalProviderConfigEn._(_root);
+	late final _TranslationsSettingsLocalGgufEn localGguf = _TranslationsSettingsLocalGgufEn._(_root);
+	late final _TranslationsSettingsPersonaDialogEn personaDialog = _TranslationsSettingsPersonaDialogEn._(_root);
+	late final _TranslationsSettingsPersonasTabEn personasTab = _TranslationsSettingsPersonasTabEn._(_root);
+	late final _TranslationsSettingsUpdateCheckEn updateCheck = _TranslationsSettingsUpdateCheckEn._(_root);
 }
 
 // Path: workspace
@@ -995,6 +1008,282 @@ class _TranslationsRoutingEditPresetEn {
 
 	// Translations
 	String navigationError({required Object presetId}) => 'Navigation error to edit preset: ${presetId}';
+}
+
+// Path: settings.gearMenu
+class _TranslationsSettingsGearMenuEn {
+	_TranslationsSettingsGearMenuEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get settingsTooltip => 'Settings';
+	String get mediaDefaultsApp => 'App';
+	String get mediaDefaultsCharacter => 'Character';
+	String get mediaDefaultsChat => 'Chat';
+	String get appSettings => 'App Settings';
+	String get logs => 'Logs';
+}
+
+// Path: settings.mediaDefaultsDrawerEntry
+class _TranslationsSettingsMediaDefaultsDrawerEntryEn {
+	_TranslationsSettingsMediaDefaultsDrawerEntryEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get configurationHeader => 'Configuration';
+}
+
+// Path: settings.endDrawer
+class _TranslationsSettingsEndDrawerEn {
+	_TranslationsSettingsEndDrawerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get switchPersonaTooltip => 'Switch persona';
+}
+
+// Path: settings.general
+class _TranslationsSettingsGeneralEn {
+	_TranslationsSettingsGeneralEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get characterFolderTitle => 'Character Folder';
+	String get characterFolderNotSet => 'Not set. Required for the app to function.';
+	String get browseButton => 'Browse...';
+	String get taxonomyTagsTitle => 'Taxonomy Tags';
+	String get appThemeTitle => 'App Theme';
+	String get themeSystem => 'System';
+	String get themeLight => 'Light';
+	String get themeDark => 'Dark';
+	String get themeStyleTitle => 'Theme Style';
+	String get themeStyleDefault => 'Default';
+	String get themeStyleNeon => 'Neon';
+	String get storyMemoryTitle => 'Story Memory';
+	String get storyMemorySubtitle => 'Remember earlier moments and bring the relevant ones back into long chats.';
+	String get narrativeEngineTitle => 'Narrative Engine';
+	String get narrativeEngineSubtitle => 'Track the scene and characters and move the story along as you chat.';
+	String get promptBreakdownTitle => 'Show Prompt Breakdown';
+	String get promptBreakdownSubtitle => 'Show a bar under each reply breaking down how the prompt filled the model context window.';
+	String get checkUpdatesTitle => 'Check for Updates';
+	String get checkUpdatesSubtitle => 'Check if a newer version of the app is available.';
+	String get websiteTitle => 'Website';
+	String get websiteSubtitle => 'Visit the official website for updates and information.';
+	String get disclaimerTitle => 'Disclaimer & Terms';
+	String get disclaimerSubtitle => 'Read the application disclaimer and terms of use.';
+	String versionLabel({required Object version, required Object buildNumber}) => 'Version ${version}+${buildNumber}';
+}
+
+// Path: settings.aiSettingsTab
+class _TranslationsSettingsAiSettingsTabEn {
+	_TranslationsSettingsAiSettingsTabEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get aiProviders => 'AI Providers';
+	String get mediaDefaults => 'Media Defaults';
+}
+
+// Path: settings.aiTab
+class _TranslationsSettingsAiTabEn {
+	_TranslationsSettingsAiTabEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
+	String get newProviderButton => 'New Provider';
+	String get cloudProviderMenuItem => 'Cloud Provider';
+	String get localProviderMenuItem => 'Local Provider';
+	String get localGgufMenuItem => 'Local GGUF';
+	String get noProvidersConfigured => 'No API providers configured.';
+	String get addingProviderOverlay => 'Adding provider…';
+	String get neverRefreshed => 'Never refreshed';
+	String lastRefreshedLabel({required Object time}) => 'Last refreshed: ${time}';
+	String get refreshModelsButton => 'Refresh models';
+	String get refreshNowMenuItem => 'Refresh now';
+	String get autoNeverMenuItem => 'Auto: Never';
+	String get autoDailyMenuItem => 'Auto: Daily on startup';
+	String get defaultModelsHeader => 'Default Models for New Chats';
+	String get editModelTooltip => 'Edit Model';
+	String get noModelsPlaceholder => 'No Models';
+	String get noCompatibleModelsPlaceholder => 'No compatible models';
+	String get tapToChoosePlaceholder => 'Tap to choose';
+	String get modelUsedForPrefix => 'Model used for ';
+	String get modelUsedForSuffix => ' generation';
+	String get chooseModelTitle => 'Choose a Model';
+	String temperatureLabel({required Object value}) => 'Temp ${value}';
+	String get setDefaultButton => 'Set default';
+	String get addModelButton => 'Add Model';
+	String get editProviderMenuItem => 'Edit provider';
+	String get moreTooltip => 'More';
+	String get noModelsForProvider => 'No Models configured for this provider.';
+	String setDefaultConfirmTitle({required Object provider}) => 'Set ${provider} as the default for every AI feature?';
+	String get setDefaultConfirmMessage => 'You may pick models for unsupported features\n(like image or video) from other providers yourself.';
+	String localGgufSubtitle({required Object loaded, required Object native, required Object kv}) => '${loaded} ctx (max ${native}) · KV ${kv}';
+	String get testTtsTooltip => 'Test TTS';
+	String get ttsTestPhrase => 'Hello, this is a test.';
+	String get ttsFailedError => 'TTS failed.';
+	String get testVideoTooltip => 'Test video generation';
+	String get videoGeneratedWebFallback => 'Video generated successfully (preview unavailable on web).';
+	String get videoFailedError => 'Video failed.';
+	String get videoLoadFailedMessage => 'Could not load generated video.';
+	String get presetPickerSearchHint => 'Search by provider, model, or preset…';
+	String tempParamAbbrev({required Object value}) => 'temp ${value}';
+	String reasoningParamLabel({required Object level}) => 'reasoning ${level}';
+}
+
+// Path: settings.presetConfig
+class _TranslationsSettingsPresetConfigEn {
+	_TranslationsSettingsPresetConfigEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get testMessageButton => 'Test Message';
+	String get testSuccessLabel => 'Success';
+	String get testFailedLabel => 'Failed';
+	String get deleteModelTitle => 'Delete Model?';
+	String deleteModelMessage({required Object name}) => 'Permanently delete "${name}"? This cannot be undone.';
+	String get editModelHeader => 'Edit Model';
+	String get addModelHeader => 'Add Model';
+	String get resetToDefaultsTooltip => 'Reset to Defaults';
+	String get modelNameLabel => 'Model name';
+	String get clearTooltip => 'Clear';
+	String get nameRequiredError => 'Name is required';
+	String get modelLabel => 'Model';
+	String get selectModelHint => 'Select a model';
+	String get modelRequiredError => 'Model is required';
+	String filteredDomainsNote({required Object domains}) => 'Models are filtered to support the active domains: ${domains}';
+	String get requiredValidator => 'Required';
+	String get invalidValidator => 'Invalid';
+	String get testResponseTitle => 'Response';
+}
+
+// Path: settings.providerConfig
+class _TranslationsSettingsProviderConfigEn {
+	_TranslationsSettingsProviderConfigEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noModelsError => 'No models returned. Check your API key.';
+	String get connectionFailedError => 'Could not connect. Check your internet connection and API key.';
+	String get deleteProviderTitle => 'Delete provider?';
+	String deleteProviderMessage({required Object provider}) => 'Permanently delete the ${provider} provider and all its presets? This cannot be undone.';
+	String lockHint({required Object roles}) => 'Cannot delete: in use by ${roles}.';
+	String get editProviderHeader => 'Edit Provider';
+	String get addProviderHeader => 'Add Provider';
+	String get apiKeyLabel => 'API Key';
+	String get apiKeyHintRotate => 'Paste a new key to rotate';
+	String get apiKeyHintNew => 'Paste your key — provider is auto-detected';
+	String get supportedProvidersNote => 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.';
+	String keyMismatchError({required Object owner, required Object profile}) => 'This key belongs to ${owner}, but this profile is ${profile}. Delete this profile and add a new one instead.';
+	String get anotherProviderFallback => 'another provider';
+	String get connectingStatus => 'Connecting…';
+	String connectedStatus({required Object provider}) => 'Connected to ${provider}. Default presets will be created.';
+	String detectedStatus({required Object provider}) => 'Detected: ${provider}';
+	String get unrecognizedKeyStatus => 'Unrecognized key format.';
+}
+
+// Path: settings.localProviderConfig
+class _TranslationsSettingsLocalProviderConfigEn {
+	_TranslationsSettingsLocalProviderConfigEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String serverUnreachableMessage({required Object url}) => 'Could not reach ${url}. Make sure your local server (KoboldCpp / Ollama / LM Studio / llama.cpp) is running.';
+	String get noModelsError => 'Server reachable but returned no models. Load a model in your local server first.';
+	String get deleteProviderMessage => 'Permanently delete this Local provider and all its presets? This cannot be undone.';
+	String get editHeader => 'Edit Local Provider';
+	String get addHeader => 'Add Local Provider';
+	String get serverUrlLabel => 'Server URL';
+	String get serverUrlLockedHelper => 'Locked. Delete this provider and add a new one to point at a different server.';
+	String get apiKeyOptionalLabel => 'API Key (optional)';
+	String get apiKeyOptionalHint => 'Leave blank — most local servers don\'t need one';
+	String get connectFetchButton => 'Connect & Fetch Models';
+	String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'Connected. Found ${n} model.',
+		other: 'Connected. Found ${n} models.',
+	);
+}
+
+// Path: settings.localGguf
+class _TranslationsSettingsLocalGgufEn {
+	_TranslationsSettingsLocalGgufEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get haveLocalGgufExpanderTitle => 'I have a local GGUF file';
+	String get pickFileLabel => 'Pick GGUF file...';
+	String get loadModelLabel => 'Load model';
+	String get nativeContextLabel => 'Native context';
+	String get freeVramLabel => 'Free VRAM';
+	String get contextSizeLabel => 'Context size';
+	String get kvCacheLabel => 'KV cache';
+	String get kvCacheAutoLabel => 'Auto';
+	String modelTooLargeForVramMessage({required Object neededMb, required Object freeMb}) => 'This model needs about ${neededMb}MB of GPU memory but only ${freeMb}MB is free. Close other GPU apps or pick a smaller / more-quantized model.';
+	String modelBarelyFitsMessage({required Object minimumContext}) => 'This model barely fits even with q4_0 KV cache at ${minimumContext} tokens. Consider a more-aggressively-quantized model file.';
+	String get readingMetadata => 'Reading model metadata…';
+	String get architectureLabel => 'Architecture';
+	String autoKvHint({required Object picked, required Object max}) => 'auto: ${picked} (max ${max})';
+	String maxKvHint({required Object max, required Object picked}) => 'max ${max} at ${picked} KV';
+	String ctxExceedsMaxError({required Object max, required Object picked}) => 'over ${max} at ${picked} KV — load may OOM';
+	String get vramNotDetected => 'not detected';
+	String readMetadataFailedError({required Object error}) => 'Failed to read GGUF metadata: ${error}';
+	String loadModelFailedError({required Object error}) => 'Failed to load the model: ${error}';
+}
+
+// Path: settings.personaDialog
+class _TranslationsSettingsPersonaDialogEn {
+	_TranslationsSettingsPersonaDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get newTitle => 'New Persona';
+	String get editTitle => 'Edit Persona';
+	String get nameLabel => 'Name';
+	String get nameRequiredError => 'Name is required';
+	String get descriptionLabel => 'Description';
+	String get descriptionHint => 'Appearance, personality, background, etc.';
+}
+
+// Path: settings.personasTab
+class _TranslationsSettingsPersonasTabEn {
+	_TranslationsSettingsPersonasTabEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get cannotDeleteDefaultTooltip => 'Cannot delete default persona';
+	String get deleteTooltip => 'Delete Persona';
+	String get cannotDeleteDefaultSnackbar => 'Cannot delete the default persona.';
+	String get deleteConfirmTitle => 'Delete Persona';
+	String deleteConfirmMessage({required Object name}) => 'Are you sure you want to delete "${name}"?';
+}
+
+// Path: settings.updateCheck
+class _TranslationsSettingsUpdateCheckEn {
+	_TranslationsSettingsUpdateCheckEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get upToDateTitle => 'Up to Date';
+	String upToDateMessage({required Object version}) => 'You are on the current version (${version}).';
+	String get notApplicableTitle => 'Update Check';
+	String get notApplicableMessage => 'Version check is not applicable on the Web.';
+	String get errorTitle => 'Error';
+	String get serverErrorMessage => 'Could not check for updates. Server error.';
+	String get connectionErrorMessage => 'Could not check for updates. Check your connection.';
 }
 
 // Path: <root>
@@ -2639,6 +2928,165 @@ extension on Translations {
 			case 'routing.editPreset.navigationError': return ({required Object presetId}) => 'Navigation error to edit preset: ${presetId}';
 			case 'settings.gearLanguage': return 'Language';
 			case 'settings.languageSystemDefault': return 'System default';
+			case 'settings.gearMenu.settingsTooltip': return 'Settings';
+			case 'settings.gearMenu.mediaDefaultsApp': return 'App';
+			case 'settings.gearMenu.mediaDefaultsCharacter': return 'Character';
+			case 'settings.gearMenu.mediaDefaultsChat': return 'Chat';
+			case 'settings.gearMenu.appSettings': return 'App Settings';
+			case 'settings.gearMenu.logs': return 'Logs';
+			case 'settings.mediaDefaultsDrawerEntry.configurationHeader': return 'Configuration';
+			case 'settings.endDrawer.switchPersonaTooltip': return 'Switch persona';
+			case 'settings.general.characterFolderTitle': return 'Character Folder';
+			case 'settings.general.characterFolderNotSet': return 'Not set. Required for the app to function.';
+			case 'settings.general.browseButton': return 'Browse...';
+			case 'settings.general.taxonomyTagsTitle': return 'Taxonomy Tags';
+			case 'settings.general.appThemeTitle': return 'App Theme';
+			case 'settings.general.themeSystem': return 'System';
+			case 'settings.general.themeLight': return 'Light';
+			case 'settings.general.themeDark': return 'Dark';
+			case 'settings.general.themeStyleTitle': return 'Theme Style';
+			case 'settings.general.themeStyleDefault': return 'Default';
+			case 'settings.general.themeStyleNeon': return 'Neon';
+			case 'settings.general.storyMemoryTitle': return 'Story Memory';
+			case 'settings.general.storyMemorySubtitle': return 'Remember earlier moments and bring the relevant ones back into long chats.';
+			case 'settings.general.narrativeEngineTitle': return 'Narrative Engine';
+			case 'settings.general.narrativeEngineSubtitle': return 'Track the scene and characters and move the story along as you chat.';
+			case 'settings.general.promptBreakdownTitle': return 'Show Prompt Breakdown';
+			case 'settings.general.promptBreakdownSubtitle': return 'Show a bar under each reply breaking down how the prompt filled the model context window.';
+			case 'settings.general.checkUpdatesTitle': return 'Check for Updates';
+			case 'settings.general.checkUpdatesSubtitle': return 'Check if a newer version of the app is available.';
+			case 'settings.general.websiteTitle': return 'Website';
+			case 'settings.general.websiteSubtitle': return 'Visit the official website for updates and information.';
+			case 'settings.general.disclaimerTitle': return 'Disclaimer & Terms';
+			case 'settings.general.disclaimerSubtitle': return 'Read the application disclaimer and terms of use.';
+			case 'settings.general.versionLabel': return ({required Object version, required Object buildNumber}) => 'Version ${version}+${buildNumber}';
+			case 'settings.aiSettingsTab.aiProviders': return 'AI Providers';
+			case 'settings.aiSettingsTab.mediaDefaults': return 'Media Defaults';
+			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
+			case 'settings.aiTab.newProviderButton': return 'New Provider';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Cloud Provider';
+			case 'settings.aiTab.localProviderMenuItem': return 'Local Provider';
+			case 'settings.aiTab.localGgufMenuItem': return 'Local GGUF';
+			case 'settings.aiTab.noProvidersConfigured': return 'No API providers configured.';
+			case 'settings.aiTab.addingProviderOverlay': return 'Adding provider…';
+			case 'settings.aiTab.neverRefreshed': return 'Never refreshed';
+			case 'settings.aiTab.lastRefreshedLabel': return ({required Object time}) => 'Last refreshed: ${time}';
+			case 'settings.aiTab.refreshModelsButton': return 'Refresh models';
+			case 'settings.aiTab.refreshNowMenuItem': return 'Refresh now';
+			case 'settings.aiTab.autoNeverMenuItem': return 'Auto: Never';
+			case 'settings.aiTab.autoDailyMenuItem': return 'Auto: Daily on startup';
+			case 'settings.aiTab.defaultModelsHeader': return 'Default Models for New Chats';
+			case 'settings.aiTab.editModelTooltip': return 'Edit Model';
+			case 'settings.aiTab.noModelsPlaceholder': return 'No Models';
+			case 'settings.aiTab.noCompatibleModelsPlaceholder': return 'No compatible models';
+			case 'settings.aiTab.tapToChoosePlaceholder': return 'Tap to choose';
+			case 'settings.aiTab.modelUsedForPrefix': return 'Model used for ';
+			case 'settings.aiTab.modelUsedForSuffix': return ' generation';
+			case 'settings.aiTab.chooseModelTitle': return 'Choose a Model';
+			case 'settings.aiTab.temperatureLabel': return ({required Object value}) => 'Temp ${value}';
+			case 'settings.aiTab.setDefaultButton': return 'Set default';
+			case 'settings.aiTab.addModelButton': return 'Add Model';
+			case 'settings.aiTab.editProviderMenuItem': return 'Edit provider';
+			case 'settings.aiTab.moreTooltip': return 'More';
+			case 'settings.aiTab.noModelsForProvider': return 'No Models configured for this provider.';
+			case 'settings.aiTab.setDefaultConfirmTitle': return ({required Object provider}) => 'Set ${provider} as the default for every AI feature?';
+			case 'settings.aiTab.setDefaultConfirmMessage': return 'You may pick models for unsupported features\n(like image or video) from other providers yourself.';
+			case 'settings.aiTab.localGgufSubtitle': return ({required Object loaded, required Object native, required Object kv}) => '${loaded} ctx (max ${native}) · KV ${kv}';
+			case 'settings.aiTab.testTtsTooltip': return 'Test TTS';
+			case 'settings.aiTab.ttsTestPhrase': return 'Hello, this is a test.';
+			case 'settings.aiTab.ttsFailedError': return 'TTS failed.';
+			case 'settings.aiTab.testVideoTooltip': return 'Test video generation';
+			case 'settings.aiTab.videoGeneratedWebFallback': return 'Video generated successfully (preview unavailable on web).';
+			case 'settings.aiTab.videoFailedError': return 'Video failed.';
+			case 'settings.aiTab.videoLoadFailedMessage': return 'Could not load generated video.';
+			case 'settings.aiTab.presetPickerSearchHint': return 'Search by provider, model, or preset…';
+			case 'settings.aiTab.tempParamAbbrev': return ({required Object value}) => 'temp ${value}';
+			case 'settings.aiTab.reasoningParamLabel': return ({required Object level}) => 'reasoning ${level}';
+			case 'settings.presetConfig.testMessageButton': return 'Test Message';
+			case 'settings.presetConfig.testSuccessLabel': return 'Success';
+			case 'settings.presetConfig.testFailedLabel': return 'Failed';
+			case 'settings.presetConfig.deleteModelTitle': return 'Delete Model?';
+			case 'settings.presetConfig.deleteModelMessage': return ({required Object name}) => 'Permanently delete "${name}"? This cannot be undone.';
+			case 'settings.presetConfig.editModelHeader': return 'Edit Model';
+			case 'settings.presetConfig.addModelHeader': return 'Add Model';
+			case 'settings.presetConfig.resetToDefaultsTooltip': return 'Reset to Defaults';
+			case 'settings.presetConfig.modelNameLabel': return 'Model name';
+			case 'settings.presetConfig.clearTooltip': return 'Clear';
+			case 'settings.presetConfig.nameRequiredError': return 'Name is required';
+			case 'settings.presetConfig.modelLabel': return 'Model';
+			case 'settings.presetConfig.selectModelHint': return 'Select a model';
+			case 'settings.presetConfig.modelRequiredError': return 'Model is required';
+			case 'settings.presetConfig.filteredDomainsNote': return ({required Object domains}) => 'Models are filtered to support the active domains: ${domains}';
+			case 'settings.presetConfig.requiredValidator': return 'Required';
+			case 'settings.presetConfig.invalidValidator': return 'Invalid';
+			case 'settings.presetConfig.testResponseTitle': return 'Response';
+			case 'settings.providerConfig.noModelsError': return 'No models returned. Check your API key.';
+			case 'settings.providerConfig.connectionFailedError': return 'Could not connect. Check your internet connection and API key.';
+			case 'settings.providerConfig.deleteProviderTitle': return 'Delete provider?';
+			case 'settings.providerConfig.deleteProviderMessage': return ({required Object provider}) => 'Permanently delete the ${provider} provider and all its presets? This cannot be undone.';
+			case 'settings.providerConfig.lockHint': return ({required Object roles}) => 'Cannot delete: in use by ${roles}.';
+			case 'settings.providerConfig.editProviderHeader': return 'Edit Provider';
+			case 'settings.providerConfig.addProviderHeader': return 'Add Provider';
+			case 'settings.providerConfig.apiKeyLabel': return 'API Key';
+			case 'settings.providerConfig.apiKeyHintRotate': return 'Paste a new key to rotate';
+			case 'settings.providerConfig.apiKeyHintNew': return 'Paste your key — provider is auto-detected';
+			case 'settings.providerConfig.supportedProvidersNote': return 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.';
+			case 'settings.providerConfig.keyMismatchError': return ({required Object owner, required Object profile}) => 'This key belongs to ${owner}, but this profile is ${profile}. Delete this profile and add a new one instead.';
+			case 'settings.providerConfig.anotherProviderFallback': return 'another provider';
+			case 'settings.providerConfig.connectingStatus': return 'Connecting…';
+			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Connected to ${provider}. Default presets will be created.';
+			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Detected: ${provider}';
+			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Unrecognized key format.';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Could not reach ${url}. Make sure your local server (KoboldCpp / Ollama / LM Studio / llama.cpp) is running.';
+			case 'settings.localProviderConfig.noModelsError': return 'Server reachable but returned no models. Load a model in your local server first.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Permanently delete this Local provider and all its presets? This cannot be undone.';
+			case 'settings.localProviderConfig.editHeader': return 'Edit Local Provider';
+			case 'settings.localProviderConfig.addHeader': return 'Add Local Provider';
+			case 'settings.localProviderConfig.serverUrlLabel': return 'Server URL';
+			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Locked. Delete this provider and add a new one to point at a different server.';
+			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API Key (optional)';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Leave blank — most local servers don\'t need one';
+			case 'settings.localProviderConfig.connectFetchButton': return 'Connect & Fetch Models';
+			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'Connected. Found ${n} model.',
+				other: 'Connected. Found ${n} models.',
+			);
+			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'I have a local GGUF file';
+			case 'settings.localGguf.pickFileLabel': return 'Pick GGUF file...';
+			case 'settings.localGguf.loadModelLabel': return 'Load model';
+			case 'settings.localGguf.nativeContextLabel': return 'Native context';
+			case 'settings.localGguf.freeVramLabel': return 'Free VRAM';
+			case 'settings.localGguf.contextSizeLabel': return 'Context size';
+			case 'settings.localGguf.kvCacheLabel': return 'KV cache';
+			case 'settings.localGguf.kvCacheAutoLabel': return 'Auto';
+			case 'settings.localGguf.modelTooLargeForVramMessage': return ({required Object neededMb, required Object freeMb}) => 'This model needs about ${neededMb}MB of GPU memory but only ${freeMb}MB is free. Close other GPU apps or pick a smaller / more-quantized model.';
+			case 'settings.localGguf.modelBarelyFitsMessage': return ({required Object minimumContext}) => 'This model barely fits even with q4_0 KV cache at ${minimumContext} tokens. Consider a more-aggressively-quantized model file.';
+			case 'settings.localGguf.readingMetadata': return 'Reading model metadata…';
+			case 'settings.localGguf.architectureLabel': return 'Architecture';
+			case 'settings.localGguf.autoKvHint': return ({required Object picked, required Object max}) => 'auto: ${picked} (max ${max})';
+			case 'settings.localGguf.maxKvHint': return ({required Object max, required Object picked}) => 'max ${max} at ${picked} KV';
+			case 'settings.localGguf.ctxExceedsMaxError': return ({required Object max, required Object picked}) => 'over ${max} at ${picked} KV — load may OOM';
+			case 'settings.localGguf.vramNotDetected': return 'not detected';
+			case 'settings.localGguf.readMetadataFailedError': return ({required Object error}) => 'Failed to read GGUF metadata: ${error}';
+			case 'settings.localGguf.loadModelFailedError': return ({required Object error}) => 'Failed to load the model: ${error}';
+			case 'settings.personaDialog.newTitle': return 'New Persona';
+			case 'settings.personaDialog.editTitle': return 'Edit Persona';
+			case 'settings.personaDialog.nameLabel': return 'Name';
+			case 'settings.personaDialog.nameRequiredError': return 'Name is required';
+			case 'settings.personaDialog.descriptionLabel': return 'Description';
+			case 'settings.personaDialog.descriptionHint': return 'Appearance, personality, background, etc.';
+			case 'settings.personasTab.cannotDeleteDefaultTooltip': return 'Cannot delete default persona';
+			case 'settings.personasTab.deleteTooltip': return 'Delete Persona';
+			case 'settings.personasTab.cannotDeleteDefaultSnackbar': return 'Cannot delete the default persona.';
+			case 'settings.personasTab.deleteConfirmTitle': return 'Delete Persona';
+			case 'settings.personasTab.deleteConfirmMessage': return ({required Object name}) => 'Are you sure you want to delete "${name}"?';
+			case 'settings.updateCheck.upToDateTitle': return 'Up to Date';
+			case 'settings.updateCheck.upToDateMessage': return ({required Object version}) => 'You are on the current version (${version}).';
+			case 'settings.updateCheck.notApplicableTitle': return 'Update Check';
+			case 'settings.updateCheck.notApplicableMessage': return 'Version check is not applicable on the Web.';
+			case 'settings.updateCheck.errorTitle': return 'Error';
+			case 'settings.updateCheck.serverErrorMessage': return 'Could not check for updates. Server error.';
+			case 'settings.updateCheck.connectionErrorMessage': return 'Could not check for updates. Check your connection.';
 			default: return null;
 		}
 	}

@@ -147,11 +147,11 @@ class _DialogPresetConfigParameterInputWidgetState extends State<DialogPresetCon
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Required';
+                  return t.settings.presetConfig.requiredValidator;
                 }
                 final parsed = double.tryParse(value);
                 if (parsed == null) {
-                  return 'Invalid';
+                  return t.settings.presetConfig.invalidValidator;
                 }
                 if (parsed < def.min || parsed > def.max) {
                   return '${def.min} - ${def.max}';

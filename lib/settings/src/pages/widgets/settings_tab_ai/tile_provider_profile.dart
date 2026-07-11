@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/providers_controller.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai.dart'
     show SettingsTabAi;
@@ -51,23 +52,23 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
             children: [
               TextButton(
                 onPressed: _resetDomainsToDefaults,
-                child: const Text('Set default'),
+                child: Text(t.settings.aiTab.setDefaultButton),
               ),
               TextButton(
                 onPressed: _openPresetEditor,
-                child: const Text('Add Model'),
+                child: Text(t.settings.aiTab.addModelButton),
               ),
               MenuAnchor(
                 menuChildren: [
                   MenuItemButton(
                     leadingIcon: const Icon(Icons.edit, size: 18),
                     onPressed: _editProfile,
-                    child: const Text('Edit provider'),
+                    child: Text(t.settings.aiTab.editProviderMenuItem),
                   ),
                 ],
                 builder: (_, controller, _) => IconButton(
                   icon: const Icon(Icons.more_vert),
-                  tooltip: 'More',
+                  tooltip: t.settings.aiTab.moreTooltip,
                   onPressed: () =>
                       controller.isOpen ? controller.close() : controller.open(),
                 ),
@@ -80,7 +81,7 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Text(
-              'No Models configured for this provider.',
+              t.settings.aiTab.noModelsForProvider,
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
           )
@@ -165,10 +166,9 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
   Future<void> _resetDomainsToDefaults() async {
     final providerLabel = widget.profile.displayLabel;
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Set $providerLabel as the default for every AI feature?',
-      message:
-          'You may pick models for unsupported features\n(like image or video) from other providers yourself.',
-      confirmText: 'Set default',
+      title: t.settings.aiTab.setDefaultConfirmTitle(provider: providerLabel),
+      message: t.settings.aiTab.setDefaultConfirmMessage,
+      confirmText: t.settings.aiTab.setDefaultButton,
       confirmColor: Theme.of(context).colorScheme.primary,
     );
     if (!confirmed || !mounted) return;
@@ -270,7 +270,9 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
                 if (temperature != null) ...[
                   const TextSpan(text: ' · '),
                   TextSpan(
-                    text: 'Temp ${temperature.toStringAsFixed(1)}',
+                    text: t.settings.aiTab.temperatureLabel(
+                      value: temperature.toStringAsFixed(1),
+                    ),
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,
@@ -289,7 +291,7 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
               ButtonTestVideo(profile: widget.profile, model: widget.model),
               IconButton(
                 icon: const Icon(Icons.settings, size: 20),
-                tooltip: 'Edit Model',
+                tooltip: t.settings.aiTab.editModelTooltip,
                 onPressed: widget.onEditPreset,
               ),
             ],
@@ -342,6 +344,10 @@ String? _localGgufSubtitle(LlmProviderConfig profile, LlmModel model) {
   final nativeLabel = native >= 1000 ? '${native ~/ 1000}k' : '$native';
   final kv = profile.kvCacheType;
   final kvLabel = kv == null ? 'fp16' : kv.name;
-  return '$loaded ctx (max $nativeLabel) · KV $kvLabel';
+  return t.settings.aiTab.localGgufSubtitle(
+    loaded: loaded,
+    native: nativeLabel,
+    kv: kvLabel,
+  );
 }
 

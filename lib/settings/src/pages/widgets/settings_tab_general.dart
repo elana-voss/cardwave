@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/update_controller.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:file_selector/file_selector.dart';
@@ -61,12 +62,12 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
           children: [
             ListTile(
               leading: const Icon(Icons.folder_open),
-              title: const Text('Character Folder'),
+              title: Text(t.settings.general.characterFolderTitle),
               subtitle: Text(
                 settings.characterPath != null &&
                         settings.characterPath!.isNotEmpty
                     ? settings.characterPath!
-                    : 'Not set. Required for the app to function.',
+                    : t.settings.general.characterFolderNotSet,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: settings.characterPath == null
@@ -75,13 +76,13 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
               ),
               trailing: ElevatedButton(
                 onPressed: _pickDirectory,
-                child: const Text('Browse...'),
+                child: Text(t.settings.general.browseButton),
               ),
             ),
             if (kDebugMode)
               ListTile(
                 leading: const Icon(Icons.tag_sharp),
-                title: const Text('Taxonomy Tags'),
+                title: Text(t.settings.general.taxonomyTagsTitle),
                 onTap: () =>
                     unawaited(NavigationService().showTaxonomyEditorDialog()),
               ),
@@ -93,7 +94,7 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
                     ? Icons.light_mode
                     : Icons.brightness_auto,
               ),
-              title: const Text('App Theme'),
+              title: Text(t.settings.general.appThemeTitle),
               trailing: Padding(
                 padding: EdgeInsets.zero,
                 child: SegmentedButton<ThemeMode>(
@@ -102,17 +103,23 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
                     ButtonSegment(
                       value: ThemeMode.system,
                       icon: const Icon(Icons.brightness_auto, size: 18),
-                      label: isNarrow ? null : const Text('System'),
+                      label: isNarrow
+                          ? null
+                          : Text(t.settings.general.themeSystem),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
                       icon: const Icon(Icons.light_mode, size: 18),
-                      label: isNarrow ? null : const Text('Light'),
+                      label: isNarrow
+                          ? null
+                          : Text(t.settings.general.themeLight),
                     ),
                     ButtonSegment(
                       value: ThemeMode.dark,
                       icon: const Icon(Icons.dark_mode, size: 18),
-                      label: isNarrow ? null : const Text('Dark'),
+                      label: isNarrow
+                          ? null
+                          : Text(t.settings.general.themeDark),
                     ),
                   ],
                   selected: {currentMode},
@@ -127,19 +134,23 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
             ),
             ListTile(
               leading: const Icon(Icons.palette_outlined),
-              title: const Text('Theme Style'),
+              title: Text(t.settings.general.themeStyleTitle),
               trailing: SegmentedButton<ThemeStyleEnum>(
                 showSelectedIcon: false,
                 segments: [
                   ButtonSegment(
                     value: ThemeStyleEnum.standard,
                     icon: const Icon(Icons.format_paint, size: 18),
-                    label: isNarrow ? null : const Text('Default'),
+                    label: isNarrow
+                        ? null
+                        : Text(t.settings.general.themeStyleDefault),
                   ),
                   ButtonSegment(
                     value: ThemeStyleEnum.neon,
                     icon: const Icon(Icons.auto_awesome, size: 18),
-                    label: isNarrow ? null : const Text('Neon'),
+                    label: isNarrow
+                        ? null
+                        : Text(t.settings.general.themeStyleNeon),
                   ),
                 ],
                 selected: {settingsDisplay.themeStyle},
@@ -156,11 +167,8 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
           children: [
             SwitchListTile(
               secondary: const Icon(Icons.psychology),
-              title: const Text('Story Memory'),
-              subtitle: const Text(
-                'Remember earlier moments and bring the relevant ones back '
-                'into long chats.',
-              ),
+              title: Text(t.settings.general.storyMemoryTitle),
+              subtitle: Text(t.settings.general.storyMemorySubtitle),
               value: settings.memoryEnabled,
               onChanged: (value) {
                 settings.memoryEnabled = value;
@@ -169,11 +177,8 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
             ),
             SwitchListTile(
               secondary: const Icon(Icons.auto_stories),
-              title: const Text('Narrative Engine'),
-              subtitle: const Text(
-                'Track the scene and characters and move the story along as '
-                'you chat.',
-              ),
+              title: Text(t.settings.general.narrativeEngineTitle),
+              subtitle: Text(t.settings.general.narrativeEngineSubtitle),
               value: settings.nodesEnabled,
               onChanged: (value) {
                 settings.nodesEnabled = value;
@@ -182,11 +187,8 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
             ),
             SwitchListTile(
               secondary: const Icon(Icons.data_usage),
-              title: const Text('Show Prompt Breakdown'),
-              subtitle: const Text(
-                'Show a bar under each reply breaking down how the prompt '
-                'filled the model context window.',
-              ),
+              title: Text(t.settings.general.promptBreakdownTitle),
+              subtitle: Text(t.settings.general.promptBreakdownSubtitle),
               value: settings.showPromptBreakdown,
               onChanged: (value) {
                 settings.showPromptBreakdown = value;
@@ -199,27 +201,21 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
           children: [
             ListTile(
               leading: const Icon(Icons.system_update),
-              title: const Text('Check for Updates'),
-              subtitle: const Text(
-                'Check if a newer version of the app is available.',
-              ),
+              title: Text(t.settings.general.checkUpdatesTitle),
+              subtitle: Text(t.settings.general.checkUpdatesSubtitle),
               onTap: () => unawaited(UpdateController.checkAndShow()),
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Website'),
-              subtitle: const Text(
-                'Visit the official website for updates and information.',
-              ),
+              title: Text(t.settings.general.websiteTitle),
+              subtitle: Text(t.settings.general.websiteSubtitle),
               trailing: const Icon(Icons.open_in_new),
               onTap: () => launchUrl(Uri.parse(AppConstants.website)),
             ),
             ListTile(
               leading: const Icon(Icons.warning_amber),
-              title: const Text('Disclaimer & Terms'),
-              subtitle: const Text(
-                'Read the application disclaimer and terms of use.',
-              ),
+              title: Text(t.settings.general.disclaimerTitle),
+              subtitle: Text(t.settings.general.disclaimerSubtitle),
               trailing: const Icon(Icons.open_in_new),
               onTap: () => launchUrl(Uri.parse(AppConstants.disclaimer)),
             ),
@@ -232,7 +228,10 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Version ${snapshot.requireData.version}+${snapshot.requireData.buildNumber}',
+                  t.settings.general.versionLabel(
+                    version: snapshot.requireData.version,
+                    buildNumber: snapshot.requireData.buildNumber,
+                  ),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).hintColor,

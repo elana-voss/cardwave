@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/utils/gpu_device_selection.dart';
 import 'package:cardwave/settings/src/utils/local_gguf_recommendation.dart';
 import 'package:cardwave/settings/src/utils/vram_probe.dart';
@@ -171,7 +172,7 @@ class LocalGgufDialogController extends ChangeNotifier {
         e,
         st,
       );
-      _error = 'Failed to read GGUF metadata: $e';
+      _error = t.settings.localGguf.readMetadataFailedError(error: '$e');
     } finally {
       _probing = false;
       notifyListeners();
@@ -268,7 +269,7 @@ class LocalGgufDialogController extends ChangeNotifier {
         e,
         st,
       );
-      _error = 'Failed to load the model: $e';
+      _error = t.settings.localGguf.loadModelFailedError(error: '$e');
     } finally {
       _loadingModel = false;
       notifyListeners();

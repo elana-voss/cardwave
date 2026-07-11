@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -364,7 +365,7 @@ class DialogPresetConfigController extends ChangeNotifier {
       connectionStatus = true;
       notifyListeners();
       await NavigationService().showAlertConfirmDialog(
-        title: 'Response',
+        title: t.settings.presetConfig.testResponseTitle,
         message: reply,
       );
     } on Exception catch (e, stackTrace) {

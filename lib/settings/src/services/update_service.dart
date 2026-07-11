@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -46,9 +47,7 @@ class UpdateService {
           .get(Uri.parse(AppConstants.version))
           .timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) {
-        return const UpdateCheckFailed(
-          'Could not check for updates. Server error.',
-        );
+        return UpdateCheckFailed(t.settings.updateCheck.serverErrorMessage);
       }
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -71,9 +70,7 @@ class UpdateService {
       return UpToDate(currentFullVersion);
     } on Exception catch (e, st) {
       LoggingService().error('Update check failed', e, st);
-      return const UpdateCheckFailed(
-        'Could not check for updates. Check your connection.',
-      );
+      return UpdateCheckFailed(t.settings.updateCheck.connectionErrorMessage);
     }
   }
 

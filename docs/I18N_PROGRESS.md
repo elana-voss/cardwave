@@ -69,7 +69,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 2 `lib/routing/` → `routing`
 - [x] 3 `lib/onboarding/` → `onboarding`
 - [x] 4 `lib/common/` → `common`
-- [ ] 5 `lib/settings/` → `settings`
+- [x] 5 `lib/settings/` → `settings`
 - [ ] 6 `lib/llm_app/` → `llmApp`
 - [ ] 7 `lib/character/` → `character`
 - [ ] 8 `lib/chat/` → `chat`
@@ -135,7 +135,37 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   one) — deferred to row 5 so lib/settings/ isn't touched out of order.
   Row 5: convert both constants to non-const `t.settings.*` getters and
   drop `const` from the two `Text(...)` call sites (here and in
-  dialog_local_gguf_provider_config.dart).
+  dialog_local_gguf_provider_config.dart). **Resolved in row 5**: both
+  converted to `t.settings.localGguf.*` getters; the onboarding call
+  sites had `const` dropped as a ripple (see row 5 entry below).
+- **[settings] `dialog_taxonomy_editor.dart`** (~40 strings: dialog
+  titles, tooltips, field labels/hints, confirm dialogs): NOT
+  extracted, whole file skipped. This is the Taxonomy Tags editor,
+  reachable only via a `kDebugMode`-gated menu entry in
+  `settings_tab_general.dart` — end users never see it in release
+  builds. Matches the plan's "developer surfaces" scope exclusion
+  (§1, same category as the Logs screen) more strongly than Logs does,
+  since Logs is reachable in production too. The menu entry itself
+  ("Taxonomy Tags") IS extracted since it's a settings-menu label, not
+  part of the debug tool's own UI.
+- **[settings] `ChatTheme` preset names** (`lib/settings/src/models/chat_theme.dart`
+  — 11 `static const ChatTheme` fields: 'Azure', 'Cappuccino', 'Celestial
+  Macaron', 'Dark Lite', 'Dark V 1.0', 'Glimmer', 'Moonlit Echoes',
+  'Cardwave Neon', 'Cardwave Neon (Flat)', plus 'Native Light'/'Native
+  Dark' built at runtime): NOT extracted. These names are shown to the
+  user in the chat-theme picker (`lib/chat/src/pages/widgets/tile_chat_theme.dart`),
+  so they're genuinely in scope — but `ChatTheme.azure` is used as a
+  **compile-time-constant default parameter value** in
+  `lib/settings/src/models/app_settings.dart` (`this.chatTheme =
+  ChatTheme.azure`) and `lib/chat/src/pages/widgets/chat_view.dart`
+  (`this.theme = ChatTheme.azure`). Making `.name` a `t.` getter would
+  make the whole `ChatTheme` instance non-const, breaking both default
+  values — fixing that means restructuring those two call sites
+  (nullable param + null-coalescing fallback), which is a model-level
+  refactor spanning outside lib/settings/, not mechanical string
+  extraction. Flagging for Step 4/5 or a follow-up task; the qcheck
+  lint rule Step 6 proposes (flag new hardcoded literals) should also
+  catch new theme presets if any are added later.
 - **[common] `UtilsApp.timeAgo()` relative-time unit strings**
   (`lib/common/src/utils/utils_app.dart:75-86`): NOT extracted. This
   hand-rolled formatter returns strings like `'$n y ago'`, `'$n mo ago'`,

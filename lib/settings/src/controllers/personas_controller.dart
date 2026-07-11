@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/models/chat_persona.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:flutter/material.dart' show Color;
@@ -54,13 +55,17 @@ class PersonasController {
     required Color confirmColor,
   }) async {
     if (settingsService.settings.defaultPersonaId == persona.id) {
-      NavigationService().showSnackBar('Cannot delete the default persona.');
+      NavigationService().showSnackBar(
+        t.settings.personasTab.cannotDeleteDefaultSnackbar,
+      );
       return false;
     }
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Persona',
-      message: 'Are you sure you want to delete "${persona.name}"?',
-      confirmText: 'Delete',
+      title: t.settings.personasTab.deleteConfirmTitle,
+      message: t.settings.personasTab.deleteConfirmMessage(
+        name: persona.name,
+      ),
+      confirmText: t.common.actions.delete,
       confirmColor: confirmColor,
     );
     if (!confirmed) return false;

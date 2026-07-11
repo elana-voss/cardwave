@@ -1,5 +1,6 @@
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +39,7 @@ class _ButtonTestTtsState extends State<ButtonTestTts> {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : const Icon(Icons.play_arrow, size: 20),
-      tooltip: 'Test TTS',
+      tooltip: t.settings.aiTab.testTtsTooltip,
       onPressed: _isPlaying ? null : _testTts,
     );
   }
@@ -54,12 +55,14 @@ class _ButtonTestTtsState extends State<ButtonTestTts> {
       await tts.testSpeakFor(
         provider: widget.profile,
         modelId: widget.model.id,
-        text: 'Hello, this is a test.',
+        text: t.settings.aiTab.ttsTestPhrase,
         voiceId: voiceId,
         languageCode: TtsLanguage.autoCode,
       );
     } on Exception catch (e) {
-      final msg = e is LlmFetchException ? e.userMessage : 'TTS failed.';
+      final msg = e is LlmFetchException
+          ? e.userMessage
+          : t.settings.aiTab.ttsFailedError;
       NavigationService().showSnackBar(msg);
     } finally {
       if (mounted) setState(() => _isPlaying = false);

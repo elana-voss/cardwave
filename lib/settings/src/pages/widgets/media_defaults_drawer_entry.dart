@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/dialog_ai_settings.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class MediaDefaultsDrawerEntry extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const DrawerSectionHeader('Configuration'),
+        DrawerSectionHeader(t.settings.mediaDefaultsDrawerEntry.configurationHeader),
         ListTile(
           leading: Icon(DialogAiSettingsTab.mediaDefaults.icon),
           title: Text(DialogAiSettingsTab.mediaDefaults.label),

@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_tts.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_video.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/dialog_preset_picker.dart';
@@ -53,7 +54,7 @@ class TileDomainPreset extends StatelessWidget {
                 ),
               IconButton(
                 icon: const Icon(Icons.settings, size: 20),
-                tooltip: 'Edit Model',
+                tooltip: t.settings.aiTab.editModelTooltip,
                 onPressed: () => _editActivePreset(context, activeEntry),
               ),
             ],
@@ -64,8 +65,10 @@ class TileDomainPreset extends StatelessWidget {
       model: activeEntry?.model,
       preset: activeEntry?.config,
       placeholderTitle: validPresets.isEmpty
-          ? (d == null ? 'No Models' : 'No compatible models')
-          : 'Tap to choose',
+          ? (d == null
+                ? t.settings.aiTab.noModelsPlaceholder
+                : t.settings.aiTab.noCompatibleModelsPlaceholder)
+          : t.settings.aiTab.tapToChoosePlaceholder,
       onTap: activeEntry == null && validPresets.isEmpty
           ? null
           : () => _openPicker(context, validPresets, activePresetId),
@@ -136,7 +139,7 @@ class TileDomainPreset extends StatelessWidget {
               TextSpan(
                 style: theme.textTheme.titleLarge,
                 children: [
-                  const TextSpan(text: 'Model used for '),
+                  TextSpan(text: t.settings.aiTab.modelUsedForPrefix),
                   TextSpan(
                     text: d.label,
                     style: TextStyle(
@@ -144,11 +147,14 @@ class TileDomainPreset extends StatelessWidget {
                       color: theme.colorScheme.primary,
                     ),
                   ),
-                  const TextSpan(text: ' generation'),
+                  TextSpan(text: t.settings.aiTab.modelUsedForSuffix),
                 ],
               ),
             )
-          : Text('Choose a Model', style: theme.textTheme.titleLarge),
+          : Text(
+              t.settings.aiTab.chooseModelTitle,
+              style: theme.textTheme.titleLarge,
+            ),
       validPresets: validPresets,
       activePresetId: activePresetId,
     );

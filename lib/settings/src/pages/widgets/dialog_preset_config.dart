@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/dialog_preset_config_controller.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
@@ -98,9 +99,9 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
     final name = _controller!.configurationName;
     if (name == null) return;
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Model?',
-      message: 'Permanently delete "$name"? This cannot be undone.',
-      confirmText: 'Delete',
+      title: t.settings.presetConfig.deleteModelTitle,
+      message: t.settings.presetConfig.deleteModelMessage(name: name),
+      confirmText: t.common.actions.delete,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
@@ -131,7 +132,7 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.chat_bubble_outline, size: 18),
-                  label: const Text('Test Message'),
+                  label: Text(t.settings.presetConfig.testMessageButton),
                 ),
               if (showTestButton && controller.connectionStatus != null)
                 Row(
@@ -139,7 +140,9 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
                   children: [
                     const SizedBox(width: 8),
                     Text(
-                      controller.connectionStatus! ? 'Success' : 'Failed',
+                      controller.connectionStatus!
+                          ? t.settings.presetConfig.testSuccessLabel
+                          : t.settings.presetConfig.testFailedLabel,
                       style: TextStyle(
                         color: controller.connectionStatus!
                             ? Theme.of(context).colorScheme.primary
@@ -168,10 +171,13 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
                   style: TextButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
                   ),
-                  child: const Text('Delete'),
+                  child: Text(t.common.actions.delete),
                 ),
               if (showDelete) const SizedBox(width: 24),
-              FilledButton(onPressed: _onSave, child: const Text('Save')),
+              FilledButton(
+                onPressed: _onSave,
+                child: Text(t.common.actions.save),
+              ),
             ],
             builder: (context, isMobile) => Column(
               mainAxisSize: MainAxisSize.min,
@@ -213,13 +219,15 @@ class _DialogHeader extends StatelessWidget {
     return Row(
       children: [
         Text(
-          isEditing ? 'Edit Model' : 'Add Model',
+          isEditing
+              ? t.settings.presetConfig.editModelHeader
+              : t.settings.presetConfig.addModelHeader,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const Spacer(),
         IconButton(
           icon: const Icon(Icons.restore),
-          tooltip: 'Reset to Defaults',
+          tooltip: t.settings.presetConfig.resetToDefaultsTooltip,
           onPressed: onReset,
         ),
       ],

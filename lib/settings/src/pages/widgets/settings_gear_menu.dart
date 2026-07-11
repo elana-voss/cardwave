@@ -40,7 +40,7 @@ class SettingsGearMenu extends StatelessWidget {
     return PopupMenuButton<_GearActionEnum>(
       key: const Key('settings-gear-menu'),
       icon: const Icon(Icons.settings),
-      tooltip: 'Settings',
+      tooltip: t.settings.gearMenu.settingsTooltip,
       onSelected: (action) => _onSelected(context, action),
       itemBuilder: (_) {
         final session = chatPageController?.selectedChat;
@@ -61,9 +61,9 @@ class SettingsGearMenu extends StatelessWidget {
             child: ListTile(
               leading: Icon(DialogAiSettingsTab.mediaDefaults.icon),
               title: Text(DialogAiSettingsTab.mediaDefaults.label),
-              subtitle: const Text(
-                'App',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              subtitle: Text(
+                t.settings.gearMenu.mediaDefaultsApp,
+                style: const TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
           ),
@@ -75,9 +75,9 @@ class SettingsGearMenu extends StatelessWidget {
               enabled: charEnabled,
               leading: Icon(DialogAiSettingsTab.mediaDefaults.icon),
               title: Text(DialogAiSettingsTab.mediaDefaults.label),
-              subtitle: const Text(
-                'Character',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              subtitle: Text(
+                t.settings.gearMenu.mediaDefaultsCharacter,
+                style: const TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
           ),
@@ -89,9 +89,9 @@ class SettingsGearMenu extends StatelessWidget {
               enabled: chatEnabled,
               leading: Icon(DialogAiSettingsTab.mediaDefaults.icon),
               title: Text(DialogAiSettingsTab.mediaDefaults.label),
-              subtitle: const Text(
-                'Chat',
-                style: TextStyle(fontStyle: FontStyle.italic),
+              subtitle: Text(
+                t.settings.gearMenu.mediaDefaultsChat,
+                style: const TextStyle(fontStyle: FontStyle.italic),
               ),
             ),
           ),
@@ -104,21 +104,21 @@ class SettingsGearMenu extends StatelessWidget {
               title: Text(t.settings.gearLanguage),
             ),
           ),
-          const PopupMenuItem(
-            key: Key('settings-app-settings'),
+          PopupMenuItem(
+            key: const Key('settings-app-settings'),
             value: _GearActionEnum.appSettings,
             child: ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('App Settings'),
+              leading: const Icon(Icons.settings),
+              title: Text(t.settings.gearMenu.appSettings),
             ),
           ),
           const PopupMenuDivider(),
-          const PopupMenuItem(
-            key: Key('settings-logs'),
+          PopupMenuItem(
+            key: const Key('settings-logs'),
             value: _GearActionEnum.logs,
             child: ListTile(
-              leading: Icon(Icons.bug_report),
-              title: Text('Logs'),
+              leading: const Icon(Icons.bug_report),
+              title: Text(t.settings.gearMenu.logs),
             ),
           ),
         ];

@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/ai_tab_section_header.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_domain_preset.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -27,7 +28,7 @@ class TileDefaultModels extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AiTabSectionHeader(
-          title: 'Default Models for New Chats',
+          title: t.settings.aiTab.defaultModelsHeader,
           subtitle: providerLabels.isEmpty ? null : providerLabels,
         ),
         const Divider(height: 1, thickness: 0.5),

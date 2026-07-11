@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +11,18 @@ import 'package:flutter/material.dart';
 /// visuals — reused by [DialogAiSettings]' tab strip, the gear-menu's
 /// matching entries, and the drawer "Media Defaults" tile.
 enum DialogAiSettingsTab {
-  aiProviders(icon: Icons.electrical_services, label: 'AI Providers'),
-  mediaDefaults(icon: Icons.tune, label: 'Media Defaults');
+  aiProviders(icon: Icons.electrical_services),
+  mediaDefaults(icon: Icons.tune);
 
-  const DialogAiSettingsTab({required this.icon, required this.label});
+  const DialogAiSettingsTab({required this.icon});
 
   final IconData icon;
-  final String label;
+
+  String get label => switch (this) {
+    DialogAiSettingsTab.aiProviders => t.settings.aiSettingsTab.aiProviders,
+    DialogAiSettingsTab.mediaDefaults =>
+      t.settings.aiSettingsTab.mediaDefaults,
+  };
 }
 
 /// Combined fullscreen AI settings dialog. Replaces the AppBar with a

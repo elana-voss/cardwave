@@ -3,6 +3,7 @@ import 'dart:io' show Directory, File;
 
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/button_test_tts.dart'
     show ButtonTestTts;
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -51,7 +52,7 @@ class _ButtonTestVideoState extends State<ButtonTestVideo> {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : const Icon(Icons.movie, size: 20),
-      tooltip: 'Test video generation',
+      tooltip: t.settings.aiTab.testVideoTooltip,
       onPressed: _isRunning ? null : _test,
     );
   }
@@ -66,7 +67,7 @@ class _ButtonTestVideoState extends State<ButtonTestVideo> {
       );
       if (kIsWeb) {
         NavigationService().showSnackBar(
-          'Video generated successfully (preview unavailable on web).',
+          t.settings.aiTab.videoGeneratedWebFallback,
         );
         return;
       }
@@ -80,7 +81,9 @@ class _ButtonTestVideoState extends State<ButtonTestVideo> {
       await NavigationService().showVideoTestPreviewDialog(file: file);
       unawaited(file.delete().catchError((_) => file));
     } on Exception catch (e) {
-      final msg = e is LlmFetchException ? e.userMessage : 'Video failed.';
+      final msg = e is LlmFetchException
+          ? e.userMessage
+          : t.settings.aiTab.videoFailedError;
       NavigationService().showSnackBar(msg);
     } finally {
       if (mounted) setState(() => _isRunning = false);

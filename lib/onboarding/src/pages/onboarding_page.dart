@@ -270,9 +270,9 @@ class _OnboardingLocalGgufRow extends StatelessWidget {
       tilePadding: EdgeInsets.zero,
       childrenPadding: EdgeInsets.zero,
       initiallyExpanded: p != null,
-      title: const Text(
+      title: Text(
         kHaveLocalGgufExpanderTitle,
-        style: TextStyle(fontSize: 13),
+        style: const TextStyle(fontSize: 13),
       ),
       children: [
         if (p != null)
@@ -282,7 +282,7 @@ class _OnboardingLocalGgufRow extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
               icon: const Icon(Icons.folder_open),
-              label: const Text(kPickFileLabel),
+              label: Text(kPickFileLabel),
               onPressed: onPick,
             ),
           ),

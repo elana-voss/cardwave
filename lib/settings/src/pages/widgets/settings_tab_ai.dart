@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/providers_controller.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_default_models.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/tile_provider_profile.dart';
@@ -55,9 +56,11 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
       await _settingsService.saveSettings();
       _healAssignments();
       NavigationService().showSnackBar(
-        'Refreshed ${summary.updated} models, '
-        '${summary.markedUnavailable} unavailable, '
-        '${summary.errorsByProfile.length} errors.',
+        t.settings.aiTab.refreshSummary(
+          updated: summary.updated,
+          unavailable: summary.markedUnavailable,
+          errors: summary.errorsByProfile.length,
+        ),
       );
     } finally {
       if (mounted) setState(() => _isRefreshing = false);
@@ -191,7 +194,7 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
                         mainAxisSize: MainAxisSize.min,
                         spacing: 8,
                         children: [
-                          const Text('New Provider'),
+                          Text(t.settings.aiTab.newProviderButton),
                           Icon(
                             controller.isOpen
                                 ? Icons.arrow_drop_up
@@ -204,19 +207,19 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
                     menuChildren: [
                       _AddProviderMenuItem(
                         icon: Icons.cloud_queue,
-                        label: 'Cloud Provider',
+                        label: t.settings.aiTab.cloudProviderMenuItem,
                         onPressed: _addProvider,
                       ),
                       _AddProviderMenuItem(
                         icon: Icons.desktop_windows,
-                        label: 'Local Provider',
+                        label: t.settings.aiTab.localProviderMenuItem,
                         onPressed: _addLocalProvider,
                       ),
                       if (!kIsWeb &&
                           defaultTargetPlatform != TargetPlatform.android)
                         _AddProviderMenuItem(
                           icon: Icons.memory,
-                          label: 'Local GGUF',
+                          label: t.settings.aiTab.localGgufMenuItem,
                           onPressed: _addLocalGgufProvider,
                         ),
                     ],
@@ -249,9 +252,11 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
               const SizedBox(height: 24),
             ],
             if (providers.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(32),
-                child: Center(child: Text('No API providers configured.')),
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Center(
+                  child: Text(t.settings.aiTab.noProvidersConfigured),
+                ),
               )
             else
               for (final (i, p) in providers.indexed) ...[
@@ -269,18 +274,18 @@ class _SettingsTabAiState extends State<SettingsTabAi> {
         children: [
           body,
           if (_isAdding)
-            const Positioned.fill(
+            Positioned.fill(
               child: ColoredBox(
-                color: Color(0x66000000),
+                color: const Color(0x66000000),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     spacing: 12,
                     children: [
-                      CircularProgressIndicator(),
+                      const CircularProgressIndicator(),
                       Text(
-                        'Adding provider…',
-                        style: TextStyle(color: Colors.white),
+                        t.settings.aiTab.addingProviderOverlay,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
@@ -336,8 +341,10 @@ class _RefreshMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lastLabel = lastRefreshMillis == null
-        ? 'Never refreshed'
-        : 'Last refreshed: ${UtilsApp.timeAgo(lastRefreshMillis)}';
+        ? t.settings.aiTab.neverRefreshed
+        : t.settings.aiTab.lastRefreshedLabel(
+            time: UtilsApp.timeAgo(lastRefreshMillis),
+          );
     return MenuAnchor(
       builder: (context, controller, _) => TextButton.icon(
         onPressed: () =>
@@ -348,7 +355,7 @@ class _RefreshMenuButton extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.refresh),
-        label: const Text('Refresh models'),
+        label: Text(t.settings.aiTab.refreshModelsButton),
       ),
       menuChildren: [
         MenuItemButton(
@@ -360,21 +367,21 @@ class _RefreshMenuButton extends StatelessWidget {
         MenuItemButton(
           leadingIcon: const Icon(Icons.refresh),
           onPressed: onRefresh,
-          child: const Text('Refresh now'),
+          child: Text(t.settings.aiTab.refreshNowMenuItem),
         ),
         MenuItemButton(
           leadingIcon: Icon(
             policy == ModelRefreshPolicyEnum.never ? Icons.check : null,
           ),
           onPressed: () => onPolicyChanged(ModelRefreshPolicyEnum.never),
-          child: const Text('Auto: Never'),
+          child: Text(t.settings.aiTab.autoNeverMenuItem),
         ),
         MenuItemButton(
           leadingIcon: Icon(
             policy == ModelRefreshPolicyEnum.daily ? Icons.check : null,
           ),
           onPressed: () => onPolicyChanged(ModelRefreshPolicyEnum.daily),
-          child: const Text('Auto: Daily on startup'),
+          child: Text(t.settings.aiTab.autoDailyMenuItem),
         ),
       ],
     );

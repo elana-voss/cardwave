@@ -43,13 +43,13 @@ class _DialogFormBody extends StatelessWidget {
                 controller: nameController,
                 focusNode: nameFocusNode,
                 decoration: InputDecoration(
-                  labelText: 'Model name',
+                  labelText: t.settings.presetConfig.modelNameLabel,
                   errorStyle: const TextStyle(height: 0),
                   suffixIcon: value.text.isEmpty
                       ? null
                       : IconButton(
                           icon: const Icon(Icons.clear, size: 18),
-                          tooltip: 'Clear',
+                          tooltip: t.settings.presetConfig.clearTooltip,
                           onPressed: () {
                             nameController.clear();
                             nameFocusNode.requestFocus();
@@ -57,7 +57,7 @@ class _DialogFormBody extends StatelessWidget {
                         ),
                 ),
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Name is required'
+                    ? t.settings.presetConfig.nameRequiredError
                     : null,
               );
             },
@@ -67,15 +67,16 @@ class _DialogFormBody extends StatelessWidget {
             controller: modelTextController,
             readOnly: true,
             style: const TextStyle(overflow: TextOverflow.ellipsis),
-            decoration: const InputDecoration(
-              labelText: 'Model',
-              errorStyle: TextStyle(height: 0),
-              suffixIcon: Icon(Icons.arrow_drop_down),
-              hintText: 'Select a model',
+            decoration: InputDecoration(
+              labelText: t.settings.presetConfig.modelLabel,
+              errorStyle: const TextStyle(height: 0),
+              suffixIcon: const Icon(Icons.arrow_drop_down),
+              hintText: t.settings.presetConfig.selectModelHint,
             ),
             onTap: onShowModelSelectionDialog,
-            validator: (value) =>
-                value == null || value.isEmpty ? 'Model is required' : null,
+            validator: (value) => value == null || value.isEmpty
+                ? t.settings.presetConfig.modelRequiredError
+                : null,
           );
 
           return Column(
@@ -94,7 +95,11 @@ class _DialogFormBody extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          'Models are filtered to support the active domains: ${activeDomains.map((d) => d.label).join(', ')}',
+                          t.settings.presetConfig.filteredDomainsNote(
+                            domains: activeDomains
+                                .map((d) => d.label)
+                                .join(', '),
+                          ),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 12,

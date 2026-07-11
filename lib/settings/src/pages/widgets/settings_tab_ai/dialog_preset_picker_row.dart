@@ -22,9 +22,15 @@ class _PresetRow extends StatelessWidget {
     final params = <String>[];
     final temp =
         preset.parameterValues[LlmParameterDefinitionIdEnum.temperature];
-    if (temp != null) params.add('temp ${temp.toStringAsFixed(2)}');
+    if (temp != null) {
+      params.add(t.settings.aiTab.tempParamAbbrev(value: temp.toStringAsFixed(2)));
+    }
     if (preset.reasoningEffort.isOn) {
-      params.add('reasoning ${preset.reasoningEffort.label.toLowerCase()}');
+      params.add(
+        t.settings.aiTab.reasoningParamLabel(
+          level: preset.reasoningEffort.label.toLowerCase(),
+        ),
+      );
     }
     final paramsLine = params.join(' · ');
 

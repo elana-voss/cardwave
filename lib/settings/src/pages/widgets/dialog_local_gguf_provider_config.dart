@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/local_gguf_dialog_controller.dart';
 import 'package:cardwave/settings/src/utils/local_gguf_strings.dart';
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
@@ -88,7 +89,7 @@ class _DialogLocalGgufProviderConfigState
                                     CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Icon(Icons.memory),
-                        label: const Text(kLoadModelLabel),
+                        label: Text(kLoadModelLabel),
                         onPressed: (c.canLoadModel && !c.isLoadingModel)
                             ? _loadAndSave
                             : null,
@@ -115,21 +116,21 @@ class _DialogLocalGgufProviderConfigState
                   ),
                   if (c.isProbing) ...[
                     const SizedBox(height: 12),
-                    const Row(
+                    Row(
                       spacing: 12,
                       children: [
-                        SizedBox.square(
+                        const SizedBox.square(
                           dimension: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                        Text('Reading model metadata…'),
+                        Text(t.settings.localGguf.readingMetadata),
                       ],
                     ),
                   ],
                   if (c.metadata != null) ...[
                     const SizedBox(height: 16),
                     _InfoRow(
-                      label: 'Architecture',
+                      label: t.settings.localGguf.architectureLabel,
                       value: c.metadata!.architecture,
                     ),
                     _InfoRow(
@@ -195,7 +196,9 @@ class _DialogLocalGgufProviderConfigState
     if (c.contextSize != null && c.contextSize! > max) return null;
     final picked = c.effectiveKvCacheType.name;
     final isAuto = c.kvCacheType == null;
-    return isAuto ? 'auto: $picked (max $max)' : 'max $max at $picked KV';
+    return isAuto
+        ? t.settings.localGguf.autoKvHint(picked: picked, max: max)
+        : t.settings.localGguf.maxKvHint(max: max, picked: picked);
   }
 
   /// Error-text when the user's ctx exceeds the budget at every KV
@@ -206,13 +209,13 @@ class _DialogLocalGgufProviderConfigState
     final ctx = c.contextSize;
     if (max == null || max == 0 || ctx == null || ctx <= max) return null;
     final picked = c.effectiveKvCacheType.name;
-    return 'over $max at $picked KV — load may OOM';
+    return t.settings.localGguf.ctxExceedsMaxError(max: max, picked: picked);
   }
 
   String _formatVram(({int totalBytes, int freeBytes}) vram) {
     final freeMb = vram.freeBytes ~/ (1024 * 1024);
     final totalMb = vram.totalBytes ~/ (1024 * 1024);
-    if (totalMb == 0) return 'not detected';
+    if (totalMb == 0) return t.settings.localGguf.vramNotDetected;
     return '$freeMb MB / $totalMb MB';
   }
 }
@@ -256,18 +259,18 @@ class _KvCachePicker extends StatelessWidget {
     return DropdownButtonFormField<KvCacheType?>(
       key: ValueKey(value),
       initialValue: value,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: kKvCacheLabel,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
-      items: const [
+      items: [
         DropdownMenuItem<KvCacheType?>(
           value: null,
           child: Text(kKvCacheAutoLabel),
         ),
-        DropdownMenuItem(value: KvCacheType.f16, child: Text('fp16')),
-        DropdownMenuItem(value: KvCacheType.q8_0, child: Text('q8_0')),
-        DropdownMenuItem(value: KvCacheType.q4_0, child: Text('q4_0')),
+        const DropdownMenuItem(value: KvCacheType.f16, child: Text('fp16')),
+        const DropdownMenuItem(value: KvCacheType.q8_0, child: Text('q8_0')),
+        const DropdownMenuItem(value: KvCacheType.q4_0, child: Text('q4_0')),
       ],
       onChanged: onChanged,
     );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show File;
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -74,9 +75,9 @@ class _TestVideoPreviewDialogState extends State<TestVideoPreviewDialog> {
     return AppDialog(
       builder: (_, _) {
         if (_initFailed) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Could not load generated video.'),
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(t.settings.aiTab.videoLoadFailedMessage),
           );
         }
         final videoController = _videoController;

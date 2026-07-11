@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +90,7 @@ class _MainDrawerList extends StatelessWidget {
           if (settings.personas.length > 1)
             PopupMenuButton<String>(
               icon: const Icon(Icons.swap_vert),
-              tooltip: 'Switch persona',
+              tooltip: t.settings.endDrawer.switchPersonaTooltip,
               onSelected: (id) {
                 settings.defaultPersonaId = id;
                 unawaited(settingsService.saveSettings());

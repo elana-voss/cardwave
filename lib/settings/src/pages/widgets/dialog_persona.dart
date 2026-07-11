@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/models/chat_persona.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +50,7 @@ class _DialogPersonaState extends State<DialogPersona> {
         FilledButton(
           key: const Key('persona-edit-save'),
           onPressed: _save,
-          child: const Text('Save'),
+          child: Text(t.common.actions.save),
         ),
       ],
       builder: (context, isMobile) => Column(
@@ -58,7 +59,9 @@ class _DialogPersonaState extends State<DialogPersona> {
         spacing: 16,
         children: [
           Text(
-            widget.persona == null ? 'New Persona' : 'Edit Persona',
+            widget.persona == null
+                ? t.settings.personaDialog.newTitle
+                : t.settings.personaDialog.editTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           Form(
@@ -71,15 +74,18 @@ class _DialogPersonaState extends State<DialogPersona> {
                 TextFieldAutotrim(
                   controller: _nameController,
                   autofocus: true,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Name is required' : null,
+                  decoration: InputDecoration(
+                    labelText: t.settings.personaDialog.nameLabel,
+                  ),
+                  validator: (v) => v == null || v.isEmpty
+                      ? t.settings.personaDialog.nameRequiredError
+                      : null,
                 ),
                 TextFieldAutotrim(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Appearance, personality, background, etc.',
+                  decoration: InputDecoration(
+                    labelText: t.settings.personaDialog.descriptionLabel,
+                    hintText: t.settings.personaDialog.descriptionHint,
                   ),
                   maxLines: 5,
                   minLines: 3,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -101,15 +102,14 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
       setState(() {
         _models = fetched;
         if (fetched.isEmpty) {
-          _fetchError = 'No models returned. Check your API key.';
+          _fetchError = t.settings.providerConfig.noModelsError;
         }
       });
     } on Exception catch (e, st) {
       LoggingService().error('Provider-config model fetch failed', e, st);
       if (_isDisposed) return;
       setState(
-        () => _fetchError =
-            'Could not connect. Check your internet connection and API key.',
+        () => _fetchError = t.settings.providerConfig.connectionFailedError,
       );
     } finally {
       if (!_isDisposed) setState(() => _isFetching = false);
@@ -144,11 +144,11 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
   Future<void> _confirmDelete() async {
     final providerLabel = LlmProvider.of(_profile.providerEnum).label;
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete provider?',
-      message:
-          'Permanently delete the $providerLabel provider and all its presets? '
-          'This cannot be undone.',
-      confirmText: 'Delete',
+      title: t.settings.providerConfig.deleteProviderTitle,
+      message: t.settings.providerConfig.deleteProviderMessage(
+        provider: providerLabel,
+      ),
+      confirmText: t.common.actions.delete,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
@@ -237,7 +237,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
     final lockingRoles = _lockingRoleLabels;
     final isLocked = lockingRoles.isNotEmpty;
     final lockHint = isLocked
-        ? 'Cannot delete: in use by ${_joinRoles(lockingRoles)}.'
+        ? t.settings.providerConfig.lockHint(roles: _joinRoles(lockingRoles))
         : null;
     return AppDialog(
       actions: [
@@ -247,12 +247,12 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(t.common.actions.delete),
           ),
         if (_isEdit) const SizedBox(width: 24),
         FilledButton(
           onPressed: _canSave ? _save : null,
-          child: const Text('Save'),
+          child: Text(t.common.actions.save),
         ),
       ],
       builder: (context, isMobile) {
@@ -262,7 +262,9 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
           spacing: 16,
           children: [
             Text(
-              _isEdit ? 'Edit Provider' : 'Add Provider',
+              _isEdit
+                  ? t.settings.providerConfig.editProviderHeader
+                  : t.settings.providerConfig.addProviderHeader,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             Form(
@@ -274,15 +276,16 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
                   TextFieldAutotrim(
                     controller: _apiKeyController,
                     decoration: InputDecoration(
-                      labelText: 'API Key',
+                      labelText: t.settings.providerConfig.apiKeyLabel,
                       hintText: _isEdit
-                          ? 'Paste a new key to rotate'
-                          : 'Paste your key — provider is auto-detected',
+                          ? t.settings.providerConfig.apiKeyHintRotate
+                          : t.settings.providerConfig.apiKeyHintNew,
                     ),
                     obscureText: true,
                     onChanged: _onKeyChanged,
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Required' : null,
+                    validator: (v) => v == null || v.isEmpty
+                        ? t.settings.presetConfig.requiredValidator
+                        : null,
                   ),
                   const SizedBox(height: 8),
                   _ProviderStatusLine(
@@ -297,9 +300,9 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
                     apiKeyText: _apiKeyController!.text,
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  Text(
+                    t.settings.providerConfig.supportedProvidersNote,
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                   if (lockHint != null) ...[
                     const SizedBox(height: 8),
@@ -371,23 +374,28 @@ class _ProviderStatusLine extends StatelessWidget {
       final owner = keyOwner;
       final ownerLabel = owner != null
           ? LlmProvider.of(owner).label
-          : 'another provider';
+          : t.settings.providerConfig.anotherProviderFallback;
       final profileLabel = LlmProvider.of(profileProviderEnum!).label;
       return Text(
-        'This key belongs to $ownerLabel, but this profile is $profileLabel. '
-        'Delete this profile and add a new one instead.',
+        t.settings.providerConfig.keyMismatchError(
+          owner: ownerLabel,
+          profile: profileLabel,
+        ),
         style: TextStyle(color: colorScheme.error, fontSize: 12),
       );
     }
     if (isFetching) {
-      return const Row(
+      return Row(
         spacing: 8,
         children: [
-          SizedBox.square(
+          const SizedBox.square(
             dimension: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          Text('Connecting…', style: TextStyle(fontSize: 12)),
+          Text(
+            t.settings.providerConfig.connectingStatus,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       );
     }
@@ -399,21 +407,24 @@ class _ProviderStatusLine extends StatelessWidget {
     }
     if (!isEdit && hasModels && detectedProvider != null) {
       return Text(
-        'Connected to ${LlmProvider.of(detectedProvider!).label}. '
-        'Default presets will be created.',
+        t.settings.providerConfig.connectedStatus(
+          provider: LlmProvider.of(detectedProvider!).label,
+        ),
         style: TextStyle(color: colorScheme.primary, fontSize: 12),
       );
     }
     if (detectedProvider != null) {
       return Text(
-        'Detected: ${LlmProvider.of(detectedProvider!).label}',
+        t.settings.providerConfig.detectedStatus(
+          provider: LlmProvider.of(detectedProvider!).label,
+        ),
         style: const TextStyle(fontSize: 12, color: Colors.grey),
       );
     }
     if (apiKeyText.isNotEmpty) {
-      return const Text(
-        'Unrecognized key format.',
-        style: TextStyle(color: Colors.orange, fontSize: 12),
+      return Text(
+        t.settings.providerConfig.unrecognizedKeyStatus,
+        style: const TextStyle(color: Colors.orange, fontSize: 12),
       );
     }
     return const SizedBox(height: 14);

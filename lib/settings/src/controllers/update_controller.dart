@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/services/update_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -32,16 +33,19 @@ class UpdateController {
         }
       case UpToDate(version: final v):
         await nav.showAlertConfirmDialog(
-          title: 'Up to Date',
-          message: 'You are on the current version ($v).',
+          title: t.settings.updateCheck.upToDateTitle,
+          message: t.settings.updateCheck.upToDateMessage(version: v),
         );
       case UpdateNotApplicable():
         await nav.showAlertConfirmDialog(
-          title: 'Update Check',
-          message: 'Version check is not applicable on the Web.',
+          title: t.settings.updateCheck.notApplicableTitle,
+          message: t.settings.updateCheck.notApplicableMessage,
         );
       case UpdateCheckFailed(reason: final r):
-        await nav.showAlertConfirmDialog(title: 'Error', message: r);
+        await nav.showAlertConfirmDialog(
+          title: t.settings.updateCheck.errorTitle,
+          message: r,
+        );
     }
   }
 }

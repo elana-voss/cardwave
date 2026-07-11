@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/widgets/dialog_provider_config.dart'
     show DialogProviderAddResult;
 import 'package:cardwave/settings/src/services/llm_management_service.dart';
@@ -46,8 +47,7 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
       'KoboldCpp 5001, Ollama 11434, LM Studio 1234, llama.cpp 8080';
 
   String _serverUnreachableMessage(String url) =>
-      'Could not reach $url. Make sure your local server '
-      '(KoboldCpp / Ollama / LM Studio / llama.cpp) is running.';
+      t.settings.localProviderConfig.serverUnreachableMessage(url: url);
 
   bool get _isEdit => widget.profile != null;
 
@@ -113,9 +113,7 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
       setState(() {
         _models = fetched;
         if (fetched.isEmpty) {
-          _fetchError =
-              'Server reachable but returned no models. Load a model in '
-              'your local server first.';
+          _fetchError = t.settings.localProviderConfig.noModelsError;
         }
       });
     } on LlmFetchException catch (e) {
@@ -225,11 +223,9 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
 
   Future<void> _confirmDelete() async {
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete provider?',
-      message:
-          'Permanently delete this Local provider and all its presets? '
-          'This cannot be undone.',
-      confirmText: 'Delete',
+      title: t.settings.providerConfig.deleteProviderTitle,
+      message: t.settings.localProviderConfig.deleteProviderMessage,
+      confirmText: t.common.actions.delete,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
@@ -261,12 +257,12 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Delete'),
+              child: Text(t.common.actions.delete),
             ),
           if (_isEdit && !_isLocked) const SizedBox(width: 24),
           FilledButton(
             onPressed: _canSave ? _save : null,
-            child: const Text('Save'),
+            child: Text(t.common.actions.save),
           ),
         ],
         builder: (context, isMobile) {
@@ -276,7 +272,9 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
             spacing: 16,
             children: [
               Text(
-                _isEdit ? 'Edit Local Provider' : 'Add Local Provider',
+                _isEdit
+                    ? t.settings.localProviderConfig.editHeader
+                    : t.settings.localProviderConfig.addHeader,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               Form(
@@ -297,22 +295,23 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
                       controller: _baseUrlController,
                       enabled: !_isEdit,
                       decoration: InputDecoration(
-                        labelText: 'Server URL',
+                        labelText: t.settings.localProviderConfig.serverUrlLabel,
                         hintText: 'http://localhost:5001/v1',
                         helperText: _isEdit
-                            ? 'Locked. Delete this provider and add a new '
-                                  'one to point at a different server.'
+                            ? t.settings.localProviderConfig.serverUrlLockedHelper
                             : _supportedServersHint,
                       ),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? t.settings.presetConfig.requiredValidator
+                          : null,
                     ),
                     TextFieldAutotrim(
                       controller: _apiKeyController,
-                      decoration: const InputDecoration(
-                        labelText: 'API Key (optional)',
+                      decoration: InputDecoration(
+                        labelText:
+                            t.settings.localProviderConfig.apiKeyOptionalLabel,
                         hintText:
-                            "Leave blank — most local servers don't need one",
+                            t.settings.localProviderConfig.apiKeyOptionalHint,
                       ),
                       obscureText: true,
                     ),
@@ -322,7 +321,9 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
                         OutlinedButton.icon(
                           onPressed: _isFetching ? null : _connectAndFetch,
                           icon: const Icon(Icons.power_settings_new, size: 18),
-                          label: const Text('Connect & Fetch Models'),
+                          label: Text(
+                            t.settings.localProviderConfig.connectFetchButton,
+                          ),
                         ),
                         Expanded(
                           child: _LocalProviderStatusLine(
@@ -357,14 +358,17 @@ class _LocalProviderStatusLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isFetching) {
-      return const Row(
+      return Row(
         spacing: 8,
         children: [
-          SizedBox.square(
+          const SizedBox.square(
             dimension: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          Text('Connecting…', style: TextStyle(fontSize: 12)),
+          Text(
+            t.settings.providerConfig.connectingStatus,
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       );
     }
@@ -377,7 +381,7 @@ class _LocalProviderStatusLine extends StatelessWidget {
     }
     if (modelCount > 0) {
       return Text(
-        'Connected. Found $modelCount model${modelCount == 1 ? '' : 's'}.',
+        t.settings.localProviderConfig.connectedFoundModels(n: modelCount),
         style: TextStyle(color: colorScheme.primary, fontSize: 12),
       );
     }

@@ -2,22 +2,27 @@
 // onboarding LLM-step expander. Kept in one place so the wording stays
 // consistent across the two entry points.
 
-const kHaveLocalGgufExpanderTitle = 'I have a local GGUF file';
-const kPickFileLabel = 'Pick GGUF file...';
-const kLoadModelLabel = 'Load model';
-const kNativeContextLabel = 'Native context';
-const kFreeVramLabel = 'Free VRAM';
-const kContextSizeLabel = 'Context size';
-const kKvCacheLabel = 'KV cache';
-const kKvCacheAutoLabel = 'Auto';
+import 'package:cardwave/i18n/gen/translations.g.dart';
+
+String get kHaveLocalGgufExpanderTitle =>
+    t.settings.localGguf.haveLocalGgufExpanderTitle;
+String get kPickFileLabel => t.settings.localGguf.pickFileLabel;
+String get kLoadModelLabel => t.settings.localGguf.loadModelLabel;
+String get kNativeContextLabel => t.settings.localGguf.nativeContextLabel;
+String get kFreeVramLabel => t.settings.localGguf.freeVramLabel;
+String get kContextSizeLabel => t.settings.localGguf.contextSizeLabel;
+String get kKvCacheLabel => t.settings.localGguf.kvCacheLabel;
+String get kKvCacheAutoLabel => t.settings.localGguf.kvCacheAutoLabel;
 
 String modelTooLargeForVramMessage({
   required int neededMb,
   required int freeMb,
-}) =>
-    'This model needs about ${neededMb}MB of GPU memory but only ${freeMb}MB '
-    'is free. Close other GPU apps or pick a smaller / more-quantized model.';
+}) => t.settings.localGguf.modelTooLargeForVramMessage(
+  neededMb: neededMb,
+  freeMb: freeMb,
+);
 
 String modelBarelyFitsMessage({required int minimumContext}) =>
-    'This model barely fits even with q4_0 KV cache at $minimumContext '
-    'tokens. Consider a more-aggressively-quantized model file.';
+    t.settings.localGguf.modelBarelyFitsMessage(
+      minimumContext: minimumContext,
+    );

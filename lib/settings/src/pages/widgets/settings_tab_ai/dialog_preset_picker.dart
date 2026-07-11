@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/pages/widgets/settings_tab_ai/domain_pill.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -137,10 +138,10 @@ class _PresetPickerBodyState extends State<_PresetPickerBody> {
               padding: const EdgeInsets.only(bottom: 8),
               child: TextField(
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search by provider, model, or preset…',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: t.settings.aiTab.presetPickerSearchHint,
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
                   isDense: true,
                 ),
                 onChanged: (v) => setState(() => _query = v),

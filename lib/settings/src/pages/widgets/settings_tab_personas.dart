@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/controllers/personas_controller.dart';
 import 'package:cardwave/settings/src/models/chat_persona.dart';
 import 'package:cardwave/settings/src/services/settings_service.dart';
@@ -60,7 +61,7 @@ class _SettingsTabPersonasState extends State<SettingsTabPersonas> {
               key: const Key('persona-new-button'),
               onPressed: _addPersona,
               icon: const Icon(Icons.add),
-              label: const Text('New Persona'),
+              label: Text(t.settings.personaDialog.newTitle),
             ),
           ),
         ),
@@ -112,8 +113,8 @@ class _SettingsTabPersonasState extends State<SettingsTabPersonas> {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           tooltip: settings.defaultPersonaId == persona.id
-                              ? 'Cannot delete default persona'
-                              : 'Delete Persona',
+                              ? t.settings.personasTab.cannotDeleteDefaultTooltip
+                              : t.settings.personasTab.deleteTooltip,
                           onPressed: settings.defaultPersonaId == persona.id
                               ? null
                               : () => _deletePersona(persona),
