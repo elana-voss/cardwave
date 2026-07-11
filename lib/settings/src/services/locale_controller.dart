@@ -40,11 +40,53 @@ class LocaleController extends ChangeNotifier {
   /// right after settings load, at the same point the [ThemeNotifier] is
   /// seeded from saved settings. A null tag follows the device locale.
   void applyPersisted() {
+    _registerPluralResolvers();
     final tag = SettingsService().settings.localeTag;
     if (tag != null) {
       LocaleSettings.setLocaleRaw(tag);
     } else {
       LocaleSettings.useDeviceLocale();
+    }
+  }
+
+  /// slang ships CLDR cardinal plural resolvers for only a fixed set of
+  /// languages (of ours: en, es — es-419's language code is `es` — and ru).
+  /// The remaining UI languages otherwise fall back to a tolerant default
+  /// resolver that also prints a console warning on every plural render.
+  /// Register explicit resolvers so those locales pluralize per CLDR and stay
+  /// silent. Called once at bootstrap.
+  void _registerPluralResolvers() {
+    // Single-category languages: only `other` applies (ja, zh-Hans, zh-Hant,
+    // ko). `language: 'zh'` covers both Chinese scripts.
+    String otherOnly(num n,
+            {String? zero,
+            String? one,
+            String? two,
+            String? few,
+            String? many,
+            String? other}) =>
+        other!;
+    for (final language in const ['ja', 'zh', 'ko']) {
+      LocaleSettings.setPluralResolver(
+        language: language,
+        cardinalResolver: otherOnly,
+      );
+    }
+
+    // pt-BR and hi: the `one` category also covers 0.
+    String oneCoversZeroAndOne(num n,
+            {String? zero,
+            String? one,
+            String? two,
+            String? few,
+            String? many,
+            String? other}) =>
+        (n == 0 || n == 1) ? (one ?? other!) : other!;
+    for (final language in const ['pt', 'hi']) {
+      LocaleSettings.setPluralResolver(
+        language: language,
+        cardinalResolver: oneCoversZeroAndOne,
+      );
     }
   }
 }

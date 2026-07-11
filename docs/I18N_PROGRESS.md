@@ -6,7 +6,8 @@ as the work it describes. Conversation context is disposable; this file is not.
 ## Steps
 - [x] Step 1 — Plan (Fable) — done 2026-07-11
 - [x] Step 2 — Infrastructure (**Opus**) — done 2026-07-11
-- [ ] Step 3 — Extraction (**Sonnet**)
+- [x] Step 3 — Extraction (**Sonnet**) — done 2026-07-12 (all 14 rows + §3.7 sweep
+  below were checked off and committed; Step 4 flipped this stale top-level box)
 - [ ] Step 4 — Translation + glossary (**Opus**)
 - [ ] Step 5 — Error-check + web verification (**Opus**)
 - [ ] Step 6 — Optional acceptance (Fable)
@@ -82,9 +83,9 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 3.7 final leftover sweep done
 
 ## Step 4 checklist (Opus) — one commit per language
-- [ ] 4.1 Step-3 open questions resolved
-- [ ] 4.2 `docs/I18N_GLOSSARY.md` created
-- [ ] ru
+- [x] 4.1 Step-3 open questions resolved (decisions appended to each entry below)
+- [x] 4.2 `docs/I18N_GLOSSARY.md` created
+- [x] ru
 - [ ] pt-BR
 - [ ] es-419 (or es — see Step 2 contingency)
 - [ ] ja
@@ -94,6 +95,28 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [ ] hi
 - [ ] 4.5 self-review pass committed
 - [ ] 4.6 slang analyze: zero missing / zero unused
+
+### Step 4 notes
+- **Plural resolvers registered at bootstrap** (`locale_controller.dart`
+  `_registerPluralResolvers`, called once from `applyPersisted`): slang 3.32.0
+  ships CLDR cardinal resolvers for only `cs,de,en,es,fr,it,pl,ru,sv,vi`. Of our
+  9 locales `en`, `es` (es-419's languageCode is `es`) and `ru` are covered; the
+  rest fall back to slang's tolerant default resolver **which also `print()`s a
+  console warning on every plural render** — noise that Step 5's
+  `list_console_messages` pass would flag. Registered explicit resolvers:
+  `ja`/`zh`/`ko` → `other` only; `pt`/`hi` → `one` (covers 0 and 1) else `other`.
+  This is the §4.4-anticipated action (it names ja/zh/ko; extended to pt/hi for
+  the same reason). Only 4 plural keys exist in the whole app
+  (`group.dialogSelectGroup.memberCountLabel`,
+  `settings.localProviderConfig.connectedFoundModels`,
+  `editor.editorNodes.loadErrorMessage`,
+  `editor.nodesRawEditorPage.fixProblemsMessage`).
+- **es-419 confirmed**: kept `lib/i18n/es-419/`; Material `es` + slang `es`
+  resolver both apply via languageCode. No fallback to plain `es`.
+- **Glossary** (`docs/I18N_GLOSSARY.md`): canonical term table for all 8 target
+  languages + register cheatsheet. A known CJK terminology collision (persona vs
+  character both tend toward 角色) is resolved there: character = 角色, persona =
+  人设/人設.
 
 ## Step 5 checklist (Opus)
 - [ ] 5.1 branch diff review + fixes committed
@@ -166,6 +189,20 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   extraction. Flagging for Step 4/5 or a follow-up task; the qcheck
   lint rule Step 6 proposes (flag new hardcoded literals) should also
   catch new theme presets if any are added later.
+  **Resolved in Step 4 (non-action, kept untranslated):** confirmed
+  `ChatTheme.azure` is a compile-time-const default parameter at
+  `app_settings.dart:20` and `chat_view.dart:41`, so making `.name` a `t.`
+  getter would force a nullable-param + null-coalesce refactor spanning two
+  files outside the i18n surface — exactly the model-level refactor the plan
+  says to avoid. The names are also proper-noun-ish brand labels ('Azure',
+  'Glimmer', 'Moonlit Echoes', 'Cardwave Neon'), same treatment as the
+  "Cardwave" wordmark and the native language names in
+  `dialog_language_picker.dart`. Left as-is deliberately; glossary keeps them
+  untranslated. All other Step-3 open questions were reviewed and their
+  non-actions upheld (developer-surface exclusions for the taxonomy editor,
+  taxonomy controller, and NODES debug dialog; dual-use pass-through English for
+  the character AI-action field names and the workspace style-preset chips; the
+  `timeAgo`/settings-loading strings that the §3.7 sweep already extracted).
 - **[common] `UtilsApp.timeAgo()` relative-time unit strings**
   (`lib/common/src/utils/utils_app.dart:75-86`): NOT extracted. This
   hand-rolled formatter returns strings like `'$n y ago'`, `'$n mo ago'`,
