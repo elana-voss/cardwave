@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "모델",
+    "invalidLabel": "잘못됨",
+    "chooseModelTitle": "모델 선택"
+  },
+  "presetTile": {
+    "tapToChoose": "탭하여 선택"
+  },
+  "tileImagePreset": {
+    "titleLabel": "이미지 모델",
+    "chooseModelTitle": "이미지 모델 선택"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "비디오 모델",
+    "chooseModelTitle": "비디오 모델 선택"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "음성 모델",
+    "chooseModelTitle": "음성 모델 선택"
+  },
+  "tileImageAspectRatio": {
+    "label": "이미지 화면 비율"
+  },
+  "tileVideoAspectRatio": {
+    "label": "화면 비율"
+  },
+  "tileVideoResolution": {
+    "label": "해상도"
+  },
+  "tileVideoDuration": {
+    "label": "길이"
+  },
+  "tileTtsVoice": {
+    "label": "음성"
+  },
+  "tileTtsLanguage": {
+    "label": "언어"
+  },
+  "tileNsfw": {
+    "label": "NSFW / 무제한"
+  },
+  "tileScenario": {
+    "label": "시나리오"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "응답 길이 — $bucket",
+    "sliderLabel": "$bucket ($tokens 토큰)",
+    "bucketVeryShort": "매우 짧게",
+    "bucketShort": "짧게",
+    "bucketMedium": "보통",
+    "bucketLong": "길게",
+    "bucketVeryLong": "매우 길게"
+  },
+  "tileTrailingParagraph": {
+    "label": "끝부분 텍스트 자르기"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "추론 — $effort",
+    "titleOff": "추론 끔",
+    "extraTokensCaption": "최대 응답 길이를 넘어서 추가 토큰을 사용해요."
+  },
+  "tileChatTheme": {
+    "label": "테마"
+  },
+  "tileRecalledMemory": {
+    "label": "불러온 기억 표시"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "즐겨찾기",
+    "recentChatsTooltip": "최근 채팅",
+    "originalBadge": "원본",
+    "variantBadge": "변형",
+    "lastActive": "마지막 활동: $timeAgo",
+    "never": "없음"
+  },
+  "freeImagePromptDialog": {
+    "title": "이미지 생성",
+    "description": "보고 싶은 것을 설명하세요. 짧은 문구도 괜찮아요 — 모델이 전체 태그 목록으로 확장해 줘요.",
+    "subjectLabel": "주제",
+    "subjectHint": "cyberpunk alley, neon rain",
+    "generateButton": "생성"
+  },
+  "freeVideoPromptDialog": {
+    "title": "비디오 생성",
+    "description": "짧은 움직임의 순간을 설명하세요 — 무엇이, 어떻게, 어디서 움직이는지. 시스템 모델이 영화 같은 T2V 프롬프트로 확장해 줘요.",
+    "subjectLabel": "주제",
+    "subjectHint": "she walks through neon rain, slow motion",
+    "generateButton": "생성"
+  },
+  "imagePromptReviewDialog": {
+    "title": "이미지 프롬프트 검토",
+    "description": "생성하기 전에 아래 프롬프트를 편집하거나, 생성을 눌러 그대로 사용하세요.",
+    "fieldLabel": "이미지 프롬프트",
+    "generateButton": "생성"
+  },
+  "videoPromptReviewDialog": {
+    "title": "비디오 프롬프트 검토",
+    "description": "제출하기 전에 아래 프롬프트를 편집하거나, 생성을 눌러 그대로 사용하세요.",
+    "fieldLabel": "비디오 프롬프트",
+    "generateButton": "생성"
+  },
+  "urlFetchReviewDialog": {
+    "title": "웹 가져오기를 허용할까요?",
+    "description": "캐릭터가 이 URL의 내용을 읽으려고 해요.",
+    "purposeLabel": "목적:",
+    "denyButton": "거부",
+    "allowButton": "허용"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}토큰",
+    "generationTimeAbbrev": "${seconds}초",
+    "viewGenerationPromptTooltip": "생성 프롬프트 보기",
+    "messageActionsTooltip": "메시지 작업",
+    "editAction": "편집",
+    "copyAction": "복사",
+    "shareImageAction": "이미지 공유",
+    "setAsBackgroundAction": "배경으로 설정",
+    "setAsCharacterImageAction": "캐릭터 이미지로 설정",
+    "deleteAction": "삭제",
+    "copiedToClipboard": "메시지를 클립보드에 복사했어요"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "정지",
+    "readAloudTooltip": "소리 내어 읽기",
+    "ttsFailed": "TTS에 실패했어요."
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "이전 버전",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "다시 생성",
+    "nextVersionTooltip": "다음 버전"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "웹에서는 비디오 재생을 지원하지 않아요.",
+    "couldNotLoad": "비디오를 불러오지 못했어요."
+  },
+  "newChatLabel": "새 채팅",
+  "chatListItem": {
+    "messageCount": "메시지 $count개",
+    "renameAction": "이름 바꾸기",
+    "deleteChatAction": "채팅 삭제"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "채팅 이름 바꾸기",
+    "chatNameHint": "채팅 이름",
+    "renameButton": "이름 바꾸기",
+    "deleteChatTitle": "채팅 삭제",
+    "deleteChatMessage": "이 채팅 기록을 삭제할까요? 이 작업은 되돌릴 수 없어요."
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "어시스턴트 채팅 기록을 지울까요?",
+    "clearButton": "지우기",
+    "deleteOrKeepMessage": "현재 채팅을 삭제할까요, 아니면 기록에 남겨 둘까요?",
+    "deleteCurrentButton": "현재 삭제",
+    "keepCurrentButton": "현재 유지"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "이미지를 생성하려면 프롬프트를 입력하세요.",
+    "noCharacterMessage": "이미지 생성에 사용할 캐릭터가 없어요.",
+    "notConfiguredMessage": "이미지 생성이 설정되지 않았어요.",
+    "noSystemModelMessage": "시스템 모델이 설정되지 않았어요. 설정 → AI에서 설정하세요."
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "비디오를 생성하려면 프롬프트를 입력하세요.",
+    "noCharacterMessage": "비디오 생성에 사용할 캐릭터가 없어요.",
+    "notConfiguredMessage": "비디오 생성이 설정되지 않았어요."
+  },
+  "bubbleWaitingFor": {
+    "thinking": "생각 중…",
+    "preparingImagePrompt": "이미지 프롬프트 준비 중…",
+    "preparingVideoPrompt": "비디오 프롬프트 준비 중…",
+    "generatingImage": "이미지 생성 중…",
+    "generatingVideo": "비디오 생성 중…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "편집기 패널 숨기기",
+    "showEditorSideBySideTooltip": "편집기 나란히 보기"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "색인 다시 만드는 중...",
+    "noChatsFound": "채팅이 없어요."
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "미디어 생성",
+    "generateImageLabel": "이미지 생성",
+    "generateVideoLabel": "비디오 생성"
+  },
+  "chatView": {
+    "deleteMessageTitle": "메시지 삭제",
+    "deleteMessageConfirmation": "이 메시지를 삭제할까요?",
+    "typeMessageHint": "메시지를 입력하세요...",
+    "moreActionsTooltip": "더 많은 작업",
+    "continueAction": "계속",
+    "impersonateAction": "대신 말하기",
+    "generateReplyAction": "답장 생성",
+    "improveMessageAction": "메시지 다듬기"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "이미지",
+    "assistantFallbackName": "어시스턴트",
+    "reasoningLabel": "추론",
+    "sendingToProvider": "제공자에게 전송 중…",
+    "pollingWithPercent": "확인 중… $pct%",
+    "polling": "확인 중…",
+    "downloading": "다운로드 중…"
+  }
+}

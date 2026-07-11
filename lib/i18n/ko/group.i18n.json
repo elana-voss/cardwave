@@ -1,1 +1,111 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "그룹 이름 바꾸기",
+    "groupNameHint": "그룹 이름",
+    "deleteGroupTitle": "그룹 삭제",
+    "deleteGroupMessage": "\"$name\"을(를) 삭제할까요? 되돌릴 수 없어요."
+  },
+  "groupChatPage": {
+    "defaultGroupName": "그룹 채팅",
+    "failedToLoadMessage": "그룹 채팅을 불러오지 못했어요:\n$error",
+    "nextTurnTooltip": "다음 턴",
+    "stopAutoChatTooltip": "자동 채팅 중지",
+    "startAutoChatTooltip": "자동 채팅 시작",
+    "stopGenerationTooltip": "생성 중지",
+    "noCharactersYetMessage": "이 그룹에는 아직 캐릭터가 없어요.",
+    "addCharacterButton": "캐릭터 추가",
+    "pickCharacterMessage": "왼쪽 목록에서 캐릭터를 선택하세요."
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "그룹을 불러오지 못했어요:\n$error",
+    "unknownErrorFallback": "알 수 없는 오류",
+    "noGroupsYetMessage": "아직 그룹이 없어요 — +를 눌러 만드세요."
+  },
+  "tileAutoChatDelay": {
+    "title": "자동 채팅 지연",
+    "secondsAbbrev": "${seconds}초"
+  },
+  "tileActivationStrategy": {
+    "title": "화자 선택",
+    "naturalOption": "자연스럽게",
+    "roundRobinOption": "순차",
+    "randomOption": "무작위",
+    "changeSelectionTooltip": "화자 선택 변경"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "웹 가져오기 허용",
+    "allowWebFetchSubtitle": "관련 있을 때 공개 웹 페이지 읽기",
+    "reviewUrlTitle": "가져오기 전에 URL 검토",
+    "reviewUrlSubtitle": "가져올 때마다 확인",
+    "suggestNpcNamesTitle": "NPC 이름 제안",
+    "suggestNpcNamesSubtitle": "선별된 데이터베이스에서 이름 선택",
+    "unrestrictedImagesTitle": "무제한 이미지",
+    "allowNsfwImagePromptsSubtitle": "NSFW 이미지 프롬프트 허용",
+    "characterCanSendSelfiesTitle": "캐릭터가 셀카 보내기 가능",
+    "attachSelfieWhenNaturalSubtitle": "자연스러울 때 셀카 첨부",
+    "reviewImagePromptTitle": "이미지 프롬프트 검토",
+    "editBeforeGeneratingSubtitle": "생성 전에 편집",
+    "reviewToolImagePromptsTitle": "도구 이미지 프롬프트 검토",
+    "editToolTriggeredPromptsSubtitle": "도구가 생성한 프롬프트 편집",
+    "allowSelfieCaptionsTitle": "셀카 캡션 허용",
+    "captionRenderedOnImageSubtitle": "이미지에 캡션 표시",
+    "groupOverridesTitle": "그룹 재정의",
+    "groupOverridesSubtitle": "공유 시나리오, 메인 프롬프트, 예시 대화",
+    "chatSessionSubtitle": "채팅 세션",
+    "allChatsLabel": "모든 채팅",
+    "showImageLabel": "이미지 표시",
+    "groupSectionHeader": "그룹",
+    "chatSectionHeader": "채팅",
+    "chatThemeSectionHeader": "채팅 테마",
+    "unrestrictedVideosTitle": "무제한 비디오",
+    "allowNsfwVideoPromptsSubtitle": "NSFW 비디오 프롬프트 허용",
+    "characterCanSendVideosTitle": "캐릭터가 비디오 보내기 가능",
+    "attachShortVideoWhenNaturalSubtitle": "자연스러울 때 짧은 비디오 첨부",
+    "reviewVideoPromptTitle": "비디오 프롬프트 검토"
+  },
+  "groupCharacterPicker": {
+    "addButton": "추가",
+    "addWithCountButton": "$count개 추가",
+    "favoritesTooltip": "즐겨찾기",
+    "noMatchMessage": "\"$query\"과(와) 일치하는 캐릭터가 없어요",
+    "noFavoritesMessage": "즐겨찾기한 캐릭터가 없어요",
+    "allAddedMessage": "모든 캐릭터가 이미 추가되었어요"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "이 캐릭터가 말하게 하기",
+    "removeFromChatTitle": "채팅에서 제거"
+  },
+  "dialogCreateGroup": {
+    "title": "새 그룹",
+    "nameLabel": "이름",
+    "nameHint": "예: Bob & Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "이 채팅에만 적용돼요. 모든 그룹 구성원이 캐릭터 카드에 정의된 값 대신 이 값을 사용해요. 비워 두면 카드 값을 사용해요.",
+    "scenarioHint": "그룹의 공유 설정 (예: \"파리의 어느 카페에서\")",
+    "mainPromptLabel": "메인 프롬프트",
+    "mainPromptHint": "매 턴마다 적용되는 시스템 프롬프트",
+    "exampleDialogueLabel": "예시 대화",
+    "exampleDialogueHint": "말투/형식을 위한 공유 예시 메시지"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "캐릭터 추가",
+    "noCharactersYetMessage": "아직 캐릭터가 없어요.\n+를 눌러 추가하세요."
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "그룹을 삭제할까요?",
+    "deleteGroupMessage": "\"$name\"과(와) 모든 채팅 세션이 영구히 삭제돼요.",
+    "title": "그룹",
+    "noGroupsYetMessage": "아직 그룹이 없어요. \"새 그룹\"을 눌러 만드세요.",
+    "memberCountLabel(plural)": {
+      "other": "구성원 $n명"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "아직 구성원이 없어요"
+  },
+  "groupFileService": {
+    "defaultGroupName": "그룹"
+  }
+}

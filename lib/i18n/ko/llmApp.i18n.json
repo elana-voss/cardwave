@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "이미지 모델",
+    "imageAspectRatio": "이미지 화면 비율",
+    "imageNsfwAllowed": "이미지 NSFW 허용",
+    "imageToolSelfieAllowed": "셀카 전송 가능",
+    "imageToolSelfieCaptionsAllowed": "셀카 캡션 허용",
+    "imagePromptPrefix": "이미지 스타일",
+    "videoModel": "비디오 모델",
+    "videoResolution": "비디오 해상도",
+    "videoAspectRatio": "비디오 화면 비율",
+    "videoDuration": "비디오 길이",
+    "videoNsfwAllowed": "비디오 NSFW 허용",
+    "videoToolSendAllowed": "비디오 전송 가능",
+    "videoPromptPrefix": "비디오 스타일",
+    "ttsModel": "TTS 모델",
+    "ttsVoice": "TTS 음성",
+    "ttsLanguage": "TTS 언어",
+    "webToolFetchAllowed": "웹 가져오기 허용",
+    "nameToolSuggestAllowed": "NPC 이름 제안 가능"
+  },
+  "mediaSection": {
+    "image": "이미지",
+    "video": "비디오",
+    "tts": "TTS",
+    "web": "웹",
+    "names": "이름"
+  },
+  "tristate": {
+    "on": "켬",
+    "off": "끔",
+    "inherit": "상속"
+  },
+  "mediaCellMenu": {
+    "change": "변경…",
+    "clear": "지우기"
+  },
+  "mediaHeader": {
+    "appDefault": "앱 기본값",
+    "character": "캐릭터",
+    "currentChat": "현재 채팅",
+    "previousLayerTooltip": "이전 레이어",
+    "nextLayerTooltip": "다음 레이어"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "앱 기본값을 변경할까요?",
+    "changeAppDefaultMessage": "모든 채팅에 영향을 줘요. 계속할까요?",
+    "continueButton": "계속",
+    "chooseModelTitle": "$domain 모델 선택"
+  },
+  "mediaCell": {
+    "notApplicable": "해당 없음"
+  }
+}

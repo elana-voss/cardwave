@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "필터와 일치하는 캐릭터가 없어요",
+    "noCharacters": "아직 가져온 캐릭터가 없어요",
+    "clearAllFilters": "모든 필터 지우기",
+    "importCharacters": "캐릭터 가져오기",
+    "createNewCharacter": "새 캐릭터 만들기"
+  },
+  "appBar": {
+    "groups": "그룹",
+    "createNew": "새로 만들기",
+    "import": "가져오기",
+    "menuTooltip": "메뉴"
+  },
+  "fab": {
+    "addOrImportTooltip": "추가 또는 가져오기",
+    "import": "가져오기",
+    "create": "만들기"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "앱",
+    "batchAiHeader": "일괄 AI",
+    "batchGeneratePreviewsTitle": "미리보기 일괄 생성",
+    "batchGeneratePreviewsEmpty": "모든 캐릭터에 이미 미리보기가 있어요.",
+    "batchAutoTagTitle": "자동 태그 일괄 적용",
+    "batchAutoTagEmpty": "모든 캐릭터에 이미 태그가 있어요.",
+    "libraryHeader": "라이브러리",
+    "reloadCharacters": "캐릭터 다시 불러오기"
+  },
+  "variantBadge": {
+    "tooltip": "변형 $count개"
+  },
+  "dialogActions": {
+    "clearAll": "모두 지우기",
+    "apply": "적용"
+  },
+  "tagFilterDialog": {
+    "title": "태그 필터",
+    "searchHint": "태그 검색..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "필터 숨기기",
+    "moreFiltersTooltip": "더 많은 필터",
+    "folderChip": "폴더",
+    "creatorChip": "제작자",
+    "tagChip": "태그",
+    "recentTooltip": "최근",
+    "favoritesTooltip": "즐겨찾기",
+    "variantsTooltip": "변형",
+    "indexingProgress": "검색 색인 생성 중 $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "관련도 ↓",
+    "nameAsc": "이름 ↓",
+    "nameDesc": "이름 ↑",
+    "importNewest": "가져온 날짜 ↓",
+    "importOldest": "가져온 날짜 ↑",
+    "modifiedNewest": "수정한 날짜 ↓",
+    "modifiedOldest": "수정한 날짜 ↑",
+    "interactedNewest": "상호작용 ↓",
+    "interactedOldest": "상호작용 ↑",
+    "tokensHigh": "토큰 ↓",
+    "tokensLow": "토큰 ↑"
+  },
+  "filterController": {
+    "filterCreators": "제작자 필터",
+    "filterTags": "태그 필터",
+    "filterByFolder": "폴더로 필터"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "아직 표시할 항목이 없어요.",
+    "noMatches": "일치하는 항목이 없어요.",
+    "showMore": "더 보기"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "캐릭터 이름은 비워 둘 수 없어요.",
+    "nameInvalidCharsError": "이름에 사용할 수 없는 문자가 있어요 (<>:\"/\\|?*).",
+    "nameExistsError": "이 이름의 캐릭터가 이미 있어요.",
+    "nameCheckFailedError": "이름을 확인할 수 없어요. 폴더 권한을 확인하고 다시 시도하세요.",
+    "title": "새 캐릭터 만들기",
+    "nameLabel": "캐릭터 이름",
+    "createButton": "만들기"
+  },
+  "variantsSheet": {
+    "title": "변형"
+  },
+  "groupAppBar": {
+    "characters": "캐릭터",
+    "newGroup": "새 그룹"
+  },
+  "thumbnailBadges": {
+    "recent": "최근",
+    "original": "원본",
+    "variant": "변형"
+  },
+  "actionMenu": {
+    "editNotes": "노트 편집",
+    "dismissRecent": "최근에서 제외",
+    "exportPngV2V3": "PNG로 내보내기 (V2/V3)",
+    "exportJsonV3": "JSON으로 내보내기 (V3)",
+    "exportJsonV2": "JSON으로 내보내기 (V2)",
+    "duplicate": "복제"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "캐릭터를 복제하지 못했어요.",
+    "editVariantNotesTitle": "변형 노트 편집",
+    "editVariantNotesHint": "이 변형에 대한 노트를 추가하세요...",
+    "deleteCardTitle": "카드 삭제",
+    "deleteCardMessage": "이 카드를 삭제할까요?",
+    "deletePartialFailure": "일부 파일을 삭제하지 못했어요. 자세한 내용은 로그를 확인하세요."
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

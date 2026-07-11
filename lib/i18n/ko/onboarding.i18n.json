@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "설정에 실패했어요. 자세한 내용은 로그를 확인하세요.",
+  "appBarTitle": "빠른 설정",
+  "webWarning": "실험적인 웹 빌드예요 — 업데이트 사이에 브라우저 저장소가 초기화될 수 있어요. 데이터를 유지하려면 데스크톱이나 Android를 사용하세요.",
+  "finishButton": "설정 완료",
+  "nextButton": "다음",
+  "backButton": "뒤로",
+  "storageStep": {
+    "title": "캐릭터 저장소",
+    "subtitle": "캐릭터 카드를 어디에 저장할까요?",
+    "description": "기본적으로 앱 폴더에 저장돼요. 기존 PNG 폴더를 지정하면 가져올 수 있어요.",
+    "startFresh": "새로 시작",
+    "haveCards": "이미 카드가 있어요",
+    "importLaterHint": "PNG는 나중에 파일 → 가져오기로 가져올 수 있어요.",
+    "selectedPath": "선택됨: $path",
+    "selectedDefaultFolder": "선택됨: 기본 앱 폴더",
+    "noFolderSelected": "아직 선택된 폴더가 없어요."
+  },
+  "setupStep": {
+    "title": "AI 및 페르소나"
+  },
+  "aiSection": {
+    "heading": "AI 연결",
+    "optionalHint": "선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요 (로컬 제공자도 거기서 추가할 수 있어요).",
+    "apiKeyLabel": "API 키",
+    "apiKeyHint": "키를 붙여넣으세요 (또는 지금은 건너뛰기)",
+    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 더 많은 항목은 설정에 있어요.",
+    "unknownModel": "(알 수 없는 모델)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "변경"
+  },
+  "aiStatus": {
+    "connecting": "연결 중…",
+    "connected": "$provider에 연결되었어요. 기본 채팅 모델이 선택되었어요.",
+    "detected": "감지됨: $provider",
+    "unrecognizedKey": "인식할 수 없는 키 형식이에요."
+  },
+  "personaSection": {
+    "heading": "내 페르소나",
+    "hint": "채팅에서 사용할 이름이에요. 더 많은 페르소나 정보는 설정에 있어요.",
+    "nameLabel": "내 이름"
+  },
+  "disclaimer": {
+    "prefix": "다음을 읽고 동의합니다: ",
+    "linkText": "면책 조항"
+  },
+  "fetchError": {
+    "noModels": "반환된 모델이 없어요. API 키를 확인하세요.",
+    "connectionFailed": "연결하지 못했어요. 인터넷 연결과 API 키를 확인하세요."
+  }
+}
