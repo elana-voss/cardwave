@@ -1,1 +1,112 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "ग्रुप का नाम बदलें",
+    "groupNameHint": "ग्रुप का नाम",
+    "deleteGroupTitle": "ग्रुप हटाएं",
+    "deleteGroupMessage": "क्या आप वाकई \"$name\" हटाना चाहते हैं? यह पूर्ववत नहीं किया जा सकता।"
+  },
+  "groupChatPage": {
+    "defaultGroupName": "ग्रुप चैट",
+    "failedToLoadMessage": "ग्रुप चैट लोड करने में विफल:\n$error",
+    "nextTurnTooltip": "अगला टर्न",
+    "stopAutoChatTooltip": "ऑटो-चैट रोकें",
+    "startAutoChatTooltip": "ऑटो-चैट शुरू करें",
+    "stopGenerationTooltip": "जनरेशन रोकें",
+    "noCharactersYetMessage": "इस ग्रुप में अभी तक कोई कैरेक्टर नहीं है।",
+    "addCharacterButton": "एक कैरेक्टर जोड़ें",
+    "pickCharacterMessage": "बाईं ओर की सूची से एक कैरेक्टर चुनें।"
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "ग्रुप लोड करने में विफल:\n$error",
+    "unknownErrorFallback": "अज्ञात त्रुटि",
+    "noGroupsYetMessage": "अभी तक कोई ग्रुप नहीं — एक बनाने के लिए + टैप करें।"
+  },
+  "tileAutoChatDelay": {
+    "title": "ऑटो-चैट विलंब",
+    "secondsAbbrev": "${seconds}s"
+  },
+  "tileActivationStrategy": {
+    "title": "वक्ता चयन",
+    "naturalOption": "स्वाभाविक",
+    "roundRobinOption": "राउंड-रॉबिन",
+    "randomOption": "यादृच्छिक",
+    "changeSelectionTooltip": "वक्ता चयन बदलें"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "वेब फ़ेच की अनुमति दें",
+    "allowWebFetchSubtitle": "प्रासंगिक होने पर सार्वजनिक वेब पेज पढ़ें",
+    "reviewUrlTitle": "फ़ेच करने से पहले URL की समीक्षा करें",
+    "reviewUrlSubtitle": "हर फ़ेच की पुष्टि करें",
+    "suggestNpcNamesTitle": "NPC नाम सुझाएं",
+    "suggestNpcNamesSubtitle": "क्यूरेटेड डेटाबेस से नाम चुनें",
+    "unrestrictedImagesTitle": "अप्रतिबंधित इमेज",
+    "allowNsfwImagePromptsSubtitle": "NSFW इमेज प्रॉम्प्ट की अनुमति दें",
+    "characterCanSendSelfiesTitle": "कैरेक्टर सेल्फी भेज सकता है",
+    "attachSelfieWhenNaturalSubtitle": "स्वाभाविक होने पर सेल्फी संलग्न करें",
+    "reviewImagePromptTitle": "इमेज प्रॉम्प्ट की समीक्षा करें",
+    "editBeforeGeneratingSubtitle": "जनरेट करने से पहले एडिट करें",
+    "reviewToolImagePromptsTitle": "टूल इमेज प्रॉम्प्ट की समीक्षा करें",
+    "editToolTriggeredPromptsSubtitle": "टूल-ट्रिगर्ड प्रॉम्प्ट एडिट करें",
+    "allowSelfieCaptionsTitle": "सेल्फी कैप्शन की अनुमति दें",
+    "captionRenderedOnImageSubtitle": "इमेज पर कैप्शन रेंडर किया गया",
+    "groupOverridesTitle": "ग्रुप ओवरराइड",
+    "groupOverridesSubtitle": "साझा परिदृश्य, मुख्य प्रॉम्प्ट, उदाहरण संवाद",
+    "chatSessionSubtitle": "चैट सत्र",
+    "allChatsLabel": "सभी चैट",
+    "showImageLabel": "इमेज दिखाएं",
+    "groupSectionHeader": "ग्रुप",
+    "chatSectionHeader": "चैट",
+    "chatThemeSectionHeader": "चैट थीम",
+    "unrestrictedVideosTitle": "अप्रतिबंधित वीडियो",
+    "allowNsfwVideoPromptsSubtitle": "NSFW वीडियो प्रॉम्प्ट की अनुमति दें",
+    "characterCanSendVideosTitle": "कैरेक्टर वीडियो भेज सकता है",
+    "attachShortVideoWhenNaturalSubtitle": "स्वाभाविक होने पर एक छोटा वीडियो संलग्न करें",
+    "reviewVideoPromptTitle": "वीडियो प्रॉम्प्ट की समीक्षा करें"
+  },
+  "groupCharacterPicker": {
+    "addButton": "जोड़ें",
+    "addWithCountButton": "$count जोड़ें",
+    "favoritesTooltip": "पसंदीदा",
+    "noMatchMessage": "\"$query\" से कोई कैरेक्टर मेल नहीं खाता",
+    "noFavoritesMessage": "कोई पसंदीदा कैरेक्टर उपलब्ध नहीं",
+    "allAddedMessage": "सभी कैरेक्टर पहले से जोड़े गए"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "इस कैरेक्टर को बुलवाएं",
+    "removeFromChatTitle": "चैट से हटाएं"
+  },
+  "dialogCreateGroup": {
+    "title": "नया ग्रुप",
+    "nameLabel": "नाम",
+    "nameHint": "उदाहरण के लिए Bob & Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "इस चैट के लिए अद्वितीय। सभी ग्रुप सदस्य अपने कैरेक्टर कार्ड द्वारा परिभाषित के बजाय इन मानों का उपयोग करते हैं। कार्ड मान पर वापस जाने के लिए खाली छोड़ें।",
+    "scenarioHint": "ग्रुप के लिए साझा सेटिंग (उदाहरण के लिए \"पेरिस के एक कैफ़े में\")",
+    "mainPromptLabel": "मुख्य प्रॉम्प्ट",
+    "mainPromptHint": "हर टर्न के दौरान लागू होने वाला सिस्टम प्रॉम्प्ट",
+    "exampleDialogueLabel": "उदाहरण संवाद",
+    "exampleDialogueHint": "टोन / फ़ॉर्मेटिंग के लिए साझा उदाहरण संदेश"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "कैरेक्टर जोड़ें",
+    "noCharactersYetMessage": "अभी तक कोई कैरेक्टर नहीं।\nएक जोड़ने के लिए + टैप करें।"
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "ग्रुप हटाएं?",
+    "deleteGroupMessage": "\"$name\" और इसके सभी चैट सत्र स्थायी रूप से हटा दिए जाएंगे।",
+    "title": "ग्रुप",
+    "noGroupsYetMessage": "अभी तक कोई ग्रुप नहीं। एक बनाने के लिए \"नया ग्रुप\" टैप करें।",
+    "memberCountLabel(plural)": {
+      "one": "$n सदस्य",
+      "other": "$n सदस्य"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "अभी तक कोई सदस्य नहीं"
+  },
+  "groupFileService": {
+    "defaultGroupName": "ग्रुप"
+  }
+}

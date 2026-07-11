@@ -1,1 +1,261 @@
-{}
+{
+  "panelLabels": {
+    "basic": "मूल",
+    "greetings": "अभिवादन",
+    "prompts": "प्रॉम्प्ट",
+    "lorebook": "लोरबुक",
+    "group": "ग्रुप",
+    "creator": "निर्माता",
+    "appData": "ऐप डेटा",
+    "nodes": "नोड"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "असिस्टेंट पैनल छिपाएं",
+    "showChatAssistantTooltip": "चैट असिस्टेंट साथ-साथ दिखाएं"
+  },
+  "codeFindPanel": {
+    "noneResult": "कोई नहीं",
+    "previousTooltip": "पिछला",
+    "nextTooltip": "अगला",
+    "closeTooltip": "बंद करें",
+    "replaceTooltip": "बदलें",
+    "replaceAllTooltip": "सभी बदलें"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "सभी बदलने की पुष्टि करें",
+    "confirmReplaceAllMessage": "क्या आप वाकई आगे बढ़ना चाहते हैं?\nयह क्रिया अपरिवर्तनीय है और सभी फ़ील्ड को प्रभावित करती है।",
+    "proceedButton": "आगे बढ़ें",
+    "title": "खोजें और बदलें",
+    "findLabel": "खोजें",
+    "replaceWithLabel": "इससे बदलें",
+    "replaceAllButton": "सभी बदलें"
+  },
+  "objectValueEditor": {
+    "stringType": "स्ट्रिंग",
+    "numberType": "संख्या",
+    "boolType": "बूल"
+  },
+  "editorBasic": {
+    "nameLabel": "नाम",
+    "nicknameLabel": "उपनाम (CCv3)",
+    "descriptionLabel": "विवरण",
+    "personalityLabel": "व्यक्तित्व",
+    "scenarioLabel": "परिदृश्य",
+    "messageExampleLabel": "संदेश उदाहरण"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "सिस्टम नाम (CCv3)",
+    "creatorLabel": "निर्माता",
+    "versionLabel": "संस्करण",
+    "creatorNotesLabel": "निर्माता नोट्स",
+    "tagsLabel": "टैग (अल्पविराम से अलग)"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "सिस्टम प्रॉम्प्ट",
+    "postHistoryInstructionsLabel": "पोस्ट हिस्ट्री निर्देश",
+    "depthPromptLabel": "डेप्थ प्रॉम्प्ट (कैरेक्टर नोट्स)",
+    "insertionDepthLabel": "इंसर्शन डेप्थ",
+    "roleLabel": "भूमिका"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "वैरिएंट नोट्स",
+    "descriptionPreviewLabel": "विवरण प्रीव्यू"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "अभिवादन हटाएं",
+    "deleteGreetingMessage": "क्या आप वाकई यह अभिवादन हटाना चाहते हैं?",
+    "addGreetingButton": "अभिवादन जोड़ें",
+    "primaryGreetingLabel": "प्राथमिक अभिवादन (first_mes)",
+    "alternateGreetingLabel": "वैकल्पिक अभिवादन #$index",
+    "removeTooltip": "हटाएं"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "अभिवादन $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "नई प्रविष्टि",
+    "deleteEntryTitle": "प्रविष्टि हटाएं",
+    "deleteEntryMessage": "क्या आप वाकई यह प्रविष्टि हटाना चाहते हैं?",
+    "addNewEntryButton": "नई प्रविष्टि जोड़ें",
+    "noEntriesFound": "कोई लोरबुक प्रविष्टि नहीं मिली।"
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "अनाम प्रविष्टि",
+    "noKeywords": "कोई कीवर्ड नहीं"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "लोरबुक प्रविष्टि एडिट करें",
+    "advancedFilter": "उन्नत",
+    "primaryKeywordsLabel": "प्राथमिक कीवर्ड",
+    "logicLabel": "लॉजिक",
+    "logicAndAny": "AND ANY",
+    "logicAndAll": "AND ALL",
+    "logicNotAny": "NOT ANY",
+    "logicNotAll": "NOT ALL",
+    "optionalFilterLabel": "वैकल्पिक फ़िल्टर",
+    "contentLabel": "सामग्री",
+    "nonRecursableFilter": "नॉन-रिकर्सेबल",
+    "preventFurtherRecursionFilter": "आगे की रिकर्सन रोकें",
+    "delayUntilRecursionFilter": "रिकर्सन तक विलंब करें",
+    "ignoreBudgetFilter": "बजट अनदेखा करें",
+    "prioritizeFilter": "प्राथमिकता दें",
+    "inclusionGroupLabel": "इंक्लूजन ग्रुप",
+    "groupWeightLabel": "ग्रुप वेट",
+    "stickyLabel": "स्टिकी",
+    "cooldownLabel": "कूलडाउन",
+    "delayLabel": "विलंब",
+    "filterToCharactersLabel": "कैरेक्टर या टैग तक फ़िल्टर करें",
+    "filterToTriggersLabel": "जनरेशन ट्रिगर तक फ़िल्टर करें",
+    "additionalMatchingSourcesLabel": "अतिरिक्त मैचिंग स्रोत:",
+    "personaFilter": "पर्सोना",
+    "descriptionFilter": "विवरण",
+    "personalityFilter": "व्यक्तित्व",
+    "depthPromptFilter": "डेप्थ प्रॉम्प्ट",
+    "scenarioFilter": "परिदृश्य",
+    "creatorNotesFilter": "निर्माता नोट्स"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "शीर्षक/मेमो",
+    "strategyLabel": "रणनीति",
+    "strategyConstant": "स्थिर",
+    "strategyEnabled": "सक्षम",
+    "strategyDisabled": "अक्षम",
+    "strategyVectorized": "वेक्टराइज़्ड",
+    "positionLabel": "स्थिति",
+    "positionUpChar": "↑ Char",
+    "positionDownChar": "↓ Char",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D System",
+    "positionDepthUser": "@D User",
+    "positionDepthAssistant": "@D Assistant",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Outlet",
+    "depthLabel": "डेप्थ",
+    "orderLabel": "क्रम",
+    "triggerLabel": "ट्रिगर %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "स्कैन डेप्थ",
+    "automationIdLabel": "ऑटोमेशन ID",
+    "useRegexFilter": "regex उपयोग करें",
+    "caseSensitiveFilter": "केस संवेदनशील",
+    "wholeWordsFilter": "पूरे शब्द",
+    "groupScoringFilter": "ग्रुप स्कोरिंग"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "$actionName की पुष्टि करें",
+    "title": "सामग्री क्लीनर",
+    "normalizeFancyCharsAction": "फैंसी अक्षर सामान्य करें",
+    "normalizeFancyCharsButton": "फैंसी अक्षर सामान्य करें (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "HTML हटाएं",
+    "purgeHtmlButton": "HTML टैग हटाएं",
+    "purgeMarkdownAction": "Markdown लिंक/इमेज हटाएं",
+    "purgeEmojisAction": "इमोजी हटाएं",
+    "purgeExtraSpacesAction": "अतिरिक्त स्पेस हटाएं",
+    "yoloPurgeAction": "योलो पर्ज",
+    "applyAllAboveButton": "ऊपर के सभी लागू करें"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "बदलाव लागू करें",
+    "originalTextTitle": "मूल टेक्स्ट",
+    "suggestedTextTitle": "सुझाया गया टेक्स्ट"
+  },
+  "editorPageController": {
+    "globalActionTitle": "ग्लोबल $action",
+    "globalAiActionFailed": "ग्लोबल AI क्रिया विफल हुई। लॉग देखें।",
+    "compositeName": "नाम:\n$value\n",
+    "compositeDescription": "विवरण:\n$value\n",
+    "compositePersonality": "व्यक्तित्व:\n$value\n",
+    "compositeScenario": "परिदृश्य:\n$value\n",
+    "compositeFirstMessage": "पहला संदेश:\n$value\n",
+    "compositeMessageExample": "संदेश उदाहरण:\n$value\n",
+    "compositeCreatorNotes": "निर्माता नोट्स:\n$value\n",
+    "compositeSystemPrompt": "सिस्टम प्रॉम्प्ट:\n$value\n",
+    "compositePostHistoryInstructions": "पोस्ट-हिस्ट्री निर्देश:\n$value\n",
+    "compositeAlternateGreeting": "वैकल्पिक अभिवादन #$index:\n$value\n",
+    "compositeGroupGreeting": "ग्रुप अभिवादन #$index:\n$value\n",
+    "compositeLorebookEntry": "लोरबुक प्रविष्टि #$index:\n$value\n",
+    "imageTooLargeMessage": "चयनित इमेज बहुत बड़ी है। अधिकतम आकार $maxSize है।",
+    "invalidPngMessage": "चयनित इमेज एक मान्य PNG नहीं है या पढ़ी नहीं जा सकी।"
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "नोड हटाएं",
+    "deleteNodeMessage": "क्या इस लिखे गए नोड को कार्ड से हटाएं?",
+    "engineSeedTitle": "इंजन सीड",
+    "visualEditorTooltip": "विज़ुअल एडिटर",
+    "editJsonTooltip": "JSON एडिट करें",
+    "initialGoalLabel": "प्रारंभिक लक्ष्य",
+    "initialSceneLabel": "प्रारंभिक दृश्य",
+    "locationLabel": "स्थान",
+    "timeOfDayLabel": "दिन का समय",
+    "presentEntitiesLabel": "उपस्थित (अल्पविराम से अलग)",
+    "sensoryHooksLabel": "संवेदी हुक (अल्पविराम से अलग)",
+    "addNodeButton": "नोड जोड़ें",
+    "noAuthoredNodesYet": "अभी तक कोई लिखा गया नोड नहीं।",
+    "loadErrorMessage(plural)": {
+      "one": "इस कार्ड के नोड ब्लॉक में $n समस्या है; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।",
+      "other": "इस कार्ड के नोड ब्लॉक में $n समस्याएं हैं; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।"
+    },
+    "moreErrorsSuffix": "… $n और",
+    "emotionBaselineLabel": "भावना आधाररेखा",
+    "emotionChipLabel": "भावना"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "स्पॉन: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "शीर्ष स्तर एक JSON ऑब्जेक्ट होना चाहिए",
+    "editNodesJsonTitle": "नोड JSON एडिट करें",
+    "fixProblemsMessage(plural)": {
+      "one": "सहेजने के लिए $n समस्या ठीक करें।",
+      "other": "सहेजने के लिए $n समस्याएं ठीक करें।"
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "स्पॉन स्रोत",
+    "spawnsPort": "स्पॉन",
+    "editNodeLabel": "नोड एडिट करें",
+    "addNodeTooltip": "नोड जोड़ें"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "नाम",
+    "narrativePayloadLabel": "नैरेटिव पेलोड",
+    "removeSpawnLinkTitle": "स्पॉन लिंक हटाएं",
+    "removeSpawnLinkMessage": "इस नोड को \"$nodeId\" स्पॉन करने से रोकें? नोड स्वयं कार्ड पर बना रहेगा।",
+    "removeButton": "हटाएं",
+    "typeLabel": "प्रकार",
+    "scopeLabel": "स्कोप",
+    "originLabel": "मूल",
+    "triggerProbLabel": "ट्रिगर प्रायिकता",
+    "delayHelper": "पात्र बनने से पहले प्रतीक्षा के टर्न। -1 का अर्थ 0 है।",
+    "cooldownHelper": "फायर होने के बाद लॉक रहने के टर्न। -1 का अर्थ कोई कूलडाउन नहीं।",
+    "stickyHelper": "फायर होने के बाद नैरेटिव पेलोड जितने टर्न \"Lingering\" के रूप में दिखता रहता है। -1 का अर्थ स्थायी।",
+    "aliveHelper": "हटाए जाने से पहले नोड पूल में जितने टर्न रहता है। -1 का अर्थ हमेशा के लिए।",
+    "setToNeverButton": "कभी नहीं पर सेट करें",
+    "effectsSectionLabel": "प्रभाव",
+    "emotionDeltasTitle": "भावना डेल्टा",
+    "physicalDeltasTitle": "भौतिक डेल्टा",
+    "relationshipDeltasTitle": "संबंध डेल्टा",
+    "addDeltaChip": "डेल्टा जोड़ें",
+    "knowledgeWritesTitle": "ज्ञान लेखन",
+    "addFactChip": "तथ्य जोड़ें",
+    "topicLabel": "विषय",
+    "confidenceLabel": "विश्वास",
+    "flagSetTitle": "फ्लैग सेट",
+    "addFlagChip": "फ्लैग जोड़ें",
+    "keyLabel": "कुंजी",
+    "sceneAndFlowTitle": "दृश्य और प्रवाह",
+    "goalChangeLabel": "goalChange (खाली होने पर वर्तमान लक्ष्य साफ़ कर देता है)",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "(कोई नहीं)",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "true होने पर, इंजन इस फायरिंग को दृश्य परिवर्तन के रूप में चिह्नित करता है।",
+    "spawnsSectionLabel": "स्पॉन",
+    "addNewChip": "नया जोड़ें",
+    "linkExistingChip": "मौजूदा लिंक करें",
+    "unlinkTooltip": "अनलिंक करें",
+    "predicateLabel": "प्रेडिकेट"
+  }
+}

@@ -1,1 +1,11 @@
-{}
+{
+  "chatCharacter": {
+    "navigationError": "चैट पर नेविगेशन त्रुटि। कैरेक्टर: $name"
+  },
+  "editCharacter": {
+    "navigationError": "एडिट पर नेविगेशन त्रुटि। कैरेक्टर: $name"
+  },
+  "editPreset": {
+    "navigationError": "प्रीसेट एडिट पर नेविगेशन त्रुटि: $presetId"
+  }
+}

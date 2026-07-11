@@ -92,7 +92,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] zh-Hans
 - [x] zh-Hant
 - [x] ko
-- [ ] hi
+- [x] hi
 - [ ] 4.5 self-review pass committed
 - [ ] 4.6 slang analyze: zero missing / zero unused
 

@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "सेटअप विफल हुआ। विवरण के लिए लॉग देखें।",
+  "appBarTitle": "त्वरित सेटअप",
+  "webWarning": "प्रायोगिक वेब बिल्ड — अपडेट के बीच ब्राउज़र स्टोरेज रीसेट हो सकता है। स्थायी डेटा के लिए डेस्कटॉप या Android का उपयोग करें।",
+  "finishButton": "सेटअप पूर्ण करें",
+  "nextButton": "अगला",
+  "backButton": "पीछे",
+  "storageStep": {
+    "title": "कैरेक्टर स्टोरेज",
+    "subtitle": "हम आपके कैरेक्टर कार्ड कहाँ सहेजें?",
+    "description": "डिफ़ॉल्ट रूप से ऐप फ़ोल्डर में सहेजा जाता है। इम्पोर्ट करने के लिए किसी मौजूदा PNG फ़ोल्डर की ओर इंगित करें।",
+    "startFresh": "नए सिरे से शुरू करें",
+    "haveCards": "मेरे पास पहले से कार्ड हैं",
+    "importLaterHint": "बाद में फ़ाइल → इम्पोर्ट के माध्यम से PNG इम्पोर्ट करें।",
+    "selectedPath": "चयनित: $path",
+    "selectedDefaultFolder": "चयनित: डिफ़ॉल्ट ऐप फ़ोल्डर",
+    "noFolderSelected": "अभी तक कोई फ़ोल्डर चयनित नहीं।"
+  },
+  "setupStep": {
+    "title": "AI और पर्सोना"
+  },
+  "aiSection": {
+    "heading": "AI कनेक्शन",
+    "optionalHint": "वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें (लोकल प्रोवाइडर भी वहाँ जोड़े जा सकते हैं)।",
+    "apiKeyLabel": "API कुंजी",
+    "apiKeyHint": "अपनी कुंजी पेस्ट करें (या अभी के लिए छोड़ें)",
+    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है। और सेटिंग्स में।",
+    "unknownModel": "(अज्ञात मॉडल)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "बदलें"
+  },
+  "aiStatus": {
+    "connecting": "कनेक्ट हो रहा है…",
+    "connected": "$provider से कनेक्ट हुआ। डिफ़ॉल्ट चैट मॉडल चयनित।",
+    "detected": "पहचाना गया: $provider",
+    "unrecognizedKey": "अपरिचित कुंजी प्रारूप।"
+  },
+  "personaSection": {
+    "heading": "आपका पर्सोना",
+    "hint": "चैट में आपका नाम। और पर्सोना विवरण सेटिंग्स में।",
+    "nameLabel": "आपका नाम"
+  },
+  "disclaimer": {
+    "prefix": "मैंने पढ़ लिया है और सहमत हूँ: ",
+    "linkText": "अस्वीकरण"
+  },
+  "fetchError": {
+    "noModels": "कोई मॉडल नहीं लौटाया गया। अपनी API कुंजी जांचें।",
+    "connectionFailed": "कनेक्ट नहीं हो सका। अपना इंटरनेट कनेक्शन और API कुंजी जांचें।"
+  }
+}

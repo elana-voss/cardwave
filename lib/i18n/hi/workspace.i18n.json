@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "इमेज स्टाइल",
+    "noneValue": "कोई नहीं"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "वीडियो स्टाइल"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "डिस्प्ले",
+    "showCharacterImageTitle": "कैरेक्टर इमेज दिखाएं",
+    "wideScreenOnlySubtitle": "केवल वाइड-स्क्रीन एडिटर"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "एडिटिंग"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "एक्सपोर्ट",
+    "exportPngTitle": "PNG (V2/V3) के रूप में एक्सपोर्ट करें",
+    "exportJsonV3Title": "JSON (V3) के रूप में एक्सपोर्ट करें",
+    "exportJsonV2Title": "JSON (V2) के रूप में एक्सपोर्ट करें"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "इमेज रीसेट करें"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "असिस्टेंट कार्ड एडिट"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "पसंदीदा",
+    "nodesEngineTitle": "NODES इंजन",
+    "debugSnapshotSubtitle": "डीबग स्नैपशॉट",
+    "characterSubtitle": "कैरेक्टर"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "कोई स्टाइल चयनित नहीं"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "चैट इंडेक्स फिर से बन रहा है...",
+    "selectChatToStartMessagingMessage": "मैसेजिंग शुरू करने के लिए एक चैट चुनें",
+    "failedToLoadAssistantMessage": "असिस्टेंट लोड करने में विफल।"
+  }
+}

@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "इमेज मॉडल",
+    "imageAspectRatio": "इमेज आस्पेक्ट रेशियो",
+    "imageNsfwAllowed": "इमेज NSFW अनुमत",
+    "imageToolSelfieAllowed": "सेल्फी भेज सकता है",
+    "imageToolSelfieCaptionsAllowed": "सेल्फी कैप्शन की अनुमति दें",
+    "imagePromptPrefix": "इमेज स्टाइल",
+    "videoModel": "वीडियो मॉडल",
+    "videoResolution": "वीडियो रिज़ॉल्यूशन",
+    "videoAspectRatio": "वीडियो आस्पेक्ट रेशियो",
+    "videoDuration": "वीडियो अवधि",
+    "videoNsfwAllowed": "वीडियो NSFW अनुमत",
+    "videoToolSendAllowed": "वीडियो भेज सकता है",
+    "videoPromptPrefix": "वीडियो स्टाइल",
+    "ttsModel": "TTS मॉडल",
+    "ttsVoice": "TTS आवाज़",
+    "ttsLanguage": "TTS भाषा",
+    "webToolFetchAllowed": "वेब फ़ेच की अनुमति दें",
+    "nameToolSuggestAllowed": "NPC नाम सुझा सकता है"
+  },
+  "mediaSection": {
+    "image": "इमेज",
+    "video": "वीडियो",
+    "tts": "TTS",
+    "web": "वेब",
+    "names": "नाम"
+  },
+  "tristate": {
+    "on": "चालू",
+    "off": "बंद",
+    "inherit": "इनहेरिट"
+  },
+  "mediaCellMenu": {
+    "change": "बदलें…",
+    "clear": "साफ़ करें"
+  },
+  "mediaHeader": {
+    "appDefault": "ऐप डिफ़ॉल्ट",
+    "character": "कैरेक्टर",
+    "currentChat": "वर्तमान चैट",
+    "previousLayerTooltip": "पिछली परत",
+    "nextLayerTooltip": "अगली परत"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "ऐप डिफ़ॉल्ट बदलें?",
+    "changeAppDefaultMessage": "यह हर चैट को प्रभावित करता है। जारी रखें?",
+    "continueButton": "जारी रखें",
+    "chooseModelTitle": "एक $domain मॉडल चुनें"
+  },
+  "mediaCell": {
+    "notApplicable": "लागू नहीं"
+  }
+}

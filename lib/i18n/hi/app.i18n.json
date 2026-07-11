@@ -1,1 +1,5 @@
-{}
+{
+  "appBootstrapper": {
+    "failedToInitializeMessage": "ऐप शुरू करने में विफल:\n\n$error"
+  }
+}

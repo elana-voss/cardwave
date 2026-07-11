@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "मॉडल",
+    "invalidLabel": "अमान्य",
+    "chooseModelTitle": "एक मॉडल चुनें"
+  },
+  "presetTile": {
+    "tapToChoose": "चुनने के लिए टैप करें"
+  },
+  "tileImagePreset": {
+    "titleLabel": "इमेज मॉडल",
+    "chooseModelTitle": "एक इमेज मॉडल चुनें"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "वीडियो मॉडल",
+    "chooseModelTitle": "एक वीडियो मॉडल चुनें"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "स्पीच मॉडल",
+    "chooseModelTitle": "एक स्पीच मॉडल चुनें"
+  },
+  "tileImageAspectRatio": {
+    "label": "इमेज आस्पेक्ट रेशियो"
+  },
+  "tileVideoAspectRatio": {
+    "label": "आस्पेक्ट रेशियो"
+  },
+  "tileVideoResolution": {
+    "label": "रिज़ॉल्यूशन"
+  },
+  "tileVideoDuration": {
+    "label": "अवधि"
+  },
+  "tileTtsVoice": {
+    "label": "आवाज़"
+  },
+  "tileTtsLanguage": {
+    "label": "भाषा"
+  },
+  "tileNsfw": {
+    "label": "NSFW / असीमित"
+  },
+  "tileScenario": {
+    "label": "परिदृश्य"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "प्रतिक्रिया लंबाई — $bucket",
+    "sliderLabel": "$bucket ($tokens टोकन)",
+    "bucketVeryShort": "बहुत छोटा",
+    "bucketShort": "छोटा",
+    "bucketMedium": "मध्यम",
+    "bucketLong": "लंबा",
+    "bucketVeryLong": "बहुत लंबा"
+  },
+  "tileTrailingParagraph": {
+    "label": "अंत का टेक्स्ट काटें"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "रीज़निंग — $effort",
+    "titleOff": "रीज़निंग बंद",
+    "extraTokensCaption": "आपकी अधिकतम प्रतिक्रिया लंबाई से अधिक अतिरिक्त टोकन का उपयोग करता है।"
+  },
+  "tileChatTheme": {
+    "label": "थीम"
+  },
+  "tileRecalledMemory": {
+    "label": "याद की गई मेमोरी दिखाएं"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "पसंदीदा",
+    "recentChatsTooltip": "हाल की चैट",
+    "originalBadge": "मूल",
+    "variantBadge": "वैरिएंट",
+    "lastActive": "अंतिम बार सक्रिय: $timeAgo",
+    "never": "कभी नहीं"
+  },
+  "freeImagePromptDialog": {
+    "title": "इमेज जनरेट करें",
+    "description": "आप क्या देखना चाहते हैं, उसका वर्णन करें। एक छोटा वाक्यांश भी ठीक है — मॉडल इसे एक पूरी टैग सूची में विस्तृत कर देगा।",
+    "subjectLabel": "विषय",
+    "subjectHint": "cyberpunk alley, neon rain",
+    "generateButton": "जनरेट करें"
+  },
+  "freeVideoPromptDialog": {
+    "title": "वीडियो जनरेट करें",
+    "description": "गति के एक छोटे क्षण का वर्णन करें — क्या हिल रहा है, कैसे, कहाँ। सिस्टम मॉडल इसे एक सिनेमैटिक T2V प्रॉम्प्ट में विस्तृत कर देगा।",
+    "subjectLabel": "विषय",
+    "subjectHint": "she walks through neon rain, slow motion",
+    "generateButton": "जनरेट करें"
+  },
+  "imagePromptReviewDialog": {
+    "title": "इमेज प्रॉम्प्ट की समीक्षा करें",
+    "description": "जनरेट करने से पहले नीचे दिए गए प्रॉम्प्ट को एडिट करें, या इसे वैसे ही उपयोग करने के लिए जनरेट करें पर टैप करें।",
+    "fieldLabel": "इमेज प्रॉम्प्ट",
+    "generateButton": "जनरेट करें"
+  },
+  "videoPromptReviewDialog": {
+    "title": "वीडियो प्रॉम्प्ट की समीक्षा करें",
+    "description": "सबमिट करने से पहले नीचे दिए गए प्रॉम्प्ट को एडिट करें, या इसे वैसे ही उपयोग करने के लिए जनरेट करें पर टैप करें।",
+    "fieldLabel": "वीडियो प्रॉम्प्ट",
+    "generateButton": "जनरेट करें"
+  },
+  "urlFetchReviewDialog": {
+    "title": "वेब फ़ेच की अनुमति दें?",
+    "description": "कैरेक्टर इस URL की सामग्री पढ़ना चाहता है।",
+    "purposeLabel": "उद्देश्य:",
+    "denyButton": "अस्वीकार करें",
+    "allowButton": "अनुमति दें"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}s",
+    "viewGenerationPromptTooltip": "जनरेशन प्रॉम्प्ट देखें",
+    "messageActionsTooltip": "संदेश क्रियाएं",
+    "editAction": "एडिट करें",
+    "copyAction": "कॉपी करें",
+    "shareImageAction": "इमेज साझा करें",
+    "setAsBackgroundAction": "बैकग्राउंड के रूप में सेट करें",
+    "setAsCharacterImageAction": "कैरेक्टर इमेज के रूप में सेट करें",
+    "deleteAction": "हटाएं",
+    "copiedToClipboard": "संदेश क्लिपबोर्ड पर कॉपी किया गया"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "रोकें",
+    "readAloudTooltip": "ज़ोर से पढ़ें",
+    "ttsFailed": "TTS विफल हुआ।"
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "पिछला संस्करण",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "दोबारा जनरेट करें",
+    "nextVersionTooltip": "अगला संस्करण"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "वेब पर वीडियो प्लेबैक समर्थित नहीं है।",
+    "couldNotLoad": "वीडियो लोड नहीं किया जा सका।"
+  },
+  "newChatLabel": "नई चैट",
+  "chatListItem": {
+    "messageCount": "$count संदेश",
+    "renameAction": "नाम बदलें",
+    "deleteChatAction": "चैट हटाएं"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "चैट का नाम बदलें",
+    "chatNameHint": "चैट का नाम",
+    "renameButton": "नाम बदलें",
+    "deleteChatTitle": "चैट हटाएं",
+    "deleteChatMessage": "क्या आप वाकई यह चैट इतिहास हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।"
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "असिस्टेंट चैट इतिहास साफ़ करें?",
+    "clearButton": "साफ़ करें",
+    "deleteOrKeepMessage": "क्या आप वर्तमान चैट हटाना चाहते हैं या इसे अपने इतिहास में रखना चाहते हैं?",
+    "deleteCurrentButton": "वर्तमान हटाएं",
+    "keepCurrentButton": "वर्तमान रखें"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "इमेज जनरेट करने के लिए एक प्रॉम्प्ट दर्ज करें।",
+    "noCharacterMessage": "इमेज जनरेशन के लिए कोई कैरेक्टर उपलब्ध नहीं है।",
+    "notConfiguredMessage": "इमेज जनरेशन कॉन्फ़िगर नहीं किया गया है।",
+    "noSystemModelMessage": "कोई सिस्टम मॉडल कॉन्फ़िगर नहीं किया गया है। सेटिंग्स → AI में एक सेट करें।"
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "वीडियो जनरेट करने के लिए एक प्रॉम्प्ट दर्ज करें।",
+    "noCharacterMessage": "वीडियो जनरेशन के लिए कोई कैरेक्टर उपलब्ध नहीं है।",
+    "notConfiguredMessage": "वीडियो जनरेशन कॉन्फ़िगर नहीं किया गया है।"
+  },
+  "bubbleWaitingFor": {
+    "thinking": "सोच रहा है…",
+    "preparingImagePrompt": "इमेज प्रॉम्प्ट तैयार हो रहा है…",
+    "preparingVideoPrompt": "वीडियो प्रॉम्प्ट तैयार हो रहा है…",
+    "generatingImage": "इमेज जनरेट हो रही है…",
+    "generatingVideo": "वीडियो जनरेट हो रहा है…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "एडिटर पैनल छिपाएं",
+    "showEditorSideBySideTooltip": "एडिटर साथ-साथ दिखाएं"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "इंडेक्स फिर से बन रहा है...",
+    "noChatsFound": "कोई चैट नहीं मिली।"
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "मीडिया जनरेट करें",
+    "generateImageLabel": "इमेज जनरेट करें",
+    "generateVideoLabel": "वीडियो जनरेट करें"
+  },
+  "chatView": {
+    "deleteMessageTitle": "संदेश हटाएं",
+    "deleteMessageConfirmation": "क्या आप वाकई यह संदेश हटाना चाहते हैं?",
+    "typeMessageHint": "एक संदेश लिखें...",
+    "moreActionsTooltip": "अधिक क्रियाएं",
+    "continueAction": "जारी रखें",
+    "impersonateAction": "आपकी ओर से लिखें",
+    "generateReplyAction": "जवाब जनरेट करें",
+    "improveMessageAction": "संदेश सुधारें"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "इमेज",
+    "assistantFallbackName": "असिस्टेंट",
+    "reasoningLabel": "रीज़निंग",
+    "sendingToProvider": "प्रोवाइडर को भेजा जा रहा है…",
+    "pollingWithPercent": "पोलिंग… $pct%",
+    "polling": "पोलिंग…",
+    "downloading": "डाउनलोड हो रहा है…"
+  }
+}

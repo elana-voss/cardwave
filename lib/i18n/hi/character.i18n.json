@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "स्टाइल कीवर्ड",
+    "imageTitle": "इमेज स्टाइल",
+    "imageDescription": "इस कैरेक्टर के हर इमेज जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"anime style, vibrant colors\")।",
+    "imageHint": "anime style, vibrant colors",
+    "videoTitle": "वीडियो स्टाइल",
+    "videoDescription": "इस कैरेक्टर के हर वीडियो जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"cinematic, shallow depth of field, 24fps film grain\")। वीडियो मॉडल मोशन और कैमरा शब्दावली के अनुसार प्रतिक्रिया देते हैं; इसे छोटा रखें।",
+    "videoHint": "cinematic, shallow depth of field"
+  },
+  "cardEditApproval": {
+    "denyAll": "सभी अस्वीकार करें",
+    "approveAll": "सभी स्वीकृत करें",
+    "confirm": "पुष्टि करें",
+    "dialogTitle": "असिस्टेंट द्वारा प्रस्तावित बदलाव",
+    "dontAskAgainFor": "$modality के लिए दोबारा न पूछें",
+    "modalityLabel": {
+      "edits": "एडिट",
+      "additions": "जोड़",
+      "deletions": "हटाव"
+    },
+    "modalityVerb": {
+      "edit": "एडिट करें",
+      "addition": "इसमें जोड़ें",
+      "deletion": "इससे हटाएं"
+    },
+    "tapToDeny": "अस्वीकार करने के लिए टैप करें",
+    "tapToApprove": "स्वीकृत करने के लिए टैप करें",
+    "reasonLabel": "कारण (वैकल्पिक, असिस्टेंट को वापस भेजा जाता है)",
+    "newEntryTitle": "नई प्रविष्टि",
+    "removingTitle": "हटाया जा रहा है",
+    "beforeTitle": "पहले",
+    "afterTitle": "बाद में"
+  },
+  "requireApprovalTile": {
+    "edits": "अनुमोदन आवश्यक: एडिट",
+    "additions": "अनुमोदन आवश्यक: जोड़",
+    "deletions": "अनुमोदन आवश्यक: हटाव"
+  },
+  "loadingStatus": {
+    "initial": "लोड हो रहा है...",
+    "copyingAssistant": "असिस्टेंट कॉपी हो रहा है...",
+    "scanningForCharacters": "कैरेक्टर स्कैन हो रहे हैं...",
+    "scanningForCharactersProgress": "कैरेक्टर स्कैन हो रहे हैं...\n$current / $total",
+    "loadingCharactersProgress": "कैरेक्टर लोड हो रहे हैं...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "कोई लाइब्रेरी फ़ोल्डर कॉन्फ़िगर नहीं किया गया।",
+    "mustBeInsideLibrary": "कैरेक्टर आपके लाइब्रेरी फ़ोल्डर के अंदर ही सहेजे जाने चाहिए।"
+  },
+  "characterFilesTypeGroupLabel": "कैरेक्टर फ़ाइलें",
+  "createController": {
+    "pngImagesTypeGroupLabel": "PNG इमेज",
+    "invalidLocationTitle": "अमान्य स्थान",
+    "creationFailedTitle": "बनाने में विफल",
+    "creationFailedMessage": "कैरेक्टर नहीं बनाया जा सका। विवरण के लिए लॉग देखें।"
+  },
+  "importController": {
+    "failedToImport": "$fileName इम्पोर्ट करने में विफल।",
+    "importedCount": "$count कैरेक्टर इम्पोर्ट किए गए"
+  },
+  "aiActionController": {
+    "aiActionFailed": "AI क्रिया विफल हुई। विवरण के लिए लॉग देखें।",
+    "processingProgress": "$name प्रोसेस हो रहा है ($current/$total)...$eta",
+    "etaHoursMinutes": " शेष: ${hours}h ${minutes}m",
+    "etaMinutesSeconds": " शेष: ${minutes}m ${seconds}s",
+    "etaSeconds": " शेष: ${seconds}s",
+    "processingField": "$fieldName प्रोसेस हो रहा है..."
+  }
+}

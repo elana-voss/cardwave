@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "हटाएं",
+    "ok": "ठीक है",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "tryAgain": "पुनः प्रयास करें",
+    "close": "बंद करें"
+  },
+  "aiAction": {
+    "proofread": "प्रूफ़रीड करें",
+    "compact": "गद्य संक्षिप्त करें",
+    "translate": "अंग्रेज़ी में अनुवाद करें",
+    "generatePreview": "प्रीव्यू जनरेट करें",
+    "autoTag": "ऑटो-टैग"
+  },
+  "aiActionsTooltip": "AI क्रियाएं",
+  "promptSegmentKind": {
+    "identity": "पहचान",
+    "systemPrompt": "सिस्टम प्रॉम्प्ट",
+    "nsfwMode": "NSFW मोड",
+    "scenarioMode": "परिदृश्य मोड",
+    "description": "विवरण",
+    "personality": "व्यक्तित्व",
+    "scenario": "परिदृश्य",
+    "userPersona": "आपका पर्सोना",
+    "memory": "मेमोरी",
+    "situation": "स्थिति",
+    "cardData": "कार्ड डेटा",
+    "tools": "टूल",
+    "postHistory": "पोस्ट-हिस्ट्री",
+    "depthPrompt": "डेप्थ प्रॉम्प्ट",
+    "worldInfo": "वर्ल्ड इन्फो",
+    "injected": "इंजेक्टेड",
+    "exampleDialogue": "उदाहरण संवाद",
+    "history": "संदेश इतिहास",
+    "currentMessage": "वर्तमान संदेश",
+    "reservedReply": "आरक्षित जवाब"
+  },
+  "promptBreakdown": {
+    "free": "खाली"
+  },
+  "logs": {
+    "title": "लॉग",
+    "filterTooltip": "लॉग फ़िल्टर करें",
+    "clearTooltip": "लॉग साफ़ करें",
+    "exportTooltip": "लॉग एक्सपोर्ट करें",
+    "searchHint": "लॉग खोजें...",
+    "noLogsFound": "कोई लॉग नहीं मिला।",
+    "noLogsToExport": "एक्सपोर्ट करने के लिए कोई लॉग नहीं",
+    "exportedSuccessfully": "लॉग सफलतापूर्वक एक्सपोर्ट किए गए",
+    "exportFailed": "लॉग एक्सपोर्ट करने में विफल। विवरण के लिए लॉग देखें।",
+    "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+    "copyLogButton": "लॉग कॉपी करें",
+    "copiedEntryToClipboard": "लॉग प्रविष्टि क्लिपबोर्ड पर कॉपी की गई",
+    "errorPrefix": "त्रुटि: $error"
+  },
+  "importErrorsDialog": {
+    "title": "इम्पोर्ट त्रुटियां",
+    "message": "निम्नलिखित फ़ाइलें इम्पोर्ट नहीं की जा सकीं:"
+  },
+  "updateDialog": {
+    "title": "नया संस्करण उपलब्ध",
+    "body": "$appName का एक नया संस्करण उपलब्ध है।\n\nवर्तमान संस्करण: $currentVersion\nनवीनतम संस्करण: $latestVersion",
+    "releaseNotesLabel": "रिलीज़ नोट्स:",
+    "viewReleasesButton": "रिलीज़ देखें"
+  },
+  "importConflictsDialog": {
+    "title": "इम्पोर्ट टकराव",
+    "message": "निम्नलिखित $count कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:"
+  },
+  "missingProviderBanner": {
+    "message": "एक AI प्रोवाइडर कनेक्ट करें।",
+    "setUpNowButton": "अभी सेट अप करें"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "मॉडल खोजें",
+    "subscriptionOnlyToggle": "केवल सब्सक्रिप्शन मॉडल दिखाएं ($included/$total)"
+  },
+  "showAdvanced": {
+    "less": "कम",
+    "more": "अधिक"
+  },
+  "messageEditDialog": {
+    "title": "संदेश एडिट करें"
+  },
+  "promptBreakdownDialog": {
+    "title": "प्रॉम्प्ट विश्लेषण",
+    "breakdownTab": "विश्लेषण",
+    "contentTab": "सामग्री",
+    "promptTotalEstimated": "प्रॉम्प्ट कुल (अनुमानित)",
+    "promptTotalProvider": "प्रॉम्प्ट कुल (प्रोवाइडर)",
+    "contextWindowLabel": "कॉन्टेक्स्ट विंडो",
+    "categoryHeader": "श्रेणी",
+    "tokensHeader": "टोकन",
+    "usageHeader": "उपयोग",
+    "noContentToInspect": "इस जवाब के लिए जांचने योग्य कोई सामग्री नहीं है।",
+    "estimatedSuffix": " (अनुमानित)",
+    "usedSummary": "$used / $total उपयोग किए गए"
+  },
+  "jsonPromptDialog": {
+    "title": "जनरेशन प्रॉम्प्ट"
+  },
+  "progressDialog": {
+    "defaultMessage": "भेजा जा रहा है...",
+    "finished": "पूर्ण हुआ!"
+  },
+  "diffPanel": {
+    "tokenSuffix": " ($count टोकन)"
+  },
+  "selectionDialog": {
+    "searchHint": "खोजें…"
+  },
+  "zdrSwitch": {
+    "title": "शून्य डेटा रिटेंशन (ZDR) आवश्यक करें",
+    "subtitle": "केवल ZDR-अनुरूप एंडपॉइंट वाले OR मॉडल दिखाएं। यदि आपका openrouter.ai खाता ZDR प्रोवाइडर तक सीमित है तो इसे सक्षम करें।"
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count टोकन",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "रीज़निंग",
+    "vision": "विज़न",
+    "tools": "टूल",
+    "json": "JSON",
+    "files": "फ़ाइलें",
+    "image": "इमेज",
+    "video": "वीडियो",
+    "speech": "स्पीच",
+    "music": "संगीत"
+  },
+  "modelUnavailableTooltip": "यह मॉडल अब प्रोवाइडर से उपलब्ध नहीं है — कोई अन्य चुनें।",
+  "characterImageSemanticLabel": "कैरेक्टर इमेज",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "एक्सपोर्ट विफल हुआ। विवरण के लिए लॉग देखें।"
+  },
+  "timeAgo": {
+    "years": "${n} वर्ष पहले",
+    "months": "${n} माह पहले",
+    "days": "${n} दिन पहले",
+    "hours": "${n} घंटे पहले",
+    "minutes": "${n} मिनट पहले",
+    "justNow": "अभी अभी"
+  }
+}

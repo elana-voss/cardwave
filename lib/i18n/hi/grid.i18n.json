@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "आपके फ़िल्टर से कोई कैरेक्टर मेल नहीं खाता",
+    "noCharacters": "अभी तक कोई कैरेक्टर इम्पोर्ट नहीं किया गया",
+    "clearAllFilters": "सभी फ़िल्टर साफ़ करें",
+    "importCharacters": "कैरेक्टर इम्पोर्ट करें",
+    "createNewCharacter": "नया कैरेक्टर बनाएं"
+  },
+  "appBar": {
+    "groups": "ग्रुप",
+    "createNew": "नया बनाएं",
+    "import": "इम्पोर्ट",
+    "menuTooltip": "मेन्यू"
+  },
+  "fab": {
+    "addOrImportTooltip": "जोड़ें या इम्पोर्ट करें",
+    "import": "इम्पोर्ट",
+    "create": "बनाएं"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "ऐप",
+    "batchAiHeader": "बैच AI",
+    "batchGeneratePreviewsTitle": "बैच प्रीव्यू जनरेट करें",
+    "batchGeneratePreviewsEmpty": "सभी कैरेक्टर के पास पहले से प्रीव्यू हैं।",
+    "batchAutoTagTitle": "बैच ऑटो-टैग",
+    "batchAutoTagEmpty": "सभी कैरेक्टर के पास पहले से टैग हैं।",
+    "libraryHeader": "लाइब्रेरी",
+    "reloadCharacters": "कैरेक्टर फिर से लोड करें"
+  },
+  "variantBadge": {
+    "tooltip": "$count वैरिएंट"
+  },
+  "dialogActions": {
+    "clearAll": "सभी साफ़ करें",
+    "apply": "लागू करें"
+  },
+  "tagFilterDialog": {
+    "title": "टैग फ़िल्टर करें",
+    "searchHint": "टैग खोजें..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "फ़िल्टर छिपाएं",
+    "moreFiltersTooltip": "अधिक फ़िल्टर",
+    "folderChip": "फ़ोल्डर",
+    "creatorChip": "निर्माता",
+    "tagChip": "टैग",
+    "recentTooltip": "हाल का",
+    "favoritesTooltip": "पसंदीदा",
+    "variantsTooltip": "वैरिएंट",
+    "indexingProgress": "खोज बन रही है $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "प्रासंगिकता ↓",
+    "nameAsc": "नाम ↓",
+    "nameDesc": "नाम ↑",
+    "importNewest": "इम्पोर्ट किया ↓",
+    "importOldest": "इम्पोर्ट किया ↑",
+    "modifiedNewest": "संशोधित ↓",
+    "modifiedOldest": "संशोधित ↑",
+    "interactedNewest": "इंटरैक्ट किया ↓",
+    "interactedOldest": "इंटरैक्ट किया ↑",
+    "tokensHigh": "टोकन ↓",
+    "tokensLow": "टोकन ↑"
+  },
+  "filterController": {
+    "filterCreators": "निर्माता फ़िल्टर करें",
+    "filterTags": "टैग फ़िल्टर करें",
+    "filterByFolder": "फ़ोल्डर से फ़िल्टर करें"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "अभी दिखाने के लिए कुछ नहीं।",
+    "noMatches": "कोई मेल नहीं।",
+    "showMore": "और दिखाएं"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "कैरेक्टर का नाम खाली नहीं हो सकता।",
+    "nameInvalidCharsError": "नाम में अमान्य अक्षर हैं (<>:\"/\\|?*)।",
+    "nameExistsError": "इस नाम का एक कैरेक्टर पहले से मौजूद है।",
+    "nameCheckFailedError": "नाम सत्यापित नहीं किया जा सका। फ़ोल्डर अनुमतियां जांचें और पुनः प्रयास करें।",
+    "title": "नया कैरेक्टर बनाएं",
+    "nameLabel": "कैरेक्टर का नाम",
+    "createButton": "बनाएं"
+  },
+  "variantsSheet": {
+    "title": "वैरिएंट"
+  },
+  "groupAppBar": {
+    "characters": "कैरेक्टर",
+    "newGroup": "नया ग्रुप"
+  },
+  "thumbnailBadges": {
+    "recent": "हाल का",
+    "original": "मूल",
+    "variant": "वैरिएंट"
+  },
+  "actionMenu": {
+    "editNotes": "नोट्स एडिट करें",
+    "dismissRecent": "हाल का खारिज करें",
+    "exportPngV2V3": "PNG (V2/V3) के रूप में एक्सपोर्ट करें",
+    "exportJsonV3": "JSON (V3) के रूप में एक्सपोर्ट करें",
+    "exportJsonV2": "JSON (V2) के रूप में एक्सपोर्ट करें",
+    "duplicate": "डुप्लिकेट करें"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "कैरेक्टर डुप्लिकेट नहीं किया जा सका।",
+    "editVariantNotesTitle": "वैरिएंट नोट्स एडिट करें",
+    "editVariantNotesHint": "इस वैरिएंट के बारे में नोट्स जोड़ें...",
+    "deleteCardTitle": "कार्ड हटाएं",
+    "deleteCardMessage": "क्या आप वाकई यह कार्ड हटाना चाहते हैं?",
+    "deletePartialFailure": "कुछ फ़ाइलें हटाई नहीं जा सकीं। विवरण के लिए लॉग देखें।"
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}
