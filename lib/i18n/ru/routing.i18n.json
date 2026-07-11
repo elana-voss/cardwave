@@ -1,1 +1,11 @@
-{}
+{
+  "chatCharacter": {
+    "navigationError": "Ошибка перехода к чату. Персонаж: $name"
+  },
+  "editCharacter": {
+    "navigationError": "Ошибка перехода к редактированию. Персонаж: $name"
+  },
+  "editPreset": {
+    "navigationError": "Ошибка перехода к редактированию пресета: $presetId"
+  }
+}

@@ -1,1 +1,265 @@
-{}
+{
+  "panelLabels": {
+    "basic": "Основное",
+    "greetings": "Приветствия",
+    "prompts": "Промпты",
+    "lorebook": "Лорбук",
+    "group": "Группа",
+    "creator": "Автор",
+    "appData": "Данные приложения",
+    "nodes": "Узлы"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "Скрыть панель ассистента",
+    "showChatAssistantTooltip": "Показать чат-ассистент рядом"
+  },
+  "codeFindPanel": {
+    "noneResult": "нет",
+    "previousTooltip": "Предыдущее",
+    "nextTooltip": "Следующее",
+    "closeTooltip": "Закрыть",
+    "replaceTooltip": "Заменить",
+    "replaceAllTooltip": "Заменить всё"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "Подтвердите «Заменить всё»",
+    "confirmReplaceAllMessage": "Вы уверены, что хотите продолжить?\nЭто действие необратимо и затрагивает все поля.",
+    "proceedButton": "Продолжить",
+    "title": "Найти и заменить",
+    "findLabel": "Найти",
+    "replaceWithLabel": "Заменить на",
+    "replaceAllButton": "Заменить всё"
+  },
+  "objectValueEditor": {
+    "stringType": "строка",
+    "numberType": "число",
+    "boolType": "булево"
+  },
+  "editorBasic": {
+    "nameLabel": "Имя",
+    "nicknameLabel": "Прозвище (CCv3)",
+    "descriptionLabel": "Описание",
+    "personalityLabel": "Характер",
+    "scenarioLabel": "Сценарий",
+    "messageExampleLabel": "Пример сообщения"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "Системное имя (CCv3)",
+    "creatorLabel": "Автор",
+    "versionLabel": "Версия",
+    "creatorNotesLabel": "Заметки автора",
+    "tagsLabel": "Теги (через запятую)"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "Системный промпт",
+    "postHistoryInstructionsLabel": "Инструкции после истории",
+    "depthPromptLabel": "Глубинный промпт (заметки о персонаже)",
+    "insertionDepthLabel": "Глубина вставки",
+    "roleLabel": "Роль"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "Заметки варианта",
+    "descriptionPreviewLabel": "Превью описания"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "Удалить приветствие",
+    "deleteGreetingMessage": "Вы уверены, что хотите удалить это приветствие?",
+    "addGreetingButton": "Добавить приветствие",
+    "primaryGreetingLabel": "Основное приветствие (first_mes)",
+    "alternateGreetingLabel": "Альтернативное приветствие №$index",
+    "removeTooltip": "Удалить"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "Приветствие $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "Новая запись",
+    "deleteEntryTitle": "Удалить запись",
+    "deleteEntryMessage": "Вы уверены, что хотите удалить эту запись?",
+    "addNewEntryButton": "Добавить запись",
+    "noEntriesFound": "Записи лорбука не найдены."
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "Запись без названия",
+    "noKeywords": "Нет ключевых слов"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "Редактировать запись лорбука",
+    "advancedFilter": "Расширенно",
+    "primaryKeywordsLabel": "Основные ключевые слова",
+    "logicLabel": "Логика",
+    "logicAndAny": "И (любое)",
+    "logicAndAll": "И (все)",
+    "logicNotAny": "НЕ (любое)",
+    "logicNotAll": "НЕ (все)",
+    "optionalFilterLabel": "Дополнительный фильтр",
+    "contentLabel": "Содержимое",
+    "nonRecursableFilter": "Без рекурсии",
+    "preventFurtherRecursionFilter": "Запретить дальнейшую рекурсию",
+    "delayUntilRecursionFilter": "Отложить до рекурсии",
+    "ignoreBudgetFilter": "Игнорировать бюджет",
+    "prioritizeFilter": "Приоритизировать",
+    "inclusionGroupLabel": "Группа включения",
+    "groupWeightLabel": "Вес группы",
+    "stickyLabel": "Закреплённый",
+    "cooldownLabel": "Задержка перезарядки",
+    "delayLabel": "Задержка",
+    "filterToCharactersLabel": "Фильтр по персонажам или тегам",
+    "filterToTriggersLabel": "Фильтр по триггерам генерации",
+    "additionalMatchingSourcesLabel": "Дополнительные источники совпадений:",
+    "personaFilter": "Персона",
+    "descriptionFilter": "Описание",
+    "personalityFilter": "Характер",
+    "depthPromptFilter": "Глубинный промпт",
+    "scenarioFilter": "Сценарий",
+    "creatorNotesFilter": "Заметки автора"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "Заголовок/памятка",
+    "strategyLabel": "Стратегия",
+    "strategyConstant": "Постоянный",
+    "strategyEnabled": "Включён",
+    "strategyDisabled": "Отключён",
+    "strategyVectorized": "Векторизован",
+    "positionLabel": "Позиция",
+    "positionUpChar": "↑ Перс",
+    "positionDownChar": "↓ Перс",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D система",
+    "positionDepthUser": "@D польз.",
+    "positionDepthAssistant": "@D ассистент",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Выход",
+    "depthLabel": "Глубина",
+    "orderLabel": "Порядок",
+    "triggerLabel": "Триггер %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "Глубина сканирования",
+    "automationIdLabel": "ID автоматизации",
+    "useRegexFilter": "Использовать regex",
+    "caseSensitiveFilter": "С учётом регистра",
+    "wholeWordsFilter": "Слова целиком",
+    "groupScoringFilter": "Оценка группы"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "Подтвердите «$actionName»",
+    "title": "Очистка содержимого",
+    "normalizeFancyCharsAction": "Нормализовать спецсимволы",
+    "normalizeFancyCharsButton": "Нормализовать спецсимволы (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "Удалить HTML",
+    "purgeHtmlButton": "Удалить теги HTML",
+    "purgeMarkdownAction": "Удалить ссылки/изображения Markdown",
+    "purgeEmojisAction": "Удалить эмодзи",
+    "purgeExtraSpacesAction": "Удалить лишние пробелы",
+    "yoloPurgeAction": "Полная очистка",
+    "applyAllAboveButton": "Применить всё выше"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "Применить изменения",
+    "originalTextTitle": "Исходный текст",
+    "suggestedTextTitle": "Предложенный текст"
+  },
+  "editorPageController": {
+    "globalActionTitle": "Глобально: $action",
+    "globalAiActionFailed": "Глобальное действие ИИ не выполнено. Проверьте логи.",
+    "compositeName": "Имя:\n$value\n",
+    "compositeDescription": "Описание:\n$value\n",
+    "compositePersonality": "Характер:\n$value\n",
+    "compositeScenario": "Сценарий:\n$value\n",
+    "compositeFirstMessage": "Первое сообщение:\n$value\n",
+    "compositeMessageExample": "Пример сообщения:\n$value\n",
+    "compositeCreatorNotes": "Заметки автора:\n$value\n",
+    "compositeSystemPrompt": "Системный промпт:\n$value\n",
+    "compositePostHistoryInstructions": "Инструкции после истории:\n$value\n",
+    "compositeAlternateGreeting": "Альтернативное приветствие №$index:\n$value\n",
+    "compositeGroupGreeting": "Групповое приветствие №$index:\n$value\n",
+    "compositeLorebookEntry": "Запись лорбука №$index:\n$value\n",
+    "imageTooLargeMessage": "Выбранное изображение слишком большое. Максимальный размер — $maxSize.",
+    "invalidPngMessage": "Выбранное изображение не является корректным PNG или не может быть прочитано."
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "Удалить узел",
+    "deleteNodeMessage": "Удалить этот авторский узел из карточки?",
+    "engineSeedTitle": "Начальное состояние движка",
+    "visualEditorTooltip": "Визуальный редактор",
+    "editJsonTooltip": "Редактировать JSON",
+    "initialGoalLabel": "Начальная цель",
+    "initialSceneLabel": "Начальная сцена",
+    "locationLabel": "Место",
+    "timeOfDayLabel": "Время суток",
+    "presentEntitiesLabel": "Присутствуют (через запятую)",
+    "sensoryHooksLabel": "Сенсорные зацепки (через запятую)",
+    "addNodeButton": "Добавить узел",
+    "noAuthoredNodesYet": "Авторских узлов пока нет.",
+    "loadErrorMessage(plural)": {
+      "one": "В блоке узлов этой карточки $n проблема; редактирование здесь перезапишет повреждённые части при сохранении.",
+      "few": "В блоке узлов этой карточки $n проблемы; редактирование здесь перезапишет повреждённые части при сохранении.",
+      "many": "В блоке узлов этой карточки $n проблем; редактирование здесь перезапишет повреждённые части при сохранении.",
+      "other": "В блоке узлов этой карточки $n проблемы; редактирование здесь перезапишет повреждённые части при сохранении."
+    },
+    "moreErrorsSuffix": "… ещё $n",
+    "emotionBaselineLabel": "Базовая эмоция",
+    "emotionChipLabel": "Эмоция"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "порождает: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "Верхний уровень должен быть объектом JSON",
+    "editNodesJsonTitle": "Редактировать JSON узлов",
+    "fixProblemsMessage(plural)": {
+      "one": "Исправьте $n проблему, чтобы сохранить.",
+      "few": "Исправьте $n проблемы, чтобы сохранить.",
+      "many": "Исправьте $n проблем, чтобы сохранить.",
+      "other": "Исправьте $n проблемы, чтобы сохранить."
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "порождён",
+    "spawnsPort": "порождает",
+    "editNodeLabel": "Редактировать узел",
+    "addNodeTooltip": "Добавить узел"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "Имя",
+    "narrativePayloadLabel": "Нарративная нагрузка",
+    "removeSpawnLinkTitle": "Удалить связь порождения",
+    "removeSpawnLinkMessage": "Запретить этому узлу порождать «$nodeId»? Сам узел останется на карточке.",
+    "removeButton": "Удалить",
+    "typeLabel": "Тип",
+    "scopeLabel": "Область",
+    "originLabel": "Источник",
+    "triggerProbLabel": "Вероятность триггера",
+    "delayHelper": "Ходов ожидания перед активацией. -1 равно 0.",
+    "cooldownHelper": "Ходов блокировки после срабатывания. -1 означает без перезарядки.",
+    "stickyHelper": "Ходов, в течение которых нарративная нагрузка остаётся как «Сохраняющаяся» после срабатывания. -1 означает навсегда.",
+    "aliveHelper": "Ходов, в течение которых узел остаётся в пуле до удаления. -1 означает бесконечно.",
+    "setToNeverButton": "Установить «никогда»",
+    "effectsSectionLabel": "Эффекты",
+    "emotionDeltasTitle": "Изменения эмоций",
+    "physicalDeltasTitle": "Физические изменения",
+    "relationshipDeltasTitle": "Изменения отношений",
+    "addDeltaChip": "Добавить изменение",
+    "knowledgeWritesTitle": "Записи знаний",
+    "addFactChip": "Добавить факт",
+    "topicLabel": "тема",
+    "confidenceLabel": "уверенность",
+    "flagSetTitle": "Набор флагов",
+    "addFlagChip": "Добавить флаг",
+    "keyLabel": "ключ",
+    "sceneAndFlowTitle": "Сцена и ход",
+    "goalChangeLabel": "goalChange (очищает текущую цель, если пусто)",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "(нет)",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "Если true, движок помечает срабатывание как смену сцены.",
+    "spawnsSectionLabel": "Порождения",
+    "addNewChip": "Добавить новый",
+    "linkExistingChip": "Связать существующий",
+    "unlinkTooltip": "Отвязать",
+    "predicateLabel": "Предикат"
+  }
+}

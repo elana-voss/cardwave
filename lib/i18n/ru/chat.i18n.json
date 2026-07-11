@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "Модель",
+    "invalidLabel": "Недопустимо",
+    "chooseModelTitle": "Выберите модель"
+  },
+  "presetTile": {
+    "tapToChoose": "Нажмите, чтобы выбрать"
+  },
+  "tileImagePreset": {
+    "titleLabel": "Модель изображений",
+    "chooseModelTitle": "Выберите модель изображений"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "Модель видео",
+    "chooseModelTitle": "Выберите модель видео"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "Модель речи",
+    "chooseModelTitle": "Выберите модель речи"
+  },
+  "tileImageAspectRatio": {
+    "label": "Соотношение сторон изображения"
+  },
+  "tileVideoAspectRatio": {
+    "label": "Соотношение сторон"
+  },
+  "tileVideoResolution": {
+    "label": "Разрешение"
+  },
+  "tileVideoDuration": {
+    "label": "Длительность"
+  },
+  "tileTtsVoice": {
+    "label": "Голос"
+  },
+  "tileTtsLanguage": {
+    "label": "Язык"
+  },
+  "tileNsfw": {
+    "label": "NSFW / Без ограничений"
+  },
+  "tileScenario": {
+    "label": "Сценарий"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "Длина ответа — $bucket",
+    "sliderLabel": "$bucket ($tokens токенов)",
+    "bucketVeryShort": "Очень короткий",
+    "bucketShort": "Короткий",
+    "bucketMedium": "Средний",
+    "bucketLong": "Длинный",
+    "bucketVeryLong": "Очень длинный"
+  },
+  "tileTrailingParagraph": {
+    "label": "Обрезать хвост текста"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "Рассуждения — $effort",
+    "titleOff": "Рассуждения выключены",
+    "extraTokensCaption": "Использует дополнительные токены сверх максимальной длины ответа."
+  },
+  "tileChatTheme": {
+    "label": "Тема"
+  },
+  "tileRecalledMemory": {
+    "label": "Показывать вызванную память"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "Избранное",
+    "recentChatsTooltip": "Недавние чаты",
+    "originalBadge": "ОРИГИНАЛ",
+    "variantBadge": "ВАРИАНТ",
+    "lastActive": "Последняя активность: $timeAgo",
+    "never": "Никогда"
+  },
+  "freeImagePromptDialog": {
+    "title": "Сгенерировать изображение",
+    "description": "Опишите, что вы хотите увидеть. Достаточно короткой фразы — модель развернёт её в полный список тегов.",
+    "subjectLabel": "Тема",
+    "subjectHint": "киберпанк-переулок, неоновый дождь",
+    "generateButton": "Сгенерировать"
+  },
+  "freeVideoPromptDialog": {
+    "title": "Сгенерировать видео",
+    "description": "Опишите короткий момент движения — что движется, как, где. Системная модель развернёт это в кинематографичный промпт T2V.",
+    "subjectLabel": "Тема",
+    "subjectHint": "она идёт сквозь неоновый дождь, замедленная съёмка",
+    "generateButton": "Сгенерировать"
+  },
+  "imagePromptReviewDialog": {
+    "title": "Проверить промпт изображения",
+    "description": "Отредактируйте промпт ниже перед генерацией или нажмите «Сгенерировать», чтобы использовать как есть.",
+    "fieldLabel": "Промпт изображения",
+    "generateButton": "Сгенерировать"
+  },
+  "videoPromptReviewDialog": {
+    "title": "Проверить промпт видео",
+    "description": "Отредактируйте промпт ниже перед отправкой или нажмите «Сгенерировать», чтобы использовать как есть.",
+    "fieldLabel": "Промпт видео",
+    "generateButton": "Сгенерировать"
+  },
+  "urlFetchReviewDialog": {
+    "title": "Разрешить веб-запрос?",
+    "description": "Персонаж хочет прочитать содержимое этого URL.",
+    "purposeLabel": "Цель:",
+    "denyButton": "Отклонить",
+    "allowButton": "Разрешить"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count} т",
+    "generationTimeAbbrev": "${seconds} с",
+    "viewGenerationPromptTooltip": "Посмотреть промпт генерации",
+    "messageActionsTooltip": "Действия с сообщением",
+    "editAction": "Изменить",
+    "copyAction": "Копировать",
+    "shareImageAction": "Поделиться изображением",
+    "setAsBackgroundAction": "Сделать фоном",
+    "setAsCharacterImageAction": "Сделать изображением персонажа",
+    "deleteAction": "Удалить",
+    "copiedToClipboard": "Сообщение скопировано в буфер обмена"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "Стоп",
+    "readAloudTooltip": "Прочитать вслух",
+    "ttsFailed": "Ошибка TTS."
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "Предыдущая версия",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "Перегенерировать",
+    "nextVersionTooltip": "Следующая версия"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "Воспроизведение видео не поддерживается в вебе.",
+    "couldNotLoad": "Не удалось загрузить видео."
+  },
+  "newChatLabel": "Новый чат",
+  "chatListItem": {
+    "messageCount": "Сообщений: $count",
+    "renameAction": "Переименовать",
+    "deleteChatAction": "Удалить чат"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "Переименовать чат",
+    "chatNameHint": "Название чата",
+    "renameButton": "Переименовать",
+    "deleteChatTitle": "Удалить чат",
+    "deleteChatMessage": "Вы уверены, что хотите удалить историю этого чата? Это действие нельзя отменить."
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "Очистить историю чата с ассистентом?",
+    "clearButton": "Очистить",
+    "deleteOrKeepMessage": "Удалить текущий чат или сохранить его в истории?",
+    "deleteCurrentButton": "Удалить текущий",
+    "keepCurrentButton": "Оставить текущий"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "Введите промпт для генерации изображения.",
+    "noCharacterMessage": "Нет персонажа для генерации изображения.",
+    "notConfiguredMessage": "Генерация изображений не настроена.",
+    "noSystemModelMessage": "Системная модель не настроена. Задайте её в Настройки → ИИ."
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "Введите промпт для генерации видео.",
+    "noCharacterMessage": "Нет персонажа для генерации видео.",
+    "notConfiguredMessage": "Генерация видео не настроена."
+  },
+  "bubbleWaitingFor": {
+    "thinking": "Размышляет…",
+    "preparingImagePrompt": "Подготовка промпта изображения…",
+    "preparingVideoPrompt": "Подготовка промпта видео…",
+    "generatingImage": "Генерация изображения…",
+    "generatingVideo": "Генерация видео…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "Скрыть панель редактора",
+    "showEditorSideBySideTooltip": "Показать редактор рядом"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "Перестроение индекса...",
+    "noChatsFound": "Чаты не найдены."
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "Сгенерировать медиа",
+    "generateImageLabel": "Сгенерировать изображение",
+    "generateVideoLabel": "Сгенерировать видео"
+  },
+  "chatView": {
+    "deleteMessageTitle": "Удалить сообщение",
+    "deleteMessageConfirmation": "Вы уверены, что хотите удалить это сообщение?",
+    "typeMessageHint": "Введите сообщение...",
+    "moreActionsTooltip": "Ещё действия",
+    "continueAction": "Продолжить",
+    "impersonateAction": "Отыграть за персонажа",
+    "generateReplyAction": "Сгенерировать ответ",
+    "improveMessageAction": "Улучшить сообщение"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "Изображения",
+    "assistantFallbackName": "Ассистент",
+    "reasoningLabel": "Рассуждения",
+    "sendingToProvider": "Отправка провайдеру…",
+    "pollingWithPercent": "Опрос… $pct%",
+    "polling": "Опрос…",
+    "downloading": "Загрузка…"
+  }
+}

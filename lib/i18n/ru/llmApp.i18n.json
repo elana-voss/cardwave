@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "Модель изображений",
+    "imageAspectRatio": "Соотношение сторон изображения",
+    "imageNsfwAllowed": "Разрешить NSFW-изображения",
+    "imageToolSelfieAllowed": "Может отправлять селфи",
+    "imageToolSelfieCaptionsAllowed": "Разрешить подписи к селфи",
+    "imagePromptPrefix": "Стиль изображения",
+    "videoModel": "Модель видео",
+    "videoResolution": "Разрешение видео",
+    "videoAspectRatio": "Соотношение сторон видео",
+    "videoDuration": "Длительность видео",
+    "videoNsfwAllowed": "Разрешить NSFW-видео",
+    "videoToolSendAllowed": "Может отправлять видео",
+    "videoPromptPrefix": "Стиль видео",
+    "ttsModel": "Модель TTS",
+    "ttsVoice": "Голос TTS",
+    "ttsLanguage": "Язык TTS",
+    "webToolFetchAllowed": "Разрешить веб-запросы",
+    "nameToolSuggestAllowed": "Может предлагать имена NPC"
+  },
+  "mediaSection": {
+    "image": "Изображение",
+    "video": "Видео",
+    "tts": "TTS",
+    "web": "Веб",
+    "names": "Имена"
+  },
+  "tristate": {
+    "on": "Вкл.",
+    "off": "Выкл.",
+    "inherit": "Наследовать"
+  },
+  "mediaCellMenu": {
+    "change": "Изменить…",
+    "clear": "Очистить"
+  },
+  "mediaHeader": {
+    "appDefault": "По умолчанию",
+    "character": "Персонаж",
+    "currentChat": "Текущий чат",
+    "previousLayerTooltip": "Предыдущий слой",
+    "nextLayerTooltip": "Следующий слой"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "Изменить значение по умолчанию?",
+    "changeAppDefaultMessage": "Это затронет каждый чат. Продолжить?",
+    "continueButton": "Продолжить",
+    "chooseModelTitle": "Выберите модель для «$domain»"
+  },
+  "mediaCell": {
+    "notApplicable": "Неприменимо"
+  }
+}

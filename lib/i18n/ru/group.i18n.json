@@ -1,1 +1,114 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "Переименовать группу",
+    "groupNameHint": "Название группы",
+    "deleteGroupTitle": "Удалить группу",
+    "deleteGroupMessage": "Вы уверены, что хотите удалить «$name»? Это нельзя отменить."
+  },
+  "groupChatPage": {
+    "defaultGroupName": "Групповой чат",
+    "failedToLoadMessage": "Не удалось загрузить групповой чат:\n$error",
+    "nextTurnTooltip": "Следующий ход",
+    "stopAutoChatTooltip": "Остановить авточат",
+    "startAutoChatTooltip": "Запустить авточат",
+    "stopGenerationTooltip": "Остановить генерацию",
+    "noCharactersYetMessage": "В этой группе пока нет персонажей.",
+    "addCharacterButton": "Добавить персонажа",
+    "pickCharacterMessage": "Выберите персонажа из списка слева."
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "Не удалось загрузить группы:\n$error",
+    "unknownErrorFallback": "неизвестная ошибка",
+    "noGroupsYetMessage": "Групп пока нет — нажмите +, чтобы создать."
+  },
+  "tileAutoChatDelay": {
+    "title": "Задержка авточата",
+    "secondsAbbrev": "${seconds} с"
+  },
+  "tileActivationStrategy": {
+    "title": "Выбор говорящего",
+    "naturalOption": "Естественный",
+    "roundRobinOption": "По кругу",
+    "randomOption": "Случайный",
+    "changeSelectionTooltip": "Изменить выбор говорящего"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "Разрешить веб-запросы",
+    "allowWebFetchSubtitle": "Читать публичные веб-страницы, когда это уместно",
+    "reviewUrlTitle": "Проверять URL перед запросом",
+    "reviewUrlSubtitle": "Подтверждать каждый запрос",
+    "suggestNpcNamesTitle": "Предлагать имена NPC",
+    "suggestNpcNamesSubtitle": "Выбирать имена из курируемой базы",
+    "unrestrictedImagesTitle": "Изображения без ограничений",
+    "allowNsfwImagePromptsSubtitle": "Разрешить NSFW-промпты изображений",
+    "characterCanSendSelfiesTitle": "Персонаж может отправлять селфи",
+    "attachSelfieWhenNaturalSubtitle": "Прикреплять селфи, когда это естественно",
+    "reviewImagePromptTitle": "Проверять промпт изображения",
+    "editBeforeGeneratingSubtitle": "Редактировать перед генерацией",
+    "reviewToolImagePromptsTitle": "Проверять промпты изображений от инструментов",
+    "editToolTriggeredPromptsSubtitle": "Редактировать промпты, вызванные инструментами",
+    "allowSelfieCaptionsTitle": "Разрешить подписи к селфи",
+    "captionRenderedOnImageSubtitle": "Подпись наносится на изображение",
+    "groupOverridesTitle": "Переопределения группы",
+    "groupOverridesSubtitle": "Общий сценарий, основной промпт, пример диалога",
+    "chatSessionSubtitle": "Сессия чата",
+    "allChatsLabel": "Все чаты",
+    "showImageLabel": "Показать изображение",
+    "groupSectionHeader": "Группа",
+    "chatSectionHeader": "Чат",
+    "chatThemeSectionHeader": "Тема чата",
+    "unrestrictedVideosTitle": "Видео без ограничений",
+    "allowNsfwVideoPromptsSubtitle": "Разрешить NSFW-промпты видео",
+    "characterCanSendVideosTitle": "Персонаж может отправлять видео",
+    "attachShortVideoWhenNaturalSubtitle": "Прикреплять короткое видео, когда это естественно",
+    "reviewVideoPromptTitle": "Проверять промпт видео"
+  },
+  "groupCharacterPicker": {
+    "addButton": "Добавить",
+    "addWithCountButton": "Добавить $count",
+    "favoritesTooltip": "Избранное",
+    "noMatchMessage": "Нет персонажей по запросу «$query»",
+    "noFavoritesMessage": "Нет избранных персонажей",
+    "allAddedMessage": "Все персонажи уже добавлены"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "Заставить этого персонажа говорить",
+    "removeFromChatTitle": "Убрать из чата"
+  },
+  "dialogCreateGroup": {
+    "title": "Новая группа",
+    "nameLabel": "Название",
+    "nameHint": "напр., Боб и Алиса"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "Уникально для этого чата. Все участники группы используют эти значения вместо того, что задано в их карточках. Оставьте пустым, чтобы вернуться к значению карточки.",
+    "scenarioHint": "Общая обстановка для группы (напр., «В кафе в Париже»)",
+    "mainPromptLabel": "Основной промпт",
+    "mainPromptHint": "Системный промпт, применяемый на каждом ходу",
+    "exampleDialogueLabel": "Пример диалога",
+    "exampleDialogueHint": "Общие примеры сообщений для тона/форматирования"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "Добавить персонажа",
+    "noCharactersYetMessage": "Персонажей пока нет.\nНажмите +, чтобы добавить."
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "Удалить группу?",
+    "deleteGroupMessage": "«$name» и все её сессии чата будут безвозвратно удалены.",
+    "title": "Группы",
+    "noGroupsYetMessage": "Групп пока нет. Нажмите «Новая группа», чтобы создать.",
+    "memberCountLabel(plural)": {
+      "one": "$n участник",
+      "few": "$n участника",
+      "many": "$n участников",
+      "other": "$n участника"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "Пока нет участников"
+  },
+  "groupFileService": {
+    "defaultGroupName": "Группа"
+  }
+}

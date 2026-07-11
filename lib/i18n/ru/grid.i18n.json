@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "Нет персонажей по вашим фильтрам",
+    "noCharacters": "Персонажи ещё не импортированы",
+    "clearAllFilters": "Сбросить все фильтры",
+    "importCharacters": "Импортировать персонажей",
+    "createNewCharacter": "Создать персонажа"
+  },
+  "appBar": {
+    "groups": "Группы",
+    "createNew": "Создать",
+    "import": "Импорт",
+    "menuTooltip": "Меню"
+  },
+  "fab": {
+    "addOrImportTooltip": "Добавить или импортировать",
+    "import": "Импорт",
+    "create": "Создать"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "Приложение",
+    "batchAiHeader": "Пакетный ИИ",
+    "batchGeneratePreviewsTitle": "Пакетная генерация превью",
+    "batchGeneratePreviewsEmpty": "У всех персонажей уже есть превью.",
+    "batchAutoTagTitle": "Пакетное авто-тегирование",
+    "batchAutoTagEmpty": "У всех персонажей уже есть теги.",
+    "libraryHeader": "Библиотека",
+    "reloadCharacters": "Перезагрузить персонажей"
+  },
+  "variantBadge": {
+    "tooltip": "Вариантов: $count"
+  },
+  "dialogActions": {
+    "clearAll": "Очистить всё",
+    "apply": "Применить"
+  },
+  "tagFilterDialog": {
+    "title": "Фильтр по тегам",
+    "searchHint": "Поиск тегов..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "Скрыть фильтры",
+    "moreFiltersTooltip": "Больше фильтров",
+    "folderChip": "Папка",
+    "creatorChip": "Автор",
+    "tagChip": "Тег",
+    "recentTooltip": "Недавние",
+    "favoritesTooltip": "Избранное",
+    "variantsTooltip": "Варианты",
+    "indexingProgress": "Построение поиска $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "Релевантность ↓",
+    "nameAsc": "Имя ↓",
+    "nameDesc": "Имя ↑",
+    "importNewest": "Импортировано ↓",
+    "importOldest": "Импортировано ↑",
+    "modifiedNewest": "Изменено ↓",
+    "modifiedOldest": "Изменено ↑",
+    "interactedNewest": "Взаимодействие ↓",
+    "interactedOldest": "Взаимодействие ↑",
+    "tokensHigh": "Токены ↓",
+    "tokensLow": "Токены ↑"
+  },
+  "filterController": {
+    "filterCreators": "Фильтр по авторам",
+    "filterTags": "Фильтр по тегам",
+    "filterByFolder": "Фильтр по папке"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "Пока нечего показать.",
+    "noMatches": "Совпадений нет.",
+    "showMore": "Показать ещё"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "Имя персонажа не может быть пустым.",
+    "nameInvalidCharsError": "Имя содержит недопустимые символы (<>:\"/\\|?*).",
+    "nameExistsError": "Персонаж с таким именем уже существует.",
+    "nameCheckFailedError": "Не удалось проверить имя. Проверьте права доступа к папке и попробуйте снова.",
+    "title": "Создать персонажа",
+    "nameLabel": "Имя персонажа",
+    "createButton": "Создать"
+  },
+  "variantsSheet": {
+    "title": "Варианты"
+  },
+  "groupAppBar": {
+    "characters": "Персонажи",
+    "newGroup": "Новая группа"
+  },
+  "thumbnailBadges": {
+    "recent": "НЕДАВНИЙ",
+    "original": "ОРИГИНАЛ",
+    "variant": "ВАРИАНТ"
+  },
+  "actionMenu": {
+    "editNotes": "Редактировать заметки",
+    "dismissRecent": "Убрать из недавних",
+    "exportPngV2V3": "Экспорт как PNG (V2/V3)",
+    "exportJsonV3": "Экспорт как JSON (V3)",
+    "exportJsonV2": "Экспорт как JSON (V2)",
+    "duplicate": "Дублировать"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "Не удалось дублировать персонажа.",
+    "editVariantNotesTitle": "Редактировать заметки варианта",
+    "editVariantNotesHint": "Добавьте заметки об этом варианте...",
+    "deleteCardTitle": "Удалить карточку",
+    "deleteCardMessage": "Вы уверены, что хотите удалить эту карточку?",
+    "deletePartialFailure": "Некоторые файлы не удалось удалить. Подробности в логах."
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

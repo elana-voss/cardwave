@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "Ключевые слова стиля",
+    "imageTitle": "Стиль изображения",
+    "imageDescription": "Добавляется в начало каждого промпта генерации изображения для этого персонажа (например, «стиль аниме, яркие цвета»).",
+    "imageHint": "стиль аниме, яркие цвета",
+    "videoTitle": "Стиль видео",
+    "videoDescription": "Добавляется в начало каждого промпта генерации видео для этого персонажа (например, «кинематографично, малая глубина резкости, зерно плёнки 24 к/с»). Видеомодели реагируют на лексику движения и камеры; пишите кратко.",
+    "videoHint": "кинематографично, малая глубина резкости"
+  },
+  "cardEditApproval": {
+    "denyAll": "Отклонить все",
+    "approveAll": "Одобрить все",
+    "confirm": "Подтвердить",
+    "dialogTitle": "Ассистент предложил изменения",
+    "dontAskAgainFor": "Не спрашивать снова для «$modality»",
+    "modalityLabel": {
+      "edits": "правки",
+      "additions": "добавления",
+      "deletions": "удаления"
+    },
+    "modalityVerb": {
+      "edit": "Изменить",
+      "addition": "Добавить в",
+      "deletion": "Удалить из"
+    },
+    "tapToDeny": "Нажмите, чтобы отклонить",
+    "tapToApprove": "Нажмите, чтобы одобрить",
+    "reasonLabel": "Причина (необязательно, отправляется обратно ассистенту)",
+    "newEntryTitle": "Новая запись",
+    "removingTitle": "Удаление",
+    "beforeTitle": "До",
+    "afterTitle": "После"
+  },
+  "requireApprovalTile": {
+    "edits": "Требовать одобрения: правки",
+    "additions": "Требовать одобрения: добавления",
+    "deletions": "Требовать одобрения: удаления"
+  },
+  "loadingStatus": {
+    "initial": "Загрузка...",
+    "copyingAssistant": "Копирование ассистента...",
+    "scanningForCharacters": "Поиск персонажей...",
+    "scanningForCharactersProgress": "Поиск персонажей...\n$current / $total",
+    "loadingCharactersProgress": "Загрузка персонажей...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "Папка библиотеки не настроена.",
+    "mustBeInsideLibrary": "Персонажей нужно сохранять внутри папки библиотеки."
+  },
+  "characterFilesTypeGroupLabel": "Файлы персонажей",
+  "createController": {
+    "pngImagesTypeGroupLabel": "Изображения PNG",
+    "invalidLocationTitle": "Недопустимое расположение",
+    "creationFailedTitle": "Не удалось создать",
+    "creationFailedMessage": "Не удалось создать персонажа. Подробности в логах."
+  },
+  "importController": {
+    "failedToImport": "Не удалось импортировать $fileName.",
+    "importedCount": "Импортировано персонажей: $count"
+  },
+  "aiActionController": {
+    "aiActionFailed": "Действие ИИ не выполнено. Подробности в логах.",
+    "processingProgress": "Обработка $name ($current/$total)...$eta",
+    "etaHoursMinutes": " Осталось: ${hours} ч ${minutes} мин",
+    "etaMinutesSeconds": " Осталось: ${minutes} мин ${seconds} с",
+    "etaSeconds": " Осталось: ${seconds} с",
+    "processingField": "Обработка «$fieldName»..."
+  }
+}

@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "Удалить",
+    "ok": "ОК",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "tryAgain": "Повторить",
+    "close": "Закрыть"
+  },
+  "aiAction": {
+    "proofread": "Вычитать",
+    "compact": "Сжать текст",
+    "translate": "Перевести на английский",
+    "generatePreview": "Создать превью",
+    "autoTag": "Авто-теги"
+  },
+  "aiActionsTooltip": "Действия ИИ",
+  "promptSegmentKind": {
+    "identity": "Идентичность",
+    "systemPrompt": "Системный промпт",
+    "nsfwMode": "Режим NSFW",
+    "scenarioMode": "Режим сценария",
+    "description": "Описание",
+    "personality": "Характер",
+    "scenario": "Сценарий",
+    "userPersona": "Ваша персона",
+    "memory": "Память",
+    "situation": "Ситуация",
+    "cardData": "Данные карточки",
+    "tools": "Инструменты",
+    "postHistory": "После истории",
+    "depthPrompt": "Глубинный промпт",
+    "worldInfo": "Информация о мире",
+    "injected": "Внедрено",
+    "exampleDialogue": "Пример диалога",
+    "history": "История сообщений",
+    "currentMessage": "Текущее сообщение",
+    "reservedReply": "Зарезервировано для ответа"
+  },
+  "promptBreakdown": {
+    "free": "Свободно"
+  },
+  "logs": {
+    "title": "Логи",
+    "filterTooltip": "Фильтр логов",
+    "clearTooltip": "Очистить логи",
+    "exportTooltip": "Экспорт логов",
+    "searchHint": "Поиск в логах...",
+    "noLogsFound": "Логи не найдены.",
+    "noLogsToExport": "Нет логов для экспорта",
+    "exportedSuccessfully": "Логи успешно экспортированы",
+    "exportFailed": "Не удалось экспортировать логи. Подробности в логах.",
+    "copiedToClipboard": "Скопировано в буфер обмена",
+    "copyLogButton": "Копировать лог",
+    "copiedEntryToClipboard": "Запись лога скопирована в буфер обмена",
+    "errorPrefix": "Ошибка: $error"
+  },
+  "importErrorsDialog": {
+    "title": "Ошибки импорта",
+    "message": "Следующие файлы не удалось импортировать:"
+  },
+  "updateDialog": {
+    "title": "Доступна версия",
+    "body": "Доступна более новая версия $appName.\n\nТекущая версия: $currentVersion\nПоследняя версия: $latestVersion",
+    "releaseNotesLabel": "Что нового:",
+    "viewReleasesButton": "Смотреть релизы"
+  },
+  "importConflictsDialog": {
+    "title": "Конфликты импорта",
+    "message": "Следующие $count персонажей имеют конфликты имён файлов и будут переименованы автоматически:"
+  },
+  "missingProviderBanner": {
+    "message": "Подключите провайдер ИИ.",
+    "setUpNowButton": "Настроить сейчас"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "Поиск моделей",
+    "subscriptionOnlyToggle": "Показывать только модели по подписке ($included/$total)"
+  },
+  "showAdvanced": {
+    "less": "Меньше",
+    "more": "Больше"
+  },
+  "messageEditDialog": {
+    "title": "Редактировать сообщение"
+  },
+  "promptBreakdownDialog": {
+    "title": "Разбор промпта",
+    "breakdownTab": "Разбор",
+    "contentTab": "Содержимое",
+    "promptTotalEstimated": "Итого по промпту (оценка)",
+    "promptTotalProvider": "Итого по промпту (провайдер)",
+    "contextWindowLabel": "Контекстное окно",
+    "categoryHeader": "КАТЕГОРИЯ",
+    "tokensHeader": "ТОКЕНЫ",
+    "usageHeader": "ИСПОЛЬЗОВАНИЕ",
+    "noContentToInspect": "Нет содержимого для этого ответа.",
+    "estimatedSuffix": " (оценка)",
+    "usedSummary": "Использовано $used / $total"
+  },
+  "jsonPromptDialog": {
+    "title": "Промпт генерации"
+  },
+  "progressDialog": {
+    "defaultMessage": "Отправка...",
+    "finished": "Готово!"
+  },
+  "diffPanel": {
+    "tokenSuffix": " ($count токенов)"
+  },
+  "selectionDialog": {
+    "searchHint": "Поиск…"
+  },
+  "zdrSwitch": {
+    "title": "Требовать нулевое хранение данных (ZDR)",
+    "subtitle": "Показывать только модели OR с ZDR-совместимыми эндпоинтами. Включите, если ваш аккаунт openrouter.ai ограничен провайдерами ZDR."
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label — $count токенов",
+    "tokenCountAbbrev": "$count т"
+  },
+  "modelCapability": {
+    "reasoning": "Рассуждения",
+    "vision": "Зрение",
+    "tools": "Инструменты",
+    "json": "JSON",
+    "files": "Файлы",
+    "image": "Изображение",
+    "video": "Видео",
+    "speech": "Речь",
+    "music": "Музыка"
+  },
+  "modelUnavailableTooltip": "Эта модель больше недоступна у провайдера — выберите другую.",
+  "characterImageSemanticLabel": "Изображение персонажа",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 МБ",
+    "exportFailedMessage": "Не удалось экспортировать. Подробности в логах."
+  },
+  "timeAgo": {
+    "years": "${n} г. назад",
+    "months": "${n} мес. назад",
+    "days": "${n} д. назад",
+    "hours": "${n} ч. назад",
+    "minutes": "${n} мин. назад",
+    "justNow": "Только что"
+  }
+}

@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "Стиль изображения",
+    "noneValue": "Нет"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "Стиль видео"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "Отображение",
+    "showCharacterImageTitle": "Показывать изображение персонажа",
+    "wideScreenOnlySubtitle": "Только в широкоэкранном редакторе"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "ИИ"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "Редактирование"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "Экспорт",
+    "exportPngTitle": "Экспорт как PNG (V2/V3)",
+    "exportJsonV3Title": "Экспорт как JSON (V3)",
+    "exportJsonV2Title": "Экспорт как JSON (V2)"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "Сбросить изображения"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "Правки карточки ассистентом"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "Избранное",
+    "nodesEngineTitle": "Движок NODES",
+    "debugSnapshotSubtitle": "Отладочный снимок",
+    "characterSubtitle": "Персонаж"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "Стиль не выбран"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "Перестроение индекса чата...",
+    "selectChatToStartMessagingMessage": "Выберите чат, чтобы начать переписку",
+    "failedToLoadAssistantMessage": "Не удалось загрузить ассистента."
+  }
+}
