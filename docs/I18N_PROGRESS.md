@@ -66,7 +66,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 
 ## Step 3 checklist (Sonnet) — one commit per row
 - [x] 1 `lib/grid/` → `grid`
-- [ ] 2 `lib/routing/` → `routing`
+- [x] 2 `lib/routing/` → `routing`
 - [ ] 3 `lib/onboarding/` → `onboarding`
 - [ ] 4 `lib/common/` → `common`
 - [ ] 5 `lib/settings/` → `settings`

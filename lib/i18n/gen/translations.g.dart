@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 79 (8 per locale)
+/// Strings: 82 (9 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -294,6 +294,9 @@ class _TranslationsRoutingEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsRoutingChatCharacterEn chatCharacter = _TranslationsRoutingChatCharacterEn._(_root);
+	late final _TranslationsRoutingEditCharacterEn editCharacter = _TranslationsRoutingEditCharacterEn._(_root);
+	late final _TranslationsRoutingEditPresetEn editPreset = _TranslationsRoutingEditPresetEn._(_root);
 }
 
 // Path: search
@@ -562,6 +565,36 @@ class _TranslationsGridControllerMessagesEn {
 	String get deleteCardTitle => 'Delete Card';
 	String get deleteCardMessage => 'Are you sure you want to delete this card?';
 	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
+}
+
+// Path: routing.chatCharacter
+class _TranslationsRoutingChatCharacterEn {
+	_TranslationsRoutingChatCharacterEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String navigationError({required Object name}) => 'Navigation error to chat. Character: ${name}';
+}
+
+// Path: routing.editCharacter
+class _TranslationsRoutingEditCharacterEn {
+	_TranslationsRoutingEditCharacterEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String navigationError({required Object name}) => 'Navigation error to edit. Character: ${name}';
+}
+
+// Path: routing.editPreset
+class _TranslationsRoutingEditPresetEn {
+	_TranslationsRoutingEditPresetEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String navigationError({required Object presetId}) => 'Navigation error to edit preset: ${presetId}';
 }
 
 // Path: <root>
@@ -2071,6 +2104,9 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
+			case 'routing.chatCharacter.navigationError': return ({required Object name}) => 'Navigation error to chat. Character: ${name}';
+			case 'routing.editCharacter.navigationError': return ({required Object name}) => 'Navigation error to edit. Character: ${name}';
+			case 'routing.editPreset.navigationError': return ({required Object presetId}) => 'Navigation error to edit preset: ${presetId}';
 			case 'settings.gearLanguage': return 'Language';
 			case 'settings.languageSystemDefault': return 'System default';
 			default: return null;

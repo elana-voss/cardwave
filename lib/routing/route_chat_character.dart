@@ -1,6 +1,7 @@
 import 'package:cardwave/app_routes_enum.dart';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/app_router_args_chat_page.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +30,7 @@ class RouteChatCharacter {
         st,
       );
       NavigationService().showSnackBar(
-        'Navigation error to chat. Character: ${file.card.name}',
+        t.routing.chatCharacter.navigationError(name: file.card.name),
       );
     }
   }

@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class RouteEditPreset {
         st,
       );
       NavigationService().showSnackBar(
-        'Navigation error to edit preset: $presetId',
+        t.routing.editPreset.navigationError(presetId: presetId),
       );
     }
   }
