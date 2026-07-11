@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "删除",
+    "ok": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "tryAgain": "重试",
+    "close": "关闭"
+  },
+  "aiAction": {
+    "proofread": "校对",
+    "compact": "精简文字",
+    "translate": "翻译成英文",
+    "generatePreview": "生成预览",
+    "autoTag": "自动打标签"
+  },
+  "aiActionsTooltip": "AI 操作",
+  "promptSegmentKind": {
+    "identity": "身份",
+    "systemPrompt": "系统提示词",
+    "nsfwMode": "NSFW 模式",
+    "scenarioMode": "场景模式",
+    "description": "描述",
+    "personality": "性格",
+    "scenario": "场景",
+    "userPersona": "你的人设",
+    "memory": "记忆",
+    "situation": "情境",
+    "cardData": "卡片数据",
+    "tools": "工具",
+    "postHistory": "历史后指令",
+    "depthPrompt": "深度提示词",
+    "worldInfo": "世界信息",
+    "injected": "注入内容",
+    "exampleDialogue": "示例对话",
+    "history": "消息历史",
+    "currentMessage": "当前消息",
+    "reservedReply": "预留回复"
+  },
+  "promptBreakdown": {
+    "free": "空闲"
+  },
+  "logs": {
+    "title": "日志",
+    "filterTooltip": "筛选日志",
+    "clearTooltip": "清空日志",
+    "exportTooltip": "导出日志",
+    "searchHint": "搜索日志…",
+    "noLogsFound": "未找到日志。",
+    "noLogsToExport": "没有可导出的日志",
+    "exportedSuccessfully": "日志导出成功",
+    "exportFailed": "导出日志失败。详情请查看日志。",
+    "copiedToClipboard": "已复制到剪贴板",
+    "copyLogButton": "复制日志",
+    "copiedEntryToClipboard": "已将日志条目复制到剪贴板",
+    "errorPrefix": "错误：$error"
+  },
+  "importErrorsDialog": {
+    "title": "导入错误",
+    "message": "以下文件无法导入："
+  },
+  "updateDialog": {
+    "title": "有可用版本",
+    "body": "$appName 有更新版本可用。\n\n当前版本：$currentVersion\n最新版本：$latestVersion",
+    "releaseNotesLabel": "更新说明：",
+    "viewReleasesButton": "查看版本"
+  },
+  "importConflictsDialog": {
+    "title": "导入冲突",
+    "message": "以下 $count 个角色的文件名有冲突，将自动重命名："
+  },
+  "missingProviderBanner": {
+    "message": "请连接一个 AI 服务商。",
+    "setUpNowButton": "立即设置"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "搜索模型",
+    "subscriptionOnlyToggle": "仅显示订阅模型（$included/$total）"
+  },
+  "showAdvanced": {
+    "less": "收起",
+    "more": "更多"
+  },
+  "messageEditDialog": {
+    "title": "编辑消息"
+  },
+  "promptBreakdownDialog": {
+    "title": "提示词构成",
+    "breakdownTab": "构成",
+    "contentTab": "内容",
+    "promptTotalEstimated": "提示词总计（估算）",
+    "promptTotalProvider": "提示词总计（服务商）",
+    "contextWindowLabel": "上下文窗口",
+    "categoryHeader": "类别",
+    "tokensHeader": "TOKEN",
+    "usageHeader": "占用",
+    "noContentToInspect": "这条回复没有可查看的内容。",
+    "estimatedSuffix": "（估算）",
+    "usedSummary": "已用 $used / $total"
+  },
+  "jsonPromptDialog": {
+    "title": "生成提示词"
+  },
+  "progressDialog": {
+    "defaultMessage": "发送中…",
+    "finished": "完成！"
+  },
+  "diffPanel": {
+    "tokenSuffix": " （$count 个 Token）"
+  },
+  "selectionDialog": {
+    "searchHint": "搜索…"
+  },
+  "zdrSwitch": {
+    "title": "要求零数据保留（ZDR）",
+    "subtitle": "仅显示带有 ZDR 合规端点的 OR 模型。如果你的 openrouter.ai 账户仅限使用 ZDR 服务商，请启用此项。"
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count 个 token",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "推理",
+    "vision": "视觉",
+    "tools": "工具",
+    "json": "JSON",
+    "files": "文件",
+    "image": "图像",
+    "video": "视频",
+    "speech": "语音",
+    "music": "音乐"
+  },
+  "modelUnavailableTooltip": "该模型已无法从服务商获取，请另选一个。",
+  "characterImageSemanticLabel": "角色图像",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "导出失败。详情请查看日志。"
+  },
+  "timeAgo": {
+    "years": "${n}年前",
+    "months": "${n}个月前",
+    "days": "${n}天前",
+    "hours": "${n}小时前",
+    "minutes": "${n}分钟前",
+    "justNow": "刚刚"
+  }
+}

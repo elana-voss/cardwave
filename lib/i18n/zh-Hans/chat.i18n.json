@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "模型",
+    "invalidLabel": "无效",
+    "chooseModelTitle": "选择一个模型"
+  },
+  "presetTile": {
+    "tapToChoose": "点击选择"
+  },
+  "tileImagePreset": {
+    "titleLabel": "图像模型",
+    "chooseModelTitle": "选择一个图像模型"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "视频模型",
+    "chooseModelTitle": "选择一个视频模型"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "语音模型",
+    "chooseModelTitle": "选择一个语音模型"
+  },
+  "tileImageAspectRatio": {
+    "label": "图像宽高比"
+  },
+  "tileVideoAspectRatio": {
+    "label": "宽高比"
+  },
+  "tileVideoResolution": {
+    "label": "分辨率"
+  },
+  "tileVideoDuration": {
+    "label": "时长"
+  },
+  "tileTtsVoice": {
+    "label": "音色"
+  },
+  "tileTtsLanguage": {
+    "label": "语言"
+  },
+  "tileNsfw": {
+    "label": "NSFW / 无限制"
+  },
+  "tileScenario": {
+    "label": "场景"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "回复长度 — $bucket",
+    "sliderLabel": "$bucket（$tokens 个 token）",
+    "bucketVeryShort": "极短",
+    "bucketShort": "短",
+    "bucketMedium": "中等",
+    "bucketLong": "长",
+    "bucketVeryLong": "极长"
+  },
+  "tileTrailingParagraph": {
+    "label": "截断结尾文字"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "推理 — $effort",
+    "titleOff": "推理已关闭",
+    "extraTokensCaption": "会在你的最大回复长度之外额外消耗 token。"
+  },
+  "tileChatTheme": {
+    "label": "主题"
+  },
+  "tileRecalledMemory": {
+    "label": "显示唤起的记忆"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "收藏",
+    "recentChatsTooltip": "最近对话",
+    "originalBadge": "原始",
+    "variantBadge": "变体",
+    "lastActive": "上次活跃：$timeAgo",
+    "never": "从未"
+  },
+  "freeImagePromptDialog": {
+    "title": "生成图像",
+    "description": "描述你想看到的画面。简短一句即可——模型会把它扩展成完整的标签列表。",
+    "subjectLabel": "主体",
+    "subjectHint": "赛博朋克小巷，霓虹雨",
+    "generateButton": "生成"
+  },
+  "freeVideoPromptDialog": {
+    "title": "生成视频",
+    "description": "描述一小段运动的瞬间——什么在动、怎么动、在哪里。系统模型会把它扩展成电影感的 T2V 提示词。",
+    "subjectLabel": "主体",
+    "subjectHint": "她走过霓虹雨，慢动作",
+    "generateButton": "生成"
+  },
+  "imagePromptReviewDialog": {
+    "title": "审核图像提示词",
+    "description": "在生成前编辑下方的提示词，或点击“生成”直接使用。",
+    "fieldLabel": "图像提示词",
+    "generateButton": "生成"
+  },
+  "videoPromptReviewDialog": {
+    "title": "审核视频提示词",
+    "description": "在提交前编辑下方的提示词，或点击“生成”直接使用。",
+    "fieldLabel": "视频提示词",
+    "generateButton": "生成"
+  },
+  "urlFetchReviewDialog": {
+    "title": "允许网页读取？",
+    "description": "角色想读取此网址的内容。",
+    "purposeLabel": "用途：",
+    "denyButton": "拒绝",
+    "allowButton": "允许"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}s",
+    "viewGenerationPromptTooltip": "查看生成提示词",
+    "messageActionsTooltip": "消息操作",
+    "editAction": "编辑",
+    "copyAction": "复制",
+    "shareImageAction": "分享图像",
+    "setAsBackgroundAction": "设为背景",
+    "setAsCharacterImageAction": "设为角色图像",
+    "deleteAction": "删除",
+    "copiedToClipboard": "消息已复制到剪贴板"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "停止",
+    "readAloudTooltip": "朗读",
+    "ttsFailed": "TTS 失败。"
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "上一版本",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "重新生成",
+    "nextVersionTooltip": "下一版本"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "网页端不支持视频播放。",
+    "couldNotLoad": "无法加载视频。"
+  },
+  "newChatLabel": "新对话",
+  "chatListItem": {
+    "messageCount": "$count 条消息",
+    "renameAction": "重命名",
+    "deleteChatAction": "删除对话"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "重命名对话",
+    "chatNameHint": "对话名称",
+    "renameButton": "重命名",
+    "deleteChatTitle": "删除对话",
+    "deleteChatMessage": "确定要删除这段对话历史吗？此操作无法撤销。"
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "清空助手对话历史？",
+    "clearButton": "清空",
+    "deleteOrKeepMessage": "你想删除当前对话，还是将它保留在历史中？",
+    "deleteCurrentButton": "删除当前",
+    "keepCurrentButton": "保留当前"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "输入提示词以生成图像。",
+    "noCharacterMessage": "没有可用于图像生成的角色。",
+    "notConfiguredMessage": "尚未配置图像生成。",
+    "noSystemModelMessage": "尚未配置系统模型。请在“设置 → AI”中设置一个。"
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "输入提示词以生成视频。",
+    "noCharacterMessage": "没有可用于视频生成的角色。",
+    "notConfiguredMessage": "尚未配置视频生成。"
+  },
+  "bubbleWaitingFor": {
+    "thinking": "思考中…",
+    "preparingImagePrompt": "正在准备图像提示词…",
+    "preparingVideoPrompt": "正在准备视频提示词…",
+    "generatingImage": "正在生成图像…",
+    "generatingVideo": "正在生成视频…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "隐藏编辑器面板",
+    "showEditorSideBySideTooltip": "并排显示编辑器"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "正在重建索引…",
+    "noChatsFound": "未找到对话。"
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "生成媒体",
+    "generateImageLabel": "生成图像",
+    "generateVideoLabel": "生成视频"
+  },
+  "chatView": {
+    "deleteMessageTitle": "删除消息",
+    "deleteMessageConfirmation": "确定要删除这条消息吗？",
+    "typeMessageHint": "输入消息…",
+    "moreActionsTooltip": "更多操作",
+    "continueAction": "继续",
+    "impersonateAction": "代入扮演",
+    "generateReplyAction": "生成回复",
+    "improveMessageAction": "优化消息"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "图像",
+    "assistantFallbackName": "助手",
+    "reasoningLabel": "推理",
+    "sendingToProvider": "正在发送给服务商…",
+    "pollingWithPercent": "轮询中… $pct%",
+    "polling": "轮询中…",
+    "downloading": "下载中…"
+  }
+}

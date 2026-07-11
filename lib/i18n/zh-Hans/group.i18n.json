@@ -1,1 +1,111 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "重命名群组",
+    "groupNameHint": "群组名称",
+    "deleteGroupTitle": "删除群组",
+    "deleteGroupMessage": "确定要删除“$name”吗？此操作无法撤销。"
+  },
+  "groupChatPage": {
+    "defaultGroupName": "群聊",
+    "failedToLoadMessage": "加载群聊失败：\n$error",
+    "nextTurnTooltip": "下一轮",
+    "stopAutoChatTooltip": "停止自动聊天",
+    "startAutoChatTooltip": "开始自动聊天",
+    "stopGenerationTooltip": "停止生成",
+    "noCharactersYetMessage": "该群组还没有角色。",
+    "addCharacterButton": "添加角色",
+    "pickCharacterMessage": "从左侧列表中选择一个角色。"
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "加载群组失败：\n$error",
+    "unknownErrorFallback": "未知错误",
+    "noGroupsYetMessage": "还没有群组——点击 + 创建一个。"
+  },
+  "tileAutoChatDelay": {
+    "title": "自动聊天延迟",
+    "secondsAbbrev": "${seconds}秒"
+  },
+  "tileActivationStrategy": {
+    "title": "发言者选择",
+    "naturalOption": "自然",
+    "roundRobinOption": "轮流",
+    "randomOption": "随机",
+    "changeSelectionTooltip": "更改发言者选择"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "允许网页读取",
+    "allowWebFetchSubtitle": "在相关时读取公开网页",
+    "reviewUrlTitle": "读取前审核网址",
+    "reviewUrlSubtitle": "确认每次读取",
+    "suggestNpcNamesTitle": "建议 NPC 名字",
+    "suggestNpcNamesSubtitle": "从精选数据库中挑选名字",
+    "unrestrictedImagesTitle": "无限制图像",
+    "allowNsfwImagePromptsSubtitle": "允许 NSFW 图像提示词",
+    "characterCanSendSelfiesTitle": "角色可以发送自拍",
+    "attachSelfieWhenNaturalSubtitle": "在自然时机附上自拍",
+    "reviewImagePromptTitle": "审核图像提示词",
+    "editBeforeGeneratingSubtitle": "生成前编辑",
+    "reviewToolImagePromptsTitle": "审核工具图像提示词",
+    "editToolTriggeredPromptsSubtitle": "编辑工具触发的提示词",
+    "allowSelfieCaptionsTitle": "允许自拍配文",
+    "captionRenderedOnImageSubtitle": "配文渲染在图像上",
+    "groupOverridesTitle": "群组覆盖设置",
+    "groupOverridesSubtitle": "共享场景、主提示词、示例对话",
+    "chatSessionSubtitle": "对话会话",
+    "allChatsLabel": "所有对话",
+    "showImageLabel": "显示图像",
+    "groupSectionHeader": "群组",
+    "chatSectionHeader": "对话",
+    "chatThemeSectionHeader": "对话主题",
+    "unrestrictedVideosTitle": "无限制视频",
+    "allowNsfwVideoPromptsSubtitle": "允许 NSFW 视频提示词",
+    "characterCanSendVideosTitle": "角色可以发送视频",
+    "attachShortVideoWhenNaturalSubtitle": "在自然时机附上短视频",
+    "reviewVideoPromptTitle": "审核视频提示词"
+  },
+  "groupCharacterPicker": {
+    "addButton": "添加",
+    "addWithCountButton": "添加 $count 个",
+    "favoritesTooltip": "收藏",
+    "noMatchMessage": "没有匹配“$query”的角色",
+    "noFavoritesMessage": "没有可用的收藏角色",
+    "allAddedMessage": "所有角色都已添加"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "让这个角色发言",
+    "removeFromChatTitle": "从对话中移除"
+  },
+  "dialogCreateGroup": {
+    "title": "新建群组",
+    "nameLabel": "名称",
+    "nameHint": "例如 Bob 和 Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "仅用于此对话。所有群组成员都使用这些值，而不是各自角色卡中定义的值。留空则回退到卡片中的值。",
+    "scenarioHint": "群组的共享设定（例如“在巴黎的一家咖啡馆里”）",
+    "mainPromptLabel": "主提示词",
+    "mainPromptHint": "每一轮都会应用的系统提示词",
+    "exampleDialogueLabel": "示例对话",
+    "exampleDialogueHint": "用于语气/格式的共享示例消息"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "添加角色",
+    "noCharactersYetMessage": "还没有角色。\n点击 + 添加一个。"
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "删除群组？",
+    "deleteGroupMessage": "“$name”及其所有对话会话都将被永久删除。",
+    "title": "群组",
+    "noGroupsYetMessage": "还没有群组。点击“新建群组”创建一个。",
+    "memberCountLabel(plural)": {
+      "other": "$n 名成员"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "还没有成员"
+  },
+  "groupFileService": {
+    "defaultGroupName": "群组"
+  }
+}

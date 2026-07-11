@@ -1,1 +1,259 @@
-{}
+{
+  "panelLabels": {
+    "basic": "基础",
+    "greetings": "开场白",
+    "prompts": "提示词",
+    "lorebook": "世界书",
+    "group": "群组",
+    "creator": "创作者",
+    "appData": "应用数据",
+    "nodes": "节点"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "隐藏助手面板",
+    "showChatAssistantTooltip": "并排显示对话助手"
+  },
+  "codeFindPanel": {
+    "noneResult": "无",
+    "previousTooltip": "上一个",
+    "nextTooltip": "下一个",
+    "closeTooltip": "关闭",
+    "replaceTooltip": "替换",
+    "replaceAllTooltip": "全部替换"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "确认全部替换",
+    "confirmReplaceAllMessage": "确定要继续吗？\n此操作不可逆，并会影响所有字段。",
+    "proceedButton": "继续",
+    "title": "查找和替换",
+    "findLabel": "查找",
+    "replaceWithLabel": "替换为",
+    "replaceAllButton": "全部替换"
+  },
+  "objectValueEditor": {
+    "stringType": "字符串",
+    "numberType": "数字",
+    "boolType": "布尔"
+  },
+  "editorBasic": {
+    "nameLabel": "名称",
+    "nicknameLabel": "昵称（CCv3）",
+    "descriptionLabel": "描述",
+    "personalityLabel": "性格",
+    "scenarioLabel": "场景",
+    "messageExampleLabel": "消息示例"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "系统名称（CCv3）",
+    "creatorLabel": "创作者",
+    "versionLabel": "版本",
+    "creatorNotesLabel": "创作者备注",
+    "tagsLabel": "标签（逗号分隔）"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "系统提示词",
+    "postHistoryInstructionsLabel": "历史后指令",
+    "depthPromptLabel": "深度提示词（角色备注）",
+    "insertionDepthLabel": "插入深度",
+    "roleLabel": "角色"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "变体备注",
+    "descriptionPreviewLabel": "描述预览"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "删除开场白",
+    "deleteGreetingMessage": "确定要删除这段开场白吗？",
+    "addGreetingButton": "添加开场白",
+    "primaryGreetingLabel": "主开场白（first_mes）",
+    "alternateGreetingLabel": "备用开场白 #$index",
+    "removeTooltip": "移除"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "开场白 $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "新条目",
+    "deleteEntryTitle": "删除条目",
+    "deleteEntryMessage": "确定要删除这个条目吗？",
+    "addNewEntryButton": "添加新条目",
+    "noEntriesFound": "未找到世界书条目。"
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "无标题条目",
+    "noKeywords": "无关键词"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "编辑世界书条目",
+    "advancedFilter": "高级",
+    "primaryKeywordsLabel": "主关键词",
+    "logicLabel": "逻辑",
+    "logicAndAny": "且 任一",
+    "logicAndAll": "且 全部",
+    "logicNotAny": "非 任一",
+    "logicNotAll": "非 全部",
+    "optionalFilterLabel": "可选筛选",
+    "contentLabel": "内容",
+    "nonRecursableFilter": "不可递归",
+    "preventFurtherRecursionFilter": "阻止进一步递归",
+    "delayUntilRecursionFilter": "延迟至递归时",
+    "ignoreBudgetFilter": "忽略预算",
+    "prioritizeFilter": "优先",
+    "inclusionGroupLabel": "包含组",
+    "groupWeightLabel": "组权重",
+    "stickyLabel": "粘滞",
+    "cooldownLabel": "冷却",
+    "delayLabel": "延迟",
+    "filterToCharactersLabel": "限定角色或标签",
+    "filterToTriggersLabel": "限定生成触发条件",
+    "additionalMatchingSourcesLabel": "额外匹配来源：",
+    "personaFilter": "人设",
+    "descriptionFilter": "描述",
+    "personalityFilter": "性格",
+    "depthPromptFilter": "深度提示词",
+    "scenarioFilter": "场景",
+    "creatorNotesFilter": "创作者备注"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "标题/备忘",
+    "strategyLabel": "策略",
+    "strategyConstant": "常驻",
+    "strategyEnabled": "启用",
+    "strategyDisabled": "禁用",
+    "strategyVectorized": "向量化",
+    "positionLabel": "位置",
+    "positionUpChar": "↑ 角色",
+    "positionDownChar": "↓ 角色",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D 系统",
+    "positionDepthUser": "@D 用户",
+    "positionDepthAssistant": "@D 助手",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "出口",
+    "depthLabel": "深度",
+    "orderLabel": "顺序",
+    "triggerLabel": "触发 %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "扫描深度",
+    "automationIdLabel": "自动化 ID",
+    "useRegexFilter": "使用 regex",
+    "caseSensitiveFilter": "区分大小写",
+    "wholeWordsFilter": "全词匹配",
+    "groupScoringFilter": "组评分"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "确认$actionName",
+    "title": "内容清理器",
+    "normalizeFancyCharsAction": "规范花式字符",
+    "normalizeFancyCharsButton": "规范花式字符 (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "清除 HTML",
+    "purgeHtmlButton": "清除 HTML 标签",
+    "purgeMarkdownAction": "清除 Markdown 链接/图像",
+    "purgeEmojisAction": "清除表情符号",
+    "purgeExtraSpacesAction": "清除多余空格",
+    "yoloPurgeAction": "大胆清除",
+    "applyAllAboveButton": "应用以上全部"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "应用更改",
+    "originalTextTitle": "原始文本",
+    "suggestedTextTitle": "建议文本"
+  },
+  "editorPageController": {
+    "globalActionTitle": "全局$action",
+    "globalAiActionFailed": "全局 AI 操作失败。请查看日志。",
+    "compositeName": "名称：\n$value\n",
+    "compositeDescription": "描述：\n$value\n",
+    "compositePersonality": "性格：\n$value\n",
+    "compositeScenario": "场景：\n$value\n",
+    "compositeFirstMessage": "首条消息：\n$value\n",
+    "compositeMessageExample": "消息示例：\n$value\n",
+    "compositeCreatorNotes": "创作者备注：\n$value\n",
+    "compositeSystemPrompt": "系统提示词：\n$value\n",
+    "compositePostHistoryInstructions": "历史后指令：\n$value\n",
+    "compositeAlternateGreeting": "备用开场白 #$index：\n$value\n",
+    "compositeGroupGreeting": "群组开场白 #$index：\n$value\n",
+    "compositeLorebookEntry": "世界书条目 #$index：\n$value\n",
+    "imageTooLargeMessage": "所选图像过大。最大尺寸为 $maxSize。",
+    "invalidPngMessage": "所选图像不是有效的 PNG，或无法读取。"
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "删除节点",
+    "deleteNodeMessage": "从卡片中移除这个已创建的节点？",
+    "engineSeedTitle": "引擎种子",
+    "visualEditorTooltip": "可视化编辑器",
+    "editJsonTooltip": "编辑 JSON",
+    "initialGoalLabel": "初始目标",
+    "initialSceneLabel": "初始场景",
+    "locationLabel": "地点",
+    "timeOfDayLabel": "时段",
+    "presentEntitiesLabel": "在场（逗号分隔）",
+    "sensoryHooksLabel": "感官钩子（逗号分隔）",
+    "addNodeButton": "添加节点",
+    "noAuthoredNodesYet": "还没有已创建的节点。",
+    "loadErrorMessage(plural)": {
+      "other": "这张卡片的节点块有 $n 个问题；在此编辑会在保存时覆盖损坏的部分。"
+    },
+    "moreErrorsSuffix": "…还有 $n 个",
+    "emotionBaselineLabel": "情绪基线",
+    "emotionChipLabel": "情绪"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "生成：$count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "顶层必须是一个 JSON 对象",
+    "editNodesJsonTitle": "编辑节点 JSON",
+    "fixProblemsMessage(plural)": {
+      "other": "修复 $n 个问题后才能保存。"
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "生成自",
+    "spawnsPort": "生成",
+    "editNodeLabel": "编辑节点",
+    "addNodeTooltip": "添加节点"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "名称",
+    "narrativePayloadLabel": "叙事内容",
+    "removeSpawnLinkTitle": "移除生成链接",
+    "removeSpawnLinkMessage": "停止此节点生成“$nodeId”？节点本身仍保留在卡片上。",
+    "removeButton": "移除",
+    "typeLabel": "类型",
+    "scopeLabel": "范围",
+    "originLabel": "来源",
+    "triggerProbLabel": "触发概率",
+    "delayHelper": "生效前需等待的回合数。-1 等同于 0。",
+    "cooldownHelper": "触发后锁定的回合数。-1 表示无冷却。",
+    "stickyHelper": "触发后叙事内容以“残留”形式持续出现的回合数。-1 表示永久。",
+    "aliveHelper": "节点在被移除前留在池中的回合数。-1 表示永远。",
+    "setToNeverButton": "设为从不",
+    "effectsSectionLabel": "效果",
+    "emotionDeltasTitle": "情绪变化量",
+    "physicalDeltasTitle": "身体变化量",
+    "relationshipDeltasTitle": "关系变化量",
+    "addDeltaChip": "添加变化量",
+    "knowledgeWritesTitle": "知识写入",
+    "addFactChip": "添加事实",
+    "topicLabel": "主题",
+    "confidenceLabel": "置信度",
+    "flagSetTitle": "标志设置",
+    "addFlagChip": "添加标志",
+    "keyLabel": "键",
+    "sceneAndFlowTitle": "场景与流程",
+    "goalChangeLabel": "goalChange（留空时清除当前目标）",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "（无）",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "为 true 时，引擎会将这次触发标记为场景切换。",
+    "spawnsSectionLabel": "生成",
+    "addNewChip": "新建",
+    "linkExistingChip": "链接现有",
+    "unlinkTooltip": "取消链接",
+    "predicateLabel": "条件"
+  }
+}

@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "图像模型",
+    "imageAspectRatio": "图像宽高比",
+    "imageNsfwAllowed": "允许 NSFW 图像",
+    "imageToolSelfieAllowed": "可以发送自拍",
+    "imageToolSelfieCaptionsAllowed": "允许自拍配文",
+    "imagePromptPrefix": "图像风格",
+    "videoModel": "视频模型",
+    "videoResolution": "视频分辨率",
+    "videoAspectRatio": "视频宽高比",
+    "videoDuration": "视频时长",
+    "videoNsfwAllowed": "允许 NSFW 视频",
+    "videoToolSendAllowed": "可以发送视频",
+    "videoPromptPrefix": "视频风格",
+    "ttsModel": "TTS 模型",
+    "ttsVoice": "TTS 音色",
+    "ttsLanguage": "TTS 语言",
+    "webToolFetchAllowed": "允许网页读取",
+    "nameToolSuggestAllowed": "可以建议 NPC 名字"
+  },
+  "mediaSection": {
+    "image": "图像",
+    "video": "视频",
+    "tts": "TTS",
+    "web": "网页",
+    "names": "名字"
+  },
+  "tristate": {
+    "on": "开",
+    "off": "关",
+    "inherit": "继承"
+  },
+  "mediaCellMenu": {
+    "change": "更改…",
+    "clear": "清除"
+  },
+  "mediaHeader": {
+    "appDefault": "应用默认",
+    "character": "角色",
+    "currentChat": "当前对话",
+    "previousLayerTooltip": "上一层",
+    "nextLayerTooltip": "下一层"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "更改应用默认值？",
+    "changeAppDefaultMessage": "这会影响每一段对话。要继续吗？",
+    "continueButton": "继续",
+    "chooseModelTitle": "选择一个 $domain 模型"
+  },
+  "mediaCell": {
+    "notApplicable": "不适用"
+  }
+}

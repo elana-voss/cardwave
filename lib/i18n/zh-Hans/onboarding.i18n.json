@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "设置失败。详情请查看日志。",
+  "appBarTitle": "快速设置",
+  "webWarning": "实验性网页版——浏览器存储可能在更新之间被重置。如需持久保存数据，请使用桌面版或 Android。",
+  "finishButton": "完成设置",
+  "nextButton": "下一步",
+  "backButton": "上一步",
+  "storageStep": {
+    "title": "角色存储",
+    "subtitle": "你的角色卡应该保存在哪里？",
+    "description": "默认保存在应用文件夹中。指向一个已有的 PNG 文件夹即可导入。",
+    "startFresh": "从零开始",
+    "haveCards": "我已经有卡片了",
+    "importLaterHint": "之后可通过“文件 → 导入”导入 PNG。",
+    "selectedPath": "已选择：$path",
+    "selectedDefaultFolder": "已选择：默认应用文件夹",
+    "noFolderSelected": "尚未选择文件夹。"
+  },
+  "setupStep": {
+    "title": "AI 与人设"
+  },
+  "aiSection": {
+    "heading": "AI 连接",
+    "optionalHint": "可选——可以跳过，之后在设置中添加密钥（本地服务商也可以在那里添加）。",
+    "apiKeyLabel": "API 密钥",
+    "apiKeyHint": "粘贴你的密钥（或暂时跳过）",
+    "supportedProviders": "支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多请在设置中查看。",
+    "unknownModel": "（未知模型）",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "更改"
+  },
+  "aiStatus": {
+    "connecting": "连接中…",
+    "connected": "已连接到 $provider。已选择默认对话模型。",
+    "detected": "检测到：$provider",
+    "unrecognizedKey": "无法识别的密钥格式。"
+  },
+  "personaSection": {
+    "heading": "你的人设",
+    "hint": "你在对话中的名字。更多人设细节请在设置中查看。",
+    "nameLabel": "你的名字"
+  },
+  "disclaimer": {
+    "prefix": "我已阅读并同意",
+    "linkText": "免责声明"
+  },
+  "fetchError": {
+    "noModels": "未返回任何模型。请检查你的 API 密钥。",
+    "connectionFailed": "无法连接。请检查你的网络连接和 API 密钥。"
+  }
+}

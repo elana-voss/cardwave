@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "图像风格",
+    "noneValue": "无"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "视频风格"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "显示",
+    "showCharacterImageTitle": "显示角色图像",
+    "wideScreenOnlySubtitle": "仅限宽屏编辑器"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "编辑"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "导出",
+    "exportPngTitle": "导出为 PNG（V2/V3）",
+    "exportJsonV3Title": "导出为 JSON（V3）",
+    "exportJsonV2Title": "导出为 JSON（V2）"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "重置图像"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "助手卡片编辑"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "收藏",
+    "nodesEngineTitle": "NODES 引擎",
+    "debugSnapshotSubtitle": "调试快照",
+    "characterSubtitle": "角色"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "未选择风格"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "正在重建对话索引…",
+    "selectChatToStartMessagingMessage": "选择一段对话开始聊天",
+    "failedToLoadAssistantMessage": "加载助手失败。"
+  }
+}

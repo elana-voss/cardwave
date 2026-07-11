@@ -1,1 +1,11 @@
-{}
+{
+  "chatCharacter": {
+    "navigationError": "跳转到对话时出错。角色：$name"
+  },
+  "editCharacter": {
+    "navigationError": "跳转到编辑时出错。角色：$name"
+  },
+  "editPreset": {
+    "navigationError": "跳转到编辑预设时出错：$presetId"
+  }
+}

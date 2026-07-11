@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "没有符合筛选条件的角色",
+    "noCharacters": "还没有导入任何角色",
+    "clearAllFilters": "清除所有筛选",
+    "importCharacters": "导入角色",
+    "createNewCharacter": "新建角色"
+  },
+  "appBar": {
+    "groups": "群组",
+    "createNew": "新建",
+    "import": "导入",
+    "menuTooltip": "菜单"
+  },
+  "fab": {
+    "addOrImportTooltip": "添加或导入",
+    "import": "导入",
+    "create": "新建"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "应用",
+    "batchAiHeader": "批量 AI",
+    "batchGeneratePreviewsTitle": "批量生成预览",
+    "batchGeneratePreviewsEmpty": "所有角色都已有预览。",
+    "batchAutoTagTitle": "批量自动打标签",
+    "batchAutoTagEmpty": "所有角色都已有标签。",
+    "libraryHeader": "库",
+    "reloadCharacters": "重新加载角色"
+  },
+  "variantBadge": {
+    "tooltip": "$count 个变体"
+  },
+  "dialogActions": {
+    "clearAll": "全部清除",
+    "apply": "应用"
+  },
+  "tagFilterDialog": {
+    "title": "筛选标签",
+    "searchHint": "搜索标签…"
+  },
+  "filters": {
+    "hideFiltersTooltip": "隐藏筛选",
+    "moreFiltersTooltip": "更多筛选",
+    "folderChip": "文件夹",
+    "creatorChip": "创作者",
+    "tagChip": "标签",
+    "recentTooltip": "最近",
+    "favoritesTooltip": "收藏",
+    "variantsTooltip": "变体",
+    "indexingProgress": "正在构建搜索 $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "相关度 ↓",
+    "nameAsc": "名称 ↓",
+    "nameDesc": "名称 ↑",
+    "importNewest": "导入时间 ↓",
+    "importOldest": "导入时间 ↑",
+    "modifiedNewest": "修改时间 ↓",
+    "modifiedOldest": "修改时间 ↑",
+    "interactedNewest": "互动时间 ↓",
+    "interactedOldest": "互动时间 ↑",
+    "tokensHigh": "Token 数 ↓",
+    "tokensLow": "Token 数 ↑"
+  },
+  "filterController": {
+    "filterCreators": "筛选创作者",
+    "filterTags": "筛选标签",
+    "filterByFolder": "按文件夹筛选"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "暂无内容。",
+    "noMatches": "没有匹配项。",
+    "showMore": "显示更多"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "角色名称不能为空。",
+    "nameInvalidCharsError": "名称包含非法字符（<>:\"/\\|?*）。",
+    "nameExistsError": "已存在同名角色。",
+    "nameCheckFailedError": "无法验证名称。请检查文件夹权限后重试。",
+    "title": "新建角色",
+    "nameLabel": "角色名称",
+    "createButton": "新建"
+  },
+  "variantsSheet": {
+    "title": "变体"
+  },
+  "groupAppBar": {
+    "characters": "角色",
+    "newGroup": "新建群组"
+  },
+  "thumbnailBadges": {
+    "recent": "最近",
+    "original": "原始",
+    "variant": "变体"
+  },
+  "actionMenu": {
+    "editNotes": "编辑备注",
+    "dismissRecent": "移出最近",
+    "exportPngV2V3": "导出为 PNG（V2/V3）",
+    "exportJsonV3": "导出为 JSON（V3）",
+    "exportJsonV2": "导出为 JSON（V2）",
+    "duplicate": "复制"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "无法复制该角色。",
+    "editVariantNotesTitle": "编辑变体备注",
+    "editVariantNotesHint": "添加关于此变体的备注…",
+    "deleteCardTitle": "删除卡片",
+    "deleteCardMessage": "确定要删除这张卡片吗？",
+    "deletePartialFailure": "部分文件无法删除。详情请查看日志。"
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}
