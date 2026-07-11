@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
+import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +11,7 @@ import 'package:flutter/material.dart';
 enum _GearActionEnum {
   aiProviders,
   appSettings,
+  language,
   mediaApp,
   mediaCharacter,
   mediaChat,
@@ -91,6 +96,14 @@ class SettingsGearMenu extends StatelessWidget {
             ),
           ),
           const PopupMenuDivider(),
+          PopupMenuItem(
+            key: const Key('settings-language'),
+            value: _GearActionEnum.language,
+            child: ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(t.settings.gearLanguage),
+            ),
+          ),
           const PopupMenuItem(
             key: Key('settings-app-settings'),
             value: _GearActionEnum.appSettings,
@@ -119,6 +132,8 @@ class SettingsGearMenu extends StatelessWidget {
         SettingsMenuController.openAiProvidersTab(context);
       case _GearActionEnum.appSettings:
         SettingsMenuController.openAppSettingsTab();
+      case _GearActionEnum.language:
+        unawaited(NavigationService().showLanguageDialog());
       case _GearActionEnum.mediaApp:
         SettingsMenuController.openMediaDefaults(context);
       case _GearActionEnum.mediaCharacter:

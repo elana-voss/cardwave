@@ -15,6 +15,7 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) =>
         themeStyle:
             $enumDecodeNullable(_$ThemeStyleEnumEnumMap, json['theme_style']) ??
             ThemeStyleEnum.standard,
+        localeTag: json['locale_tag'] as String?,
         chatTheme: json['chat_theme'] == null
             ? ChatTheme.azure
             : ChatTheme.fromJson(json['chat_theme'] as Map<String, dynamic>),
@@ -94,6 +95,7 @@ Map<String, dynamic> _$AppSettingsToJson(
   'provider_configs': instance.providerConfigs.map((e) => e.toJson()).toList(),
   'theme_mode': _$ThemeModeEnumMap[instance.themeMode]!,
   'theme_style': _$ThemeStyleEnumEnumMap[instance.themeStyle]!,
+  'locale_tag': instance.localeTag,
   'chat_theme': instance.chatTheme.toJson(),
   'domain_preset_ids': instance.domainPresetIds.map(
     (k, e) => MapEntry(_$LlmProviderDomainEnumEnumMap[k]!, e),

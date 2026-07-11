@@ -16,6 +16,7 @@ class AppSettings {
     List<LlmProviderConfig>? connectionProfiles,
     this.themeMode = ThemeMode.dark,
     this.themeStyle = ThemeStyleEnum.standard,
+    this.localeTag,
     this.chatTheme = ChatTheme.azure,
     Map<LlmProviderDomainEnum, String>? domainPresetIds,
     this.configMedia,
@@ -72,6 +73,10 @@ class AppSettings {
   ThemeMode themeMode;
 
   ThemeStyleEnum themeStyle;
+
+  /// BCP-47 tag of the UI language ('ru', 'pt-BR', ...). Null follows the
+  /// device locale.
+  String? localeTag;
 
   ChatTheme chatTheme;
 

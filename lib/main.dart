@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:cardwave/app_router.dart';
 import 'package:cardwave/app_routes_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
@@ -22,6 +23,7 @@ import 'package:cardwave_memory/cardwave_memory.dart' show MemoryDiagnosticEvent
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
@@ -295,6 +297,10 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       _settingsDisplay = ThemeNotifier();
       _settingsDisplay.themeMode = _settingsService.settings.themeMode;
       _settingsDisplay.themeStyle = _settingsService.settings.themeStyle;
+
+      // Apply the persisted UI language (null tag follows the device locale)
+      // before the first MaterialApp with a `locale:` builds.
+      LocaleController().applyPersisted();
 
       _characterService = CharacterService(
         characterRepository: _characterRepository,
@@ -638,6 +644,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     if (_error != null) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
+        supportedLocales: AppLocaleUtils.supportedLocales,
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         theme: compactLightTheme,
         darkTheme: compactDarkTheme,
         home: Scaffold(
@@ -658,6 +666,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     if (!_initialized) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
+        supportedLocales: AppLocaleUtils.supportedLocales,
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         theme: compactLightTheme,
         darkTheme: compactDarkTheme,
         home: const Scaffold(body: SizedBox.shrink()),
@@ -711,7 +721,7 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         ),
         Provider<GroupPromptService>.value(value: _groupPromptService),
       ],
-      child: const MyApp(),
+      child: TranslationProvider(child: const MyApp()),
     );
   }
 }
@@ -805,6 +815,9 @@ class _MyAppState extends State<MyApp> {
         },
       ),
       debugShowCheckedModeBanner: false,
+      locale: TranslationProvider.of(context).flutterLocale,
+      supportedLocales: AppLocaleUtils.supportedLocales,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: isNeon ? neonLightTheme : compactLightTheme,
       darkTheme: isNeon ? neonDarkTheme : compactDarkTheme,
       themeMode: settingsDisplay.themeMode,

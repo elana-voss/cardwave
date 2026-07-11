@@ -210,6 +210,16 @@ class NavigationService {
     );
   }
 
+  /// Opens the language picker inside an [AppDialog] — a flat list of every
+  /// UI language plus a "System default" row. Modeled on [showPersonasDialog].
+  Future<void> showLanguageDialog() async {
+    await _showAppDialog<void>(
+      builder: (_) => AppDialog(
+        builder: (ctx, isMobile) => const DialogLanguagePicker(),
+      ),
+    );
+  }
+
   /// Opens the image-style presets toggle dialog for a character. The dialog
   /// reads/writes `characterFile.configMedia.imagePromptPrefix` and persists
   /// changes via [characterService] as toggles flip. Returns when the user
