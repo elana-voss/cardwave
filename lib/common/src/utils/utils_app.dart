@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:uuid/uuid.dart';
 
 class UtilsApp {
@@ -77,12 +78,16 @@ class UtilsApp {
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
     final diff = DateTime.now().difference(date);
 
-    if (diff.inDays > 365) return '${(diff.inDays / 365).floor()}y ago';
-    if (diff.inDays > 30) return '${(diff.inDays / 30).floor()}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'Just now';
+    if (diff.inDays > 365) {
+      return t.common.timeAgo.years(n: (diff.inDays / 365).floor());
+    }
+    if (diff.inDays > 30) {
+      return t.common.timeAgo.months(n: (diff.inDays / 30).floor());
+    }
+    if (diff.inDays > 0) return t.common.timeAgo.days(n: diff.inDays);
+    if (diff.inHours > 0) return t.common.timeAgo.hours(n: diff.inHours);
+    if (diff.inMinutes > 0) return t.common.timeAgo.minutes(n: diff.inMinutes);
+    return t.common.timeAgo.justNow;
   }
 
   static String cleanseAndInlineForPrompt(String input, {int? maxLength}) {

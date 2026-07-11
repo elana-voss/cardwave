@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// A `Wrap` of [FilterChip]s, one per tag (label = `"tag (count)"`).
@@ -23,7 +24,9 @@ class TagWrap extends StatelessWidget {
       children: [
         for (final e in tags)
           FilterChip(
-            label: Text('${e.key} (${e.value})'),
+            label: Text(
+              t.grid.tagWrap.tagCountLabel(tag: e.key, count: e.value),
+            ),
             selected: currentSelection.contains(e.key),
             onSelected: (selected) => onToggle(e.key, selected),
           ),

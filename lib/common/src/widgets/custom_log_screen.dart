@@ -252,7 +252,7 @@ class _LogEntryWidgetState extends State<_LogEntryWidget> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'Error: ${widget.entry.error}',
+                  t.common.logs.errorPrefix(error: '${widget.entry.error}'),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.error,
                     fontSize: 13,

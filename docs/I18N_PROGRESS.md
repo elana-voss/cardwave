@@ -79,7 +79,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 12 `lib/nodes/` → `nodes`
 - [x] 13 `lib/memory/` + `lib/search/`
 - [x] 14 root files → `app`
-- [ ] 3.7 final leftover sweep done
+- [x] 3.7 final leftover sweep done
 
 ## Step 4 checklist (Opus) — one commit per language
 - [ ] 4.1 Step-3 open questions resolved
@@ -265,3 +265,45 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   `lib/character/`), so not fixed here to avoid mixing an unrelated
   directory into this row's commit. Flagging for a follow-up pass —
   either folded into Step 4/5 or a small dedicated fix-up commit.
+  **Resolved in the §3.7 leftover sweep**: both converted to
+  `t.settings.loadingStatus.restoringProviders` /
+  `.fetchingModelsProgress(completed, total)`.
+
+## §3.7 leftover sweep (post row-14)
+Ran the full self-check: `grep -rn "Text('" lib --include="*.dart"` plus
+broader patterns for `label:`/`title:`/`subtitle:`/`hintText:`/
+`labelText:`/`helperText:`/`errorText:`/`tooltip:`/`semanticsLabel:`/
+`message:`/`content:` (including multi-line forms where the literal
+isn't on the same source line as the keyword), `return '...'` in utility
+functions, and `showSnackBar('...')`. Every remaining hit was checked
+against §3.3 and either matches an existing documented exclusion
+(the nodes debug dialog, the taxonomy editor, bare format/technical
+identifiers like "GGUF"/"PNG"/"JSON" in native file-picker `XTypeGroup`
+labels, `LlmDiagnosticEvent`/`LlmCacheEvent` logger payloads, the
+"Cardwave" wordmark, lorebook strategy value-identifiers) or was a
+genuine miss, now fixed:
+- **`lib/grid/src/pages/widgets/tag_wrap.dart`**: the tag-chip label
+  `'${e.key} (${e.value})'` had no `t.` wrapper at all — extracted to
+  `t.grid.tagWrap.tagCountLabel(tag, count)`, matching the row 1
+  precedent of extracting punctuation/format-only templates (see
+  `variantBadge.tooltip`, `filters.indexingProgress` in the same file).
+- **`lib/common/src/widgets/custom_log_screen.dart`**: the `'Error:
+  ${widget.entry.error}'` prefix label (the log-entry detail panel's own
+  chrome, not the logged message itself) was missing its `t.` wrapper —
+  extracted to `t.common.logs.errorPrefix(error)`. The raw
+  `widget.entry.message`/`.stackTrace`/`.dataContext` content stays
+  untouched (that's logger payload, out of scope per §3.3).
+- **`lib/common/src/utils/utils_app.dart`**: `UtilsApp.timeAgo()` — used
+  across `lib/grid/`, `lib/group/`, `lib/chat/`, and `lib/settings/` for
+  "last active"/"imported"/"last refreshed" timestamps — returned six
+  raw English literals (`'Xy ago'`, `'Xmo ago'`, `'Xd ago'`, `'Xh ago'`,
+  `'Xm ago'`, `'Just now'`) that were never caught by any row because the
+  function itself lives in `lib/common/` (row 4) but its only call sites
+  are in other directories. Extracted to `t.common.timeAgo.years/months
+  /days/hours/minutes(n)` and `.justNow`.
+- **`lib/settings/src/services/settings_service.dart`**: the parked
+  observation above, now resolved.
+
+Confirmed clean after the fixes: `dart run slang analyze` shows zero
+missing `en` keys; `flutter analyze` still shows only the 36 pre-existing
+`qcheck` warnings; `flutter test --exclude-tags=integration` is 68/68.

@@ -15,6 +15,10 @@
   "endDrawer": {
     "switchPersonaTooltip": "Switch persona"
   },
+  "loadingStatus": {
+    "restoringProviders": "Restoring providers…",
+    "fetchingModelsProgress": "Fetching models ($completed/$total)…"
+  },
   "general": {
     "characterFolderTitle": "Character Folder",
     "characterFolderNotSet": "Not set. Required for the app to function.",

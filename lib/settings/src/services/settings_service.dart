@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/src/models/app_settings.dart';
 import 'package:cardwave/settings/src/models/llm_providers_recovery.dart';
 import 'package:cardwave/settings/src/repositories/settings_repository.dart';
@@ -117,7 +118,7 @@ class SettingsService extends ChangeNotifier {
     final total = profiles.length;
 
     _isLoading = true;
-    _loadingStatus = 'Restoring providers…';
+    _loadingStatus = t.settings.loadingStatus.restoringProviders;
     _loadingProgress = null;
     notifyListeners();
 
@@ -131,7 +132,10 @@ class SettingsService extends ChangeNotifier {
             trigger: ModelRefreshTriggerEnum.recoveryRebuild,
           );
           completed++;
-          _loadingStatus = 'Fetching models ($completed/$total)…';
+          _loadingStatus = t.settings.loadingStatus.fetchingModelsProgress(
+            completed: completed,
+            total: total,
+          );
           _loadingProgress = completed / total;
           notifyListeners();
         }(),

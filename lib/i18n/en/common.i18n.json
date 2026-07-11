@@ -52,7 +52,8 @@
     "exportFailed": "Failed to export logs. See logs for details.",
     "copiedToClipboard": "Copied to clipboard",
     "copyLogButton": "Copy Log",
-    "copiedEntryToClipboard": "Copied log entry to clipboard"
+    "copiedEntryToClipboard": "Copied log entry to clipboard",
+    "errorPrefix": "Error: $error"
   },
   "importErrorsDialog": {
     "title": "Import Errors",
@@ -134,5 +135,13 @@
   "appConstants": {
     "maxImageFileSizeLabel": "10 MB",
     "exportFailedMessage": "Export failed. See logs for details."
+  },
+  "timeAgo": {
+    "years": "${n}y ago",
+    "months": "${n}mo ago",
+    "days": "${n}d ago",
+    "hours": "${n}h ago",
+    "minutes": "${n}m ago",
+    "justNow": "Just now"
   }
 }

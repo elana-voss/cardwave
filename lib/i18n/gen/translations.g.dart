@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 893 (99 per locale)
+/// Strings: 903 (100 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -278,6 +278,7 @@ class _TranslationsCommonEn {
 	String get modelUnavailableTooltip => 'This model is no longer available from the provider — pick another.';
 	String get characterImageSemanticLabel => 'Character image';
 	late final _TranslationsCommonAppConstantsEn appConstants = _TranslationsCommonAppConstantsEn._(_root);
+	late final _TranslationsCommonTimeAgoEn timeAgo = _TranslationsCommonTimeAgoEn._(_root);
 }
 
 // Path: editor
@@ -337,6 +338,7 @@ class _TranslationsGridEn {
 	late final _TranslationsGridThumbnailBadgesEn thumbnailBadges = _TranslationsGridThumbnailBadgesEn._(_root);
 	late final _TranslationsGridActionMenuEn actionMenu = _TranslationsGridActionMenuEn._(_root);
 	late final _TranslationsGridControllerMessagesEn controllerMessages = _TranslationsGridControllerMessagesEn._(_root);
+	late final _TranslationsGridTagWrapEn tagWrap = _TranslationsGridTagWrapEn._(_root);
 }
 
 // Path: group
@@ -451,6 +453,7 @@ class _TranslationsSettingsEn {
 	late final _TranslationsSettingsGearMenuEn gearMenu = _TranslationsSettingsGearMenuEn._(_root);
 	late final _TranslationsSettingsMediaDefaultsDrawerEntryEn mediaDefaultsDrawerEntry = _TranslationsSettingsMediaDefaultsDrawerEntryEn._(_root);
 	late final _TranslationsSettingsEndDrawerEn endDrawer = _TranslationsSettingsEndDrawerEn._(_root);
+	late final _TranslationsSettingsLoadingStatusEn loadingStatus = _TranslationsSettingsLoadingStatusEn._(_root);
 	late final _TranslationsSettingsGeneralEn general = _TranslationsSettingsGeneralEn._(_root);
 	late final _TranslationsSettingsAiSettingsTabEn aiSettingsTab = _TranslationsSettingsAiSettingsTabEn._(_root);
 	late final _TranslationsSettingsAiTabEn aiTab = _TranslationsSettingsAiTabEn._(_root);
@@ -1173,6 +1176,7 @@ class _TranslationsCommonLogsEn {
 	String get copiedToClipboard => 'Copied to clipboard';
 	String get copyLogButton => 'Copy Log';
 	String get copiedEntryToClipboard => 'Copied log entry to clipboard';
+	String errorPrefix({required Object error}) => 'Error: ${error}';
 }
 
 // Path: common.importErrorsDialog
@@ -1364,6 +1368,21 @@ class _TranslationsCommonAppConstantsEn {
 	// Translations
 	String get maxImageFileSizeLabel => '10 MB';
 	String get exportFailedMessage => 'Export failed. See logs for details.';
+}
+
+// Path: common.timeAgo
+class _TranslationsCommonTimeAgoEn {
+	_TranslationsCommonTimeAgoEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String years({required Object n}) => '${n}y ago';
+	String months({required Object n}) => '${n}mo ago';
+	String days({required Object n}) => '${n}d ago';
+	String hours({required Object n}) => '${n}h ago';
+	String minutes({required Object n}) => '${n}m ago';
+	String get justNow => 'Just now';
 }
 
 // Path: editor.panelLabels
@@ -2022,6 +2041,16 @@ class _TranslationsGridControllerMessagesEn {
 	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
 }
 
+// Path: grid.tagWrap
+class _TranslationsGridTagWrapEn {
+	_TranslationsGridTagWrapEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerEn._(this._root);
@@ -2488,6 +2517,17 @@ class _TranslationsSettingsEndDrawerEn {
 
 	// Translations
 	String get switchPersonaTooltip => 'Switch persona';
+}
+
+// Path: settings.loadingStatus
+class _TranslationsSettingsLoadingStatusEn {
+	_TranslationsSettingsLoadingStatusEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get restoringProviders => 'Restoring providers…';
+	String fetchingModelsProgress({required Object completed, required Object total}) => 'Fetching models (${completed}/${total})…';
 }
 
 // Path: settings.general
@@ -4528,6 +4568,7 @@ extension on Translations {
 			case 'common.logs.copiedToClipboard': return 'Copied to clipboard';
 			case 'common.logs.copyLogButton': return 'Copy Log';
 			case 'common.logs.copiedEntryToClipboard': return 'Copied log entry to clipboard';
+			case 'common.logs.errorPrefix': return ({required Object error}) => 'Error: ${error}';
 			case 'common.importErrorsDialog.title': return 'Import Errors';
 			case 'common.importErrorsDialog.message': return 'The following files could not be imported:';
 			case 'common.updateDialog.title': return 'Version Available';
@@ -4577,6 +4618,12 @@ extension on Translations {
 			case 'common.characterImageSemanticLabel': return 'Character image';
 			case 'common.appConstants.maxImageFileSizeLabel': return '10 MB';
 			case 'common.appConstants.exportFailedMessage': return 'Export failed. See logs for details.';
+			case 'common.timeAgo.years': return ({required Object n}) => '${n}y ago';
+			case 'common.timeAgo.months': return ({required Object n}) => '${n}mo ago';
+			case 'common.timeAgo.days': return ({required Object n}) => '${n}d ago';
+			case 'common.timeAgo.hours': return ({required Object n}) => '${n}h ago';
+			case 'common.timeAgo.minutes': return ({required Object n}) => '${n}m ago';
+			case 'common.timeAgo.justNow': return 'Just now';
 			case 'editor.panelLabels.basic': return 'Basic';
 			case 'editor.panelLabels.greetings': return 'Greetings';
 			case 'editor.panelLabels.prompts': return 'Prompts';
@@ -4864,6 +4911,7 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
+			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
 			case 'group.groupGridController.renameGroupTitle': return 'Rename Group';
 			case 'group.groupGridController.groupNameHint': return 'Group name';
 			case 'group.groupGridController.deleteGroupTitle': return 'Delete Group';
@@ -5034,6 +5082,8 @@ extension on Translations {
 			case 'settings.gearMenu.logs': return 'Logs';
 			case 'settings.mediaDefaultsDrawerEntry.configurationHeader': return 'Configuration';
 			case 'settings.endDrawer.switchPersonaTooltip': return 'Switch persona';
+			case 'settings.loadingStatus.restoringProviders': return 'Restoring providers…';
+			case 'settings.loadingStatus.fetchingModelsProgress': return ({required Object completed, required Object total}) => 'Fetching models (${completed}/${total})…';
 			case 'settings.general.characterFolderTitle': return 'Character Folder';
 			case 'settings.general.characterFolderNotSet': return 'Not set. Required for the app to function.';
 			case 'settings.general.browseButton': return 'Browse...';
