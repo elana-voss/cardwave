@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 8119 (902 per locale)
+/// Strings: 8128 (903 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -255,6 +255,7 @@ class _TranslationsCommonEn {
 
 	// Translations
 	late final _TranslationsCommonActionsEn actions = _TranslationsCommonActionsEn._(_root);
+	late final _TranslationsCommonAppSearchFieldEn appSearchField = _TranslationsCommonAppSearchFieldEn._(_root);
 	late final _TranslationsCommonAiActionEn aiAction = _TranslationsCommonAiActionEn._(_root);
 	String get aiActionsTooltip => 'AI Actions';
 	late final _TranslationsCommonPromptSegmentKindEn promptSegmentKind = _TranslationsCommonPromptSegmentKindEn._(_root);
@@ -1102,6 +1103,16 @@ class _TranslationsCommonActionsEn {
 	String get save => 'Save';
 	String get tryAgain => 'Try Again';
 	String get close => 'Close';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get hint => 'Search...';
 }
 
 // Path: common.aiAction
@@ -3044,6 +3055,7 @@ class _TranslationsCommonEs419 extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsEs419 actions = _TranslationsCommonActionsEs419._(_root);
+	@override late final _TranslationsCommonAppSearchFieldEs419 appSearchField = _TranslationsCommonAppSearchFieldEs419._(_root);
 	@override late final _TranslationsCommonAiActionEs419 aiAction = _TranslationsCommonAiActionEs419._(_root);
 	@override String get aiActionsTooltip => 'Acciones de IA';
 	@override late final _TranslationsCommonPromptSegmentKindEs419 promptSegmentKind = _TranslationsCommonPromptSegmentKindEs419._(_root);
@@ -3891,6 +3903,16 @@ class _TranslationsCommonActionsEs419 extends _TranslationsCommonActionsEn {
 	@override String get save => 'Guardar';
 	@override String get tryAgain => 'Reintentar';
 	@override String get close => 'Cerrar';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldEs419 extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
+
+	@override final _TranslationsEs419 _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => 'Buscar...';
 }
 
 // Path: common.aiAction
@@ -5833,6 +5855,7 @@ class _TranslationsCommonHi extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsHi actions = _TranslationsCommonActionsHi._(_root);
+	@override late final _TranslationsCommonAppSearchFieldHi appSearchField = _TranslationsCommonAppSearchFieldHi._(_root);
 	@override late final _TranslationsCommonAiActionHi aiAction = _TranslationsCommonAiActionHi._(_root);
 	@override String get aiActionsTooltip => 'AI क्रियाएं';
 	@override late final _TranslationsCommonPromptSegmentKindHi promptSegmentKind = _TranslationsCommonPromptSegmentKindHi._(_root);
@@ -6680,6 +6703,16 @@ class _TranslationsCommonActionsHi extends _TranslationsCommonActionsEn {
 	@override String get save => 'सहेजें';
 	@override String get tryAgain => 'पुनः प्रयास करें';
 	@override String get close => 'बंद करें';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldHi extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldHi._(_TranslationsHi root) : this._root = root, super._(root);
+
+	@override final _TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => 'खोजें...';
 }
 
 // Path: common.aiAction
@@ -8622,6 +8655,7 @@ class _TranslationsCommonJa extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsJa actions = _TranslationsCommonActionsJa._(_root);
+	@override late final _TranslationsCommonAppSearchFieldJa appSearchField = _TranslationsCommonAppSearchFieldJa._(_root);
 	@override late final _TranslationsCommonAiActionJa aiAction = _TranslationsCommonAiActionJa._(_root);
 	@override String get aiActionsTooltip => 'AIアクション';
 	@override late final _TranslationsCommonPromptSegmentKindJa promptSegmentKind = _TranslationsCommonPromptSegmentKindJa._(_root);
@@ -9469,6 +9503,16 @@ class _TranslationsCommonActionsJa extends _TranslationsCommonActionsEn {
 	@override String get save => '保存';
 	@override String get tryAgain => '再試行';
 	@override String get close => '閉じる';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldJa extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldJa._(_TranslationsJa root) : this._root = root, super._(root);
+
+	@override final _TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => '検索...';
 }
 
 // Path: common.aiAction
@@ -11407,6 +11451,7 @@ class _TranslationsCommonKo extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsKo actions = _TranslationsCommonActionsKo._(_root);
+	@override late final _TranslationsCommonAppSearchFieldKo appSearchField = _TranslationsCommonAppSearchFieldKo._(_root);
 	@override late final _TranslationsCommonAiActionKo aiAction = _TranslationsCommonAiActionKo._(_root);
 	@override String get aiActionsTooltip => 'AI 작업';
 	@override late final _TranslationsCommonPromptSegmentKindKo promptSegmentKind = _TranslationsCommonPromptSegmentKindKo._(_root);
@@ -12254,6 +12299,16 @@ class _TranslationsCommonActionsKo extends _TranslationsCommonActionsEn {
 	@override String get save => '저장';
 	@override String get tryAgain => '다시 시도';
 	@override String get close => '닫기';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldKo extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldKo._(_TranslationsKo root) : this._root = root, super._(root);
+
+	@override final _TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => '검색...';
 }
 
 // Path: common.aiAction
@@ -14192,6 +14247,7 @@ class _TranslationsCommonPtBr extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsPtBr actions = _TranslationsCommonActionsPtBr._(_root);
+	@override late final _TranslationsCommonAppSearchFieldPtBr appSearchField = _TranslationsCommonAppSearchFieldPtBr._(_root);
 	@override late final _TranslationsCommonAiActionPtBr aiAction = _TranslationsCommonAiActionPtBr._(_root);
 	@override String get aiActionsTooltip => 'Ações de IA';
 	@override late final _TranslationsCommonPromptSegmentKindPtBr promptSegmentKind = _TranslationsCommonPromptSegmentKindPtBr._(_root);
@@ -15039,6 +15095,16 @@ class _TranslationsCommonActionsPtBr extends _TranslationsCommonActionsEn {
 	@override String get save => 'Salvar';
 	@override String get tryAgain => 'Tentar novamente';
 	@override String get close => 'Fechar';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldPtBr extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
+
+	@override final _TranslationsPtBr _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => 'Buscar...';
 }
 
 // Path: common.aiAction
@@ -16981,6 +17047,7 @@ class _TranslationsCommonRu extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsRu actions = _TranslationsCommonActionsRu._(_root);
+	@override late final _TranslationsCommonAppSearchFieldRu appSearchField = _TranslationsCommonAppSearchFieldRu._(_root);
 	@override late final _TranslationsCommonAiActionRu aiAction = _TranslationsCommonAiActionRu._(_root);
 	@override String get aiActionsTooltip => 'Действия ИИ';
 	@override late final _TranslationsCommonPromptSegmentKindRu promptSegmentKind = _TranslationsCommonPromptSegmentKindRu._(_root);
@@ -17828,6 +17895,16 @@ class _TranslationsCommonActionsRu extends _TranslationsCommonActionsEn {
 	@override String get save => 'Сохранить';
 	@override String get tryAgain => 'Повторить';
 	@override String get close => 'Закрыть';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldRu extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldRu._(_TranslationsRu root) : this._root = root, super._(root);
+
+	@override final _TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => 'Поиск...';
 }
 
 // Path: common.aiAction
@@ -19778,6 +19855,7 @@ class _TranslationsCommonZhHans extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsZhHans actions = _TranslationsCommonActionsZhHans._(_root);
+	@override late final _TranslationsCommonAppSearchFieldZhHans appSearchField = _TranslationsCommonAppSearchFieldZhHans._(_root);
 	@override late final _TranslationsCommonAiActionZhHans aiAction = _TranslationsCommonAiActionZhHans._(_root);
 	@override String get aiActionsTooltip => 'AI 操作';
 	@override late final _TranslationsCommonPromptSegmentKindZhHans promptSegmentKind = _TranslationsCommonPromptSegmentKindZhHans._(_root);
@@ -20625,6 +20703,16 @@ class _TranslationsCommonActionsZhHans extends _TranslationsCommonActionsEn {
 	@override String get save => '保存';
 	@override String get tryAgain => '重试';
 	@override String get close => '关闭';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldZhHans extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHans _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => '搜索...';
 }
 
 // Path: common.aiAction
@@ -22563,6 +22651,7 @@ class _TranslationsCommonZhHant extends _TranslationsCommonEn {
 
 	// Translations
 	@override late final _TranslationsCommonActionsZhHant actions = _TranslationsCommonActionsZhHant._(_root);
+	@override late final _TranslationsCommonAppSearchFieldZhHant appSearchField = _TranslationsCommonAppSearchFieldZhHant._(_root);
 	@override late final _TranslationsCommonAiActionZhHant aiAction = _TranslationsCommonAiActionZhHant._(_root);
 	@override String get aiActionsTooltip => 'AI 動作';
 	@override late final _TranslationsCommonPromptSegmentKindZhHant promptSegmentKind = _TranslationsCommonPromptSegmentKindZhHant._(_root);
@@ -23410,6 +23499,16 @@ class _TranslationsCommonActionsZhHant extends _TranslationsCommonActionsEn {
 	@override String get save => '儲存';
 	@override String get tryAgain => '重試';
 	@override String get close => '關閉';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldZhHant extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => '搜尋...';
 }
 
 // Path: common.aiAction
@@ -25409,6 +25508,7 @@ extension on Translations {
 			case 'common.actions.save': return 'Save';
 			case 'common.actions.tryAgain': return 'Try Again';
 			case 'common.actions.close': return 'Close';
+			case 'common.appSearchField.hint': return 'Search...';
 			case 'common.aiAction.proofread': return 'Proofread';
 			case 'common.aiAction.compact': return 'Compact Prose';
 			case 'common.aiAction.translate': return 'Translate to English';
@@ -26328,6 +26428,7 @@ extension on _TranslationsEs419 {
 			case 'common.actions.save': return 'Guardar';
 			case 'common.actions.tryAgain': return 'Reintentar';
 			case 'common.actions.close': return 'Cerrar';
+			case 'common.appSearchField.hint': return 'Buscar...';
 			case 'common.aiAction.proofread': return 'Corregir';
 			case 'common.aiAction.compact': return 'Compactar prosa';
 			case 'common.aiAction.translate': return 'Traducir al inglés';
@@ -27247,6 +27348,7 @@ extension on _TranslationsHi {
 			case 'common.actions.save': return 'सहेजें';
 			case 'common.actions.tryAgain': return 'पुनः प्रयास करें';
 			case 'common.actions.close': return 'बंद करें';
+			case 'common.appSearchField.hint': return 'खोजें...';
 			case 'common.aiAction.proofread': return 'प्रूफ़रीड करें';
 			case 'common.aiAction.compact': return 'गद्य संक्षिप्त करें';
 			case 'common.aiAction.translate': return 'अंग्रेज़ी में अनुवाद करें';
@@ -28166,6 +28268,7 @@ extension on _TranslationsJa {
 			case 'common.actions.save': return '保存';
 			case 'common.actions.tryAgain': return '再試行';
 			case 'common.actions.close': return '閉じる';
+			case 'common.appSearchField.hint': return '検索...';
 			case 'common.aiAction.proofread': return '校正';
 			case 'common.aiAction.compact': return '文章を圧縮';
 			case 'common.aiAction.translate': return '英語に翻訳';
@@ -29081,6 +29184,7 @@ extension on _TranslationsKo {
 			case 'common.actions.save': return '저장';
 			case 'common.actions.tryAgain': return '다시 시도';
 			case 'common.actions.close': return '닫기';
+			case 'common.appSearchField.hint': return '검색...';
 			case 'common.aiAction.proofread': return '교정';
 			case 'common.aiAction.compact': return '문장 압축';
 			case 'common.aiAction.translate': return '영어로 번역';
@@ -29996,6 +30100,7 @@ extension on _TranslationsPtBr {
 			case 'common.actions.save': return 'Salvar';
 			case 'common.actions.tryAgain': return 'Tentar novamente';
 			case 'common.actions.close': return 'Fechar';
+			case 'common.appSearchField.hint': return 'Buscar...';
 			case 'common.aiAction.proofread': return 'Revisar';
 			case 'common.aiAction.compact': return 'Compactar prosa';
 			case 'common.aiAction.translate': return 'Traduzir para o inglês';
@@ -30915,6 +31020,7 @@ extension on _TranslationsRu {
 			case 'common.actions.save': return 'Сохранить';
 			case 'common.actions.tryAgain': return 'Повторить';
 			case 'common.actions.close': return 'Закрыть';
+			case 'common.appSearchField.hint': return 'Поиск...';
 			case 'common.aiAction.proofread': return 'Вычитать';
 			case 'common.aiAction.compact': return 'Сжать текст';
 			case 'common.aiAction.translate': return 'Перевести на английский';
@@ -31842,6 +31948,7 @@ extension on _TranslationsZhHans {
 			case 'common.actions.save': return '保存';
 			case 'common.actions.tryAgain': return '重试';
 			case 'common.actions.close': return '关闭';
+			case 'common.appSearchField.hint': return '搜索...';
 			case 'common.aiAction.proofread': return '校对';
 			case 'common.aiAction.compact': return '精简文字';
 			case 'common.aiAction.translate': return '翻译成英文';
@@ -32757,6 +32864,7 @@ extension on _TranslationsZhHant {
 			case 'common.actions.save': return '儲存';
 			case 'common.actions.tryAgain': return '重試';
 			case 'common.actions.close': return '關閉';
+			case 'common.appSearchField.hint': return '搜尋...';
 			case 'common.aiAction.proofread': return '校對';
 			case 'common.aiAction.compact': return '精簡文句';
 			case 'common.aiAction.translate': return '翻譯成英文';

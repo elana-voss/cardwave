@@ -7,6 +7,9 @@
     "tryAgain": "Повторить",
     "close": "Закрыть"
   },
+  "appSearchField": {
+    "hint": "Поиск..."
+  },
   "aiAction": {
     "proofread": "Вычитать",
     "compact": "Сжать текст",

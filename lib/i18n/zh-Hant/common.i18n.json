@@ -7,6 +7,9 @@
     "tryAgain": "重試",
     "close": "關閉"
   },
+  "appSearchField": {
+    "hint": "搜尋..."
+  },
   "aiAction": {
     "proofread": "校對",
     "compact": "精簡文句",

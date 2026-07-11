@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Compact rounded search field with a leading magnifying-glass icon and a
@@ -7,12 +8,14 @@ class AppSearchField extends StatelessWidget {
   const AppSearchField({
     required this.controller,
     super.key,
-    this.hintText = 'Search...',
+    this.hintText,
     this.autofocus = false,
   });
 
   final TextEditingController controller;
-  final String hintText;
+
+  /// Placeholder shown when empty. Null falls back to the localized default.
+  final String? hintText;
   final bool autofocus;
 
   @override
@@ -24,7 +27,7 @@ class AppSearchField extends StatelessWidget {
           controller: controller,
           autofocus: autofocus,
           decoration: InputDecoration(
-            hintText: hintText,
+            hintText: hintText ?? t.common.appSearchField.hint,
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,

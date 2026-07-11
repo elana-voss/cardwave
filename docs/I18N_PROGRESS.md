@@ -9,7 +9,9 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] Step 3 — Extraction (**Sonnet**) — done 2026-07-12 (all 14 rows + §3.7 sweep
   below were checked off and committed; Step 4 flipped this stale top-level box)
 - [x] Step 4 — Translation + glossary (**Opus**) — done 2026-07-12
-- [ ] Step 5 — Error-check + web verification (**Opus**)
+- [x] Step 5 — Error-check + web verification (**Opus**) — done 2026-07-12
+  (all 9 locales render cleanly on web; one real fix committed; one live-switch
+  limitation surfaced for the user — see Open questions)
 - [ ] Step 6 — Optional acceptance (Fable)
 
 ## Step 2 checklist (Opus)
@@ -142,24 +144,77 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   languages (per-language commits carried JSON only, to stay reproducible from
   their own sources).
 
-## Step 5 checklist (Opus)
-- [ ] 5.1 branch diff review + fixes committed
-- [ ] 5.2 analyze/test/slang-analyze clean
-- [ ] 5.3 web smoke test — results table below
-- [ ] persistence check (ru survives page reload)
+## Step 5 checklist (Opus) — done 2026-07-12
+- [x] 5.1 branch diff review + fixes committed (one real fix; see below)
+- [x] 5.2 analyze/test/slang-analyze clean (after the fix: analyze = only the 36
+  pre-existing qcheck warnings, `flutter test` 68/68, `dart run slang analyze`
+  0 missing / 0 unused)
+- [x] 5.3 web smoke test — results table below (all 9 locales)
+- [x] persistence check — **PASS**: switched to `ru`, reloaded the page, came back
+  in `ru`. Verified twice more (locale survived a full `flutter run` restart on the
+  same origin — came back in `hi`).
+
+### 5.1 review outcome
+Reviewed `git diff main...feat/i18n` with skepticism (enum-label conversions,
+nullable-default localizations, const removals, plural handling, behavior drift).
+- **No behavior drift** in the extraction: all 6 enum→`switch` `get label`
+  conversions are exhaustive and total; the two nullable-default→localized refactors
+  (`navigation_service` confirm/cancel/success, `group_file_service` default group
+  name) preserve behavior. Removed non-string lines are all `const`-removal or
+  multi-line-string-argument artifacts.
+- **Missed plurals are non-regressions**: strings like `chat.messageCount`
+  ("$count messages") / `character.importedCount` were extracted byte-identical from
+  originals that were *already* un-pluralized in English (`'${chat.messageCount}
+  messages'`, `'Imported ... characters'`). No English rendering changed; pluralizing
+  them now would be a Step-4-scale multi-locale change with no correctness payoff —
+  left as-is (documented, non-action).
+- **One real fix applied** (`i18n(review): fixes`): `AppSearchField`'s constructor
+  default `hintText = 'Search...'` (`lib/common/src/widgets/app_search_field.dart`)
+  was never extracted, so the main library search bar + 4 picker dialogs
+  (`character_grid_filters`, `dialog_character_switcher`, `dialog_multi_select`,
+  `dialog_pick_folder`, `group_character_picker`) showed a hardcoded English
+  "Search..." in every locale, even after reload. §3.7's sweep missed it because the
+  literal lives in a constructor default, not a `Text('…')`/`hintText:` call site —
+  the same shape as the `navigation_service` defaults Step 3 *did* catch. Fixed with
+  the identical nullable-default pattern: `hintText` is now `String?`, falling back to
+  a new `t.common.appSearchField.hint` key added + translated across all 9 locales
+  (en kept byte-identical "Search..."). Confirmed rendering in-app: the grid search
+  hint now shows "खोजें..." under `hi`.
 
 ### 5.3 Web results
+Method: `flutter run -d web-server` on 127.0.0.1:8080, driven via chrome-devtools.
+Flutter web's semantics DOM was enabled per load (click the accessibility
+placeholder) to interact with the CanvasKit tree. Each locale was switched via
+gear → Language → tile, then the page was **reloaded** before capture (see the
+live-switch finding under Open questions — static chrome only repaints on reload).
+Screenshots in session scratchpad `…/scratchpad/shots/`.
+
 | Locale | Renders (no tofu) | No overflow | Console clean | Screenshots |
 |---|---|---|---|---|
-| en | | | | |
-| ru | | | | |
-| pt-BR | | | | |
-| es-419 | | | | |
-| ja | | | | |
-| zh-Hans | | | | |
-| zh-Hant | | | | |
-| ko | | | | |
-| hi | | | | |
+| en | PASS | PASS | PASS | en_grid, en_gearmenu, language_modal |
+| ru | PASS | PASS¹ | PASS | ru_grid, ru_gearmenu, ru_grid_afterreload |
+| pt-BR | PASS | PASS | PASS | ptBR_grid |
+| es-419 | PASS | PASS | PASS | es419_grid |
+| ja | PASS | PASS¹ | PASS | ja_grid |
+| zh-Hans | PASS | PASS | PASS | zhHans_grid |
+| zh-Hant | PASS | PASS | PASS | zhHant_grid |
+| ko | PASS | PASS | PASS | ko_grid |
+| hi | PASS | PASS | PASS | hi_grid, hi_grid_searchfix |
+
+**No tofu anywhere** — this is the headline of §5.4: on Flutter **web**, CanvasKit
+auto-fetches Noto fallback fonts on demand, so ja / zh-Hans / zh-Hant / ko (CJK) and
+hi (Devanagari, incl. conjuncts/matras) all render correctly despite only NotoSans
+(Latin/Cyrillic) being bundled. The all-scripts language modal (`language_modal.png`)
+is the clearest single proof. The desktop-tofu risk the progress notes flagged does
+**not** reproduce on web. **No console errors or warnings** in any locale (the plural
+resolvers registered in Step 4 kept the console silent). No yellow/black overflow
+stripes in any locale.
+
+¹ The sort-order dropdown is capped at `maxWidth: 140` (`character_grid_filters.dart`)
+and ellipsis-truncates the longer labels — ru "Импортир…" (Импортировано ↓) and ja
+"インポート…" (インポート日 ↓). This is a pre-existing fixed-width design cap, not
+i18n breakage (en "Imported ↓" fits); the full value is available in the a11y label
+and on the open dropdown. Benign — noted, not changed.
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,
@@ -312,6 +367,45 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   literal is either a `loggingService.*` call, a JSON/storage key, or a
   folder/file name. Row 12 has zero extractions; no `nodes.i18n.json`
   content was added and no source files changed.
+
+- **[Step 5 — HEADLINE] Live language switch does not repaint static chrome
+  until an app reload/restart.** Switching locale in the modal immediately
+  updates only widgets that happen to rebuild for another reason (listenable-driven
+  bits: the "connect an AI provider" banner, card `timeAgo`, the card menu). Static
+  chrome — the top app-bar (`Create New`/`Import`/`Groups`/menu tooltip), the sort
+  dropdown, gear-menu labels — stays in the OLD language until the page is reloaded
+  (web) or the app is restarted (desktop). Verified on web across the whole sweep;
+  a reload always brings the full UI into the chosen language, and the choice
+  persists.
+  - **Root cause:** the extraction is built on slang's global `t` accessor, which
+    does not subscribe a widget to the `TranslationProvider` InheritedWidget. So
+    when `LocaleController.setLocale` → `LocaleSettings.setLocaleRaw` flips the
+    locale, only widgets rebuilt by unrelated `ChangeNotifier`s repaint; routed
+    pages built once by the Navigator (and `const` subtrees like
+    `appBar: const AppBarGrid()` in `character_grid_page.dart:56`) do not. A full
+    reload rebuilds everything fresh in the persisted locale, which is why it looks
+    correct after reload.
+  - **Why not fixed here:** this is a Step-2 infrastructure characteristic, not an
+    extraction defect, and every candidate fix is a judgment call the plan tells
+    Step 5 to avoid taking unilaterally (§5.4 pattern; "choose the NON-action" on
+    ambiguity; "never restructure the widget tree"). Options for the user/Step 6 to
+    weigh: (a) accept it and add a "changes apply on restart" hint to the language
+    modal (smallest, matches many apps' language settings); (b) force a full-tree
+    rebuild on locale change (e.g. rebuild the app subtree keyed by locale, or have
+    the top-level widget listen to `LocaleController`) — effective but risks
+    resetting in-flight navigation/scroll; (c) migrate hot surfaces to
+    context-based translations — most faithful to Step 2 §2.5's "re-render
+    immediately" requirement but the largest change. **Decision deferred to the
+    user.** Note: Step 2 §2.5's "UI must re-render immediately" requirement is
+    therefore only partially met today.
+
+- **[Step 5 — §5.4 font contingency] No action needed on web.** §5.4 says to only
+  act if tofu appears. It did not on web (CanvasKit on-demand Noto fallback covers
+  CJK + Devanagari — see the 5.3 note). ⚠️ This clears **web only**. Desktop/mobile
+  builds bundle just NotoSans (Latin/Cyrillic) and were NOT re-checked in this step
+  (Step 2 ran the desktop build in English). If the app ships ja/zh/ko/hi on
+  **desktop**, tofu is still a live risk there and needs a separate check +
+  `fontFamilyFallback`/subset-font decision (a binary-size call = the user's).
 
 ## Parked observations (bugs noticed but out of scope)
 - **[settings, row 5] `SettingsService._loadingStatus` progress strings**

@@ -7,6 +7,9 @@
     "tryAgain": "다시 시도",
     "close": "닫기"
   },
+  "appSearchField": {
+    "hint": "검색..."
+  },
   "aiAction": {
     "proofread": "교정",
     "compact": "문장 압축",

@@ -7,6 +7,9 @@
     "tryAgain": "再試行",
     "close": "閉じる"
   },
+  "appSearchField": {
+    "hint": "検索..."
+  },
   "aiAction": {
     "proofread": "校正",
     "compact": "文章を圧縮",

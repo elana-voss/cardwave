@@ -7,6 +7,9 @@
     "tryAgain": "Tentar novamente",
     "close": "Fechar"
   },
+  "appSearchField": {
+    "hint": "Buscar..."
+  },
   "aiAction": {
     "proofread": "Revisar",
     "compact": "Compactar prosa",
