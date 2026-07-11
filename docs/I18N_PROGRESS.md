@@ -5,7 +5,7 @@ as the work it describes. Conversation context is disposable; this file is not.
 
 ## Steps
 - [x] Step 1 — Plan (Fable) — done 2026-07-11
-- [ ] Step 2 — Infrastructure (**Opus**)
+- [x] Step 2 — Infrastructure (**Opus**) — done 2026-07-11
 - [ ] Step 3 — Extraction (**Sonnet**)
 - [ ] Step 4 — Translation + glossary (**Opus**)
 - [ ] Step 5 — Error-check + web verification (**Opus**)
@@ -18,7 +18,7 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] 2.4 TranslationProvider + all three MaterialApps wired
 - [x] 2.5 gear-menu entry + `showLanguageDialog` + `DialogLanguagePicker`
 - [x] 2.6 two DateFormat call sites locale-aware
-- [ ] 2.7 DONE criteria verified on Windows desktop
+- [x] 2.7 DONE criteria verified on Windows desktop
 - es-419 contingency outcome: **`es-419` worked** — slang parsed it as
   `es419(languageCode: 'es', countryCode: '419')`. No fallback to plain `es` needed;
   kept dir `lib/i18n/es-419/`.
@@ -32,6 +32,37 @@ as the work it describes. Conversation context is disposable; this file is not.
   `package:cardwave/i18n/gen/translations.g.dart`.
 - 135 skeleton files created (15 namespaces × 9 locales), all `{}` except
   `en/settings.i18n.json` (`gearLanguage`, `languageSystemDefault`).
+
+### Step 2 §2.7 verification results
+- `flutter analyze`: clean of new issues. The only reported items are 36
+  pre-existing environmental warnings — every `packages/*/analysis_options.yaml`
+  includes `../../qcheck/app/lib/*.yaml`, which doesn't resolve in this checkout
+  (qcheck sits at `../qcheck`, not `../../qcheck`). Not introduced by this work;
+  untouched analysis_options files.
+- `dart run slang analyze`: no issues (writes `_missing_translations.json` /
+  `_unused_translations.json` — expected: en complete, 8 locales all-missing).
+- `flutter test`: 68/68 pass (integration_test excluded).
+- Windows desktop **build** succeeds: `√ Built build\windows\x64\runner\Debug\
+  cardwave.exe`. (A background `flutter run` couldn't attach a debug connection
+  because it was launched detached — a launcher artifact, not a code issue.)
+- Language modal confirmed opening + listing languages on the running Windows
+  desktop app (manual check by the user).
+- Modal contents + switch/persist logic verified with a throwaway widget test
+  (now deleted — Step 3 owns permanent tests): exactly 10 rows with keys
+  `language-tile-{system,en,ru,pt-BR,es-419,ja,zh-Hans,zh-Hant,ko,hi}`; the
+  check mark tracks the active choice; `LocaleController.setLocale` switches the
+  live slang locale and writes `localeTag`; `applyPersisted` restores it after a
+  simulated relaunch; System-default clears the tag.
+
+### Heads-up for Step 5 (and Step 4)
+Step 2 ships **English-only content** by design (all 8 non-en namespaces are
+`{}`, `fallback_strategy: base_locale`). So switching to e.g. Русский right now
+does **not** visibly change the app's own strings — they fall back to English.
+What *does* change on switch: Flutter's `GlobalMaterialLocalizations`-provided
+widget chrome and the two locale-aware `DateFormat` call sites. The per-language
+visual rendering that §2.7 gestures at ("picking Русский changes chrome") only
+becomes observable once Step 4 adds translations; Step 5's Chrome pass across all
+9 languages is where that gets verified.
 
 ## Step 3 checklist (Sonnet) — one commit per row
 - [ ] 1 `lib/grid/` → `grid`
