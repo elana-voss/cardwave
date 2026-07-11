@@ -2,25 +2,40 @@ import 'dart:async';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:flutter/material.dart';
 
 enum CharacterSortOptionEnum {
-  relevance('Relevance ↓'),
-  nameAsc('Name ↓'),
-  nameDesc('Name ↑'),
-  importNewest('Imported ↓'),
-  importOldest('Imported ↑'),
-  modifiedNewest('Modified ↓'),
-  modifiedOldest('Modified ↑'),
-  interactedNewest('Interacted ↓'),
-  interactedOldest('Interacted ↑'),
-  tokensHigh('Tokens ↓'),
-  tokensLow('Tokens ↑')
-  ;
+  relevance,
+  nameAsc,
+  nameDesc,
+  importNewest,
+  importOldest,
+  modifiedNewest,
+  modifiedOldest,
+  interactedNewest,
+  interactedOldest,
+  tokensHigh,
+  tokensLow;
 
-  final String label;
-  const CharacterSortOptionEnum(this.label);
+  String get label => switch (this) {
+    CharacterSortOptionEnum.relevance => t.grid.sortOption.relevance,
+    CharacterSortOptionEnum.nameAsc => t.grid.sortOption.nameAsc,
+    CharacterSortOptionEnum.nameDesc => t.grid.sortOption.nameDesc,
+    CharacterSortOptionEnum.importNewest => t.grid.sortOption.importNewest,
+    CharacterSortOptionEnum.importOldest => t.grid.sortOption.importOldest,
+    CharacterSortOptionEnum.modifiedNewest =>
+      t.grid.sortOption.modifiedNewest,
+    CharacterSortOptionEnum.modifiedOldest =>
+      t.grid.sortOption.modifiedOldest,
+    CharacterSortOptionEnum.interactedNewest =>
+      t.grid.sortOption.interactedNewest,
+    CharacterSortOptionEnum.interactedOldest =>
+      t.grid.sortOption.interactedOldest,
+    CharacterSortOptionEnum.tokensHigh => t.grid.sortOption.tokensHigh,
+    CharacterSortOptionEnum.tokensLow => t.grid.sortOption.tokensLow,
+  };
 }
 
 /// One row: a card (loaded full) plus how many cards its variant group holds
@@ -300,7 +315,7 @@ class FilterController extends ChangeNotifier {
 
   Future<void> openCreatorFilterDialog() async {
     final newCreators = await NavigationService().showMultiSelectDialog(
-      title: 'Filter Creators',
+      title: t.grid.filterController.filterCreators,
       items: await characterService.creatorCounts(_filter),
       selectedItems: selectedCreators,
     );
@@ -309,7 +324,7 @@ class FilterController extends ChangeNotifier {
 
   Future<void> openTagFilterDialog() async {
     final newTags = await NavigationService().showMultiSelectDialog(
-      title: 'Filter Tags',
+      title: t.grid.filterController.filterTags,
       items: await _tagCounts(selectedTags),
       selectedItems: selectedTags,
       dynamicItemsCallback: _tagCounts,
@@ -319,7 +334,7 @@ class FilterController extends ChangeNotifier {
 
   Future<void> openDirectoryFilterDialog() async {
     final newDirectory = await NavigationService().showPickFolderDialog(
-      title: 'Filter by Folder',
+      title: t.grid.filterController.filterByFolder,
       items: await _directoryCounts(),
       selectedItem: selectedDirectory,
       allFoldersKey: allDirectories,

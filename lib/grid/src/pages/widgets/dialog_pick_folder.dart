@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
@@ -93,7 +94,7 @@ class _DialogPickFolderState extends State<DialogPickFolder> {
           onPressed: isCleared
               ? null
               : () => Navigator.of(context).pop(widget.allFoldersKey),
-          child: const Text('Clear All'),
+          child: Text(t.grid.dialogActions.clearAll),
         ),
       ],
       builder: (context, isMobile) => Column(

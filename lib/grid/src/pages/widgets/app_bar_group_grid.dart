@@ -1,5 +1,6 @@
 import 'package:cardwave/app_routes_enum.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class AppBarGroupGrid extends StatelessWidget implements PreferredSizeWidget {
 
         final charactersButton = TextButton.icon(
           icon: const Icon(Icons.person),
-          label: const Text('Characters'),
+          label: Text(t.grid.groupAppBar.characters),
           onPressed: () => Navigator.of(
             context,
           ).pushReplacementNamed(AppRoutesEnum.home.name),
@@ -31,7 +32,7 @@ class AppBarGroupGrid extends StatelessWidget implements PreferredSizeWidget {
                   key: const Key('group-new-button'),
                   onPressed: onCreateGroup,
                   icon: const Icon(Icons.add),
-                  label: const Text('New group'),
+                  label: Text(t.grid.groupAppBar.newGroup),
                 )
               : charactersButton,
           actions: [
@@ -42,7 +43,7 @@ class AppBarGroupGrid extends StatelessWidget implements PreferredSizeWidget {
                 key: const Key('appbar-end-drawer'),
                 icon: const Icon(Icons.menu),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
-                tooltip: 'Menu',
+                tooltip: t.grid.appBar.menuTooltip,
               ),
             ),
           ],

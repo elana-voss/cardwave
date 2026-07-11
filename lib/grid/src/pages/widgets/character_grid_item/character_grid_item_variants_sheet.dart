@@ -4,6 +4,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/variant_status_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -79,7 +80,7 @@ class _CharacterGridItemVariantsSheetState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Variants',
+                  t.grid.variantsSheet.title,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const CloseButton(),

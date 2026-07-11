@@ -1,5 +1,6 @@
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/controllers/filter_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,7 +84,9 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                   _expanded ? Icons.expand_less : Icons.tune,
                   size: 20,
                 ),
-                tooltip: _expanded ? 'Hide filters' : 'More filters',
+                tooltip: _expanded
+                    ? t.grid.filters.hideFiltersTooltip
+                    : t.grid.filters.moreFiltersTooltip,
                 style: IconButton.styleFrom(
                   foregroundColor: hasAdvancedFilters
                       ? Theme.of(context).colorScheme.primary
@@ -113,17 +116,17 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                 if (hasDirectories)
                   ActionChip(
                     avatar: const Icon(Icons.folder_open, size: 16),
-                    label: const Text('Folder'),
+                    label: Text(t.grid.filters.folderChip),
                     onPressed: controller.openDirectoryFilterDialog,
                   ),
                 ActionChip(
                   avatar: const Icon(Icons.person_outline, size: 16),
-                  label: const Text('Creator'),
+                  label: Text(t.grid.filters.creatorChip),
                   onPressed: controller.openCreatorFilterDialog,
                 ),
                 ActionChip(
                   avatar: const Icon(Icons.tag, size: 16),
-                  label: const Text('Tag'),
+                  label: Text(t.grid.filters.tagChip),
                   onPressed: controller.openTagFilterDialog,
                 ),
                 IconButton(
@@ -142,7 +145,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                         ? Theme.of(context).colorScheme.primaryContainer
                         : null,
                   ),
-                  tooltip: 'Recent',
+                  tooltip: t.grid.filters.recentTooltip,
                 ),
                 IconButton(
                   onPressed: controller.toggleFilterFavorites,
@@ -165,7 +168,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                         ? Theme.of(context).colorScheme.primaryContainer
                         : null,
                   ),
-                  tooltip: 'Favorites',
+                  tooltip: t.grid.filters.favoritesTooltip,
                 ),
                 IconButton(
                   onPressed: controller.toggleFilterHasVariants,
@@ -183,7 +186,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
                         ? Theme.of(context).colorScheme.primaryContainer
                         : null,
                   ),
-                  tooltip: 'Variants',
+                  tooltip: t.grid.filters.variantsTooltip,
                 ),
               ],
             ),
@@ -334,7 +337,10 @@ class _IndexingProgressLine extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(top: 6),
           child: Text(
-            'Building search ${progress.done} / ${progress.total}…',
+            t.grid.filters.indexingProgress(
+              done: progress.done,
+              total: progress.total,
+            ),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

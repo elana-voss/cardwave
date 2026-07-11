@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 2 (0 per locale)
+/// Strings: 79 (8 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -204,6 +204,7 @@ class _TranslationsCommonEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsCommonActionsEn actions = _TranslationsCommonActionsEn._(_root);
 }
 
 // Path: editor
@@ -222,6 +223,23 @@ class _TranslationsGridEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsGridEmptyStateEn emptyState = _TranslationsGridEmptyStateEn._(_root);
+	late final _TranslationsGridAppBarEn appBar = _TranslationsGridAppBarEn._(_root);
+	late final _TranslationsGridFabEn fab = _TranslationsGridFabEn._(_root);
+	late final _TranslationsGridDrawerEn drawer = _TranslationsGridDrawerEn._(_root);
+	late final _TranslationsGridVariantBadgeEn variantBadge = _TranslationsGridVariantBadgeEn._(_root);
+	late final _TranslationsGridDialogActionsEn dialogActions = _TranslationsGridDialogActionsEn._(_root);
+	late final _TranslationsGridTagFilterDialogEn tagFilterDialog = _TranslationsGridTagFilterDialogEn._(_root);
+	late final _TranslationsGridFiltersEn filters = _TranslationsGridFiltersEn._(_root);
+	late final _TranslationsGridSortOptionEn sortOption = _TranslationsGridSortOptionEn._(_root);
+	late final _TranslationsGridFilterControllerEn filterController = _TranslationsGridFilterControllerEn._(_root);
+	late final _TranslationsGridMultiSelectDialogEn multiSelectDialog = _TranslationsGridMultiSelectDialogEn._(_root);
+	late final _TranslationsGridCreateCharacterDialogEn createCharacterDialog = _TranslationsGridCreateCharacterDialogEn._(_root);
+	late final _TranslationsGridVariantsSheetEn variantsSheet = _TranslationsGridVariantsSheetEn._(_root);
+	late final _TranslationsGridGroupAppBarEn groupAppBar = _TranslationsGridGroupAppBarEn._(_root);
+	late final _TranslationsGridThumbnailBadgesEn thumbnailBadges = _TranslationsGridThumbnailBadgesEn._(_root);
+	late final _TranslationsGridActionMenuEn actionMenu = _TranslationsGridActionMenuEn._(_root);
+	late final _TranslationsGridControllerMessagesEn controllerMessages = _TranslationsGridControllerMessagesEn._(_root);
 }
 
 // Path: group
@@ -305,6 +323,245 @@ class _TranslationsWorkspaceEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+}
+
+// Path: common.actions
+class _TranslationsCommonActionsEn {
+	_TranslationsCommonActionsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get delete => 'Delete';
+}
+
+// Path: grid.emptyState
+class _TranslationsGridEmptyStateEn {
+	_TranslationsGridEmptyStateEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noMatches => 'No characters match your filters';
+	String get noCharacters => 'No characters imported yet';
+	String get clearAllFilters => 'Clear all filters';
+	String get importCharacters => 'Import Characters';
+	String get createNewCharacter => 'Create New Character';
+}
+
+// Path: grid.appBar
+class _TranslationsGridAppBarEn {
+	_TranslationsGridAppBarEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get groups => 'Groups';
+	String get createNew => 'Create New';
+	String get import => 'Import';
+	String get menuTooltip => 'Menu';
+}
+
+// Path: grid.fab
+class _TranslationsGridFabEn {
+	_TranslationsGridFabEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get addOrImportTooltip => 'Add or Import';
+	String get import => 'Import';
+	String get create => 'Create';
+}
+
+// Path: grid.drawer
+class _TranslationsGridDrawerEn {
+	_TranslationsGridDrawerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get mediaDefaultsApp => 'App';
+	String get batchAiHeader => 'Batch AI';
+	String get batchGeneratePreviewsTitle => 'Batch Generate Previews';
+	String get batchGeneratePreviewsEmpty => 'All characters already have previews.';
+	String get batchAutoTagTitle => 'Batch Auto-Tag';
+	String get batchAutoTagEmpty => 'All characters already have tags.';
+	String get libraryHeader => 'Library';
+	String get reloadCharacters => 'Reload characters';
+}
+
+// Path: grid.variantBadge
+class _TranslationsGridVariantBadgeEn {
+	_TranslationsGridVariantBadgeEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String tooltip({required Object count}) => '${count} Variants';
+}
+
+// Path: grid.dialogActions
+class _TranslationsGridDialogActionsEn {
+	_TranslationsGridDialogActionsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get clearAll => 'Clear All';
+	String get apply => 'Apply';
+}
+
+// Path: grid.tagFilterDialog
+class _TranslationsGridTagFilterDialogEn {
+	_TranslationsGridTagFilterDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Filter Tags';
+	String get searchHint => 'Search tags...';
+}
+
+// Path: grid.filters
+class _TranslationsGridFiltersEn {
+	_TranslationsGridFiltersEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get hideFiltersTooltip => 'Hide filters';
+	String get moreFiltersTooltip => 'More filters';
+	String get folderChip => 'Folder';
+	String get creatorChip => 'Creator';
+	String get tagChip => 'Tag';
+	String get recentTooltip => 'Recent';
+	String get favoritesTooltip => 'Favorites';
+	String get variantsTooltip => 'Variants';
+	String indexingProgress({required Object done, required Object total}) => 'Building search ${done} / ${total}…';
+}
+
+// Path: grid.sortOption
+class _TranslationsGridSortOptionEn {
+	_TranslationsGridSortOptionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get relevance => 'Relevance ↓';
+	String get nameAsc => 'Name ↓';
+	String get nameDesc => 'Name ↑';
+	String get importNewest => 'Imported ↓';
+	String get importOldest => 'Imported ↑';
+	String get modifiedNewest => 'Modified ↓';
+	String get modifiedOldest => 'Modified ↑';
+	String get interactedNewest => 'Interacted ↓';
+	String get interactedOldest => 'Interacted ↑';
+	String get tokensHigh => 'Tokens ↓';
+	String get tokensLow => 'Tokens ↑';
+}
+
+// Path: grid.filterController
+class _TranslationsGridFilterControllerEn {
+	_TranslationsGridFilterControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get filterCreators => 'Filter Creators';
+	String get filterTags => 'Filter Tags';
+	String get filterByFolder => 'Filter by Folder';
+}
+
+// Path: grid.multiSelectDialog
+class _TranslationsGridMultiSelectDialogEn {
+	_TranslationsGridMultiSelectDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get nothingToShow => 'Nothing to show yet.';
+	String get noMatches => 'No matches.';
+	String get showMore => 'Show More';
+}
+
+// Path: grid.createCharacterDialog
+class _TranslationsGridCreateCharacterDialogEn {
+	_TranslationsGridCreateCharacterDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get nameEmptyError => 'Character name cannot be empty.';
+	String get nameInvalidCharsError => 'Name contains invalid characters (<>:"/\|?*).';
+	String get nameExistsError => 'A character with this name already exists.';
+	String get nameCheckFailedError => 'Could not verify the name. Check folder permissions and try again.';
+	String get title => 'Create New Character';
+	String get nameLabel => 'Character Name';
+	String get createButton => 'Create';
+}
+
+// Path: grid.variantsSheet
+class _TranslationsGridVariantsSheetEn {
+	_TranslationsGridVariantsSheetEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Variants';
+}
+
+// Path: grid.groupAppBar
+class _TranslationsGridGroupAppBarEn {
+	_TranslationsGridGroupAppBarEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get characters => 'Characters';
+	String get newGroup => 'New group';
+}
+
+// Path: grid.thumbnailBadges
+class _TranslationsGridThumbnailBadgesEn {
+	_TranslationsGridThumbnailBadgesEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get recent => 'RECENT';
+	String get original => 'ORIGINAL';
+	String get variant => 'VARIANT';
+}
+
+// Path: grid.actionMenu
+class _TranslationsGridActionMenuEn {
+	_TranslationsGridActionMenuEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get editNotes => 'Edit Notes';
+	String get dismissRecent => 'Dismiss Recent';
+	String get exportPngV2V3 => 'Export as PNG (V2/V3)';
+	String get exportJsonV3 => 'Export as JSON (V3)';
+	String get exportJsonV2 => 'Export as JSON (V2)';
+	String get duplicate => 'Duplicate';
+}
+
+// Path: grid.controllerMessages
+class _TranslationsGridControllerMessagesEn {
+	_TranslationsGridControllerMessagesEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get duplicateFailed => 'Could not duplicate the character.';
+	String get editVariantNotesTitle => 'Edit Variant Notes';
+	String get editVariantNotesHint => 'Add notes about this variant...';
+	String get deleteCardTitle => 'Delete Card';
+	String get deleteCardMessage => 'Are you sure you want to delete this card?';
+	String get deletePartialFailure => 'Some files could not be deleted. Check logs for details.';
 }
 
 // Path: <root>
@@ -1737,6 +1994,83 @@ class _TranslationsWorkspaceZhHant extends _TranslationsWorkspaceEn {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
+			case 'common.actions.delete': return 'Delete';
+			case 'grid.emptyState.noMatches': return 'No characters match your filters';
+			case 'grid.emptyState.noCharacters': return 'No characters imported yet';
+			case 'grid.emptyState.clearAllFilters': return 'Clear all filters';
+			case 'grid.emptyState.importCharacters': return 'Import Characters';
+			case 'grid.emptyState.createNewCharacter': return 'Create New Character';
+			case 'grid.appBar.groups': return 'Groups';
+			case 'grid.appBar.createNew': return 'Create New';
+			case 'grid.appBar.import': return 'Import';
+			case 'grid.appBar.menuTooltip': return 'Menu';
+			case 'grid.fab.addOrImportTooltip': return 'Add or Import';
+			case 'grid.fab.import': return 'Import';
+			case 'grid.fab.create': return 'Create';
+			case 'grid.drawer.mediaDefaultsApp': return 'App';
+			case 'grid.drawer.batchAiHeader': return 'Batch AI';
+			case 'grid.drawer.batchGeneratePreviewsTitle': return 'Batch Generate Previews';
+			case 'grid.drawer.batchGeneratePreviewsEmpty': return 'All characters already have previews.';
+			case 'grid.drawer.batchAutoTagTitle': return 'Batch Auto-Tag';
+			case 'grid.drawer.batchAutoTagEmpty': return 'All characters already have tags.';
+			case 'grid.drawer.libraryHeader': return 'Library';
+			case 'grid.drawer.reloadCharacters': return 'Reload characters';
+			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} Variants';
+			case 'grid.dialogActions.clearAll': return 'Clear All';
+			case 'grid.dialogActions.apply': return 'Apply';
+			case 'grid.tagFilterDialog.title': return 'Filter Tags';
+			case 'grid.tagFilterDialog.searchHint': return 'Search tags...';
+			case 'grid.filters.hideFiltersTooltip': return 'Hide filters';
+			case 'grid.filters.moreFiltersTooltip': return 'More filters';
+			case 'grid.filters.folderChip': return 'Folder';
+			case 'grid.filters.creatorChip': return 'Creator';
+			case 'grid.filters.tagChip': return 'Tag';
+			case 'grid.filters.recentTooltip': return 'Recent';
+			case 'grid.filters.favoritesTooltip': return 'Favorites';
+			case 'grid.filters.variantsTooltip': return 'Variants';
+			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Building search ${done} / ${total}…';
+			case 'grid.sortOption.relevance': return 'Relevance ↓';
+			case 'grid.sortOption.nameAsc': return 'Name ↓';
+			case 'grid.sortOption.nameDesc': return 'Name ↑';
+			case 'grid.sortOption.importNewest': return 'Imported ↓';
+			case 'grid.sortOption.importOldest': return 'Imported ↑';
+			case 'grid.sortOption.modifiedNewest': return 'Modified ↓';
+			case 'grid.sortOption.modifiedOldest': return 'Modified ↑';
+			case 'grid.sortOption.interactedNewest': return 'Interacted ↓';
+			case 'grid.sortOption.interactedOldest': return 'Interacted ↑';
+			case 'grid.sortOption.tokensHigh': return 'Tokens ↓';
+			case 'grid.sortOption.tokensLow': return 'Tokens ↑';
+			case 'grid.filterController.filterCreators': return 'Filter Creators';
+			case 'grid.filterController.filterTags': return 'Filter Tags';
+			case 'grid.filterController.filterByFolder': return 'Filter by Folder';
+			case 'grid.multiSelectDialog.nothingToShow': return 'Nothing to show yet.';
+			case 'grid.multiSelectDialog.noMatches': return 'No matches.';
+			case 'grid.multiSelectDialog.showMore': return 'Show More';
+			case 'grid.createCharacterDialog.nameEmptyError': return 'Character name cannot be empty.';
+			case 'grid.createCharacterDialog.nameInvalidCharsError': return 'Name contains invalid characters (<>:"/\|?*).';
+			case 'grid.createCharacterDialog.nameExistsError': return 'A character with this name already exists.';
+			case 'grid.createCharacterDialog.nameCheckFailedError': return 'Could not verify the name. Check folder permissions and try again.';
+			case 'grid.createCharacterDialog.title': return 'Create New Character';
+			case 'grid.createCharacterDialog.nameLabel': return 'Character Name';
+			case 'grid.createCharacterDialog.createButton': return 'Create';
+			case 'grid.variantsSheet.title': return 'Variants';
+			case 'grid.groupAppBar.characters': return 'Characters';
+			case 'grid.groupAppBar.newGroup': return 'New group';
+			case 'grid.thumbnailBadges.recent': return 'RECENT';
+			case 'grid.thumbnailBadges.original': return 'ORIGINAL';
+			case 'grid.thumbnailBadges.variant': return 'VARIANT';
+			case 'grid.actionMenu.editNotes': return 'Edit Notes';
+			case 'grid.actionMenu.dismissRecent': return 'Dismiss Recent';
+			case 'grid.actionMenu.exportPngV2V3': return 'Export as PNG (V2/V3)';
+			case 'grid.actionMenu.exportJsonV3': return 'Export as JSON (V3)';
+			case 'grid.actionMenu.exportJsonV2': return 'Export as JSON (V2)';
+			case 'grid.actionMenu.duplicate': return 'Duplicate';
+			case 'grid.controllerMessages.duplicateFailed': return 'Could not duplicate the character.';
+			case 'grid.controllerMessages.editVariantNotesTitle': return 'Edit Variant Notes';
+			case 'grid.controllerMessages.editVariantNotesHint': return 'Add notes about this variant...';
+			case 'grid.controllerMessages.deleteCardTitle': return 'Delete Card';
+			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
+			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
 			case 'settings.gearLanguage': return 'Language';
 			case 'settings.languageSystemDefault': return 'System default';
 			default: return null;

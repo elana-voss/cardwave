@@ -1,5 +1,6 @@
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/pages/widgets/tag_wrap.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogTagFilter extends StatefulWidget {
@@ -56,12 +57,12 @@ class _DialogTagFilterState extends State<DialogTagFilter> {
           onPressed: _currentSelection.isEmpty
               ? null
               : () => setState(() => _currentSelection.clear()),
-          child: const Text('Clear All'),
+          child: Text(t.grid.dialogActions.clearAll),
         ),
         const Spacer(),
         TextButton(
           onPressed: () => Navigator.pop(context, _currentSelection),
-          child: const Text('Apply'),
+          child: Text(t.grid.dialogActions.apply),
         ),
       ],
       builder: (context, isMobile) => Column(
@@ -70,12 +71,12 @@ class _DialogTagFilterState extends State<DialogTagFilter> {
         spacing: 16,
         children: [
           Text(
-            'Filter Tags',
+            t.grid.tagFilterDialog.title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           AppSearchField(
             controller: _searchController,
-            hintText: 'Search tags...',
+            hintText: t.grid.tagFilterDialog.searchHint,
           ),
           Expanded(
             child: SingleChildScrollView(

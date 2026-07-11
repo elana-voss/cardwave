@@ -65,7 +65,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 9 languages is where that gets verified.
 
 ## Step 3 checklist (Sonnet) — one commit per row
-- [ ] 1 `lib/grid/` → `grid`
+- [x] 1 `lib/grid/` → `grid`
 - [ ] 2 `lib/routing/` → `routing`
 - [ ] 3 `lib/onboarding/` → `onboarding`
 - [ ] 4 `lib/common/` → `common`
@@ -115,7 +115,14 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 | hi | | | | |
 
 ## Open questions (append; do not delete resolved ones — mark them)
-_(none yet)_
+- **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,
+  the `GradientText('Cardwave', ...)` shown when the neon theme is active):
+  NOT extracted. §1 of the plan and the Step 4 glossary already decide
+  "Cardwave" stays untranslated in every locale, same treatment as the native
+  language names excluded in `dialog_language_picker.dart`. Extracting it to a
+  key whose value is identically "Cardwave" in all 9 locale files seemed like
+  pure overhead with no behavior difference. Resolved (non-action / skip) —
+  flagging so Step 4/5 know it was a deliberate call, not a miss.
 
 ## Parked observations (bugs noticed but out of scope)
 _(none yet)_

@@ -4,6 +4,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/controllers/character_grid_controller.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/variant_status_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -117,62 +118,65 @@ class CharacterGridActionMenu extends StatelessWidget {
           const PopupMenuDivider(),
 
         if (variantStatus == VariantStatusEnum.original || showVariantNotes)
-          const PopupMenuItem<Object>(
+          PopupMenuItem<Object>(
             value: _CharacterGridItemActionEnum.editNotes,
             child: Row(
               spacing: 8,
-              children: [Icon(Icons.note_alt), Text('Edit Notes')],
+              children: [
+                const Icon(Icons.note_alt),
+                Text(t.grid.actionMenu.editNotes),
+              ],
             ),
           ),
         if (file.isRecent)
-          const PopupMenuItem<Object>(
+          PopupMenuItem<Object>(
             value: _CharacterGridItemActionEnum.dismissRecent,
             child: Row(
               spacing: 8,
               children: [
-                Icon(Icons.history_toggle_off),
-                Text('Dismiss Recent'),
+                const Icon(Icons.history_toggle_off),
+                Text(t.grid.actionMenu.dismissRecent),
               ],
             ),
           ),
 
         const PopupMenuDivider(),
-        const PopupMenuItem<_CharacterGridItemActionEnum>(
+        PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.pngExportV2V3,
           child: Row(
             spacing: 8,
             children: [
-              Icon(Icons.image, size: 20),
-              Text('Export as PNG (V2/V3)'),
+              const Icon(Icons.image, size: 20),
+              Text(t.grid.actionMenu.exportPngV2V3),
             ],
           ),
         ),
-        const PopupMenuItem<_CharacterGridItemActionEnum>(
+        PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.jsonExportV3,
           child: Row(
             spacing: 8,
             children: [
-              Icon(Icons.data_object, size: 20),
-              Text('Export as JSON (V3)'),
+              const Icon(Icons.data_object, size: 20),
+              Text(t.grid.actionMenu.exportJsonV3),
             ],
           ),
         ),
-        const PopupMenuItem<_CharacterGridItemActionEnum>(
+        PopupMenuItem<_CharacterGridItemActionEnum>(
           value: _CharacterGridItemActionEnum.jsonExportV2,
           child: Row(
             spacing: 8,
             children: [
-              Icon(Icons.data_object, size: 20),
-              Text('Export as JSON (V2)'),
+              const Icon(Icons.data_object, size: 20),
+              Text(t.grid.actionMenu.exportJsonV2),
             ],
           ),
         ),
         const PopupMenuDivider(),
-        const PopupMenuItem<Object>(
+        PopupMenuItem<Object>(
           value: _CharacterGridItemActionEnum.duplicate,
           child: Row(
             spacing: 8,
-            children: [Icon(Icons.copy), Text('Duplicate')],
+            children: [const Icon(Icons.copy), Text(t.grid.actionMenu.duplicate)],
           ),
         ),
         PopupMenuItem<Object>(
@@ -183,7 +187,7 @@ class CharacterGridActionMenu extends StatelessWidget {
             children: [
               Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
               Text(
-                'Delete',
+                t.common.actions.delete,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],

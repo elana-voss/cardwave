@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class CharacterGridItemVariantBadge extends StatelessWidget {
@@ -12,7 +13,7 @@ class CharacterGridItemVariantBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: '$count Variants',
+      message: t.grid.variantBadge.tooltip(count: count),
       child: Material(
         color: Theme.of(context).colorScheme.primary,
         shape: const StadiumBorder(),

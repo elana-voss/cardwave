@@ -8,6 +8,7 @@ import 'package:cardwave/grid/src/pages/widgets/character_grid_filters.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/variant_status_enum.dart';
 import 'package:cardwave/grid/src/pages/widgets/view_empty_state.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/route_create_character.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/settings/settings.dart';
@@ -65,7 +66,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
                         key: const Key('grid-fab-speed-dial'),
                         icon: Icons.menu,
                         activeIcon: Icons.close,
-                        tooltip: 'Add or Import',
+                        tooltip: t.grid.fab.addOrImportTooltip,
                         spacing: 8,
                         spaceBetweenChildren: 4,
                         renderOverlay: false,
@@ -76,7 +77,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
                               child: Icon(Icons.upload, size: 20),
                             ),
                             shape: const CircleBorder(),
-                            label: 'Import',
+                            label: t.grid.fab.import,
                             onTap: () =>
                                 CharacterImportController.runBulkImport(
                                   context.read<CharacterService>(),
@@ -88,7 +89,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
                               child: Icon(Icons.add, size: 20),
                             ),
                             shape: const CircleBorder(),
-                            label: 'Create',
+                            label: t.grid.fab.create,
                             onTap: () =>
                                 RouteCreateCharacter().execute(context),
                           ),
@@ -190,7 +191,7 @@ class _GridDrawerMenu extends StatelessWidget {
             // own section header. The next section's DrawerSectionHeader
             // provides the divider.
             MediaDefaultsDrawerEntry(
-              subtitle: 'App',
+              subtitle: t.grid.drawer.mediaDefaultsApp,
               onTap: () {
                 Navigator.of(navContext, rootNavigator: true).pop();
                 unawaited(
@@ -201,7 +202,7 @@ class _GridDrawerMenu extends StatelessWidget {
                 );
               },
             ),
-            const DrawerSectionHeader('Batch AI'),
+            DrawerSectionHeader(t.grid.drawer.batchAiHeader),
             for (final action in AiActionEnum.values.where(
               (a) => a.isGlobalOnly,
             ))
@@ -215,8 +216,8 @@ class _GridDrawerMenu extends StatelessWidget {
                   switch (action) {
                     case AiActionEnum.generatePreview:
                       await AiActionController.runCharacterBatchAndShow(
-                        title: 'Batch Generate Previews',
-                        emptyMessage: 'All characters already have previews.',
+                        title: t.grid.drawer.batchGeneratePreviewsTitle,
+                        emptyMessage: t.grid.drawer.batchGeneratePreviewsEmpty,
                         targets: await ai.charactersMissingPreview,
                         operation: ai.generateDescriptionPreview,
                         onCancel: ai.cancelAllActiveAiTasks,
@@ -224,8 +225,8 @@ class _GridDrawerMenu extends StatelessWidget {
                       );
                     case AiActionEnum.autoTag:
                       await AiActionController.runCharacterBatchAndShow(
-                        title: 'Batch Auto-Tag',
-                        emptyMessage: 'All characters already have tags.',
+                        title: t.grid.drawer.batchAutoTagTitle,
+                        emptyMessage: t.grid.drawer.batchAutoTagEmpty,
                         targets: await ai.charactersMissingTags,
                         operation: ai.autoTagCharacter,
                         onCancel: ai.cancelAllActiveAiTasks,
@@ -236,10 +237,10 @@ class _GridDrawerMenu extends StatelessWidget {
                 },
               ),
             if (isDesktop) ...[
-              const DrawerSectionHeader('Library'),
+              DrawerSectionHeader(t.grid.drawer.libraryHeader),
               ListTile(
                 leading: const Icon(Icons.refresh),
-                title: const Text('Reload characters'),
+                title: Text(t.grid.drawer.reloadCharacters),
                 onTap: () {
                   Navigator.of(navContext, rootNavigator: true).pop();
                   unawaited(

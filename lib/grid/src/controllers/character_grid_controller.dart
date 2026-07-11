@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart' show Color;
 
 /// Stateless orchestrator for the per-character grid item action menu. Each
@@ -23,7 +24,9 @@ class CharacterGridController {
         e,
         st,
       );
-      NavigationService().showSnackBar('Could not duplicate the character.');
+      NavigationService().showSnackBar(
+        t.grid.controllerMessages.duplicateFailed,
+      );
     }
   }
 
@@ -34,9 +37,9 @@ class CharacterGridController {
     required CharacterFile file,
   }) async {
     final newNotes = await NavigationService().showTextInputDialog(
-      title: 'Edit Variant Notes',
+      title: t.grid.controllerMessages.editVariantNotesTitle,
       initialText: file.appCardVariantNotes,
-      hintText: 'Add notes about this variant...',
+      hintText: t.grid.controllerMessages.editVariantNotesHint,
     );
     if (newNotes == null) return;
     file.appCardVariantNotes = newNotes;
@@ -101,9 +104,9 @@ class CharacterGridController {
     required Color confirmColor,
   }) async {
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Card',
-      message: 'Are you sure you want to delete this card?',
-      confirmText: 'Delete',
+      title: t.grid.controllerMessages.deleteCardTitle,
+      message: t.grid.controllerMessages.deleteCardMessage,
+      confirmText: t.common.actions.delete,
       confirmColor: confirmColor,
     );
     if (!confirmed) return false;
@@ -116,7 +119,7 @@ class CharacterGridController {
         st,
       );
       NavigationService().showSnackBar(
-        'Some files could not be deleted. Check logs for details.',
+        t.grid.controllerMessages.deletePartialFailure,
       );
     }
     return true;

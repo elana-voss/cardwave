@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogMultiSelect extends StatefulWidget {
@@ -105,12 +106,12 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
       actions: [
         TextButton(
           onPressed: _currentSelection.isEmpty ? null : _clearSelection,
-          child: const Text('Clear All'),
+          child: Text(t.grid.dialogActions.clearAll),
         ),
         const Spacer(),
         FilledButton(
           onPressed: () => Navigator.pop(context, _currentSelection),
-          child: const Text('Apply'),
+          child: Text(t.grid.dialogActions.apply),
         ),
       ],
       // Non-uniform: `SizedBox(16)` and conditional `SizedBox(12)`;
@@ -157,7 +158,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
     if (widget.items.isEmpty) {
       return Center(
         child: Text(
-          'Nothing to show yet.',
+          t.grid.multiSelectDialog.nothingToShow,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -173,7 +174,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
     if (filtered.isEmpty) {
       return Center(
         child: Text(
-          'No matches.',
+          t.grid.multiSelectDialog.noMatches,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -232,7 +233,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
               onPressed: () => setState(
                 () => _displayLimit += _displayLimitIncrement,
               ),
-              child: const Text('Show More'),
+              child: Text(t.grid.multiSelectDialog.showMore),
             ),
           ],
         ],

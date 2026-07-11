@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,10 +33,10 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
     var hasError = false;
 
     if (name.isEmpty) {
-      _nameError = 'Character name cannot be empty.';
+      _nameError = t.grid.createCharacterDialog.nameEmptyError;
       hasError = true;
     } else if (RegExp(r'[<>:"/\\|?*]').hasMatch(name)) {
-      _nameError = r'Name contains invalid characters (<>:"/\|?*).';
+      _nameError = t.grid.createCharacterDialog.nameInvalidCharsError;
       hasError = true;
     }
 
@@ -53,7 +54,7 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
         imageFilename,
       );
       if (exists) {
-        _nameError = 'A character with this name already exists.';
+        _nameError = t.grid.createCharacterDialog.nameExistsError;
         hasError = true;
       }
     } on Exception catch (e, st) {
@@ -62,8 +63,7 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
         e,
         st,
       );
-      _nameError =
-          'Could not verify the name. Check folder permissions and try again.';
+      _nameError = t.grid.createCharacterDialog.nameCheckFailedError;
       hasError = true;
     }
 
@@ -89,14 +89,14 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
           spacing: 16,
           children: [
             Text(
-              'Create New Character',
+              t.grid.createCharacterDialog.title,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             TextField(
               key: const Key('character-name-field'),
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Character Name',
+                labelText: t.grid.createCharacterDialog.nameLabel,
                 errorText: _nameError,
                 border: const OutlineInputBorder(),
               ),
@@ -115,7 +115,7 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
                   dimension: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Create'),
+              : Text(t.grid.createCharacterDialog.createButton),
         ),
       ],
     );

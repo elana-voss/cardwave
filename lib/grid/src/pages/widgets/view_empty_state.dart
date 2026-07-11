@@ -1,5 +1,6 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/grid/src/controllers/filter_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/route_create_character.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +24,8 @@ class ViewEmptyState extends StatelessWidget {
           ),
           Text(
             filterController.hasActiveFilters
-                ? 'No characters match your filters'
-                : 'No characters imported yet',
+                ? t.grid.emptyState.noMatches
+                : t.grid.emptyState.noCharacters,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -33,7 +34,7 @@ class ViewEmptyState extends StatelessWidget {
             FilledButton.icon(
               onPressed: filterController.clearAllFilters,
               icon: const Icon(Icons.clear_all),
-              label: const Text('Clear all filters'),
+              label: Text(t.grid.emptyState.clearAllFilters),
             )
           else
             Wrap(
@@ -46,12 +47,12 @@ class ViewEmptyState extends StatelessWidget {
                     context.read<CharacterService>(),
                   ),
                   icon: const Icon(Icons.upload),
-                  label: const Text('Import Characters'),
+                  label: Text(t.grid.emptyState.importCharacters),
                 ),
                 OutlinedButton.icon(
                   onPressed: () => RouteCreateCharacter().execute(context),
                   icon: const Icon(Icons.add),
-                  label: const Text('Create New Character'),
+                  label: Text(t.grid.emptyState.createNewCharacter),
                 ),
               ],
             ),

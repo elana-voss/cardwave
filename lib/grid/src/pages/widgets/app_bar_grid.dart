@@ -1,6 +1,7 @@
 import 'package:cardwave/app_routes_enum.dart';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/route_create_character.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
         final groupsButton = TextButton.icon(
           key: const Key('grid-groups-button'),
           icon: const Icon(Icons.group),
-          label: const Text('Groups'),
+          label: Text(t.grid.appBar.groups),
           onPressed: () => Navigator.of(
             context,
           ).pushReplacementNamed(AppRoutesEnum.groupGrid.name),
@@ -56,14 +57,14 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
                       key: const Key('grid-create-new-button'),
                       onPressed: () => RouteCreateCharacter().execute(context),
                       icon: const Icon(Icons.add),
-                      label: const Text('Create New'),
+                      label: Text(t.grid.appBar.createNew),
                     ),
                     FilledButton.tonalIcon(
                       key: const Key('grid-import-button'),
                       onPressed: () =>
                           CharacterImportController.runBulkImport(service),
                       icon: const Icon(Icons.upload),
-                      label: const Text('Import'),
+                      label: Text(t.grid.appBar.import),
                     ),
                   ],
                 )
@@ -77,7 +78,7 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
                 key: const Key('appbar-end-drawer'),
                 icon: const Icon(Icons.menu),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
-                tooltip: 'Menu',
+                tooltip: t.grid.appBar.menuTooltip,
               ),
             ),
           ],

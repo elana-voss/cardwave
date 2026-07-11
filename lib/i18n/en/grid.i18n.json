@@ -1,1 +1,112 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "No characters match your filters",
+    "noCharacters": "No characters imported yet",
+    "clearAllFilters": "Clear all filters",
+    "importCharacters": "Import Characters",
+    "createNewCharacter": "Create New Character"
+  },
+  "appBar": {
+    "groups": "Groups",
+    "createNew": "Create New",
+    "import": "Import",
+    "menuTooltip": "Menu"
+  },
+  "fab": {
+    "addOrImportTooltip": "Add or Import",
+    "import": "Import",
+    "create": "Create"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "App",
+    "batchAiHeader": "Batch AI",
+    "batchGeneratePreviewsTitle": "Batch Generate Previews",
+    "batchGeneratePreviewsEmpty": "All characters already have previews.",
+    "batchAutoTagTitle": "Batch Auto-Tag",
+    "batchAutoTagEmpty": "All characters already have tags.",
+    "libraryHeader": "Library",
+    "reloadCharacters": "Reload characters"
+  },
+  "variantBadge": {
+    "tooltip": "$count Variants"
+  },
+  "dialogActions": {
+    "clearAll": "Clear All",
+    "apply": "Apply"
+  },
+  "tagFilterDialog": {
+    "title": "Filter Tags",
+    "searchHint": "Search tags..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "Hide filters",
+    "moreFiltersTooltip": "More filters",
+    "folderChip": "Folder",
+    "creatorChip": "Creator",
+    "tagChip": "Tag",
+    "recentTooltip": "Recent",
+    "favoritesTooltip": "Favorites",
+    "variantsTooltip": "Variants",
+    "indexingProgress": "Building search $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "Relevance ↓",
+    "nameAsc": "Name ↓",
+    "nameDesc": "Name ↑",
+    "importNewest": "Imported ↓",
+    "importOldest": "Imported ↑",
+    "modifiedNewest": "Modified ↓",
+    "modifiedOldest": "Modified ↑",
+    "interactedNewest": "Interacted ↓",
+    "interactedOldest": "Interacted ↑",
+    "tokensHigh": "Tokens ↓",
+    "tokensLow": "Tokens ↑"
+  },
+  "filterController": {
+    "filterCreators": "Filter Creators",
+    "filterTags": "Filter Tags",
+    "filterByFolder": "Filter by Folder"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "Nothing to show yet.",
+    "noMatches": "No matches.",
+    "showMore": "Show More"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "Character name cannot be empty.",
+    "nameInvalidCharsError": "Name contains invalid characters (<>:\"/\\|?*).",
+    "nameExistsError": "A character with this name already exists.",
+    "nameCheckFailedError": "Could not verify the name. Check folder permissions and try again.",
+    "title": "Create New Character",
+    "nameLabel": "Character Name",
+    "createButton": "Create"
+  },
+  "variantsSheet": {
+    "title": "Variants"
+  },
+  "groupAppBar": {
+    "characters": "Characters",
+    "newGroup": "New group"
+  },
+  "thumbnailBadges": {
+    "recent": "RECENT",
+    "original": "ORIGINAL",
+    "variant": "VARIANT"
+  },
+  "actionMenu": {
+    "editNotes": "Edit Notes",
+    "dismissRecent": "Dismiss Recent",
+    "exportPngV2V3": "Export as PNG (V2/V3)",
+    "exportJsonV3": "Export as JSON (V3)",
+    "exportJsonV2": "Export as JSON (V2)",
+    "duplicate": "Duplicate"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "Could not duplicate the character.",
+    "editVariantNotesTitle": "Edit Variant Notes",
+    "editVariantNotesHint": "Add notes about this variant...",
+    "deleteCardTitle": "Delete Card",
+    "deleteCardMessage": "Are you sure you want to delete this card?",
+    "deletePartialFailure": "Some files could not be deleted. Check logs for details."
+  }
+}
