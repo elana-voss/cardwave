@@ -78,14 +78,14 @@
     "title": "इमेज जनरेट करें",
     "description": "आप क्या देखना चाहते हैं, उसका वर्णन करें। एक छोटा वाक्यांश भी ठीक है — मॉडल इसे एक पूरी टैग सूची में विस्तृत कर देगा।",
     "subjectLabel": "विषय",
-    "subjectHint": "cyberpunk alley, neon rain",
+    "subjectHint": "साइबरपंक गली, नियॉन बारिश",
     "generateButton": "जनरेट करें"
   },
   "freeVideoPromptDialog": {
     "title": "वीडियो जनरेट करें",
     "description": "गति के एक छोटे क्षण का वर्णन करें — क्या हिल रहा है, कैसे, कहाँ। सिस्टम मॉडल इसे एक सिनेमैटिक T2V प्रॉम्प्ट में विस्तृत कर देगा।",
     "subjectLabel": "विषय",
-    "subjectHint": "she walks through neon rain, slow motion",
+    "subjectHint": "वह नियॉन बारिश में चलती है, स्लो मोशन",
     "generateButton": "जनरेट करें"
   },
   "imagePromptReviewDialog": {

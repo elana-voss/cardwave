@@ -93,7 +93,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] zh-Hant
 - [x] ko
 - [x] hi
-- [ ] 4.5 self-review pass committed
+- [x] 4.5 self-review pass committed
 - [ ] 4.6 slang analyze: zero missing / zero unused
 
 ### Step 4 notes
@@ -117,6 +117,23 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   languages + register cheatsheet. A known CJK terminology collision (persona vs
   character both tend toward 角色) is resolved there: character = 角色, persona =
   人设/人設.
+- **Parallelization**: ja/zh-Hans/zh-Hant/ko/hi were translated by 5 concurrent
+  subagents (each given the glossary + en sources + hard rules on key mirroring,
+  placeholder/`\n` preservation, untranslated-term list, and per-locale plural
+  categories); ru/pt-BR/es-419 were done directly. Every locale was verified two
+  ways before committing: `dart run slang analyze` (0 missing) plus a custom
+  placeholder/newline diff against `en` (`scratchpad/check_placeholders.js`) —
+  all 8 report 0 issues.
+- **§4.5 review-pass fix**: the ko and hi subagents both left the image/video
+  *example* strings (`character.promptPrefixDialog.image/videoHint` +
+  their `imageDescription`/`videoDescription` parentheticals, and
+  `chat.free{Image,Video}PromptDialog.subjectHint`) in English, reasoning they
+  were literal prompt tokens. They are placeholder/example UI text that the user
+  replaces, and the other 6 locales translated them — normalized ko/hi to match.
+  Other flagged cross-locale variations (lorebook AND/NOT logic operators and the
+  `↑ Char`/`@D`/`AN`/`EM` position codes translated in some locales, kept as
+  technical tokens in others) were reviewed and left as-is: each locale is
+  internally consistent and these are power-user lorebook internals.
 
 ## Step 5 checklist (Opus)
 - [ ] 5.1 branch diff review + fixes committed

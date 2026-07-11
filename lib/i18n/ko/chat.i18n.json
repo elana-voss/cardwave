@@ -78,14 +78,14 @@
     "title": "이미지 생성",
     "description": "보고 싶은 것을 설명하세요. 짧은 문구도 괜찮아요 — 모델이 전체 태그 목록으로 확장해 줘요.",
     "subjectLabel": "주제",
-    "subjectHint": "cyberpunk alley, neon rain",
+    "subjectHint": "사이버펑크 골목, 네온 비",
     "generateButton": "생성"
   },
   "freeVideoPromptDialog": {
     "title": "비디오 생성",
     "description": "짧은 움직임의 순간을 설명하세요 — 무엇이, 어떻게, 어디서 움직이는지. 시스템 모델이 영화 같은 T2V 프롬프트로 확장해 줘요.",
     "subjectLabel": "주제",
-    "subjectHint": "she walks through neon rain, slow motion",
+    "subjectHint": "그녀가 네온 비 속을 걷는다, 슬로 모션",
     "generateButton": "생성"
   },
   "imagePromptReviewDialog": {

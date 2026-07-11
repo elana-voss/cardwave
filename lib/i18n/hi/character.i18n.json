@@ -2,11 +2,11 @@
   "promptPrefixDialog": {
     "styleKeywordsLabel": "स्टाइल कीवर्ड",
     "imageTitle": "इमेज स्टाइल",
-    "imageDescription": "इस कैरेक्टर के हर इमेज जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"anime style, vibrant colors\")।",
-    "imageHint": "anime style, vibrant colors",
+    "imageDescription": "इस कैरेक्टर के हर इमेज जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"एनीमे स्टाइल, जीवंत रंग\")।",
+    "imageHint": "एनीमे स्टाइल, जीवंत रंग",
     "videoTitle": "वीडियो स्टाइल",
-    "videoDescription": "इस कैरेक्टर के हर वीडियो जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"cinematic, shallow depth of field, 24fps film grain\")। वीडियो मॉडल मोशन और कैमरा शब्दावली के अनुसार प्रतिक्रिया देते हैं; इसे छोटा रखें।",
-    "videoHint": "cinematic, shallow depth of field"
+    "videoDescription": "इस कैरेक्टर के हर वीडियो जनरेशन प्रॉम्प्ट के आगे जोड़ा जाता है (उदाहरण के लिए \"सिनेमाई, कम फ़ील्ड डेप्थ, 24fps फ़िल्म ग्रेन\")। वीडियो मॉडल मोशन और कैमरा शब्दावली के अनुसार प्रतिक्रिया देते हैं; इसे छोटा रखें।",
+    "videoHint": "सिनेमाई, कम फ़ील्ड डेप्थ"
   },
   "cardEditApproval": {
     "denyAll": "सभी अस्वीकार करें",
