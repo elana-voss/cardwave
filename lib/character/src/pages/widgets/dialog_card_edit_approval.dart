@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cardwave/character/src/controllers/card_edit_gate_controller.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:diff_match_patch/diff_match_patch.dart';
@@ -89,15 +90,15 @@ class _DialogCardEditApprovalState extends State<DialogCardEditApproval> {
       actions: [
         TextButton(
           onPressed: () => _setAll(approved: false),
-          child: const Text('Deny all'),
+          child: Text(t.character.cardEditApproval.denyAll),
         ),
         TextButton(
           onPressed: () => _setAll(approved: true),
-          child: const Text('Approve all'),
+          child: Text(t.character.cardEditApproval.approveAll),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_collect()),
-          child: const Text('Confirm'),
+          child: Text(t.character.cardEditApproval.confirm),
         ),
       ],
       builder: (context, isMobile) {
@@ -107,7 +108,7 @@ class _DialogCardEditApprovalState extends State<DialogCardEditApproval> {
           spacing: 16,
           children: [
             Text(
-              'Assistant proposed changes',
+              t.character.cardEditApproval.dialogTitle,
               style: theme.textTheme.titleLarge,
             ),
             for (var i = 0; i < widget.proposals.length; i++) ...[
@@ -132,7 +133,11 @@ class _DialogCardEditApprovalState extends State<DialogCardEditApproval> {
                     TextButton.icon(
                       icon: const Icon(Icons.notifications_off_outlined,
                           size: 18),
-                      label: Text("Don't ask again for ${_modalityLabel(m)}"),
+                      label: Text(
+                        t.character.cardEditApproval.dontAskAgainFor(
+                          modality: _modalityLabel(m),
+                        ),
+                      ),
                       onPressed: () => _disableModalityApproval(m),
                     ),
                 ],
@@ -147,11 +152,11 @@ class _DialogCardEditApprovalState extends State<DialogCardEditApproval> {
 String _modalityLabel(CardEditModality m) {
   switch (m) {
     case CardEditModality.edit:
-      return 'edits';
+      return t.character.cardEditApproval.modalityLabel.edits;
     case CardEditModality.addition:
-      return 'additions';
+      return t.character.cardEditApproval.modalityLabel.additions;
     case CardEditModality.deletion:
-      return 'deletions';
+      return t.character.cardEditApproval.modalityLabel.deletions;
   }
 }
 
@@ -194,7 +199,9 @@ class _ProposalRow extends StatelessWidget {
                 color: state.approved ? theme.colorScheme.primary : null,
               ),
               onPressed: () => onApprovedChanged(!state.approved),
-              tooltip: state.approved ? 'Tap to deny' : 'Tap to approve',
+              tooltip: state.approved
+                  ? t.character.cardEditApproval.tapToDeny
+                  : t.character.cardEditApproval.tapToApprove,
             ),
           ],
         ),
@@ -202,9 +209,9 @@ class _ProposalRow extends StatelessWidget {
         if (!state.approved)
           TextField(
             controller: state.reasonController,
-            decoration: const InputDecoration(
-              labelText: 'Reason (optional, sent back to the assistant)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: t.character.cardEditApproval.reasonLabel,
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
             maxLines: 2,
@@ -217,11 +224,11 @@ class _ProposalRow extends StatelessWidget {
 String _modalityVerb(CardEditModality m) {
   switch (m) {
     case CardEditModality.edit:
-      return 'Edit';
+      return t.character.cardEditApproval.modalityVerb.edit;
     case CardEditModality.addition:
-      return 'Add to';
+      return t.character.cardEditApproval.modalityVerb.addition;
     case CardEditModality.deletion:
-      return 'Remove from';
+      return t.character.cardEditApproval.modalityVerb.deletion;
   }
 }
 
@@ -240,14 +247,14 @@ class _ProposalDiff extends StatelessWidget {
     }
     if (p is CardListAppendProposal) {
       return _SingleStyledPanel(
-        title: 'New entry',
+        title: t.character.cardEditApproval.newEntryTitle,
         text: p.newValue,
         kind: _SingleStyleKind.insertion,
       );
     }
     if (p is CardListDeleteProposal) {
       return _SingleStyledPanel(
-        title: 'Removing',
+        title: t.character.cardEditApproval.removingTitle,
         text: p.oldValue,
         kind: _SingleStyleKind.deletion,
       );
@@ -300,12 +307,12 @@ class _EditDiffState extends State<_EditDiff> {
       spacing: 8,
       children: [
         DiffPanel(
-          title: 'Before',
+          title: t.character.cardEditApproval.beforeTitle,
           spans: buildDiffSpans(context, _diffs, showDeletions: true),
           tokenCount: null,
         ),
         DiffPanel(
-          title: 'After',
+          title: t.character.cardEditApproval.afterTitle,
           spans: buildDiffSpans(context, _diffs, showInsertions: true),
           tokenCount: null,
         ),

@@ -2,6 +2,7 @@ import 'package:cardwave/character/src/models/character_card_v3.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/services/character_ai_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/foundation.dart';
 
 class AiActionController {
@@ -60,7 +61,7 @@ class AiActionController {
         e,
         st,
       );
-      nav.showSnackBar('AI Action failed. Check logs for details.');
+      nav.showSnackBar(t.character.aiActionController.aiActionFailed);
       return null;
     }
   }
@@ -94,8 +95,12 @@ class AiActionController {
           final file = targets[i];
           handle.update(
             progressValue: i / targets.length,
-            messageValue:
-                'Processing ${file.card.name} (${i + 1}/${targets.length})...${_etaString(startTime, i, targets.length)}',
+            messageValue: t.character.aiActionController.processingProgress(
+              name: file.card.name,
+              current: i + 1,
+              total: targets.length,
+              eta: _etaString(startTime, i, targets.length),
+            ),
           );
           try {
             await operation(file);
@@ -117,8 +122,18 @@ class AiActionController {
     final msPerItem = elapsed.inMilliseconds / currentIndex;
     final remainingMs = (total - currentIndex) * msPerItem;
     final d = Duration(milliseconds: remainingMs.toInt());
-    if (d.inHours > 0) return ' ETA: ${d.inHours}h ${d.inMinutes % 60}m';
-    if (d.inMinutes > 0) return ' ETA: ${d.inMinutes}m ${d.inSeconds % 60}s';
-    return ' ETA: ${d.inSeconds}s';
+    if (d.inHours > 0) {
+      return t.character.aiActionController.etaHoursMinutes(
+        hours: d.inHours,
+        minutes: d.inMinutes % 60,
+      );
+    }
+    if (d.inMinutes > 0) {
+      return t.character.aiActionController.etaMinutesSeconds(
+        minutes: d.inMinutes,
+        seconds: d.inSeconds % 60,
+      );
+    }
+    return t.character.aiActionController.etaSeconds(seconds: d.inSeconds);
   }
 }

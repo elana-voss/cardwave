@@ -1,6 +1,7 @@
 import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/services/character_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 
@@ -29,7 +30,10 @@ class CharacterCreateController {
   ) async {
     final nav = NavigationService();
     final logging = LoggingService();
-    const typeGroup = XTypeGroup(label: 'PNG Images', extensions: ['png']);
+    final typeGroup = XTypeGroup(
+      label: t.character.createController.pngImagesTypeGroupLabel,
+      extensions: const ['png'],
+    );
 
     while (true) {
       final pick = await getSaveLocation(
@@ -42,7 +46,7 @@ class CharacterCreateController {
       final invalidReason = service.validateCharacterSavePath(pick.path);
       if (invalidReason != null) {
         final tryAgain = await nav.showTryAgainDialog(
-          title: 'Invalid Location',
+          title: t.character.createController.invalidLocationTitle,
           content: invalidReason,
         );
         if (tryAgain) continue;
@@ -58,8 +62,8 @@ class CharacterCreateController {
       } on Exception catch (e, stackTrace) {
         logging.error('Character creation failed', e, stackTrace);
         final tryAgain = await nav.showTryAgainDialog(
-          title: 'Creation Failed',
-          content: 'Could not create the character. Check logs for details.',
+          title: t.character.createController.creationFailedTitle,
+          content: t.character.createController.creationFailedMessage,
         );
         if (tryAgain) continue;
         return null;
@@ -81,7 +85,7 @@ class CharacterCreateController {
     } on Exception catch (e, stackTrace) {
       LoggingService().error('Character creation failed', e, stackTrace);
       nav.showSnackBar(
-        'Could not create the character. Check logs for details.',
+        t.character.createController.creationFailedMessage,
       );
       return null;
     }

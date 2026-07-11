@@ -1,5 +1,6 @@
 import 'package:cardwave/character/src/pages/widgets/prompt_prefix_domain.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Modal text-field for editing a character's per-domain prompt-prefix
@@ -39,7 +40,7 @@ Future<String?> showCharacterPromptPrefixDialog(
             minLines: 1,
             maxLines: 4,
             decoration: InputDecoration(
-              labelText: 'Style keywords',
+              labelText: t.character.promptPrefixDialog.styleKeywordsLabel,
               hintText: copy.hint,
             ),
           ),
@@ -49,7 +50,7 @@ Future<String?> showCharacterPromptPrefixDialog(
         FilledButton(
           onPressed: () =>
               Navigator.of(dialogContext).pop(controller.text.trim()),
-          child: const Text('Save'),
+          child: Text(t.common.actions.save),
         ),
       ],
     ),
@@ -64,21 +65,15 @@ Future<String?> showCharacterPromptPrefixDialog(
   switch (domain) {
     case PromptPrefixDomain.image:
       return (
-        title: 'Image Style',
-        description:
-            'Prepended to every image generation prompt for this character '
-            '(e.g. "anime style, vibrant colors").',
-        hint: 'anime style, vibrant colors',
+        title: t.character.promptPrefixDialog.imageTitle,
+        description: t.character.promptPrefixDialog.imageDescription,
+        hint: t.character.promptPrefixDialog.imageHint,
       );
     case PromptPrefixDomain.video:
       return (
-        title: 'Video Style',
-        description:
-            'Prepended to every video generation prompt for this character '
-            '(e.g. "cinematic, shallow depth of field, 24fps film grain"). '
-            'Video models respond to motion and camera vocabulary; keep it '
-            'short.',
-        hint: 'cinematic, shallow depth of field',
+        title: t.character.promptPrefixDialog.videoTitle,
+        description: t.character.promptPrefixDialog.videoDescription,
+        hint: t.character.promptPrefixDialog.videoHint,
       );
   }
 }

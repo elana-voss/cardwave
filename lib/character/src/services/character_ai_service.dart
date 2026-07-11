@@ -6,6 +6,7 @@ import 'package:cardwave/character/src/models/character_file.dart';
 import 'package:cardwave/character/src/repositories/taxonomy_repository.dart';
 import 'package:cardwave/character/src/services/character_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/foundation.dart';
@@ -447,7 +448,9 @@ class CharacterAiService extends ChangeNotifier {
 
     state.handle.update(
       progressValue: state.current / state.total,
-      messageValue: 'Processing $fieldName...',
+      messageValue: t.character.aiActionController.processingField(
+        fieldName: fieldName,
+      ),
     );
 
     var result = value;

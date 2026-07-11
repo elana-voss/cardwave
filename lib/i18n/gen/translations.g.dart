@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 407 (45 per locale)
+/// Strings: 455 (50 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -186,6 +186,15 @@ class _TranslationsCharacterEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsCharacterPromptPrefixDialogEn promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogEn._(_root);
+	late final _TranslationsCharacterCardEditApprovalEn cardEditApproval = _TranslationsCharacterCardEditApprovalEn._(_root);
+	late final _TranslationsCharacterRequireApprovalTileEn requireApprovalTile = _TranslationsCharacterRequireApprovalTileEn._(_root);
+	late final _TranslationsCharacterLoadingStatusEn loadingStatus = _TranslationsCharacterLoadingStatusEn._(_root);
+	late final _TranslationsCharacterSavePathValidationEn savePathValidation = _TranslationsCharacterSavePathValidationEn._(_root);
+	String get characterFilesTypeGroupLabel => 'Character Files';
+	late final _TranslationsCharacterCreateControllerEn createController = _TranslationsCharacterCreateControllerEn._(_root);
+	late final _TranslationsCharacterImportControllerEn importController = _TranslationsCharacterImportControllerEn._(_root);
+	late final _TranslationsCharacterAiActionControllerEn aiActionController = _TranslationsCharacterAiActionControllerEn._(_root);
 }
 
 // Path: chat
@@ -382,6 +391,121 @@ class _TranslationsWorkspaceEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+}
+
+// Path: character.promptPrefixDialog
+class _TranslationsCharacterPromptPrefixDialogEn {
+	_TranslationsCharacterPromptPrefixDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get styleKeywordsLabel => 'Style keywords';
+	String get imageTitle => 'Image Style';
+	String get imageDescription => 'Prepended to every image generation prompt for this character (e.g. "anime style, vibrant colors").';
+	String get imageHint => 'anime style, vibrant colors';
+	String get videoTitle => 'Video Style';
+	String get videoDescription => 'Prepended to every video generation prompt for this character (e.g. "cinematic, shallow depth of field, 24fps film grain"). Video models respond to motion and camera vocabulary; keep it short.';
+	String get videoHint => 'cinematic, shallow depth of field';
+}
+
+// Path: character.cardEditApproval
+class _TranslationsCharacterCardEditApprovalEn {
+	_TranslationsCharacterCardEditApprovalEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get denyAll => 'Deny all';
+	String get approveAll => 'Approve all';
+	String get confirm => 'Confirm';
+	String get dialogTitle => 'Assistant proposed changes';
+	String dontAskAgainFor({required Object modality}) => 'Don\'t ask again for ${modality}';
+	late final _TranslationsCharacterCardEditApprovalModalityLabelEn modalityLabel = _TranslationsCharacterCardEditApprovalModalityLabelEn._(_root);
+	late final _TranslationsCharacterCardEditApprovalModalityVerbEn modalityVerb = _TranslationsCharacterCardEditApprovalModalityVerbEn._(_root);
+	String get tapToDeny => 'Tap to deny';
+	String get tapToApprove => 'Tap to approve';
+	String get reasonLabel => 'Reason (optional, sent back to the assistant)';
+	String get newEntryTitle => 'New entry';
+	String get removingTitle => 'Removing';
+	String get beforeTitle => 'Before';
+	String get afterTitle => 'After';
+}
+
+// Path: character.requireApprovalTile
+class _TranslationsCharacterRequireApprovalTileEn {
+	_TranslationsCharacterRequireApprovalTileEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get edits => 'Require approval: edits';
+	String get additions => 'Require approval: additions';
+	String get deletions => 'Require approval: deletions';
+}
+
+// Path: character.loadingStatus
+class _TranslationsCharacterLoadingStatusEn {
+	_TranslationsCharacterLoadingStatusEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get initial => 'Loading...';
+	String get copyingAssistant => 'Copying assistant...';
+	String get scanningForCharacters => 'Scanning for characters...';
+	String scanningForCharactersProgress({required Object current, required Object total}) => 'Scanning for characters...\n${current} / ${total}';
+	String loadingCharactersProgress({required Object current, required Object total}) => 'Loading characters...\n${current} / ${total}';
+}
+
+// Path: character.savePathValidation
+class _TranslationsCharacterSavePathValidationEn {
+	_TranslationsCharacterSavePathValidationEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noLibraryFolder => 'No library folder configured.';
+	String get mustBeInsideLibrary => 'Characters must be saved inside your library folder.';
+}
+
+// Path: character.createController
+class _TranslationsCharacterCreateControllerEn {
+	_TranslationsCharacterCreateControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get pngImagesTypeGroupLabel => 'PNG Images';
+	String get invalidLocationTitle => 'Invalid Location';
+	String get creationFailedTitle => 'Creation Failed';
+	String get creationFailedMessage => 'Could not create the character. Check logs for details.';
+}
+
+// Path: character.importController
+class _TranslationsCharacterImportControllerEn {
+	_TranslationsCharacterImportControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String failedToImport({required Object fileName}) => 'Failed to import ${fileName}.';
+	String importedCount({required Object count}) => 'Imported ${count} characters';
+}
+
+// Path: character.aiActionController
+class _TranslationsCharacterAiActionControllerEn {
+	_TranslationsCharacterAiActionControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get aiActionFailed => 'AI Action failed. Check logs for details.';
+	String processingProgress({required Object name, required Object current, required Object total, required Object eta}) => 'Processing ${name} (${current}/${total})...${eta}';
+	String etaHoursMinutes({required Object hours, required Object minutes}) => ' ETA: ${hours}h ${minutes}m';
+	String etaMinutesSeconds({required Object minutes, required Object seconds}) => ' ETA: ${minutes}m ${seconds}s';
+	String etaSeconds({required Object seconds}) => ' ETA: ${seconds}s';
+	String processingField({required Object fieldName}) => 'Processing ${fieldName}...';
 }
 
 // Path: common.actions
@@ -1392,6 +1516,30 @@ class _TranslationsSettingsUpdateCheckEn {
 	String get errorTitle => 'Error';
 	String get serverErrorMessage => 'Could not check for updates. Server error.';
 	String get connectionErrorMessage => 'Could not check for updates. Check your connection.';
+}
+
+// Path: character.cardEditApproval.modalityLabel
+class _TranslationsCharacterCardEditApprovalModalityLabelEn {
+	_TranslationsCharacterCardEditApprovalModalityLabelEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get edits => 'edits';
+	String get additions => 'additions';
+	String get deletions => 'deletions';
+}
+
+// Path: character.cardEditApproval.modalityVerb
+class _TranslationsCharacterCardEditApprovalModalityVerbEn {
+	_TranslationsCharacterCardEditApprovalModalityVerbEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get edit => 'Edit';
+	String get addition => 'Add to';
+	String get deletion => 'Remove from';
 }
 
 // Path: <root>
@@ -2824,6 +2972,54 @@ class _TranslationsWorkspaceZhHant extends _TranslationsWorkspaceEn {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
+			case 'character.promptPrefixDialog.styleKeywordsLabel': return 'Style keywords';
+			case 'character.promptPrefixDialog.imageTitle': return 'Image Style';
+			case 'character.promptPrefixDialog.imageDescription': return 'Prepended to every image generation prompt for this character (e.g. "anime style, vibrant colors").';
+			case 'character.promptPrefixDialog.imageHint': return 'anime style, vibrant colors';
+			case 'character.promptPrefixDialog.videoTitle': return 'Video Style';
+			case 'character.promptPrefixDialog.videoDescription': return 'Prepended to every video generation prompt for this character (e.g. "cinematic, shallow depth of field, 24fps film grain"). Video models respond to motion and camera vocabulary; keep it short.';
+			case 'character.promptPrefixDialog.videoHint': return 'cinematic, shallow depth of field';
+			case 'character.cardEditApproval.denyAll': return 'Deny all';
+			case 'character.cardEditApproval.approveAll': return 'Approve all';
+			case 'character.cardEditApproval.confirm': return 'Confirm';
+			case 'character.cardEditApproval.dialogTitle': return 'Assistant proposed changes';
+			case 'character.cardEditApproval.dontAskAgainFor': return ({required Object modality}) => 'Don\'t ask again for ${modality}';
+			case 'character.cardEditApproval.modalityLabel.edits': return 'edits';
+			case 'character.cardEditApproval.modalityLabel.additions': return 'additions';
+			case 'character.cardEditApproval.modalityLabel.deletions': return 'deletions';
+			case 'character.cardEditApproval.modalityVerb.edit': return 'Edit';
+			case 'character.cardEditApproval.modalityVerb.addition': return 'Add to';
+			case 'character.cardEditApproval.modalityVerb.deletion': return 'Remove from';
+			case 'character.cardEditApproval.tapToDeny': return 'Tap to deny';
+			case 'character.cardEditApproval.tapToApprove': return 'Tap to approve';
+			case 'character.cardEditApproval.reasonLabel': return 'Reason (optional, sent back to the assistant)';
+			case 'character.cardEditApproval.newEntryTitle': return 'New entry';
+			case 'character.cardEditApproval.removingTitle': return 'Removing';
+			case 'character.cardEditApproval.beforeTitle': return 'Before';
+			case 'character.cardEditApproval.afterTitle': return 'After';
+			case 'character.requireApprovalTile.edits': return 'Require approval: edits';
+			case 'character.requireApprovalTile.additions': return 'Require approval: additions';
+			case 'character.requireApprovalTile.deletions': return 'Require approval: deletions';
+			case 'character.loadingStatus.initial': return 'Loading...';
+			case 'character.loadingStatus.copyingAssistant': return 'Copying assistant...';
+			case 'character.loadingStatus.scanningForCharacters': return 'Scanning for characters...';
+			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Scanning for characters...\n${current} / ${total}';
+			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Loading characters...\n${current} / ${total}';
+			case 'character.savePathValidation.noLibraryFolder': return 'No library folder configured.';
+			case 'character.savePathValidation.mustBeInsideLibrary': return 'Characters must be saved inside your library folder.';
+			case 'character.characterFilesTypeGroupLabel': return 'Character Files';
+			case 'character.createController.pngImagesTypeGroupLabel': return 'PNG Images';
+			case 'character.createController.invalidLocationTitle': return 'Invalid Location';
+			case 'character.createController.creationFailedTitle': return 'Creation Failed';
+			case 'character.createController.creationFailedMessage': return 'Could not create the character. Check logs for details.';
+			case 'character.importController.failedToImport': return ({required Object fileName}) => 'Failed to import ${fileName}.';
+			case 'character.importController.importedCount': return ({required Object count}) => 'Imported ${count} characters';
+			case 'character.aiActionController.aiActionFailed': return 'AI Action failed. Check logs for details.';
+			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Processing ${name} (${current}/${total})...${eta}';
+			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' ETA: ${hours}h ${minutes}m';
+			case 'character.aiActionController.etaMinutesSeconds': return ({required Object minutes, required Object seconds}) => ' ETA: ${minutes}m ${seconds}s';
+			case 'character.aiActionController.etaSeconds': return ({required Object seconds}) => ' ETA: ${seconds}s';
+			case 'character.aiActionController.processingField': return ({required Object fieldName}) => 'Processing ${fieldName}...';
 			case 'common.actions.delete': return 'Delete';
 			case 'common.actions.ok': return 'OK';
 			case 'common.actions.cancel': return 'Cancel';

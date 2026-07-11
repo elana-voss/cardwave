@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +34,12 @@ class TileAssistantCardEditRequireApproval extends StatelessWidget {
   }
 
   String get _title => switch (modality) {
-        CardEditModality.edit => 'Require approval: edits',
-        CardEditModality.addition => 'Require approval: additions',
-        CardEditModality.deletion => 'Require approval: deletions',
+        CardEditModality.edit =>
+          t.character.requireApprovalTile.edits,
+        CardEditModality.addition =>
+          t.character.requireApprovalTile.additions,
+        CardEditModality.deletion =>
+          t.character.requireApprovalTile.deletions,
       };
 
   IconData get _icon => switch (modality) {

@@ -8,6 +8,7 @@ import 'package:cardwave/character/src/repositories/io_character.dart';
 import 'package:cardwave/character/src/utils/utils_png.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -120,7 +121,7 @@ class CharacterService extends ChangeNotifier {
   bool _hasScanned = false;
   bool get hasScanned => _hasScanned;
 
-  String _loadingStatus = 'Loading...';
+  String _loadingStatus = t.character.loadingStatus.initial;
   String get loadingStatus => _loadingStatus;
 
   double? _loadingProgress;
@@ -249,7 +250,9 @@ class CharacterService extends ChangeNotifier {
   /// reason for the failure, suitable for surfacing in a "Try again?" dialog.
   String? validateCharacterSavePath(String absolutePath) {
     final root = cardRootPath;
-    if (root.isEmpty) return 'No library folder configured.';
+    if (root.isEmpty) {
+      return t.character.savePathValidation.noLibraryFolder;
+    }
 
     final rootDirCanonical = p.canonicalize(root);
     final selectedPathCanonical = p.canonicalize(absolutePath);
@@ -258,7 +261,7 @@ class CharacterService extends ChangeNotifier {
         p.isWithin(rootDirCanonical, selectedPathCanonical) ||
         p.equals(rootDirCanonical, p.dirname(selectedPathCanonical));
     if (!isWithin) {
-      return 'Characters must be saved inside your library folder.';
+      return t.character.savePathValidation.mustBeInsideLibrary;
     }
     return null;
   }
@@ -605,13 +608,13 @@ class CharacterService extends ChangeNotifier {
     if (_isLoading) return;
 
     _isLoading = true;
-    _loadingStatus = 'Copying assistant...';
+    _loadingStatus = t.character.loadingStatus.copyingAssistant;
     _loadingProgress = null;
     notifyListeners();
 
     await _copyDefaultAssistant();
 
-    _loadingStatus = 'Scanning for characters...';
+    _loadingStatus = t.character.loadingStatus.scanningForCharacters;
     notifyListeners();
 
     final onProgressCallback =
@@ -620,10 +623,17 @@ class CharacterService extends ChangeNotifier {
             _loadingProgress = total > 0 ? current / total : 0;
             switch (phase) {
               case CharacterLoadingPhaseEnum.scanning:
-                _loadingStatus =
-                    'Scanning for characters...\n$current / $total';
+                _loadingStatus = t.character.loadingStatus
+                    .scanningForCharactersProgress(
+                      current: current,
+                      total: total,
+                    );
               case CharacterLoadingPhaseEnum.processing:
-                _loadingStatus = 'Loading characters...\n$current / $total';
+                _loadingStatus = t.character.loadingStatus
+                    .loadingCharactersProgress(
+                      current: current,
+                      total: total,
+                    );
             }
             notifyListeners();
           }
@@ -669,7 +679,10 @@ class CharacterService extends ChangeNotifier {
   /// returned [BulkImportParseResult.parseFailures] entries are pre-formatted
   /// `"filename: reason"` strings ready for the import-errors dialog.
   Future<BulkImportParseResult?> pickAndParseImportFiles() async {
-    const typeGroup = XTypeGroup(label: 'Character Files', extensions: ['png']);
+    final typeGroup = XTypeGroup(
+      label: t.character.characterFilesTypeGroupLabel,
+      extensions: const ['png'],
+    );
     final files = await openFiles(acceptedTypeGroups: [typeGroup]);
     if (files.isEmpty) return null;
 

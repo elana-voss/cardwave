@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "Style keywords",
+    "imageTitle": "Image Style",
+    "imageDescription": "Prepended to every image generation prompt for this character (e.g. \"anime style, vibrant colors\").",
+    "imageHint": "anime style, vibrant colors",
+    "videoTitle": "Video Style",
+    "videoDescription": "Prepended to every video generation prompt for this character (e.g. \"cinematic, shallow depth of field, 24fps film grain\"). Video models respond to motion and camera vocabulary; keep it short.",
+    "videoHint": "cinematic, shallow depth of field"
+  },
+  "cardEditApproval": {
+    "denyAll": "Deny all",
+    "approveAll": "Approve all",
+    "confirm": "Confirm",
+    "dialogTitle": "Assistant proposed changes",
+    "dontAskAgainFor": "Don't ask again for $modality",
+    "modalityLabel": {
+      "edits": "edits",
+      "additions": "additions",
+      "deletions": "deletions"
+    },
+    "modalityVerb": {
+      "edit": "Edit",
+      "addition": "Add to",
+      "deletion": "Remove from"
+    },
+    "tapToDeny": "Tap to deny",
+    "tapToApprove": "Tap to approve",
+    "reasonLabel": "Reason (optional, sent back to the assistant)",
+    "newEntryTitle": "New entry",
+    "removingTitle": "Removing",
+    "beforeTitle": "Before",
+    "afterTitle": "After"
+  },
+  "requireApprovalTile": {
+    "edits": "Require approval: edits",
+    "additions": "Require approval: additions",
+    "deletions": "Require approval: deletions"
+  },
+  "loadingStatus": {
+    "initial": "Loading...",
+    "copyingAssistant": "Copying assistant...",
+    "scanningForCharacters": "Scanning for characters...",
+    "scanningForCharactersProgress": "Scanning for characters...\n$current / $total",
+    "loadingCharactersProgress": "Loading characters...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "No library folder configured.",
+    "mustBeInsideLibrary": "Characters must be saved inside your library folder."
+  },
+  "characterFilesTypeGroupLabel": "Character Files",
+  "createController": {
+    "pngImagesTypeGroupLabel": "PNG Images",
+    "invalidLocationTitle": "Invalid Location",
+    "creationFailedTitle": "Creation Failed",
+    "creationFailedMessage": "Could not create the character. Check logs for details."
+  },
+  "importController": {
+    "failedToImport": "Failed to import $fileName.",
+    "importedCount": "Imported $count characters"
+  },
+  "aiActionController": {
+    "aiActionFailed": "AI Action failed. Check logs for details.",
+    "processingProgress": "Processing $name ($current/$total)...$eta",
+    "etaHoursMinutes": " ETA: ${hours}h ${minutes}m",
+    "etaMinutesSeconds": " ETA: ${minutes}m ${seconds}s",
+    "etaSeconds": " ETA: ${seconds}s",
+    "processingField": "Processing $fieldName..."
+  }
+}

@@ -71,7 +71,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 4 `lib/common/` → `common`
 - [x] 5 `lib/settings/` → `settings`
 - [x] 6 `lib/llm_app/` → `llmApp`
-- [ ] 7 `lib/character/` → `character`
+- [x] 7 `lib/character/` → `character`
 - [ ] 8 `lib/chat/` → `chat`
 - [ ] 9 `lib/editor/` → `editor`
 - [ ] 10 `lib/group/` → `group`
@@ -189,5 +189,44 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   treated like the asset-path/filename exclusion in §3.3, not a UI
   string.
 
+- **[character] `taxonomy_editor_controller.dart`** (~10 validation-error
+  return strings: 'Group ID and name are required.', 'Group ID already
+  exists.', 'Group not found.', 'Cannot drop a group into itself or its
+  descendants.', 'Tag ID and name are required.', 'Tag not found.',
+  'Target group not found.', 'Tag ID already exists.'): NOT extracted.
+  This is the controller layer behind `DialogTaxonomyEditor`
+  (`lib/settings/.../dialog_taxonomy_editor.dart`), which row 5 already
+  ruled out of scope as a `kDebugMode`-gated developer surface end users
+  never see in release builds. Extending that same call to this
+  controller file, since its only consumer is that same dialog.
+- **[character] AI-action field names double as LLM prompt content**
+  (`lib/character/src/services/character_ai_service.dart`, the literal
+  strings `'Name'`, `'Description'`, `'Personality'`, `'Scenario'`,
+  `'First Message'`, `'Message Example'`, `'Creator Notes'`, `'System
+  Prompt'`, `'Post-History Instructions'`, `'Alternate Greeting #$i'`
+  etc. passed as `fieldName` into the batch translate/proofread/compact
+  flow): NOT extracted, even though `fieldName` is interpolated into a
+  genuinely user-visible progress message (`'Processing $fieldName...'`
+  — that wrapper WAS extracted to `t.character.aiActionController
+  .processingField`). The `fieldName` value itself is also substituted
+  into the LLM prompt via `.replaceAll('%FIELD_NAME%', fieldName)`
+  (`character_ai_service.dart` translateText), so translating it would
+  change what gets sent to the model, not just what the user reads —
+  outside "extract UI strings," and risks coupling UI locale to prompt
+  behavior. Left as pass-through English, same treatment as
+  `proposal.fieldLabel`/`domain.label` package-data interpolations
+  elsewhere in this row.
+
 ## Parked observations (bugs noticed but out of scope)
-_(none yet)_
+- **[settings, row 5] `SettingsService._loadingStatus` progress strings**
+  (`lib/settings/src/services/settings_service.dart:120,134` —
+  `'Restoring providers…'` and `'Fetching models ($completed/$total)…'`,
+  both assigned to `_loadingStatus` and rendered via `service
+  .loadingStatus` in `lib/main.dart`): discovered while extracting the
+  analogous `CharacterService._loadingStatus` strings in row 7 — these
+  are genuinely user-visible (same startup-loading-screen pattern) but
+  were left un-extracted when row 5 (`lib/settings/`, already committed)
+  ran. Out of row 7's directory scope (`lib/settings/`, not
+  `lib/character/`), so not fixed here to avoid mixing an unrelated
+  directory into this row's commit. Flagging for a follow-up pass —
+  either folded into Step 4/5 or a small dedicated fix-up commit.

@@ -1,5 +1,6 @@
 import 'package:cardwave/character/src/services/character_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 
 /// Stateless orchestrator for bulk character imports. Drives the file picker
 /// (via [CharacterService]), the parse-error dialog, the conflict-confirmation
@@ -41,10 +42,16 @@ class CharacterImportController {
     ]);
 
     for (final fileName in result.failedFileNames) {
-      nav.showSnackBar('Failed to import $fileName.');
+      nav.showSnackBar(
+        t.character.importController.failedToImport(fileName: fileName),
+      );
     }
     if (result.importedCount > 0) {
-      nav.showSnackBar('Imported ${result.importedCount} characters');
+      nav.showSnackBar(
+        t.character.importController.importedCount(
+          count: result.importedCount,
+        ),
+      );
     }
   }
 }
