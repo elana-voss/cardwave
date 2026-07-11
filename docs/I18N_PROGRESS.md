@@ -8,7 +8,7 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] Step 2 — Infrastructure (**Opus**) — done 2026-07-11
 - [x] Step 3 — Extraction (**Sonnet**) — done 2026-07-12 (all 14 rows + §3.7 sweep
   below were checked off and committed; Step 4 flipped this stale top-level box)
-- [ ] Step 4 — Translation + glossary (**Opus**)
+- [x] Step 4 — Translation + glossary (**Opus**) — done 2026-07-12
 - [ ] Step 5 — Error-check + web verification (**Opus**)
 - [ ] Step 6 — Optional acceptance (Fable)
 
@@ -94,7 +94,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] ko
 - [x] hi
 - [x] 4.5 self-review pass committed
-- [ ] 4.6 slang analyze: zero missing / zero unused
+- [x] 4.6 slang analyze: zero missing / zero unused
 
 ### Step 4 notes
 - **Plural resolvers registered at bootstrap** (`locale_controller.dart`
@@ -134,6 +134,13 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   `↑ Char`/`@D`/`AN`/`EM` position codes translated in some locales, kept as
   technical tokens in others) were reviewed and left as-is: each locale is
   internally consistent and these are power-user lorebook internals.
+- **§4.6 verification (final state, all 9 locales)**: `dart run slang analyze`
+  → **0 missing, 0 unused**. `flutter analyze` → 36 issues, all the pre-existing
+  `qcheck` include-path warnings (0 introduced by this work). `flutter test
+  --exclude-tags=integration` → **68/68 pass**. The generated
+  `lib/i18n/gen/translations.g.dart` was committed once here reconciling all 8
+  languages (per-language commits carried JSON only, to stay reproducible from
+  their own sources).
 
 ## Step 5 checklist (Opus)
 - [ ] 5.1 branch diff review + fixes committed
