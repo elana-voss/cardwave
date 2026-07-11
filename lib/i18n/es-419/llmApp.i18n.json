@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "Modelo de imagen",
+    "imageAspectRatio": "Relación de aspecto de imagen",
+    "imageNsfwAllowed": "Permitir imágenes NSFW",
+    "imageToolSelfieAllowed": "Puede enviar selfies",
+    "imageToolSelfieCaptionsAllowed": "Permitir subtítulos de selfie",
+    "imagePromptPrefix": "Estilo de imagen",
+    "videoModel": "Modelo de video",
+    "videoResolution": "Resolución de video",
+    "videoAspectRatio": "Relación de aspecto de video",
+    "videoDuration": "Duración de video",
+    "videoNsfwAllowed": "Permitir videos NSFW",
+    "videoToolSendAllowed": "Puede enviar videos",
+    "videoPromptPrefix": "Estilo de video",
+    "ttsModel": "Modelo de TTS",
+    "ttsVoice": "Voz de TTS",
+    "ttsLanguage": "Idioma de TTS",
+    "webToolFetchAllowed": "Permitir búsqueda web",
+    "nameToolSuggestAllowed": "Puede sugerir nombres de NPC"
+  },
+  "mediaSection": {
+    "image": "Imagen",
+    "video": "Video",
+    "tts": "TTS",
+    "web": "Web",
+    "names": "Nombres"
+  },
+  "tristate": {
+    "on": "Activado",
+    "off": "Desactivado",
+    "inherit": "Heredar"
+  },
+  "mediaCellMenu": {
+    "change": "Cambiar…",
+    "clear": "Borrar"
+  },
+  "mediaHeader": {
+    "appDefault": "Predeterminado de la app",
+    "character": "Personaje",
+    "currentChat": "Chat actual",
+    "previousLayerTooltip": "Capa anterior",
+    "nextLayerTooltip": "Capa siguiente"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "¿Cambiar el valor predeterminado de la app?",
+    "changeAppDefaultMessage": "Esto afecta a todos los chats. ¿Continuar?",
+    "continueButton": "Continuar",
+    "chooseModelTitle": "Elige un modelo de $domain"
+  },
+  "mediaCell": {
+    "notApplicable": "No aplicable"
+  }
+}

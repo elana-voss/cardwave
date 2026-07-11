@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "Modelo",
+    "invalidLabel": "No válido",
+    "chooseModelTitle": "Elige un modelo"
+  },
+  "presetTile": {
+    "tapToChoose": "Toca para elegir"
+  },
+  "tileImagePreset": {
+    "titleLabel": "Modelo de imagen",
+    "chooseModelTitle": "Elige un modelo de imagen"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "Modelo de video",
+    "chooseModelTitle": "Elige un modelo de video"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "Modelo de voz",
+    "chooseModelTitle": "Elige un modelo de voz"
+  },
+  "tileImageAspectRatio": {
+    "label": "Relación de aspecto de imagen"
+  },
+  "tileVideoAspectRatio": {
+    "label": "Relación de aspecto"
+  },
+  "tileVideoResolution": {
+    "label": "Resolución"
+  },
+  "tileVideoDuration": {
+    "label": "Duración"
+  },
+  "tileTtsVoice": {
+    "label": "Voz"
+  },
+  "tileTtsLanguage": {
+    "label": "Idioma"
+  },
+  "tileNsfw": {
+    "label": "NSFW / Ilimitado"
+  },
+  "tileScenario": {
+    "label": "Escenario"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "Longitud de respuesta — $bucket",
+    "sliderLabel": "$bucket ($tokens tokens)",
+    "bucketVeryShort": "Muy corta",
+    "bucketShort": "Corta",
+    "bucketMedium": "Media",
+    "bucketLong": "Larga",
+    "bucketVeryLong": "Muy larga"
+  },
+  "tileTrailingParagraph": {
+    "label": "Cortar texto final"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "Razonamiento — $effort",
+    "titleOff": "Razonamiento desactivado",
+    "extraTokensCaption": "Usa tokens adicionales más allá de tu longitud máxima de respuesta."
+  },
+  "tileChatTheme": {
+    "label": "Tema"
+  },
+  "tileRecalledMemory": {
+    "label": "Mostrar memoria recuperada"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "Favoritos",
+    "recentChatsTooltip": "Chats recientes",
+    "originalBadge": "ORIGINAL",
+    "variantBadge": "VARIANTE",
+    "lastActive": "Última actividad: $timeAgo",
+    "never": "Nunca"
+  },
+  "freeImagePromptDialog": {
+    "title": "Generar imagen",
+    "description": "Describe lo que quieres ver. Una frase corta basta — el modelo la expandirá en una lista completa de etiquetas.",
+    "subjectLabel": "Tema",
+    "subjectHint": "callejón cyberpunk, lluvia de neón",
+    "generateButton": "Generar"
+  },
+  "freeVideoPromptDialog": {
+    "title": "Generar video",
+    "description": "Describe un breve momento de movimiento: qué se mueve, cómo, dónde. El modelo del sistema lo expandirá en un prompt cinematográfico T2V.",
+    "subjectLabel": "Tema",
+    "subjectHint": "ella camina bajo la lluvia de neón, cámara lenta",
+    "generateButton": "Generar"
+  },
+  "imagePromptReviewDialog": {
+    "title": "Revisar prompt de imagen",
+    "description": "Edita el prompt de abajo antes de generar, o toca Generar para usarlo tal cual.",
+    "fieldLabel": "Prompt de imagen",
+    "generateButton": "Generar"
+  },
+  "videoPromptReviewDialog": {
+    "title": "Revisar prompt de video",
+    "description": "Edita el prompt de abajo antes de enviar, o toca Generar para usarlo tal cual.",
+    "fieldLabel": "Prompt de video",
+    "generateButton": "Generar"
+  },
+  "urlFetchReviewDialog": {
+    "title": "¿Permitir búsqueda web?",
+    "description": "El personaje quiere leer el contenido de este URL.",
+    "purposeLabel": "Propósito:",
+    "denyButton": "Rechazar",
+    "allowButton": "Permitir"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}s",
+    "viewGenerationPromptTooltip": "Ver prompt de generación",
+    "messageActionsTooltip": "Acciones del mensaje",
+    "editAction": "Editar",
+    "copyAction": "Copiar",
+    "shareImageAction": "Compartir imagen",
+    "setAsBackgroundAction": "Establecer como fondo",
+    "setAsCharacterImageAction": "Establecer como imagen del personaje",
+    "deleteAction": "Eliminar",
+    "copiedToClipboard": "Mensaje copiado al portapapeles"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "Detener",
+    "readAloudTooltip": "Leer en voz alta",
+    "ttsFailed": "TTS falló."
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "Versión anterior",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "Regenerar",
+    "nextVersionTooltip": "Versión siguiente"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "La reproducción de video no es compatible en la web.",
+    "couldNotLoad": "No se pudo cargar el video."
+  },
+  "newChatLabel": "Nuevo chat",
+  "chatListItem": {
+    "messageCount": "$count mensajes",
+    "renameAction": "Renombrar",
+    "deleteChatAction": "Eliminar chat"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "Renombrar chat",
+    "chatNameHint": "Nombre del chat",
+    "renameButton": "Renombrar",
+    "deleteChatTitle": "Eliminar chat",
+    "deleteChatMessage": "¿Seguro que quieres eliminar este historial de chat? Esta acción no se puede deshacer."
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "¿Borrar el historial de chat con el asistente?",
+    "clearButton": "Borrar",
+    "deleteOrKeepMessage": "¿Quieres eliminar el chat actual o mantenerlo en tu historial?",
+    "deleteCurrentButton": "Eliminar actual",
+    "keepCurrentButton": "Mantener actual"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "Ingresa un prompt para generar una imagen.",
+    "noCharacterMessage": "No hay ningún personaje disponible para generar imágenes.",
+    "notConfiguredMessage": "La generación de imágenes no está configurada.",
+    "noSystemModelMessage": "No hay ningún modelo del sistema configurado. Define uno en Configuración → IA."
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "Ingresa un prompt para generar un video.",
+    "noCharacterMessage": "No hay ningún personaje disponible para generar videos.",
+    "notConfiguredMessage": "La generación de videos no está configurada."
+  },
+  "bubbleWaitingFor": {
+    "thinking": "Pensando…",
+    "preparingImagePrompt": "Preparando prompt de imagen…",
+    "preparingVideoPrompt": "Preparando prompt de video…",
+    "generatingImage": "Generando imagen…",
+    "generatingVideo": "Generando video…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "Ocultar panel del editor",
+    "showEditorSideBySideTooltip": "Mostrar editor lado a lado"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "Reconstruyendo índice...",
+    "noChatsFound": "No se encontraron chats."
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "Generar contenido",
+    "generateImageLabel": "Generar imagen",
+    "generateVideoLabel": "Generar video"
+  },
+  "chatView": {
+    "deleteMessageTitle": "Eliminar mensaje",
+    "deleteMessageConfirmation": "¿Seguro que quieres eliminar este mensaje?",
+    "typeMessageHint": "Escribe un mensaje...",
+    "moreActionsTooltip": "Más acciones",
+    "continueAction": "Continuar",
+    "impersonateAction": "Interpretar",
+    "generateReplyAction": "Generar respuesta",
+    "improveMessageAction": "Mejorar mensaje"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "Imágenes",
+    "assistantFallbackName": "Asistente",
+    "reasoningLabel": "Razonamiento",
+    "sendingToProvider": "Enviando al proveedor…",
+    "pollingWithPercent": "Consultando… $pct%",
+    "polling": "Consultando…",
+    "downloading": "Descargando…"
+  }
+}

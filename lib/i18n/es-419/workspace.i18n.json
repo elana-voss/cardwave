@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "Estilo de imagen",
+    "noneValue": "Ninguno"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "Estilo de video"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "Visualización",
+    "showCharacterImageTitle": "Mostrar imagen del personaje",
+    "wideScreenOnlySubtitle": "Solo en el editor de pantalla ancha"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "IA"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "Edición"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "Exportar",
+    "exportPngTitle": "Exportar como PNG (V2/V3)",
+    "exportJsonV3Title": "Exportar como JSON (V3)",
+    "exportJsonV2Title": "Exportar como JSON (V2)"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "Restablecer imágenes"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "Ediciones de tarjeta por el asistente"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "Favorito",
+    "nodesEngineTitle": "Motor NODES",
+    "debugSnapshotSubtitle": "Captura de depuración",
+    "characterSubtitle": "Personaje"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "Ningún estilo seleccionado"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "Reconstruyendo el índice de chats...",
+    "selectChatToStartMessagingMessage": "Selecciona un chat para empezar a chatear",
+    "failedToLoadAssistantMessage": "Error al cargar el asistente."
+  }
+}

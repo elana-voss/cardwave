@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "Ningún personaje coincide con tus filtros",
+    "noCharacters": "Aún no se importaron personajes",
+    "clearAllFilters": "Borrar todos los filtros",
+    "importCharacters": "Importar personajes",
+    "createNewCharacter": "Crear nuevo personaje"
+  },
+  "appBar": {
+    "groups": "Grupos",
+    "createNew": "Crear",
+    "import": "Importar",
+    "menuTooltip": "Menú"
+  },
+  "fab": {
+    "addOrImportTooltip": "Agregar o importar",
+    "import": "Importar",
+    "create": "Crear"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "App",
+    "batchAiHeader": "IA por lotes",
+    "batchGeneratePreviewsTitle": "Generar vistas previas por lotes",
+    "batchGeneratePreviewsEmpty": "Todos los personajes ya tienen vistas previas.",
+    "batchAutoTagTitle": "Autoetiquetado por lotes",
+    "batchAutoTagEmpty": "Todos los personajes ya tienen etiquetas.",
+    "libraryHeader": "Biblioteca",
+    "reloadCharacters": "Recargar personajes"
+  },
+  "variantBadge": {
+    "tooltip": "$count variantes"
+  },
+  "dialogActions": {
+    "clearAll": "Borrar todo",
+    "apply": "Aplicar"
+  },
+  "tagFilterDialog": {
+    "title": "Filtrar etiquetas",
+    "searchHint": "Buscar etiquetas..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "Ocultar filtros",
+    "moreFiltersTooltip": "Más filtros",
+    "folderChip": "Carpeta",
+    "creatorChip": "Creador",
+    "tagChip": "Etiqueta",
+    "recentTooltip": "Recientes",
+    "favoritesTooltip": "Favoritos",
+    "variantsTooltip": "Variantes",
+    "indexingProgress": "Creando búsqueda $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "Relevancia ↓",
+    "nameAsc": "Nombre ↓",
+    "nameDesc": "Nombre ↑",
+    "importNewest": "Importado ↓",
+    "importOldest": "Importado ↑",
+    "modifiedNewest": "Modificado ↓",
+    "modifiedOldest": "Modificado ↑",
+    "interactedNewest": "Interactuado ↓",
+    "interactedOldest": "Interactuado ↑",
+    "tokensHigh": "Tokens ↓",
+    "tokensLow": "Tokens ↑"
+  },
+  "filterController": {
+    "filterCreators": "Filtrar creadores",
+    "filterTags": "Filtrar etiquetas",
+    "filterByFolder": "Filtrar por carpeta"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "Aún no hay nada para mostrar.",
+    "noMatches": "Sin coincidencias.",
+    "showMore": "Mostrar más"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "El nombre del personaje no puede estar vacío.",
+    "nameInvalidCharsError": "El nombre contiene caracteres no válidos (<>:\"/\\|?*).",
+    "nameExistsError": "Ya existe un personaje con este nombre.",
+    "nameCheckFailedError": "No se pudo verificar el nombre. Revisa los permisos de la carpeta e inténtalo de nuevo.",
+    "title": "Crear nuevo personaje",
+    "nameLabel": "Nombre del personaje",
+    "createButton": "Crear"
+  },
+  "variantsSheet": {
+    "title": "Variantes"
+  },
+  "groupAppBar": {
+    "characters": "Personajes",
+    "newGroup": "Nuevo grupo"
+  },
+  "thumbnailBadges": {
+    "recent": "RECIENTE",
+    "original": "ORIGINAL",
+    "variant": "VARIANTE"
+  },
+  "actionMenu": {
+    "editNotes": "Editar notas",
+    "dismissRecent": "Quitar de recientes",
+    "exportPngV2V3": "Exportar como PNG (V2/V3)",
+    "exportJsonV3": "Exportar como JSON (V3)",
+    "exportJsonV2": "Exportar como JSON (V2)",
+    "duplicate": "Duplicar"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "No se pudo duplicar el personaje.",
+    "editVariantNotesTitle": "Editar notas de la variante",
+    "editVariantNotesHint": "Agrega notas sobre esta variante...",
+    "deleteCardTitle": "Eliminar tarjeta",
+    "deleteCardMessage": "¿Seguro que quieres eliminar esta tarjeta?",
+    "deletePartialFailure": "Algunos archivos no se pudieron eliminar. Consulta los registros para más detalles."
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "Palabras clave de estilo",
+    "imageTitle": "Estilo de imagen",
+    "imageDescription": "Se antepone a cada prompt de generación de imagen de este personaje (p. ej., \"estilo anime, colores vibrantes\").",
+    "imageHint": "estilo anime, colores vibrantes",
+    "videoTitle": "Estilo de video",
+    "videoDescription": "Se antepone a cada prompt de generación de video de este personaje (p. ej., \"cinematográfico, poca profundidad de campo, grano de película 24 fps\"). Los modelos de video responden al vocabulario de movimiento y cámara; mantenlo breve.",
+    "videoHint": "cinematográfico, poca profundidad de campo"
+  },
+  "cardEditApproval": {
+    "denyAll": "Rechazar todo",
+    "approveAll": "Aprobar todo",
+    "confirm": "Confirmar",
+    "dialogTitle": "El asistente propuso cambios",
+    "dontAskAgainFor": "No volver a preguntar por $modality",
+    "modalityLabel": {
+      "edits": "ediciones",
+      "additions": "adiciones",
+      "deletions": "eliminaciones"
+    },
+    "modalityVerb": {
+      "edit": "Editar",
+      "addition": "Agregar a",
+      "deletion": "Quitar de"
+    },
+    "tapToDeny": "Toca para rechazar",
+    "tapToApprove": "Toca para aprobar",
+    "reasonLabel": "Motivo (opcional, se envía de vuelta al asistente)",
+    "newEntryTitle": "Nueva entrada",
+    "removingTitle": "Quitando",
+    "beforeTitle": "Antes",
+    "afterTitle": "Después"
+  },
+  "requireApprovalTile": {
+    "edits": "Requerir aprobación: ediciones",
+    "additions": "Requerir aprobación: adiciones",
+    "deletions": "Requerir aprobación: eliminaciones"
+  },
+  "loadingStatus": {
+    "initial": "Cargando...",
+    "copyingAssistant": "Copiando asistente...",
+    "scanningForCharacters": "Buscando personajes...",
+    "scanningForCharactersProgress": "Buscando personajes...\n$current / $total",
+    "loadingCharactersProgress": "Cargando personajes...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "No hay ninguna carpeta de biblioteca configurada.",
+    "mustBeInsideLibrary": "Los personajes deben guardarse dentro de tu carpeta de biblioteca."
+  },
+  "characterFilesTypeGroupLabel": "Archivos de personaje",
+  "createController": {
+    "pngImagesTypeGroupLabel": "Imágenes PNG",
+    "invalidLocationTitle": "Ubicación no válida",
+    "creationFailedTitle": "Error al crear",
+    "creationFailedMessage": "No se pudo crear el personaje. Consulta los registros para más detalles."
+  },
+  "importController": {
+    "failedToImport": "No se pudo importar $fileName.",
+    "importedCount": "$count personajes importados"
+  },
+  "aiActionController": {
+    "aiActionFailed": "La acción de IA falló. Consulta los registros para más detalles.",
+    "processingProgress": "Procesando $name ($current/$total)...$eta",
+    "etaHoursMinutes": " Faltan: ${hours}h ${minutes}m",
+    "etaMinutesSeconds": " Faltan: ${minutes}m ${seconds}s",
+    "etaSeconds": " Faltan: ${seconds}s",
+    "processingField": "Procesando $fieldName..."
+  }
+}

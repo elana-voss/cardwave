@@ -87,7 +87,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 4.2 `docs/I18N_GLOSSARY.md` created
 - [x] ru
 - [x] pt-BR
-- [ ] es-419 (or es — see Step 2 contingency)
+- [x] es-419 (kept es-419; Step 2 contingency not needed)
 - [ ] ja
 - [ ] zh-Hans
 - [ ] zh-Hant

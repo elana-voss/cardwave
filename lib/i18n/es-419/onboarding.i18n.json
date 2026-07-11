@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "La configuración falló. Consulta los registros para más detalles.",
+  "appBarTitle": "Configuración rápida",
+  "webWarning": "Compilación web experimental — el almacenamiento del navegador puede reiniciarse entre actualizaciones. Usa el escritorio o Android para conservar los datos.",
+  "finishButton": "Finalizar configuración",
+  "nextButton": "Siguiente",
+  "backButton": "Atrás",
+  "storageStep": {
+    "title": "Almacenamiento de personajes",
+    "subtitle": "¿Dónde guardamos tus tarjetas de personaje?",
+    "description": "Se guardan en la carpeta de la app de forma predeterminada. Apunta a una carpeta PNG existente para importar.",
+    "startFresh": "Empezar de cero",
+    "haveCards": "Ya tengo tarjetas",
+    "importLaterHint": "Importa PNGs más tarde desde Archivo → Importar.",
+    "selectedPath": "Seleccionado: $path",
+    "selectedDefaultFolder": "Seleccionado: carpeta predeterminada de la app",
+    "noFolderSelected": "Aún no se seleccionó ninguna carpeta."
+  },
+  "setupStep": {
+    "title": "IA y persona"
+  },
+  "aiSection": {
+    "heading": "Conexión de IA",
+    "optionalHint": "Opcional — omítelo y agrega una clave más tarde en Configuración (los proveedores locales también se agregan ahí).",
+    "apiKeyLabel": "API key",
+    "apiKeyHint": "Pega tu clave (o omítelo por ahora)",
+    "supportedProviders": "Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Más en Configuración.",
+    "unknownModel": "(modelo desconocido)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "Cambiar"
+  },
+  "aiStatus": {
+    "connecting": "Conectando…",
+    "connected": "Conectado a $provider. Se seleccionó el modelo de chat predeterminado.",
+    "detected": "Detectado: $provider",
+    "unrecognizedKey": "Formato de clave no reconocido."
+  },
+  "personaSection": {
+    "heading": "Tu persona",
+    "hint": "Tu nombre en los chats. Más detalles de la persona en Configuración.",
+    "nameLabel": "Tu nombre"
+  },
+  "disclaimer": {
+    "prefix": "He leído y acepto el ",
+    "linkText": "Aviso legal"
+  },
+  "fetchError": {
+    "noModels": "No se devolvieron modelos. Verifica tu API key.",
+    "connectionFailed": "No se pudo conectar. Verifica tu conexión a internet y tu API key."
+  }
+}
