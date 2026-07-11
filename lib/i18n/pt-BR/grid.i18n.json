@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "Nenhum personagem corresponde aos seus filtros",
+    "noCharacters": "Nenhum personagem importado ainda",
+    "clearAllFilters": "Limpar todos os filtros",
+    "importCharacters": "Importar personagens",
+    "createNewCharacter": "Criar novo personagem"
+  },
+  "appBar": {
+    "groups": "Grupos",
+    "createNew": "Criar",
+    "import": "Importar",
+    "menuTooltip": "Menu"
+  },
+  "fab": {
+    "addOrImportTooltip": "Adicionar ou importar",
+    "import": "Importar",
+    "create": "Criar"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "App",
+    "batchAiHeader": "IA em lote",
+    "batchGeneratePreviewsTitle": "Gerar prévias em lote",
+    "batchGeneratePreviewsEmpty": "Todos os personagens já têm prévias.",
+    "batchAutoTagTitle": "Marcação automática em lote",
+    "batchAutoTagEmpty": "Todos os personagens já têm tags.",
+    "libraryHeader": "Biblioteca",
+    "reloadCharacters": "Recarregar personagens"
+  },
+  "variantBadge": {
+    "tooltip": "$count variantes"
+  },
+  "dialogActions": {
+    "clearAll": "Limpar tudo",
+    "apply": "Aplicar"
+  },
+  "tagFilterDialog": {
+    "title": "Filtrar tags",
+    "searchHint": "Buscar tags..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "Ocultar filtros",
+    "moreFiltersTooltip": "Mais filtros",
+    "folderChip": "Pasta",
+    "creatorChip": "Criador",
+    "tagChip": "Tag",
+    "recentTooltip": "Recentes",
+    "favoritesTooltip": "Favoritos",
+    "variantsTooltip": "Variantes",
+    "indexingProgress": "Criando busca $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "Relevância ↓",
+    "nameAsc": "Nome ↓",
+    "nameDesc": "Nome ↑",
+    "importNewest": "Importado ↓",
+    "importOldest": "Importado ↑",
+    "modifiedNewest": "Modificado ↓",
+    "modifiedOldest": "Modificado ↑",
+    "interactedNewest": "Interagido ↓",
+    "interactedOldest": "Interagido ↑",
+    "tokensHigh": "Tokens ↓",
+    "tokensLow": "Tokens ↑"
+  },
+  "filterController": {
+    "filterCreators": "Filtrar criadores",
+    "filterTags": "Filtrar tags",
+    "filterByFolder": "Filtrar por pasta"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "Nada para mostrar ainda.",
+    "noMatches": "Nenhuma correspondência.",
+    "showMore": "Mostrar mais"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "O nome do personagem não pode ficar vazio.",
+    "nameInvalidCharsError": "O nome contém caracteres inválidos (<>:\"/\\|?*).",
+    "nameExistsError": "Já existe um personagem com esse nome.",
+    "nameCheckFailedError": "Não foi possível verificar o nome. Verifique as permissões da pasta e tente novamente.",
+    "title": "Criar novo personagem",
+    "nameLabel": "Nome do personagem",
+    "createButton": "Criar"
+  },
+  "variantsSheet": {
+    "title": "Variantes"
+  },
+  "groupAppBar": {
+    "characters": "Personagens",
+    "newGroup": "Novo grupo"
+  },
+  "thumbnailBadges": {
+    "recent": "RECENTE",
+    "original": "ORIGINAL",
+    "variant": "VARIANTE"
+  },
+  "actionMenu": {
+    "editNotes": "Editar notas",
+    "dismissRecent": "Remover de recentes",
+    "exportPngV2V3": "Exportar como PNG (V2/V3)",
+    "exportJsonV3": "Exportar como JSON (V3)",
+    "exportJsonV2": "Exportar como JSON (V2)",
+    "duplicate": "Duplicar"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "Não foi possível duplicar o personagem.",
+    "editVariantNotesTitle": "Editar notas da variante",
+    "editVariantNotesHint": "Adicione notas sobre esta variante...",
+    "deleteCardTitle": "Excluir cartão",
+    "deleteCardMessage": "Tem certeza de que deseja excluir este cartão?",
+    "deletePartialFailure": "Alguns arquivos não puderam ser excluídos. Veja os logs para detalhes."
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

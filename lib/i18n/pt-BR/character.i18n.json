@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "Palavras-chave de estilo",
+    "imageTitle": "Estilo de imagem",
+    "imageDescription": "Adicionado no início de cada prompt de geração de imagem deste personagem (ex.: \"estilo anime, cores vibrantes\").",
+    "imageHint": "estilo anime, cores vibrantes",
+    "videoTitle": "Estilo de vídeo",
+    "videoDescription": "Adicionado no início de cada prompt de geração de vídeo deste personagem (ex.: \"cinematográfico, profundidade de campo rasa, granulação de filme 24fps\"). Modelos de vídeo respondem a vocabulário de movimento e câmera; mantenha curto.",
+    "videoHint": "cinematográfico, profundidade de campo rasa"
+  },
+  "cardEditApproval": {
+    "denyAll": "Recusar tudo",
+    "approveAll": "Aprovar tudo",
+    "confirm": "Confirmar",
+    "dialogTitle": "O assistente propôs alterações",
+    "dontAskAgainFor": "Não perguntar de novo para $modality",
+    "modalityLabel": {
+      "edits": "edições",
+      "additions": "adições",
+      "deletions": "exclusões"
+    },
+    "modalityVerb": {
+      "edit": "Editar",
+      "addition": "Adicionar a",
+      "deletion": "Remover de"
+    },
+    "tapToDeny": "Toque para recusar",
+    "tapToApprove": "Toque para aprovar",
+    "reasonLabel": "Motivo (opcional, enviado de volta ao assistente)",
+    "newEntryTitle": "Nova entrada",
+    "removingTitle": "Removendo",
+    "beforeTitle": "Antes",
+    "afterTitle": "Depois"
+  },
+  "requireApprovalTile": {
+    "edits": "Exigir aprovação: edições",
+    "additions": "Exigir aprovação: adições",
+    "deletions": "Exigir aprovação: exclusões"
+  },
+  "loadingStatus": {
+    "initial": "Carregando...",
+    "copyingAssistant": "Copiando assistente...",
+    "scanningForCharacters": "Procurando personagens...",
+    "scanningForCharactersProgress": "Procurando personagens...\n$current / $total",
+    "loadingCharactersProgress": "Carregando personagens...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "Nenhuma pasta de biblioteca configurada.",
+    "mustBeInsideLibrary": "Os personagens devem ser salvos dentro da sua pasta de biblioteca."
+  },
+  "characterFilesTypeGroupLabel": "Arquivos de personagem",
+  "createController": {
+    "pngImagesTypeGroupLabel": "Imagens PNG",
+    "invalidLocationTitle": "Local inválido",
+    "creationFailedTitle": "Falha na criação",
+    "creationFailedMessage": "Não foi possível criar o personagem. Veja os logs para detalhes."
+  },
+  "importController": {
+    "failedToImport": "Falha ao importar $fileName.",
+    "importedCount": "$count personagens importados"
+  },
+  "aiActionController": {
+    "aiActionFailed": "Ação de IA falhou. Veja os logs para detalhes.",
+    "processingProgress": "Processando $name ($current/$total)...$eta",
+    "etaHoursMinutes": " Restante: ${hours}h ${minutes}m",
+    "etaMinutesSeconds": " Restante: ${minutes}m ${seconds}s",
+    "etaSeconds": " Restante: ${seconds}s",
+    "processingField": "Processando $fieldName..."
+  }
+}

@@ -1,1 +1,261 @@
-{}
+{
+  "panelLabels": {
+    "basic": "Básico",
+    "greetings": "Saudações",
+    "prompts": "Prompts",
+    "lorebook": "Lorebook",
+    "group": "Grupo",
+    "creator": "Criador",
+    "appData": "Dados do app",
+    "nodes": "Nós"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "Ocultar painel do assistente",
+    "showChatAssistantTooltip": "Mostrar assistente de conversa lado a lado"
+  },
+  "codeFindPanel": {
+    "noneResult": "nenhum",
+    "previousTooltip": "Anterior",
+    "nextTooltip": "Próximo",
+    "closeTooltip": "Fechar",
+    "replaceTooltip": "Substituir",
+    "replaceAllTooltip": "Substituir tudo"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "Confirmar Substituir tudo",
+    "confirmReplaceAllMessage": "Tem certeza de que deseja continuar?\nEsta ação é irreversível e afeta todos os campos.",
+    "proceedButton": "Prosseguir",
+    "title": "Localizar e substituir",
+    "findLabel": "Localizar",
+    "replaceWithLabel": "Substituir por",
+    "replaceAllButton": "Substituir tudo"
+  },
+  "objectValueEditor": {
+    "stringType": "string",
+    "numberType": "número",
+    "boolType": "bool"
+  },
+  "editorBasic": {
+    "nameLabel": "Nome",
+    "nicknameLabel": "Apelido (CCv3)",
+    "descriptionLabel": "Descrição",
+    "personalityLabel": "Personalidade",
+    "scenarioLabel": "Cenário",
+    "messageExampleLabel": "Exemplo de mensagem"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "Nome de sistema (CCv3)",
+    "creatorLabel": "Criador",
+    "versionLabel": "Versão",
+    "creatorNotesLabel": "Notas do criador",
+    "tagsLabel": "Tags (separadas por vírgula)"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "Prompt do sistema",
+    "postHistoryInstructionsLabel": "Instruções pós-histórico",
+    "depthPromptLabel": "Prompt de profundidade (notas do personagem)",
+    "insertionDepthLabel": "Profundidade de inserção",
+    "roleLabel": "Papel"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "Notas da variante",
+    "descriptionPreviewLabel": "Prévia da descrição"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "Excluir saudação",
+    "deleteGreetingMessage": "Tem certeza de que deseja excluir esta saudação?",
+    "addGreetingButton": "Adicionar saudação",
+    "primaryGreetingLabel": "Saudação principal (first_mes)",
+    "alternateGreetingLabel": "Saudação alternativa nº$index",
+    "removeTooltip": "Remover"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "Saudação $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "Nova entrada",
+    "deleteEntryTitle": "Excluir entrada",
+    "deleteEntryMessage": "Tem certeza de que deseja excluir esta entrada?",
+    "addNewEntryButton": "Adicionar nova entrada",
+    "noEntriesFound": "Nenhuma entrada de lorebook encontrada."
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "Entrada sem título",
+    "noKeywords": "Sem palavras-chave"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "Editar entrada de lorebook",
+    "advancedFilter": "Avançado",
+    "primaryKeywordsLabel": "Palavras-chave principais",
+    "logicLabel": "Lógica",
+    "logicAndAny": "E QUALQUER",
+    "logicAndAll": "E TODAS",
+    "logicNotAny": "NÃO QUALQUER",
+    "logicNotAll": "NÃO TODAS",
+    "optionalFilterLabel": "Filtro opcional",
+    "contentLabel": "Conteúdo",
+    "nonRecursableFilter": "Não recursável",
+    "preventFurtherRecursionFilter": "Impedir recursão adicional",
+    "delayUntilRecursionFilter": "Adiar até a recursão",
+    "ignoreBudgetFilter": "Ignorar orçamento",
+    "prioritizeFilter": "Priorizar",
+    "inclusionGroupLabel": "Grupo de inclusão",
+    "groupWeightLabel": "Peso do grupo",
+    "stickyLabel": "Fixo",
+    "cooldownLabel": "Tempo de espera",
+    "delayLabel": "Atraso",
+    "filterToCharactersLabel": "Filtrar para personagens ou tags",
+    "filterToTriggersLabel": "Filtrar para gatilhos de geração",
+    "additionalMatchingSourcesLabel": "Fontes de correspondência adicionais:",
+    "personaFilter": "Persona",
+    "descriptionFilter": "Descrição",
+    "personalityFilter": "Personalidade",
+    "depthPromptFilter": "Prompt de profundidade",
+    "scenarioFilter": "Cenário",
+    "creatorNotesFilter": "Notas do criador"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "Título/nota",
+    "strategyLabel": "Estratégia",
+    "strategyConstant": "Constante",
+    "strategyEnabled": "Ativada",
+    "strategyDisabled": "Desativada",
+    "strategyVectorized": "Vetorizada",
+    "positionLabel": "Posição",
+    "positionUpChar": "↑ Pers",
+    "positionDownChar": "↓ Pers",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D Sistema",
+    "positionDepthUser": "@D Usuário",
+    "positionDepthAssistant": "@D Assistente",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Saída",
+    "depthLabel": "Profundidade",
+    "orderLabel": "Ordem",
+    "triggerLabel": "Gatilho %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "Profundidade de varredura",
+    "automationIdLabel": "ID de automação",
+    "useRegexFilter": "Usar regex",
+    "caseSensitiveFilter": "Diferenciar maiúsculas",
+    "wholeWordsFilter": "Palavras inteiras",
+    "groupScoringFilter": "Pontuação de grupo"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "Confirmar $actionName",
+    "title": "Limpador de conteúdo",
+    "normalizeFancyCharsAction": "Normalizar caracteres especiais",
+    "normalizeFancyCharsButton": "Normalizar caracteres especiais (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "Remover HTML",
+    "purgeHtmlButton": "Remover tags HTML",
+    "purgeMarkdownAction": "Remover links/imagens Markdown",
+    "purgeEmojisAction": "Remover emojis",
+    "purgeExtraSpacesAction": "Remover espaços extras",
+    "yoloPurgeAction": "Limpeza total",
+    "applyAllAboveButton": "Aplicar tudo acima"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "Aplicar alterações",
+    "originalTextTitle": "Texto original",
+    "suggestedTextTitle": "Texto sugerido"
+  },
+  "editorPageController": {
+    "globalActionTitle": "$action global",
+    "globalAiActionFailed": "Ação de IA global falhou. Verifique os logs.",
+    "compositeName": "Nome:\n$value\n",
+    "compositeDescription": "Descrição:\n$value\n",
+    "compositePersonality": "Personalidade:\n$value\n",
+    "compositeScenario": "Cenário:\n$value\n",
+    "compositeFirstMessage": "Primeira mensagem:\n$value\n",
+    "compositeMessageExample": "Exemplo de mensagem:\n$value\n",
+    "compositeCreatorNotes": "Notas do criador:\n$value\n",
+    "compositeSystemPrompt": "Prompt do sistema:\n$value\n",
+    "compositePostHistoryInstructions": "Instruções pós-histórico:\n$value\n",
+    "compositeAlternateGreeting": "Saudação alternativa nº$index:\n$value\n",
+    "compositeGroupGreeting": "Saudação de grupo nº$index:\n$value\n",
+    "compositeLorebookEntry": "Entrada de lorebook nº$index:\n$value\n",
+    "imageTooLargeMessage": "A imagem selecionada é grande demais. O tamanho máximo é $maxSize.",
+    "invalidPngMessage": "A imagem selecionada não é um PNG válido ou não pôde ser lida."
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "Excluir nó",
+    "deleteNodeMessage": "Remover este nó autoral do cartão?",
+    "engineSeedTitle": "Semente do motor",
+    "visualEditorTooltip": "Editor visual",
+    "editJsonTooltip": "Editar JSON",
+    "initialGoalLabel": "Objetivo inicial",
+    "initialSceneLabel": "Cena inicial",
+    "locationLabel": "Local",
+    "timeOfDayLabel": "Hora do dia",
+    "presentEntitiesLabel": "Presentes (separados por vírgula)",
+    "sensoryHooksLabel": "Ganchos sensoriais (separados por vírgula)",
+    "addNodeButton": "Adicionar nó",
+    "noAuthoredNodesYet": "Nenhum nó autoral ainda.",
+    "loadErrorMessage(plural)": {
+      "one": "O bloco de nós deste cartão tem $n problema; editar aqui sobrescreverá as partes corrompidas ao salvar.",
+      "other": "O bloco de nós deste cartão tem $n problemas; editar aqui sobrescreverá as partes corrompidas ao salvar."
+    },
+    "moreErrorsSuffix": "… mais $n",
+    "emotionBaselineLabel": "Emoção base",
+    "emotionChipLabel": "Emoção"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "gera: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "O nível superior deve ser um objeto JSON",
+    "editNodesJsonTitle": "Editar JSON dos nós",
+    "fixProblemsMessage(plural)": {
+      "one": "Corrija $n problema para salvar.",
+      "other": "Corrija $n problemas para salvar."
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "gerado por",
+    "spawnsPort": "gera",
+    "editNodeLabel": "Editar nó",
+    "addNodeTooltip": "Adicionar nó"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "Nome",
+    "narrativePayloadLabel": "Carga narrativa",
+    "removeSpawnLinkTitle": "Remover vínculo de geração",
+    "removeSpawnLinkMessage": "Impedir este nó de gerar \"$nodeId\"? O nó em si permanece no cartão.",
+    "removeButton": "Remover",
+    "typeLabel": "Tipo",
+    "scopeLabel": "Escopo",
+    "originLabel": "Origem",
+    "triggerProbLabel": "Prob. de gatilho",
+    "delayHelper": "Turnos a esperar antes de ficar elegível. -1 age como 0.",
+    "cooldownHelper": "Turnos bloqueado após disparar. -1 significa sem tempo de espera.",
+    "stickyHelper": "Turnos em que a carga narrativa continua aparecendo como \"Persistente\" após disparar. -1 significa permanente.",
+    "aliveHelper": "Turnos em que o nó permanece no pool antes da remoção. -1 significa para sempre.",
+    "setToNeverButton": "Definir como nunca",
+    "effectsSectionLabel": "Efeitos",
+    "emotionDeltasTitle": "Variações de emoção",
+    "physicalDeltasTitle": "Variações físicas",
+    "relationshipDeltasTitle": "Variações de relacionamento",
+    "addDeltaChip": "Adicionar variação",
+    "knowledgeWritesTitle": "Escritas de conhecimento",
+    "addFactChip": "Adicionar fato",
+    "topicLabel": "tópico",
+    "confidenceLabel": "confiança",
+    "flagSetTitle": "Definição de flag",
+    "addFlagChip": "Adicionar flag",
+    "keyLabel": "chave",
+    "sceneAndFlowTitle": "Cena e fluxo",
+    "goalChangeLabel": "goalChange (limpa o objetivo atual quando vazio)",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "(nenhum)",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "Quando verdadeiro, o motor marca o disparo como uma mudança de cena.",
+    "spawnsSectionLabel": "Gerações",
+    "addNewChip": "Adicionar novo",
+    "linkExistingChip": "Vincular existente",
+    "unlinkTooltip": "Desvincular",
+    "predicateLabel": "Predicado"
+  }
+}

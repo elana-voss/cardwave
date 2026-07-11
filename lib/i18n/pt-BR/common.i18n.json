@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "Excluir",
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "tryAgain": "Tentar novamente",
+    "close": "Fechar"
+  },
+  "aiAction": {
+    "proofread": "Revisar",
+    "compact": "Compactar prosa",
+    "translate": "Traduzir para o inglês",
+    "generatePreview": "Gerar prévia",
+    "autoTag": "Marcação automática"
+  },
+  "aiActionsTooltip": "Ações de IA",
+  "promptSegmentKind": {
+    "identity": "Identidade",
+    "systemPrompt": "Prompt do sistema",
+    "nsfwMode": "Modo NSFW",
+    "scenarioMode": "Modo cenário",
+    "description": "Descrição",
+    "personality": "Personalidade",
+    "scenario": "Cenário",
+    "userPersona": "Sua persona",
+    "memory": "Memória",
+    "situation": "Situação",
+    "cardData": "Dados do cartão",
+    "tools": "Ferramentas",
+    "postHistory": "Pós-histórico",
+    "depthPrompt": "Prompt de profundidade",
+    "worldInfo": "Informações do mundo",
+    "injected": "Injetado",
+    "exampleDialogue": "Diálogo de exemplo",
+    "history": "Histórico de mensagens",
+    "currentMessage": "Mensagem atual",
+    "reservedReply": "Resposta reservada"
+  },
+  "promptBreakdown": {
+    "free": "Livre"
+  },
+  "logs": {
+    "title": "Logs",
+    "filterTooltip": "Filtrar logs",
+    "clearTooltip": "Limpar logs",
+    "exportTooltip": "Exportar logs",
+    "searchHint": "Buscar logs...",
+    "noLogsFound": "Nenhum log encontrado.",
+    "noLogsToExport": "Nenhum log para exportar",
+    "exportedSuccessfully": "Logs exportados com sucesso",
+    "exportFailed": "Falha ao exportar logs. Veja os logs para detalhes.",
+    "copiedToClipboard": "Copiado para a área de transferência",
+    "copyLogButton": "Copiar log",
+    "copiedEntryToClipboard": "Entrada de log copiada para a área de transferência",
+    "errorPrefix": "Erro: $error"
+  },
+  "importErrorsDialog": {
+    "title": "Erros de importação",
+    "message": "Os seguintes arquivos não puderam ser importados:"
+  },
+  "updateDialog": {
+    "title": "Versão disponível",
+    "body": "Uma versão mais nova do $appName está disponível.\n\nVersão atual: $currentVersion\nVersão mais recente: $latestVersion",
+    "releaseNotesLabel": "Notas da versão:",
+    "viewReleasesButton": "Ver versões"
+  },
+  "importConflictsDialog": {
+    "title": "Conflitos de importação",
+    "message": "Os $count personagens a seguir têm conflitos de nome de arquivo e serão renomeados automaticamente:"
+  },
+  "missingProviderBanner": {
+    "message": "Conecte um provedor de IA.",
+    "setUpNowButton": "Configurar agora"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "Buscar modelos",
+    "subscriptionOnlyToggle": "Mostrar apenas modelos por assinatura ($included/$total)"
+  },
+  "showAdvanced": {
+    "less": "Menos",
+    "more": "Mais"
+  },
+  "messageEditDialog": {
+    "title": "Editar mensagem"
+  },
+  "promptBreakdownDialog": {
+    "title": "Detalhamento do prompt",
+    "breakdownTab": "Detalhamento",
+    "contentTab": "Conteúdo",
+    "promptTotalEstimated": "Total do prompt (estimado)",
+    "promptTotalProvider": "Total do prompt (provedor)",
+    "contextWindowLabel": "Janela de contexto",
+    "categoryHeader": "CATEGORIA",
+    "tokensHeader": "TOKENS",
+    "usageHeader": "USO",
+    "noContentToInspect": "Nenhum conteúdo para inspecionar nesta resposta.",
+    "estimatedSuffix": " (estimado)",
+    "usedSummary": "$used / $total usados"
+  },
+  "jsonPromptDialog": {
+    "title": "Prompt de geração"
+  },
+  "progressDialog": {
+    "defaultMessage": "Enviando...",
+    "finished": "Concluído!"
+  },
+  "diffPanel": {
+    "tokenSuffix": " ($count tokens)"
+  },
+  "selectionDialog": {
+    "searchHint": "Buscar…"
+  },
+  "zdrSwitch": {
+    "title": "Exigir Zero Data Retention (ZDR)",
+    "subtitle": "Mostrar apenas modelos do OR com endpoints compatíveis com ZDR. Ative se sua conta openrouter.ai restringe a provedores ZDR."
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count tokens",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "Raciocínio",
+    "vision": "Visão",
+    "tools": "Ferramentas",
+    "json": "JSON",
+    "files": "Arquivos",
+    "image": "Imagem",
+    "video": "Vídeo",
+    "speech": "Fala",
+    "music": "Música"
+  },
+  "modelUnavailableTooltip": "Este modelo não está mais disponível no provedor — escolha outro.",
+  "characterImageSemanticLabel": "Imagem do personagem",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "Falha na exportação. Veja os logs para detalhes."
+  },
+  "timeAgo": {
+    "years": "há ${n}a",
+    "months": "há ${n}mes",
+    "days": "há ${n}d",
+    "hours": "há ${n}h",
+    "minutes": "há ${n}min",
+    "justNow": "Agora mesmo"
+  }
+}

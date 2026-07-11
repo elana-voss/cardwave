@@ -1,1 +1,112 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "Renomear grupo",
+    "groupNameHint": "Nome do grupo",
+    "deleteGroupTitle": "Excluir grupo",
+    "deleteGroupMessage": "Tem certeza de que deseja excluir \"$name\"? Isso não pode ser desfeito."
+  },
+  "groupChatPage": {
+    "defaultGroupName": "Conversa em grupo",
+    "failedToLoadMessage": "Falha ao carregar a conversa em grupo:\n$error",
+    "nextTurnTooltip": "Próximo turno",
+    "stopAutoChatTooltip": "Parar conversa automática",
+    "startAutoChatTooltip": "Iniciar conversa automática",
+    "stopGenerationTooltip": "Parar geração",
+    "noCharactersYetMessage": "Este grupo ainda não tem personagens.",
+    "addCharacterButton": "Adicionar um personagem",
+    "pickCharacterMessage": "Escolha um personagem na lista à esquerda."
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "Falha ao carregar os grupos:\n$error",
+    "unknownErrorFallback": "erro desconhecido",
+    "noGroupsYetMessage": "Nenhum grupo ainda — toque em + para criar um."
+  },
+  "tileAutoChatDelay": {
+    "title": "Atraso da conversa automática",
+    "secondsAbbrev": "${seconds}s"
+  },
+  "tileActivationStrategy": {
+    "title": "Seleção de quem fala",
+    "naturalOption": "Natural",
+    "roundRobinOption": "Rodízio",
+    "randomOption": "Aleatório",
+    "changeSelectionTooltip": "Alterar seleção de quem fala"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "Permitir busca na web",
+    "allowWebFetchSubtitle": "Ler páginas web públicas quando relevante",
+    "reviewUrlTitle": "Revisar URL antes de buscar",
+    "reviewUrlSubtitle": "Confirmar cada busca",
+    "suggestNpcNamesTitle": "Sugerir nomes de NPC",
+    "suggestNpcNamesSubtitle": "Escolher nomes do banco de dados curado",
+    "unrestrictedImagesTitle": "Imagens sem restrição",
+    "allowNsfwImagePromptsSubtitle": "Permitir prompts de imagem NSFW",
+    "characterCanSendSelfiesTitle": "Personagem pode enviar selfies",
+    "attachSelfieWhenNaturalSubtitle": "Anexar uma selfie quando natural",
+    "reviewImagePromptTitle": "Revisar prompt de imagem",
+    "editBeforeGeneratingSubtitle": "Editar antes de gerar",
+    "reviewToolImagePromptsTitle": "Revisar prompts de imagem das ferramentas",
+    "editToolTriggeredPromptsSubtitle": "Editar prompts acionados por ferramentas",
+    "allowSelfieCaptionsTitle": "Permitir legendas de selfie",
+    "captionRenderedOnImageSubtitle": "Legenda renderizada sobre a imagem",
+    "groupOverridesTitle": "Substituições do grupo",
+    "groupOverridesSubtitle": "Cenário, prompt principal e diálogo de exemplo compartilhados",
+    "chatSessionSubtitle": "Sessão de conversa",
+    "allChatsLabel": "Todas as conversas",
+    "showImageLabel": "Mostrar imagem",
+    "groupSectionHeader": "Grupo",
+    "chatSectionHeader": "Conversa",
+    "chatThemeSectionHeader": "Tema da conversa",
+    "unrestrictedVideosTitle": "Vídeos sem restrição",
+    "allowNsfwVideoPromptsSubtitle": "Permitir prompts de vídeo NSFW",
+    "characterCanSendVideosTitle": "Personagem pode enviar vídeos",
+    "attachShortVideoWhenNaturalSubtitle": "Anexar um vídeo curto quando natural",
+    "reviewVideoPromptTitle": "Revisar prompt de vídeo"
+  },
+  "groupCharacterPicker": {
+    "addButton": "Adicionar",
+    "addWithCountButton": "Adicionar $count",
+    "favoritesTooltip": "Favoritos",
+    "noMatchMessage": "Nenhum personagem corresponde a \"$query\"",
+    "noFavoritesMessage": "Nenhum personagem favoritado disponível",
+    "allAddedMessage": "Todos os personagens já foram adicionados"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "Fazer este personagem falar",
+    "removeFromChatTitle": "Remover da conversa"
+  },
+  "dialogCreateGroup": {
+    "title": "Novo grupo",
+    "nameLabel": "Nome",
+    "nameHint": "ex.: Bob e Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "Exclusivo desta conversa. Todos os membros do grupo usam estes valores em vez do que os cartões de personagem definem. Deixe vazio para voltar ao valor do cartão.",
+    "scenarioHint": "Ambiente compartilhado do grupo (ex.: \"Em um café em Paris\")",
+    "mainPromptLabel": "Prompt principal",
+    "mainPromptHint": "Prompt do sistema aplicado a cada turno",
+    "exampleDialogueLabel": "Diálogo de exemplo",
+    "exampleDialogueHint": "Mensagens de exemplo compartilhadas para tom / formatação"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "Adicionar personagem",
+    "noCharactersYetMessage": "Nenhum personagem ainda.\nToque em + para adicionar um."
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "Excluir grupo?",
+    "deleteGroupMessage": "\"$name\" e todas as suas sessões de conversa serão removidas permanentemente.",
+    "title": "Grupos",
+    "noGroupsYetMessage": "Nenhum grupo ainda. Toque em \"Novo grupo\" para criar um.",
+    "memberCountLabel(plural)": {
+      "one": "$n membro",
+      "other": "$n membros"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "Ainda sem membros"
+  },
+  "groupFileService": {
+    "defaultGroupName": "Grupo"
+  }
+}

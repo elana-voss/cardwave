@@ -1,1 +1,53 @@
-{}
+{
+  "finishFailedSnackbar": "Falha na configuração. Veja os logs para detalhes.",
+  "appBarTitle": "Configuração rápida",
+  "webWarning": "Build web experimental — o armazenamento do navegador pode ser redefinido entre atualizações. Use desktop ou Android para dados persistentes.",
+  "finishButton": "Concluir configuração",
+  "nextButton": "Avançar",
+  "backButton": "Voltar",
+  "storageStep": {
+    "title": "Armazenamento de personagens",
+    "subtitle": "Onde devemos salvar seus cartões de personagem?",
+    "description": "Salvos na pasta do app por padrão. Aponte para uma pasta PNG existente para importar.",
+    "startFresh": "Começar do zero",
+    "haveCards": "Já tenho cartões",
+    "importLaterHint": "Importe PNGs depois em Arquivo → Importar.",
+    "selectedPath": "Selecionado: $path",
+    "selectedDefaultFolder": "Selecionado: pasta padrão do app",
+    "noFolderSelected": "Nenhuma pasta selecionada ainda."
+  },
+  "setupStep": {
+    "title": "IA e persona"
+  },
+  "aiSection": {
+    "heading": "Conexão de IA",
+    "optionalHint": "Opcional — pule e adicione uma chave depois nas Configurações (provedores locais também podem ser adicionados lá).",
+    "apiKeyLabel": "API key",
+    "apiKeyHint": "Cole sua chave (ou pule por enquanto)",
+    "supportedProviders": "Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Mais nas Configurações.",
+    "unknownModel": "(modelo desconhecido)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "Alterar"
+  },
+  "aiStatus": {
+    "connecting": "Conectando…",
+    "connected": "Conectado a $provider. Modelo de conversa padrão selecionado.",
+    "detected": "Detectado: $provider",
+    "unrecognizedKey": "Formato de chave não reconhecido."
+  },
+  "personaSection": {
+    "heading": "Sua persona",
+    "hint": "Seu nome nas conversas. Mais detalhes da persona nas Configurações.",
+    "nameLabel": "Seu nome"
+  },
+  "disclaimer": {
+    "prefix": "Li e concordo com o ",
+    "linkText": "Aviso legal"
+  },
+  "fetchError": {
+    "noModels": "Nenhum modelo retornado. Verifique sua API key.",
+    "connectionFailed": "Não foi possível conectar. Verifique sua conexão com a internet e a API key."
+  }
+}
