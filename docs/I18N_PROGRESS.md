@@ -75,7 +75,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 8 `lib/chat/` → `chat`
 - [x] 9 `lib/editor/` → `editor`
 - [x] 10 `lib/group/` → `group`
-- [ ] 11 `lib/workspace/` → `workspace`
+- [x] 11 `lib/workspace/` → `workspace`
 - [ ] 12 `lib/nodes/` → `nodes`
 - [ ] 13 `lib/memory/` + `lib/search/`
 - [ ] 14 root files → `app`
@@ -216,6 +216,24 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   behavior. Left as pass-through English, same treatment as
   `proposal.fieldLabel`/`domain.label` package-data interpolations
   elsewhere in this row.
+- **[workspace] Image-style preset chip labels double as generation-prompt
+  content** (`lib/workspace/src/pages/widgets/workspace_page/style_presets_dialog.dart`,
+  the `_presets` list: `'anime'`, `'photorealistic'`, `'oil painting'`,
+  `'watercolor'`, `'pixel art'`, `'comic book'`, `'pencil sketch'`,
+  `'digital art'`, `'3D render'`, `'fantasy illustration'`): NOT
+  extracted, even though each one is rendered as a `FilterChip` label the
+  user reads and taps. Each string is also substring-matched against
+  `configMedia.imagePromptPrefix` (`current.toLowerCase().contains(p
+  .toLowerCase())`) to derive which chips show as selected, and toggling
+  a chip joins the active preset strings directly into that same
+  `imagePromptPrefix`, which is fed into image-generation prompts.
+  Translating the chip text would change both what's inserted into the
+  generation prompt and break the substring match against
+  already-persisted English prefixes on existing cards. Same dual-use
+  pattern as the character AI-action `fieldName` case above; left as
+  pass-through English. The dialog's own chrome ("Image Style" title,
+  "No style selected" fallback) WAS extracted since neither value
+  touches the prompt string.
 
 ## Parked observations (bugs noticed but out of scope)
 - **[settings, row 5] `SettingsService._loadingStatus` progress strings**

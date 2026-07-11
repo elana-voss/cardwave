@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "Image Style",
+    "noneValue": "None"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "Video Style"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "Display",
+    "showCharacterImageTitle": "Show Character Image",
+    "wideScreenOnlySubtitle": "Wide-screen editor only"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "Editing"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "Export",
+    "exportPngTitle": "Export as PNG (V2/V3)",
+    "exportJsonV3Title": "Export as JSON (V3)",
+    "exportJsonV2Title": "Export as JSON (V2)"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "Reset Images"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "Assistant Card Edits"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "Favorite",
+    "nodesEngineTitle": "NODES Engine",
+    "debugSnapshotSubtitle": "Debug snapshot",
+    "characterSubtitle": "Character"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "No style selected"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "Rebuilding chat index...",
+    "selectChatToStartMessagingMessage": "Select a chat to start messaging",
+    "failedToLoadAssistantMessage": "Failed to load assistant."
+  }
+}

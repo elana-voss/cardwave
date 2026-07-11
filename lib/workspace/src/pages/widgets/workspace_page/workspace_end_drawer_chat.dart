@@ -18,7 +18,9 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (visibleChatController.isAssistant) ...[
-          const DrawerSectionHeader('Assistant Card Edits'),
+          DrawerSectionHeader(
+            t.workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader,
+          ),
           const TileAssistantCardEditRequireApproval(
             modality: CardEditModality.edit,
           ),
@@ -29,7 +31,7 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
             modality: CardEditModality.deletion,
           ),
         ],
-        const DrawerSectionHeader('Chat'),
+        DrawerSectionHeader(t.group.groupChatPageEndDrawer.chatSectionHeader),
         TileNsfw(
           chatSession: visibleChatController.selectedChat,
           onChanged: (value) =>

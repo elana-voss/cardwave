@@ -17,7 +17,7 @@ class _WorkspaceEndDrawerSpeech extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Speech'),
+        DrawerSectionHeader(t.common.modelCapability.speech),
         TileTtsPreset(
           chatSession: visibleChatController.selectedChat,
           characterFile: activeCharacterFile,

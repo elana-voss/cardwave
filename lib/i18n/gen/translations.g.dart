@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 870 (96 per locale)
+/// Strings: 892 (99 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -469,6 +469,17 @@ class _TranslationsWorkspaceEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsWorkspaceWorkspaceEndDrawerImageEn workspaceEndDrawerImage = _TranslationsWorkspaceWorkspaceEndDrawerImageEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerVideoEn workspaceEndDrawerVideo = _TranslationsWorkspaceWorkspaceEndDrawerVideoEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerDisplayEn workspaceEndDrawerDisplay = _TranslationsWorkspaceWorkspaceEndDrawerDisplayEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerAiEn workspaceEndDrawerAi = _TranslationsWorkspaceWorkspaceEndDrawerAiEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerEditingEn workspaceEndDrawerEditing = _TranslationsWorkspaceWorkspaceEndDrawerEditingEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerExportEn workspaceEndDrawerExport = _TranslationsWorkspaceWorkspaceEndDrawerExportEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerChatThemeEn workspaceEndDrawerChatTheme = _TranslationsWorkspaceWorkspaceEndDrawerChatThemeEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerChatEn workspaceEndDrawerChat = _TranslationsWorkspaceWorkspaceEndDrawerChatEn._(_root);
+	late final _TranslationsWorkspaceWorkspaceEndDrawerEn workspaceEndDrawer = _TranslationsWorkspaceWorkspaceEndDrawerEn._(_root);
+	late final _TranslationsWorkspaceStylePresetsDialogEn stylePresetsDialog = _TranslationsWorkspaceStylePresetsDialogEn._(_root);
+	late final _TranslationsWorkspaceWorkspacePageEn workspacePage = _TranslationsWorkspaceWorkspacePageEn._(_root);
 }
 
 // Path: character.promptPrefixDialog
@@ -2707,6 +2718,127 @@ class _TranslationsSettingsUpdateCheckEn {
 	String get errorTitle => 'Error';
 	String get serverErrorMessage => 'Could not check for updates. Server error.';
 	String get connectionErrorMessage => 'Could not check for updates. Check your connection.';
+}
+
+// Path: workspace.workspaceEndDrawerImage
+class _TranslationsWorkspaceWorkspaceEndDrawerImageEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerImageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get imageStyleTitle => 'Image Style';
+	String get noneValue => 'None';
+}
+
+// Path: workspace.workspaceEndDrawerVideo
+class _TranslationsWorkspaceWorkspaceEndDrawerVideoEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerVideoEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get videoStyleTitle => 'Video Style';
+}
+
+// Path: workspace.workspaceEndDrawerDisplay
+class _TranslationsWorkspaceWorkspaceEndDrawerDisplayEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerDisplayEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get sectionHeader => 'Display';
+	String get showCharacterImageTitle => 'Show Character Image';
+	String get wideScreenOnlySubtitle => 'Wide-screen editor only';
+}
+
+// Path: workspace.workspaceEndDrawerAi
+class _TranslationsWorkspaceWorkspaceEndDrawerAiEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerAiEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get sectionHeader => 'AI';
+}
+
+// Path: workspace.workspaceEndDrawerEditing
+class _TranslationsWorkspaceWorkspaceEndDrawerEditingEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerEditingEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get sectionHeader => 'Editing';
+}
+
+// Path: workspace.workspaceEndDrawerExport
+class _TranslationsWorkspaceWorkspaceEndDrawerExportEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerExportEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get sectionHeader => 'Export';
+	String get exportPngTitle => 'Export as PNG (V2/V3)';
+	String get exportJsonV3Title => 'Export as JSON (V3)';
+	String get exportJsonV2Title => 'Export as JSON (V2)';
+}
+
+// Path: workspace.workspaceEndDrawerChatTheme
+class _TranslationsWorkspaceWorkspaceEndDrawerChatThemeEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerChatThemeEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get resetImagesTitle => 'Reset Images';
+}
+
+// Path: workspace.workspaceEndDrawerChat
+class _TranslationsWorkspaceWorkspaceEndDrawerChatEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerChatEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get assistantCardEditsSectionHeader => 'Assistant Card Edits';
+}
+
+// Path: workspace.workspaceEndDrawer
+class _TranslationsWorkspaceWorkspaceEndDrawerEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get favoriteLabel => 'Favorite';
+	String get nodesEngineTitle => 'NODES Engine';
+	String get debugSnapshotSubtitle => 'Debug snapshot';
+	String get characterSubtitle => 'Character';
+}
+
+// Path: workspace.stylePresetsDialog
+class _TranslationsWorkspaceStylePresetsDialogEn {
+	_TranslationsWorkspaceStylePresetsDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get noStyleSelectedMessage => 'No style selected';
+}
+
+// Path: workspace.workspacePage
+class _TranslationsWorkspaceWorkspacePageEn {
+	_TranslationsWorkspaceWorkspacePageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get rebuildingChatIndexMessage => 'Rebuilding chat index...';
+	String get selectChatToStartMessagingMessage => 'Select a chat to start messaging';
+	String get failedToLoadAssistantMessage => 'Failed to load assistant.';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -5041,6 +5173,28 @@ extension on Translations {
 			case 'settings.updateCheck.errorTitle': return 'Error';
 			case 'settings.updateCheck.serverErrorMessage': return 'Could not check for updates. Server error.';
 			case 'settings.updateCheck.connectionErrorMessage': return 'Could not check for updates. Check your connection.';
+			case 'workspace.workspaceEndDrawerImage.imageStyleTitle': return 'Image Style';
+			case 'workspace.workspaceEndDrawerImage.noneValue': return 'None';
+			case 'workspace.workspaceEndDrawerVideo.videoStyleTitle': return 'Video Style';
+			case 'workspace.workspaceEndDrawerDisplay.sectionHeader': return 'Display';
+			case 'workspace.workspaceEndDrawerDisplay.showCharacterImageTitle': return 'Show Character Image';
+			case 'workspace.workspaceEndDrawerDisplay.wideScreenOnlySubtitle': return 'Wide-screen editor only';
+			case 'workspace.workspaceEndDrawerAi.sectionHeader': return 'AI';
+			case 'workspace.workspaceEndDrawerEditing.sectionHeader': return 'Editing';
+			case 'workspace.workspaceEndDrawerExport.sectionHeader': return 'Export';
+			case 'workspace.workspaceEndDrawerExport.exportPngTitle': return 'Export as PNG (V2/V3)';
+			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Export as JSON (V3)';
+			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Export as JSON (V2)';
+			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Reset Images';
+			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Assistant Card Edits';
+			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorite';
+			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES Engine';
+			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Debug snapshot';
+			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Character';
+			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'No style selected';
+			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Rebuilding chat index...';
+			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Select a chat to start messaging';
+			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Failed to load assistant.';
 			default: return null;
 		}
 	}

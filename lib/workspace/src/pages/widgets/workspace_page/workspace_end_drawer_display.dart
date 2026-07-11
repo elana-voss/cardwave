@@ -10,11 +10,11 @@ class _WorkspaceEndDrawerDisplay extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Display'),
+        DrawerSectionHeader(t.workspace.workspaceEndDrawerDisplay.sectionHeader),
         DrawerSwitchTile(
           leading: const Icon(Icons.image),
-          title: const Text('Show Character Image'),
-          subtitle: const Text('Wide-screen editor only'),
+          title: Text(t.workspace.workspaceEndDrawerDisplay.showCharacterImageTitle),
+          subtitle: Text(t.workspace.workspaceEndDrawerDisplay.wideScreenOnlySubtitle),
           value: settings.editorImageVisible,
           onChanged: (value) {
             settings.editorImageVisible = value;

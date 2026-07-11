@@ -18,7 +18,7 @@ class _WorkspaceEndDrawerChatTheme extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Chat Theme'),
+        DrawerSectionHeader(t.group.groupChatPageEndDrawer.chatThemeSectionHeader),
         TileChatTheme(
           settings: settings,
           onThemeChanged: (theme) {
@@ -42,7 +42,7 @@ class _WorkspaceEndDrawerChatTheme extends StatelessWidget {
                 activeCharacterFile.card.cardwaveData.customAvatar != null;
             return ListTile(
               leading: const Icon(Icons.restart_alt),
-              title: const Text('Reset Images'),
+              title: Text(t.workspace.workspaceEndDrawerChatTheme.resetImagesTitle),
               trailing: SizedBox(
                 width: 160,
                 child: Align(

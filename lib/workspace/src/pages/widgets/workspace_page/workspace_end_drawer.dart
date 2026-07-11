@@ -79,7 +79,8 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                       builder: (context, _) {
                         final selectedChat = visibleChatController.selectedChat;
                         return MediaDefaultsDrawerEntry(
-                          subtitle: 'Chat session',
+                          subtitle:
+                              t.group.groupChatPageEndDrawer.chatSessionSubtitle,
                           onTap: selectedChat == null
                               ? null
                               : () {
@@ -119,7 +120,7 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                             QuickAction(
                               tileKey: const Key('chat-menu-new-chat'),
                               icon: Icons.add_comment,
-                              label: 'New Chat',
+                              label: t.chat.newChatLabel,
                               onTap: () {
                                 Navigator.of(
                                   navContext,
@@ -133,7 +134,7 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                             QuickAction(
                               tileKey: const Key('drawer-all-chats'),
                               icon: Icons.forum,
-                              label: 'All Chats',
+                              label: t.group.groupChatPageEndDrawer.allChatsLabel,
                               onTap: () => Navigator.of(
                                 navContext,
                               ).pushNamed('/all_chats'),
@@ -142,14 +143,14 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                               icon: Icons.favorite_border,
                               selectedIcon: Icons.favorite,
                               isSelected: isFav,
-                              label: 'Favorite',
+                              label: t.workspace.workspaceEndDrawer.favoriteLabel,
                               onTap: visibleChatController.toggleFavorite,
                             ),
                             QuickAction(
                               icon: Icons.image_not_supported_outlined,
                               selectedIcon: Icons.image,
                               isSelected: imageVisible,
-                              label: 'Show Image',
+                              label: t.group.groupChatPageEndDrawer.showImageLabel,
                               onTap: () {
                                 settings.chatImageVisible = !imageVisible;
                                 unawaited(settingsService.saveSettings());
@@ -211,8 +212,9 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                     if (kDebugMode)
                       ListTile(
                         leading: const Icon(Icons.bug_report_outlined),
-                        title: const Text('NODES Engine'),
-                        subtitle: const Text('Debug snapshot'),
+                        title: Text(t.workspace.workspaceEndDrawer.nodesEngineTitle),
+                        subtitle:
+                            Text(t.workspace.workspaceEndDrawer.debugSnapshotSubtitle),
                         onTap: () {
                           Navigator.of(navContext, rootNavigator: true).pop();
                           unawaited(
@@ -232,7 +234,7 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                     // above them under its own section header. The next
                     // section's DrawerSectionHeader provides the divider.
                     MediaDefaultsDrawerEntry(
-                      subtitle: 'Character',
+                      subtitle: t.workspace.workspaceEndDrawer.characterSubtitle,
                       onTap: () {
                         Navigator.of(
                           navContext,
@@ -271,7 +273,7 @@ class _WorkspaceEndDrawer extends StatelessWidget {
       chatSpecificRoutes: {
         if (!showEditorTools)
           '/all_chats': (_) => AppDrawerPage(
-            title: 'All Chats',
+            title: t.group.groupChatPageEndDrawer.allChatsLabel,
             child: allChatsList,
           ),
       },

@@ -9,7 +9,7 @@ class _WorkspaceEndDrawerAi extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('AI'),
+        DrawerSectionHeader(t.workspace.workspaceEndDrawerAi.sectionHeader),
         for (final action in AiActionEnum.values)
           ListTile(
             leading: Icon(action.icon),

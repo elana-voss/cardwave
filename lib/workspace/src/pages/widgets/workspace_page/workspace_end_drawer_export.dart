@@ -13,10 +13,10 @@ class _WorkspaceEndDrawerExport extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Export'),
+        DrawerSectionHeader(t.workspace.workspaceEndDrawerExport.sectionHeader),
         ListTile(
           leading: const Icon(Icons.image),
-          title: const Text('Export as PNG (V2/V3)'),
+          title: Text(t.workspace.workspaceEndDrawerExport.exportPngTitle),
           onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             unawaited(() async {
@@ -33,7 +33,7 @@ class _WorkspaceEndDrawerExport extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.data_object),
-          title: const Text('Export as JSON (V3)'),
+          title: Text(t.workspace.workspaceEndDrawerExport.exportJsonV3Title),
           onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             unawaited(() async {
@@ -50,7 +50,7 @@ class _WorkspaceEndDrawerExport extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.data_object),
-          title: const Text('Export as JSON (V2)'),
+          title: Text(t.workspace.workspaceEndDrawerExport.exportJsonV2Title),
           onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             unawaited(() async {

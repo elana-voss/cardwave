@@ -5,6 +5,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/editor.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/memory/memory.dart';
 import 'package:cardwave/nodes/nodes.dart';
@@ -278,14 +279,16 @@ class _PrimaryChat extends StatelessWidget {
             const CircularProgressIndicator(),
             if (primaryChatController.isRebuildingIndex) ...[
               const SizedBox(height: 16),
-              const Text('Rebuilding chat index...'),
+              Text(t.workspace.workspacePage.rebuildingChatIndexMessage),
             ],
           ],
         ),
       );
     }
     if (primaryChatController.selectedChat == null) {
-      return const Center(child: Text('Select a chat to start messaging'));
+      return Center(
+        child: Text(t.workspace.workspacePage.selectChatToStartMessagingMessage),
+      );
     }
     return ChangeNotifierProvider<BaseChatViewController>(
       key: ValueKey(primaryChatController.selectedChat!.id),
@@ -364,7 +367,9 @@ class _AssistantChat extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (assistantChatController.selectedChat == null) {
-          return const Center(child: Text('Failed to load assistant.'));
+          return Center(
+            child: Text(t.workspace.workspacePage.failedToLoadAssistantMessage),
+          );
         }
         return ChangeNotifierProvider<BaseChatViewController>(
           key: ValueKey(assistantChatController.selectedChat!.id),

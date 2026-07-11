@@ -19,12 +19,12 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Image'),
+        DrawerSectionHeader(t.llmApp.mediaSection.image),
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.shield,
-          title: 'Unrestricted Images',
-          subtitle: 'Allow NSFW image prompts',
+          title: t.group.groupChatPageEndDrawer.unrestrictedImagesTitle,
+          subtitle: t.group.groupChatPageEndDrawer.allowNsfwImagePromptsSubtitle,
           read: (s) => s.configMedia?.imageNsfwAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             imageNsfwAllowed: v,
@@ -33,8 +33,8 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.camera_alt,
-          title: 'Character Can Send Selfies',
-          subtitle: 'Attach a selfie when natural',
+          title: t.group.groupChatPageEndDrawer.characterCanSendSelfiesTitle,
+          subtitle: t.group.groupChatPageEndDrawer.attachSelfieWhenNaturalSubtitle,
           read: (s) => s.configMedia?.imageToolSelfieAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             imageToolSelfieAllowed: v,
@@ -46,9 +46,11 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
             final prefix = activeCharacterFile.configMedia?.imagePromptPrefix;
             return ListTile(
               leading: const Icon(Icons.auto_fix_high),
-              title: const Text('Image Style'),
+              title: Text(t.workspace.workspaceEndDrawerImage.imageStyleTitle),
               trailing: DrawerTrailingValue(
-                prefix?.isNotEmpty == true ? prefix! : 'None',
+                prefix?.isNotEmpty == true
+                    ? prefix!
+                    : t.workspace.workspaceEndDrawerImage.noneValue,
                 suffix: InkWell(
                   onTap: () => _showStylePresetsDialog(
                     activeCharacterFile,
@@ -74,8 +76,8 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
           _sessionSwitchTile(
             visibleChatController: visibleChatController,
             icon: Icons.rate_review,
-            title: 'Review Image Prompt',
-            subtitle: 'Edit before generating',
+            title: t.group.groupChatPageEndDrawer.reviewImagePromptTitle,
+            subtitle: t.group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle,
             read: (s) => s.configMedia?.imagePromptReview ?? false,
             write: (v) => visibleChatController.updateSelectedChatSettings(
               imagePromptReview: v,
@@ -84,8 +86,9 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
           _sessionSwitchTile(
             visibleChatController: visibleChatController,
             icon: Icons.rate_review_outlined,
-            title: 'Review Tool Image Prompts',
-            subtitle: 'Edit tool-triggered prompts',
+            title: t.group.groupChatPageEndDrawer.reviewToolImagePromptsTitle,
+            subtitle:
+                t.group.groupChatPageEndDrawer.editToolTriggeredPromptsSubtitle,
             read: (s) => s.configMedia?.imageToolPromptReview ?? false,
             write: (v) => visibleChatController.updateSelectedChatSettings(
               imageToolPromptReview: v,
@@ -94,8 +97,9 @@ class _WorkspaceEndDrawerImage extends StatelessWidget {
           _sessionSwitchTile(
             visibleChatController: visibleChatController,
             icon: Icons.text_fields,
-            title: 'Allow Selfie Captions',
-            subtitle: 'Caption rendered on the image',
+            title: t.group.groupChatPageEndDrawer.allowSelfieCaptionsTitle,
+            subtitle:
+                t.group.groupChatPageEndDrawer.captionRenderedOnImageSubtitle,
             read: (s) =>
                 s.configMedia?.imageToolSelfieCaptionsAllowed ?? false,
             write: (v) => visibleChatController.updateSelectedChatSettings(

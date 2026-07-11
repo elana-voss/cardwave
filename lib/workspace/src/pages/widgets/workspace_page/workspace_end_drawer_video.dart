@@ -19,12 +19,12 @@ class _WorkspaceEndDrawerVideo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Video'),
+        DrawerSectionHeader(t.llmApp.mediaSection.video),
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.shield,
-          title: 'Unrestricted Videos',
-          subtitle: 'Allow NSFW video prompts',
+          title: t.group.groupChatPageEndDrawer.unrestrictedVideosTitle,
+          subtitle: t.group.groupChatPageEndDrawer.allowNsfwVideoPromptsSubtitle,
           read: (s) => s.configMedia?.videoNsfwAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             videoNsfwAllowed: v,
@@ -33,8 +33,9 @@ class _WorkspaceEndDrawerVideo extends StatelessWidget {
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.movie_creation,
-          title: 'Character Can Send Videos',
-          subtitle: 'Attach a short video when natural',
+          title: t.group.groupChatPageEndDrawer.characterCanSendVideosTitle,
+          subtitle:
+              t.group.groupChatPageEndDrawer.attachShortVideoWhenNaturalSubtitle,
           read: (s) => s.configMedia?.videoToolSendAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             videoToolSendAllowed: v,
@@ -46,9 +47,11 @@ class _WorkspaceEndDrawerVideo extends StatelessWidget {
             final prefix = activeCharacterFile.configMedia?.videoPromptPrefix;
             return ListTile(
               leading: const Icon(Icons.movie_filter),
-              title: const Text('Video Style'),
+              title: Text(t.workspace.workspaceEndDrawerVideo.videoStyleTitle),
               trailing: DrawerTrailingValue(
-                prefix?.isNotEmpty == true ? prefix! : 'None',
+                prefix?.isNotEmpty == true
+                    ? prefix!
+                    : t.workspace.workspaceEndDrawerImage.noneValue,
               ),
               onTap: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -67,8 +70,8 @@ class _WorkspaceEndDrawerVideo extends StatelessWidget {
           _sessionSwitchTile(
             visibleChatController: visibleChatController,
             icon: Icons.rate_review,
-            title: 'Review Video Prompt',
-            subtitle: 'Edit before generating',
+            title: t.group.groupChatPageEndDrawer.reviewVideoPromptTitle,
+            subtitle: t.group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle,
             read: (s) => s.configMedia?.videoPromptReview ?? false,
             write: (v) => visibleChatController.updateSelectedChatSettings(
               videoPromptReview: v,

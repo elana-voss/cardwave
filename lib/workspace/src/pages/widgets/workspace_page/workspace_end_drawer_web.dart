@@ -9,12 +9,12 @@ class _WorkspaceEndDrawerWeb extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Web'),
+        DrawerSectionHeader(t.llmApp.mediaSection.web),
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.cloud_download,
-          title: 'Allow Web Fetch',
-          subtitle: 'Read public web pages when relevant',
+          title: t.group.groupChatPageEndDrawer.allowWebFetchTitle,
+          subtitle: t.group.groupChatPageEndDrawer.allowWebFetchSubtitle,
           read: (s) => s.configMedia?.webToolFetchAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             webToolFetchAllowed: v,
@@ -23,8 +23,8 @@ class _WorkspaceEndDrawerWeb extends StatelessWidget {
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.rate_review,
-          title: 'Review URL Before Fetching',
-          subtitle: 'Confirm each fetch',
+          title: t.group.groupChatPageEndDrawer.reviewUrlTitle,
+          subtitle: t.group.groupChatPageEndDrawer.reviewUrlSubtitle,
           read: (s) => s.configMedia?.webToolFetchReview ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             webToolFetchReview: v,

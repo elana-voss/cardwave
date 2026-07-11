@@ -9,12 +9,12 @@ class _WorkspaceEndDrawerNames extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Names'),
+        DrawerSectionHeader(t.llmApp.mediaSection.names),
         _sessionSwitchTile(
           visibleChatController: visibleChatController,
           icon: Icons.badge,
-          title: 'Suggest NPC Names',
-          subtitle: 'Pick names from the curated database',
+          title: t.group.groupChatPageEndDrawer.suggestNpcNamesTitle,
+          subtitle: t.group.groupChatPageEndDrawer.suggestNpcNamesSubtitle,
           read: (s) => s.configMedia?.nameToolSuggestAllowed ?? false,
           write: (v) => visibleChatController.updateSelectedChatSettings(
             nameToolSuggestAllowed: v,

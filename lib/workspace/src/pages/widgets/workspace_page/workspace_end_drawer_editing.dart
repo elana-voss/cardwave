@@ -9,10 +9,10 @@ class _WorkspaceEndDrawerEditing extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const DrawerSectionHeader('Editing'),
+        DrawerSectionHeader(t.workspace.workspaceEndDrawerEditing.sectionHeader),
         ListTile(
           leading: const Icon(Icons.cleaning_services),
-          title: const Text('Content Cleaner'),
+          title: Text(t.editor.dialogContentCleaner.title),
           onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             if (onApplyCleaner != null) {
@@ -26,7 +26,7 @@ class _WorkspaceEndDrawerEditing extends StatelessWidget {
         ),
         ListTile(
           leading: const Icon(Icons.find_replace),
-          title: const Text('Find & Replace'),
+          title: Text(t.editor.findReplaceDialog.title),
           onTap: () {
             Navigator.of(context, rootNavigator: true).pop();
             if (onApplyCleaner != null) {

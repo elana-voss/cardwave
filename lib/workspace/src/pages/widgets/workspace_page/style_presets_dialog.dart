@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:flutter/material.dart';
 
@@ -74,10 +75,15 @@ class _StylePresetsDialogState extends State<StylePresetsDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Image Style', style: Theme.of(ctx).textTheme.titleLarge),
+          Text(
+            t.workspace.workspaceEndDrawerImage.imageStyleTitle,
+            style: Theme.of(ctx).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
           Text(
-            combined.isEmpty ? 'No style selected' : combined,
+            combined.isEmpty
+                ? t.workspace.stylePresetsDialog.noStyleSelectedMessage
+                : combined,
             style: Theme.of(ctx).textTheme.bodySmall,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
