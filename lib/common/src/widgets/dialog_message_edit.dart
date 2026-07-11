@@ -1,5 +1,6 @@
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
 import 'package:cardwave/common/src/widgets/text_field_autotrim.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogMessageEdit extends StatefulWidget {
@@ -32,7 +33,7 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
         FilledButton(
           key: const Key('dialog-save'),
           onPressed: () => Navigator.pop(context, _controller!.text),
-          child: const Text('Save'),
+          child: Text(t.common.actions.save),
         ),
       ],
       builder: (context, isMobile) => Column(
@@ -40,7 +41,10 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,
         children: [
-          Text('Edit Message', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            t.common.messageEditDialog.title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           TextFieldAutotrim(
             controller: _controller,
             maxLines: null,

@@ -1,6 +1,7 @@
 import 'package:cardwave/common/src/models/prompt_breakdown.dart';
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
 import 'package:cardwave/common/src/widgets/prompt_breakdown_bar.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Read-only detail view for a reply's prompt breakdown, opened by tapping the
@@ -44,13 +45,16 @@ class _DialogPromptBreakdownState extends State<DialogPromptBreakdown>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 8,
         children: [
-          Text('Prompt Breakdown', style: theme.textTheme.titleLarge),
+          Text(
+            t.common.promptBreakdownDialog.title,
+            style: theme.textTheme.titleLarge,
+          ),
           PromptBreakdownBar(breakdown: breakdown),
           TabBar(
             controller: _tabs,
-            tabs: const [
-              Tab(text: 'Breakdown'),
-              Tab(text: 'Content'),
+            tabs: [
+              Tab(text: t.common.promptBreakdownDialog.breakdownTab),
+              Tab(text: t.common.promptBreakdownDialog.contentTab),
             ],
           ),
           // IndexedStack lays out both tabs and sizes to the taller one, so
@@ -84,8 +88,8 @@ class _SummaryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final realNote = breakdown.realInputTokens == null
-        ? 'Prompt total (estimated)'
-        : 'Prompt total (provider)';
+        ? t.common.promptBreakdownDialog.promptTotalEstimated
+        : t.common.promptBreakdownDialog.promptTotalProvider;
     return ListView(
       shrinkWrap: true,
       children: [
@@ -108,7 +112,7 @@ class _SummaryTab extends StatelessWidget {
           bold: true,
         ),
         _SummaryRow(
-          label: 'Context window',
+          label: t.common.promptBreakdownDialog.contextWindowLabel,
           tokens: breakdown.contextSize,
           percent: 100,
           bold: true,
@@ -134,11 +138,20 @@ class _SummaryHeader extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 20),
-          Expanded(child: Text('CATEGORY', style: style)),
-          Text('TOKENS', style: style),
+          Expanded(
+            child: Text(
+              t.common.promptBreakdownDialog.categoryHeader,
+              style: style,
+            ),
+          ),
+          Text(t.common.promptBreakdownDialog.tokensHeader, style: style),
           SizedBox(
             width: 56,
-            child: Text('USAGE', style: style, textAlign: TextAlign.right),
+            child: Text(
+              t.common.promptBreakdownDialog.usageHeader,
+              style: style,
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       ),
@@ -213,7 +226,7 @@ class _ContentTab extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Text(
-          'No content to inspect for this reply.',
+          t.common.promptBreakdownDialog.noContentToInspect,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,

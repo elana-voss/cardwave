@@ -1,5 +1,138 @@
 {
   "actions": {
-    "delete": "Delete"
+    "delete": "Delete",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "tryAgain": "Try Again",
+    "close": "Close"
+  },
+  "aiAction": {
+    "proofread": "Proofread",
+    "compact": "Compact Prose",
+    "translate": "Translate to English",
+    "generatePreview": "Generate Preview",
+    "autoTag": "Auto-Tag"
+  },
+  "aiActionsTooltip": "AI Actions",
+  "promptSegmentKind": {
+    "identity": "Identity",
+    "systemPrompt": "System prompt",
+    "nsfwMode": "NSFW mode",
+    "scenarioMode": "Scenario mode",
+    "description": "Description",
+    "personality": "Personality",
+    "scenario": "Scenario",
+    "userPersona": "Your persona",
+    "memory": "Memory",
+    "situation": "Situation",
+    "cardData": "Card data",
+    "tools": "Tools",
+    "postHistory": "Post-history",
+    "depthPrompt": "Depth prompt",
+    "worldInfo": "World info",
+    "injected": "Injected",
+    "exampleDialogue": "Example dialogue",
+    "history": "Message history",
+    "currentMessage": "Current message",
+    "reservedReply": "Reserved reply"
+  },
+  "promptBreakdown": {
+    "free": "Free"
+  },
+  "logs": {
+    "title": "Logs",
+    "filterTooltip": "Filter Logs",
+    "clearTooltip": "Clear Logs",
+    "exportTooltip": "Export Logs",
+    "searchHint": "Search logs...",
+    "noLogsFound": "No logs found.",
+    "noLogsToExport": "No logs to export",
+    "exportedSuccessfully": "Logs exported successfully",
+    "exportFailed": "Failed to export logs. See logs for details.",
+    "copiedToClipboard": "Copied to clipboard",
+    "copyLogButton": "Copy Log",
+    "copiedEntryToClipboard": "Copied log entry to clipboard"
+  },
+  "importErrorsDialog": {
+    "title": "Import Errors",
+    "message": "The following files could not be imported:"
+  },
+  "updateDialog": {
+    "title": "Version Available",
+    "body": "A newer version of $appName is available.\n\nCurrent version: $currentVersion\nLatest version: $latestVersion",
+    "releaseNotesLabel": "Release Notes:",
+    "viewReleasesButton": "View Releases"
+  },
+  "importConflictsDialog": {
+    "title": "Import Conflicts",
+    "message": "The following $count characters have filename conflicts and will be renamed automatically:"
+  },
+  "missingProviderBanner": {
+    "message": "Connect an AI provider.",
+    "setUpNowButton": "Set Up Now"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "Search Models",
+    "subscriptionOnlyToggle": "Show only subscription models ($included/$total)"
+  },
+  "showAdvanced": {
+    "less": "Less",
+    "more": "More"
+  },
+  "messageEditDialog": {
+    "title": "Edit Message"
+  },
+  "promptBreakdownDialog": {
+    "title": "Prompt Breakdown",
+    "breakdownTab": "Breakdown",
+    "contentTab": "Content",
+    "promptTotalEstimated": "Prompt total (estimated)",
+    "promptTotalProvider": "Prompt total (provider)",
+    "contextWindowLabel": "Context window",
+    "categoryHeader": "CATEGORY",
+    "tokensHeader": "TOKENS",
+    "usageHeader": "USAGE",
+    "noContentToInspect": "No content to inspect for this reply.",
+    "estimatedSuffix": " (estimated)",
+    "usedSummary": "$used / $total used"
+  },
+  "jsonPromptDialog": {
+    "title": "Generation Prompt"
+  },
+  "progressDialog": {
+    "defaultMessage": "Sending...",
+    "finished": "Finished!"
+  },
+  "diffPanel": {
+    "tokenSuffix": " ($count Tokens)"
+  },
+  "selectionDialog": {
+    "searchHint": "Search…"
+  },
+  "zdrSwitch": {
+    "title": "Require Zero Data Retention (ZDR)",
+    "subtitle": "Only show OR models with ZDR-compliant endpoints. Enable this if your openrouter.ai account restricts to ZDR providers."
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count tokens",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "Reasoning",
+    "vision": "Vision",
+    "tools": "Tools",
+    "json": "JSON",
+    "files": "Files",
+    "image": "Image",
+    "video": "Video",
+    "speech": "Speech",
+    "music": "Music"
+  },
+  "modelUnavailableTooltip": "This model is no longer available from the provider — pick another.",
+  "characterImageSemanticLabel": "Character image",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "Export failed. See logs for details."
   }
 }

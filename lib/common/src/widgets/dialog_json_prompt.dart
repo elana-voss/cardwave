@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class DialogJsonPrompt extends StatelessWidget {
@@ -26,7 +27,7 @@ class DialogJsonPrompt extends StatelessWidget {
         spacing: 16,
         children: [
           Text(
-            'Generation Prompt',
+            t.common.jsonPromptDialog.title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           SelectionArea(child: JsonPromptViewer(jsonContent: content)),

@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class BadgeModelUnavailable extends StatelessWidget {
@@ -5,11 +6,9 @@ class BadgeModelUnavailable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Tooltip(
-      message:
-          'This model is no longer available from the provider — '
-          'pick another.',
-      child: Icon(
+    return Tooltip(
+      message: t.common.modelUnavailableTooltip,
+      child: const Icon(
         Icons.warning_amber_rounded,
         color: Colors.orange,
         size: 16,

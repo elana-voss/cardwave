@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Titled, boxed, selectable rich-text view of pre-built diff spans. Used
@@ -17,7 +18,9 @@ class DiffPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokenText = tokenCount != null ? ' ($tokenCount Tokens)' : '';
+    final tokenText = tokenCount != null
+        ? t.common.diffPanel.tokenSuffix(count: tokenCount!)
+        : '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/src/utils/utils_image.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -133,7 +134,7 @@ class _ImageThumbnailState extends State<ImageThumbnail> {
             height: widget.height,
             child: Image.memory(
               snapshot.data!,
-              semanticLabel: 'Character image',
+              semanticLabel: t.common.characterImageSemanticLabel,
               fit: BoxFit.cover,
               gaplessPlayback: true,
             ),

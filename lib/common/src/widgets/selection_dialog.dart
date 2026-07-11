@@ -1,5 +1,6 @@
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
 import 'package:cardwave/common/src/widgets/selection_option.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Above this many options the dialog grows a search field. Below it
@@ -99,10 +100,10 @@ class _SelectionDialogBodyState<T> extends State<_SelectionDialogBody<T>> {
               padding: const EdgeInsets.only(bottom: 8),
               child: TextField(
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search…',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: t.common.selectionDialog.searchHint,
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
                   isDense: true,
                 ),
                 onChanged: (v) => setState(() => _query = v),

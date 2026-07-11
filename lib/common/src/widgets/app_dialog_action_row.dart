@@ -1,4 +1,5 @@
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class AppDialogActionRow extends StatelessWidget {
@@ -19,7 +20,7 @@ class AppDialogActionRow extends StatelessWidget {
       final closeButton = TextButton(
         key: AppDialog.dismissKey,
         onPressed: () => Navigator.pop(context),
-        child: const Text('Close'),
+        child: Text(t.common.actions.close),
       );
       rowChildren = actions.isEmpty
           ? [const Spacer(), closeButton]

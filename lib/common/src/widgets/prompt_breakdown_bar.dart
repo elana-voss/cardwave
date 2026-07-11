@@ -1,6 +1,7 @@
 import 'package:cardwave/common/src/models/prompt_breakdown.dart';
 import 'package:cardwave/common/src/models/prompt_segment_kind_enum.dart';
 import 'package:cardwave/common/src/utils/navigation_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Thin segmented bar shown under an AI reply. Full width is the model's
@@ -86,11 +87,13 @@ class PromptBreakdownBar extends StatelessWidget {
           ],
         ),
     ];
-    final realNote = breakdown.realInputTokens == null ? ' (estimated)' : '';
+    final realNote = breakdown.realInputTokens == null
+        ? t.common.promptBreakdownDialog.estimatedSuffix
+        : '';
     lines.add(
       TextSpan(
         text:
-            '${breakdown.usedTokens} / ${breakdown.contextSize} used$realNote',
+            '${t.common.promptBreakdownDialog.usedSummary(used: breakdown.usedTokens, total: breakdown.contextSize)}$realNote',
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );

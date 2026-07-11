@@ -1,4 +1,5 @@
 import 'package:cardwave/app_routes_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -98,7 +99,7 @@ class _MissingProviderBanner extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  'Connect an AI provider.',
+                  t.common.missingProviderBanner.message,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onErrorContainer,
                   ),
@@ -114,7 +115,7 @@ class _MissingProviderBanner extends StatelessWidget {
                 onPressed: () => Navigator.of(
                   context,
                 ).pushNamed(AppRoutesEnum.onboarding.name),
-                child: const Text('Set Up Now'),
+                child: Text(t.common.missingProviderBanner.setUpNowButton),
               ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class SwitchTileZdr extends StatelessWidget {
@@ -18,11 +19,10 @@ class SwitchTileZdr extends StatelessWidget {
         dense: true,
         value: value,
         onChanged: onChanged,
-        title: const Text('Require Zero Data Retention (ZDR)'),
-        subtitle: const Text(
-          'Only show OR models with ZDR-compliant endpoints. Enable this if '
-          'your openrouter.ai account restricts to ZDR providers.',
-          style: TextStyle(fontSize: 11, color: Colors.grey),
+        title: Text(t.common.zdrSwitch.title),
+        subtitle: Text(
+          t.common.zdrSwitch.subtitle,
+          style: const TextStyle(fontSize: 11, color: Colors.grey),
         ),
       ),
     );

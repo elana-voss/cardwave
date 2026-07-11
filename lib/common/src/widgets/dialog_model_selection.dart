@@ -1,6 +1,7 @@
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
 import 'package:cardwave/common/src/widgets/app_search_field.dart';
 import 'package:cardwave/common/src/widgets/tile_model.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 
@@ -55,14 +56,19 @@ class DialogModelSelectionState extends State<DialogModelSelection> {
           children: [
             AppSearchField(
               controller: _searchController,
-              hintText: 'Search Models',
+              hintText: t.common.modelSelectionDialog.searchHint,
               autofocus: true,
             ),
             if (widget.provider == LLMProviderEnum.nanogpt) ...[
               const SizedBox(height: 8),
               SwitchListTile(
                 title: Text(
-                  'Show only subscription models (${widget.models.where((m) => m.subscription?.included == true).length}/${widget.models.length})',
+                  t.common.modelSelectionDialog.subscriptionOnlyToggle(
+                    included: widget.models
+                        .where((m) => m.subscription?.included == true)
+                        .length,
+                    total: widget.models.length,
+                  ),
                 ),
                 contentPadding: EdgeInsets.zero,
                 value: _showOnlySubscriptionModels,

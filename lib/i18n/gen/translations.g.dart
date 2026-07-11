@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 119 (13 per locale)
+/// Strings: 212 (23 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -205,6 +205,29 @@ class _TranslationsCommonEn {
 
 	// Translations
 	late final _TranslationsCommonActionsEn actions = _TranslationsCommonActionsEn._(_root);
+	late final _TranslationsCommonAiActionEn aiAction = _TranslationsCommonAiActionEn._(_root);
+	String get aiActionsTooltip => 'AI Actions';
+	late final _TranslationsCommonPromptSegmentKindEn promptSegmentKind = _TranslationsCommonPromptSegmentKindEn._(_root);
+	late final _TranslationsCommonPromptBreakdownEn promptBreakdown = _TranslationsCommonPromptBreakdownEn._(_root);
+	late final _TranslationsCommonLogsEn logs = _TranslationsCommonLogsEn._(_root);
+	late final _TranslationsCommonImportErrorsDialogEn importErrorsDialog = _TranslationsCommonImportErrorsDialogEn._(_root);
+	late final _TranslationsCommonUpdateDialogEn updateDialog = _TranslationsCommonUpdateDialogEn._(_root);
+	late final _TranslationsCommonImportConflictsDialogEn importConflictsDialog = _TranslationsCommonImportConflictsDialogEn._(_root);
+	late final _TranslationsCommonMissingProviderBannerEn missingProviderBanner = _TranslationsCommonMissingProviderBannerEn._(_root);
+	late final _TranslationsCommonModelSelectionDialogEn modelSelectionDialog = _TranslationsCommonModelSelectionDialogEn._(_root);
+	late final _TranslationsCommonShowAdvancedEn showAdvanced = _TranslationsCommonShowAdvancedEn._(_root);
+	late final _TranslationsCommonMessageEditDialogEn messageEditDialog = _TranslationsCommonMessageEditDialogEn._(_root);
+	late final _TranslationsCommonPromptBreakdownDialogEn promptBreakdownDialog = _TranslationsCommonPromptBreakdownDialogEn._(_root);
+	late final _TranslationsCommonJsonPromptDialogEn jsonPromptDialog = _TranslationsCommonJsonPromptDialogEn._(_root);
+	late final _TranslationsCommonProgressDialogEn progressDialog = _TranslationsCommonProgressDialogEn._(_root);
+	late final _TranslationsCommonDiffPanelEn diffPanel = _TranslationsCommonDiffPanelEn._(_root);
+	late final _TranslationsCommonSelectionDialogEn selectionDialog = _TranslationsCommonSelectionDialogEn._(_root);
+	late final _TranslationsCommonZdrSwitchEn zdrSwitch = _TranslationsCommonZdrSwitchEn._(_root);
+	late final _TranslationsCommonTextFieldCardEn textFieldCard = _TranslationsCommonTextFieldCardEn._(_root);
+	late final _TranslationsCommonModelCapabilityEn modelCapability = _TranslationsCommonModelCapabilityEn._(_root);
+	String get modelUnavailableTooltip => 'This model is no longer available from the provider — pick another.';
+	String get characterImageSemanticLabel => 'Character image';
+	late final _TranslationsCommonAppConstantsEn appConstants = _TranslationsCommonAppConstantsEn._(_root);
 }
 
 // Path: editor
@@ -349,6 +372,276 @@ class _TranslationsCommonActionsEn {
 
 	// Translations
 	String get delete => 'Delete';
+	String get ok => 'OK';
+	String get cancel => 'Cancel';
+	String get save => 'Save';
+	String get tryAgain => 'Try Again';
+	String get close => 'Close';
+}
+
+// Path: common.aiAction
+class _TranslationsCommonAiActionEn {
+	_TranslationsCommonAiActionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get proofread => 'Proofread';
+	String get compact => 'Compact Prose';
+	String get translate => 'Translate to English';
+	String get generatePreview => 'Generate Preview';
+	String get autoTag => 'Auto-Tag';
+}
+
+// Path: common.promptSegmentKind
+class _TranslationsCommonPromptSegmentKindEn {
+	_TranslationsCommonPromptSegmentKindEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get identity => 'Identity';
+	String get systemPrompt => 'System prompt';
+	String get nsfwMode => 'NSFW mode';
+	String get scenarioMode => 'Scenario mode';
+	String get description => 'Description';
+	String get personality => 'Personality';
+	String get scenario => 'Scenario';
+	String get userPersona => 'Your persona';
+	String get memory => 'Memory';
+	String get situation => 'Situation';
+	String get cardData => 'Card data';
+	String get tools => 'Tools';
+	String get postHistory => 'Post-history';
+	String get depthPrompt => 'Depth prompt';
+	String get worldInfo => 'World info';
+	String get injected => 'Injected';
+	String get exampleDialogue => 'Example dialogue';
+	String get history => 'Message history';
+	String get currentMessage => 'Current message';
+	String get reservedReply => 'Reserved reply';
+}
+
+// Path: common.promptBreakdown
+class _TranslationsCommonPromptBreakdownEn {
+	_TranslationsCommonPromptBreakdownEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get free => 'Free';
+}
+
+// Path: common.logs
+class _TranslationsCommonLogsEn {
+	_TranslationsCommonLogsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Logs';
+	String get filterTooltip => 'Filter Logs';
+	String get clearTooltip => 'Clear Logs';
+	String get exportTooltip => 'Export Logs';
+	String get searchHint => 'Search logs...';
+	String get noLogsFound => 'No logs found.';
+	String get noLogsToExport => 'No logs to export';
+	String get exportedSuccessfully => 'Logs exported successfully';
+	String get exportFailed => 'Failed to export logs. See logs for details.';
+	String get copiedToClipboard => 'Copied to clipboard';
+	String get copyLogButton => 'Copy Log';
+	String get copiedEntryToClipboard => 'Copied log entry to clipboard';
+}
+
+// Path: common.importErrorsDialog
+class _TranslationsCommonImportErrorsDialogEn {
+	_TranslationsCommonImportErrorsDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Import Errors';
+	String get message => 'The following files could not be imported:';
+}
+
+// Path: common.updateDialog
+class _TranslationsCommonUpdateDialogEn {
+	_TranslationsCommonUpdateDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Version Available';
+	String body({required Object appName, required Object currentVersion, required Object latestVersion}) => 'A newer version of ${appName} is available.\n\nCurrent version: ${currentVersion}\nLatest version: ${latestVersion}';
+	String get releaseNotesLabel => 'Release Notes:';
+	String get viewReleasesButton => 'View Releases';
+}
+
+// Path: common.importConflictsDialog
+class _TranslationsCommonImportConflictsDialogEn {
+	_TranslationsCommonImportConflictsDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Import Conflicts';
+	String message({required Object count}) => 'The following ${count} characters have filename conflicts and will be renamed automatically:';
+}
+
+// Path: common.missingProviderBanner
+class _TranslationsCommonMissingProviderBannerEn {
+	_TranslationsCommonMissingProviderBannerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get message => 'Connect an AI provider.';
+	String get setUpNowButton => 'Set Up Now';
+}
+
+// Path: common.modelSelectionDialog
+class _TranslationsCommonModelSelectionDialogEn {
+	_TranslationsCommonModelSelectionDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get searchHint => 'Search Models';
+	String subscriptionOnlyToggle({required Object included, required Object total}) => 'Show only subscription models (${included}/${total})';
+}
+
+// Path: common.showAdvanced
+class _TranslationsCommonShowAdvancedEn {
+	_TranslationsCommonShowAdvancedEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get less => 'Less';
+	String get more => 'More';
+}
+
+// Path: common.messageEditDialog
+class _TranslationsCommonMessageEditDialogEn {
+	_TranslationsCommonMessageEditDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Edit Message';
+}
+
+// Path: common.promptBreakdownDialog
+class _TranslationsCommonPromptBreakdownDialogEn {
+	_TranslationsCommonPromptBreakdownDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Prompt Breakdown';
+	String get breakdownTab => 'Breakdown';
+	String get contentTab => 'Content';
+	String get promptTotalEstimated => 'Prompt total (estimated)';
+	String get promptTotalProvider => 'Prompt total (provider)';
+	String get contextWindowLabel => 'Context window';
+	String get categoryHeader => 'CATEGORY';
+	String get tokensHeader => 'TOKENS';
+	String get usageHeader => 'USAGE';
+	String get noContentToInspect => 'No content to inspect for this reply.';
+	String get estimatedSuffix => ' (estimated)';
+	String usedSummary({required Object used, required Object total}) => '${used} / ${total} used';
+}
+
+// Path: common.jsonPromptDialog
+class _TranslationsCommonJsonPromptDialogEn {
+	_TranslationsCommonJsonPromptDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Generation Prompt';
+}
+
+// Path: common.progressDialog
+class _TranslationsCommonProgressDialogEn {
+	_TranslationsCommonProgressDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get defaultMessage => 'Sending...';
+	String get finished => 'Finished!';
+}
+
+// Path: common.diffPanel
+class _TranslationsCommonDiffPanelEn {
+	_TranslationsCommonDiffPanelEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String tokenSuffix({required Object count}) => ' (${count} Tokens)';
+}
+
+// Path: common.selectionDialog
+class _TranslationsCommonSelectionDialogEn {
+	_TranslationsCommonSelectionDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get searchHint => 'Search…';
+}
+
+// Path: common.zdrSwitch
+class _TranslationsCommonZdrSwitchEn {
+	_TranslationsCommonZdrSwitchEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Require Zero Data Retention (ZDR)';
+	String get subtitle => 'Only show OR models with ZDR-compliant endpoints. Enable this if your openrouter.ai account restricts to ZDR providers.';
+}
+
+// Path: common.textFieldCard
+class _TranslationsCommonTextFieldCardEn {
+	_TranslationsCommonTextFieldCardEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} tokens';
+	String tokenCountAbbrev({required Object count}) => '${count} t';
+}
+
+// Path: common.modelCapability
+class _TranslationsCommonModelCapabilityEn {
+	_TranslationsCommonModelCapabilityEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get reasoning => 'Reasoning';
+	String get vision => 'Vision';
+	String get tools => 'Tools';
+	String get json => 'JSON';
+	String get files => 'Files';
+	String get image => 'Image';
+	String get video => 'Video';
+	String get speech => 'Speech';
+	String get music => 'Music';
+}
+
+// Path: common.appConstants
+class _TranslationsCommonAppConstantsEn {
+	_TranslationsCommonAppConstantsEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get maxImageFileSizeLabel => '10 MB';
+	String get exportFailedMessage => 'Export failed. See logs for details.';
 }
 
 // Path: grid.emptyState
@@ -2135,6 +2428,99 @@ extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'common.actions.delete': return 'Delete';
+			case 'common.actions.ok': return 'OK';
+			case 'common.actions.cancel': return 'Cancel';
+			case 'common.actions.save': return 'Save';
+			case 'common.actions.tryAgain': return 'Try Again';
+			case 'common.actions.close': return 'Close';
+			case 'common.aiAction.proofread': return 'Proofread';
+			case 'common.aiAction.compact': return 'Compact Prose';
+			case 'common.aiAction.translate': return 'Translate to English';
+			case 'common.aiAction.generatePreview': return 'Generate Preview';
+			case 'common.aiAction.autoTag': return 'Auto-Tag';
+			case 'common.aiActionsTooltip': return 'AI Actions';
+			case 'common.promptSegmentKind.identity': return 'Identity';
+			case 'common.promptSegmentKind.systemPrompt': return 'System prompt';
+			case 'common.promptSegmentKind.nsfwMode': return 'NSFW mode';
+			case 'common.promptSegmentKind.scenarioMode': return 'Scenario mode';
+			case 'common.promptSegmentKind.description': return 'Description';
+			case 'common.promptSegmentKind.personality': return 'Personality';
+			case 'common.promptSegmentKind.scenario': return 'Scenario';
+			case 'common.promptSegmentKind.userPersona': return 'Your persona';
+			case 'common.promptSegmentKind.memory': return 'Memory';
+			case 'common.promptSegmentKind.situation': return 'Situation';
+			case 'common.promptSegmentKind.cardData': return 'Card data';
+			case 'common.promptSegmentKind.tools': return 'Tools';
+			case 'common.promptSegmentKind.postHistory': return 'Post-history';
+			case 'common.promptSegmentKind.depthPrompt': return 'Depth prompt';
+			case 'common.promptSegmentKind.worldInfo': return 'World info';
+			case 'common.promptSegmentKind.injected': return 'Injected';
+			case 'common.promptSegmentKind.exampleDialogue': return 'Example dialogue';
+			case 'common.promptSegmentKind.history': return 'Message history';
+			case 'common.promptSegmentKind.currentMessage': return 'Current message';
+			case 'common.promptSegmentKind.reservedReply': return 'Reserved reply';
+			case 'common.promptBreakdown.free': return 'Free';
+			case 'common.logs.title': return 'Logs';
+			case 'common.logs.filterTooltip': return 'Filter Logs';
+			case 'common.logs.clearTooltip': return 'Clear Logs';
+			case 'common.logs.exportTooltip': return 'Export Logs';
+			case 'common.logs.searchHint': return 'Search logs...';
+			case 'common.logs.noLogsFound': return 'No logs found.';
+			case 'common.logs.noLogsToExport': return 'No logs to export';
+			case 'common.logs.exportedSuccessfully': return 'Logs exported successfully';
+			case 'common.logs.exportFailed': return 'Failed to export logs. See logs for details.';
+			case 'common.logs.copiedToClipboard': return 'Copied to clipboard';
+			case 'common.logs.copyLogButton': return 'Copy Log';
+			case 'common.logs.copiedEntryToClipboard': return 'Copied log entry to clipboard';
+			case 'common.importErrorsDialog.title': return 'Import Errors';
+			case 'common.importErrorsDialog.message': return 'The following files could not be imported:';
+			case 'common.updateDialog.title': return 'Version Available';
+			case 'common.updateDialog.body': return ({required Object appName, required Object currentVersion, required Object latestVersion}) => 'A newer version of ${appName} is available.\n\nCurrent version: ${currentVersion}\nLatest version: ${latestVersion}';
+			case 'common.updateDialog.releaseNotesLabel': return 'Release Notes:';
+			case 'common.updateDialog.viewReleasesButton': return 'View Releases';
+			case 'common.importConflictsDialog.title': return 'Import Conflicts';
+			case 'common.importConflictsDialog.message': return ({required Object count}) => 'The following ${count} characters have filename conflicts and will be renamed automatically:';
+			case 'common.missingProviderBanner.message': return 'Connect an AI provider.';
+			case 'common.missingProviderBanner.setUpNowButton': return 'Set Up Now';
+			case 'common.modelSelectionDialog.searchHint': return 'Search Models';
+			case 'common.modelSelectionDialog.subscriptionOnlyToggle': return ({required Object included, required Object total}) => 'Show only subscription models (${included}/${total})';
+			case 'common.showAdvanced.less': return 'Less';
+			case 'common.showAdvanced.more': return 'More';
+			case 'common.messageEditDialog.title': return 'Edit Message';
+			case 'common.promptBreakdownDialog.title': return 'Prompt Breakdown';
+			case 'common.promptBreakdownDialog.breakdownTab': return 'Breakdown';
+			case 'common.promptBreakdownDialog.contentTab': return 'Content';
+			case 'common.promptBreakdownDialog.promptTotalEstimated': return 'Prompt total (estimated)';
+			case 'common.promptBreakdownDialog.promptTotalProvider': return 'Prompt total (provider)';
+			case 'common.promptBreakdownDialog.contextWindowLabel': return 'Context window';
+			case 'common.promptBreakdownDialog.categoryHeader': return 'CATEGORY';
+			case 'common.promptBreakdownDialog.tokensHeader': return 'TOKENS';
+			case 'common.promptBreakdownDialog.usageHeader': return 'USAGE';
+			case 'common.promptBreakdownDialog.noContentToInspect': return 'No content to inspect for this reply.';
+			case 'common.promptBreakdownDialog.estimatedSuffix': return ' (estimated)';
+			case 'common.promptBreakdownDialog.usedSummary': return ({required Object used, required Object total}) => '${used} / ${total} used';
+			case 'common.jsonPromptDialog.title': return 'Generation Prompt';
+			case 'common.progressDialog.defaultMessage': return 'Sending...';
+			case 'common.progressDialog.finished': return 'Finished!';
+			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} Tokens)';
+			case 'common.selectionDialog.searchHint': return 'Search…';
+			case 'common.zdrSwitch.title': return 'Require Zero Data Retention (ZDR)';
+			case 'common.zdrSwitch.subtitle': return 'Only show OR models with ZDR-compliant endpoints. Enable this if your openrouter.ai account restricts to ZDR providers.';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} tokens';
+			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
+			case 'common.modelCapability.reasoning': return 'Reasoning';
+			case 'common.modelCapability.vision': return 'Vision';
+			case 'common.modelCapability.tools': return 'Tools';
+			case 'common.modelCapability.json': return 'JSON';
+			case 'common.modelCapability.files': return 'Files';
+			case 'common.modelCapability.image': return 'Image';
+			case 'common.modelCapability.video': return 'Video';
+			case 'common.modelCapability.speech': return 'Speech';
+			case 'common.modelCapability.music': return 'Music';
+			case 'common.modelUnavailableTooltip': return 'This model is no longer available from the provider — pick another.';
+			case 'common.characterImageSemanticLabel': return 'Character image';
+			case 'common.appConstants.maxImageFileSizeLabel': return '10 MB';
+			case 'common.appConstants.exportFailedMessage': return 'Export failed. See logs for details.';
 			case 'grid.emptyState.noMatches': return 'No characters match your filters';
 			case 'grid.emptyState.noCharacters': return 'No characters imported yet';
 			case 'grid.emptyState.clearAllFilters': return 'Clear all filters';

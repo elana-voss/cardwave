@@ -68,7 +68,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 1 `lib/grid/` → `grid`
 - [x] 2 `lib/routing/` → `routing`
 - [x] 3 `lib/onboarding/` → `onboarding`
-- [ ] 4 `lib/common/` → `common`
+- [x] 4 `lib/common/` → `common`
 - [ ] 5 `lib/settings/` → `settings`
 - [ ] 6 `lib/llm_app/` → `llmApp`
 - [ ] 7 `lib/character/` → `character`
@@ -136,6 +136,28 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   Row 5: convert both constants to non-const `t.settings.*` getters and
   drop `const` from the two `Text(...)` call sites (here and in
   dialog_local_gguf_provider_config.dart).
+- **[common] `UtilsApp.timeAgo()` relative-time unit strings**
+  (`lib/common/src/utils/utils_app.dart:75-86`): NOT extracted. This
+  hand-rolled formatter returns strings like `'$n y ago'`, `'$n mo ago'`,
+  `'$n d ago'`, `'$n h ago'`, `'$n m ago'`, and `'Just now'` — genuinely
+  user-visible (used across grid item footers, group tiles, the chat
+  character switcher, and settings' provider-refresh line). §1 of the
+  plan says dates/numbers get "No dedicated phase" beyond the two named
+  `DateFormat` call sites Step 2 already wired; `timeAgo()` is a
+  hand-rolled formatter, not a `DateFormat` site, so it reads as
+  deliberately out of scope rather than a gap in the two-site list.
+  Treated as non-action (skip) — flagging since it's a real i18n hole
+  (relative-time phrasing/word-order varies a lot by language) in case
+  Step 4/5 want to fold it in as a follow-up. The surrounding fixed
+  English chrome around each `timeAgo()` call site (e.g. "Last active:",
+  "Last refreshed:", "Never") is NOT part of this exclusion and gets
+  extracted normally when its owning feature's row comes up.
+- **[common] `UtilsApp.sanitizeFileName`'s `fallback = 'Untitled'`**
+  (`lib/common/src/utils/utils_app.dart:41`): NOT extracted. Both call
+  sites (`lib/character/src/utils/utils_png.dart`) use the default and
+  the result becomes an on-disk export filename, not rendered UI text —
+  treated like the asset-path/filename exclusion in §3.3, not a UI
+  string.
 
 ## Parked observations (bugs noticed but out of scope)
 _(none yet)_

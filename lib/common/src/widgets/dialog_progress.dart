@@ -1,9 +1,12 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class ProgressDialogHandle {
   ProgressDialogHandle(this._closeCallback);
   final ValueNotifier<double?> progress = ValueNotifier<double?>(null);
-  final ValueNotifier<String> message = ValueNotifier<String>('Sending...');
+  final ValueNotifier<String> message = ValueNotifier<String>(
+    t.common.progressDialog.defaultMessage,
+  );
   final VoidCallback _closeCallback;
   bool isCancelled = false;
   bool _isClosed = false;
@@ -75,7 +78,7 @@ class _DialogProgressState extends State<DialogProgress> {
               widget.onCancel?.call();
               widget.handle.close();
             },
-            child: const Text('Cancel'),
+            child: Text(t.common.actions.cancel),
           ),
         ],
       ),

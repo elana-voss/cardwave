@@ -1,4 +1,5 @@
 import 'package:cardwave/common/src/models/prompt_segment_kind_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 
 /// One assembled part of a chat prompt: its kind, its character-based token
 /// estimate, and the exact text it contributed. Runtime-only — held for the
@@ -89,7 +90,7 @@ class PromptContextBreakdown {
       tokens: reservedReply,
       kind: PromptSegmentKindEnum.reservedReply,
     ),
-    PromptBreakdownRow(label: 'Free', tokens: freeTokens),
+    PromptBreakdownRow(label: t.common.promptBreakdown.free, tokens: freeTokens),
   ];
 
   /// A row's share of the whole context window, as a 0–100 percentage.

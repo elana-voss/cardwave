@@ -1,4 +1,5 @@
 import 'package:cardwave/common/src/widgets/badge_model_unavailable.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 
@@ -28,24 +29,28 @@ class TileModel extends StatelessWidget {
 
     final inputCapabilityChips = <_ChipSpec>[
       if (caps.reasoning)
-        const _ChipSpec(Icons.psychology_outlined, 'Reasoning'),
+        _ChipSpec(Icons.psychology_outlined, t.common.modelCapability.reasoning),
       if (caps.inputModalities.contains(LlmModelCapabilitiesEnum.image))
-        const _ChipSpec(Icons.visibility_outlined, 'Vision'),
-      if (caps.toolCalling) const _ChipSpec(Icons.build_outlined, 'Tools'),
+        _ChipSpec(Icons.visibility_outlined, t.common.modelCapability.vision),
+      if (caps.toolCalling)
+        _ChipSpec(Icons.build_outlined, t.common.modelCapability.tools),
       if (caps.structuredOutput)
-        const _ChipSpec(Icons.data_object_outlined, 'JSON'),
+        _ChipSpec(Icons.data_object_outlined, t.common.modelCapability.json),
       if (caps.inputModalities.contains(LlmModelCapabilitiesEnum.file))
-        const _ChipSpec(Icons.description_outlined, 'Files'),
+        _ChipSpec(Icons.description_outlined, t.common.modelCapability.files),
     ];
     final outputCapabilityChips = <_ChipSpec>[
       if (caps.outputModalities.contains(LlmModelCapabilitiesEnum.image))
-        const _ChipSpec(Icons.image_outlined, 'Image'),
+        _ChipSpec(Icons.image_outlined, t.common.modelCapability.image),
       if (caps.outputModalities.contains(LlmModelCapabilitiesEnum.video))
-        const _ChipSpec(Icons.movie_outlined, 'Video'),
+        _ChipSpec(Icons.movie_outlined, t.common.modelCapability.video),
       if (caps.outputModalities.contains(LlmModelCapabilitiesEnum.audioTts))
-        const _ChipSpec(Icons.record_voice_over_outlined, 'Speech'),
+        _ChipSpec(
+          Icons.record_voice_over_outlined,
+          t.common.modelCapability.speech,
+        ),
       if (caps.outputModalities.contains(LlmModelCapabilitiesEnum.audioMusic))
-        const _ChipSpec(Icons.music_note_outlined, 'Music'),
+        _ChipSpec(Icons.music_note_outlined, t.common.modelCapability.music),
     ];
     final chipChildren = <Widget>[
       for (final spec in inputCapabilityChips) _ChipWidget(spec: spec),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +54,7 @@ class _ImageCharacterState extends State<ImageCharacter> {
         if (snapshot.hasData) {
           return Image.memory(
             snapshot.data!,
-            semanticLabel: 'Character image',
+            semanticLabel: t.common.characterImageSemanticLabel,
             fit: widget.fit,
             gaplessPlayback: true,
             cacheWidth: widget.cacheWidth,

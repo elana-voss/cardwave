@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cardwave/common/src/utils/logging_service.dart';
 import 'package:cardwave/common/src/utils/navigation_service.dart';
 import 'package:cardwave/common/src/widgets/app_search_field.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,13 +44,13 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.close),
         ),
-        title: const Text('Logs'),
+        title: Text(t.common.logs.title),
         actions: [
           MenuAnchor(
             builder: (context, controller, child) {
               return IconButton(
                 icon: const Icon(Icons.filter_alt),
-                tooltip: 'Filter Logs',
+                tooltip: t.common.logs.filterTooltip,
                 onPressed: () {
                   if (controller.isOpen) {
                     controller.close();
@@ -84,12 +85,12 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.delete_sweep),
-            tooltip: 'Clear Logs',
+            tooltip: t.common.logs.clearTooltip,
             onPressed: () => LoggingService().logsNotifier.value = [],
           ),
           IconButton(
             icon: const Icon(Icons.download),
-            tooltip: 'Export Logs',
+            tooltip: t.common.logs.exportTooltip,
             onPressed: _exportLogs,
           ),
         ],
@@ -100,7 +101,7 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
             padding: const EdgeInsets.all(8),
             child: AppSearchField(
               controller: _searchController,
-              hintText: 'Search logs...',
+              hintText: t.common.logs.searchHint,
             ),
           ),
           Expanded(
@@ -124,7 +125,7 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
                 }).toList();
 
                 if (filteredLogs.isEmpty) {
-                  return const Center(child: Text('No logs found.'));
+                  return Center(child: Text(t.common.logs.noLogsFound));
                 }
 
                 return ListView.builder(
@@ -145,7 +146,7 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
   Future<void> _exportLogs() async {
     final logs = LoggingService().logsNotifier.value;
     if (logs.isEmpty) {
-      NavigationService().showSnackBar('No logs to export');
+      NavigationService().showSnackBar(t.common.logs.noLogsToExport);
       return;
     }
 
@@ -181,13 +182,11 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
         );
         await textFile.saveTo(result.path);
 
-        NavigationService().showSnackBar('Logs exported successfully');
+        NavigationService().showSnackBar(t.common.logs.exportedSuccessfully);
       }
     } on Exception catch (e, st) {
       LoggingService().error('Log export failed', e, st);
-      NavigationService().showSnackBar(
-        'Failed to export logs. See logs for details.',
-      );
+      NavigationService().showSnackBar(t.common.logs.exportFailed);
     }
   }
 }
@@ -215,7 +214,7 @@ class _LogEntryWidgetState extends State<_LogEntryWidget> {
       onTap: () => setState(() => _isExpanded = !_isExpanded),
       onLongPress: () {
         unawaited(Clipboard.setData(ClipboardData(text: widget.entry.message)));
-        NavigationService().showSnackBar('Copied to clipboard');
+        NavigationService().showSnackBar(t.common.logs.copiedToClipboard);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -281,7 +280,7 @@ class _LogEntryWidgetState extends State<_LogEntryWidget> {
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
                   icon: const Icon(Icons.copy, size: 16),
-                  label: const Text('Copy Log'),
+                  label: Text(t.common.logs.copyLogButton),
                   onPressed: () {
                     final fullLog =
                         '[$time] [${widget.entry.level.name}] ${widget.entry.message}'
@@ -290,7 +289,7 @@ class _LogEntryWidgetState extends State<_LogEntryWidget> {
                         '${widget.entry.dataContext != null ? '\n${widget.entry.dataContext}' : ''}';
                     unawaited(Clipboard.setData(ClipboardData(text: fullLog)));
                     NavigationService().showSnackBar(
-                      'Copied log entry to clipboard',
+                      t.common.logs.copiedEntryToClipboard,
                     );
                   },
                 ),

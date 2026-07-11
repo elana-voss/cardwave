@@ -1,4 +1,5 @@
 import 'package:cardwave/common/src/theme/compact_theme.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Per-section "More / Less" expander row. Sits at the bottom of a
@@ -20,7 +21,7 @@ class DrawerShowAdvanced extends StatelessWidget {
     return ListTile(
       onTap: onToggle,
       leading: const Icon(Icons.more_horiz),
-      title: Text(expanded ? 'Less' : 'More'),
+      title: Text(expanded ? t.common.showAdvanced.less : t.common.showAdvanced.more),
       trailing: SizedBox(
         // Same 160 dp trailing column every row uses, so the chevron
         // anchors at the same right margin as the picker text/icons.

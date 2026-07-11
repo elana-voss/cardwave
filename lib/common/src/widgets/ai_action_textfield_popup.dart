@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/src/utils/logging_service.dart';
 import 'package:cardwave/common/src/widgets/ai_action_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +46,7 @@ class AiActionTextfieldPopup extends StatelessWidget {
         Icons.auto_awesome,
         color: Theme.of(context).colorScheme.primary,
       ),
-      tooltip: 'AI Actions',
+      tooltip: t.common.aiActionsTooltip,
       onSelected: (action) {
         final service = context.read<CharacterAiService>();
         unawaited(() async {

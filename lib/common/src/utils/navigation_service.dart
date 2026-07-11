@@ -6,6 +6,7 @@ import 'package:cardwave/common/src/utils/app_constants.dart';
 import 'package:cardwave/common/src/widgets/app_dialog.dart';
 import 'package:cardwave/common/src/models/prompt_breakdown.dart';
 import 'package:cardwave/common/src/widgets/dialog_json_prompt.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/common/src/widgets/dialog_message_edit.dart';
 import 'package:cardwave/common/src/widgets/dialog_prompt_breakdown.dart';
 import 'package:cardwave/common/src/widgets/dialog_progress.dart';
@@ -60,7 +61,7 @@ class NavigationService {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(t.common.actions.ok),
           ),
         ],
       ),
@@ -82,7 +83,7 @@ class NavigationService {
           TextButton(
             key: const Key('dialog-cancel'),
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(t.common.actions.cancel),
           ),
           TextButton(
             key: const Key('dialog-confirm'),
@@ -101,8 +102,8 @@ class NavigationService {
     required String title,
     required String initialText,
     required String hintText,
-    String confirmText = 'Save',
-    String cancelText = 'Cancel',
+    String? confirmText,
+    String? cancelText,
     int maxLines = 3,
   }) {
     return _showAppDialog<String>(
@@ -110,8 +111,8 @@ class NavigationService {
         title: title,
         initialText: initialText,
         hintText: hintText,
-        confirmText: confirmText,
-        cancelText: cancelText,
+        confirmText: confirmText ?? t.common.actions.save,
+        cancelText: cancelText ?? t.common.actions.cancel,
         maxLines: maxLines,
       ),
     );
@@ -432,7 +433,7 @@ class NavigationService {
   Future<T?> runWithProgressDialog<T>({
     required String title,
     required Future<T> Function(ProgressDialogHandle handle) task,
-    String successMessage = 'Finished!',
+    String? successMessage,
     VoidCallback? onCancel,
   }) async {
     final handle = showProgressDialog(title: title, onCancel: onCancel);
@@ -440,7 +441,10 @@ class NavigationService {
     try {
       final result = await task(handle);
       if (!handle.isCancelled) {
-        handle.update(progressValue: 1, messageValue: successMessage);
+        handle.update(
+          progressValue: 1,
+          messageValue: successMessage ?? t.common.progressDialog.finished,
+        );
         await Future.delayed(const Duration(milliseconds: 500));
       }
       return result;
@@ -468,7 +472,7 @@ class NavigationService {
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Try Again'),
+            child: Text(t.common.actions.tryAgain),
           ),
         ],
       ),
@@ -490,7 +494,7 @@ class NavigationService {
   Future<void> showImportErrorsDialog(List<String> errors) async {
     await _showAppDialog(
       builder: (context) => AlertDialog(
-        title: const Text('Import Errors'),
+        title: Text(t.common.importErrorsDialog.title),
         content: SingleChildScrollView(
           // Spread children carry their own `Padding(bottom: 4)`; a single
           // `spacing:` would compound with that and change effective gaps.
@@ -499,7 +503,7 @@ class NavigationService {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('The following files could not be imported:'),
+              Text(t.common.importErrorsDialog.message),
               const SizedBox(height: 8),
               ...errors.map(
                 (e) => Padding(
@@ -519,7 +523,7 @@ class NavigationService {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(t.common.actions.ok),
           ),
         ],
       ),
@@ -534,19 +538,23 @@ class NavigationService {
   }) async {
     final result = await _showAppDialog<bool>(
       builder: (context) => AlertDialog(
-        title: const Text('Version Available'),
+        title: Text(t.common.updateDialog.title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'A newer version of ${AppConstants.appPackageName} is available.\n\nCurrent version: $currentVersion\nLatest version: $latestVersion',
+              t.common.updateDialog.body(
+                appName: AppConstants.appPackageName,
+                currentVersion: currentVersion,
+                latestVersion: latestVersion,
+              ),
             ),
             if (releaseNotes != null && releaseNotes.isNotEmpty) ...[
               const SizedBox(height: 16),
-              const Text(
-                'Release Notes:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text(
+                t.common.updateDialog.releaseNotesLabel,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(releaseNotes),
@@ -556,11 +564,11 @@ class NavigationService {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Close'),
+            child: Text(t.common.actions.close),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('View Releases'),
+            child: Text(t.common.updateDialog.viewReleasesButton),
           ),
         ],
       ),
@@ -573,7 +581,7 @@ class NavigationService {
     final result = await _showAppDialog<bool>(
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Import Conflicts'),
+        title: Text(t.common.importConflictsDialog.title),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -581,7 +589,9 @@ class NavigationService {
             children: [
               if (conflictingNames.isNotEmpty) ...[
                 Text(
-                  'The following ${conflictingNames.length} characters have filename conflicts and will be renamed automatically:',
+                  t.common.importConflictsDialog.message(
+                    count: conflictingNames.length,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -596,11 +606,11 @@ class NavigationService {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(t.common.actions.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('OK'),
+            child: Text(t.common.actions.ok),
           ),
         ],
       ),

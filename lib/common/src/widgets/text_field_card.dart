@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/src/utils/app_constants.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -246,7 +247,13 @@ class TextFieldCardState extends State<TextFieldCard> {
         ? ValueListenableBuilder<int>(
             valueListenable: _tokenCount,
             builder: (context, count, child) {
-              return Text('${widget.label} - $count tokens', style: textStyle);
+              return Text(
+                t.common.textFieldCard.labelWithTokenCount(
+                  label: widget.label,
+                  count: count,
+                ),
+                style: textStyle,
+              );
             },
           )
         : Text(widget.label, style: textStyle);
@@ -365,7 +372,9 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
                       valueListenable: _localTokenCount!,
                       builder: (context, count, child) {
                         return Text(
-                          '$count t',
+                          t.common.textFieldCard.tokenCountAbbrev(
+                            count: count,
+                          ),
                           style: Theme.of(context).textTheme.bodyMedium,
                         );
                       },

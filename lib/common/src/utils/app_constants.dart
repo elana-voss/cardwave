@@ -1,3 +1,5 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
+
 class AppConstants {
   static const String appPackageName = 'Cardwave';
   static final String appPackageNameLowerCase = appPackageName.toLowerCase();
@@ -169,10 +171,11 @@ class AppConstants {
 
   /// Replace PNG, max size
   static const int maxImageFileSizeBytes = 10 * 1024 * 1024;
-  static const String maxImageFileSizeLabel = '10 MB';
+  static String get maxImageFileSizeLabel =>
+      t.common.appConstants.maxImageFileSizeLabel;
 
   /// Snackbar shown when card export (PNG / JSON) fails. Duplicated across
   /// the grid item action menu and the workspace end-drawer export tiles.
-  static const String exportFailedMessage =
-      'Export failed. See logs for details.';
+  static String get exportFailedMessage =>
+      t.common.appConstants.exportFailedMessage;
 }
