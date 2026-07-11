@@ -120,6 +120,10 @@ dependencies:
   drift: ^2.34.0
   drift_flutter: ^0.3.0
   sqlite3: ^3.3.3
+  slang: ^3.32.0
+  slang_flutter: ^3.32.0
+  flutter_localizations:
+    sdk: flutter
 dev_dependencies:
   flutter_test:
     sdk: flutter
