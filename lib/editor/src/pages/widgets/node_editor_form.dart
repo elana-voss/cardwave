@@ -2,6 +2,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/pages/widgets/dropdown_labeled.dart';
 import 'package:cardwave/editor/src/pages/widgets/object_value_editor.dart';
 import 'package:cardwave/editor/src/pages/widgets/tag_chip.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -185,7 +186,7 @@ class _NodeEditorFormState extends State<NodeEditorForm> {
           children: [
             TextFieldCard.singleLine(
               controller: _controllers.name,
-              label: 'Name',
+              label: t.editor.nodeEditorForm.nameLabel,
             ),
             _BasicFieldsSection(
               node: _node,
@@ -202,7 +203,7 @@ class _NodeEditorFormState extends State<NodeEditorForm> {
             ),
             TextFieldCard.multiLine(
               controller: _controllers.narrativePayload,
-              label: 'Narrative payload',
+              label: t.editor.nodeEditorForm.narrativePayloadLabel,
               minLines: 2,
             ),
             _EffectsSection(
@@ -248,10 +249,9 @@ class _NodeEditorFormState extends State<NodeEditorForm> {
     // the root navigator, above where that controller is provided, so a
     // context read here would not find it.
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Remove spawn link',
-      message: 'Stop this node from spawning "$nodeId"? '
-          'The node itself stays on the card.',
-      confirmText: 'Remove',
+      title: t.editor.nodeEditorForm.removeSpawnLinkTitle,
+      message: t.editor.nodeEditorForm.removeSpawnLinkMessage(nodeId: nodeId),
+      confirmText: t.editor.nodeEditorForm.removeButton,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (!confirmed || !mounted) return;
@@ -488,7 +488,7 @@ class _BasicFieldsSection extends StatelessWidget {
             SizedBox(
               width: 220,
               child: DropdownLabeled<NodeTypeEnum>(
-                label: 'Type',
+                label: t.editor.nodeEditorForm.typeLabel,
                 value: node.type,
                 items: [
                   for (final t in NodeTypeEnum.values)
@@ -500,7 +500,7 @@ class _BasicFieldsSection extends StatelessWidget {
             SizedBox(
               width: 180,
               child: DropdownLabeled<NodeScopeEnum>(
-                label: 'Scope',
+                label: t.editor.nodeEditorForm.scopeLabel,
                 value: node.scope,
                 items: [
                   for (final s in NodeScopeEnum.values)
@@ -512,7 +512,7 @@ class _BasicFieldsSection extends StatelessWidget {
             SizedBox(
               width: 180,
               child: DropdownLabeled<NodeOriginEnum>(
-                label: 'Origin',
+                label: t.editor.nodeEditorForm.originLabel,
                 value: node.origin,
                 items: [
                   for (final o in NodeOriginEnum.values)
@@ -531,29 +531,25 @@ class _BasicFieldsSection extends StatelessWidget {
         _CountdownRow(
           field: _CountdownField.delay,
           controller: controllers.delay,
-          helper: 'Turns to wait before becoming eligible. -1 acts as 0.',
+          helper: t.editor.nodeEditorForm.delayHelper,
           onSetNever: null,
         ),
         _CountdownRow(
           field: _CountdownField.cooldown,
           controller: controllers.cooldown,
-          helper: 'Turns locked out after firing. -1 means no cooldown.',
+          helper: t.editor.nodeEditorForm.cooldownHelper,
           onSetNever: () => onSetNever(_CountdownField.cooldown),
         ),
         _CountdownRow(
           field: _CountdownField.sticky,
           controller: controllers.sticky,
-          helper:
-              'Turns the narrative payload keeps appearing as "Lingering" '
-              'after firing. -1 means permanent.',
+          helper: t.editor.nodeEditorForm.stickyHelper,
           onSetNever: () => onSetNever(_CountdownField.sticky),
         ),
         _CountdownRow(
           field: _CountdownField.alive,
           controller: controllers.alive,
-          helper:
-              'Turns the node stays in the pool before removal. '
-              '-1 means forever.',
+          helper: t.editor.nodeEditorForm.aliveHelper,
           onSetNever: () => onSetNever(_CountdownField.alive),
         ),
       ],
@@ -577,9 +573,9 @@ class _TriggerProbRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const SizedBox(
+        SizedBox(
           width: 110,
-          child: Text('Trigger prob'),
+          child: Text(t.editor.nodeEditorForm.triggerProbLabel),
         ),
         Expanded(
           child: Slider(
@@ -644,7 +640,7 @@ class _CountdownRow extends StatelessWidget {
             if (onSetNever != null)
               TextButton(
                 onPressed: onSetNever,
-                child: const Text('Set to never'),
+                child: Text(t.editor.nodeEditorForm.setToNeverButton),
               ),
           ],
         ),
@@ -712,19 +708,19 @@ class _EffectsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _SectionLabel('Effects'),
+        _SectionLabel(t.editor.nodeEditorForm.effectsSectionLabel),
         _deltaEditor<EmotionEnum>(
-          title: 'Emotion deltas',
+          title: t.editor.nodeEditorForm.emotionDeltasTitle,
           allValues: EmotionEnum.values,
           byCharacter: effects.emotionDeltas,
         ),
         _deltaEditor<PhysicalEnum>(
-          title: 'Physical deltas',
+          title: t.editor.nodeEditorForm.physicalDeltasTitle,
           allValues: PhysicalEnum.values,
           byCharacter: effects.physicalDeltas,
         ),
         _deltaEditor<RelationshipEnum>(
-          title: 'Relationship deltas',
+          title: t.editor.nodeEditorForm.relationshipDeltasTitle,
           allValues: RelationshipEnum.values,
           byCharacter: effects.relationshipDeltas,
         ),
@@ -854,9 +850,9 @@ class _DeltaMapEditor<E extends Enum> extends StatelessWidget {
                 for (final v in remaining)
                   PopupMenuItem(value: v, child: Text(v.name)),
               ],
-              child: const Chip(
-                avatar: Icon(Icons.add, size: 18),
-                label: Text('Add delta'),
+              child: Chip(
+                avatar: const Icon(Icons.add, size: 18),
+                label: Text(t.editor.nodeEditorForm.addDeltaChip),
               ),
             ),
           ),
@@ -967,7 +963,7 @@ class _DeltaRowState<E extends Enum> extends State<_DeltaRow<E>> {
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: widget.onRemove,
-            tooltip: 'Remove',
+            tooltip: t.editor.nodeEditorForm.removeButton,
           ),
         ],
       ),
@@ -1021,7 +1017,7 @@ class _KnowledgeWritesSection extends StatelessWidget {
     return ExpansionTile(
       title: Row(
         children: [
-          const Text('Knowledge writes'),
+          Text(t.editor.nodeEditorForm.knowledgeWritesTitle),
           if (records.isNotEmpty) ...[
             const SizedBox(width: 8),
             _CountBadge(records.length),
@@ -1052,7 +1048,7 @@ class _KnowledgeWritesSection extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: ActionChip(
             avatar: const Icon(Icons.add, size: 18),
-            label: const Text('Add fact'),
+            label: Text(t.editor.nodeEditorForm.addFactChip),
             onPressed: binding.add,
           ),
         ),
@@ -1120,13 +1116,13 @@ class _KnowledgeRowState extends State<_KnowledgeRow> {
               Expanded(
                 child: TextFieldCard.singleLine(
                   controller: _topicController,
-                  label: 'topic',
+                  label: t.editor.nodeEditorForm.topicLabel,
                 ),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: widget.onRemove,
-                tooltip: 'Remove',
+                tooltip: t.editor.nodeEditorForm.removeButton,
               ),
             ],
           ),
@@ -1136,7 +1132,10 @@ class _KnowledgeRowState extends State<_KnowledgeRow> {
           ),
           Row(
             children: [
-              const SizedBox(width: 100, child: Text('confidence')),
+              SizedBox(
+                width: 100,
+                child: Text(t.editor.nodeEditorForm.confidenceLabel),
+              ),
               Expanded(
                 child: Slider(
                   value: widget.record.confidence.clamp(0.0, 1.0),
@@ -1208,7 +1207,7 @@ class _FlagSetSection extends StatelessWidget {
     return ExpansionTile(
       title: Row(
         children: [
-          const Text('Flag set'),
+          Text(t.editor.nodeEditorForm.flagSetTitle),
           if (keys.isNotEmpty) ...[
             const SizedBox(width: 8),
             _CountBadge(keys.length),
@@ -1231,7 +1230,7 @@ class _FlagSetSection extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: ActionChip(
             avatar: const Icon(Icons.add, size: 18),
-            label: const Text('Add flag'),
+            label: Text(t.editor.nodeEditorForm.addFlagChip),
             onPressed: binding.add,
           ),
         ),
@@ -1303,7 +1302,7 @@ class _FlagRowState extends State<_FlagRow> {
             child: TextFieldCard.singleLine(
               controller: _keyController,
               focusNode: _keyFocusNode,
-              label: 'key',
+              label: t.editor.nodeEditorForm.keyLabel,
             ),
           ),
           Expanded(
@@ -1315,7 +1314,7 @@ class _FlagRowState extends State<_FlagRow> {
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: widget.onRemove,
-            tooltip: 'Remove',
+            tooltip: t.editor.nodeEditorForm.removeButton,
           ),
         ],
       ),
@@ -1375,7 +1374,7 @@ class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
     return ExpansionTile(
       title: Row(
         children: [
-          const Text('Scene & flow'),
+          Text(t.editor.nodeEditorForm.sceneAndFlowTitle),
           if (_isSet) ...[
             const SizedBox(width: 8),
             _CountBadge(_setCount),
@@ -1387,22 +1386,25 @@ class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
       children: [
         TextFieldCard.singleLine(
           controller: _goalController,
-          label: 'goalChange (clears the current goal when empty)',
+          label: t.editor.nodeEditorForm.goalChangeLabel,
         ),
         Padding(
           padding: const EdgeInsets.only(top: 12),
           child: Row(
             children: [
-              const SizedBox(width: 110, child: Text('phaseChange')),
+              SizedBox(
+                width: 110,
+                child: Text(t.editor.nodeEditorForm.phaseChangeLabel),
+              ),
               SizedBox(
                 width: 200,
                 child: DropdownButton<PhaseEnum?>(
                   isExpanded: true,
                   value: widget.phase,
-                  hint: const Text('(none)'),
+                  hint: Text(t.editor.nodeEditorForm.noneOption),
                   items: [
-                    const DropdownMenuItem<PhaseEnum?>(
-                      child: Text('(none)'),
+                    DropdownMenuItem<PhaseEnum?>(
+                      child: Text(t.editor.nodeEditorForm.noneOption),
                     ),
                     for (final p in PhaseEnum.values)
                       DropdownMenuItem<PhaseEnum?>(
@@ -1417,10 +1419,8 @@ class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
           ),
         ),
         SwitchListTile(
-          title: const Text('sceneTransition'),
-          subtitle: const Text(
-            'When true, the engine marks the firing as a scene shift.',
-          ),
+          title: Text(t.editor.nodeEditorForm.sceneTransitionLabel),
+          subtitle: Text(t.editor.nodeEditorForm.sceneTransitionSubtitle),
           value: widget.sceneTransition,
           onChanged: widget.onSceneTransitionChanged,
           contentPadding: EdgeInsets.zero,
@@ -1474,7 +1474,7 @@ class _SpawnsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _SectionLabel('Spawns'),
+        _SectionLabel(t.editor.nodeEditorForm.spawnsSectionLabel),
         for (final spawnId in spawnIds)
           _SpawnRow(
             key: ValueKey(spawnId),
@@ -1490,7 +1490,7 @@ class _SpawnsSection extends StatelessWidget {
           children: [
             ActionChip(
               avatar: const Icon(Icons.add, size: 18),
-              label: const Text('Add new'),
+              label: Text(t.editor.nodeEditorForm.addNewChip),
               onPressed: onAddNew,
             ),
             if (linkable.isNotEmpty)
@@ -1503,9 +1503,9 @@ class _SpawnsSection extends StatelessWidget {
                       child: Text(n.displayLabel),
                     ),
                 ],
-                child: const Chip(
-                  avatar: Icon(Icons.link, size: 18),
-                  label: Text('Link existing'),
+                child: Chip(
+                  avatar: const Icon(Icons.link, size: 18),
+                  label: Text(t.editor.nodeEditorForm.linkExistingChip),
                 ),
               ),
           ],
@@ -1575,7 +1575,7 @@ class _SpawnRow extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.link_off),
             onPressed: onUnlink,
-            tooltip: 'Unlink',
+            tooltip: t.editor.nodeEditorForm.unlinkTooltip,
           ),
         ],
       ),
@@ -1644,7 +1644,7 @@ class _PredicateField extends StatelessWidget {
       children: [
         TextFieldCard.multiLine(
           controller: controller,
-          label: 'Predicate',
+          label: t.editor.nodeEditorForm.predicateLabel,
           minLines: 2,
         ),
         ValueListenableBuilder<List<String>>(

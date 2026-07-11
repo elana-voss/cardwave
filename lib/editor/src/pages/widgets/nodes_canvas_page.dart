@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/editor/src/pages/widgets/nodes_canvas_view.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/material.dart';
 
@@ -64,7 +65,9 @@ class _NodesCanvasPageState extends State<NodesCanvasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Visual editor')),
+      appBar: AppBar(
+        title: Text(t.editor.editorNodes.visualEditorTooltip),
+      ),
       body: NodesCanvasView(
         nodes: widget.nodes,
         onPositionChanged: widget.onPositionChanged,

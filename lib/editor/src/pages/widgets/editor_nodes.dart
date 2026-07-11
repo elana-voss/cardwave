@@ -5,6 +5,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_editor_form.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/editor/src/pages/widgets/node_list_tile.dart';
 import 'package:cardwave/editor/src/pages/widgets/nodes_canvas_page.dart';
 import 'package:cardwave/editor/src/pages/widgets/nodes_raw_editor_page.dart';
@@ -209,8 +210,8 @@ class _EditorNodesState extends State<EditorNodes> {
     final controller = context.read<EditorPageController>();
     final errorColor = Theme.of(context).colorScheme.error;
     final confirmed = await controller.confirmDelete(
-      title: 'Delete node',
-      message: 'Remove this authored node from the card?',
+      title: t.editor.editorNodes.deleteNodeTitle,
+      message: t.editor.editorNodes.deleteNodeMessage,
       confirmColor: errorColor,
     );
     if (!confirmed || !mounted) return;
@@ -417,17 +418,17 @@ class _EditorNodesState extends State<EditorNodes> {
         ExpansionTile(
           title: Row(
             children: [
-              const Text('Engine seed'),
+              Text(t.editor.editorNodes.engineSeedTitle),
               const Spacer(),
               IconButton(
                 key: const Key('editor-nodes-canvas-button'),
-                tooltip: 'Visual editor',
+                tooltip: t.editor.editorNodes.visualEditorTooltip,
                 icon: const Icon(Icons.account_tree),
                 onPressed: () => unawaited(_openCanvasPage()),
               ),
               IconButton(
                 key: const Key('editor-nodes-raw-button'),
-                tooltip: 'Edit JSON',
+                tooltip: t.editor.editorNodes.editJsonTooltip,
                 icon: const Icon(Icons.data_object),
                 onPressed: _openRawEditor,
               ),
@@ -443,7 +444,7 @@ class _EditorNodesState extends State<EditorNodes> {
               children: [
                 TextFieldCard.singleLine(
                   controller: _goalController,
-                  label: 'Initial goal',
+                  label: t.editor.editorNodes.initialGoalLabel,
                 ),
                 _BaselineSection(
                   baseline: _extension.emotionBaseline,
@@ -457,22 +458,22 @@ class _EditorNodesState extends State<EditorNodes> {
                   onRemove: _removeBaseline,
                   onAdd: _addBaseline,
                 ),
-                const _SectionLabel('Initial scene'),
+                _SectionLabel(t.editor.editorNodes.initialSceneLabel),
                 TextFieldCard.singleLine(
                   controller: _locationController,
-                  label: 'Location',
+                  label: t.editor.editorNodes.locationLabel,
                 ),
                 TextFieldCard.singleLine(
                   controller: _timeOfDayController,
-                  label: 'Time of day',
+                  label: t.editor.editorNodes.timeOfDayLabel,
                 ),
                 TextFieldCard.singleLine(
                   controller: _presentEntitiesController,
-                  label: 'Present (comma-separated)',
+                  label: t.editor.editorNodes.presentEntitiesLabel,
                 ),
                 TextFieldCard.singleLine(
                   controller: _sensoryHooksController,
-                  label: 'Sensory hooks (comma-separated)',
+                  label: t.editor.editorNodes.sensoryHooksLabel,
                 ),
               ],
             ),
@@ -486,14 +487,16 @@ class _EditorNodesState extends State<EditorNodes> {
               key: const Key('editor-nodes-add-button'),
               onPressed: _addNode,
               icon: const Icon(Icons.add),
-              label: const Text('Add Node'),
+              label: Text(t.editor.editorNodes.addNodeButton),
             ),
           ),
         ),
         if (nodes.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: Text('No authored nodes yet.')),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: Text(t.editor.editorNodes.noAuthoredNodesYet),
+            ),
           )
         else
           ReorderableListView(
@@ -606,9 +609,7 @@ class _LoadErrorBanner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This card\'s nodes block has ${errors.length} problem'
-              '${errors.length == 1 ? '' : 's'}; editing here will '
-              'overwrite the broken parts on save.',
+              t.editor.editorNodes.loadErrorMessage(n: errors.length),
               style: TextStyle(color: theme.colorScheme.onErrorContainer),
             ),
             for (final error in errors.take(5))
@@ -626,7 +627,9 @@ class _LoadErrorBanner extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '… ${errors.length - 5} more',
+                  t.editor.editorNodes.moreErrorsSuffix(
+                    n: errors.length - 5,
+                  ),
                   style: TextStyle(
                     color: theme.colorScheme.onErrorContainer,
                     fontSize: 12,
@@ -667,7 +670,7 @@ class _BaselineSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
-            'Emotion baseline',
+            t.editor.editorNodes.emotionBaselineLabel,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
@@ -691,9 +694,9 @@ class _BaselineSection extends StatelessWidget {
                   for (final e in remaining)
                     PopupMenuItem(value: e, child: Text(e.name)),
                 ],
-                child: const Chip(
-                  avatar: Icon(Icons.add, size: 18),
-                  label: Text('Emotion'),
+                child: Chip(
+                  avatar: const Icon(Icons.add, size: 18),
+                  label: Text(t.editor.editorNodes.emotionChipLabel),
                 ),
               ),
           ],

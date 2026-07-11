@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cardwave/editor/src/pages/widgets/code_find_panel_view.dart';
 import 'package:cardwave/editor/src/pages/widgets/code_selection_toolbar_controller.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -85,10 +86,10 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
       final decoded = jsonDecode(text);
       if (decoded is! Map<String, dynamic>) {
         return (
-          errors: const [
+          errors: [
             CardExtensionLoadError(
               path: 'root',
-              message: 'Top level must be a JSON object',
+              message: t.editor.nodesRawEditorPage.topLevelMustBeObject,
             ),
           ],
           extension: null,
@@ -121,14 +122,14 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit nodes JSON'),
+        title: Text(t.editor.nodesRawEditorPage.editNodesJsonTitle),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               key: const Key('nodes-raw-editor-save-button'),
               onPressed: _onSave,
-              child: const Text('Save'),
+              child: Text(t.common.actions.save),
             ),
           ),
         ],
@@ -205,8 +206,9 @@ class _RawEditorProblemList extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Fix ${list.length} problem'
-                      '${list.length == 1 ? '' : 's'} to save.',
+                      t.editor.nodesRawEditorPage.fixProblemsMessage(
+                        n: list.length,
+                      ),
                       style: TextStyle(color: cs.onErrorContainer),
                     ),
                     for (final error in list)

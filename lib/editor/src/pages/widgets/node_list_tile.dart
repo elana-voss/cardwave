@@ -1,4 +1,5 @@
 import 'package:cardwave/editor/src/pages/widgets/tag_chip.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +56,9 @@ class NodeListTile extends StatelessWidget {
           TagChip(label: node.scope.name),
           if (spawnCount > 0) ...[
             const SizedBox(width: 4),
-            TagChip(label: 'spawns: $spawnCount'),
+            TagChip(
+              label: t.editor.nodeListTile.spawnsLabel(count: spawnCount),
+            ),
           ],
         ],
       ),

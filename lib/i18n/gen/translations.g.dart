@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 726 (80 per locale)
+/// Strings: 790 (87 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -305,6 +305,11 @@ class _TranslationsEditorEn {
 	late final _TranslationsEditorDialogContentCleanerEn dialogContentCleaner = _TranslationsEditorDialogContentCleanerEn._(_root);
 	late final _TranslationsEditorDialogAiDiffConfirmationEn dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationEn._(_root);
 	late final _TranslationsEditorEditorPageControllerEn editorPageController = _TranslationsEditorEditorPageControllerEn._(_root);
+	late final _TranslationsEditorEditorNodesEn editorNodes = _TranslationsEditorEditorNodesEn._(_root);
+	late final _TranslationsEditorNodeListTileEn nodeListTile = _TranslationsEditorNodeListTileEn._(_root);
+	late final _TranslationsEditorNodesRawEditorPageEn nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageEn._(_root);
+	late final _TranslationsEditorNodesCanvasViewEn nodesCanvasView = _TranslationsEditorNodesCanvasViewEn._(_root);
+	late final _TranslationsEditorNodeEditorFormEn nodeEditorForm = _TranslationsEditorNodeEditorFormEn._(_root);
 }
 
 // Path: grid
@@ -1637,6 +1642,119 @@ class _TranslationsEditorEditorPageControllerEn {
 	String compositeLorebookEntry({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
 	String imageTooLargeMessage({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
 	String get invalidPngMessage => 'Selected image is not a valid PNG or could not be read.';
+}
+
+// Path: editor.editorNodes
+class _TranslationsEditorEditorNodesEn {
+	_TranslationsEditorEditorNodesEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get deleteNodeTitle => 'Delete node';
+	String get deleteNodeMessage => 'Remove this authored node from the card?';
+	String get engineSeedTitle => 'Engine seed';
+	String get visualEditorTooltip => 'Visual editor';
+	String get editJsonTooltip => 'Edit JSON';
+	String get initialGoalLabel => 'Initial goal';
+	String get initialSceneLabel => 'Initial scene';
+	String get locationLabel => 'Location';
+	String get timeOfDayLabel => 'Time of day';
+	String get presentEntitiesLabel => 'Present (comma-separated)';
+	String get sensoryHooksLabel => 'Sensory hooks (comma-separated)';
+	String get addNodeButton => 'Add Node';
+	String get noAuthoredNodesYet => 'No authored nodes yet.';
+	String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'This card\'s nodes block has ${n} problem; editing here will overwrite the broken parts on save.',
+		other: 'This card\'s nodes block has ${n} problems; editing here will overwrite the broken parts on save.',
+	);
+	String moreErrorsSuffix({required Object n}) => '… ${n} more';
+	String get emotionBaselineLabel => 'Emotion baseline';
+	String get emotionChipLabel => 'Emotion';
+}
+
+// Path: editor.nodeListTile
+class _TranslationsEditorNodeListTileEn {
+	_TranslationsEditorNodeListTileEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String spawnsLabel({required Object count}) => 'spawns: ${count}';
+}
+
+// Path: editor.nodesRawEditorPage
+class _TranslationsEditorNodesRawEditorPageEn {
+	_TranslationsEditorNodesRawEditorPageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get topLevelMustBeObject => 'Top level must be a JSON object';
+	String get editNodesJsonTitle => 'Edit nodes JSON';
+	String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'Fix ${n} problem to save.',
+		other: 'Fix ${n} problems to save.',
+	);
+}
+
+// Path: editor.nodesCanvasView
+class _TranslationsEditorNodesCanvasViewEn {
+	_TranslationsEditorNodesCanvasViewEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get spawnedByPort => 'spawned by';
+	String get spawnsPort => 'spawns';
+	String get editNodeLabel => 'Edit node';
+	String get addNodeTooltip => 'Add node';
+}
+
+// Path: editor.nodeEditorForm
+class _TranslationsEditorNodeEditorFormEn {
+	_TranslationsEditorNodeEditorFormEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get nameLabel => 'Name';
+	String get narrativePayloadLabel => 'Narrative payload';
+	String get removeSpawnLinkTitle => 'Remove spawn link';
+	String removeSpawnLinkMessage({required Object nodeId}) => 'Stop this node from spawning "${nodeId}"? The node itself stays on the card.';
+	String get removeButton => 'Remove';
+	String get typeLabel => 'Type';
+	String get scopeLabel => 'Scope';
+	String get originLabel => 'Origin';
+	String get triggerProbLabel => 'Trigger prob';
+	String get delayHelper => 'Turns to wait before becoming eligible. -1 acts as 0.';
+	String get cooldownHelper => 'Turns locked out after firing. -1 means no cooldown.';
+	String get stickyHelper => 'Turns the narrative payload keeps appearing as "Lingering" after firing. -1 means permanent.';
+	String get aliveHelper => 'Turns the node stays in the pool before removal. -1 means forever.';
+	String get setToNeverButton => 'Set to never';
+	String get effectsSectionLabel => 'Effects';
+	String get emotionDeltasTitle => 'Emotion deltas';
+	String get physicalDeltasTitle => 'Physical deltas';
+	String get relationshipDeltasTitle => 'Relationship deltas';
+	String get addDeltaChip => 'Add delta';
+	String get knowledgeWritesTitle => 'Knowledge writes';
+	String get addFactChip => 'Add fact';
+	String get topicLabel => 'topic';
+	String get confidenceLabel => 'confidence';
+	String get flagSetTitle => 'Flag set';
+	String get addFlagChip => 'Add flag';
+	String get keyLabel => 'key';
+	String get sceneAndFlowTitle => 'Scene & flow';
+	String get goalChangeLabel => 'goalChange (clears the current goal when empty)';
+	String get phaseChangeLabel => 'phaseChange';
+	String get noneOption => '(none)';
+	String get sceneTransitionLabel => 'sceneTransition';
+	String get sceneTransitionSubtitle => 'When true, the engine marks the firing as a scene shift.';
+	String get spawnsSectionLabel => 'Spawns';
+	String get addNewChip => 'Add new';
+	String get linkExistingChip => 'Link existing';
+	String get unlinkTooltip => 'Unlink';
+	String get predicateLabel => 'Predicate';
 }
 
 // Path: grid.emptyState
@@ -4236,6 +4354,74 @@ extension on Translations {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'Selected image is not a valid PNG or could not be read.';
+			case 'editor.editorNodes.deleteNodeTitle': return 'Delete node';
+			case 'editor.editorNodes.deleteNodeMessage': return 'Remove this authored node from the card?';
+			case 'editor.editorNodes.engineSeedTitle': return 'Engine seed';
+			case 'editor.editorNodes.visualEditorTooltip': return 'Visual editor';
+			case 'editor.editorNodes.editJsonTooltip': return 'Edit JSON';
+			case 'editor.editorNodes.initialGoalLabel': return 'Initial goal';
+			case 'editor.editorNodes.initialSceneLabel': return 'Initial scene';
+			case 'editor.editorNodes.locationLabel': return 'Location';
+			case 'editor.editorNodes.timeOfDayLabel': return 'Time of day';
+			case 'editor.editorNodes.presentEntitiesLabel': return 'Present (comma-separated)';
+			case 'editor.editorNodes.sensoryHooksLabel': return 'Sensory hooks (comma-separated)';
+			case 'editor.editorNodes.addNodeButton': return 'Add Node';
+			case 'editor.editorNodes.noAuthoredNodesYet': return 'No authored nodes yet.';
+			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'This card\'s nodes block has ${n} problem; editing here will overwrite the broken parts on save.',
+				other: 'This card\'s nodes block has ${n} problems; editing here will overwrite the broken parts on save.',
+			);
+			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… ${n} more';
+			case 'editor.editorNodes.emotionBaselineLabel': return 'Emotion baseline';
+			case 'editor.editorNodes.emotionChipLabel': return 'Emotion';
+			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'spawns: ${count}';
+			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'Top level must be a JSON object';
+			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Edit nodes JSON';
+			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'Fix ${n} problem to save.',
+				other: 'Fix ${n} problems to save.',
+			);
+			case 'editor.nodesCanvasView.spawnedByPort': return 'spawned by';
+			case 'editor.nodesCanvasView.spawnsPort': return 'spawns';
+			case 'editor.nodesCanvasView.editNodeLabel': return 'Edit node';
+			case 'editor.nodesCanvasView.addNodeTooltip': return 'Add node';
+			case 'editor.nodeEditorForm.nameLabel': return 'Name';
+			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Narrative payload';
+			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Remove spawn link';
+			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Stop this node from spawning "${nodeId}"? The node itself stays on the card.';
+			case 'editor.nodeEditorForm.removeButton': return 'Remove';
+			case 'editor.nodeEditorForm.typeLabel': return 'Type';
+			case 'editor.nodeEditorForm.scopeLabel': return 'Scope';
+			case 'editor.nodeEditorForm.originLabel': return 'Origin';
+			case 'editor.nodeEditorForm.triggerProbLabel': return 'Trigger prob';
+			case 'editor.nodeEditorForm.delayHelper': return 'Turns to wait before becoming eligible. -1 acts as 0.';
+			case 'editor.nodeEditorForm.cooldownHelper': return 'Turns locked out after firing. -1 means no cooldown.';
+			case 'editor.nodeEditorForm.stickyHelper': return 'Turns the narrative payload keeps appearing as "Lingering" after firing. -1 means permanent.';
+			case 'editor.nodeEditorForm.aliveHelper': return 'Turns the node stays in the pool before removal. -1 means forever.';
+			case 'editor.nodeEditorForm.setToNeverButton': return 'Set to never';
+			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Effects';
+			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Emotion deltas';
+			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Physical deltas';
+			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Relationship deltas';
+			case 'editor.nodeEditorForm.addDeltaChip': return 'Add delta';
+			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Knowledge writes';
+			case 'editor.nodeEditorForm.addFactChip': return 'Add fact';
+			case 'editor.nodeEditorForm.topicLabel': return 'topic';
+			case 'editor.nodeEditorForm.confidenceLabel': return 'confidence';
+			case 'editor.nodeEditorForm.flagSetTitle': return 'Flag set';
+			case 'editor.nodeEditorForm.addFlagChip': return 'Add flag';
+			case 'editor.nodeEditorForm.keyLabel': return 'key';
+			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Scene & flow';
+			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (clears the current goal when empty)';
+			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
+			case 'editor.nodeEditorForm.noneOption': return '(none)';
+			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
+			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'When true, the engine marks the firing as a scene shift.';
+			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Spawns';
+			case 'editor.nodeEditorForm.addNewChip': return 'Add new';
+			case 'editor.nodeEditorForm.linkExistingChip': return 'Link existing';
+			case 'editor.nodeEditorForm.unlinkTooltip': return 'Unlink';
+			case 'editor.nodeEditorForm.predicateLabel': return 'Predicate';
 			case 'grid.emptyState.noMatches': return 'No characters match your filters';
 			case 'grid.emptyState.noCharacters': return 'No characters imported yet';
 			case 'grid.emptyState.clearAllFilters': return 'Clear all filters';

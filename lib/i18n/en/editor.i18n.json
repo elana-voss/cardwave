@@ -179,5 +179,83 @@
     "compositeLorebookEntry": "Lorebook Entry #$index:\n$value\n",
     "imageTooLargeMessage": "Selected image is too large. Maximum size is $maxSize.",
     "invalidPngMessage": "Selected image is not a valid PNG or could not be read."
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "Delete node",
+    "deleteNodeMessage": "Remove this authored node from the card?",
+    "engineSeedTitle": "Engine seed",
+    "visualEditorTooltip": "Visual editor",
+    "editJsonTooltip": "Edit JSON",
+    "initialGoalLabel": "Initial goal",
+    "initialSceneLabel": "Initial scene",
+    "locationLabel": "Location",
+    "timeOfDayLabel": "Time of day",
+    "presentEntitiesLabel": "Present (comma-separated)",
+    "sensoryHooksLabel": "Sensory hooks (comma-separated)",
+    "addNodeButton": "Add Node",
+    "noAuthoredNodesYet": "No authored nodes yet.",
+    "loadErrorMessage(plural)": {
+      "one": "This card's nodes block has $n problem; editing here will overwrite the broken parts on save.",
+      "other": "This card's nodes block has $n problems; editing here will overwrite the broken parts on save."
+    },
+    "moreErrorsSuffix": "… $n more",
+    "emotionBaselineLabel": "Emotion baseline",
+    "emotionChipLabel": "Emotion"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "spawns: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "Top level must be a JSON object",
+    "editNodesJsonTitle": "Edit nodes JSON",
+    "fixProblemsMessage(plural)": {
+      "one": "Fix $n problem to save.",
+      "other": "Fix $n problems to save."
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "spawned by",
+    "spawnsPort": "spawns",
+    "editNodeLabel": "Edit node",
+    "addNodeTooltip": "Add node"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "Name",
+    "narrativePayloadLabel": "Narrative payload",
+    "removeSpawnLinkTitle": "Remove spawn link",
+    "removeSpawnLinkMessage": "Stop this node from spawning \"$nodeId\"? The node itself stays on the card.",
+    "removeButton": "Remove",
+    "typeLabel": "Type",
+    "scopeLabel": "Scope",
+    "originLabel": "Origin",
+    "triggerProbLabel": "Trigger prob",
+    "delayHelper": "Turns to wait before becoming eligible. -1 acts as 0.",
+    "cooldownHelper": "Turns locked out after firing. -1 means no cooldown.",
+    "stickyHelper": "Turns the narrative payload keeps appearing as \"Lingering\" after firing. -1 means permanent.",
+    "aliveHelper": "Turns the node stays in the pool before removal. -1 means forever.",
+    "setToNeverButton": "Set to never",
+    "effectsSectionLabel": "Effects",
+    "emotionDeltasTitle": "Emotion deltas",
+    "physicalDeltasTitle": "Physical deltas",
+    "relationshipDeltasTitle": "Relationship deltas",
+    "addDeltaChip": "Add delta",
+    "knowledgeWritesTitle": "Knowledge writes",
+    "addFactChip": "Add fact",
+    "topicLabel": "topic",
+    "confidenceLabel": "confidence",
+    "flagSetTitle": "Flag set",
+    "addFlagChip": "Add flag",
+    "keyLabel": "key",
+    "sceneAndFlowTitle": "Scene & flow",
+    "goalChangeLabel": "goalChange (clears the current goal when empty)",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "(none)",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "When true, the engine marks the firing as a scene shift.",
+    "spawnsSectionLabel": "Spawns",
+    "addNewChip": "Add new",
+    "linkExistingChip": "Link existing",
+    "unlinkTooltip": "Unlink",
+    "predicateLabel": "Predicate"
   }
 }

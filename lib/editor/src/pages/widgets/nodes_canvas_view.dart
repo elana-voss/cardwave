@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_nodes/cardwave_nodes.dart';
 import 'package:fl_nodes/fl_nodes.dart';
 import 'package:flutter/material.dart';
@@ -240,11 +241,11 @@ class _NodesCanvasViewState extends State<NodesCanvasView> {
         ports: [
           FlDataInputPortPrototype<Object>(
             idName: _inPort,
-            displayName: (_) => 'spawned by',
+            displayName: (_) => t.editor.nodesCanvasView.spawnedByPort,
           ),
           FlDataOutputPortPrototype<Object>(
             idName: _outPort,
-            displayName: (_) => 'spawns',
+            displayName: (_) => t.editor.nodesCanvasView.spawnsPort,
             styleBuilder: flDefaultPortStyleBuilder,
           ),
         ],
@@ -306,14 +307,14 @@ class _NodesCanvasViewState extends State<NodesCanvasView> {
             final cardId = _cardIdByFlId[node.id];
             return [
               MenuItem(
-                label: 'Edit node',
+                label: t.editor.nodesCanvasView.editNodeLabel,
                 icon: Icons.edit,
                 onSelected: () {
                   if (cardId != null) widget.onEditNode(cardId);
                 },
               ),
               MenuItem(
-                label: 'Delete node',
+                label: t.editor.editorNodes.deleteNodeTitle,
                 icon: Icons.delete_outline,
                 onSelected: () {
                   if (cardId != null) widget.onDeleteNode(cardId);
@@ -327,7 +328,7 @@ class _NodesCanvasViewState extends State<NodesCanvasView> {
           bottom: 16,
           child: FloatingActionButton(
             onPressed: () => widget.onAddNode(_newNodeSpot),
-            tooltip: 'Add node',
+            tooltip: t.editor.nodesCanvasView.addNodeTooltip,
             child: const Icon(Icons.add),
           ),
         ),
