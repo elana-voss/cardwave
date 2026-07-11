@@ -7,6 +7,7 @@ import 'package:cardwave/chat/src/models/chat_message.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/models/chat_swipe.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -56,14 +57,16 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
 
     if (mode.requiresFreePrompt &&
         (freePrompt == null || freePrompt.trim().isEmpty)) {
-      NavigationService().showSnackBar('Enter a prompt to generate a video.');
+      NavigationService().showSnackBar(
+        t.chat.videoGenerationMixin.enterPromptMessage,
+      );
       return false;
     }
 
     final character = videoGenTargetCharacter;
     if (character == null) {
       NavigationService().showSnackBar(
-        'No character available for video generation.',
+        t.chat.videoGenerationMixin.noCharacterMessage,
       );
       return false;
     }
@@ -81,7 +84,9 @@ mixin ChatVideoGenerationMixin on BaseChatViewController {
       character: character,
     );
     if (resolved.videoPreset == null) {
-      NavigationService().showSnackBar('Video generation is not configured.');
+      NavigationService().showSnackBar(
+        t.chat.videoGenerationMixin.notConfiguredMessage,
+      );
       return false;
     }
 

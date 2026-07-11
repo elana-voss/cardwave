@@ -1,4 +1,5 @@
 import 'package:cardwave/chat/src/models/chat_message.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 class MessageSwipeFlipper extends StatelessWidget {
@@ -44,7 +45,7 @@ class MessageSwipeFlipper extends StatelessWidget {
           iconSize: 24,
           color: metaStyle.color,
           disabledColor: metaStyle.color?.withValues(alpha: 0.3),
-          tooltip: 'Previous version',
+          tooltip: t.chat.messageSwipeFlipper.previousVersionTooltip,
           icon: const Icon(Icons.chevron_left),
           onPressed: canSwipeLeft
               ? () {
@@ -58,7 +59,10 @@ class MessageSwipeFlipper extends StatelessWidget {
               : null,
         ),
         Text(
-          '${message.swipeIndex + 1} / ${message.swipes.length}',
+          t.chat.messageSwipeFlipper.swipeCounter(
+            current: message.swipeIndex + 1,
+            total: message.swipes.length,
+          ),
           style: metaStyle,
         ),
         IconButton(
@@ -68,7 +72,9 @@ class MessageSwipeFlipper extends StatelessWidget {
           iconSize: 24,
           color: metaStyle.color,
           disabledColor: metaStyle.color?.withValues(alpha: 0.3),
-          tooltip: canRegenerate ? 'Regenerate' : 'Next version',
+          tooltip: canRegenerate
+              ? t.chat.messageSwipeFlipper.regenerateTooltip
+              : t.chat.messageSwipeFlipper.nextVersionTooltip,
           icon: const Icon(Icons.chevron_right),
           onPressed: canSwipeRight
               ? () {

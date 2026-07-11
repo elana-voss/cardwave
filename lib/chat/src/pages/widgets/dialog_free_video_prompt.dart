@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Collects a free-form subject for video generation. Returns the trimmed
@@ -22,14 +23,12 @@ class DialogFreeVideoPrompt {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Generate video',
+                    t.chat.freeVideoPromptDialog.title,
                     style: Theme.of(ctx).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Describe a short moment of motion — what is moving, '
-                    'how, where. The system model will expand it into a '
-                    'cinematic T2V prompt.',
+                    t.chat.freeVideoPromptDialog.description,
                     style: Theme.of(ctx).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
@@ -38,9 +37,9 @@ class DialogFreeVideoPrompt {
                     autofocus: true,
                     minLines: 1,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Subject',
-                      hintText: 'she walks through neon rain, slow motion',
+                    decoration: InputDecoration(
+                      labelText: t.chat.freeVideoPromptDialog.subjectLabel,
+                      hintText: t.chat.freeVideoPromptDialog.subjectHint,
                     ),
                     onFieldSubmitted: (value) =>
                         Navigator.of(dialogContext).pop(value.trim()),
@@ -53,7 +52,7 @@ class DialogFreeVideoPrompt {
                 key: const Key('media-generate-confirm'),
                 onPressed: () =>
                     Navigator.of(dialogContext).pop(controller.text.trim()),
-                child: const Text('Generate'),
+                child: Text(t.chat.freeVideoPromptDialog.generateButton),
               ),
             ],
           );

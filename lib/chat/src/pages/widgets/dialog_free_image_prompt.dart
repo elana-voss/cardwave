@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Shows a small dialog that asks the user for a subject / free prompt for
@@ -19,13 +20,12 @@ class DialogFreeImagePrompt {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Generate image',
+                    t.chat.freeImagePromptDialog.title,
                     style: Theme.of(ctx).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Describe what you want to see. A short phrase is fine — '
-                    'the model will expand it into a full tag list.',
+                    t.chat.freeImagePromptDialog.description,
                     style: Theme.of(ctx).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
@@ -34,9 +34,9 @@ class DialogFreeImagePrompt {
                     autofocus: true,
                     minLines: 1,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'Subject',
-                      hintText: 'cyberpunk alley, neon rain',
+                    decoration: InputDecoration(
+                      labelText: t.chat.freeImagePromptDialog.subjectLabel,
+                      hintText: t.chat.freeImagePromptDialog.subjectHint,
                     ),
                     onFieldSubmitted: (value) =>
                         Navigator.of(dialogContext).pop(value.trim()),
@@ -49,7 +49,7 @@ class DialogFreeImagePrompt {
                 key: const Key('media-generate-confirm'),
                 onPressed: () =>
                     Navigator.of(dialogContext).pop(controller.text.trim()),
-                child: const Text('Generate'),
+                child: Text(t.chat.freeImagePromptDialog.generateButton),
               ),
             ],
           );

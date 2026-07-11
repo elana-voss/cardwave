@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/chat/src/models/chat_session.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +45,17 @@ class TileMaxResponseLength extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.text_fields),
-      title: Text('Response length — ${current.label}'),
+      title: Text(
+        t.chat.tileMaxResponseLength.titleWithBucket(bucket: current.label),
+      ),
       subtitle: Slider(
         value: currentIndex.toDouble(),
         max: (buckets.length - 1).toDouble(),
         divisions: buckets.length - 1,
-        label: '${current.label} (${current.value} tokens)',
+        label: t.chat.tileMaxResponseLength.sliderLabel(
+          bucket: current.label,
+          tokens: current.value,
+        ),
         onChanged: (v) {
           // `v` is in `[0, buckets.length - 1]` by the slider's max/divisions.
           // ignore: qcheck/avoid_unsafe_collection_methods
@@ -67,16 +73,28 @@ class TileMaxResponseLength extends StatelessWidget {
 }
 
 enum _ResponseLengthBucketEnum {
-  veryShort(value: 80, label: 'Very short'),
-  short(value: 180, label: 'Short'),
-  medium(value: 350, label: 'Medium'),
-  long(value: 750, label: 'Long'),
-  veryLong(value: 1500, label: 'Very long')
+  veryShort(80),
+  short(180),
+  medium(350),
+  long(750),
+  veryLong(1500)
   ;
 
   final int value;
-  final String label;
-  const _ResponseLengthBucketEnum({required this.value, required this.label});
+  const _ResponseLengthBucketEnum(this.value);
+
+  String get label => switch (this) {
+    _ResponseLengthBucketEnum.veryShort =>
+      t.chat.tileMaxResponseLength.bucketVeryShort,
+    _ResponseLengthBucketEnum.short =>
+      t.chat.tileMaxResponseLength.bucketShort,
+    _ResponseLengthBucketEnum.medium =>
+      t.chat.tileMaxResponseLength.bucketMedium,
+    _ResponseLengthBucketEnum.long =>
+      t.chat.tileMaxResponseLength.bucketLong,
+    _ResponseLengthBucketEnum.veryLong =>
+      t.chat.tileMaxResponseLength.bucketVeryLong,
+  };
 
   static _ResponseLengthBucketEnum fromValue(num stored) {
     var best = _ResponseLengthBucketEnum.medium;

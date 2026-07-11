@@ -17,6 +17,7 @@ import 'package:cardwave/chat/src/pages/widgets/chat_message_bubble/message_swip
 import 'package:cardwave/chat/src/pages/widgets/chat_message_bubble/system_message_bubble.dart';
 import 'package:cardwave/chat/src/pages/widgets/chat_message_bubble/video_player_inline.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
@@ -87,7 +88,10 @@ class ChatMessageBubble extends StatelessWidget {
       final location = await getSaveLocation(
         suggestedName: fileName,
         acceptedTypeGroups: [
-          const XTypeGroup(label: 'Images', extensions: ['png']),
+          XTypeGroup(
+            label: t.chat.chatMessageBubble.imagesTypeGroupLabel,
+            extensions: const ['png'],
+          ),
         ],
       );
       if (location == null) return;
@@ -401,7 +405,9 @@ class ChatMessageBubble extends StatelessWidget {
     final nickname = card?.nickname;
     return (nickname != null && nickname.isNotEmpty)
         ? nickname
-        : (card?.name.isNotEmpty == true ? card!.name : 'Assistant');
+        : (card?.name.isNotEmpty == true
+              ? card!.name
+              : t.chat.chatMessageBubble.assistantFallbackName);
   }
 }
 
@@ -440,7 +446,10 @@ class _ReasoningRevealState extends State<_ReasoningReveal> {
                   size: 16,
                   color: widget.metaStyle.color,
                 ),
-                Text('Reasoning', style: widget.metaStyle),
+                Text(
+                  t.chat.chatMessageBubble.reasoningLabel,
+                  style: widget.metaStyle,
+                ),
               ],
             ),
           ),
@@ -514,12 +523,14 @@ class _BubbleWaitingIndicator extends StatelessWidget {
     if (job == null) return null;
     switch (job.state) {
       case VideoJobStateEnum.submitting:
-        return 'Sending to provider…';
+        return t.chat.chatMessageBubble.sendingToProvider;
       case VideoJobStateEnum.polling:
         final pct = job.progressPct;
-        return pct != null ? 'Polling… $pct%' : 'Polling…';
+        return pct != null
+            ? t.chat.chatMessageBubble.pollingWithPercent(pct: pct)
+            : t.chat.chatMessageBubble.polling;
       case VideoJobStateEnum.downloading:
-        return 'Downloading…';
+        return t.chat.chatMessageBubble.downloading;
       case VideoJobStateEnum.done:
       case VideoJobStateEnum.failed:
         return null;

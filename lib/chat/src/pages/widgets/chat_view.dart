@@ -14,6 +14,7 @@ import 'package:cardwave/chat/src/pages/widgets/dialog_url_fetch_review.dart';
 import 'package:cardwave/chat/src/pages/widgets/dialog_video_prompt_review.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,9 +108,9 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> _deleteMessage(ChatMessage message) async {
     final confirm = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Message',
-      message: 'Are you sure you want to delete this message?',
-      confirmText: 'Delete',
+      title: t.chat.chatView.deleteMessageTitle,
+      message: t.chat.chatView.deleteMessageConfirmation,
+      confirmText: t.common.actions.delete,
       confirmColor: Theme.of(context).colorScheme.error,
     );
     if (confirm && mounted) {
@@ -237,7 +238,7 @@ class _ChatViewState extends State<ChatView> {
                   focusNode: _controller.focusNode,
                   autoTrim: false,
                   decoration: InputDecoration(
-                    hintText: 'Type a message...',
+                    hintText: t.chat.chatView.typeMessageHint,
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -263,7 +264,7 @@ class _ChatViewState extends State<ChatView> {
                             PopupMenuButton<_ChatInputOptionEnum>(
                               key: const Key('chat-menu-trigger'),
                               icon: const Icon(Icons.more_vert),
-                              tooltip: 'More actions',
+                              tooltip: t.chat.chatView.moreActionsTooltip,
                               enabled: !_controller.isGenerating,
                               onSelected: (option) {
                                 switch (option) {
@@ -281,14 +282,17 @@ class _ChatViewState extends State<ChatView> {
                               },
                               itemBuilder: (context) => [
                                 if (widget.onNewChat != null)
-                                  const PopupMenuItem(
-                                    key: Key('chat-menu-new-chat'),
+                                  PopupMenuItem(
+                                    key: const Key('chat-menu-new-chat'),
                                     value: _ChatInputOptionEnum.newChat,
                                     child: Row(
                                       spacing: 8,
                                       children: [
-                                        Icon(Icons.add_comment, size: 20),
-                                        Text('New Chat'),
+                                        const Icon(
+                                          Icons.add_comment,
+                                          size: 20,
+                                        ),
+                                        Text(t.chat.newChatLabel),
                                       ],
                                     ),
                                   ),
@@ -297,11 +301,14 @@ class _ChatViewState extends State<ChatView> {
                                     key: const Key('chat-menu-continue'),
                                     value: _ChatInputOptionEnum.continueChat,
                                     enabled: isLastMessageAI,
-                                    child: const Row(
+                                    child: Row(
                                       spacing: 8,
                                       children: [
-                                        Icon(Icons.fast_forward, size: 20),
-                                        Text('Continue'),
+                                        const Icon(
+                                          Icons.fast_forward,
+                                          size: 20,
+                                        ),
+                                        Text(t.chat.chatView.continueAction),
                                       ],
                                     ),
                                   ),
@@ -310,11 +317,13 @@ class _ChatViewState extends State<ChatView> {
                                     key: const Key('chat-menu-impersonate'),
                                     value: _ChatInputOptionEnum.impersonate,
                                     enabled: isLastMessageAI,
-                                    child: const Row(
+                                    child: Row(
                                       spacing: 8,
                                       children: [
-                                        Icon(Icons.person, size: 20),
-                                        Text('Impersonate'),
+                                        const Icon(Icons.person, size: 20),
+                                        Text(
+                                          t.chat.chatView.impersonateAction,
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -322,11 +331,16 @@ class _ChatViewState extends State<ChatView> {
                                   key: const Key('chat-menu-generate-reply'),
                                   value: _ChatInputOptionEnum.generateReply,
                                   enabled: isLastMessageUser,
-                                  child: const Row(
+                                  child: Row(
                                     spacing: 8,
                                     children: [
-                                      Icon(Icons.chat_bubble_outline, size: 20),
-                                      Text('Generate Reply'),
+                                      const Icon(
+                                        Icons.chat_bubble_outline,
+                                        size: 20,
+                                      ),
+                                      Text(
+                                        t.chat.chatView.generateReplyAction,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -335,11 +349,16 @@ class _ChatViewState extends State<ChatView> {
                                     key: const Key('chat-menu-improve'),
                                     value: _ChatInputOptionEnum.improveInput,
                                     enabled: !isInputEmpty,
-                                    child: const Row(
+                                    child: Row(
                                       spacing: 8,
                                       children: [
-                                        Icon(Icons.auto_fix_high, size: 20),
-                                        Text('Improve Message'),
+                                        const Icon(
+                                          Icons.auto_fix_high,
+                                          size: 20,
+                                        ),
+                                        Text(
+                                          t.chat.chatView.improveMessageAction,
+                                        ),
                                       ],
                                     ),
                                   ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -54,13 +55,13 @@ class TileTtsVoice extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.record_voice_over),
-      title: const Text('Voice'),
+      title: Text(t.chat.tileTtsVoice.label),
       trailing: DrawerTrailingValue(active.label),
       onTap: () {
         unawaited(() async {
           final pickedId = await showSelectionDialog<String>(
             context: context,
-            title: 'Voice',
+            title: t.chat.tileTtsVoice.label,
             activeValue: active.id,
             options: [
               for (final voice in voices)

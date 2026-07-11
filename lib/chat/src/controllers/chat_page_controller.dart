@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/models/chat_message.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -207,9 +208,9 @@ class ChatPageController extends ChangeNotifier {
     if (isAssistant) {
       if (_selectedChat == null) return;
       final confirm = await NavigationService().showConfirmCancelDialog(
-        title: 'New Chat',
-        message: 'Clear the assistant chat history?',
-        confirmText: 'Clear',
+        title: t.chat.newChatLabel,
+        message: t.chat.chatPageController.clearAssistantHistoryMessage,
+        confirmText: t.chat.chatPageController.clearButton,
         confirmColor: Theme.of(context).colorScheme.error,
       );
 
@@ -227,23 +228,23 @@ class ChatPageController extends ChangeNotifier {
       final action = await showDialog<NewChatPromptActionEnum>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('New Chat'),
-          content: const Text(
-            'Would you like to delete the current chat or keep it in your history?',
+          title: Text(t.chat.newChatLabel),
+          content: Text(
+            t.chat.chatPageController.deleteOrKeepMessage,
           ),
           actions: [
             TextButton(
               key: const Key('dialog-cancel'),
               onPressed: () =>
                   Navigator.pop(context, NewChatPromptActionEnum.cancel),
-              child: const Text('Cancel'),
+              child: Text(t.common.actions.cancel),
             ),
             TextButton(
               key: const Key('new-chat-delete-current'),
               onPressed: () =>
                   Navigator.pop(context, NewChatPromptActionEnum.deleteCurrent),
               child: Text(
-                'Delete Current',
+                t.chat.chatPageController.deleteCurrentButton,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                 ),
@@ -253,7 +254,7 @@ class ChatPageController extends ChangeNotifier {
               key: const Key('dialog-confirm'),
               onPressed: () =>
                   Navigator.pop(context, NewChatPromptActionEnum.keepCurrent),
-              child: const Text('Keep Current'),
+              child: Text(t.chat.chatPageController.keepCurrentButton),
             ),
           ],
         ),

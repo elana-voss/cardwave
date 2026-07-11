@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -53,13 +54,13 @@ class TileTtsLanguage extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.language),
-      title: const Text('Language'),
+      title: Text(t.chat.tileTtsLanguage.label),
       trailing: DrawerTrailingValue(active.label),
       onTap: () {
         unawaited(() async {
           final pickedCode = await showSelectionDialog<String>(
             context: context,
-            title: 'Language',
+            title: t.chat.tileTtsLanguage.label,
             activeValue: active.code,
             options: [
               for (final lang in languages)

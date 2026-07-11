@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Shows the generated image prompt for review and optional editing before
@@ -23,13 +24,12 @@ class DialogImagePromptReview {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Review image prompt',
+                    t.chat.imagePromptReviewDialog.title,
                     style: Theme.of(ctx).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Edit the prompt below before generating, or tap '
-                    'Generate to use it as-is.',
+                    t.chat.imagePromptReviewDialog.description,
                     style: Theme.of(ctx).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
@@ -38,8 +38,8 @@ class DialogImagePromptReview {
                     autofocus: true,
                     minLines: 3,
                     maxLines: 10,
-                    decoration: const InputDecoration(
-                      labelText: 'Image prompt',
+                    decoration: InputDecoration(
+                      labelText: t.chat.imagePromptReviewDialog.fieldLabel,
                     ),
                   ),
                 ],
@@ -50,7 +50,7 @@ class DialogImagePromptReview {
                 key: const Key('media-generate-confirm'),
                 onPressed: () =>
                     Navigator.of(dialogContext).pop(controller.text.trim()),
-                child: const Text('Generate'),
+                child: Text(t.chat.imagePromptReviewDialog.generateButton),
               ),
             ],
           );

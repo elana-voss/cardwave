@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/pages/widgets/tile_ai_provider.dart'
     show TileAiProvider;
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -59,9 +60,11 @@ class TileVideoPreset extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.movie_creation_outlined),
-      title: const Text('Video Model'),
+      title: Text(t.chat.tileVideoPreset.titleLabel),
       trailing: DrawerTrailingValue(
-        activeEntry == null ? 'Tap to choose' : activeEntry.config.name,
+        activeEntry == null
+            ? t.chat.presetTile.tapToChoose
+            : activeEntry.config.name,
       ),
       onTap: () {
         final llm = pureHelpers;
@@ -70,7 +73,7 @@ class TileVideoPreset extends StatelessWidget {
           final pickedId = await DialogPresetPicker.show(
             context: context,
             title: Text(
-              'Choose a video model',
+              t.chat.tileVideoPreset.chooseModelTitle,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             validPresets: validPresets,

@@ -1,5 +1,6 @@
 import 'package:cardwave/chat/src/pages/widgets/dialog_free_image_prompt.dart';
 import 'package:cardwave/chat/src/pages/widgets/dialog_free_video_prompt.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +72,7 @@ class _ChatInputMediaMenuState extends State<ChatInputMediaMenu> {
       child: IconButton(
         key: _buttonKey,
         icon: const Icon(Icons.auto_fix_high),
-        tooltip: 'Generate media',
+        tooltip: t.chat.chatInputMediaMenu.generateMediaTooltip,
         onPressed: widget.enabled ? _openTopMenu : null,
       ),
     );
@@ -88,9 +89,9 @@ class _ChatInputMediaMenuState extends State<ChatInputMediaMenu> {
             key: const Key('media-menu-image'),
             value: _TopBranchEnum.image,
             enabled: widget.imageEnabled,
-            child: const _BranchRow(
+            child: _BranchRow(
               icon: Icons.image_outlined,
-              label: 'Generate image',
+              label: t.chat.chatInputMediaMenu.generateImageLabel,
             ),
           ),
         if (widget.onGenerateVideo != null)
@@ -98,9 +99,9 @@ class _ChatInputMediaMenuState extends State<ChatInputMediaMenu> {
             key: const Key('media-menu-video'),
             value: _TopBranchEnum.video,
             enabled: widget.videoEnabled,
-            child: const _BranchRow(
+            child: _BranchRow(
               icon: Icons.movie_outlined,
-              label: 'Generate video',
+              label: t.chat.chatInputMediaMenu.generateVideoLabel,
             ),
           ),
       ],

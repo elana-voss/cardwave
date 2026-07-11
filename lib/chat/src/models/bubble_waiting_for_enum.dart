@@ -1,3 +1,5 @@
+import 'package:cardwave/i18n/gen/translations.g.dart';
+
 /// What an assistant bubble is currently waiting on. Drives the bubble's
 /// progress indicator (small spinner + label below the content). The
 /// active swipe carries the value; `complete` is the terminal state and
@@ -56,15 +58,15 @@ extension BubbleWaitingForEnumX on BubbleWaitingForEnum {
       case BubbleWaitingForEnum.runningTool:
         return '';
       case BubbleWaitingForEnum.callingLlm:
-        return 'Thinking…';
+        return t.chat.bubbleWaitingFor.thinking;
       case BubbleWaitingForEnum.composingImagePrompt:
-        return 'Preparing image prompt…';
+        return t.chat.bubbleWaitingFor.preparingImagePrompt;
       case BubbleWaitingForEnum.composingVideoPrompt:
-        return 'Preparing video prompt…';
+        return t.chat.bubbleWaitingFor.preparingVideoPrompt;
       case BubbleWaitingForEnum.generatingImage:
-        return 'Generating image…';
+        return t.chat.bubbleWaitingFor.generatingImage;
       case BubbleWaitingForEnum.generatingVideo:
-        return 'Generating video…';
+        return t.chat.bubbleWaitingFor.generatingVideo;
     }
   }
 }

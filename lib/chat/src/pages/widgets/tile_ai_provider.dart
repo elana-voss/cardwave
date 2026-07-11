@@ -4,6 +4,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/route_edit_preset.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -51,7 +52,7 @@ class TileAiProvider extends StatelessWidget {
         hasValidActivePreset ? Icons.smart_toy : Icons.error_outline,
         color: hasValidActivePreset ? null : errorColor,
       ),
-      title: const Text('Model'),
+      title: Text(t.chat.tileAiProvider.modelLabel),
       trailing: hasValidActivePreset
           ? DrawerTrailingValue(
               activePresetEntry.config.name,
@@ -66,7 +67,10 @@ class TileAiProvider extends StatelessWidget {
                 child: const Icon(Icons.settings, size: 18),
               ),
             )
-          : Text('Invalid', style: TextStyle(color: errorColor)),
+          : Text(
+              t.chat.tileAiProvider.invalidLabel,
+              style: TextStyle(color: errorColor),
+            ),
       onTap: () {
         final chatService = context.read<ChatService>();
         Navigator.of(context, rootNavigator: true).pop();
@@ -74,7 +78,7 @@ class TileAiProvider extends StatelessWidget {
           final pickedId = await DialogPresetPicker.show(
             context: context,
             title: Text(
-              'Choose a model',
+              t.chat.tileAiProvider.chooseModelTitle,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             validPresets: textCapablePresets,

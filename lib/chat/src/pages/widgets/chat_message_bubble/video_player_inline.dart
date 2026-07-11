@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -89,18 +90,21 @@ class _VideoPlayerInlineState extends State<VideoPlayerInline> {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
-      return const Padding(
-        padding: EdgeInsets.all(8),
+      return Padding(
+        padding: const EdgeInsets.all(8),
         child: Text(
-          'Video playback not supported on web.',
-          style: TextStyle(fontSize: 12),
+          t.chat.videoPlayerInline.webUnsupported,
+          style: const TextStyle(fontSize: 12),
         ),
       );
     }
     if (_initFailed) {
-      return const Padding(
-        padding: EdgeInsets.all(8),
-        child: Text('Could not load video.', style: TextStyle(fontSize: 12)),
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          t.chat.videoPlayerInline.couldNotLoad,
+          style: const TextStyle(fontSize: 12),
+        ),
       );
     }
     final videoController = _videoController;

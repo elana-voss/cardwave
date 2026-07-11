@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "Model",
+    "invalidLabel": "Invalid",
+    "chooseModelTitle": "Choose a model"
+  },
+  "presetTile": {
+    "tapToChoose": "Tap to choose"
+  },
+  "tileImagePreset": {
+    "titleLabel": "Image Model",
+    "chooseModelTitle": "Choose an image model"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "Video Model",
+    "chooseModelTitle": "Choose a video model"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "Speech Model",
+    "chooseModelTitle": "Choose a speech model"
+  },
+  "tileImageAspectRatio": {
+    "label": "Image aspect ratio"
+  },
+  "tileVideoAspectRatio": {
+    "label": "Aspect ratio"
+  },
+  "tileVideoResolution": {
+    "label": "Resolution"
+  },
+  "tileVideoDuration": {
+    "label": "Duration"
+  },
+  "tileTtsVoice": {
+    "label": "Voice"
+  },
+  "tileTtsLanguage": {
+    "label": "Language"
+  },
+  "tileNsfw": {
+    "label": "NSFW / Unlimited"
+  },
+  "tileScenario": {
+    "label": "Scenario"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "Response length — $bucket",
+    "sliderLabel": "$bucket ($tokens tokens)",
+    "bucketVeryShort": "Very short",
+    "bucketShort": "Short",
+    "bucketMedium": "Medium",
+    "bucketLong": "Long",
+    "bucketVeryLong": "Very long"
+  },
+  "tileTrailingParagraph": {
+    "label": "Cut Trailing Text"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "Reasoning — $effort",
+    "titleOff": "Reasoning off",
+    "extraTokensCaption": "Uses extra tokens beyond your max response length."
+  },
+  "tileChatTheme": {
+    "label": "Theme"
+  },
+  "tileRecalledMemory": {
+    "label": "Show Recalled Memory"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "Favorites",
+    "recentChatsTooltip": "Recent Chats",
+    "originalBadge": "ORIGINAL",
+    "variantBadge": "VARIANT",
+    "lastActive": "Last active: $timeAgo",
+    "never": "Never"
+  },
+  "freeImagePromptDialog": {
+    "title": "Generate image",
+    "description": "Describe what you want to see. A short phrase is fine — the model will expand it into a full tag list.",
+    "subjectLabel": "Subject",
+    "subjectHint": "cyberpunk alley, neon rain",
+    "generateButton": "Generate"
+  },
+  "freeVideoPromptDialog": {
+    "title": "Generate video",
+    "description": "Describe a short moment of motion — what is moving, how, where. The system model will expand it into a cinematic T2V prompt.",
+    "subjectLabel": "Subject",
+    "subjectHint": "she walks through neon rain, slow motion",
+    "generateButton": "Generate"
+  },
+  "imagePromptReviewDialog": {
+    "title": "Review image prompt",
+    "description": "Edit the prompt below before generating, or tap Generate to use it as-is.",
+    "fieldLabel": "Image prompt",
+    "generateButton": "Generate"
+  },
+  "videoPromptReviewDialog": {
+    "title": "Review video prompt",
+    "description": "Edit the prompt below before submitting, or tap Generate to use it as-is.",
+    "fieldLabel": "Video prompt",
+    "generateButton": "Generate"
+  },
+  "urlFetchReviewDialog": {
+    "title": "Allow web fetch?",
+    "description": "The character wants to read the contents of this URL.",
+    "purposeLabel": "Purpose:",
+    "denyButton": "Deny",
+    "allowButton": "Allow"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}s",
+    "viewGenerationPromptTooltip": "View generation prompt",
+    "messageActionsTooltip": "Message actions",
+    "editAction": "Edit",
+    "copyAction": "Copy",
+    "shareImageAction": "Share Image",
+    "setAsBackgroundAction": "Set as Background",
+    "setAsCharacterImageAction": "Set as Character Image",
+    "deleteAction": "Delete",
+    "copiedToClipboard": "Message copied to clipboard"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "Stop",
+    "readAloudTooltip": "Read aloud",
+    "ttsFailed": "TTS failed."
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "Previous version",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "Regenerate",
+    "nextVersionTooltip": "Next version"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "Video playback not supported on web.",
+    "couldNotLoad": "Could not load video."
+  },
+  "newChatLabel": "New Chat",
+  "chatListItem": {
+    "messageCount": "$count messages",
+    "renameAction": "Rename",
+    "deleteChatAction": "Delete Chat"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "Rename Chat",
+    "chatNameHint": "Chat Name",
+    "renameButton": "Rename",
+    "deleteChatTitle": "Delete Chat",
+    "deleteChatMessage": "Are you sure you want to delete this chat history? This action cannot be undone."
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "Clear the assistant chat history?",
+    "clearButton": "Clear",
+    "deleteOrKeepMessage": "Would you like to delete the current chat or keep it in your history?",
+    "deleteCurrentButton": "Delete Current",
+    "keepCurrentButton": "Keep Current"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "Enter a prompt to generate an image.",
+    "noCharacterMessage": "No character available for image generation.",
+    "notConfiguredMessage": "Image generation is not configured.",
+    "noSystemModelMessage": "No system model is configured. Set one in Settings → AI."
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "Enter a prompt to generate a video.",
+    "noCharacterMessage": "No character available for video generation.",
+    "notConfiguredMessage": "Video generation is not configured."
+  },
+  "bubbleWaitingFor": {
+    "thinking": "Thinking…",
+    "preparingImagePrompt": "Preparing image prompt…",
+    "preparingVideoPrompt": "Preparing video prompt…",
+    "generatingImage": "Generating image…",
+    "generatingVideo": "Generating video…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "Hide editor panel",
+    "showEditorSideBySideTooltip": "Show editor side-by-side"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "Rebuilding index...",
+    "noChatsFound": "No chats found."
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "Generate media",
+    "generateImageLabel": "Generate image",
+    "generateVideoLabel": "Generate video"
+  },
+  "chatView": {
+    "deleteMessageTitle": "Delete Message",
+    "deleteMessageConfirmation": "Are you sure you want to delete this message?",
+    "typeMessageHint": "Type a message...",
+    "moreActionsTooltip": "More actions",
+    "continueAction": "Continue",
+    "impersonateAction": "Impersonate",
+    "generateReplyAction": "Generate Reply",
+    "improveMessageAction": "Improve Message"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "Images",
+    "assistantFallbackName": "Assistant",
+    "reasoningLabel": "Reasoning",
+    "sendingToProvider": "Sending to provider…",
+    "pollingWithPercent": "Polling… $pct%",
+    "polling": "Polling…",
+    "downloading": "Downloading…"
+  }
+}

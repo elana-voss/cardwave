@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class TileRecalledMemory extends StatelessWidget {
     final svc = context.watch<SettingsService>();
     if (!svc.settings.memoryEnabled) return const SizedBox.shrink();
     return DrawerSwitchTile(
-      title: const Text('Show Recalled Memory'),
+      title: Text(t.chat.tileRecalledMemory.label),
       value: svc.settings.showRecalledMemory,
       leading: const Icon(Icons.history_edu),
       onChanged: (value) {

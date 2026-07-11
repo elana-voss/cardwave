@@ -54,7 +54,9 @@ class _TtsPlayButton extends StatelessWidget {
       iconSize: 20,
       color: metaStyle.color,
       disabledColor: metaStyle.color?.withValues(alpha: 0.3),
-      tooltip: isThisPlaying ? 'Stop' : 'Read aloud',
+      tooltip: isThisPlaying
+          ? t.chat.ttsPlayButton.stopTooltip
+          : t.chat.ttsPlayButton.readAloudTooltip,
       icon: showSpinner
           ? const SizedBox.square(
               dimension: 16,
@@ -79,7 +81,7 @@ class _TtsPlayButton extends StatelessWidget {
               } on Exception catch (e) {
                 final msg = e is LlmFetchException
                     ? e.userMessage
-                    : 'TTS failed.';
+                    : t.chat.ttsPlayButton.ttsFailed;
                 NavigationService().showSnackBar(msg);
               }
             },

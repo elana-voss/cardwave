@@ -1,6 +1,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/controllers/chat_page_controller.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/workspace.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +52,8 @@ class AppBarChat extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
             tooltip: workspace.chatSidePanel
-                ? 'Hide editor panel'
-                : 'Show editor side-by-side',
+                ? t.chat.appBarChat.hideEditorPanelTooltip
+                : t.chat.appBarChat.showEditorSideBySideTooltip,
             onPressed: workspace.toggleChatSidePanel,
           ),
         const SizedBox(width: 16),

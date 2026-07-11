@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/pages/widgets/tile_ai_provider.dart'
     show TileAiProvider;
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -59,9 +60,11 @@ class TileImagePreset extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.image_outlined),
-      title: const Text('Image Model'),
+      title: Text(t.chat.tileImagePreset.titleLabel),
       trailing: DrawerTrailingValue(
-        activeEntry == null ? 'Tap to choose' : activeEntry.config.name,
+        activeEntry == null
+            ? t.chat.presetTile.tapToChoose
+            : activeEntry.config.name,
       ),
       onTap: () {
         // Capture before the async gap so we don't reach into `context`
@@ -72,7 +75,7 @@ class TileImagePreset extends StatelessWidget {
           final pickedId = await DialogPresetPicker.show(
             context: context,
             title: Text(
-              'Choose an image model',
+              t.chat.tileImagePreset.chooseModelTitle,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             validPresets: validPresets,

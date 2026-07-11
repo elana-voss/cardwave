@@ -10,6 +10,7 @@ import 'package:cardwave/chat/src/repositories/chat_repository.dart';
 import 'package:cardwave/chat/src/services/chat_builtin_tool_app_data.dart';
 import 'package:cardwave/chat/src/services/chat_execution_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -101,14 +102,16 @@ mixin ChatImageGenerationMixin
 
     if (mode.requiresFreePrompt &&
         (freePrompt == null || freePrompt.trim().isEmpty)) {
-      NavigationService().showSnackBar('Enter a prompt to generate an image.');
+      NavigationService().showSnackBar(
+        t.chat.imageGenerationMixin.enterPromptMessage,
+      );
       return false;
     }
 
     final character = imageGenTargetCharacter;
     if (character == null) {
       NavigationService().showSnackBar(
-        'No character available for image generation.',
+        t.chat.imageGenerationMixin.noCharacterMessage,
       );
       return false;
     }
@@ -127,7 +130,9 @@ mixin ChatImageGenerationMixin
     );
     final imagePreset = resolved.imagePreset;
     if (imagePreset == null) {
-      NavigationService().showSnackBar('Image generation is not configured.');
+      NavigationService().showSnackBar(
+        t.chat.imageGenerationMixin.notConfiguredMessage,
+      );
       return false;
     }
 
@@ -135,7 +140,7 @@ mixin ChatImageGenerationMixin
         settings.domainPresetIds[LlmProviderDomainEnum.system];
     if (systemPresetId == null || systemPresetId.isEmpty) {
       NavigationService().showSnackBar(
-        'No system model is configured. Set one in Settings → AI.',
+        t.chat.imageGenerationMixin.noSystemModelMessage,
       );
       return false;
     }

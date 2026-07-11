@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 455 (50 per locale)
+/// Strings: 583 (64 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -204,6 +204,46 @@ class _TranslationsChatEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsChatTileAiProviderEn tileAiProvider = _TranslationsChatTileAiProviderEn._(_root);
+	late final _TranslationsChatPresetTileEn presetTile = _TranslationsChatPresetTileEn._(_root);
+	late final _TranslationsChatTileImagePresetEn tileImagePreset = _TranslationsChatTileImagePresetEn._(_root);
+	late final _TranslationsChatTileVideoPresetEn tileVideoPreset = _TranslationsChatTileVideoPresetEn._(_root);
+	late final _TranslationsChatTileTtsPresetEn tileTtsPreset = _TranslationsChatTileTtsPresetEn._(_root);
+	late final _TranslationsChatTileImageAspectRatioEn tileImageAspectRatio = _TranslationsChatTileImageAspectRatioEn._(_root);
+	late final _TranslationsChatTileVideoAspectRatioEn tileVideoAspectRatio = _TranslationsChatTileVideoAspectRatioEn._(_root);
+	late final _TranslationsChatTileVideoResolutionEn tileVideoResolution = _TranslationsChatTileVideoResolutionEn._(_root);
+	late final _TranslationsChatTileVideoDurationEn tileVideoDuration = _TranslationsChatTileVideoDurationEn._(_root);
+	late final _TranslationsChatTileTtsVoiceEn tileTtsVoice = _TranslationsChatTileTtsVoiceEn._(_root);
+	late final _TranslationsChatTileTtsLanguageEn tileTtsLanguage = _TranslationsChatTileTtsLanguageEn._(_root);
+	late final _TranslationsChatTileNsfwEn tileNsfw = _TranslationsChatTileNsfwEn._(_root);
+	late final _TranslationsChatTileScenarioEn tileScenario = _TranslationsChatTileScenarioEn._(_root);
+	late final _TranslationsChatTileMaxResponseLengthEn tileMaxResponseLength = _TranslationsChatTileMaxResponseLengthEn._(_root);
+	late final _TranslationsChatTileTrailingParagraphEn tileTrailingParagraph = _TranslationsChatTileTrailingParagraphEn._(_root);
+	late final _TranslationsChatTileReasoningEffortEn tileReasoningEffort = _TranslationsChatTileReasoningEffortEn._(_root);
+	late final _TranslationsChatTileChatThemeEn tileChatTheme = _TranslationsChatTileChatThemeEn._(_root);
+	late final _TranslationsChatTileRecalledMemoryEn tileRecalledMemory = _TranslationsChatTileRecalledMemoryEn._(_root);
+	late final _TranslationsChatCharacterSwitcherEn characterSwitcher = _TranslationsChatCharacterSwitcherEn._(_root);
+	late final _TranslationsChatFreeImagePromptDialogEn freeImagePromptDialog = _TranslationsChatFreeImagePromptDialogEn._(_root);
+	late final _TranslationsChatFreeVideoPromptDialogEn freeVideoPromptDialog = _TranslationsChatFreeVideoPromptDialogEn._(_root);
+	late final _TranslationsChatImagePromptReviewDialogEn imagePromptReviewDialog = _TranslationsChatImagePromptReviewDialogEn._(_root);
+	late final _TranslationsChatVideoPromptReviewDialogEn videoPromptReviewDialog = _TranslationsChatVideoPromptReviewDialogEn._(_root);
+	late final _TranslationsChatUrlFetchReviewDialogEn urlFetchReviewDialog = _TranslationsChatUrlFetchReviewDialogEn._(_root);
+	late final _TranslationsChatMessageActionsRowEn messageActionsRow = _TranslationsChatMessageActionsRowEn._(_root);
+	late final _TranslationsChatTtsPlayButtonEn ttsPlayButton = _TranslationsChatTtsPlayButtonEn._(_root);
+	late final _TranslationsChatMessageSwipeFlipperEn messageSwipeFlipper = _TranslationsChatMessageSwipeFlipperEn._(_root);
+	late final _TranslationsChatVideoPlayerInlineEn videoPlayerInline = _TranslationsChatVideoPlayerInlineEn._(_root);
+	String get newChatLabel => 'New Chat';
+	late final _TranslationsChatChatListItemEn chatListItem = _TranslationsChatChatListItemEn._(_root);
+	late final _TranslationsChatChatHistoryControllerEn chatHistoryController = _TranslationsChatChatHistoryControllerEn._(_root);
+	late final _TranslationsChatChatPageControllerEn chatPageController = _TranslationsChatChatPageControllerEn._(_root);
+	late final _TranslationsChatImageGenerationMixinEn imageGenerationMixin = _TranslationsChatImageGenerationMixinEn._(_root);
+	late final _TranslationsChatVideoGenerationMixinEn videoGenerationMixin = _TranslationsChatVideoGenerationMixinEn._(_root);
+	late final _TranslationsChatBubbleWaitingForEn bubbleWaitingFor = _TranslationsChatBubbleWaitingForEn._(_root);
+	late final _TranslationsChatAppBarChatEn appBarChat = _TranslationsChatAppBarChatEn._(_root);
+	late final _TranslationsChatAllChatsDrawerListEn allChatsDrawerList = _TranslationsChatAllChatsDrawerListEn._(_root);
+	late final _TranslationsChatChatInputMediaMenuEn chatInputMediaMenu = _TranslationsChatChatInputMediaMenuEn._(_root);
+	late final _TranslationsChatChatViewEn chatView = _TranslationsChatChatViewEn._(_root);
+	late final _TranslationsChatChatMessageBubbleEn chatMessageBubble = _TranslationsChatChatMessageBubbleEn._(_root);
 }
 
 // Path: common
@@ -506,6 +546,484 @@ class _TranslationsCharacterAiActionControllerEn {
 	String etaMinutesSeconds({required Object minutes, required Object seconds}) => ' ETA: ${minutes}m ${seconds}s';
 	String etaSeconds({required Object seconds}) => ' ETA: ${seconds}s';
 	String processingField({required Object fieldName}) => 'Processing ${fieldName}...';
+}
+
+// Path: chat.tileAiProvider
+class _TranslationsChatTileAiProviderEn {
+	_TranslationsChatTileAiProviderEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get modelLabel => 'Model';
+	String get invalidLabel => 'Invalid';
+	String get chooseModelTitle => 'Choose a model';
+}
+
+// Path: chat.presetTile
+class _TranslationsChatPresetTileEn {
+	_TranslationsChatPresetTileEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get tapToChoose => 'Tap to choose';
+}
+
+// Path: chat.tileImagePreset
+class _TranslationsChatTileImagePresetEn {
+	_TranslationsChatTileImagePresetEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get titleLabel => 'Image Model';
+	String get chooseModelTitle => 'Choose an image model';
+}
+
+// Path: chat.tileVideoPreset
+class _TranslationsChatTileVideoPresetEn {
+	_TranslationsChatTileVideoPresetEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get titleLabel => 'Video Model';
+	String get chooseModelTitle => 'Choose a video model';
+}
+
+// Path: chat.tileTtsPreset
+class _TranslationsChatTileTtsPresetEn {
+	_TranslationsChatTileTtsPresetEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get titleLabel => 'Speech Model';
+	String get chooseModelTitle => 'Choose a speech model';
+}
+
+// Path: chat.tileImageAspectRatio
+class _TranslationsChatTileImageAspectRatioEn {
+	_TranslationsChatTileImageAspectRatioEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Image aspect ratio';
+}
+
+// Path: chat.tileVideoAspectRatio
+class _TranslationsChatTileVideoAspectRatioEn {
+	_TranslationsChatTileVideoAspectRatioEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Aspect ratio';
+}
+
+// Path: chat.tileVideoResolution
+class _TranslationsChatTileVideoResolutionEn {
+	_TranslationsChatTileVideoResolutionEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Resolution';
+}
+
+// Path: chat.tileVideoDuration
+class _TranslationsChatTileVideoDurationEn {
+	_TranslationsChatTileVideoDurationEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Duration';
+}
+
+// Path: chat.tileTtsVoice
+class _TranslationsChatTileTtsVoiceEn {
+	_TranslationsChatTileTtsVoiceEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Voice';
+}
+
+// Path: chat.tileTtsLanguage
+class _TranslationsChatTileTtsLanguageEn {
+	_TranslationsChatTileTtsLanguageEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Language';
+}
+
+// Path: chat.tileNsfw
+class _TranslationsChatTileNsfwEn {
+	_TranslationsChatTileNsfwEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'NSFW / Unlimited';
+}
+
+// Path: chat.tileScenario
+class _TranslationsChatTileScenarioEn {
+	_TranslationsChatTileScenarioEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Scenario';
+}
+
+// Path: chat.tileMaxResponseLength
+class _TranslationsChatTileMaxResponseLengthEn {
+	_TranslationsChatTileMaxResponseLengthEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String titleWithBucket({required Object bucket}) => 'Response length — ${bucket}';
+	String sliderLabel({required Object bucket, required Object tokens}) => '${bucket} (${tokens} tokens)';
+	String get bucketVeryShort => 'Very short';
+	String get bucketShort => 'Short';
+	String get bucketMedium => 'Medium';
+	String get bucketLong => 'Long';
+	String get bucketVeryLong => 'Very long';
+}
+
+// Path: chat.tileTrailingParagraph
+class _TranslationsChatTileTrailingParagraphEn {
+	_TranslationsChatTileTrailingParagraphEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Cut Trailing Text';
+}
+
+// Path: chat.tileReasoningEffort
+class _TranslationsChatTileReasoningEffortEn {
+	_TranslationsChatTileReasoningEffortEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String titleWithEffort({required Object effort}) => 'Reasoning — ${effort}';
+	String get titleOff => 'Reasoning off';
+	String get extraTokensCaption => 'Uses extra tokens beyond your max response length.';
+}
+
+// Path: chat.tileChatTheme
+class _TranslationsChatTileChatThemeEn {
+	_TranslationsChatTileChatThemeEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Theme';
+}
+
+// Path: chat.tileRecalledMemory
+class _TranslationsChatTileRecalledMemoryEn {
+	_TranslationsChatTileRecalledMemoryEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get label => 'Show Recalled Memory';
+}
+
+// Path: chat.characterSwitcher
+class _TranslationsChatCharacterSwitcherEn {
+	_TranslationsChatCharacterSwitcherEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get favoritesTooltip => 'Favorites';
+	String get recentChatsTooltip => 'Recent Chats';
+	String get originalBadge => 'ORIGINAL';
+	String get variantBadge => 'VARIANT';
+	String lastActive({required Object timeAgo}) => 'Last active: ${timeAgo}';
+	String get never => 'Never';
+}
+
+// Path: chat.freeImagePromptDialog
+class _TranslationsChatFreeImagePromptDialogEn {
+	_TranslationsChatFreeImagePromptDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Generate image';
+	String get description => 'Describe what you want to see. A short phrase is fine — the model will expand it into a full tag list.';
+	String get subjectLabel => 'Subject';
+	String get subjectHint => 'cyberpunk alley, neon rain';
+	String get generateButton => 'Generate';
+}
+
+// Path: chat.freeVideoPromptDialog
+class _TranslationsChatFreeVideoPromptDialogEn {
+	_TranslationsChatFreeVideoPromptDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Generate video';
+	String get description => 'Describe a short moment of motion — what is moving, how, where. The system model will expand it into a cinematic T2V prompt.';
+	String get subjectLabel => 'Subject';
+	String get subjectHint => 'she walks through neon rain, slow motion';
+	String get generateButton => 'Generate';
+}
+
+// Path: chat.imagePromptReviewDialog
+class _TranslationsChatImagePromptReviewDialogEn {
+	_TranslationsChatImagePromptReviewDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Review image prompt';
+	String get description => 'Edit the prompt below before generating, or tap Generate to use it as-is.';
+	String get fieldLabel => 'Image prompt';
+	String get generateButton => 'Generate';
+}
+
+// Path: chat.videoPromptReviewDialog
+class _TranslationsChatVideoPromptReviewDialogEn {
+	_TranslationsChatVideoPromptReviewDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Review video prompt';
+	String get description => 'Edit the prompt below before submitting, or tap Generate to use it as-is.';
+	String get fieldLabel => 'Video prompt';
+	String get generateButton => 'Generate';
+}
+
+// Path: chat.urlFetchReviewDialog
+class _TranslationsChatUrlFetchReviewDialogEn {
+	_TranslationsChatUrlFetchReviewDialogEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get title => 'Allow web fetch?';
+	String get description => 'The character wants to read the contents of this URL.';
+	String get purposeLabel => 'Purpose:';
+	String get denyButton => 'Deny';
+	String get allowButton => 'Allow';
+}
+
+// Path: chat.messageActionsRow
+class _TranslationsChatMessageActionsRowEn {
+	_TranslationsChatMessageActionsRowEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String tokenCountAbbrev({required Object count}) => '${count}t';
+	String generationTimeAbbrev({required Object seconds}) => '${seconds}s';
+	String get viewGenerationPromptTooltip => 'View generation prompt';
+	String get messageActionsTooltip => 'Message actions';
+	String get editAction => 'Edit';
+	String get copyAction => 'Copy';
+	String get shareImageAction => 'Share Image';
+	String get setAsBackgroundAction => 'Set as Background';
+	String get setAsCharacterImageAction => 'Set as Character Image';
+	String get deleteAction => 'Delete';
+	String get copiedToClipboard => 'Message copied to clipboard';
+}
+
+// Path: chat.ttsPlayButton
+class _TranslationsChatTtsPlayButtonEn {
+	_TranslationsChatTtsPlayButtonEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get stopTooltip => 'Stop';
+	String get readAloudTooltip => 'Read aloud';
+	String get ttsFailed => 'TTS failed.';
+}
+
+// Path: chat.messageSwipeFlipper
+class _TranslationsChatMessageSwipeFlipperEn {
+	_TranslationsChatMessageSwipeFlipperEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get previousVersionTooltip => 'Previous version';
+	String swipeCounter({required Object current, required Object total}) => '${current} / ${total}';
+	String get regenerateTooltip => 'Regenerate';
+	String get nextVersionTooltip => 'Next version';
+}
+
+// Path: chat.videoPlayerInline
+class _TranslationsChatVideoPlayerInlineEn {
+	_TranslationsChatVideoPlayerInlineEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get webUnsupported => 'Video playback not supported on web.';
+	String get couldNotLoad => 'Could not load video.';
+}
+
+// Path: chat.chatListItem
+class _TranslationsChatChatListItemEn {
+	_TranslationsChatChatListItemEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String messageCount({required Object count}) => '${count} messages';
+	String get renameAction => 'Rename';
+	String get deleteChatAction => 'Delete Chat';
+}
+
+// Path: chat.chatHistoryController
+class _TranslationsChatChatHistoryControllerEn {
+	_TranslationsChatChatHistoryControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get renameChatTitle => 'Rename Chat';
+	String get chatNameHint => 'Chat Name';
+	String get renameButton => 'Rename';
+	String get deleteChatTitle => 'Delete Chat';
+	String get deleteChatMessage => 'Are you sure you want to delete this chat history? This action cannot be undone.';
+}
+
+// Path: chat.chatPageController
+class _TranslationsChatChatPageControllerEn {
+	_TranslationsChatChatPageControllerEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get clearAssistantHistoryMessage => 'Clear the assistant chat history?';
+	String get clearButton => 'Clear';
+	String get deleteOrKeepMessage => 'Would you like to delete the current chat or keep it in your history?';
+	String get deleteCurrentButton => 'Delete Current';
+	String get keepCurrentButton => 'Keep Current';
+}
+
+// Path: chat.imageGenerationMixin
+class _TranslationsChatImageGenerationMixinEn {
+	_TranslationsChatImageGenerationMixinEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get enterPromptMessage => 'Enter a prompt to generate an image.';
+	String get noCharacterMessage => 'No character available for image generation.';
+	String get notConfiguredMessage => 'Image generation is not configured.';
+	String get noSystemModelMessage => 'No system model is configured. Set one in Settings → AI.';
+}
+
+// Path: chat.videoGenerationMixin
+class _TranslationsChatVideoGenerationMixinEn {
+	_TranslationsChatVideoGenerationMixinEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get enterPromptMessage => 'Enter a prompt to generate a video.';
+	String get noCharacterMessage => 'No character available for video generation.';
+	String get notConfiguredMessage => 'Video generation is not configured.';
+}
+
+// Path: chat.bubbleWaitingFor
+class _TranslationsChatBubbleWaitingForEn {
+	_TranslationsChatBubbleWaitingForEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get thinking => 'Thinking…';
+	String get preparingImagePrompt => 'Preparing image prompt…';
+	String get preparingVideoPrompt => 'Preparing video prompt…';
+	String get generatingImage => 'Generating image…';
+	String get generatingVideo => 'Generating video…';
+}
+
+// Path: chat.appBarChat
+class _TranslationsChatAppBarChatEn {
+	_TranslationsChatAppBarChatEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get hideEditorPanelTooltip => 'Hide editor panel';
+	String get showEditorSideBySideTooltip => 'Show editor side-by-side';
+}
+
+// Path: chat.allChatsDrawerList
+class _TranslationsChatAllChatsDrawerListEn {
+	_TranslationsChatAllChatsDrawerListEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get rebuildingIndex => 'Rebuilding index...';
+	String get noChatsFound => 'No chats found.';
+}
+
+// Path: chat.chatInputMediaMenu
+class _TranslationsChatChatInputMediaMenuEn {
+	_TranslationsChatChatInputMediaMenuEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get generateMediaTooltip => 'Generate media';
+	String get generateImageLabel => 'Generate image';
+	String get generateVideoLabel => 'Generate video';
+}
+
+// Path: chat.chatView
+class _TranslationsChatChatViewEn {
+	_TranslationsChatChatViewEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get deleteMessageTitle => 'Delete Message';
+	String get deleteMessageConfirmation => 'Are you sure you want to delete this message?';
+	String get typeMessageHint => 'Type a message...';
+	String get moreActionsTooltip => 'More actions';
+	String get continueAction => 'Continue';
+	String get impersonateAction => 'Impersonate';
+	String get generateReplyAction => 'Generate Reply';
+	String get improveMessageAction => 'Improve Message';
+}
+
+// Path: chat.chatMessageBubble
+class _TranslationsChatChatMessageBubbleEn {
+	_TranslationsChatChatMessageBubbleEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get imagesTypeGroupLabel => 'Images';
+	String get assistantFallbackName => 'Assistant';
+	String get reasoningLabel => 'Reasoning';
+	String get sendingToProvider => 'Sending to provider…';
+	String pollingWithPercent({required Object pct}) => 'Polling… ${pct}%';
+	String get polling => 'Polling…';
+	String get downloading => 'Downloading…';
 }
 
 // Path: common.actions
@@ -3020,6 +3538,134 @@ extension on Translations {
 			case 'character.aiActionController.etaMinutesSeconds': return ({required Object minutes, required Object seconds}) => ' ETA: ${minutes}m ${seconds}s';
 			case 'character.aiActionController.etaSeconds': return ({required Object seconds}) => ' ETA: ${seconds}s';
 			case 'character.aiActionController.processingField': return ({required Object fieldName}) => 'Processing ${fieldName}...';
+			case 'chat.tileAiProvider.modelLabel': return 'Model';
+			case 'chat.tileAiProvider.invalidLabel': return 'Invalid';
+			case 'chat.tileAiProvider.chooseModelTitle': return 'Choose a model';
+			case 'chat.presetTile.tapToChoose': return 'Tap to choose';
+			case 'chat.tileImagePreset.titleLabel': return 'Image Model';
+			case 'chat.tileImagePreset.chooseModelTitle': return 'Choose an image model';
+			case 'chat.tileVideoPreset.titleLabel': return 'Video Model';
+			case 'chat.tileVideoPreset.chooseModelTitle': return 'Choose a video model';
+			case 'chat.tileTtsPreset.titleLabel': return 'Speech Model';
+			case 'chat.tileTtsPreset.chooseModelTitle': return 'Choose a speech model';
+			case 'chat.tileImageAspectRatio.label': return 'Image aspect ratio';
+			case 'chat.tileVideoAspectRatio.label': return 'Aspect ratio';
+			case 'chat.tileVideoResolution.label': return 'Resolution';
+			case 'chat.tileVideoDuration.label': return 'Duration';
+			case 'chat.tileTtsVoice.label': return 'Voice';
+			case 'chat.tileTtsLanguage.label': return 'Language';
+			case 'chat.tileNsfw.label': return 'NSFW / Unlimited';
+			case 'chat.tileScenario.label': return 'Scenario';
+			case 'chat.tileMaxResponseLength.titleWithBucket': return ({required Object bucket}) => 'Response length — ${bucket}';
+			case 'chat.tileMaxResponseLength.sliderLabel': return ({required Object bucket, required Object tokens}) => '${bucket} (${tokens} tokens)';
+			case 'chat.tileMaxResponseLength.bucketVeryShort': return 'Very short';
+			case 'chat.tileMaxResponseLength.bucketShort': return 'Short';
+			case 'chat.tileMaxResponseLength.bucketMedium': return 'Medium';
+			case 'chat.tileMaxResponseLength.bucketLong': return 'Long';
+			case 'chat.tileMaxResponseLength.bucketVeryLong': return 'Very long';
+			case 'chat.tileTrailingParagraph.label': return 'Cut Trailing Text';
+			case 'chat.tileReasoningEffort.titleWithEffort': return ({required Object effort}) => 'Reasoning — ${effort}';
+			case 'chat.tileReasoningEffort.titleOff': return 'Reasoning off';
+			case 'chat.tileReasoningEffort.extraTokensCaption': return 'Uses extra tokens beyond your max response length.';
+			case 'chat.tileChatTheme.label': return 'Theme';
+			case 'chat.tileRecalledMemory.label': return 'Show Recalled Memory';
+			case 'chat.characterSwitcher.favoritesTooltip': return 'Favorites';
+			case 'chat.characterSwitcher.recentChatsTooltip': return 'Recent Chats';
+			case 'chat.characterSwitcher.originalBadge': return 'ORIGINAL';
+			case 'chat.characterSwitcher.variantBadge': return 'VARIANT';
+			case 'chat.characterSwitcher.lastActive': return ({required Object timeAgo}) => 'Last active: ${timeAgo}';
+			case 'chat.characterSwitcher.never': return 'Never';
+			case 'chat.freeImagePromptDialog.title': return 'Generate image';
+			case 'chat.freeImagePromptDialog.description': return 'Describe what you want to see. A short phrase is fine — the model will expand it into a full tag list.';
+			case 'chat.freeImagePromptDialog.subjectLabel': return 'Subject';
+			case 'chat.freeImagePromptDialog.subjectHint': return 'cyberpunk alley, neon rain';
+			case 'chat.freeImagePromptDialog.generateButton': return 'Generate';
+			case 'chat.freeVideoPromptDialog.title': return 'Generate video';
+			case 'chat.freeVideoPromptDialog.description': return 'Describe a short moment of motion — what is moving, how, where. The system model will expand it into a cinematic T2V prompt.';
+			case 'chat.freeVideoPromptDialog.subjectLabel': return 'Subject';
+			case 'chat.freeVideoPromptDialog.subjectHint': return 'she walks through neon rain, slow motion';
+			case 'chat.freeVideoPromptDialog.generateButton': return 'Generate';
+			case 'chat.imagePromptReviewDialog.title': return 'Review image prompt';
+			case 'chat.imagePromptReviewDialog.description': return 'Edit the prompt below before generating, or tap Generate to use it as-is.';
+			case 'chat.imagePromptReviewDialog.fieldLabel': return 'Image prompt';
+			case 'chat.imagePromptReviewDialog.generateButton': return 'Generate';
+			case 'chat.videoPromptReviewDialog.title': return 'Review video prompt';
+			case 'chat.videoPromptReviewDialog.description': return 'Edit the prompt below before submitting, or tap Generate to use it as-is.';
+			case 'chat.videoPromptReviewDialog.fieldLabel': return 'Video prompt';
+			case 'chat.videoPromptReviewDialog.generateButton': return 'Generate';
+			case 'chat.urlFetchReviewDialog.title': return 'Allow web fetch?';
+			case 'chat.urlFetchReviewDialog.description': return 'The character wants to read the contents of this URL.';
+			case 'chat.urlFetchReviewDialog.purposeLabel': return 'Purpose:';
+			case 'chat.urlFetchReviewDialog.denyButton': return 'Deny';
+			case 'chat.urlFetchReviewDialog.allowButton': return 'Allow';
+			case 'chat.messageActionsRow.tokenCountAbbrev': return ({required Object count}) => '${count}t';
+			case 'chat.messageActionsRow.generationTimeAbbrev': return ({required Object seconds}) => '${seconds}s';
+			case 'chat.messageActionsRow.viewGenerationPromptTooltip': return 'View generation prompt';
+			case 'chat.messageActionsRow.messageActionsTooltip': return 'Message actions';
+			case 'chat.messageActionsRow.editAction': return 'Edit';
+			case 'chat.messageActionsRow.copyAction': return 'Copy';
+			case 'chat.messageActionsRow.shareImageAction': return 'Share Image';
+			case 'chat.messageActionsRow.setAsBackgroundAction': return 'Set as Background';
+			case 'chat.messageActionsRow.setAsCharacterImageAction': return 'Set as Character Image';
+			case 'chat.messageActionsRow.deleteAction': return 'Delete';
+			case 'chat.messageActionsRow.copiedToClipboard': return 'Message copied to clipboard';
+			case 'chat.ttsPlayButton.stopTooltip': return 'Stop';
+			case 'chat.ttsPlayButton.readAloudTooltip': return 'Read aloud';
+			case 'chat.ttsPlayButton.ttsFailed': return 'TTS failed.';
+			case 'chat.messageSwipeFlipper.previousVersionTooltip': return 'Previous version';
+			case 'chat.messageSwipeFlipper.swipeCounter': return ({required Object current, required Object total}) => '${current} / ${total}';
+			case 'chat.messageSwipeFlipper.regenerateTooltip': return 'Regenerate';
+			case 'chat.messageSwipeFlipper.nextVersionTooltip': return 'Next version';
+			case 'chat.videoPlayerInline.webUnsupported': return 'Video playback not supported on web.';
+			case 'chat.videoPlayerInline.couldNotLoad': return 'Could not load video.';
+			case 'chat.newChatLabel': return 'New Chat';
+			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} messages';
+			case 'chat.chatListItem.renameAction': return 'Rename';
+			case 'chat.chatListItem.deleteChatAction': return 'Delete Chat';
+			case 'chat.chatHistoryController.renameChatTitle': return 'Rename Chat';
+			case 'chat.chatHistoryController.chatNameHint': return 'Chat Name';
+			case 'chat.chatHistoryController.renameButton': return 'Rename';
+			case 'chat.chatHistoryController.deleteChatTitle': return 'Delete Chat';
+			case 'chat.chatHistoryController.deleteChatMessage': return 'Are you sure you want to delete this chat history? This action cannot be undone.';
+			case 'chat.chatPageController.clearAssistantHistoryMessage': return 'Clear the assistant chat history?';
+			case 'chat.chatPageController.clearButton': return 'Clear';
+			case 'chat.chatPageController.deleteOrKeepMessage': return 'Would you like to delete the current chat or keep it in your history?';
+			case 'chat.chatPageController.deleteCurrentButton': return 'Delete Current';
+			case 'chat.chatPageController.keepCurrentButton': return 'Keep Current';
+			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Enter a prompt to generate an image.';
+			case 'chat.imageGenerationMixin.noCharacterMessage': return 'No character available for image generation.';
+			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'Image generation is not configured.';
+			case 'chat.imageGenerationMixin.noSystemModelMessage': return 'No system model is configured. Set one in Settings → AI.';
+			case 'chat.videoGenerationMixin.enterPromptMessage': return 'Enter a prompt to generate a video.';
+			case 'chat.videoGenerationMixin.noCharacterMessage': return 'No character available for video generation.';
+			case 'chat.videoGenerationMixin.notConfiguredMessage': return 'Video generation is not configured.';
+			case 'chat.bubbleWaitingFor.thinking': return 'Thinking…';
+			case 'chat.bubbleWaitingFor.preparingImagePrompt': return 'Preparing image prompt…';
+			case 'chat.bubbleWaitingFor.preparingVideoPrompt': return 'Preparing video prompt…';
+			case 'chat.bubbleWaitingFor.generatingImage': return 'Generating image…';
+			case 'chat.bubbleWaitingFor.generatingVideo': return 'Generating video…';
+			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Hide editor panel';
+			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Show editor side-by-side';
+			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Rebuilding index...';
+			case 'chat.allChatsDrawerList.noChatsFound': return 'No chats found.';
+			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Generate media';
+			case 'chat.chatInputMediaMenu.generateImageLabel': return 'Generate image';
+			case 'chat.chatInputMediaMenu.generateVideoLabel': return 'Generate video';
+			case 'chat.chatView.deleteMessageTitle': return 'Delete Message';
+			case 'chat.chatView.deleteMessageConfirmation': return 'Are you sure you want to delete this message?';
+			case 'chat.chatView.typeMessageHint': return 'Type a message...';
+			case 'chat.chatView.moreActionsTooltip': return 'More actions';
+			case 'chat.chatView.continueAction': return 'Continue';
+			case 'chat.chatView.impersonateAction': return 'Impersonate';
+			case 'chat.chatView.generateReplyAction': return 'Generate Reply';
+			case 'chat.chatView.improveMessageAction': return 'Improve Message';
+			case 'chat.chatMessageBubble.imagesTypeGroupLabel': return 'Images';
+			case 'chat.chatMessageBubble.assistantFallbackName': return 'Assistant';
+			case 'chat.chatMessageBubble.reasoningLabel': return 'Reasoning';
+			case 'chat.chatMessageBubble.sendingToProvider': return 'Sending to provider…';
+			case 'chat.chatMessageBubble.pollingWithPercent': return ({required Object pct}) => 'Polling… ${pct}%';
+			case 'chat.chatMessageBubble.polling': return 'Polling…';
+			case 'chat.chatMessageBubble.downloading': return 'Downloading…';
 			case 'common.actions.delete': return 'Delete';
 			case 'common.actions.ok': return 'OK';
 			case 'common.actions.cancel': return 'Cancel';

@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Asks the user whether to allow the chat model to fetch [url] before
@@ -23,12 +24,12 @@ class DialogUrlFetchReview {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Allow web fetch?',
+                  t.chat.urlFetchReviewDialog.title,
                   style: Theme.of(ctx).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'The character wants to read the contents of this URL.',
+                  t.chat.urlFetchReviewDialog.description,
                   style: Theme.of(ctx).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 16),
@@ -41,7 +42,7 @@ class DialogUrlFetchReview {
                 if (purpose != null && purpose.trim().isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Text(
-                    'Purpose:',
+                    t.chat.urlFetchReviewDialog.purposeLabel,
                     style: Theme.of(ctx).textTheme.labelLarge,
                   ),
                   const SizedBox(height: 4),
@@ -56,12 +57,12 @@ class DialogUrlFetchReview {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Deny'),
+              child: Text(t.chat.urlFetchReviewDialog.denyButton),
             ),
             const Spacer(),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Allow'),
+              child: Text(t.chat.urlFetchReviewDialog.allowButton),
             ),
           ],
         );

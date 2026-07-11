@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
@@ -49,13 +50,13 @@ class TileVideoDuration extends StatelessWidget {
 
     return ListTile(
       leading: const Icon(Icons.timer),
-      title: const Text('Duration'),
+      title: Text(t.chat.tileVideoDuration.label),
       trailing: DrawerTrailingValue(active.label),
       onTap: () {
         unawaited(() async {
           final picked = await showSelectionDialog<int>(
             context: context,
-            title: 'Duration',
+            title: t.chat.tileVideoDuration.label,
             activeValue: active.seconds,
             options: [
               for (final d in durations)

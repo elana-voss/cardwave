@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/chat/src/models/chat_session.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,11 @@ class TileReasoningEffort extends StatelessWidget {
             ? LlmPresetConfigReasoningEffortEnum.off
             : LlmPresetConfigReasoningEffortEnum.medium,
       ),
-      title: Text(enabled ? 'Reasoning — ${effort.label}' : 'Reasoning off'),
+      title: Text(
+        enabled
+            ? t.chat.tileReasoningEffort.titleWithEffort(effort: effort.label)
+            : t.chat.tileReasoningEffort.titleOff,
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -88,7 +93,7 @@ class TileReasoningEffort extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 4, right: 4, bottom: 4),
               child: Text(
-                'Uses extra tokens beyond your max response length.',
+                t.chat.tileReasoningEffort.extraTokensCaption,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontStyle: FontStyle.italic,
                   color: Theme.of(

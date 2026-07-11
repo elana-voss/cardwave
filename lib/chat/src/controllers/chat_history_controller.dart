@@ -2,6 +2,7 @@ import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_index.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart' show Color;
 
 /// Stateless orchestrator for the per-entry actions in the "All Chats"
@@ -20,10 +21,10 @@ class ChatHistoryController {
     required ChatIndexEntry entry,
   }) async {
     final newName = await NavigationService().showTextInputDialog(
-      title: 'Rename Chat',
+      title: t.chat.chatHistoryController.renameChatTitle,
       initialText: entry.name,
-      hintText: 'Chat Name',
-      confirmText: 'Rename',
+      hintText: t.chat.chatHistoryController.chatNameHint,
+      confirmText: t.chat.chatHistoryController.renameButton,
       maxLines: 1,
     );
     if (newName == null || newName.isEmpty) return null;
@@ -47,11 +48,9 @@ class ChatHistoryController {
     required Color confirmColor,
   }) async {
     final confirmed = await NavigationService().showConfirmCancelDialog(
-      title: 'Delete Chat',
-      message:
-          'Are you sure you want to delete this chat history? '
-          'This action cannot be undone.',
-      confirmText: 'Delete',
+      title: t.chat.chatHistoryController.deleteChatTitle,
+      message: t.chat.chatHistoryController.deleteChatMessage,
+      confirmText: t.common.actions.delete,
       confirmColor: confirmColor,
     );
     if (!confirmed) return false;

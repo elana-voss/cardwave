@@ -45,7 +45,7 @@ class ChatListItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${chat.messageCount} messages',
+            t.chat.chatListItem.messageCount(count: chat.messageCount),
             style: const TextStyle(fontSize: 12),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -69,10 +69,13 @@ class ChatListItem extends StatelessWidget {
           }
         },
         itemBuilder: (context) => [
-          const PopupMenuItem(
-            key: Key('chat-history-rename'),
+          PopupMenuItem(
+            key: const Key('chat-history-rename'),
             value: _ChatListItemActionEnum.rename,
-            child: ListTile(leading: Icon(Icons.edit), title: Text('Rename')),
+            child: ListTile(
+              leading: const Icon(Icons.edit),
+              title: Text(t.chat.chatListItem.renameAction),
+            ),
           ),
           const PopupMenuDivider(),
           PopupMenuItem(
@@ -84,7 +87,7 @@ class ChatListItem extends StatelessWidget {
                 color: Theme.of(context).colorScheme.error,
               ),
               title: Text(
-                'Delete Chat',
+                t.chat.chatListItem.deleteChatAction,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.error,
                 ),

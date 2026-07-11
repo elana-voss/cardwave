@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/controllers/chat_history_controller.dart';
 import 'package:cardwave/chat/src/models/chat_index.dart';
 import 'package:cardwave/chat/src/pages/widgets/chat_list_item.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -83,14 +84,14 @@ class _AllChatsDrawerListState extends State<AllChatsDrawerList> {
             const CircularProgressIndicator(),
             if (_isRebuilding) ...[
               const SizedBox(height: 16),
-              const Text('Rebuilding index...'),
+              Text(t.chat.allChatsDrawerList.rebuildingIndex),
             ],
           ],
         ),
       );
     }
     if (_chatIndex!.entries.isEmpty) {
-      return const Center(child: Text('No chats found.'));
+      return Center(child: Text(t.chat.allChatsDrawerList.noChatsFound));
     }
 
     return ListView.builder(

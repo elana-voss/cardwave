@@ -1,4 +1,5 @@
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 
 /// Shows the compacted video prompt for review and optional editing before
@@ -26,13 +27,12 @@ class DialogVideoPromptReview {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Review video prompt',
+                    t.chat.videoPromptReviewDialog.title,
                     style: Theme.of(ctx).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Edit the prompt below before submitting, or tap '
-                    'Generate to use it as-is.',
+                    t.chat.videoPromptReviewDialog.description,
                     style: Theme.of(ctx).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
@@ -41,8 +41,8 @@ class DialogVideoPromptReview {
                     autofocus: true,
                     minLines: 3,
                     maxLines: 10,
-                    decoration: const InputDecoration(
-                      labelText: 'Video prompt',
+                    decoration: InputDecoration(
+                      labelText: t.chat.videoPromptReviewDialog.fieldLabel,
                     ),
                   ),
                 ],
@@ -53,7 +53,7 @@ class DialogVideoPromptReview {
                 key: const Key('media-generate-confirm'),
                 onPressed: () =>
                     Navigator.of(dialogContext).pop(controller.text.trim()),
-                child: const Text('Generate'),
+                child: Text(t.chat.videoPromptReviewDialog.generateButton),
               ),
             ],
           );

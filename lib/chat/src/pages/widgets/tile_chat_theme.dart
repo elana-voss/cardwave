@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class TileChatTheme extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.palette),
-      title: const Text('Theme'),
+      title: Text(t.chat.tileChatTheme.label),
       trailing: DrawerTrailingValue(settings.chatTheme.name),
       onTap: () {
         unawaited(
@@ -32,7 +33,7 @@ class TileChatTheme extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(
-                      'Theme',
+                      t.chat.tileChatTheme.label,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),

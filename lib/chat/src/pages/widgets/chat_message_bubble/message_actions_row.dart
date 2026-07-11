@@ -64,12 +64,19 @@ class MessageActionsRow extends StatelessWidget {
         ),
         if (message.tokenCount != null) ...[
           const SizedBox(width: 8),
-          Text('${message.tokenCount}t', style: metaStyle),
+          Text(
+            t.chat.messageActionsRow.tokenCountAbbrev(
+              count: message.tokenCount!,
+            ),
+            style: metaStyle,
+          ),
         ],
         if (message.generationTime != null) ...[
           const SizedBox(width: 8),
           Text(
-            '${(message.generationTime! / 1000).toStringAsFixed(1)}s',
+            t.chat.messageActionsRow.generationTimeAbbrev(
+              seconds: (message.generationTime! / 1000).toStringAsFixed(1),
+            ),
             style: metaStyle,
           ),
         ],
@@ -81,7 +88,7 @@ class MessageActionsRow extends StatelessWidget {
             iconSize: 20,
             color: metaStyle.color,
             disabledColor: Theme.of(context).disabledColor,
-            tooltip: 'View generation prompt',
+            tooltip: t.chat.messageActionsRow.viewGenerationPromptTooltip,
             icon: const Icon(Icons.description),
             onPressed: isStreamingThisMessage ? null : onShowPrompt,
           ),
@@ -101,42 +108,44 @@ class MessageActionsRow extends StatelessWidget {
           enabled: !isStreamingThisMessage,
           icon: Icon(Icons.more_vert, size: 20, color: metaStyle.color),
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          tooltip: 'Message actions',
+          tooltip: t.chat.messageActionsRow.messageActionsTooltip,
           itemBuilder: (context) => [
             if (onShowEdit != null)
-              const PopupMenuItem(
-                key: Key('msg-menu-edit'),
+              PopupMenuItem(
+                key: const Key('msg-menu-edit'),
                 value: _MessageActionEnum.edit,
-                child: Text('Edit'),
+                child: Text(t.chat.messageActionsRow.editAction),
               ),
-            const PopupMenuItem(
-              key: Key('msg-menu-copy'),
+            PopupMenuItem(
+              key: const Key('msg-menu-copy'),
               value: _MessageActionEnum.copy,
-              child: Text('Copy'),
+              child: Text(t.chat.messageActionsRow.copyAction),
             ),
             if (onShareImage != null)
-              const PopupMenuItem(
-                key: Key('msg-menu-share-image'),
+              PopupMenuItem(
+                key: const Key('msg-menu-share-image'),
                 value: _MessageActionEnum.shareImage,
-                child: Text('Share Image'),
+                child: Text(t.chat.messageActionsRow.shareImageAction),
               ),
             if (onSetAsBackground != null)
-              const PopupMenuItem(
-                key: Key('msg-menu-set-bg'),
+              PopupMenuItem(
+                key: const Key('msg-menu-set-bg'),
                 value: _MessageActionEnum.setAsBackground,
-                child: Text('Set as Background'),
+                child: Text(t.chat.messageActionsRow.setAsBackgroundAction),
               ),
             if (onSetAsCharacterImage != null)
-              const PopupMenuItem(
-                key: Key('msg-menu-set-character-image'),
+              PopupMenuItem(
+                key: const Key('msg-menu-set-character-image'),
                 value: _MessageActionEnum.setAsCharacterImage,
-                child: Text('Set as Character Image'),
+                child: Text(
+                  t.chat.messageActionsRow.setAsCharacterImageAction,
+                ),
               ),
             if (onDelete != null)
-              const PopupMenuItem(
-                key: Key('msg-menu-delete'),
+              PopupMenuItem(
+                key: const Key('msg-menu-delete'),
                 value: _MessageActionEnum.delete,
-                child: Text('Delete'),
+                child: Text(t.chat.messageActionsRow.deleteAction),
               ),
           ],
           onSelected: (action) {
@@ -147,7 +156,7 @@ class MessageActionsRow extends StatelessWidget {
                 case _MessageActionEnum.copy:
                   await Clipboard.setData(ClipboardData(text: message.content));
                   NavigationService().showSnackBar(
-                    'Message copied to clipboard',
+                    t.chat.messageActionsRow.copiedToClipboard,
                   );
                 case _MessageActionEnum.shareImage:
                   onShareImage?.call();

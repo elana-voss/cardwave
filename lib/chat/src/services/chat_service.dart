@@ -7,6 +7,7 @@ import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/chat/src/models/chat_swipe.dart';
 import 'package:cardwave/chat/src/repositories/chat_repository.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/widgets.dart';
@@ -235,7 +236,7 @@ class ChatService extends ChangeNotifier {
       modelPresetId: config.id,
       created: DateTime.now().millisecondsSinceEpoch,
       lastActive: DateTime.now().millisecondsSinceEpoch,
-      name: 'New Chat',
+      name: t.chat.newChatLabel,
       isStreaming: true,
       isNsfw: isNsfwDetected,
       isScenario: false,

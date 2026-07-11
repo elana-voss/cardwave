@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/grid.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/workspace/workspace.dart';
 import 'package:flutter/material.dart';
@@ -98,14 +99,14 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
                         minHeight: 40,
                         minWidth: 48,
                       ),
-                      children: const [
+                      children: [
                         Tooltip(
-                          message: 'Favorites',
-                          child: Icon(Icons.favorite, size: 18),
+                          message: t.chat.characterSwitcher.favoritesTooltip,
+                          child: const Icon(Icons.favorite, size: 18),
                         ),
                         Tooltip(
-                          message: 'Recent Chats',
-                          child: Icon(Icons.history, size: 18),
+                          message: t.chat.characterSwitcher.recentChatsTooltip,
+                          child: const Icon(Icons.history, size: 18),
                         ),
                       ],
                     ),
@@ -173,7 +174,7 @@ class _CharacterSwitcherItem extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(4)),
         ),
         child: Text(
-          'ORIGINAL',
+          t.chat.characterSwitcher.originalBadge,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: Theme.of(context).colorScheme.onSecondaryContainer,
             fontSize: 10,
@@ -189,7 +190,7 @@ class _CharacterSwitcherItem extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(4)),
         ),
         child: Text(
-          'VARIANT',
+          t.chat.characterSwitcher.variantBadge,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: 10,
@@ -213,7 +214,11 @@ class _CharacterSwitcherItem extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        'Last active: ${lastActivity == 0 ? "Never" : UtilsApp.timeAgo(lastActivity)}',
+        t.chat.characterSwitcher.lastActive(
+          timeAgo: lastActivity == 0
+              ? t.chat.characterSwitcher.never
+              : UtilsApp.timeAgo(lastActivity),
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
