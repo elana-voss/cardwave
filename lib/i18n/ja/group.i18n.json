@@ -1,1 +1,111 @@
-{}
+{
+  "groupGridController": {
+    "renameGroupTitle": "グループの名前を変更",
+    "groupNameHint": "グループ名",
+    "deleteGroupTitle": "グループを削除",
+    "deleteGroupMessage": "「$name」を削除してもよろしいですか？この操作は取り消せません。"
+  },
+  "groupChatPage": {
+    "defaultGroupName": "グループチャット",
+    "failedToLoadMessage": "グループチャットの読み込みに失敗しました:\n$error",
+    "nextTurnTooltip": "次のターン",
+    "stopAutoChatTooltip": "自動チャットを停止",
+    "startAutoChatTooltip": "自動チャットを開始",
+    "stopGenerationTooltip": "生成を停止",
+    "noCharactersYetMessage": "このグループにはまだキャラクターがいません。",
+    "addCharacterButton": "キャラクターを追加",
+    "pickCharacterMessage": "左のリストからキャラクターを選択してください。"
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "グループの読み込みに失敗しました:\n$error",
+    "unknownErrorFallback": "不明なエラー",
+    "noGroupsYetMessage": "まだグループがありません — + をタップして作成してください。"
+  },
+  "tileAutoChatDelay": {
+    "title": "自動チャットの遅延",
+    "secondsAbbrev": "${seconds}秒"
+  },
+  "tileActivationStrategy": {
+    "title": "話者の選択",
+    "naturalOption": "自然",
+    "roundRobinOption": "ラウンドロビン",
+    "randomOption": "ランダム",
+    "changeSelectionTooltip": "話者の選択を変更"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "ウェブ取得を許可",
+    "allowWebFetchSubtitle": "関連する場合に公開ウェブページを読み取る",
+    "reviewUrlTitle": "取得前にURLを確認",
+    "reviewUrlSubtitle": "取得ごとに確認する",
+    "suggestNpcNamesTitle": "NPCの名前を提案",
+    "suggestNpcNamesSubtitle": "厳選されたデータベースから名前を選ぶ",
+    "unrestrictedImagesTitle": "無制限の画像",
+    "allowNsfwImagePromptsSubtitle": "NSFWの画像プロンプトを許可",
+    "characterCanSendSelfiesTitle": "キャラクターが自撮りを送信可能",
+    "attachSelfieWhenNaturalSubtitle": "自然な場合に自撮りを添付する",
+    "reviewImagePromptTitle": "画像プロンプトを確認",
+    "editBeforeGeneratingSubtitle": "生成前に編集する",
+    "reviewToolImagePromptsTitle": "ツールの画像プロンプトを確認",
+    "editToolTriggeredPromptsSubtitle": "ツールによって起動されたプロンプトを編集する",
+    "allowSelfieCaptionsTitle": "自撮りのキャプションを許可",
+    "captionRenderedOnImageSubtitle": "画像上にキャプションを表示する",
+    "groupOverridesTitle": "グループの上書き",
+    "groupOverridesSubtitle": "共有シナリオ、メインプロンプト、例示会話",
+    "chatSessionSubtitle": "チャットセッション",
+    "allChatsLabel": "すべてのチャット",
+    "showImageLabel": "画像を表示",
+    "groupSectionHeader": "グループ",
+    "chatSectionHeader": "チャット",
+    "chatThemeSectionHeader": "チャットテーマ",
+    "unrestrictedVideosTitle": "無制限の動画",
+    "allowNsfwVideoPromptsSubtitle": "NSFWの動画プロンプトを許可",
+    "characterCanSendVideosTitle": "キャラクターが動画を送信可能",
+    "attachShortVideoWhenNaturalSubtitle": "自然な場合に短い動画を添付する",
+    "reviewVideoPromptTitle": "動画プロンプトを確認"
+  },
+  "groupCharacterPicker": {
+    "addButton": "追加",
+    "addWithCountButton": "$count 件を追加",
+    "favoritesTooltip": "お気に入り",
+    "noMatchMessage": "「$query」に一致するキャラクターがありません",
+    "noFavoritesMessage": "お気に入りのキャラクターがありません",
+    "allAddedMessage": "すべてのキャラクターがすでに追加されています"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "このキャラクターに発言させる",
+    "removeFromChatTitle": "チャットから削除"
+  },
+  "dialogCreateGroup": {
+    "title": "新しいグループ",
+    "nameLabel": "名前",
+    "nameHint": "例：Bob & Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "このチャット固有です。すべてのグループメンバーは、キャラクターカードで定義された値の代わりにこれらの値を使用します。空のままにするとカードの値が使用されます。",
+    "scenarioHint": "グループの共有設定（例：「パリのカフェで」）",
+    "mainPromptLabel": "メインプロンプト",
+    "mainPromptHint": "毎ターン適用されるシステムプロンプト",
+    "exampleDialogueLabel": "例示会話",
+    "exampleDialogueHint": "トーンや書式のための共有例示メッセージ"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "キャラクターを追加",
+    "noCharactersYetMessage": "まだキャラクターがいません。\n+ をタップして追加してください。"
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "グループを削除しますか？",
+    "deleteGroupMessage": "「$name」とそのすべてのチャットセッションが完全に削除されます。",
+    "title": "グループ",
+    "noGroupsYetMessage": "まだグループがありません。「新しいグループ」をタップして作成してください。",
+    "memberCountLabel(plural)": {
+      "other": "$n 人のメンバー"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "まだメンバーがいません"
+  },
+  "groupFileService": {
+    "defaultGroupName": "グループ"
+  }
+}

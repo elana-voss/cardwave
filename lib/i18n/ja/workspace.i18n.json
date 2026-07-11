@@ -1,1 +1,46 @@
-{}
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "画像スタイル",
+    "noneValue": "なし"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "動画スタイル"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "表示",
+    "showCharacterImageTitle": "キャラクター画像を表示",
+    "wideScreenOnlySubtitle": "ワイド画面エディタのみ"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "編集"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "エクスポート",
+    "exportPngTitle": "PNGとしてエクスポート（V2/V3）",
+    "exportJsonV3Title": "JSONとしてエクスポート（V3）",
+    "exportJsonV2Title": "JSONとしてエクスポート（V2）"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "画像をリセット"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "アシスタントによるカード編集"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "お気に入り",
+    "nodesEngineTitle": "NODESエンジン",
+    "debugSnapshotSubtitle": "デバッグスナップショット",
+    "characterSubtitle": "キャラクター"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "スタイルが選択されていません"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "チャットインデックスを再構築中...",
+    "selectChatToStartMessagingMessage": "メッセージを始めるにはチャットを選択してください",
+    "failedToLoadAssistantMessage": "アシスタントの読み込みに失敗しました。"
+  }
+}

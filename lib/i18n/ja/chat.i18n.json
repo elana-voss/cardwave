@@ -1,1 +1,208 @@
-{}
+{
+  "tileAiProvider": {
+    "modelLabel": "モデル",
+    "invalidLabel": "無効",
+    "chooseModelTitle": "モデルを選択"
+  },
+  "presetTile": {
+    "tapToChoose": "タップして選択"
+  },
+  "tileImagePreset": {
+    "titleLabel": "画像モデル",
+    "chooseModelTitle": "画像モデルを選択"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "動画モデル",
+    "chooseModelTitle": "動画モデルを選択"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "音声モデル",
+    "chooseModelTitle": "音声モデルを選択"
+  },
+  "tileImageAspectRatio": {
+    "label": "画像のアスペクト比"
+  },
+  "tileVideoAspectRatio": {
+    "label": "アスペクト比"
+  },
+  "tileVideoResolution": {
+    "label": "解像度"
+  },
+  "tileVideoDuration": {
+    "label": "長さ"
+  },
+  "tileTtsVoice": {
+    "label": "音声"
+  },
+  "tileTtsLanguage": {
+    "label": "言語"
+  },
+  "tileNsfw": {
+    "label": "NSFW / 無制限"
+  },
+  "tileScenario": {
+    "label": "シナリオ"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "応答の長さ — $bucket",
+    "sliderLabel": "$bucket（$tokens トークン）",
+    "bucketVeryShort": "非常に短い",
+    "bucketShort": "短い",
+    "bucketMedium": "普通",
+    "bucketLong": "長い",
+    "bucketVeryLong": "非常に長い"
+  },
+  "tileTrailingParagraph": {
+    "label": "末尾のテキストを削除"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "推論 — $effort",
+    "titleOff": "推論オフ",
+    "extraTokensCaption": "最大応答長を超えて追加のトークンを使用します。"
+  },
+  "tileChatTheme": {
+    "label": "テーマ"
+  },
+  "tileRecalledMemory": {
+    "label": "呼び出したメモリを表示"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "お気に入り",
+    "recentChatsTooltip": "最近のチャット",
+    "originalBadge": "オリジナル",
+    "variantBadge": "バリアント",
+    "lastActive": "最終アクティブ: $timeAgo",
+    "never": "なし"
+  },
+  "freeImagePromptDialog": {
+    "title": "画像を生成",
+    "description": "見たいものを説明してください。短いフレーズで構いません。モデルが完全なタグリストに拡張します。",
+    "subjectLabel": "被写体",
+    "subjectHint": "サイバーパンクの路地、ネオンの雨",
+    "generateButton": "生成"
+  },
+  "freeVideoPromptDialog": {
+    "title": "動画を生成",
+    "description": "短い動きの一瞬を説明してください。何が、どのように、どこで動くのか。システムモデルがそれをシネマティックなT2Vプロンプトに拡張します。",
+    "subjectLabel": "被写体",
+    "subjectHint": "彼女がネオンの雨の中を歩く、スローモーション",
+    "generateButton": "生成"
+  },
+  "imagePromptReviewDialog": {
+    "title": "画像プロンプトを確認",
+    "description": "生成前に下のプロンプトを編集するか、「生成」をタップしてそのまま使用します。",
+    "fieldLabel": "画像プロンプト",
+    "generateButton": "生成"
+  },
+  "videoPromptReviewDialog": {
+    "title": "動画プロンプトを確認",
+    "description": "送信前に下のプロンプトを編集するか、「生成」をタップしてそのまま使用します。",
+    "fieldLabel": "動画プロンプト",
+    "generateButton": "生成"
+  },
+  "urlFetchReviewDialog": {
+    "title": "ウェブ取得を許可しますか？",
+    "description": "キャラクターがこのURLの内容を読み取ろうとしています。",
+    "purposeLabel": "目的:",
+    "denyButton": "拒否",
+    "allowButton": "許可"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}秒",
+    "viewGenerationPromptTooltip": "生成プロンプトを表示",
+    "messageActionsTooltip": "メッセージ操作",
+    "editAction": "編集",
+    "copyAction": "コピー",
+    "shareImageAction": "画像を共有",
+    "setAsBackgroundAction": "背景に設定",
+    "setAsCharacterImageAction": "キャラクター画像に設定",
+    "deleteAction": "削除",
+    "copiedToClipboard": "メッセージをクリップボードにコピーしました"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "停止",
+    "readAloudTooltip": "読み上げ",
+    "ttsFailed": "TTSに失敗しました。"
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "前のバージョン",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "再生成",
+    "nextVersionTooltip": "次のバージョン"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "動画の再生はウェブではサポートされていません。",
+    "couldNotLoad": "動画を読み込めませんでした。"
+  },
+  "newChatLabel": "新しいチャット",
+  "chatListItem": {
+    "messageCount": "$count 件のメッセージ",
+    "renameAction": "名前を変更",
+    "deleteChatAction": "チャットを削除"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "チャットの名前を変更",
+    "chatNameHint": "チャット名",
+    "renameButton": "名前を変更",
+    "deleteChatTitle": "チャットを削除",
+    "deleteChatMessage": "このチャット履歴を削除してもよろしいですか？この操作は取り消せません。"
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "アシスタントのチャット履歴を消去しますか？",
+    "clearButton": "消去",
+    "deleteOrKeepMessage": "現在のチャットを削除しますか、それとも履歴に残しますか？",
+    "deleteCurrentButton": "現在のを削除",
+    "keepCurrentButton": "現在のを保持"
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "画像を生成するにはプロンプトを入力してください。",
+    "noCharacterMessage": "画像生成に使用できるキャラクターがありません。",
+    "notConfiguredMessage": "画像生成が設定されていません。",
+    "noSystemModelMessage": "システムモデルが設定されていません。設定 → AI で設定してください。"
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "動画を生成するにはプロンプトを入力してください。",
+    "noCharacterMessage": "動画生成に使用できるキャラクターがありません。",
+    "notConfiguredMessage": "動画生成が設定されていません。"
+  },
+  "bubbleWaitingFor": {
+    "thinking": "思考中…",
+    "preparingImagePrompt": "画像プロンプトを準備中…",
+    "preparingVideoPrompt": "動画プロンプトを準備中…",
+    "generatingImage": "画像を生成中…",
+    "generatingVideo": "動画を生成中…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "エディタパネルを非表示",
+    "showEditorSideBySideTooltip": "エディタを並べて表示"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "インデックスを再構築中...",
+    "noChatsFound": "チャットが見つかりません。"
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "メディアを生成",
+    "generateImageLabel": "画像を生成",
+    "generateVideoLabel": "動画を生成"
+  },
+  "chatView": {
+    "deleteMessageTitle": "メッセージを削除",
+    "deleteMessageConfirmation": "このメッセージを削除してもよろしいですか？",
+    "typeMessageHint": "メッセージを入力...",
+    "moreActionsTooltip": "その他の操作",
+    "continueAction": "続ける",
+    "impersonateAction": "なりきり",
+    "generateReplyAction": "返信を生成",
+    "improveMessageAction": "メッセージを改善"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "画像",
+    "assistantFallbackName": "アシスタント",
+    "reasoningLabel": "推論",
+    "sendingToProvider": "プロバイダーに送信中…",
+    "pollingWithPercent": "ポーリング中… $pct%",
+    "polling": "ポーリング中…",
+    "downloading": "ダウンロード中…"
+  }
+}

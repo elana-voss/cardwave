@@ -1,1 +1,70 @@
-{}
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "スタイルキーワード",
+    "imageTitle": "画像スタイル",
+    "imageDescription": "このキャラクターの画像生成プロンプトすべての先頭に追加されます（例：「アニメ調、鮮やかな色彩」）。",
+    "imageHint": "アニメ調、鮮やかな色彩",
+    "videoTitle": "動画スタイル",
+    "videoDescription": "このキャラクターの動画生成プロンプトすべての先頭に追加されます（例：「シネマティック、浅い被写界深度、24fpsのフィルムグレイン」）。動画モデルは動きやカメラに関する語彙に反応します。短くまとめてください。",
+    "videoHint": "シネマティック、浅い被写界深度"
+  },
+  "cardEditApproval": {
+    "denyAll": "すべて拒否",
+    "approveAll": "すべて承認",
+    "confirm": "確定",
+    "dialogTitle": "アシスタントが提案した変更",
+    "dontAskAgainFor": "$modality について今後確認しない",
+    "modalityLabel": {
+      "edits": "編集",
+      "additions": "追加",
+      "deletions": "削除"
+    },
+    "modalityVerb": {
+      "edit": "編集",
+      "addition": "追加",
+      "deletion": "削除"
+    },
+    "tapToDeny": "タップして拒否",
+    "tapToApprove": "タップして承認",
+    "reasonLabel": "理由（任意、アシスタントに送信されます）",
+    "newEntryTitle": "新しいエントリ",
+    "removingTitle": "削除中",
+    "beforeTitle": "変更前",
+    "afterTitle": "変更後"
+  },
+  "requireApprovalTile": {
+    "edits": "承認を必須にする：編集",
+    "additions": "承認を必須にする：追加",
+    "deletions": "承認を必須にする：削除"
+  },
+  "loadingStatus": {
+    "initial": "読み込み中...",
+    "copyingAssistant": "アシスタントをコピー中...",
+    "scanningForCharacters": "キャラクターをスキャン中...",
+    "scanningForCharactersProgress": "キャラクターをスキャン中...\n$current / $total",
+    "loadingCharactersProgress": "キャラクターを読み込み中...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "ライブラリフォルダが設定されていません。",
+    "mustBeInsideLibrary": "キャラクターはライブラリフォルダ内に保存する必要があります。"
+  },
+  "characterFilesTypeGroupLabel": "キャラクターファイル",
+  "createController": {
+    "pngImagesTypeGroupLabel": "PNG画像",
+    "invalidLocationTitle": "無効な場所",
+    "creationFailedTitle": "作成に失敗しました",
+    "creationFailedMessage": "キャラクターを作成できませんでした。詳細はログを確認してください。"
+  },
+  "importController": {
+    "failedToImport": "$fileName のインポートに失敗しました。",
+    "importedCount": "$count 個のキャラクターをインポートしました"
+  },
+  "aiActionController": {
+    "aiActionFailed": "AIアクションに失敗しました。詳細はログを確認してください。",
+    "processingProgress": "$name を処理中（$current/$total）...$eta",
+    "etaHoursMinutes": " 残り: ${hours}時間 ${minutes}分",
+    "etaMinutesSeconds": " 残り: ${minutes}分 ${seconds}秒",
+    "etaSeconds": " 残り: ${seconds}秒",
+    "processingField": "$fieldName を処理中..."
+  }
+}

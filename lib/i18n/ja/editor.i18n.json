@@ -1,1 +1,259 @@
-{}
+{
+  "panelLabels": {
+    "basic": "基本",
+    "greetings": "挨拶",
+    "prompts": "プロンプト",
+    "lorebook": "ロアブック",
+    "group": "グループ",
+    "creator": "作成者",
+    "appData": "アプリデータ",
+    "nodes": "ノード"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "アシスタントパネルを非表示",
+    "showChatAssistantTooltip": "チャットアシスタントを並べて表示"
+  },
+  "codeFindPanel": {
+    "noneResult": "なし",
+    "previousTooltip": "前へ",
+    "nextTooltip": "次へ",
+    "closeTooltip": "閉じる",
+    "replaceTooltip": "置換",
+    "replaceAllTooltip": "すべて置換"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "すべて置換の確認",
+    "confirmReplaceAllMessage": "続行してもよろしいですか？\nこの操作は取り消せず、すべてのフィールドに影響します。",
+    "proceedButton": "続行",
+    "title": "検索と置換",
+    "findLabel": "検索",
+    "replaceWithLabel": "置換後の文字列",
+    "replaceAllButton": "すべて置換"
+  },
+  "objectValueEditor": {
+    "stringType": "文字列",
+    "numberType": "数値",
+    "boolType": "真偽値"
+  },
+  "editorBasic": {
+    "nameLabel": "名前",
+    "nicknameLabel": "ニックネーム（CCv3）",
+    "descriptionLabel": "説明",
+    "personalityLabel": "性格",
+    "scenarioLabel": "シナリオ",
+    "messageExampleLabel": "メッセージ例"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "システム名（CCv3）",
+    "creatorLabel": "作成者",
+    "versionLabel": "バージョン",
+    "creatorNotesLabel": "作成者メモ",
+    "tagsLabel": "タグ（カンマ区切り）"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "システムプロンプト",
+    "postHistoryInstructionsLabel": "履歴後の指示",
+    "depthPromptLabel": "深度プロンプト（キャラクターメモ）",
+    "insertionDepthLabel": "挿入深度",
+    "roleLabel": "役割"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "バリアントメモ",
+    "descriptionPreviewLabel": "説明プレビュー"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "挨拶を削除",
+    "deleteGreetingMessage": "この挨拶を削除してもよろしいですか？",
+    "addGreetingButton": "挨拶を追加",
+    "primaryGreetingLabel": "メインの挨拶（first_mes）",
+    "alternateGreetingLabel": "代替の挨拶 #$index",
+    "removeTooltip": "削除"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "挨拶 $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "新しいエントリ",
+    "deleteEntryTitle": "エントリを削除",
+    "deleteEntryMessage": "このエントリを削除してもよろしいですか？",
+    "addNewEntryButton": "新しいエントリを追加",
+    "noEntriesFound": "ロアブックのエントリが見つかりません。"
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "無題のエントリ",
+    "noKeywords": "キーワードなし"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "ロアブックエントリを編集",
+    "advancedFilter": "詳細設定",
+    "primaryKeywordsLabel": "メインキーワード",
+    "logicLabel": "ロジック",
+    "logicAndAny": "AND ANY",
+    "logicAndAll": "AND ALL",
+    "logicNotAny": "NOT ANY",
+    "logicNotAll": "NOT ALL",
+    "optionalFilterLabel": "オプションフィルター",
+    "contentLabel": "内容",
+    "nonRecursableFilter": "再帰不可",
+    "preventFurtherRecursionFilter": "これ以上の再帰を防ぐ",
+    "delayUntilRecursionFilter": "再帰まで遅延",
+    "ignoreBudgetFilter": "予算を無視",
+    "prioritizeFilter": "優先する",
+    "inclusionGroupLabel": "包含グループ",
+    "groupWeightLabel": "グループの重み",
+    "stickyLabel": "固定",
+    "cooldownLabel": "クールダウン",
+    "delayLabel": "遅延",
+    "filterToCharactersLabel": "キャラクターまたはタグで絞り込む",
+    "filterToTriggersLabel": "生成トリガーで絞り込む",
+    "additionalMatchingSourcesLabel": "追加のマッチングソース:",
+    "personaFilter": "ペルソナ",
+    "descriptionFilter": "説明",
+    "personalityFilter": "性格",
+    "depthPromptFilter": "深度プロンプト",
+    "scenarioFilter": "シナリオ",
+    "creatorNotesFilter": "作成者メモ"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "タイトル/メモ",
+    "strategyLabel": "戦略",
+    "strategyConstant": "常時",
+    "strategyEnabled": "有効",
+    "strategyDisabled": "無効",
+    "strategyVectorized": "ベクトル化",
+    "positionLabel": "位置",
+    "positionUpChar": "↑ キャラ",
+    "positionDownChar": "↓ キャラ",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D システム",
+    "positionDepthUser": "@D ユーザー",
+    "positionDepthAssistant": "@D アシスタント",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "アウトレット",
+    "depthLabel": "深度",
+    "orderLabel": "順序",
+    "triggerLabel": "トリガー %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "スキャン深度",
+    "automationIdLabel": "オートメーションID",
+    "useRegexFilter": "regexを使用",
+    "caseSensitiveFilter": "大文字小文字を区別",
+    "wholeWordsFilter": "単語全体",
+    "groupScoringFilter": "グループスコアリング"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "$actionName の確認",
+    "title": "コンテンツクリーナー",
+    "normalizeFancyCharsAction": "装飾文字を正規化",
+    "normalizeFancyCharsButton": "装飾文字を正規化 (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "HTMLを除去",
+    "purgeHtmlButton": "HTMLタグを除去",
+    "purgeMarkdownAction": "Markdownのリンク/画像を除去",
+    "purgeEmojisAction": "絵文字を除去",
+    "purgeExtraSpacesAction": "余分なスペースを除去",
+    "yoloPurgeAction": "Yolo除去",
+    "applyAllAboveButton": "上記をすべて適用"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "変更を適用",
+    "originalTextTitle": "元のテキスト",
+    "suggestedTextTitle": "提案されたテキスト"
+  },
+  "editorPageController": {
+    "globalActionTitle": "全体 $action",
+    "globalAiActionFailed": "全体のAIアクションに失敗しました。ログを確認してください。",
+    "compositeName": "名前:\n$value\n",
+    "compositeDescription": "説明:\n$value\n",
+    "compositePersonality": "性格:\n$value\n",
+    "compositeScenario": "シナリオ:\n$value\n",
+    "compositeFirstMessage": "最初のメッセージ:\n$value\n",
+    "compositeMessageExample": "メッセージ例:\n$value\n",
+    "compositeCreatorNotes": "作成者メモ:\n$value\n",
+    "compositeSystemPrompt": "システムプロンプト:\n$value\n",
+    "compositePostHistoryInstructions": "履歴後の指示:\n$value\n",
+    "compositeAlternateGreeting": "代替の挨拶 #$index:\n$value\n",
+    "compositeGroupGreeting": "グループの挨拶 #$index:\n$value\n",
+    "compositeLorebookEntry": "ロアブックエントリ #$index:\n$value\n",
+    "imageTooLargeMessage": "選択した画像が大きすぎます。最大サイズは $maxSize です。",
+    "invalidPngMessage": "選択した画像は有効なPNGでないか、読み取れませんでした。"
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "ノードを削除",
+    "deleteNodeMessage": "この作成済みノードをカードから削除しますか？",
+    "engineSeedTitle": "エンジンシード",
+    "visualEditorTooltip": "ビジュアルエディタ",
+    "editJsonTooltip": "JSONを編集",
+    "initialGoalLabel": "初期目標",
+    "initialSceneLabel": "初期シーン",
+    "locationLabel": "場所",
+    "timeOfDayLabel": "時間帯",
+    "presentEntitiesLabel": "登場中（カンマ区切り）",
+    "sensoryHooksLabel": "感覚的フック（カンマ区切り）",
+    "addNodeButton": "ノードを追加",
+    "noAuthoredNodesYet": "まだ作成済みノードがありません。",
+    "loadErrorMessage(plural)": {
+      "other": "このカードのノードブロックに $n 件の問題があります。ここで編集すると、保存時に破損した部分が上書きされます。"
+    },
+    "moreErrorsSuffix": "… 他 $n 件",
+    "emotionBaselineLabel": "感情のベースライン",
+    "emotionChipLabel": "感情"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "スポーン: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "トップレベルはJSONオブジェクトである必要があります",
+    "editNodesJsonTitle": "ノードのJSONを編集",
+    "fixProblemsMessage(plural)": {
+      "other": "保存するには $n 件の問題を修正してください。"
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "スポーン元",
+    "spawnsPort": "スポーン先",
+    "editNodeLabel": "ノードを編集",
+    "addNodeTooltip": "ノードを追加"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "名前",
+    "narrativePayloadLabel": "ナラティブペイロード",
+    "removeSpawnLinkTitle": "スポーンリンクを削除",
+    "removeSpawnLinkMessage": "このノードが「$nodeId」をスポーンしないようにしますか？ノード自体はカードに残ります。",
+    "removeButton": "削除",
+    "typeLabel": "タイプ",
+    "scopeLabel": "スコープ",
+    "originLabel": "起点",
+    "triggerProbLabel": "トリガー確率",
+    "delayHelper": "対象になるまで待機するターン数。-1 は 0 として扱われます。",
+    "cooldownHelper": "発火後にロックされるターン数。-1 はクールダウンなしを意味します。",
+    "stickyHelper": "発火後、ナラティブペイロードが「継続中」として表示され続けるターン数。-1 は永続を意味します。",
+    "aliveHelper": "削除されるまでノードがプールに残るターン数。-1 は無期限を意味します。",
+    "setToNeverButton": "「なし」に設定",
+    "effectsSectionLabel": "効果",
+    "emotionDeltasTitle": "感情の変化量",
+    "physicalDeltasTitle": "身体の変化量",
+    "relationshipDeltasTitle": "関係の変化量",
+    "addDeltaChip": "変化量を追加",
+    "knowledgeWritesTitle": "知識の書き込み",
+    "addFactChip": "事実を追加",
+    "topicLabel": "トピック",
+    "confidenceLabel": "確信度",
+    "flagSetTitle": "フラグ設定",
+    "addFlagChip": "フラグを追加",
+    "keyLabel": "キー",
+    "sceneAndFlowTitle": "シーンと流れ",
+    "goalChangeLabel": "goalChange（空の場合は現在の目標をクリアします）",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "（なし）",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "true の場合、エンジンはその発火をシーンの切り替えとしてマークします。",
+    "spawnsSectionLabel": "スポーン",
+    "addNewChip": "新規追加",
+    "linkExistingChip": "既存とリンク",
+    "unlinkTooltip": "リンク解除",
+    "predicateLabel": "述語"
+  }
+}

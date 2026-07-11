@@ -1,1 +1,147 @@
-{}
+{
+  "actions": {
+    "delete": "削除",
+    "ok": "OK",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "tryAgain": "再試行",
+    "close": "閉じる"
+  },
+  "aiAction": {
+    "proofread": "校正",
+    "compact": "文章を圧縮",
+    "translate": "英語に翻訳",
+    "generatePreview": "プレビューを生成",
+    "autoTag": "自動タグ付け"
+  },
+  "aiActionsTooltip": "AIアクション",
+  "promptSegmentKind": {
+    "identity": "アイデンティティ",
+    "systemPrompt": "システムプロンプト",
+    "nsfwMode": "NSFWモード",
+    "scenarioMode": "シナリオモード",
+    "description": "説明",
+    "personality": "性格",
+    "scenario": "シナリオ",
+    "userPersona": "あなたのペルソナ",
+    "memory": "メモリ",
+    "situation": "状況",
+    "cardData": "カードデータ",
+    "tools": "ツール",
+    "postHistory": "履歴後",
+    "depthPrompt": "深度プロンプト",
+    "worldInfo": "ワールド情報",
+    "injected": "挿入",
+    "exampleDialogue": "例示会話",
+    "history": "メッセージ履歴",
+    "currentMessage": "現在のメッセージ",
+    "reservedReply": "予約された応答"
+  },
+  "promptBreakdown": {
+    "free": "空き"
+  },
+  "logs": {
+    "title": "ログ",
+    "filterTooltip": "ログをフィルター",
+    "clearTooltip": "ログを消去",
+    "exportTooltip": "ログをエクスポート",
+    "searchHint": "ログを検索...",
+    "noLogsFound": "ログが見つかりません。",
+    "noLogsToExport": "エクスポートするログがありません",
+    "exportedSuccessfully": "ログをエクスポートしました",
+    "exportFailed": "ログのエクスポートに失敗しました。詳細はログを確認してください。",
+    "copiedToClipboard": "クリップボードにコピーしました",
+    "copyLogButton": "ログをコピー",
+    "copiedEntryToClipboard": "ログエントリをクリップボードにコピーしました",
+    "errorPrefix": "エラー: $error"
+  },
+  "importErrorsDialog": {
+    "title": "インポートエラー",
+    "message": "以下のファイルをインポートできませんでした:"
+  },
+  "updateDialog": {
+    "title": "新しいバージョンがあります",
+    "body": "$appName の新しいバージョンが利用可能です。\n\n現在のバージョン: $currentVersion\n最新のバージョン: $latestVersion",
+    "releaseNotesLabel": "リリースノート:",
+    "viewReleasesButton": "リリースを表示"
+  },
+  "importConflictsDialog": {
+    "title": "インポートの競合",
+    "message": "以下の $count 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:"
+  },
+  "missingProviderBanner": {
+    "message": "AIプロバイダーを接続してください。",
+    "setUpNowButton": "今すぐ設定"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "モデルを検索",
+    "subscriptionOnlyToggle": "サブスクリプションモデルのみ表示（$included/$total）"
+  },
+  "showAdvanced": {
+    "less": "少なく表示",
+    "more": "もっと見る"
+  },
+  "messageEditDialog": {
+    "title": "メッセージを編集"
+  },
+  "promptBreakdownDialog": {
+    "title": "プロンプトの内訳",
+    "breakdownTab": "内訳",
+    "contentTab": "内容",
+    "promptTotalEstimated": "プロンプト合計（推定）",
+    "promptTotalProvider": "プロンプト合計（プロバイダー）",
+    "contextWindowLabel": "コンテキストウィンドウ",
+    "categoryHeader": "カテゴリ",
+    "tokensHeader": "トークン",
+    "usageHeader": "使用量",
+    "noContentToInspect": "この応答には確認できる内容がありません。",
+    "estimatedSuffix": " (推定)",
+    "usedSummary": "$used / $total 使用"
+  },
+  "jsonPromptDialog": {
+    "title": "生成プロンプト"
+  },
+  "progressDialog": {
+    "defaultMessage": "送信中...",
+    "finished": "完了しました！"
+  },
+  "diffPanel": {
+    "tokenSuffix": " ($count トークン)"
+  },
+  "selectionDialog": {
+    "searchHint": "検索…"
+  },
+  "zdrSwitch": {
+    "title": "ゼロデータ保持（ZDR）を必須にする",
+    "subtitle": "ZDR準拠のエンドポイントを持つ OR モデルのみを表示します。openrouter.ai アカウントが ZDR プロバイダーに制限されている場合はこれを有効にしてください。"
+  },
+  "textFieldCard": {
+    "labelWithTokenCount": "$label - $count トークン",
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "推論",
+    "vision": "視覚",
+    "tools": "ツール",
+    "json": "JSON",
+    "files": "ファイル",
+    "image": "画像",
+    "video": "動画",
+    "speech": "音声",
+    "music": "音楽"
+  },
+  "modelUnavailableTooltip": "このモデルはプロバイダーから利用できなくなりました。別のモデルを選択してください。",
+  "characterImageSemanticLabel": "キャラクター画像",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "エクスポートに失敗しました。詳細はログを確認してください。"
+  },
+  "timeAgo": {
+    "years": "${n}年前",
+    "months": "${n}か月前",
+    "days": "${n}日前",
+    "hours": "${n}時間前",
+    "minutes": "${n}分前",
+    "justNow": "たった今"
+  }
+}

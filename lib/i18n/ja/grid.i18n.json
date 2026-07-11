@@ -1,1 +1,115 @@
-{}
+{
+  "emptyState": {
+    "noMatches": "フィルターに一致するキャラクターがありません",
+    "noCharacters": "まだキャラクターがインポートされていません",
+    "clearAllFilters": "すべてのフィルターをクリア",
+    "importCharacters": "キャラクターをインポート",
+    "createNewCharacter": "新しいキャラクターを作成"
+  },
+  "appBar": {
+    "groups": "グループ",
+    "createNew": "新規作成",
+    "import": "インポート",
+    "menuTooltip": "メニュー"
+  },
+  "fab": {
+    "addOrImportTooltip": "追加またはインポート",
+    "import": "インポート",
+    "create": "作成"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "アプリ",
+    "batchAiHeader": "バッチAI",
+    "batchGeneratePreviewsTitle": "プレビューを一括生成",
+    "batchGeneratePreviewsEmpty": "すべてのキャラクターにすでにプレビューがあります。",
+    "batchAutoTagTitle": "自動タグ付けを一括実行",
+    "batchAutoTagEmpty": "すべてのキャラクターにすでにタグがあります。",
+    "libraryHeader": "ライブラリ",
+    "reloadCharacters": "キャラクターを再読み込み"
+  },
+  "variantBadge": {
+    "tooltip": "$count 個のバリアント"
+  },
+  "dialogActions": {
+    "clearAll": "すべてクリア",
+    "apply": "適用"
+  },
+  "tagFilterDialog": {
+    "title": "タグをフィルター",
+    "searchHint": "タグを検索..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "フィルターを非表示",
+    "moreFiltersTooltip": "その他のフィルター",
+    "folderChip": "フォルダ",
+    "creatorChip": "作成者",
+    "tagChip": "タグ",
+    "recentTooltip": "最近",
+    "favoritesTooltip": "お気に入り",
+    "variantsTooltip": "バリアント",
+    "indexingProgress": "検索を構築中 $done / $total…"
+  },
+  "sortOption": {
+    "relevance": "関連度 ↓",
+    "nameAsc": "名前 ↓",
+    "nameDesc": "名前 ↑",
+    "importNewest": "インポート日 ↓",
+    "importOldest": "インポート日 ↑",
+    "modifiedNewest": "更新日 ↓",
+    "modifiedOldest": "更新日 ↑",
+    "interactedNewest": "利用日 ↓",
+    "interactedOldest": "利用日 ↑",
+    "tokensHigh": "トークン ↓",
+    "tokensLow": "トークン ↑"
+  },
+  "filterController": {
+    "filterCreators": "作成者をフィルター",
+    "filterTags": "タグをフィルター",
+    "filterByFolder": "フォルダでフィルター"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "まだ表示するものがありません。",
+    "noMatches": "一致するものがありません。",
+    "showMore": "もっと見る"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "キャラクター名を空にすることはできません。",
+    "nameInvalidCharsError": "名前に使用できない文字が含まれています (<>:\"/\\|?*)。",
+    "nameExistsError": "この名前のキャラクターはすでに存在します。",
+    "nameCheckFailedError": "名前を確認できませんでした。フォルダの権限を確認して再試行してください。",
+    "title": "新しいキャラクターを作成",
+    "nameLabel": "キャラクター名",
+    "createButton": "作成"
+  },
+  "variantsSheet": {
+    "title": "バリアント"
+  },
+  "groupAppBar": {
+    "characters": "キャラクター",
+    "newGroup": "新しいグループ"
+  },
+  "thumbnailBadges": {
+    "recent": "最近",
+    "original": "オリジナル",
+    "variant": "バリアント"
+  },
+  "actionMenu": {
+    "editNotes": "メモを編集",
+    "dismissRecent": "最近から外す",
+    "exportPngV2V3": "PNGとしてエクスポート（V2/V3）",
+    "exportJsonV3": "JSONとしてエクスポート（V3）",
+    "exportJsonV2": "JSONとしてエクスポート（V2）",
+    "duplicate": "複製"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "キャラクターを複製できませんでした。",
+    "editVariantNotesTitle": "バリアントメモを編集",
+    "editVariantNotesHint": "このバリアントに関するメモを追加...",
+    "deleteCardTitle": "カードを削除",
+    "deleteCardMessage": "このカードを削除してもよろしいですか？",
+    "deletePartialFailure": "一部のファイルを削除できませんでした。詳細はログを確認してください。"
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  }
+}

@@ -1,1 +1,5 @@
-{}
+{
+  "appBootstrapper": {
+    "failedToInitializeMessage": "アプリの初期化に失敗しました:\n\n$error"
+  }
+}

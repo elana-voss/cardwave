@@ -1,1 +1,54 @@
-{}
+{
+  "mediaField": {
+    "imageModel": "画像モデル",
+    "imageAspectRatio": "画像のアスペクト比",
+    "imageNsfwAllowed": "画像のNSFWを許可",
+    "imageToolSelfieAllowed": "自撮りを送信可能",
+    "imageToolSelfieCaptionsAllowed": "自撮りのキャプションを許可",
+    "imagePromptPrefix": "画像スタイル",
+    "videoModel": "動画モデル",
+    "videoResolution": "動画の解像度",
+    "videoAspectRatio": "動画のアスペクト比",
+    "videoDuration": "動画の長さ",
+    "videoNsfwAllowed": "動画のNSFWを許可",
+    "videoToolSendAllowed": "動画を送信可能",
+    "videoPromptPrefix": "動画スタイル",
+    "ttsModel": "TTSモデル",
+    "ttsVoice": "TTSの音声",
+    "ttsLanguage": "TTSの言語",
+    "webToolFetchAllowed": "ウェブ取得を許可",
+    "nameToolSuggestAllowed": "NPCの名前を提案可能"
+  },
+  "mediaSection": {
+    "image": "画像",
+    "video": "動画",
+    "tts": "TTS",
+    "web": "ウェブ",
+    "names": "名前"
+  },
+  "tristate": {
+    "on": "オン",
+    "off": "オフ",
+    "inherit": "継承"
+  },
+  "mediaCellMenu": {
+    "change": "変更…",
+    "clear": "クリア"
+  },
+  "mediaHeader": {
+    "appDefault": "アプリの既定",
+    "character": "キャラクター",
+    "currentChat": "現在のチャット",
+    "previousLayerTooltip": "前のレイヤー",
+    "nextLayerTooltip": "次のレイヤー"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "アプリの既定を変更しますか？",
+    "changeAppDefaultMessage": "これはすべてのチャットに影響します。続行しますか？",
+    "continueButton": "続行",
+    "chooseModelTitle": "$domain モデルを選択"
+  },
+  "mediaCell": {
+    "notApplicable": "該当なし"
+  }
+}

@@ -1,1 +1,11 @@
-{}
+{
+  "chatCharacter": {
+    "navigationError": "チャットへのナビゲーションエラー。キャラクター: $name"
+  },
+  "editCharacter": {
+    "navigationError": "編集へのナビゲーションエラー。キャラクター: $name"
+  },
+  "editPreset": {
+    "navigationError": "プリセット編集へのナビゲーションエラー: $presetId"
+  }
+}
