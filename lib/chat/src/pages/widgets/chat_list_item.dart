@@ -1,4 +1,5 @@
 import 'package:cardwave/chat/src/models/chat_index.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -22,7 +23,9 @@ class ChatListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = DateTime.fromMillisecondsSinceEpoch(chat.lastActive);
-    final dateStr = DateFormat.yMMMd().add_jm().format(date);
+    final dateStr = DateFormat.yMMMd(
+      LocaleSettings.currentLocale.languageTag,
+    ).add_jm().format(date);
 
     return ListTile(
       selected: isSelected,

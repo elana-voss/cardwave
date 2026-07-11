@@ -13,11 +13,11 @@ as the work it describes. Conversation context is disposable; this file is not.
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
-- [ ] 2.2 `AppSettings.localeTag` + json regen
-- [ ] 2.3 LocaleController + bootstrap apply
-- [ ] 2.4 TranslationProvider + all three MaterialApps wired
-- [ ] 2.5 gear-menu entry + `showLanguageDialog` + `DialogLanguagePicker`
-- [ ] 2.6 two DateFormat call sites locale-aware
+- [x] 2.2 `AppSettings.localeTag` + json regen
+- [x] 2.3 LocaleController + bootstrap apply
+- [x] 2.4 TranslationProvider + all three MaterialApps wired
+- [x] 2.5 gear-menu entry + `showLanguageDialog` + `DialogLanguagePicker`
+- [x] 2.6 two DateFormat call sites locale-aware
 - [ ] 2.7 DONE criteria verified on Windows desktop
 - es-419 contingency outcome: **`es-419` worked** — slang parsed it as
   `es419(languageCode: 'es', countryCode: '419')`. No fallback to plain `es` needed;

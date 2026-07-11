@@ -5,6 +5,7 @@ import 'package:cardwave/chat/src/controllers/text_to_speech_controller.dart';
 import 'package:cardwave/chat/src/models/chat_message.dart';
 import 'package:cardwave/chat/src/models/chat_session.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,6 @@ class MessageActionsRow extends StatelessWidget {
     this.onSetAsCharacterImage,
     this.chatSession,
   });
-  static final _timeFormatter = DateFormat.jm();
 
   final ChatMessage message;
   final TextStyle metaStyle;
@@ -46,6 +46,10 @@ class MessageActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isStreamingThisMessage = isGenerating && isLastMessage;
+    // Built per-render (not cached in a static) so it tracks the active locale.
+    final timeFormatter = DateFormat.jm(
+      LocaleSettings.currentLocale.languageTag,
+    );
 
     // Non-uniform spacers (8 and 4 mixed); single `spacing:` can't express both.
     // ignore: qcheck/prefer_spacing
@@ -53,7 +57,7 @@ class MessageActionsRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          _timeFormatter.format(
+          timeFormatter.format(
             DateTime.fromMillisecondsSinceEpoch(message.timestamp),
           ),
           style: metaStyle,
