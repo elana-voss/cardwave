@@ -76,7 +76,7 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
 - [x] 9 `lib/editor/` → `editor`
 - [x] 10 `lib/group/` → `group`
 - [x] 11 `lib/workspace/` → `workspace`
-- [ ] 12 `lib/nodes/` → `nodes`
+- [x] 12 `lib/nodes/` → `nodes`
 - [ ] 13 `lib/memory/` + `lib/search/`
 - [ ] 14 root files → `app`
 - [ ] 3.7 final leftover sweep done
@@ -234,6 +234,23 @@ becomes observable once Step 4 adds translations; Step 5's Chrome pass across al
   pass-through English. The dialog's own chrome ("Image Style" title,
   "No style selected" fallback) WAS extracted since neither value
   touches the prompt string.
+- **[nodes] `nodes_debug_dialog.dart` + `nodes_debug_controller.dart`**
+  (~30 strings: section titles like "Scene"/"Session"/"Characters"/
+  "Pool"/"Event log"/"State changes"/"Director"/"Prompt assembly",
+  empty-state text, the whole read-only NODES-engine snapshot body):
+  NOT extracted, whole file skipped. Per the class doc comment this is
+  a "Read-only snapshot of the NODES engine state" reachable only via
+  the `kDebugMode`-gated "NODES Engine" ListTile in
+  `workspace_end_drawer.dart` (row 11) — same developer-surface
+  exclusion as row 5's Taxonomy Editor. The menu entry itself
+  ("NODES Engine" / "Debug snapshot") IS extracted (done in row 11:
+  `t.workspace.workspaceEndDrawer.nodesEngineTitle` /
+  `.debugSnapshotSubtitle`), same split as the Taxonomy Tags case. The
+  rest of `lib/nodes/` (services, repositories, models, the module
+  dispatcher) contains no other in-scope strings — every remaining
+  literal is either a `loggingService.*` call, a JSON/storage key, or a
+  folder/file name. Row 12 has zero extractions; no `nodes.i18n.json`
+  content was added and no source files changed.
 
 ## Parked observations (bugs noticed but out of scope)
 - **[settings, row 5] `SettingsService._loadingStatus` progress strings**
