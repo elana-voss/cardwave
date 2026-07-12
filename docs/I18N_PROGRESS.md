@@ -19,6 +19,10 @@ as the work it describes. Conversation context is disposable; this file is not.
   Context-based `t` migration (132 widget files) makes locale changes repaint
   without reload; 6 count strings pluralized ×9 locales. Live switch web-verified
   in en→ru→ja without reload; ru plurals spot-checked. `feat/i18n` ready to merge.
+- [ ] Step 8 — Language picker on the onboarding page (**Opus**) — added 2026-07-12
+  (plan §8). Globe icon in the onboarding AppBar → existing `showLanguageDialog`;
+  requires the §8.1 persistence guard in `LocaleController.setLocale` first
+  (saving settings pre-onboarding crashes on `characterPath!`).
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
@@ -370,6 +374,19 @@ Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
   **ru plural spot-check** (throwaway test, now deleted): `variantBadge.tooltip`
   → n=1 `Вариант: 1` (one), n=3 `Варианта: 3` (few), n=5 `Вариантов: 5` (many);
   `messageCount` → n=1 `Сообщение: 1` (one). All pass.
+
+## Step 8 checklist (Opus) — plan §8
+- [ ] 8.1 persistence guard in `LocaleController.setLocale` (`saveSettings()` only when
+  `settings.onboardingComplete`; in-memory `localeTag` still set so `finishOnboarding`'s
+  save persists it)
+- [ ] 8.2 globe `IconButton` (`Key('onboarding-language')`) in the onboarding AppBar →
+  `NavigationService().showLanguageDialog()`
+- [ ] 8.3 `onboarding.languageTooltip` key ×9 locales (values copied from each locale's
+  `settings.gearLanguage`) + `dart run slang`
+- [ ] 8.4 DONE criteria: analyze/test/slang-analyze clean; fresh-storage web run — dialog
+  opens, ru switch live + no crash, System default no crash, finish → grid in ru,
+  reload → still ru; console clean; single commit `i18n(onboarding): language picker
+  in onboarding`
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,

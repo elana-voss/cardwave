@@ -38,6 +38,7 @@ source of truth; conversation context is disposable (see Compaction Protocol).
 | 5 | Error-check + Flutter Web verification in Chrome | **Opus** | `/compact` ok (same model as 4) |
 | 6 | Optional final acceptance | Fable | `/clear`, switch to Fable |
 | 7 | Live-switch repaint + plural fixes | **Opus** | `/clear`, switch to Opus |
+| 8 | Language picker on the onboarding page | **Opus** | `/clear`, switch to Opus |
 
 ### Global ground rules (all models)
 - All work happens on branch `feat/i18n` (created at the start of Step 2). Never commit to `main`.
@@ -494,3 +495,103 @@ edits are needed (if one is, it's a named-param rename only).
 ### 7.4 Handoff — print verbatim, then STOP
 > Step 7 complete. Live language switching works without reload and the count strings are
 > pluralized. `feat/i18n` is ready to merge.
+
+---
+
+## 8. STEP 8 — Language picker on the onboarding page (**Opus**)
+
+Added after Step 7 (2026-07-12). Rationale: on first launch the app follows the device locale
+(`LocaleController.applyPersisted` → `useDeviceLocale()`, English fallback), but a user whose
+device language is not the one they read has no way to change it during onboarding — the gear
+menu doesn't exist there. Fix: a globe icon in the onboarding AppBar that opens the EXISTING
+language dialog. All global ground rules (§0) apply. **One concern → ONE commit:**
+`i18n(onboarding): language picker in onboarding`.
+
+Everything below was verified against the code on 2026-07-12; re-verify line numbers before
+editing but do not re-derive the approach.
+
+### 8.1 REQUIRED FIRST — persistence guard in `LocaleController.setLocale`
+**The trap (do not skip this or the feature crashes):**
+`LocaleController.setLocale` (`lib/settings/src/services/locale_controller.dart:27`) calls
+`SettingsService().saveSettings()`. `saveSettings`
+(`lib/settings/src/services/settings_service.dart:83`) writes the recovery mirror using
+`_settings.characterPath!` (line 87) — a null assertion. During onboarding `characterPath` is
+still null (it's first assigned in `OnboardingController.finishOnboarding`,
+`lib/onboarding/src/controllers/onboarding_controller.dart:211-216`), so picking a language
+from the onboarding screen would throw.
+
+**The fix — guard the save, keep everything else:** in `setLocale`, still (1) switch the live
+slang locale, (2) write `settings.localeTag = tag` in memory, (3) `notifyListeners()` — but only
+call `unawaited(settingsService.saveSettings())` when
+`settingsService.settings.onboardingComplete` is true (`onboardingComplete` is the project's
+established first-launch predicate). During onboarding the in-memory `localeTag` is then
+persisted by `finishOnboarding`'s own `saveSettings()` (onboarding_controller.dart:260) — no
+extra persistence code needed. Update `setLocale`'s doc comment to say why the save is guarded.
+Accepted trade-off (do not "fix"): a user who picks a language and then quits before finishing
+onboarding loses the choice.
+
+Do NOT touch `saveSettings` / the recovery mirror / the `characterPath!` assertion — out of
+scope for this step.
+
+### 8.2 The button
+`lib/onboarding/src/pages/onboarding_page.dart` — in `_OnboardingPageState.build` (the
+`Scaffold`'s `AppBar` at ~line 86, which is shared by BOTH the stepped desktop layout and the
+single-page mobile/web layout), add:
+
+```dart
+appBar: AppBar(
+  title: Text(t.onboarding.appBarTitle),
+  centerTitle: true,
+  actions: [
+    IconButton(
+      key: const Key('onboarding-language'),
+      icon: const Icon(Icons.language),
+      tooltip: t.onboarding.languageTooltip,
+      onPressed: () => unawaited(NavigationService().showLanguageDialog()),
+    ),
+  ],
+),
+```
+
+- `NavigationService().showLanguageDialog()` already exists
+  (`lib/common/src/utils/navigation_service.dart:216`) and opens `DialogLanguagePicker` in an
+  `AppDialog`. Calling it straight from a widget handler is the established precedent for this
+  exact dialog — `settings_gear_menu.dart:137` does the same. Do NOT build a new picker, a
+  dropdown, or a controller method.
+- `dart:async` (`unawaited`) and `NavigationService` are already imported in the file.
+- Reuse the existing `Key` style; the widget-key string is not a translation key (§3.3).
+
+**Why no other code changes are needed:** `_OnboardingPageState.build` already registers the
+locale dependency via `final t = Translations.of(context);` (line 84), so when the dialog
+switches the locale, the entire onboarding page — including the Step titles built by State
+helper methods that read the global `t` — repaints live (Step 7 §7.1 rule 2 mechanics). The
+dialog itself pops on selection and the tapped choice flows through `LocaleController` exactly
+as it does from the gear menu.
+
+### 8.3 The tooltip key
+New key in the `onboarding` namespace, all 9 locales
+(`lib/i18n/<locale>/onboarding.i18n.json`): top-level `"languageTooltip"`. The value for every
+locale is copied VERBATIM from that same locale's existing
+`settings.i18n.json → "gearLanguage"` (en: `"Language"`) — same word, already translated and
+glossary-checked in Step 4. Do not re-translate, do not reuse the settings key cross-namespace
+(§3.4 forbids it). Then `dart run slang` to regenerate.
+
+### 8.4 Verification (DONE criteria)
+- [ ] `flutter analyze` — only the 36 pre-existing qcheck warnings; `flutter test` — 68/68
+      (no new tests required: pumping `OnboardingPage` needs three provided services and is not
+      worth the harness; do not add one); `dart run slang analyze` — 0 missing / 0 unused.
+- [ ] Manual web run with FRESH storage so onboarding actually shows
+      (`flutter run -d web-server`, open in a fresh incognito profile / clear site data;
+      chrome-devtools MCP, enable the a11y placeholder per load). On the onboarding screen:
+      1. Globe icon visible in the AppBar; tap → language dialog opens.
+      2. Pick **Русский** → onboarding repaints in Russian immediately, NO crash (this
+         exercises the §8.1 guard — a crash here means the guard is missing/wrong).
+      3. Re-open the dialog, pick **System default** → no crash, back to device locale.
+      4. Pick Русский again, complete onboarding (Start Fresh path) → app lands on the grid in
+         Russian; reload the page → still Russian (proves `finishOnboarding` persisted the tag).
+- [ ] Console clean during the switches (`list_console_messages`).
+- [ ] Progress file updated (Step 8 checklist + Steps list); single commit on `feat/i18n`.
+
+### 8.5 Handoff — print verbatim, then STOP
+> Step 8 complete. Onboarding has a language picker (globe icon → existing dialog); the choice
+> applies live and persists via finishOnboarding. `feat/i18n` is ready to merge.
