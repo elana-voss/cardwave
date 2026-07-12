@@ -70,7 +70,9 @@
   },
   "importConflictsDialog": {
     "title": "匯入衝突",
-    "message": "下列 $count 個角色的檔名有衝突，將會自動重新命名："
+    "message(plural)": {
+      "other": "下列 $n 個角色的檔名有衝突，將會自動重新命名："
+    }
   },
   "missingProviderBanner": {
     "message": "請連線 AI 服務商。",
@@ -109,7 +111,9 @@
     "finished": "完成！"
   },
   "diffPanel": {
-    "tokenSuffix": " （$count 個 Token）"
+    "tokenSuffix(plural)": {
+      "other": " （$n 個 Token）"
+    }
   },
   "selectionDialog": {
     "searchHint": "搜尋…"
@@ -119,7 +123,9 @@
     "subtitle": "只顯示端點符合 ZDR 的 OR 模型。如果你的 openrouter.ai 帳號限定只用 ZDR 服務商，請啟用此項。"
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count 個 token",
+    "labelWithTokenCount(plural)": {
+      "other": "$label - $n 個 token"
+    },
     "tokenCountAbbrev": "$count t"
   },
   "modelCapability": {

@@ -28,7 +28,9 @@
     "reloadCharacters": "重新載入角色"
   },
   "variantBadge": {
-    "tooltip": "$count 個變體"
+    "tooltip(plural)": {
+      "other": "$n 個變體"
+    }
   },
   "dialogActions": {
     "clearAll": "全部清除",

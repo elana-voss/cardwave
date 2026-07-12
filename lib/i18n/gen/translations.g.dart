@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 8128 (903 per locale)
+/// Strings: 8170 (907 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -594,7 +594,10 @@ class _TranslationsCharacterImportControllerEn {
 
 	// Translations
 	String failedToImport({required Object fileName}) => 'Failed to import ${fileName}.';
-	String importedCount({required Object count}) => 'Imported ${count} characters';
+	String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'Imported ${n} character',
+		other: 'Imported ${n} characters',
+	);
 }
 
 // Path: character.aiActionController
@@ -951,7 +954,10 @@ class _TranslationsChatChatListItemEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String messageCount({required Object count}) => '${count} messages';
+	String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '${n} message',
+		other: '${n} messages',
+	);
 	String get renameAction => 'Rename';
 	String get deleteChatAction => 'Delete Chat';
 }
@@ -1222,7 +1228,10 @@ class _TranslationsCommonImportConflictsDialogEn {
 
 	// Translations
 	String get title => 'Import Conflicts';
-	String message({required Object count}) => 'The following ${count} characters have filename conflicts and will be renamed automatically:';
+	String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'The following ${n} character has a filename conflict and will be renamed automatically:',
+		other: 'The following ${n} characters have filename conflicts and will be renamed automatically:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -1317,7 +1326,10 @@ class _TranslationsCommonDiffPanelEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String tokenSuffix({required Object count}) => ' (${count} Tokens)';
+	String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: ' (${n} Token)',
+		other: ' (${n} Tokens)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -1348,7 +1360,10 @@ class _TranslationsCommonTextFieldCardEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} tokens';
+	String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '${label} - ${n} token',
+		other: '${label} - ${n} tokens',
+	);
 	String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -1886,7 +1901,10 @@ class _TranslationsGridVariantBadgeEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String tooltip({required Object count}) => '${count} Variants';
+	String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '${n} Variant',
+		other: '${n} Variants',
+	);
 }
 
 // Path: grid.dialogActions
@@ -3394,7 +3412,10 @@ class _TranslationsCharacterImportControllerEs419 extends _TranslationsCharacter
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => 'No se pudo importar ${fileName}.';
-	@override String importedCount({required Object count}) => '${count} personajes importados';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: '${n} personaje importado',
+		other: '${n} personajes importados',
+	);
 }
 
 // Path: character.aiActionController
@@ -3751,7 +3772,10 @@ class _TranslationsChatChatListItemEs419 extends _TranslationsChatChatListItemEn
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} mensajes';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: '${n} mensaje',
+		other: '${n} mensajes',
+	);
 	@override String get renameAction => 'Renombrar';
 	@override String get deleteChatAction => 'Eliminar chat';
 }
@@ -4022,7 +4046,10 @@ class _TranslationsCommonImportConflictsDialogEs419 extends _TranslationsCommonI
 
 	// Translations
 	@override String get title => 'Conflictos de importación';
-	@override String message({required Object count}) => 'Los siguientes ${count} personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: 'El siguiente ${n} personaje tiene un conflicto de nombre de archivo y se renombrará automáticamente:',
+		other: 'Los siguientes ${n} personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -4117,7 +4144,10 @@ class _TranslationsCommonDiffPanelEs419 extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} tokens)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: ' (${n} token)',
+		other: ' (${n} tokens)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -4148,7 +4178,10 @@ class _TranslationsCommonTextFieldCardEs419 extends _TranslationsCommonTextField
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} tokens';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: '${label} - ${n} token',
+		other: '${label} - ${n} tokens',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -4686,7 +4719,10 @@ class _TranslationsGridVariantBadgeEs419 extends _TranslationsGridVariantBadgeEn
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} variantes';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+		one: '${n} variante',
+		other: '${n} variantes',
+	);
 }
 
 // Path: grid.dialogActions
@@ -6194,7 +6230,10 @@ class _TranslationsCharacterImportControllerHi extends _TranslationsCharacterImp
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => '${fileName} इम्पोर्ट करने में विफल।';
-	@override String importedCount({required Object count}) => '${count} कैरेक्टर इम्पोर्ट किए गए';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: '${n} कैरेक्टर इम्पोर्ट किया गया',
+		other: '${n} कैरेक्टर इम्पोर्ट किए गए',
+	);
 }
 
 // Path: character.aiActionController
@@ -6551,7 +6590,10 @@ class _TranslationsChatChatListItemHi extends _TranslationsChatChatListItemEn {
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} संदेश';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: '${n} संदेश',
+		other: '${n} संदेश',
+	);
 	@override String get renameAction => 'नाम बदलें';
 	@override String get deleteChatAction => 'चैट हटाएं';
 }
@@ -6822,7 +6864,10 @@ class _TranslationsCommonImportConflictsDialogHi extends _TranslationsCommonImpo
 
 	// Translations
 	@override String get title => 'इम्पोर्ट टकराव';
-	@override String message({required Object count}) => 'निम्नलिखित ${count} कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: 'निम्नलिखित ${n} कैरेक्टर के फ़ाइल नाम में टकराव है और उसका नाम स्वचालित रूप से बदल दिया जाएगा:',
+		other: 'निम्नलिखित ${n} कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -6917,7 +6962,10 @@ class _TranslationsCommonDiffPanelHi extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} टोकन)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: ' (${n} टोकन)',
+		other: ' (${n} टोकन)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -6948,7 +6996,10 @@ class _TranslationsCommonTextFieldCardHi extends _TranslationsCommonTextFieldCar
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} टोकन';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: '${label} - ${n} टोकन',
+		other: '${label} - ${n} टोकन',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -7486,7 +7537,10 @@ class _TranslationsGridVariantBadgeHi extends _TranslationsGridVariantBadgeEn {
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} वैरिएंट';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+		one: '${n} वैरिएंट',
+		other: '${n} वैरिएंट',
+	);
 }
 
 // Path: grid.dialogActions
@@ -8994,7 +9048,9 @@ class _TranslationsCharacterImportControllerJa extends _TranslationsCharacterImp
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => '${fileName} のインポートに失敗しました。';
-	@override String importedCount({required Object count}) => '${count} 個のキャラクターをインポートしました';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: '${n} 個のキャラクターをインポートしました',
+	);
 }
 
 // Path: character.aiActionController
@@ -9351,7 +9407,9 @@ class _TranslationsChatChatListItemJa extends _TranslationsChatChatListItemEn {
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} 件のメッセージ';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: '${n} 件のメッセージ',
+	);
 	@override String get renameAction => '名前を変更';
 	@override String get deleteChatAction => 'チャットを削除';
 }
@@ -9622,7 +9680,9 @@ class _TranslationsCommonImportConflictsDialogJa extends _TranslationsCommonImpo
 
 	// Translations
 	@override String get title => 'インポートの競合';
-	@override String message({required Object count}) => '以下の ${count} 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: '以下の ${n} 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -9717,7 +9777,9 @@ class _TranslationsCommonDiffPanelJa extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} トークン)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: ' (${n} トークン)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -9748,7 +9810,9 @@ class _TranslationsCommonTextFieldCardJa extends _TranslationsCommonTextFieldCar
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} トークン';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: '${label} - ${n} トークン',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -10284,7 +10348,9 @@ class _TranslationsGridVariantBadgeJa extends _TranslationsGridVariantBadgeEn {
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} 個のバリアント';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+		other: '${n} 個のバリアント',
+	);
 }
 
 // Path: grid.dialogActions
@@ -11790,7 +11856,9 @@ class _TranslationsCharacterImportControllerKo extends _TranslationsCharacterImp
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => '${fileName} 가져오기에 실패했어요.';
-	@override String importedCount({required Object count}) => '캐릭터 ${count}개를 가져왔어요';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: '캐릭터 ${n}개를 가져왔어요',
+	);
 }
 
 // Path: character.aiActionController
@@ -12147,7 +12215,9 @@ class _TranslationsChatChatListItemKo extends _TranslationsChatChatListItemEn {
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '메시지 ${count}개';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: '메시지 ${n}개',
+	);
 	@override String get renameAction => '이름 바꾸기';
 	@override String get deleteChatAction => '채팅 삭제';
 }
@@ -12418,7 +12488,9 @@ class _TranslationsCommonImportConflictsDialogKo extends _TranslationsCommonImpo
 
 	// Translations
 	@override String get title => '가져오기 충돌';
-	@override String message({required Object count}) => '다음 캐릭터 ${count}개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: '다음 캐릭터 ${n}개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -12513,7 +12585,9 @@ class _TranslationsCommonDiffPanelKo extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} 토큰)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: ' (${n} 토큰)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -12544,7 +12618,9 @@ class _TranslationsCommonTextFieldCardKo extends _TranslationsCommonTextFieldCar
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} 토큰';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: '${label} - ${n} 토큰',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} 토큰';
 }
 
@@ -13080,7 +13156,9 @@ class _TranslationsGridVariantBadgeKo extends _TranslationsGridVariantBadgeEn {
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '변형 ${count}개';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+		other: '변형 ${n}개',
+	);
 }
 
 // Path: grid.dialogActions
@@ -14586,7 +14664,10 @@ class _TranslationsCharacterImportControllerPtBr extends _TranslationsCharacterI
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => 'Falha ao importar ${fileName}.';
-	@override String importedCount({required Object count}) => '${count} personagens importados';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: '${n} personagem importado',
+		other: '${n} personagens importados',
+	);
 }
 
 // Path: character.aiActionController
@@ -14943,7 +15024,10 @@ class _TranslationsChatChatListItemPtBr extends _TranslationsChatChatListItemEn 
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} mensagens';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: '${n} mensagem',
+		other: '${n} mensagens',
+	);
 	@override String get renameAction => 'Renomear';
 	@override String get deleteChatAction => 'Excluir conversa';
 }
@@ -15214,7 +15298,10 @@ class _TranslationsCommonImportConflictsDialogPtBr extends _TranslationsCommonIm
 
 	// Translations
 	@override String get title => 'Conflitos de importação';
-	@override String message({required Object count}) => 'Os ${count} personagens a seguir têm conflitos de nome de arquivo e serão renomeados automaticamente:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: 'O ${n} personagem a seguir tem um conflito de nome de arquivo e será renomeado automaticamente:',
+		other: 'Os ${n} personagens a seguir têm conflitos de nome de arquivo e serão renomeados automaticamente:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -15309,7 +15396,10 @@ class _TranslationsCommonDiffPanelPtBr extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} tokens)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: ' (${n} token)',
+		other: ' (${n} tokens)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -15340,7 +15430,10 @@ class _TranslationsCommonTextFieldCardPtBr extends _TranslationsCommonTextFieldC
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} tokens';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: '${label} - ${n} token',
+		other: '${label} - ${n} tokens',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -15878,7 +15971,10 @@ class _TranslationsGridVariantBadgePtBr extends _TranslationsGridVariantBadgeEn 
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} variantes';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+		one: '${n} variante',
+		other: '${n} variantes',
+	);
 }
 
 // Path: grid.dialogActions
@@ -17386,7 +17482,12 @@ class _TranslationsCharacterImportControllerRu extends _TranslationsCharacterImp
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => 'Не удалось импортировать ${fileName}.';
-	@override String importedCount({required Object count}) => 'Импортировано персонажей: ${count}';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'Импортирован ${n} персонаж',
+		few: 'Импортировано ${n} персонажа',
+		many: 'Импортировано ${n} персонажей',
+		other: 'Импортировано персонажей: ${n}',
+	);
 }
 
 // Path: character.aiActionController
@@ -17743,7 +17844,12 @@ class _TranslationsChatChatListItemRu extends _TranslationsChatChatListItemEn {
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => 'Сообщений: ${count}';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'Сообщение: ${n}',
+		few: 'Сообщения: ${n}',
+		many: 'Сообщений: ${n}',
+		other: 'Сообщений: ${n}',
+	);
 	@override String get renameAction => 'Переименовать';
 	@override String get deleteChatAction => 'Удалить чат';
 }
@@ -18014,7 +18120,12 @@ class _TranslationsCommonImportConflictsDialogRu extends _TranslationsCommonImpo
 
 	// Translations
 	@override String get title => 'Конфликты импорта';
-	@override String message({required Object count}) => 'Следующие ${count} персонажей имеют конфликты имён файлов и будут переименованы автоматически:';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'Следующий ${n} персонаж имеет конфликт имени файла и будет переименован автоматически:',
+		few: 'Следующие ${n} персонажа имеют конфликты имён файлов и будут переименованы автоматически:',
+		many: 'Следующие ${n} персонажей имеют конфликты имён файлов и будут переименованы автоматически:',
+		other: 'Следующие ${n} персонажей имеют конфликты имён файлов и будут переименованы автоматически:',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -18109,7 +18220,12 @@ class _TranslationsCommonDiffPanelRu extends _TranslationsCommonDiffPanelEn {
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' (${count} токенов)';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: ' (${n} токен)',
+		few: ' (${n} токена)',
+		many: ' (${n} токенов)',
+		other: ' (${n} токенов)',
+	);
 }
 
 // Path: common.selectionDialog
@@ -18140,7 +18256,12 @@ class _TranslationsCommonTextFieldCardRu extends _TranslationsCommonTextFieldCar
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} — ${count} токенов';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: '${label} — ${n} токен',
+		few: '${label} — ${n} токена',
+		many: '${label} — ${n} токенов',
+		other: '${label} — ${n} токенов',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} т';
 }
 
@@ -18682,7 +18803,12 @@ class _TranslationsGridVariantBadgeRu extends _TranslationsGridVariantBadgeEn {
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => 'Вариантов: ${count}';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+		one: 'Вариант: ${n}',
+		few: 'Варианта: ${n}',
+		many: 'Вариантов: ${n}',
+		other: 'Вариантов: ${n}',
+	);
 }
 
 // Path: grid.dialogActions
@@ -20194,7 +20320,9 @@ class _TranslationsCharacterImportControllerZhHans extends _TranslationsCharacte
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => '导入 ${fileName} 失败。';
-	@override String importedCount({required Object count}) => '已导入 ${count} 个角色';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '已导入 ${n} 个角色',
+	);
 }
 
 // Path: character.aiActionController
@@ -20551,7 +20679,9 @@ class _TranslationsChatChatListItemZhHans extends _TranslationsChatChatListItemE
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} 条消息';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${n} 条消息',
+	);
 	@override String get renameAction => '重命名';
 	@override String get deleteChatAction => '删除对话';
 }
@@ -20822,7 +20952,9 @@ class _TranslationsCommonImportConflictsDialogZhHans extends _TranslationsCommon
 
 	// Translations
 	@override String get title => '导入冲突';
-	@override String message({required Object count}) => '以下 ${count} 个角色的文件名有冲突，将自动重命名：';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '以下 ${n} 个角色的文件名有冲突，将自动重命名：',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -20917,7 +21049,9 @@ class _TranslationsCommonDiffPanelZhHans extends _TranslationsCommonDiffPanelEn 
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' （${count} 个 Token）';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: ' （${n} 个 Token）',
+	);
 }
 
 // Path: common.selectionDialog
@@ -20948,7 +21082,9 @@ class _TranslationsCommonTextFieldCardZhHans extends _TranslationsCommonTextFiel
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} 个 token';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${label} - ${n} 个 token',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -21484,7 +21620,9 @@ class _TranslationsGridVariantBadgeZhHans extends _TranslationsGridVariantBadgeE
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} 个变体';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${n} 个变体',
+	);
 }
 
 // Path: grid.dialogActions
@@ -22990,7 +23128,9 @@ class _TranslationsCharacterImportControllerZhHant extends _TranslationsCharacte
 
 	// Translations
 	@override String failedToImport({required Object fileName}) => '匯入 ${fileName} 失敗。';
-	@override String importedCount({required Object count}) => '已匯入 ${count} 個角色';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '已匯入 ${n} 個角色',
+	);
 }
 
 // Path: character.aiActionController
@@ -23347,7 +23487,9 @@ class _TranslationsChatChatListItemZhHant extends _TranslationsChatChatListItemE
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String messageCount({required Object count}) => '${count} 則訊息';
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${n} 則訊息',
+	);
 	@override String get renameAction => '重新命名';
 	@override String get deleteChatAction => '刪除對話';
 }
@@ -23618,7 +23760,9 @@ class _TranslationsCommonImportConflictsDialogZhHant extends _TranslationsCommon
 
 	// Translations
 	@override String get title => '匯入衝突';
-	@override String message({required Object count}) => '下列 ${count} 個角色的檔名有衝突，將會自動重新命名：';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '下列 ${n} 個角色的檔名有衝突，將會自動重新命名：',
+	);
 }
 
 // Path: common.missingProviderBanner
@@ -23713,7 +23857,9 @@ class _TranslationsCommonDiffPanelZhHant extends _TranslationsCommonDiffPanelEn 
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String tokenSuffix({required Object count}) => ' （${count} 個 Token）';
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: ' （${n} 個 Token）',
+	);
 }
 
 // Path: common.selectionDialog
@@ -23744,7 +23890,9 @@ class _TranslationsCommonTextFieldCardZhHant extends _TranslationsCommonTextFiel
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String labelWithTokenCount({required Object label, required Object count}) => '${label} - ${count} 個 token';
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${label} - ${n} 個 token',
+	);
 	@override String tokenCountAbbrev({required Object count}) => '${count} t';
 }
 
@@ -24280,7 +24428,9 @@ class _TranslationsGridVariantBadgeZhHant extends _TranslationsGridVariantBadgeE
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String tooltip({required Object count}) => '${count} 個變體';
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+		other: '${n} 個變體',
+	);
 }
 
 // Path: grid.dialogActions
@@ -25367,7 +25517,10 @@ extension on Translations {
 			case 'character.createController.creationFailedTitle': return 'Creation Failed';
 			case 'character.createController.creationFailedMessage': return 'Could not create the character. Check logs for details.';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => 'Failed to import ${fileName}.';
-			case 'character.importController.importedCount': return ({required Object count}) => 'Imported ${count} characters';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'Imported ${n} character',
+				other: 'Imported ${n} characters',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AI Action failed. Check logs for details.';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Processing ${name} (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' ETA: ${hours}h ${minutes}m';
@@ -25455,7 +25608,10 @@ extension on Translations {
 			case 'chat.videoPlayerInline.webUnsupported': return 'Video playback not supported on web.';
 			case 'chat.videoPlayerInline.couldNotLoad': return 'Could not load video.';
 			case 'chat.newChatLabel': return 'New Chat';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} messages';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: '${n} message',
+				other: '${n} messages',
+			);
 			case 'chat.chatListItem.renameAction': return 'Rename';
 			case 'chat.chatListItem.deleteChatAction': return 'Delete Chat';
 			case 'chat.chatHistoryController.renameChatTitle': return 'Rename Chat';
@@ -25556,7 +25712,10 @@ extension on Translations {
 			case 'common.updateDialog.releaseNotesLabel': return 'Release Notes:';
 			case 'common.updateDialog.viewReleasesButton': return 'View Releases';
 			case 'common.importConflictsDialog.title': return 'Import Conflicts';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => 'The following ${count} characters have filename conflicts and will be renamed automatically:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: 'The following ${n} character has a filename conflict and will be renamed automatically:',
+				other: 'The following ${n} characters have filename conflicts and will be renamed automatically:',
+			);
 			case 'common.missingProviderBanner.message': return 'Connect an AI provider.';
 			case 'common.missingProviderBanner.setUpNowButton': return 'Set Up Now';
 			case 'common.modelSelectionDialog.searchHint': return 'Search Models';
@@ -25579,11 +25738,17 @@ extension on Translations {
 			case 'common.jsonPromptDialog.title': return 'Generation Prompt';
 			case 'common.progressDialog.defaultMessage': return 'Sending...';
 			case 'common.progressDialog.finished': return 'Finished!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} Tokens)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: ' (${n} Token)',
+				other: ' (${n} Tokens)',
+			);
 			case 'common.selectionDialog.searchHint': return 'Search…';
 			case 'common.zdrSwitch.title': return 'Require Zero Data Retention (ZDR)';
 			case 'common.zdrSwitch.subtitle': return 'Only show OR models with ZDR-compliant endpoints. Enable this if your openrouter.ai account restricts to ZDR providers.';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} tokens';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: '${label} - ${n} token',
+				other: '${label} - ${n} tokens',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return 'Reasoning';
 			case 'common.modelCapability.vision': return 'Vision';
@@ -25835,7 +26000,10 @@ extension on Translations {
 			case 'grid.drawer.batchAutoTagEmpty': return 'All characters already have tags.';
 			case 'grid.drawer.libraryHeader': return 'Library';
 			case 'grid.drawer.reloadCharacters': return 'Reload characters';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} Variants';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+				one: '${n} Variant',
+				other: '${n} Variants',
+			);
 			case 'grid.dialogActions.clearAll': return 'Clear All';
 			case 'grid.dialogActions.apply': return 'Apply';
 			case 'grid.tagFilterDialog.title': return 'Filter Tags';
@@ -26287,7 +26455,10 @@ extension on _TranslationsEs419 {
 			case 'character.createController.creationFailedTitle': return 'Error al crear';
 			case 'character.createController.creationFailedMessage': return 'No se pudo crear el personaje. Consulta los registros para más detalles.';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => 'No se pudo importar ${fileName}.';
-			case 'character.importController.importedCount': return ({required Object count}) => '${count} personajes importados';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: '${n} personaje importado',
+				other: '${n} personajes importados',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'La acción de IA falló. Consulta los registros para más detalles.';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Procesando ${name} (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' Faltan: ${hours}h ${minutes}m';
@@ -26375,7 +26546,10 @@ extension on _TranslationsEs419 {
 			case 'chat.videoPlayerInline.webUnsupported': return 'La reproducción de video no es compatible en la web.';
 			case 'chat.videoPlayerInline.couldNotLoad': return 'No se pudo cargar el video.';
 			case 'chat.newChatLabel': return 'Nuevo chat';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} mensajes';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: '${n} mensaje',
+				other: '${n} mensajes',
+			);
 			case 'chat.chatListItem.renameAction': return 'Renombrar';
 			case 'chat.chatListItem.deleteChatAction': return 'Eliminar chat';
 			case 'chat.chatHistoryController.renameChatTitle': return 'Renombrar chat';
@@ -26476,7 +26650,10 @@ extension on _TranslationsEs419 {
 			case 'common.updateDialog.releaseNotesLabel': return 'Notas de la versión:';
 			case 'common.updateDialog.viewReleasesButton': return 'Ver versiones';
 			case 'common.importConflictsDialog.title': return 'Conflictos de importación';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => 'Los siguientes ${count} personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: 'El siguiente ${n} personaje tiene un conflicto de nombre de archivo y se renombrará automáticamente:',
+				other: 'Los siguientes ${n} personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:',
+			);
 			case 'common.missingProviderBanner.message': return 'Conecta un proveedor de IA.';
 			case 'common.missingProviderBanner.setUpNowButton': return 'Configurar ahora';
 			case 'common.modelSelectionDialog.searchHint': return 'Buscar modelos';
@@ -26499,11 +26676,17 @@ extension on _TranslationsEs419 {
 			case 'common.jsonPromptDialog.title': return 'Prompt de generación';
 			case 'common.progressDialog.defaultMessage': return 'Enviando...';
 			case 'common.progressDialog.finished': return '¡Listo!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} tokens)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: ' (${n} token)',
+				other: ' (${n} tokens)',
+			);
 			case 'common.selectionDialog.searchHint': return 'Buscar…';
 			case 'common.zdrSwitch.title': return 'Requerir Zero Data Retention (ZDR)';
 			case 'common.zdrSwitch.subtitle': return 'Mostrar solo modelos de OR con endpoints compatibles con ZDR. Actívalo si tu cuenta de openrouter.ai se restringe a proveedores ZDR.';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} tokens';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: '${label} - ${n} token',
+				other: '${label} - ${n} tokens',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return 'Razonamiento';
 			case 'common.modelCapability.vision': return 'Visión';
@@ -26755,7 +26938,10 @@ extension on _TranslationsEs419 {
 			case 'grid.drawer.batchAutoTagEmpty': return 'Todos los personajes ya tienen etiquetas.';
 			case 'grid.drawer.libraryHeader': return 'Biblioteca';
 			case 'grid.drawer.reloadCharacters': return 'Recargar personajes';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} variantes';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
+				one: '${n} variante',
+				other: '${n} variantes',
+			);
 			case 'grid.dialogActions.clearAll': return 'Borrar todo';
 			case 'grid.dialogActions.apply': return 'Aplicar';
 			case 'grid.tagFilterDialog.title': return 'Filtrar etiquetas';
@@ -27207,7 +27393,10 @@ extension on _TranslationsHi {
 			case 'character.createController.creationFailedTitle': return 'बनाने में विफल';
 			case 'character.createController.creationFailedMessage': return 'कैरेक्टर नहीं बनाया जा सका। विवरण के लिए लॉग देखें।';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => '${fileName} इम्पोर्ट करने में विफल।';
-			case 'character.importController.importedCount': return ({required Object count}) => '${count} कैरेक्टर इम्पोर्ट किए गए';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: '${n} कैरेक्टर इम्पोर्ट किया गया',
+				other: '${n} कैरेक्टर इम्पोर्ट किए गए',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AI क्रिया विफल हुई। विवरण के लिए लॉग देखें।';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => '${name} प्रोसेस हो रहा है (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' शेष: ${hours}h ${minutes}m';
@@ -27295,7 +27484,10 @@ extension on _TranslationsHi {
 			case 'chat.videoPlayerInline.webUnsupported': return 'वेब पर वीडियो प्लेबैक समर्थित नहीं है।';
 			case 'chat.videoPlayerInline.couldNotLoad': return 'वीडियो लोड नहीं किया जा सका।';
 			case 'chat.newChatLabel': return 'नई चैट';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} संदेश';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: '${n} संदेश',
+				other: '${n} संदेश',
+			);
 			case 'chat.chatListItem.renameAction': return 'नाम बदलें';
 			case 'chat.chatListItem.deleteChatAction': return 'चैट हटाएं';
 			case 'chat.chatHistoryController.renameChatTitle': return 'चैट का नाम बदलें';
@@ -27396,7 +27588,10 @@ extension on _TranslationsHi {
 			case 'common.updateDialog.releaseNotesLabel': return 'रिलीज़ नोट्स:';
 			case 'common.updateDialog.viewReleasesButton': return 'रिलीज़ देखें';
 			case 'common.importConflictsDialog.title': return 'इम्पोर्ट टकराव';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => 'निम्नलिखित ${count} कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: 'निम्नलिखित ${n} कैरेक्टर के फ़ाइल नाम में टकराव है और उसका नाम स्वचालित रूप से बदल दिया जाएगा:',
+				other: 'निम्नलिखित ${n} कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:',
+			);
 			case 'common.missingProviderBanner.message': return 'एक AI प्रोवाइडर कनेक्ट करें।';
 			case 'common.missingProviderBanner.setUpNowButton': return 'अभी सेट अप करें';
 			case 'common.modelSelectionDialog.searchHint': return 'मॉडल खोजें';
@@ -27419,11 +27614,17 @@ extension on _TranslationsHi {
 			case 'common.jsonPromptDialog.title': return 'जनरेशन प्रॉम्प्ट';
 			case 'common.progressDialog.defaultMessage': return 'भेजा जा रहा है...';
 			case 'common.progressDialog.finished': return 'पूर्ण हुआ!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} टोकन)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: ' (${n} टोकन)',
+				other: ' (${n} टोकन)',
+			);
 			case 'common.selectionDialog.searchHint': return 'खोजें…';
 			case 'common.zdrSwitch.title': return 'शून्य डेटा रिटेंशन (ZDR) आवश्यक करें';
 			case 'common.zdrSwitch.subtitle': return 'केवल ZDR-अनुरूप एंडपॉइंट वाले OR मॉडल दिखाएं। यदि आपका openrouter.ai खाता ZDR प्रोवाइडर तक सीमित है तो इसे सक्षम करें।';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} टोकन';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: '${label} - ${n} टोकन',
+				other: '${label} - ${n} टोकन',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return 'रीज़निंग';
 			case 'common.modelCapability.vision': return 'विज़न';
@@ -27675,7 +27876,10 @@ extension on _TranslationsHi {
 			case 'grid.drawer.batchAutoTagEmpty': return 'सभी कैरेक्टर के पास पहले से टैग हैं।';
 			case 'grid.drawer.libraryHeader': return 'लाइब्रेरी';
 			case 'grid.drawer.reloadCharacters': return 'कैरेक्टर फिर से लोड करें';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} वैरिएंट';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
+				one: '${n} वैरिएंट',
+				other: '${n} वैरिएंट',
+			);
 			case 'grid.dialogActions.clearAll': return 'सभी साफ़ करें';
 			case 'grid.dialogActions.apply': return 'लागू करें';
 			case 'grid.tagFilterDialog.title': return 'टैग फ़िल्टर करें';
@@ -28127,7 +28331,9 @@ extension on _TranslationsJa {
 			case 'character.createController.creationFailedTitle': return '作成に失敗しました';
 			case 'character.createController.creationFailedMessage': return 'キャラクターを作成できませんでした。詳細はログを確認してください。';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => '${fileName} のインポートに失敗しました。';
-			case 'character.importController.importedCount': return ({required Object count}) => '${count} 個のキャラクターをインポートしました';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: '${n} 個のキャラクターをインポートしました',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AIアクションに失敗しました。詳細はログを確認してください。';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => '${name} を処理中（${current}/${total}）...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' 残り: ${hours}時間 ${minutes}分';
@@ -28215,7 +28421,9 @@ extension on _TranslationsJa {
 			case 'chat.videoPlayerInline.webUnsupported': return '動画の再生はウェブではサポートされていません。';
 			case 'chat.videoPlayerInline.couldNotLoad': return '動画を読み込めませんでした。';
 			case 'chat.newChatLabel': return '新しいチャット';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} 件のメッセージ';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: '${n} 件のメッセージ',
+			);
 			case 'chat.chatListItem.renameAction': return '名前を変更';
 			case 'chat.chatListItem.deleteChatAction': return 'チャットを削除';
 			case 'chat.chatHistoryController.renameChatTitle': return 'チャットの名前を変更';
@@ -28316,7 +28524,9 @@ extension on _TranslationsJa {
 			case 'common.updateDialog.releaseNotesLabel': return 'リリースノート:';
 			case 'common.updateDialog.viewReleasesButton': return 'リリースを表示';
 			case 'common.importConflictsDialog.title': return 'インポートの競合';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => '以下の ${count} 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: '以下の ${n} 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:',
+			);
 			case 'common.missingProviderBanner.message': return 'AIプロバイダーを接続してください。';
 			case 'common.missingProviderBanner.setUpNowButton': return '今すぐ設定';
 			case 'common.modelSelectionDialog.searchHint': return 'モデルを検索';
@@ -28339,11 +28549,15 @@ extension on _TranslationsJa {
 			case 'common.jsonPromptDialog.title': return '生成プロンプト';
 			case 'common.progressDialog.defaultMessage': return '送信中...';
 			case 'common.progressDialog.finished': return '完了しました！';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} トークン)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: ' (${n} トークン)',
+			);
 			case 'common.selectionDialog.searchHint': return '検索…';
 			case 'common.zdrSwitch.title': return 'ゼロデータ保持（ZDR）を必須にする';
 			case 'common.zdrSwitch.subtitle': return 'ZDR準拠のエンドポイントを持つ OR モデルのみを表示します。openrouter.ai アカウントが ZDR プロバイダーに制限されている場合はこれを有効にしてください。';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} トークン';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: '${label} - ${n} トークン',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return '推論';
 			case 'common.modelCapability.vision': return '視覚';
@@ -28593,7 +28807,9 @@ extension on _TranslationsJa {
 			case 'grid.drawer.batchAutoTagEmpty': return 'すべてのキャラクターにすでにタグがあります。';
 			case 'grid.drawer.libraryHeader': return 'ライブラリ';
 			case 'grid.drawer.reloadCharacters': return 'キャラクターを再読み込み';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} 個のバリアント';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
+				other: '${n} 個のバリアント',
+			);
 			case 'grid.dialogActions.clearAll': return 'すべてクリア';
 			case 'grid.dialogActions.apply': return '適用';
 			case 'grid.tagFilterDialog.title': return 'タグをフィルター';
@@ -29043,7 +29259,9 @@ extension on _TranslationsKo {
 			case 'character.createController.creationFailedTitle': return '생성 실패';
 			case 'character.createController.creationFailedMessage': return '캐릭터를 생성하지 못했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => '${fileName} 가져오기에 실패했어요.';
-			case 'character.importController.importedCount': return ({required Object count}) => '캐릭터 ${count}개를 가져왔어요';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: '캐릭터 ${n}개를 가져왔어요',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AI 작업에 실패했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => '${name} 처리 중 (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' 남은 시간: ${hours}시간 ${minutes}분';
@@ -29131,7 +29349,9 @@ extension on _TranslationsKo {
 			case 'chat.videoPlayerInline.webUnsupported': return '웹에서는 비디오 재생을 지원하지 않아요.';
 			case 'chat.videoPlayerInline.couldNotLoad': return '비디오를 불러오지 못했어요.';
 			case 'chat.newChatLabel': return '새 채팅';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '메시지 ${count}개';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: '메시지 ${n}개',
+			);
 			case 'chat.chatListItem.renameAction': return '이름 바꾸기';
 			case 'chat.chatListItem.deleteChatAction': return '채팅 삭제';
 			case 'chat.chatHistoryController.renameChatTitle': return '채팅 이름 바꾸기';
@@ -29232,7 +29452,9 @@ extension on _TranslationsKo {
 			case 'common.updateDialog.releaseNotesLabel': return '릴리스 노트:';
 			case 'common.updateDialog.viewReleasesButton': return '릴리스 보기';
 			case 'common.importConflictsDialog.title': return '가져오기 충돌';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => '다음 캐릭터 ${count}개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: '다음 캐릭터 ${n}개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:',
+			);
 			case 'common.missingProviderBanner.message': return 'AI 제공자를 연결하세요.';
 			case 'common.missingProviderBanner.setUpNowButton': return '지금 설정';
 			case 'common.modelSelectionDialog.searchHint': return '모델 검색';
@@ -29255,11 +29477,15 @@ extension on _TranslationsKo {
 			case 'common.jsonPromptDialog.title': return '생성 프롬프트';
 			case 'common.progressDialog.defaultMessage': return '전송 중...';
 			case 'common.progressDialog.finished': return '완료!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} 토큰)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: ' (${n} 토큰)',
+			);
 			case 'common.selectionDialog.searchHint': return '검색…';
 			case 'common.zdrSwitch.title': return '제로 데이터 보존(ZDR) 요구';
 			case 'common.zdrSwitch.subtitle': return 'ZDR을 준수하는 엔드포인트가 있는 OR 모델만 표시해요. openrouter.ai 계정이 ZDR 제공자로 제한된 경우 켜세요.';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} 토큰';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: '${label} - ${n} 토큰',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} 토큰';
 			case 'common.modelCapability.reasoning': return '추론';
 			case 'common.modelCapability.vision': return '비전';
@@ -29509,7 +29735,9 @@ extension on _TranslationsKo {
 			case 'grid.drawer.batchAutoTagEmpty': return '모든 캐릭터에 이미 태그가 있어요.';
 			case 'grid.drawer.libraryHeader': return '라이브러리';
 			case 'grid.drawer.reloadCharacters': return '캐릭터 다시 불러오기';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '변형 ${count}개';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
+				other: '변형 ${n}개',
+			);
 			case 'grid.dialogActions.clearAll': return '모두 지우기';
 			case 'grid.dialogActions.apply': return '적용';
 			case 'grid.tagFilterDialog.title': return '태그 필터';
@@ -29959,7 +30187,10 @@ extension on _TranslationsPtBr {
 			case 'character.createController.creationFailedTitle': return 'Falha na criação';
 			case 'character.createController.creationFailedMessage': return 'Não foi possível criar o personagem. Veja os logs para detalhes.';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => 'Falha ao importar ${fileName}.';
-			case 'character.importController.importedCount': return ({required Object count}) => '${count} personagens importados';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: '${n} personagem importado',
+				other: '${n} personagens importados',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'Ação de IA falhou. Veja os logs para detalhes.';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Processando ${name} (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' Restante: ${hours}h ${minutes}m';
@@ -30047,7 +30278,10 @@ extension on _TranslationsPtBr {
 			case 'chat.videoPlayerInline.webUnsupported': return 'Reprodução de vídeo não suportada na web.';
 			case 'chat.videoPlayerInline.couldNotLoad': return 'Não foi possível carregar o vídeo.';
 			case 'chat.newChatLabel': return 'Nova conversa';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} mensagens';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: '${n} mensagem',
+				other: '${n} mensagens',
+			);
 			case 'chat.chatListItem.renameAction': return 'Renomear';
 			case 'chat.chatListItem.deleteChatAction': return 'Excluir conversa';
 			case 'chat.chatHistoryController.renameChatTitle': return 'Renomear conversa';
@@ -30148,7 +30382,10 @@ extension on _TranslationsPtBr {
 			case 'common.updateDialog.releaseNotesLabel': return 'Notas da versão:';
 			case 'common.updateDialog.viewReleasesButton': return 'Ver versões';
 			case 'common.importConflictsDialog.title': return 'Conflitos de importação';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => 'Os ${count} personagens a seguir têm conflitos de nome de arquivo e serão renomeados automaticamente:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: 'O ${n} personagem a seguir tem um conflito de nome de arquivo e será renomeado automaticamente:',
+				other: 'Os ${n} personagens a seguir têm conflitos de nome de arquivo e serão renomeados automaticamente:',
+			);
 			case 'common.missingProviderBanner.message': return 'Conecte um provedor de IA.';
 			case 'common.missingProviderBanner.setUpNowButton': return 'Configurar agora';
 			case 'common.modelSelectionDialog.searchHint': return 'Buscar modelos';
@@ -30171,11 +30408,17 @@ extension on _TranslationsPtBr {
 			case 'common.jsonPromptDialog.title': return 'Prompt de geração';
 			case 'common.progressDialog.defaultMessage': return 'Enviando...';
 			case 'common.progressDialog.finished': return 'Concluído!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} tokens)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: ' (${n} token)',
+				other: ' (${n} tokens)',
+			);
 			case 'common.selectionDialog.searchHint': return 'Buscar…';
 			case 'common.zdrSwitch.title': return 'Exigir Zero Data Retention (ZDR)';
 			case 'common.zdrSwitch.subtitle': return 'Mostrar apenas modelos do OR com endpoints compatíveis com ZDR. Ative se sua conta openrouter.ai restringe a provedores ZDR.';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} tokens';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: '${label} - ${n} token',
+				other: '${label} - ${n} tokens',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return 'Raciocínio';
 			case 'common.modelCapability.vision': return 'Visão';
@@ -30427,7 +30670,10 @@ extension on _TranslationsPtBr {
 			case 'grid.drawer.batchAutoTagEmpty': return 'Todos os personagens já têm tags.';
 			case 'grid.drawer.libraryHeader': return 'Biblioteca';
 			case 'grid.drawer.reloadCharacters': return 'Recarregar personagens';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} variantes';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
+				one: '${n} variante',
+				other: '${n} variantes',
+			);
 			case 'grid.dialogActions.clearAll': return 'Limpar tudo';
 			case 'grid.dialogActions.apply': return 'Aplicar';
 			case 'grid.tagFilterDialog.title': return 'Filtrar tags';
@@ -30879,7 +31125,12 @@ extension on _TranslationsRu {
 			case 'character.createController.creationFailedTitle': return 'Не удалось создать';
 			case 'character.createController.creationFailedMessage': return 'Не удалось создать персонажа. Подробности в логах.';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => 'Не удалось импортировать ${fileName}.';
-			case 'character.importController.importedCount': return ({required Object count}) => 'Импортировано персонажей: ${count}';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: 'Импортирован ${n} персонаж',
+				few: 'Импортировано ${n} персонажа',
+				many: 'Импортировано ${n} персонажей',
+				other: 'Импортировано персонажей: ${n}',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'Действие ИИ не выполнено. Подробности в логах.';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Обработка ${name} (${current}/${total})...${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' Осталось: ${hours} ч ${minutes} мин';
@@ -30967,7 +31218,12 @@ extension on _TranslationsRu {
 			case 'chat.videoPlayerInline.webUnsupported': return 'Воспроизведение видео не поддерживается в вебе.';
 			case 'chat.videoPlayerInline.couldNotLoad': return 'Не удалось загрузить видео.';
 			case 'chat.newChatLabel': return 'Новый чат';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => 'Сообщений: ${count}';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: 'Сообщение: ${n}',
+				few: 'Сообщения: ${n}',
+				many: 'Сообщений: ${n}',
+				other: 'Сообщений: ${n}',
+			);
 			case 'chat.chatListItem.renameAction': return 'Переименовать';
 			case 'chat.chatListItem.deleteChatAction': return 'Удалить чат';
 			case 'chat.chatHistoryController.renameChatTitle': return 'Переименовать чат';
@@ -31068,7 +31324,12 @@ extension on _TranslationsRu {
 			case 'common.updateDialog.releaseNotesLabel': return 'Что нового:';
 			case 'common.updateDialog.viewReleasesButton': return 'Смотреть релизы';
 			case 'common.importConflictsDialog.title': return 'Конфликты импорта';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => 'Следующие ${count} персонажей имеют конфликты имён файлов и будут переименованы автоматически:';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: 'Следующий ${n} персонаж имеет конфликт имени файла и будет переименован автоматически:',
+				few: 'Следующие ${n} персонажа имеют конфликты имён файлов и будут переименованы автоматически:',
+				many: 'Следующие ${n} персонажей имеют конфликты имён файлов и будут переименованы автоматически:',
+				other: 'Следующие ${n} персонажей имеют конфликты имён файлов и будут переименованы автоматически:',
+			);
 			case 'common.missingProviderBanner.message': return 'Подключите провайдер ИИ.';
 			case 'common.missingProviderBanner.setUpNowButton': return 'Настроить сейчас';
 			case 'common.modelSelectionDialog.searchHint': return 'Поиск моделей';
@@ -31091,11 +31352,21 @@ extension on _TranslationsRu {
 			case 'common.jsonPromptDialog.title': return 'Промпт генерации';
 			case 'common.progressDialog.defaultMessage': return 'Отправка...';
 			case 'common.progressDialog.finished': return 'Готово!';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' (${count} токенов)';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: ' (${n} токен)',
+				few: ' (${n} токена)',
+				many: ' (${n} токенов)',
+				other: ' (${n} токенов)',
+			);
 			case 'common.selectionDialog.searchHint': return 'Поиск…';
 			case 'common.zdrSwitch.title': return 'Требовать нулевое хранение данных (ZDR)';
 			case 'common.zdrSwitch.subtitle': return 'Показывать только модели OR с ZDR-совместимыми эндпоинтами. Включите, если ваш аккаунт openrouter.ai ограничен провайдерами ZDR.';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} — ${count} токенов';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: '${label} — ${n} токен',
+				few: '${label} — ${n} токена',
+				many: '${label} — ${n} токенов',
+				other: '${label} — ${n} токенов',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} т';
 			case 'common.modelCapability.reasoning': return 'Рассуждения';
 			case 'common.modelCapability.vision': return 'Зрение';
@@ -31351,7 +31622,12 @@ extension on _TranslationsRu {
 			case 'grid.drawer.batchAutoTagEmpty': return 'У всех персонажей уже есть теги.';
 			case 'grid.drawer.libraryHeader': return 'Библиотека';
 			case 'grid.drawer.reloadCharacters': return 'Перезагрузить персонажей';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => 'Вариантов: ${count}';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
+				one: 'Вариант: ${n}',
+				few: 'Варианта: ${n}',
+				many: 'Вариантов: ${n}',
+				other: 'Вариантов: ${n}',
+			);
 			case 'grid.dialogActions.clearAll': return 'Очистить всё';
 			case 'grid.dialogActions.apply': return 'Применить';
 			case 'grid.tagFilterDialog.title': return 'Фильтр по тегам';
@@ -31807,7 +32083,9 @@ extension on _TranslationsZhHans {
 			case 'character.createController.creationFailedTitle': return '创建失败';
 			case 'character.createController.creationFailedMessage': return '无法创建角色。详情请查看日志。';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => '导入 ${fileName} 失败。';
-			case 'character.importController.importedCount': return ({required Object count}) => '已导入 ${count} 个角色';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '已导入 ${n} 个角色',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AI 操作失败。详情请查看日志。';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => '正在处理 ${name}（${current}/${total}）…${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' 预计剩余：${hours}小时 ${minutes}分';
@@ -31895,7 +32173,9 @@ extension on _TranslationsZhHans {
 			case 'chat.videoPlayerInline.webUnsupported': return '网页端不支持视频播放。';
 			case 'chat.videoPlayerInline.couldNotLoad': return '无法加载视频。';
 			case 'chat.newChatLabel': return '新对话';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} 条消息';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${n} 条消息',
+			);
 			case 'chat.chatListItem.renameAction': return '重命名';
 			case 'chat.chatListItem.deleteChatAction': return '删除对话';
 			case 'chat.chatHistoryController.renameChatTitle': return '重命名对话';
@@ -31996,7 +32276,9 @@ extension on _TranslationsZhHans {
 			case 'common.updateDialog.releaseNotesLabel': return '更新说明：';
 			case 'common.updateDialog.viewReleasesButton': return '查看版本';
 			case 'common.importConflictsDialog.title': return '导入冲突';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => '以下 ${count} 个角色的文件名有冲突，将自动重命名：';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '以下 ${n} 个角色的文件名有冲突，将自动重命名：',
+			);
 			case 'common.missingProviderBanner.message': return '请连接一个 AI 服务商。';
 			case 'common.missingProviderBanner.setUpNowButton': return '立即设置';
 			case 'common.modelSelectionDialog.searchHint': return '搜索模型';
@@ -32019,11 +32301,15 @@ extension on _TranslationsZhHans {
 			case 'common.jsonPromptDialog.title': return '生成提示词';
 			case 'common.progressDialog.defaultMessage': return '发送中…';
 			case 'common.progressDialog.finished': return '完成！';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' （${count} 个 Token）';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: ' （${n} 个 Token）',
+			);
 			case 'common.selectionDialog.searchHint': return '搜索…';
 			case 'common.zdrSwitch.title': return '要求零数据保留（ZDR）';
 			case 'common.zdrSwitch.subtitle': return '仅显示带有 ZDR 合规端点的 OR 模型。如果你的 openrouter.ai 账户仅限使用 ZDR 服务商，请启用此项。';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} 个 token';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${label} - ${n} 个 token',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return '推理';
 			case 'common.modelCapability.vision': return '视觉';
@@ -32273,7 +32559,9 @@ extension on _TranslationsZhHans {
 			case 'grid.drawer.batchAutoTagEmpty': return '所有角色都已有标签。';
 			case 'grid.drawer.libraryHeader': return '库';
 			case 'grid.drawer.reloadCharacters': return '重新加载角色';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} 个变体';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${n} 个变体',
+			);
 			case 'grid.dialogActions.clearAll': return '全部清除';
 			case 'grid.dialogActions.apply': return '应用';
 			case 'grid.tagFilterDialog.title': return '筛选标签';
@@ -32723,7 +33011,9 @@ extension on _TranslationsZhHant {
 			case 'character.createController.creationFailedTitle': return '建立失敗';
 			case 'character.createController.creationFailedMessage': return '無法建立角色。詳情請查看記錄。';
 			case 'character.importController.failedToImport': return ({required Object fileName}) => '匯入 ${fileName} 失敗。';
-			case 'character.importController.importedCount': return ({required Object count}) => '已匯入 ${count} 個角色';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '已匯入 ${n} 個角色',
+			);
 			case 'character.aiActionController.aiActionFailed': return 'AI 動作失敗。詳情請查看記錄。';
 			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => '正在處理 ${name}（${current}/${total}）…${eta}';
 			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' 剩餘時間：${hours} 小時 ${minutes} 分';
@@ -32811,7 +33101,9 @@ extension on _TranslationsZhHant {
 			case 'chat.videoPlayerInline.webUnsupported': return '網頁版不支援影片播放。';
 			case 'chat.videoPlayerInline.couldNotLoad': return '無法載入影片。';
 			case 'chat.newChatLabel': return '新對話';
-			case 'chat.chatListItem.messageCount': return ({required Object count}) => '${count} 則訊息';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${n} 則訊息',
+			);
 			case 'chat.chatListItem.renameAction': return '重新命名';
 			case 'chat.chatListItem.deleteChatAction': return '刪除對話';
 			case 'chat.chatHistoryController.renameChatTitle': return '重新命名對話';
@@ -32912,7 +33204,9 @@ extension on _TranslationsZhHant {
 			case 'common.updateDialog.releaseNotesLabel': return '版本資訊：';
 			case 'common.updateDialog.viewReleasesButton': return '查看版本';
 			case 'common.importConflictsDialog.title': return '匯入衝突';
-			case 'common.importConflictsDialog.message': return ({required Object count}) => '下列 ${count} 個角色的檔名有衝突，將會自動重新命名：';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '下列 ${n} 個角色的檔名有衝突，將會自動重新命名：',
+			);
 			case 'common.missingProviderBanner.message': return '請連線 AI 服務商。';
 			case 'common.missingProviderBanner.setUpNowButton': return '立即設定';
 			case 'common.modelSelectionDialog.searchHint': return '搜尋模型';
@@ -32935,11 +33229,15 @@ extension on _TranslationsZhHant {
 			case 'common.jsonPromptDialog.title': return '生成提示詞';
 			case 'common.progressDialog.defaultMessage': return '傳送中…';
 			case 'common.progressDialog.finished': return '完成！';
-			case 'common.diffPanel.tokenSuffix': return ({required Object count}) => ' （${count} 個 Token）';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: ' （${n} 個 Token）',
+			);
 			case 'common.selectionDialog.searchHint': return '搜尋…';
 			case 'common.zdrSwitch.title': return '要求零資料保留（ZDR）';
 			case 'common.zdrSwitch.subtitle': return '只顯示端點符合 ZDR 的 OR 模型。如果你的 openrouter.ai 帳號限定只用 ZDR 服務商，請啟用此項。';
-			case 'common.textFieldCard.labelWithTokenCount': return ({required Object label, required Object count}) => '${label} - ${count} 個 token';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${label} - ${n} 個 token',
+			);
 			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
 			case 'common.modelCapability.reasoning': return '推理';
 			case 'common.modelCapability.vision': return '視覺';
@@ -33189,7 +33487,9 @@ extension on _TranslationsZhHant {
 			case 'grid.drawer.batchAutoTagEmpty': return '所有角色都已有標籤。';
 			case 'grid.drawer.libraryHeader': return '庫';
 			case 'grid.drawer.reloadCharacters': return '重新載入角色';
-			case 'grid.variantBadge.tooltip': return ({required Object count}) => '${count} 個變體';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
+				other: '${n} 個變體',
+			);
 			case 'grid.dialogActions.clearAll': return '全部清除';
 			case 'grid.dialogActions.apply': return '套用';
 			case 'grid.tagFilterDialog.title': return '篩選標籤';

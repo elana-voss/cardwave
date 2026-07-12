@@ -57,7 +57,10 @@
   },
   "importController": {
     "failedToImport": "No se pudo importar $fileName.",
-    "importedCount": "$count personajes importados"
+    "importedCount(plural)": {
+      "one": "$n personaje importado",
+      "other": "$n personajes importados"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "La acción de IA falló. Consulta los registros para más detalles.",

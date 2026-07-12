@@ -590,7 +590,7 @@ class NavigationService {
               if (conflictingNames.isNotEmpty) ...[
                 Text(
                   t.common.importConflictsDialog.message(
-                    count: conflictingNames.length,
+                    n: conflictingNames.length,
                   ),
                 ),
                 const SizedBox(height: 8),

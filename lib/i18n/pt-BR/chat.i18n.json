@@ -137,7 +137,10 @@
   },
   "newChatLabel": "Nova conversa",
   "chatListItem": {
-    "messageCount": "$count mensagens",
+    "messageCount(plural)": {
+      "one": "$n mensagem",
+      "other": "$n mensagens"
+    },
     "renameAction": "Renomear",
     "deleteChatAction": "Excluir conversa"
   },

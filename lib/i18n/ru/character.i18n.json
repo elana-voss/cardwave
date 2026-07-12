@@ -57,7 +57,12 @@
   },
   "importController": {
     "failedToImport": "Не удалось импортировать $fileName.",
-    "importedCount": "Импортировано персонажей: $count"
+    "importedCount(plural)": {
+      "one": "Импортирован $n персонаж",
+      "few": "Импортировано $n персонажа",
+      "many": "Импортировано $n персонажей",
+      "other": "Импортировано персонажей: $n"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "Действие ИИ не выполнено. Подробности в логах.",

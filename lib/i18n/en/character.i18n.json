@@ -57,7 +57,10 @@
   },
   "importController": {
     "failedToImport": "Failed to import $fileName.",
-    "importedCount": "Imported $count characters"
+    "importedCount(plural)": {
+      "one": "Imported $n character",
+      "other": "Imported $n characters"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "AI Action failed. Check logs for details.",

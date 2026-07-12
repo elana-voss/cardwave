@@ -70,7 +70,9 @@
   },
   "importConflictsDialog": {
     "title": "가져오기 충돌",
-    "message": "다음 캐릭터 $count개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:"
+    "message(plural)": {
+      "other": "다음 캐릭터 $n개의 파일 이름이 충돌하여 자동으로 이름이 변경돼요:"
+    }
   },
   "missingProviderBanner": {
     "message": "AI 제공자를 연결하세요.",
@@ -109,7 +111,9 @@
     "finished": "완료!"
   },
   "diffPanel": {
-    "tokenSuffix": " ($count 토큰)"
+    "tokenSuffix(plural)": {
+      "other": " ($n 토큰)"
+    }
   },
   "selectionDialog": {
     "searchHint": "검색…"
@@ -119,7 +123,9 @@
     "subtitle": "ZDR을 준수하는 엔드포인트가 있는 OR 모델만 표시해요. openrouter.ai 계정이 ZDR 제공자로 제한된 경우 켜세요."
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count 토큰",
+    "labelWithTokenCount(plural)": {
+      "other": "$label - $n 토큰"
+    },
     "tokenCountAbbrev": "$count 토큰"
   },
   "modelCapability": {

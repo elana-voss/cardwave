@@ -49,7 +49,7 @@ class CharacterImportController {
     if (result.importedCount > 0) {
       nav.showSnackBar(
         t.character.importController.importedCount(
-          count: result.importedCount,
+          n: result.importedCount,
         ),
       );
     }

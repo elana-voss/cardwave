@@ -137,7 +137,9 @@
   },
   "newChatLabel": "新對話",
   "chatListItem": {
-    "messageCount": "$count 則訊息",
+    "messageCount(plural)": {
+      "other": "$n 則訊息"
+    },
     "renameAction": "重新命名",
     "deleteChatAction": "刪除對話"
   },

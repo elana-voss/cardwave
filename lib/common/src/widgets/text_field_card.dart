@@ -251,7 +251,7 @@ class TextFieldCardState extends State<TextFieldCard> {
               return Text(
                 t.common.textFieldCard.labelWithTokenCount(
                   label: widget.label,
-                  count: count,
+                  n: count,
                 ),
                 style: textStyle,
               );

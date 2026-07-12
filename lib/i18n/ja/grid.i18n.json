@@ -28,7 +28,9 @@
     "reloadCharacters": "キャラクターを再読み込み"
   },
   "variantBadge": {
-    "tooltip": "$count 個のバリアント"
+    "tooltip(plural)": {
+      "other": "$n 個のバリアント"
+    }
   },
   "dialogActions": {
     "clearAll": "すべてクリア",

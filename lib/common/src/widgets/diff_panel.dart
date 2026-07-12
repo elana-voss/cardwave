@@ -20,7 +20,7 @@ class DiffPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Translations.of(context);
     final tokenText = tokenCount != null
-        ? t.common.diffPanel.tokenSuffix(count: tokenCount!)
+        ? t.common.diffPanel.tokenSuffix(n: tokenCount!)
         : '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

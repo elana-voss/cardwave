@@ -57,7 +57,9 @@
   },
   "importController": {
     "failedToImport": "$fileName のインポートに失敗しました。",
-    "importedCount": "$count 個のキャラクターをインポートしました"
+    "importedCount(plural)": {
+      "other": "$n 個のキャラクターをインポートしました"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "AIアクションに失敗しました。詳細はログを確認してください。",

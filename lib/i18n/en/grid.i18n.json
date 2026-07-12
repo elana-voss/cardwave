@@ -28,7 +28,10 @@
     "reloadCharacters": "Reload characters"
   },
   "variantBadge": {
-    "tooltip": "$count Variants"
+    "tooltip(plural)": {
+      "one": "$n Variant",
+      "other": "$n Variants"
+    }
   },
   "dialogActions": {
     "clearAll": "Clear All",

@@ -137,7 +137,9 @@
   },
   "newChatLabel": "새 채팅",
   "chatListItem": {
-    "messageCount": "메시지 $count개",
+    "messageCount(plural)": {
+      "other": "메시지 $n개"
+    },
     "renameAction": "이름 바꾸기",
     "deleteChatAction": "채팅 삭제"
   },

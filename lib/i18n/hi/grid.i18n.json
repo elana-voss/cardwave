@@ -28,7 +28,10 @@
     "reloadCharacters": "कैरेक्टर फिर से लोड करें"
   },
   "variantBadge": {
-    "tooltip": "$count वैरिएंट"
+    "tooltip(plural)": {
+      "one": "$n वैरिएंट",
+      "other": "$n वैरिएंट"
+    }
   },
   "dialogActions": {
     "clearAll": "सभी साफ़ करें",

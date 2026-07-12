@@ -28,7 +28,10 @@
     "reloadCharacters": "Recarregar personagens"
   },
   "variantBadge": {
-    "tooltip": "$count variantes"
+    "tooltip(plural)": {
+      "one": "$n variante",
+      "other": "$n variantes"
+    }
   },
   "dialogActions": {
     "clearAll": "Limpar tudo",

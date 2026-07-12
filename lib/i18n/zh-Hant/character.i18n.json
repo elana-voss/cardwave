@@ -57,7 +57,9 @@
   },
   "importController": {
     "failedToImport": "匯入 $fileName 失敗。",
-    "importedCount": "已匯入 $count 個角色"
+    "importedCount(plural)": {
+      "other": "已匯入 $n 個角色"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "AI 動作失敗。詳情請查看記錄。",

@@ -70,7 +70,9 @@
   },
   "importConflictsDialog": {
     "title": "导入冲突",
-    "message": "以下 $count 个角色的文件名有冲突，将自动重命名："
+    "message(plural)": {
+      "other": "以下 $n 个角色的文件名有冲突，将自动重命名："
+    }
   },
   "missingProviderBanner": {
     "message": "请连接一个 AI 服务商。",
@@ -109,7 +111,9 @@
     "finished": "完成！"
   },
   "diffPanel": {
-    "tokenSuffix": " （$count 个 Token）"
+    "tokenSuffix(plural)": {
+      "other": " （$n 个 Token）"
+    }
   },
   "selectionDialog": {
     "searchHint": "搜索…"
@@ -119,7 +123,9 @@
     "subtitle": "仅显示带有 ZDR 合规端点的 OR 模型。如果你的 openrouter.ai 账户仅限使用 ZDR 服务商，请启用此项。"
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count 个 token",
+    "labelWithTokenCount(plural)": {
+      "other": "$label - $n 个 token"
+    },
     "tokenCountAbbrev": "$count t"
   },
   "modelCapability": {

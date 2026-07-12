@@ -70,7 +70,10 @@
   },
   "importConflictsDialog": {
     "title": "Conflictos de importación",
-    "message": "Los siguientes $count personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:"
+    "message(plural)": {
+      "one": "El siguiente $n personaje tiene un conflicto de nombre de archivo y se renombrará automáticamente:",
+      "other": "Los siguientes $n personajes tienen conflictos de nombre de archivo y se renombrarán automáticamente:"
+    }
   },
   "missingProviderBanner": {
     "message": "Conecta un proveedor de IA.",
@@ -109,7 +112,10 @@
     "finished": "¡Listo!"
   },
   "diffPanel": {
-    "tokenSuffix": " ($count tokens)"
+    "tokenSuffix(plural)": {
+      "one": " ($n token)",
+      "other": " ($n tokens)"
+    }
   },
   "selectionDialog": {
     "searchHint": "Buscar…"
@@ -119,7 +125,10 @@
     "subtitle": "Mostrar solo modelos de OR con endpoints compatibles con ZDR. Actívalo si tu cuenta de openrouter.ai se restringe a proveedores ZDR."
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count tokens",
+    "labelWithTokenCount(plural)": {
+      "one": "$label - $n token",
+      "other": "$label - $n tokens"
+    },
     "tokenCountAbbrev": "$count t"
   },
   "modelCapability": {

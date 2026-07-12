@@ -46,7 +46,7 @@ class ChatListItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            t.chat.chatListItem.messageCount(count: chat.messageCount),
+            t.chat.chatListItem.messageCount(n: chat.messageCount),
             style: const TextStyle(fontSize: 12),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

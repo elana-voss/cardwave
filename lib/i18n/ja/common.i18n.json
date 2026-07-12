@@ -70,7 +70,9 @@
   },
   "importConflictsDialog": {
     "title": "インポートの競合",
-    "message": "以下の $count 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:"
+    "message(plural)": {
+      "other": "以下の $n 個のキャラクターはファイル名が競合しているため、自動的に名前が変更されます:"
+    }
   },
   "missingProviderBanner": {
     "message": "AIプロバイダーを接続してください。",
@@ -109,7 +111,9 @@
     "finished": "完了しました！"
   },
   "diffPanel": {
-    "tokenSuffix": " ($count トークン)"
+    "tokenSuffix(plural)": {
+      "other": " ($n トークン)"
+    }
   },
   "selectionDialog": {
     "searchHint": "検索…"
@@ -119,7 +123,9 @@
     "subtitle": "ZDR準拠のエンドポイントを持つ OR モデルのみを表示します。openrouter.ai アカウントが ZDR プロバイダーに制限されている場合はこれを有効にしてください。"
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count トークン",
+    "labelWithTokenCount(plural)": {
+      "other": "$label - $n トークン"
+    },
     "tokenCountAbbrev": "$count t"
   },
   "modelCapability": {

@@ -335,8 +335,26 @@ Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
     the class analyzer will still not repaint live (their `t` lives on the enum,
     not the widget class). The verified hot surfaces (grid app bar, search hint,
     gear menu) all read `t.` directly and are covered.
-- [ ] 7.2 pluralize the 6 count strings ×9 locales — commit
-  `i18n(l10n): pluralize count strings`
+- [x] 7.2 pluralize the 6 count strings ×9 locales — commit
+  `i18n(l10n): pluralize count strings`. Converted `chat.chatListItem.
+  messageCount`, `character.importController.importedCount`,
+  `common.importConflictsDialog.message`, `common.diffPanel.tokenSuffix`,
+  `common.textFieldCard.labelWithTokenCount`, `grid.variantBadge.tooltip` from
+  plain-param to `(plural)` keys in all 9 locales (CLDR categories per §4.4: ru
+  one/few/many/other; en/pt-BR/es-419/hi one/other; ja/zh-Hans/zh-Hant/ko other
+  only). Done by a data-tabled script (`scratchpad/pluralize.py`) that verified
+  each new `other` form equals the prior plain value before replacing.
+  **Placeholder change `$count`→`$n`**: slang's plural selector is *always* the
+  parameter `n` (the existing `memberCountLabel` keys prove this), separate from
+  string interpolations — writing the values with `$count` made slang demand
+  both `n:` AND `count:` at every call site. Using `$n` (matching every other
+  plural key in the app) generates the clean `({required num n})` signature; the
+  rendered output is identical (both interpolate the number). The 6 call sites
+  had their argument renamed `count:`→`n:` (the plan §7.2-anticipated "named-param
+  rename only"). English `one` forms fix the pre-existing "1 messages"/"1
+  Variants"-class bugs; `other` forms are unchanged except the placeholder token.
+  Verified: `dart run slang analyze` 0 missing / 0 unused; `flutter analyze` = 36
+  pre-existing qcheck warnings; `flutter test` 68/68.
 - [ ] 7.3 analyze/test/slang-analyze clean; live switch verified WITHOUT reload
   in 2 locales; ru count=1 plural spot-check; Step-5 HEADLINE open question
   marked resolved

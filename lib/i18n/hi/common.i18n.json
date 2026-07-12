@@ -70,7 +70,10 @@
   },
   "importConflictsDialog": {
     "title": "इम्पोर्ट टकराव",
-    "message": "निम्नलिखित $count कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:"
+    "message(plural)": {
+      "one": "निम्नलिखित $n कैरेक्टर के फ़ाइल नाम में टकराव है और उसका नाम स्वचालित रूप से बदल दिया जाएगा:",
+      "other": "निम्नलिखित $n कैरेक्टर के फ़ाइल नाम में टकराव है और उनका नाम स्वचालित रूप से बदल दिया जाएगा:"
+    }
   },
   "missingProviderBanner": {
     "message": "एक AI प्रोवाइडर कनेक्ट करें।",
@@ -109,7 +112,10 @@
     "finished": "पूर्ण हुआ!"
   },
   "diffPanel": {
-    "tokenSuffix": " ($count टोकन)"
+    "tokenSuffix(plural)": {
+      "one": " ($n टोकन)",
+      "other": " ($n टोकन)"
+    }
   },
   "selectionDialog": {
     "searchHint": "खोजें…"
@@ -119,7 +125,10 @@
     "subtitle": "केवल ZDR-अनुरूप एंडपॉइंट वाले OR मॉडल दिखाएं। यदि आपका openrouter.ai खाता ZDR प्रोवाइडर तक सीमित है तो इसे सक्षम करें।"
   },
   "textFieldCard": {
-    "labelWithTokenCount": "$label - $count टोकन",
+    "labelWithTokenCount(plural)": {
+      "one": "$label - $n टोकन",
+      "other": "$label - $n टोकन"
+    },
     "tokenCountAbbrev": "$count t"
   },
   "modelCapability": {

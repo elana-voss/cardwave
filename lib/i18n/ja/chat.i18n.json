@@ -137,7 +137,9 @@
   },
   "newChatLabel": "新しいチャット",
   "chatListItem": {
-    "messageCount": "$count 件のメッセージ",
+    "messageCount(plural)": {
+      "other": "$n 件のメッセージ"
+    },
     "renameAction": "名前を変更",
     "deleteChatAction": "チャットを削除"
   },

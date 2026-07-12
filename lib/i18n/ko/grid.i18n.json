@@ -28,7 +28,9 @@
     "reloadCharacters": "캐릭터 다시 불러오기"
   },
   "variantBadge": {
-    "tooltip": "변형 $count개"
+    "tooltip(plural)": {
+      "other": "변형 $n개"
+    }
   },
   "dialogActions": {
     "clearAll": "모두 지우기",

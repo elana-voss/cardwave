@@ -14,7 +14,7 @@ class CharacterGridItemVariantBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Translations.of(context);
     return Tooltip(
-      message: t.grid.variantBadge.tooltip(count: count),
+      message: t.grid.variantBadge.tooltip(n: count),
       child: Material(
         color: Theme.of(context).colorScheme.primary,
         shape: const StadiumBorder(),

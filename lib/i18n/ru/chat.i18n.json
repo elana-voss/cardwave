@@ -137,7 +137,12 @@
   },
   "newChatLabel": "Новый чат",
   "chatListItem": {
-    "messageCount": "Сообщений: $count",
+    "messageCount(plural)": {
+      "one": "Сообщение: $n",
+      "few": "Сообщения: $n",
+      "many": "Сообщений: $n",
+      "other": "Сообщений: $n"
+    },
     "renameAction": "Переименовать",
     "deleteChatAction": "Удалить чат"
   },

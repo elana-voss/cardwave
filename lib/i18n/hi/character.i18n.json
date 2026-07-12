@@ -57,7 +57,10 @@
   },
   "importController": {
     "failedToImport": "$fileName इम्पोर्ट करने में विफल।",
-    "importedCount": "$count कैरेक्टर इम्पोर्ट किए गए"
+    "importedCount(plural)": {
+      "one": "$n कैरेक्टर इम्पोर्ट किया गया",
+      "other": "$n कैरेक्टर इम्पोर्ट किए गए"
+    }
   },
   "aiActionController": {
     "aiActionFailed": "AI क्रिया विफल हुई। विवरण के लिए लॉग देखें।",

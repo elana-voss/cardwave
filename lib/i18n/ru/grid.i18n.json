@@ -28,7 +28,12 @@
     "reloadCharacters": "Перезагрузить персонажей"
   },
   "variantBadge": {
-    "tooltip": "Вариантов: $count"
+    "tooltip(plural)": {
+      "one": "Вариант: $n",
+      "few": "Варианта: $n",
+      "many": "Вариантов: $n",
+      "other": "Вариантов: $n"
+    }
   },
   "dialogActions": {
     "clearAll": "Очистить всё",

@@ -137,7 +137,10 @@
   },
   "newChatLabel": "नई चैट",
   "chatListItem": {
-    "messageCount": "$count संदेश",
+    "messageCount(plural)": {
+      "one": "$n संदेश",
+      "other": "$n संदेश"
+    },
     "renameAction": "नाम बदलें",
     "deleteChatAction": "चैट हटाएं"
   },
