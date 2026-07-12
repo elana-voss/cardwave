@@ -15,8 +15,10 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] Step 6 — Optional acceptance (Fable) — done 2026-07-12. Spot-check clean.
   **Verdict amended by the user**: live switching + plurals are required BEFORE
   merge, not follow-ups → Step 7 added to the plan (2026-07-12).
-- [ ] Step 7 — Live-switch repaint + plural fixes (**Opus**) — plan §7. Merge
-  `feat/i18n` only after this is done.
+- [x] Step 7 — Live-switch repaint + plural fixes (**Opus**) — done 2026-07-12.
+  Context-based `t` migration (132 widget files) makes locale changes repaint
+  without reload; 6 count strings pluralized ×9 locales. Live switch web-verified
+  in en→ru→ja without reload; ru plurals spot-checked. `feat/i18n` ready to merge.
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
@@ -355,9 +357,19 @@ Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
   Variants"-class bugs; `other` forms are unchanged except the placeholder token.
   Verified: `dart run slang analyze` 0 missing / 0 unused; `flutter analyze` = 36
   pre-existing qcheck warnings; `flutter test` 68/68.
-- [ ] 7.3 analyze/test/slang-analyze clean; live switch verified WITHOUT reload
+- [x] 7.3 analyze/test/slang-analyze clean; live switch verified WITHOUT reload
   in 2 locales; ru count=1 plural spot-check; Step-5 HEADLINE open question
-  marked resolved
+  marked resolved. **Web run** (`flutter run -d web-server` :8080, chrome-devtools
+  MCP, a11y enabled): completed onboarding → grid, then gear → Language →
+  **Русский** repainted the whole app bar (`Создать`/`Импорт`/`Группы`), search
+  hint (`Поиск...`), banner, sort, and (re-opened) gear menu (`Провайдеры ИИ`/
+  `Язык`/`Настройки приложения`/`Логи`) **with no reload**; a second switch
+  ru → **日本語** repainted again (`新規作成`/`インポート`/`グループ`/`検索...`).
+  Console clean (0 errors/warnings) across the switches. Screenshots in session
+  scratchpad: `s7_en_grid`, `s7_ru_grid_noreload`, `s7_ja_grid_noreload`.
+  **ru plural spot-check** (throwaway test, now deleted): `variantBadge.tooltip`
+  → n=1 `Вариант: 1` (one), n=3 `Варианта: 3` (few), n=5 `Вариантов: 5` (many);
+  `messageCount` → n=1 `Сообщение: 1` (one). All pass.
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,
@@ -511,6 +523,14 @@ Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
   folder/file name. Row 12 has zero extractions; no `nodes.i18n.json`
   content was added and no source files changed.
 
+- **[Step 5 — HEADLINE] ✅ RESOLVED in Step 7.1.** The context-based `t`
+  migration (`final t = Translations.of(context);` at the top of every widget
+  build that renders translations) subscribes those widgets to the
+  `TranslationProvider` InheritedWidget, so `LocaleSettings.setLocaleRaw` now
+  repaints all static chrome **without a reload** — web-verified en→ru→ja in
+  Step 7.3 (app bar, search hint, gear menu). Step 2 §2.5's "re-render
+  immediately" requirement is now fully met. Original finding kept below for
+  history.
 - **[Step 5 — HEADLINE] Live language switch does not repaint static chrome
   until an app reload/restart.** Switching locale in the modal immediately
   updates only widgets that happen to rebuild for another reason (listenable-driven
