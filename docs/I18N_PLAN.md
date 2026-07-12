@@ -37,6 +37,7 @@ source of truth; conversation context is disposable (see Compaction Protocol).
 | 4 | Translation to 8 locales + glossary | **Opus** | `/clear`, switch to Opus |
 | 5 | Error-check + Flutter Web verification in Chrome | **Opus** | `/compact` ok (same model as 4) |
 | 6 | Optional final acceptance | Fable | `/clear`, switch to Fable |
+| 7 | Live-switch repaint + plural fixes | **Opus** | `/clear`, switch to Opus |
 
 ### Global ground rules (all models)
 - All work happens on branch `feat/i18n` (created at the start of Step 2). Never commit to `main`.
@@ -424,3 +425,72 @@ Spot-check: progress file + open questions review, 10 random diff hunks from Ste
 3 random translated files against the glossary, the §5.3 results table. Verdict: merge or a
 punch list. Also decide/propose the follow-up qcheck lint rule (flag new hardcoded literals in
 widget code) as a separate future task.
+
+---
+
+## 7. STEP 7 — Live-switch repaint + plural fixes (**Opus**)
+
+Added after Step 6 acceptance: the user requires live language switching before merge (Step 2
+§2.5's "re-render immediately" is currently unmet — see the Step-5 HEADLINE open question), plus
+correct plural forms for the ~6 count strings whose original English was never pluralized.
+All global ground rules (§0) apply. Two concerns → two commits.
+
+### 7.1 Context-based translations pass — commit `i18n(l10n): live locale switching`
+Root cause recap: the global `t` accessor never subscribes a widget to `TranslationProvider`,
+so `LocaleSettings.setLocaleRaw` repaints nothing that isn't rebuilt for other reasons.
+The generated API (confirmed in `lib/i18n/gen/translations.g.dart`) provides
+`Translations.of(context)` and a `context.t` extension — reading either registers an
+InheritedWidget dependency, which triggers rebuild on locale change **even for `const` widget
+instances** (dependencies live on the Element, not the widget).
+
+The transformation, applied file by file:
+1. In every widget `build(BuildContext context)` method whose method body (or helpers it calls
+   in the same class) reads `t.` — add as the FIRST line:
+   `final t = Translations.of(context);`
+   The local `t` shadows the global import, so **no other line in the method changes**. If the
+   method already has a `final t = ...` collision, it won't (verify), otherwise flag it.
+2. Class-level helper methods on widgets that take no `BuildContext` and read `t.` need no
+   change — they're only invoked from a build that now registers the dependency.
+3. Do NOT touch: controllers, services, enum `label` getters, dialog/snackbar content built at
+   interaction time (`NavigationService`, `showDialog` builders — those build fresh when opened),
+   and non-widget code. They keep the global `t`.
+4. Builder callbacks (`itemBuilder:`, `PopupMenuButton`, etc.) inside menus/dialogs rebuild on
+   open — no change needed. A builder that stays mounted on the page (e.g. `ListView.builder`
+   item builders) is covered by its enclosing widget's build registering the dependency.
+
+Finding the surface: `grep -rln "\bt\." lib --include="*.dart"` minus the excluded categories in
+rule 3; expect the bulk of extracted widget files. Mechanical, but verify each file compiles as
+you go in batches; `flutter analyze` clean before the commit.
+
+### 7.2 Plural upgrade — commit `i18n(l10n): pluralize count strings`
+Convert these 6 keys from plain-param to `(plural)` keys in ALL 9 locale files (categories per
+§4.4: ru one/few/many/other; hi + pt-BR + es-419 + en one/other; ja/zh-Hans/zh-Hant/ko other
+only), keeping the existing placeholder name (`$count`) and following the glossary + register
+rules from §4.2/§4.3:
+- `chat.chatListItem.messageCount` ("$count messages")
+- `character.importController.importedCount` ("Imported $count characters")
+- `common.importConflictsDialog.message`
+- `common.diffPanel.tokenSuffix`
+- `common.textFieldCard.labelWithTokenCount`
+- `grid.variantBadge.tooltip` ("$count Variants")
+The English `one` forms fix the pre-existing "1 messages"-class bugs; `other` forms stay
+byte-identical to today's values. All other `$count`/`$n` strings are numeric counters
+("3 / 10", "+2", "$count t") — do NOT touch them. Call sites keep working (slang generates the
+same method signature for plural keys); regenerate with `dart run slang` and confirm no call-site
+edits are needed (if one is, it's a named-param rename only).
+
+### 7.3 Verification (DONE criteria)
+- [ ] `flutter analyze` (only the 36 pre-existing qcheck warnings), `flutter test` (68/68),
+      `dart run slang analyze` (0 missing / 0 unused).
+- [ ] Web run (`flutter run -d web-server`, chrome-devtools MCP, enable a11y placeholder per
+      load): switch language via gear → Language and confirm — WITHOUT any reload — that the
+      grid app bar (`Create New`/`Import`/`Groups`), the search hint, and the gear-menu labels
+      repaint in the new language. Per the user's earlier guidance, verifying the live switch in
+      **two** locales (e.g. en→ru→ja) is sufficient; no 9-locale re-sweep.
+- [ ] Plural spot-check in ONE inflecting locale (ru): a count=1 surface renders the `one` form.
+- [ ] Progress file updated (Step 7 checklist + resolve the Step-5 HEADLINE open question as
+      fixed); both commits on `feat/i18n`.
+
+### 7.4 Handoff — print verbatim, then STOP
+> Step 7 complete. Live language switching works without reload and the count strings are
+> pluralized. `feat/i18n` is ready to merge.

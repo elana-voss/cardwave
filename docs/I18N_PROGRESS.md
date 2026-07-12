@@ -12,8 +12,11 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] Step 5 — Error-check + web verification (**Opus**) — done 2026-07-12
   (all 9 locales render cleanly on web; one real fix committed; one live-switch
   limitation surfaced for the user — see Open questions)
-- [x] Step 6 — Optional acceptance (Fable) — done 2026-07-12. **Verdict: MERGE**
-  (spot-check clean; punch list below is all post-merge follow-ups, none blocking)
+- [x] Step 6 — Optional acceptance (Fable) — done 2026-07-12. Spot-check clean.
+  **Verdict amended by the user**: live switching + plurals are required BEFORE
+  merge, not follow-ups → Step 7 added to the plan (2026-07-12).
+- [ ] Step 7 — Live-switch repaint + plural fixes (**Opus**) — plan §7. Merge
+  `feat/i18n` only after this is done.
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
@@ -290,6 +293,16 @@ developer surfaces (`dialog_taxonomy_editor.dart`, `nodes_debug_*`,
 `dialog_language_picker.dart` native names) and dual-use prompt-content files
 (`style_presets_dialog.dart` presets, `character_ai_service.dart` field names).
 Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
+
+## Step 7 checklist (Opus) — plan §7
+- [ ] 7.1 context-`t` pass (`final t = Translations.of(context);` at the top of
+  every widget build that renders translations) — commit
+  `i18n(l10n): live locale switching`
+- [ ] 7.2 pluralize the 6 count strings ×9 locales — commit
+  `i18n(l10n): pluralize count strings`
+- [ ] 7.3 analyze/test/slang-analyze clean; live switch verified WITHOUT reload
+  in 2 locales; ru count=1 plural spot-check; Step-5 HEADLINE open question
+  marked resolved
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,
