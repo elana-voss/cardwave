@@ -12,7 +12,8 @@ as the work it describes. Conversation context is disposable; this file is not.
 - [x] Step 5 — Error-check + web verification (**Opus**) — done 2026-07-12
   (all 9 locales render cleanly on web; one real fix committed; one live-switch
   limitation surfaced for the user — see Open questions)
-- [ ] Step 6 — Optional acceptance (Fable)
+- [x] Step 6 — Optional acceptance (Fable) — done 2026-07-12. **Verdict: MERGE**
+  (spot-check clean; punch list below is all post-merge follow-ups, none blocking)
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
@@ -215,6 +216,80 @@ and ellipsis-truncates the longer labels — ru "Импортир…" (Импо�
 "インポート…" (インポート日 ↓). This is a pre-existing fixed-width design cap, not
 i18n breakage (en "Imported ↓" fits); the full value is available in the a11y label
 and on the open dropdown. Benign — noted, not changed.
+
+## Step 6 acceptance spot-check (Fable) — done 2026-07-12
+
+Scope per plan §6: progress file + open questions review, 10 random Step-3 diff
+hunks, 3 random translated files vs the glossary, the §5.3 results table, verdict,
+qcheck lint-rule proposal.
+
+- [x] Progress file + all open questions read end-to-end. Every non-action is
+  either plan-mandated (developer surfaces, dual-use prompt strings, wordmark)
+  or correctly deferred to the user (live-switch repaint, desktop fonts,
+  ChatTheme names). No entry contradicts the plan; none was silently dropped.
+- [x] **10 diff hunks sampled** across 7 features/commits — all clean:
+  grid `app_bar_grid` + `view_empty_state` (b25aec4), onboarding
+  `onboarding_controller` (a31a234), settings `update_controller` (8571a3a),
+  chat `bubble_waiting_for_enum` + `dialog_free_image_prompt` (dcfdf33), editor
+  `dialog_find_replace` (d69b75d), group `dialog_select_group` (a6c59e9),
+  workspace `workspace_end_drawer_image` (9215ec0), app `main.dart` (7cbe1ef).
+  Verified per hunk: key↔string pairing correct, values byte-identical
+  (incl. the joined multi-line description in `freeImagePromptDialog` and the
+  `\n` in `findReplaceDialog.confirmReplaceAllMessage`), interpolation params
+  preserved (rename `$v`→`$version` is call-site-named, safe), `const` removed
+  only where required, `common.actions.*` reused instead of duplicated, dynamic
+  error payloads (`UpdateCheckFailed.reason`) correctly left unextracted, and
+  the `memberCountLabel` plural upgrade renders identically for n=1.
+  Observation (benign): Step 3 reused keys **cross-namespace** where copy was
+  identical (workspace drawer → `t.group.groupChatPageEndDrawer.*`,
+  `t.llmApp.mediaSection.*`; group dialog → `t.grid.groupAppBar.newGroup`).
+  Documented in the commit messages. Trade-off: future copy edits to one
+  surface silently change the other — acceptable, flagging for awareness.
+- [x] **3 translated files vs glossary** (+ the 4 CJK/hi `common` files read in
+  passing): `ru/grid` (персонаж/импорт/тег/токены, infinitive buttons, «вы»
+  register), `pt-BR/group` (conversa/personagem/excluir per cheatsheet, você,
+  correct one/other plural on `memberCountLabel`), `ja/chat` (モデル/プロンプト/
+  推論/キャラクター/ウェブ取得, です/ます sentences, noun-stem buttons). All
+  placeholders intact in all three; `common.actions.*` in hi/ko/zh-Hans/zh-Hant
+  match the glossary table exactly. `timeAgo` plain-param keys are safe in all
+  plural-sensitive locales (ru uses number-invariant abbreviations «${n} г.
+  назад», mirroring the abbreviated English original).
+- [x] §5.3 web results table reviewed — complete, all 9 locales PASS, method
+  sound (per-locale switch + reload + screenshot + console check), the two
+  caveats (dropdown truncation, live-switch) properly footnoted/escalated.
+
+### Verdict: MERGE `feat/i18n`
+The branch does what the plan scoped: 9 locales, zero missing/unused keys,
+analyze/test/slang-analyze clean, web-verified. Known limitations are documented,
+deliberate, and non-blocking. Post-merge punch list (priority order):
+1. **Live-switch repaint** (headline Step-5 finding): pick one of the three
+   options in the Open-questions entry. Recommendation: ship (a) — an "applies
+   after reload/restart" hint line in the language modal — now (one string ×9
+   locales), and treat (b)/(c) as a separate enhancement if live switching
+   matters. Until then Step 2 §2.5's "re-render immediately" is partially met.
+2. **Desktop/mobile font check** for ja/zh/ko/hi (web is clear via CanvasKit
+   Noto fallback; desktop bundles only NotoSans). One manual run per script
+   family on Windows; if tofu, decide `fontFamilyFallback` vs subset font.
+3. **qcheck lint rule** (see below).
+4. (Nice-to-have) True plurals for the four "$count messages"-style strings and
+   `timeAgo`; localization of `UtilsApp.timeAgo()` word order was already done —
+   only CLDR-plural fidelity remains.
+
+### qcheck lint-rule proposal (plan §6, separate future task — not started)
+qcheck already ships an easy-localization preset with exactly this rule shape:
+`avoid-missing-tr` / `avoid-missing-tr-on-strings`
+(`qcheck/app/lib/src/rules/easy_localization/…`). Proposal: a slang-flavored
+sibling, e.g. `avoid-hardcoded-ui-strings` (preset `slang.yaml`), that flags
+string literals in user-facing widget params — the §3.2 list: `Text(...)`,
+`label:`, `title:`, `subtitle:`, `hintText:`, `labelText:`, `helperText:`,
+`errorText:`, `tooltip:`, `semanticsLabel:`, `SnackBar(content:)`,
+`TextSpan(text:)` — unless the expression is a `t.` accessor call. Config knobs
+(all needed by this codebase): allow single chars/pure punctuation, allow
+`Key(...)`/asset/route/URL contexts, per-file excludes for the documented
+developer surfaces (`dialog_taxonomy_editor.dart`, `nodes_debug_*`,
+`dialog_language_picker.dart` native names) and dual-use prompt-content files
+(`style_presets_dialog.dart` presets, `character_ai_service.dart` field names).
+Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,
