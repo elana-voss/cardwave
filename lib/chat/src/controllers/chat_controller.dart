@@ -270,6 +270,11 @@ class ChatController extends BaseChatViewController
       return;
     }
 
+    // Defensive: the UI disables Send while generating, but any new call site
+    // (shortcut, gesture, test) must not start a second concurrent
+    // _generateReply on the same session — that corrupts the message list.
+    if (isGenerating) return;
+
     final userMessage = ChatMessage(
       id: UtilsApp.generateId('msg'),
       role: ChatRoleEnum.user,
@@ -298,6 +303,8 @@ class ChatController extends BaseChatViewController
   /// Regenerates the last assistant message.
   @override
   Future<void> regenerateLastMessage() async {
+    // Mirror the group controller's guard: never overlap two generations.
+    if (isGenerating) return;
     if (chatSession.messages.isEmpty) return;
     final lastMsg = chatSession.messages.last;
     if (lastMsg.role != ChatRoleEnum.assistant) return;
@@ -620,7 +627,9 @@ class ChatController extends BaseChatViewController
 
       _notify();
       scrollToBottom();
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Plain catch: log + snackbar must fire for Errors too; the finally
+      // below already handles terminal-state cleanup on every exit path.
       if (cancelToken?.value != true) {
         LoggingService().error('1:1 chat: generateReply failed', e, stackTrace);
         NavigationService().showSnackBar(UtilsLlm.extractUserFriendlyError(e));

@@ -160,8 +160,9 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       _loggingService.captureUnhandledErrors();
 
       // Routes typed events from the LLM, embeddings, and memory domains to
-      // LoggingService.
-      Logger.root.level = Level.ALL;
+      // LoggingService. Release builds cap at INFO so the listener isn't
+      // built up from FINE/ALL records for every domain event app-lifetime.
+      Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
       // App-lifetime logging subscription — never cancelled.
       // ignore: qcheck/avoid_unassigned_stream_subscriptions
       Logger.root.onRecord.listen((record) {
@@ -463,7 +464,11 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         });
         FlutterNativeSplash.remove();
       }
-    } on Exception catch (e, stack) {
+    } catch (e, stack) {
+      // Plain catch: corrupt data on the init path throws Error (e.g.
+      // TypeError from a cast in fromJson), not Exception. This is the
+      // top-level bootstrap guard — catch everything and show the error
+      // screen rather than leave the user on a blank splash forever.
       debugPrint('Initialization error: $e\n$stack');
       if (mounted) {
         setState(() {

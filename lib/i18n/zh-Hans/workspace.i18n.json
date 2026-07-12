@@ -41,6 +41,9 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "正在重建对话索引…",
     "selectChatToStartMessagingMessage": "选择一段对话开始聊天",
-    "failedToLoadAssistantMessage": "加载助手失败。"
+    "failedToLoadAssistantMessage": "加载助手失败。",
+    "connectProviderToChatMessage": "连接一个 AI 服务商即可开始聊天。",
+    "setUpProviderButton": "设置 AI 服务商",
+    "startNewChatButton": "新聊天"
   }
 }

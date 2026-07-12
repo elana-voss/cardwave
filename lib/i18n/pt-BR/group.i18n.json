@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "Parar geração",
     "noCharactersYetMessage": "Este grupo ainda não tem personagens.",
     "addCharacterButton": "Adicionar um personagem",
-    "pickCharacterMessage": "Escolha um personagem na lista à esquerda."
+    "pickCharacterMessage": "Escolha um personagem na lista à esquerda.",
+    "noAvailableSpeakersSnackbar": "Nenhum participante disponível — todos estão silenciados."
   },
   "groupGridPage": {
     "failedToLoadMessage": "Falha ao carregar os grupos:\n$error",

@@ -50,11 +50,10 @@ as the work it describes. Conversation context is disposable; this file is not.
   `en/settings.i18n.json` (`gearLanguage`, `languageSystemDefault`).
 
 ### Step 2 §2.7 verification results
-- `flutter analyze`: clean of new issues. The only reported items are 36
-  pre-existing environmental warnings — every `packages/*/analysis_options.yaml`
-  includes `../../qcheck/app/lib/*.yaml`, which doesn't resolve in this checkout
-  (qcheck sits at `../qcheck`, not `../../qcheck`). Not introduced by this work;
-  untouched analysis_options files.
+- `flutter analyze`: clean of new issues. (Historical note: the root
+  `analysis_options.yaml` previously included `../../qcheck/app/lib/*.yaml`,
+  which didn't resolve after a repo move — qcheck sits at `../qcheck`. Fixed:
+  the include and plugin paths now use `../qcheck`.)
 - `dart run slang analyze`: no issues (writes `_missing_translations.json` /
   `_unused_translations.json` — expected: en complete, 8 locales all-missing).
 - `flutter test`: 68/68 pass (integration_test excluded).

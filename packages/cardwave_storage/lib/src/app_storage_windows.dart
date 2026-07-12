@@ -85,8 +85,32 @@ class AppStorageWindows extends AppStorage {
   ) => _guard(() async {
     final file = _getFile(domain, relativePath);
     await file.parent.create(recursive: true);
-    await file.writeAsBytes(bytes);
+    await _atomicWrite(file, (tmp) => tmp.writeAsBytes(bytes, flush: true));
   });
+
+  /// Writes through a sibling `<path>.tmp` (flushed to disk) and then renames
+  /// it over [target]. The rename is atomic on the same volume (Windows and
+  /// Android use MOVEFILE_REPLACE_EXISTING semantics), so a crash, power loss,
+  /// or OS kill mid-write can never leave a truncated destination — readers
+  /// see either the old file or the fully-written new one. A stale `.tmp` left
+  /// by a failed prior rename is cleaned up before we rethrow.
+  Future<void> _atomicWrite(
+    File target,
+    Future<void> Function(File tmp) write,
+  ) async {
+    final tmp = _fs.file('${target.path}.tmp');
+    await write(tmp);
+    try {
+      await tmp.rename(target.path);
+    } catch (_) {
+      try {
+        if (await tmp.exists()) await tmp.delete();
+      } catch (_) {
+        // Best-effort cleanup; surface the original rename failure.
+      }
+      rethrow;
+    }
+  }
 
   @override
   Future<List<int>> readBytes(StorageDomainEnum domain, String relativePath) =>
@@ -100,7 +124,7 @@ class AppStorageWindows extends AppStorage {
   ) => _guard(() async {
     final file = _getFile(domain, relativePath);
     await file.parent.create(recursive: true);
-    await file.writeAsString(content);
+    await _atomicWrite(file, (tmp) => tmp.writeAsString(content, flush: true));
   });
 
   @override

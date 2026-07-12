@@ -49,7 +49,8 @@
     "recentTooltip": "最近",
     "favoritesTooltip": "最愛",
     "variantsTooltip": "變體",
-    "indexingProgress": "正在建立搜尋 $done / $total…"
+    "indexingProgress": "正在建立搜尋 $done / $total…",
+    "cardCountTooltip": "顯示的卡片數量"
   },
   "sortOption": {
     "relevance": "相關性 ↓",
@@ -113,5 +114,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "編輯角色",
+    "favoriteToggleTooltip": "切換收藏"
   }
 }

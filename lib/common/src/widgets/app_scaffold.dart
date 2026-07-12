@@ -1,4 +1,5 @@
-import 'package:cardwave/app_routes_enum.dart';
+import 'dart:async';
+
 import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,24 @@ class AppScaffold extends StatelessWidget {
 class _MissingProviderBanner extends StatelessWidget {
   const _MissingProviderBanner();
 
+  /// Runs the Settings add-provider flow: open the dialog, and on save
+  /// persist through the same [ProvidersController.applyProviderAdd] path
+  /// Settings uses (append + model refresh + heal domain presets + save).
+  /// Services are captured before the first await so the async gap is safe.
+  Future<void> _openProviderSetup(BuildContext context) async {
+    final settingsService = context.read<SettingsService>();
+    final mgmt = context.read<LlmManagementService>();
+    final added = await ProvidersController.openProviderAddDialog(
+      isLocal: false,
+    );
+    if (added == null) return;
+    await ProvidersController.applyProviderAdd(
+      settingsService: settingsService,
+      mgmt: mgmt,
+      added: added,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Translations.of(context);
@@ -113,9 +132,12 @@ class _MissingProviderBanner extends StatelessWidget {
                   ).colorScheme.onErrorContainer,
                   foregroundColor: Theme.of(context).colorScheme.errorContainer,
                 ),
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamed(AppRoutesEnum.onboarding.name),
+                // Opens the lightweight Settings "add provider" dialog rather
+                // than re-running full onboarding (which re-shows the persona
+                // field and forces re-accepting the already-accepted
+                // disclaimer). Persists via the same ProvidersController flow
+                // Settings uses.
+                onPressed: () => unawaited(_openProviderSetup(context)),
                 child: Text(t.common.missingProviderBanner.setUpNowButton),
               ),
             ],

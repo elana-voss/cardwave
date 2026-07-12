@@ -50,7 +50,8 @@
     "recentTooltip": "Recent",
     "favoritesTooltip": "Favorites",
     "variantsTooltip": "Variants",
-    "indexingProgress": "Building search $done / $total…"
+    "indexingProgress": "Building search $done / $total…",
+    "cardCountTooltip": "Number of cards shown"
   },
   "sortOption": {
     "relevance": "Relevance ↓",
@@ -114,5 +115,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "Edit character",
+    "favoriteToggleTooltip": "Toggle favorite"
   }
 }

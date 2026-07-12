@@ -257,5 +257,9 @@
     "linkExistingChip": "Vincular existente",
     "unlinkTooltip": "Desvincular",
     "predicateLabel": "Predicado"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "Alterações aplicadas",
+    "undoButton": "Desfazer"
   }
 }

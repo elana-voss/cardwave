@@ -66,6 +66,7 @@ class AppBarChat extends StatelessWidget implements PreferredSizeWidget {
           builder: (context) => IconButton(
             key: const Key('appbar-end-drawer'),
             icon: const Icon(Icons.menu),
+            tooltip: t.chat.appBarChat.chatOptionsTooltip,
             onPressed: () => Scaffold.of(context).openEndDrawer(),
           ),
         ),

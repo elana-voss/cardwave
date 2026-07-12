@@ -41,6 +41,9 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "Reconstruindo índice de conversas...",
     "selectChatToStartMessagingMessage": "Selecione uma conversa para começar",
-    "failedToLoadAssistantMessage": "Falha ao carregar o assistente."
+    "failedToLoadAssistantMessage": "Falha ao carregar o assistente.",
+    "connectProviderToChatMessage": "Conecte um provedor de IA para começar a conversar.",
+    "setUpProviderButton": "Configurar provedor de IA",
+    "startNewChatButton": "Novo chat"
   }
 }

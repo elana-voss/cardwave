@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "Stop generation",
     "noCharactersYetMessage": "This group has no characters yet.",
     "addCharacterButton": "Add a character",
-    "pickCharacterMessage": "Pick a character from the list on the left."
+    "pickCharacterMessage": "Pick a character from the list on the left.",
+    "noAvailableSpeakersSnackbar": "No available speakers — everyone is muted."
   },
   "groupGridPage": {
     "failedToLoadMessage": "Failed to load groups:\n$error",

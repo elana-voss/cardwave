@@ -49,7 +49,8 @@
     "recentTooltip": "最近",
     "favoritesTooltip": "お気に入り",
     "variantsTooltip": "バリアント",
-    "indexingProgress": "検索を構築中 $done / $total…"
+    "indexingProgress": "検索を構築中 $done / $total…",
+    "cardCountTooltip": "表示中のカード数"
   },
   "sortOption": {
     "relevance": "関連度 ↓",
@@ -113,5 +114,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "キャラクターを編集",
+    "favoriteToggleTooltip": "お気に入りを切り替え"
   }
 }

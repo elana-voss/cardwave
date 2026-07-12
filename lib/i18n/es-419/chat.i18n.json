@@ -156,7 +156,8 @@
     "clearButton": "Borrar",
     "deleteOrKeepMessage": "¿Quieres eliminar el chat actual o mantenerlo en tu historial?",
     "deleteCurrentButton": "Eliminar actual",
-    "keepCurrentButton": "Mantener actual"
+    "keepCurrentButton": "Mantener actual",
+    "connectProviderToChatSnackbar": "Conecta un proveedor de IA para empezar a chatear."
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "Ingresa un prompt para generar una imagen.",
@@ -178,7 +179,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "Ocultar panel del editor",
-    "showEditorSideBySideTooltip": "Mostrar editor lado a lado"
+    "showEditorSideBySideTooltip": "Mostrar editor lado a lado",
+    "chatOptionsTooltip": "Opciones de chat"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "Reconstruyendo índice...",

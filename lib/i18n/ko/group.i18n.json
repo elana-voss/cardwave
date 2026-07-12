@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "생성 중지",
     "noCharactersYetMessage": "이 그룹에는 아직 캐릭터가 없어요.",
     "addCharacterButton": "캐릭터 추가",
-    "pickCharacterMessage": "왼쪽 목록에서 캐릭터를 선택하세요."
+    "pickCharacterMessage": "왼쪽 목록에서 캐릭터를 선택하세요.",
+    "noAvailableSpeakersSnackbar": "사용 가능한 발언자가 없습니다 — 모두 음소거되었습니다."
   },
   "groupGridPage": {
     "failedToLoadMessage": "그룹을 불러오지 못했어요:\n$error",

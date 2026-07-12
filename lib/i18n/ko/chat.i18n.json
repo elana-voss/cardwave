@@ -155,7 +155,8 @@
     "clearButton": "지우기",
     "deleteOrKeepMessage": "현재 채팅을 삭제할까요, 아니면 기록에 남겨 둘까요?",
     "deleteCurrentButton": "현재 삭제",
-    "keepCurrentButton": "현재 유지"
+    "keepCurrentButton": "현재 유지",
+    "connectProviderToChatSnackbar": "채팅을 시작하려면 AI 제공자를 연결하세요."
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "이미지를 생성하려면 프롬프트를 입력하세요.",
@@ -177,7 +178,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "편집기 패널 숨기기",
-    "showEditorSideBySideTooltip": "편집기 나란히 보기"
+    "showEditorSideBySideTooltip": "편집기 나란히 보기",
+    "chatOptionsTooltip": "채팅 옵션"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "색인 다시 만드는 중...",

@@ -38,7 +38,8 @@ class IoNodes {
       return ChatNodesState.fromJson(
         jsonDecode(content) as Map<String, dynamic>,
       );
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: a corrupt state file throws TypeError; start fresh.
       loggingService.warning(
         'NODES state at $path unreadable; starting the chat fresh.',
         error,

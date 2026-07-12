@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "Остановить генерацию",
     "noCharactersYetMessage": "В этой группе пока нет персонажей.",
     "addCharacterButton": "Добавить персонажа",
-    "pickCharacterMessage": "Выберите персонажа из списка слева."
+    "pickCharacterMessage": "Выберите персонажа из списка слева.",
+    "noAvailableSpeakersSnackbar": "Нет доступных участников — все отключены."
   },
   "groupGridPage": {
     "failedToLoadMessage": "Не удалось загрузить группы:\n$error",

@@ -545,7 +545,17 @@ class GroupChatController extends BaseChatViewController
     notifyListeners();
 
     while (_isAutoChatActive && !isDisposed) {
-      await _generateNextCharacterTurn();
+      final producedTurn = await _generateNextCharacterTurn();
+      if (!producedTurn) {
+        // No selectable speaker (everyone muted, or members removed
+        // mid-loop). Without this the loop spins forever generating nothing
+        // — with autoChatDelay at 0 it busy-loops. Stop and tell the user.
+        stopAutoChat();
+        NavigationService().showSnackBar(
+          t.group.groupChatPage.noAvailableSpeakersSnackbar,
+        );
+        break;
+      }
       final delay = autoChatDelay;
       if (_isAutoChatActive && !isDisposed && delay > Duration.zero) {
         await Future.delayed(delay);
@@ -568,8 +578,12 @@ class GroupChatController extends BaseChatViewController
 
   // --- Speaker selection ---
 
-  Future<void> _generateNextCharacterTurn() async {
-    if (isGenerating || isDisposed) return;
+  /// Returns false when no speaker could be selected (all muted / no
+  /// members), so the auto-chat loop can stop instead of spinning. The
+  /// generating/disposed guards return true — those are transient, not a
+  /// "nobody can speak" signal.
+  Future<bool> _generateNextCharacterTurn() async {
+    if (isGenerating || isDisposed) return true;
     final targetCharacter = selectNextSpeaker(
       characters: characters,
       mutedIds: groupData.mutedMemberAppCardIds,
@@ -577,8 +591,9 @@ class GroupChatController extends BaseChatViewController
       lastSpeakerId: _lastSpeakerId,
       sessionMessages: _session.messages,
     );
-    if (targetCharacter == null) return;
+    if (targetCharacter == null) return false;
     await _generateCharacterTurn(targetCharacter);
+    return true;
   }
 
   Future<void> _generateCharacterTurn(
@@ -761,7 +776,9 @@ class GroupChatController extends BaseChatViewController
         _lastSpeakerId = targetCharacter.appCardId;
       }
       _saveSession();
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Plain catch: log + snackbar + stopAutoChat must fire for Errors too;
+      // the cleanup below handles terminal state on every exit path.
       if (cancelToken?.value != true) {
         LoggingService().error(
           'group chat: generateReplyFor failed',

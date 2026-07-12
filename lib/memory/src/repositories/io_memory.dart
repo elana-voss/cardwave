@@ -39,7 +39,8 @@ class IoMemory {
         graphPath,
       );
       graph = MemoryGraph.fromJson(jsonDecode(content) as Map<String, dynamic>);
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: a corrupt graph throws TypeError; treat as stale cache.
       loggingService.warning(
         'Memory graph at $graphPath unreadable; rebuilding from the chat.',
         error,

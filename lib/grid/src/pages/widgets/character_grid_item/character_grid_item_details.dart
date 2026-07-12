@@ -5,6 +5,7 @@ import 'package:cardwave/common/common.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/character_grid_action_menu.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/character_grid_item_tag_list.dart';
 import 'package:cardwave/grid/src/pages/widgets/character_grid_item/variant_status_enum.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/routing/route_edit_character.dart';
 import 'package:flutter/material.dart';
 
@@ -86,6 +87,7 @@ class _CharacterGridItemHeader extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.edit, size: 20),
           padding: EdgeInsets.zero,
+          tooltip: Translations.of(context).grid.gridItem.editTooltip,
           onPressed: () =>
               unawaited(RouteEditCharacter().execute(context, file)),
         ),

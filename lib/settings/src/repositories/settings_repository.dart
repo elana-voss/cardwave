@@ -53,7 +53,10 @@ class SettingsRepository {
         _currentCardsPath = map['character_path'] as String?;
         return map;
       }
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Plain catch: a corrupt file throws TypeError (an Error, not an
+      // Exception) from the cast/decode; degrade to fresh-defaults rather
+      // than let it escape bootstrap.
       LoggingService().warning('Error loading settings: $e', e, stackTrace);
     }
     return {};
@@ -107,7 +110,9 @@ class SettingsRepository {
         final map = jsonDecode(content) as Map<String, dynamic>;
         return LlmProvidersRecovery.fromJson(map);
       }
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Plain catch: a corrupt recovery file throws TypeError; drop to the
+      // fresh-install path instead of crashing bootstrap.
       LoggingService().warning(
         'Error loading recovery file: $e',
         e,

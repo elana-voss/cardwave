@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "停止生成",
     "noCharactersYetMessage": "该群组还没有角色。",
     "addCharacterButton": "添加角色",
-    "pickCharacterMessage": "从左侧列表中选择一个角色。"
+    "pickCharacterMessage": "从左侧列表中选择一个角色。",
+    "noAvailableSpeakersSnackbar": "没有可用的发言者——所有人都已静音。"
   },
   "groupGridPage": {
     "failedToLoadMessage": "加载群组失败：\n$error",

@@ -255,5 +255,9 @@
     "linkExistingChip": "連結現有",
     "unlinkTooltip": "解除連結",
     "predicateLabel": "條件式"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "變更已套用",
+    "undoButton": "復原"
   }
 }

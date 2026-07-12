@@ -155,7 +155,8 @@
     "clearButton": "清空",
     "deleteOrKeepMessage": "你想删除当前对话，还是将它保留在历史中？",
     "deleteCurrentButton": "删除当前",
-    "keepCurrentButton": "保留当前"
+    "keepCurrentButton": "保留当前",
+    "connectProviderToChatSnackbar": "连接一个 AI 服务商即可开始聊天。"
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "输入提示词以生成图像。",
@@ -177,7 +178,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "隐藏编辑器面板",
-    "showEditorSideBySideTooltip": "并排显示编辑器"
+    "showEditorSideBySideTooltip": "并排显示编辑器",
+    "chatOptionsTooltip": "聊天选项"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "正在重建索引…",

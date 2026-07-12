@@ -9,12 +9,32 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 class IOChat {
-  const IOChat({required this.loggingService, required this.appStorage});
+  IOChat({required this.loggingService, required this.appStorage});
   static const String _ttsFolder = 'tts';
   static const String _videoFolder = 'video';
 
   final LoggingService loggingService;
   final AppStorage appStorage;
+
+  /// Per-directory chained-future queue serializing `chats.index`
+  /// read-modify-write cycles. Two sessions saving near-simultaneously would
+  /// otherwise both read the index, mutate, and write — the later write
+  /// silently dropping the earlier entry update.
+  final Map<String, Future<void>> _indexWriteQueues = {};
+
+  /// Runs [update] after any in-flight index write for [chatDirectoryPath]
+  /// completes, and records it as the new tail so the next call chains behind
+  /// it. [update] is expected not to throw (it logs its own failures); the
+  /// `catchError` only guards the chain against a stray error breaking it.
+  Future<void> _serializeIndexUpdate(
+    String chatDirectoryPath,
+    AsyncCallback update,
+  ) {
+    final prev = _indexWriteQueues[chatDirectoryPath] ?? Future<void>.value();
+    final next = prev.then((_) => update()).catchError((Object _) {});
+    _indexWriteQueues[chatDirectoryPath] = next;
+    return next;
+  }
 
   ChatSession _parseChatSession(String content) {
     final json = jsonDecode(content) as Map<String, dynamic>;
@@ -42,7 +62,9 @@ class IOChat {
         final json = jsonDecode(content);
         return ChatIndex.fromJson(json as Map<String, dynamic>);
       }
-    } on Exception catch (e) {
+    } catch (e) {
+      // Plain catch: a corrupt index throws TypeError, not Exception — fall
+      // through to a full rebuild rather than escape.
       loggingService.info('Index missing or corrupted, rebuilding: $e');
     }
 
@@ -88,7 +110,10 @@ class IOChat {
             messageCount: session.messages.length,
             isAssistant: session.isAssistant,
           );
-        } on Exception catch (e, stackTrace) {
+        } catch (e, stackTrace) {
+          // Plain catch: skip just this corrupt session file (TypeError from
+          // a wrong-shaped session.json is an Error) instead of aborting the
+          // whole index rebuild.
           loggingService.warning(
             'Error loading chat ${p.posix.basename(p.posix.dirname(filePath))}: $e',
             e,
@@ -127,7 +152,8 @@ class IOChat {
           filePath,
         );
         return _parseChatSession(content);
-      } on Exception catch (e) {
+      } catch (e) {
+        // Plain catch: a corrupt session.json throws TypeError; return null.
         loggingService.error('Error loading chat $chatId: $e');
       }
     }
@@ -178,33 +204,40 @@ class IOChat {
     await appStorage.writeString(StorageDomainEnum.cards, filePath, jsonString);
 
     final indexPath = p.posix.join(chatDirectoryPath, 'chats.index');
-    try {
-      final index = await getChatIndex(chatDirectoryPath);
-      index.entries.removeWhere((e) => e.id == session.id);
-      final persistedCount = liveMessages
-          .where((m) => m.waitingFor == BubbleWaitingForEnum.complete)
-          .length;
-      index.entries.insert(
-        0,
-        ChatIndexEntry(
-          id: session.id,
-          ownerId: session.ownerId,
-          name: session.name,
-          lastActive: session.lastActive,
-          messageCount: persistedCount,
-          isAssistant: session.isAssistant,
-        ),
-      );
-      index.entries.sort((a, b) => b.lastActive.compareTo(a.lastActive));
-      final indexContent = jsonEncode(index.toJson());
-      await appStorage.writeString(
-        StorageDomainEnum.cards,
-        indexPath,
-        indexContent,
-      );
-    } on Exception catch (e, stackTrace) {
-      loggingService.warning('Error updating index: $e', e, stackTrace);
-    }
+    await _serializeIndexUpdate(chatDirectoryPath, () async {
+      try {
+        final index = await getChatIndex(chatDirectoryPath);
+        index.entries.removeWhere((e) => e.id == session.id);
+        final persistedCount = liveMessages
+            .where((m) => m.waitingFor == BubbleWaitingForEnum.complete)
+            .length;
+        index.entries.insert(
+          0,
+          ChatIndexEntry(
+            id: session.id,
+            ownerId: session.ownerId,
+            name: session.name,
+            lastActive: session.lastActive,
+            messageCount: persistedCount,
+            isAssistant: session.isAssistant,
+          ),
+        );
+        index.entries.sort((a, b) => b.lastActive.compareTo(a.lastActive));
+        final indexContent = jsonEncode(index.toJson());
+        await appStorage.writeString(
+          StorageDomainEnum.cards,
+          indexPath,
+          indexContent,
+        );
+      } catch (e, stackTrace) {
+        // Deliberately catches everything, not `on Exception`: a corrupt
+        // index makes getChatIndex/fromJson throw a TypeError (an Error, not
+        // an Exception). The index self-heals on the next rebuild, so the
+        // session.json write above must still be considered a success — log
+        // and move on rather than let the Error escape saveChat.
+        loggingService.warning('Error updating index: $e', e, stackTrace);
+      }
+    });
   }
 
   Future<void> deleteChat(String chatDirectoryPath, String chatId) async {
@@ -215,22 +248,27 @@ class IOChat {
     }
 
     final indexPath = p.posix.join(chatDirectoryPath, 'chats.index');
-    try {
-      final index = await getChatIndex(chatDirectoryPath);
-      index.entries.removeWhere((e) => e.id == chatId);
-      final indexContent = jsonEncode(index.toJson());
-      await appStorage.writeString(
-        StorageDomainEnum.cards,
-        indexPath,
-        indexContent,
-      );
-    } on Exception catch (e, stackTrace) {
-      loggingService.warning(
-        'Error updating index on delete: $e',
-        e,
-        stackTrace,
-      );
-    }
+    await _serializeIndexUpdate(chatDirectoryPath, () async {
+      try {
+        final index = await getChatIndex(chatDirectoryPath);
+        index.entries.removeWhere((e) => e.id == chatId);
+        final indexContent = jsonEncode(index.toJson());
+        await appStorage.writeString(
+          StorageDomainEnum.cards,
+          indexPath,
+          indexContent,
+        );
+      } catch (e, stackTrace) {
+        // Bare catch (not `on Exception`) on purpose: same TypeError-from-a-
+        // corrupt-index case as saveChat above. The directory delete already
+        // happened; a stale index entry self-heals on the next rebuild.
+        loggingService.warning(
+          'Error updating index on delete: $e',
+          e,
+          stackTrace,
+        );
+      }
+    });
   }
 
   Future<void> deleteAllChats(String chatDirectoryPath) async {

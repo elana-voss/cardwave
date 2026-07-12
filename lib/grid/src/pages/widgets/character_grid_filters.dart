@@ -33,6 +33,14 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
         controller.prioritizeRecent ||
         controller.filterHasVariants;
 
+    // 140px fits English but truncates longer localized sort labels
+    // (Russian/Portuguese/Spanish) even when there's room. Give the dropdown
+    // more width on wide layouts.
+    final sortDropdownMaxWidth =
+        MediaQuery.sizeOf(context).width >= AppConstants.tabletBreakpoint
+        ? 200.0
+        : 140.0;
+
     return Padding(
       padding: const EdgeInsetsGeometry.symmetric(vertical: 12),
       child: Column(
@@ -42,13 +50,11 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
           Row(
             children: [
               Expanded(
-                child: AppSearchField(
-                  controller: controller.searchController,
-                ),
+                child: AppSearchField(controller: controller.searchController),
               ),
               const SizedBox(width: 8),
               ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 140),
+                constraints: BoxConstraints(maxWidth: sortDropdownMaxWidth),
                 child: DropdownButtonFormField<CharacterSortOptionEnum>(
                   initialValue: controller.sortOption,
                   iconSize: 20,
@@ -278,6 +284,7 @@ class _CountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = Translations.of(context);
     final label = canClear ? '$filteredCount / $totalCount' : '$totalCount';
 
     final pill = Container(
@@ -312,14 +319,21 @@ class _CountPill extends StatelessWidget {
       ),
     );
 
-    if (!canClear) return pill;
+    // Tooltip disambiguates the bare "N" from an "N active filters" badge —
+    // it sits right next to the tune icon and was misread that way.
+    if (!canClear) {
+      return Tooltip(message: t.grid.filters.cardCountTooltip, child: pill);
+    }
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onClear,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: pill,
+    return Tooltip(
+      message: t.grid.filters.cardCountTooltip,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onClear,
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          child: pill,
+        ),
       ),
     );
   }

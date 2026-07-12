@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 8179 (908 per locale)
+/// Strings: 8278 (919 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -313,6 +313,7 @@ class _TranslationsEditorEn {
 	late final _TranslationsEditorNodesRawEditorPageEn nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageEn._(_root);
 	late final _TranslationsEditorNodesCanvasViewEn nodesCanvasView = _TranslationsEditorNodesCanvasViewEn._(_root);
 	late final _TranslationsEditorNodeEditorFormEn nodeEditorForm = _TranslationsEditorNodeEditorFormEn._(_root);
+	late final _TranslationsEditorContentTransformEn contentTransform = _TranslationsEditorContentTransformEn._(_root);
 }
 
 // Path: grid
@@ -340,6 +341,7 @@ class _TranslationsGridEn {
 	late final _TranslationsGridActionMenuEn actionMenu = _TranslationsGridActionMenuEn._(_root);
 	late final _TranslationsGridControllerMessagesEn controllerMessages = _TranslationsGridControllerMessagesEn._(_root);
 	late final _TranslationsGridTagWrapEn tagWrap = _TranslationsGridTagWrapEn._(_root);
+	late final _TranslationsGridGridItemEn gridItem = _TranslationsGridGridItemEn._(_root);
 }
 
 // Path: group
@@ -989,6 +991,7 @@ class _TranslationsChatChatPageControllerEn {
 	String get deleteOrKeepMessage => 'Would you like to delete the current chat or keep it in your history?';
 	String get deleteCurrentButton => 'Delete Current';
 	String get keepCurrentButton => 'Keep Current';
+	String get connectProviderToChatSnackbar => 'Connect an AI provider to start chatting.';
 }
 
 // Path: chat.imageGenerationMixin
@@ -1039,6 +1042,7 @@ class _TranslationsChatAppBarChatEn {
 	// Translations
 	String get hideEditorPanelTooltip => 'Hide editor panel';
 	String get showEditorSideBySideTooltip => 'Show editor side-by-side';
+	String get chatOptionsTooltip => 'Chat options';
 }
 
 // Path: chat.allChatsDrawerList
@@ -1839,6 +1843,17 @@ class _TranslationsEditorNodeEditorFormEn {
 	String get predicateLabel => 'Predicate';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get appliedSnackbar => 'Changes applied';
+	String get undoButton => 'Undo';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateEn._(this._root);
@@ -1946,6 +1961,7 @@ class _TranslationsGridFiltersEn {
 	String get favoritesTooltip => 'Favorites';
 	String get variantsTooltip => 'Variants';
 	String indexingProgress({required Object done, required Object total}) => 'Building search ${done} / ${total}…';
+	String get cardCountTooltip => 'Number of cards shown';
 }
 
 // Path: grid.sortOption
@@ -2081,6 +2097,17 @@ class _TranslationsGridTagWrapEn {
 	String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String get editTooltip => 'Edit character';
+	String get favoriteToggleTooltip => 'Toggle favorite';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerEn._(this._root);
@@ -2110,6 +2137,7 @@ class _TranslationsGroupGroupChatPageEn {
 	String get noCharactersYetMessage => 'This group has no characters yet.';
 	String get addCharacterButton => 'Add a character';
 	String get pickCharacterMessage => 'Pick a character from the list on the left.';
+	String get noAvailableSpeakersSnackbar => 'No available speakers — everyone is muted.';
 }
 
 // Path: group.groupGridPage
@@ -2920,6 +2948,9 @@ class _TranslationsWorkspaceWorkspacePageEn {
 	String get rebuildingChatIndexMessage => 'Rebuilding chat index...';
 	String get selectChatToStartMessagingMessage => 'Select a chat to start messaging';
 	String get failedToLoadAssistantMessage => 'Failed to load assistant.';
+	String get connectProviderToChatMessage => 'Connect an AI provider to start chatting.';
+	String get setUpProviderButton => 'Set up AI provider';
+	String get startNewChatButton => 'New chat';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -3132,6 +3163,7 @@ class _TranslationsEditorEs419 extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageEs419 nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageEs419._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewEs419 nodesCanvasView = _TranslationsEditorNodesCanvasViewEs419._(_root);
 	@override late final _TranslationsEditorNodeEditorFormEs419 nodeEditorForm = _TranslationsEditorNodeEditorFormEs419._(_root);
+	@override late final _TranslationsEditorContentTransformEs419 contentTransform = _TranslationsEditorContentTransformEs419._(_root);
 }
 
 // Path: grid
@@ -3159,6 +3191,7 @@ class _TranslationsGridEs419 extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuEs419 actionMenu = _TranslationsGridActionMenuEs419._(_root);
 	@override late final _TranslationsGridControllerMessagesEs419 controllerMessages = _TranslationsGridControllerMessagesEs419._(_root);
 	@override late final _TranslationsGridTagWrapEs419 tagWrap = _TranslationsGridTagWrapEs419._(_root);
+	@override late final _TranslationsGridGridItemEs419 gridItem = _TranslationsGridGridItemEs419._(_root);
 }
 
 // Path: group
@@ -3808,6 +3841,7 @@ class _TranslationsChatChatPageControllerEs419 extends _TranslationsChatChatPage
 	@override String get deleteOrKeepMessage => '¿Quieres eliminar el chat actual o mantenerlo en tu historial?';
 	@override String get deleteCurrentButton => 'Eliminar actual';
 	@override String get keepCurrentButton => 'Mantener actual';
+	@override String get connectProviderToChatSnackbar => 'Conecta un proveedor de IA para empezar a chatear.';
 }
 
 // Path: chat.imageGenerationMixin
@@ -3858,6 +3892,7 @@ class _TranslationsChatAppBarChatEs419 extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => 'Ocultar panel del editor';
 	@override String get showEditorSideBySideTooltip => 'Mostrar editor lado a lado';
+	@override String get chatOptionsTooltip => 'Opciones de chat';
 }
 
 // Path: chat.allChatsDrawerList
@@ -4658,6 +4693,17 @@ class _TranslationsEditorNodeEditorFormEs419 extends _TranslationsEditorNodeEdit
 	@override String get predicateLabel => 'Predicado';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformEs419 extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
+
+	@override final _TranslationsEs419 _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => 'Cambios aplicados';
+	@override String get undoButton => 'Deshacer';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateEs419 extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
@@ -4765,6 +4811,7 @@ class _TranslationsGridFiltersEs419 extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => 'Favoritos';
 	@override String get variantsTooltip => 'Variantes';
 	@override String indexingProgress({required Object done, required Object total}) => 'Creando búsqueda ${done} / ${total}…';
+	@override String get cardCountTooltip => 'Número de tarjetas mostradas';
 }
 
 // Path: grid.sortOption
@@ -4900,6 +4947,17 @@ class _TranslationsGridTagWrapEs419 extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemEs419 extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
+
+	@override final _TranslationsEs419 _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'Editar personaje';
+	@override String get favoriteToggleTooltip => 'Alternar favorito';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerEs419 extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
@@ -4929,6 +4987,7 @@ class _TranslationsGroupGroupChatPageEs419 extends _TranslationsGroupGroupChatPa
 	@override String get noCharactersYetMessage => 'Este grupo aún no tiene personajes.';
 	@override String get addCharacterButton => 'Agregar un personaje';
 	@override String get pickCharacterMessage => 'Elige un personaje de la lista de la izquierda.';
+	@override String get noAvailableSpeakersSnackbar => 'No hay participantes disponibles: todos están silenciados.';
 }
 
 // Path: group.groupGridPage
@@ -5739,6 +5798,9 @@ class _TranslationsWorkspaceWorkspacePageEs419 extends _TranslationsWorkspaceWor
 	@override String get rebuildingChatIndexMessage => 'Reconstruyendo el índice de chats...';
 	@override String get selectChatToStartMessagingMessage => 'Selecciona un chat para empezar a chatear';
 	@override String get failedToLoadAssistantMessage => 'Error al cargar el asistente.';
+	@override String get connectProviderToChatMessage => 'Conecta un proveedor de IA para empezar a chatear.';
+	@override String get setUpProviderButton => 'Configurar proveedor de IA';
+	@override String get startNewChatButton => 'Nuevo chat';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -5951,6 +6013,7 @@ class _TranslationsEditorHi extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageHi nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageHi._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewHi nodesCanvasView = _TranslationsEditorNodesCanvasViewHi._(_root);
 	@override late final _TranslationsEditorNodeEditorFormHi nodeEditorForm = _TranslationsEditorNodeEditorFormHi._(_root);
+	@override late final _TranslationsEditorContentTransformHi contentTransform = _TranslationsEditorContentTransformHi._(_root);
 }
 
 // Path: grid
@@ -5978,6 +6041,7 @@ class _TranslationsGridHi extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuHi actionMenu = _TranslationsGridActionMenuHi._(_root);
 	@override late final _TranslationsGridControllerMessagesHi controllerMessages = _TranslationsGridControllerMessagesHi._(_root);
 	@override late final _TranslationsGridTagWrapHi tagWrap = _TranslationsGridTagWrapHi._(_root);
+	@override late final _TranslationsGridGridItemHi gridItem = _TranslationsGridGridItemHi._(_root);
 }
 
 // Path: group
@@ -6627,6 +6691,7 @@ class _TranslationsChatChatPageControllerHi extends _TranslationsChatChatPageCon
 	@override String get deleteOrKeepMessage => 'क्या आप वर्तमान चैट हटाना चाहते हैं या इसे अपने इतिहास में रखना चाहते हैं?';
 	@override String get deleteCurrentButton => 'वर्तमान हटाएं';
 	@override String get keepCurrentButton => 'वर्तमान रखें';
+	@override String get connectProviderToChatSnackbar => 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
 }
 
 // Path: chat.imageGenerationMixin
@@ -6677,6 +6742,7 @@ class _TranslationsChatAppBarChatHi extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => 'एडिटर पैनल छिपाएं';
 	@override String get showEditorSideBySideTooltip => 'एडिटर साथ-साथ दिखाएं';
+	@override String get chatOptionsTooltip => 'चैट विकल्प';
 }
 
 // Path: chat.allChatsDrawerList
@@ -7477,6 +7543,17 @@ class _TranslationsEditorNodeEditorFormHi extends _TranslationsEditorNodeEditorF
 	@override String get predicateLabel => 'प्रेडिकेट';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformHi extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformHi._(_TranslationsHi root) : this._root = root, super._(root);
+
+	@override final _TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => 'परिवर्तन लागू किए गए';
+	@override String get undoButton => 'पूर्ववत करें';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateHi extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateHi._(_TranslationsHi root) : this._root = root, super._(root);
@@ -7584,6 +7661,7 @@ class _TranslationsGridFiltersHi extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => 'पसंदीदा';
 	@override String get variantsTooltip => 'वैरिएंट';
 	@override String indexingProgress({required Object done, required Object total}) => 'खोज बन रही है ${done} / ${total}…';
+	@override String get cardCountTooltip => 'दिखाए गए कार्ड की संख्या';
 }
 
 // Path: grid.sortOption
@@ -7719,6 +7797,17 @@ class _TranslationsGridTagWrapHi extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemHi extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemHi._(_TranslationsHi root) : this._root = root, super._(root);
+
+	@override final _TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'पात्र संपादित करें';
+	@override String get favoriteToggleTooltip => 'पसंदीदा टॉगल करें';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerHi extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerHi._(_TranslationsHi root) : this._root = root, super._(root);
@@ -7748,6 +7837,7 @@ class _TranslationsGroupGroupChatPageHi extends _TranslationsGroupGroupChatPageE
 	@override String get noCharactersYetMessage => 'इस ग्रुप में अभी तक कोई कैरेक्टर नहीं है।';
 	@override String get addCharacterButton => 'एक कैरेक्टर जोड़ें';
 	@override String get pickCharacterMessage => 'बाईं ओर की सूची से एक कैरेक्टर चुनें।';
+	@override String get noAvailableSpeakersSnackbar => 'कोई उपलब्ध वक्ता नहीं — सभी म्यूट हैं।';
 }
 
 // Path: group.groupGridPage
@@ -8558,6 +8648,9 @@ class _TranslationsWorkspaceWorkspacePageHi extends _TranslationsWorkspaceWorksp
 	@override String get rebuildingChatIndexMessage => 'चैट इंडेक्स फिर से बन रहा है...';
 	@override String get selectChatToStartMessagingMessage => 'मैसेजिंग शुरू करने के लिए एक चैट चुनें';
 	@override String get failedToLoadAssistantMessage => 'असिस्टेंट लोड करने में विफल।';
+	@override String get connectProviderToChatMessage => 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
+	@override String get setUpProviderButton => 'AI प्रोवाइडर सेट अप करें';
+	@override String get startNewChatButton => 'नई चैट';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -8770,6 +8863,7 @@ class _TranslationsEditorJa extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageJa nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageJa._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewJa nodesCanvasView = _TranslationsEditorNodesCanvasViewJa._(_root);
 	@override late final _TranslationsEditorNodeEditorFormJa nodeEditorForm = _TranslationsEditorNodeEditorFormJa._(_root);
+	@override late final _TranslationsEditorContentTransformJa contentTransform = _TranslationsEditorContentTransformJa._(_root);
 }
 
 // Path: grid
@@ -8797,6 +8891,7 @@ class _TranslationsGridJa extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuJa actionMenu = _TranslationsGridActionMenuJa._(_root);
 	@override late final _TranslationsGridControllerMessagesJa controllerMessages = _TranslationsGridControllerMessagesJa._(_root);
 	@override late final _TranslationsGridTagWrapJa tagWrap = _TranslationsGridTagWrapJa._(_root);
+	@override late final _TranslationsGridGridItemJa gridItem = _TranslationsGridGridItemJa._(_root);
 }
 
 // Path: group
@@ -9444,6 +9539,7 @@ class _TranslationsChatChatPageControllerJa extends _TranslationsChatChatPageCon
 	@override String get deleteOrKeepMessage => '現在のチャットを削除しますか、それとも履歴に残しますか？';
 	@override String get deleteCurrentButton => '現在のを削除';
 	@override String get keepCurrentButton => '現在のを保持';
+	@override String get connectProviderToChatSnackbar => 'チャットを開始するには AI プロバイダーを接続してください。';
 }
 
 // Path: chat.imageGenerationMixin
@@ -9494,6 +9590,7 @@ class _TranslationsChatAppBarChatJa extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => 'エディタパネルを非表示';
 	@override String get showEditorSideBySideTooltip => 'エディタを並べて表示';
+	@override String get chatOptionsTooltip => 'チャットオプション';
 }
 
 // Path: chat.allChatsDrawerList
@@ -10289,6 +10386,17 @@ class _TranslationsEditorNodeEditorFormJa extends _TranslationsEditorNodeEditorF
 	@override String get predicateLabel => '述語';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformJa extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformJa._(_TranslationsJa root) : this._root = root, super._(root);
+
+	@override final _TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => '変更を適用しました';
+	@override String get undoButton => '元に戻す';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateJa extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateJa._(_TranslationsJa root) : this._root = root, super._(root);
@@ -10395,6 +10503,7 @@ class _TranslationsGridFiltersJa extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => 'お気に入り';
 	@override String get variantsTooltip => 'バリアント';
 	@override String indexingProgress({required Object done, required Object total}) => '検索を構築中 ${done} / ${total}…';
+	@override String get cardCountTooltip => '表示中のカード数';
 }
 
 // Path: grid.sortOption
@@ -10530,6 +10639,17 @@ class _TranslationsGridTagWrapJa extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemJa extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemJa._(_TranslationsJa root) : this._root = root, super._(root);
+
+	@override final _TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'キャラクターを編集';
+	@override String get favoriteToggleTooltip => 'お気に入りを切り替え';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerJa extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerJa._(_TranslationsJa root) : this._root = root, super._(root);
@@ -10559,6 +10679,7 @@ class _TranslationsGroupGroupChatPageJa extends _TranslationsGroupGroupChatPageE
 	@override String get noCharactersYetMessage => 'このグループにはまだキャラクターがいません。';
 	@override String get addCharacterButton => 'キャラクターを追加';
 	@override String get pickCharacterMessage => '左のリストからキャラクターを選択してください。';
+	@override String get noAvailableSpeakersSnackbar => '利用可能な話者がいません — 全員がミュートされています。';
 }
 
 // Path: group.groupGridPage
@@ -11367,6 +11488,9 @@ class _TranslationsWorkspaceWorkspacePageJa extends _TranslationsWorkspaceWorksp
 	@override String get rebuildingChatIndexMessage => 'チャットインデックスを再構築中...';
 	@override String get selectChatToStartMessagingMessage => 'メッセージを始めるにはチャットを選択してください';
 	@override String get failedToLoadAssistantMessage => 'アシスタントの読み込みに失敗しました。';
+	@override String get connectProviderToChatMessage => 'チャットを開始するには AI プロバイダーを接続してください。';
+	@override String get setUpProviderButton => 'AI プロバイダーを設定';
+	@override String get startNewChatButton => '新しいチャット';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -11579,6 +11703,7 @@ class _TranslationsEditorKo extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageKo nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageKo._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewKo nodesCanvasView = _TranslationsEditorNodesCanvasViewKo._(_root);
 	@override late final _TranslationsEditorNodeEditorFormKo nodeEditorForm = _TranslationsEditorNodeEditorFormKo._(_root);
+	@override late final _TranslationsEditorContentTransformKo contentTransform = _TranslationsEditorContentTransformKo._(_root);
 }
 
 // Path: grid
@@ -11606,6 +11731,7 @@ class _TranslationsGridKo extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuKo actionMenu = _TranslationsGridActionMenuKo._(_root);
 	@override late final _TranslationsGridControllerMessagesKo controllerMessages = _TranslationsGridControllerMessagesKo._(_root);
 	@override late final _TranslationsGridTagWrapKo tagWrap = _TranslationsGridTagWrapKo._(_root);
+	@override late final _TranslationsGridGridItemKo gridItem = _TranslationsGridGridItemKo._(_root);
 }
 
 // Path: group
@@ -12253,6 +12379,7 @@ class _TranslationsChatChatPageControllerKo extends _TranslationsChatChatPageCon
 	@override String get deleteOrKeepMessage => '현재 채팅을 삭제할까요, 아니면 기록에 남겨 둘까요?';
 	@override String get deleteCurrentButton => '현재 삭제';
 	@override String get keepCurrentButton => '현재 유지';
+	@override String get connectProviderToChatSnackbar => '채팅을 시작하려면 AI 제공자를 연결하세요.';
 }
 
 // Path: chat.imageGenerationMixin
@@ -12303,6 +12430,7 @@ class _TranslationsChatAppBarChatKo extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => '편집기 패널 숨기기';
 	@override String get showEditorSideBySideTooltip => '편집기 나란히 보기';
+	@override String get chatOptionsTooltip => '채팅 옵션';
 }
 
 // Path: chat.allChatsDrawerList
@@ -13098,6 +13226,17 @@ class _TranslationsEditorNodeEditorFormKo extends _TranslationsEditorNodeEditorF
 	@override String get predicateLabel => '조건';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformKo extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformKo._(_TranslationsKo root) : this._root = root, super._(root);
+
+	@override final _TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => '변경 사항이 적용되었습니다';
+	@override String get undoButton => '실행 취소';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateKo extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateKo._(_TranslationsKo root) : this._root = root, super._(root);
@@ -13204,6 +13343,7 @@ class _TranslationsGridFiltersKo extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => '즐겨찾기';
 	@override String get variantsTooltip => '변형';
 	@override String indexingProgress({required Object done, required Object total}) => '검색 색인 생성 중 ${done} / ${total}…';
+	@override String get cardCountTooltip => '표시된 카드 수';
 }
 
 // Path: grid.sortOption
@@ -13339,6 +13479,17 @@ class _TranslationsGridTagWrapKo extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemKo extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemKo._(_TranslationsKo root) : this._root = root, super._(root);
+
+	@override final _TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => '캐릭터 편집';
+	@override String get favoriteToggleTooltip => '즐겨찾기 전환';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerKo extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerKo._(_TranslationsKo root) : this._root = root, super._(root);
@@ -13368,6 +13519,7 @@ class _TranslationsGroupGroupChatPageKo extends _TranslationsGroupGroupChatPageE
 	@override String get noCharactersYetMessage => '이 그룹에는 아직 캐릭터가 없어요.';
 	@override String get addCharacterButton => '캐릭터 추가';
 	@override String get pickCharacterMessage => '왼쪽 목록에서 캐릭터를 선택하세요.';
+	@override String get noAvailableSpeakersSnackbar => '사용 가능한 발언자가 없습니다 — 모두 음소거되었습니다.';
 }
 
 // Path: group.groupGridPage
@@ -14176,6 +14328,9 @@ class _TranslationsWorkspaceWorkspacePageKo extends _TranslationsWorkspaceWorksp
 	@override String get rebuildingChatIndexMessage => '채팅 색인 다시 만드는 중...';
 	@override String get selectChatToStartMessagingMessage => '메시지를 시작하려면 채팅을 선택하세요';
 	@override String get failedToLoadAssistantMessage => '어시스턴트를 불러오지 못했어요.';
+	@override String get connectProviderToChatMessage => '채팅을 시작하려면 AI 제공자를 연결하세요.';
+	@override String get setUpProviderButton => 'AI 제공자 설정';
+	@override String get startNewChatButton => '새 채팅';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -14388,6 +14543,7 @@ class _TranslationsEditorPtBr extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPagePtBr nodesRawEditorPage = _TranslationsEditorNodesRawEditorPagePtBr._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewPtBr nodesCanvasView = _TranslationsEditorNodesCanvasViewPtBr._(_root);
 	@override late final _TranslationsEditorNodeEditorFormPtBr nodeEditorForm = _TranslationsEditorNodeEditorFormPtBr._(_root);
+	@override late final _TranslationsEditorContentTransformPtBr contentTransform = _TranslationsEditorContentTransformPtBr._(_root);
 }
 
 // Path: grid
@@ -14415,6 +14571,7 @@ class _TranslationsGridPtBr extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuPtBr actionMenu = _TranslationsGridActionMenuPtBr._(_root);
 	@override late final _TranslationsGridControllerMessagesPtBr controllerMessages = _TranslationsGridControllerMessagesPtBr._(_root);
 	@override late final _TranslationsGridTagWrapPtBr tagWrap = _TranslationsGridTagWrapPtBr._(_root);
+	@override late final _TranslationsGridGridItemPtBr gridItem = _TranslationsGridGridItemPtBr._(_root);
 }
 
 // Path: group
@@ -15064,6 +15221,7 @@ class _TranslationsChatChatPageControllerPtBr extends _TranslationsChatChatPageC
 	@override String get deleteOrKeepMessage => 'Deseja excluir a conversa atual ou mantê-la no seu histórico?';
 	@override String get deleteCurrentButton => 'Excluir atual';
 	@override String get keepCurrentButton => 'Manter atual';
+	@override String get connectProviderToChatSnackbar => 'Conecte um provedor de IA para começar a conversar.';
 }
 
 // Path: chat.imageGenerationMixin
@@ -15114,6 +15272,7 @@ class _TranslationsChatAppBarChatPtBr extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => 'Ocultar painel do editor';
 	@override String get showEditorSideBySideTooltip => 'Mostrar editor lado a lado';
+	@override String get chatOptionsTooltip => 'Opções de chat';
 }
 
 // Path: chat.allChatsDrawerList
@@ -15914,6 +16073,17 @@ class _TranslationsEditorNodeEditorFormPtBr extends _TranslationsEditorNodeEdito
 	@override String get predicateLabel => 'Predicado';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformPtBr extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
+
+	@override final _TranslationsPtBr _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => 'Alterações aplicadas';
+	@override String get undoButton => 'Desfazer';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStatePtBr extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStatePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
@@ -16021,6 +16191,7 @@ class _TranslationsGridFiltersPtBr extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => 'Favoritos';
 	@override String get variantsTooltip => 'Variantes';
 	@override String indexingProgress({required Object done, required Object total}) => 'Criando busca ${done} / ${total}…';
+	@override String get cardCountTooltip => 'Número de cartões exibidos';
 }
 
 // Path: grid.sortOption
@@ -16156,6 +16327,17 @@ class _TranslationsGridTagWrapPtBr extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemPtBr extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
+
+	@override final _TranslationsPtBr _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'Editar personagem';
+	@override String get favoriteToggleTooltip => 'Alternar favorito';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerPtBr extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
@@ -16185,6 +16367,7 @@ class _TranslationsGroupGroupChatPagePtBr extends _TranslationsGroupGroupChatPag
 	@override String get noCharactersYetMessage => 'Este grupo ainda não tem personagens.';
 	@override String get addCharacterButton => 'Adicionar um personagem';
 	@override String get pickCharacterMessage => 'Escolha um personagem na lista à esquerda.';
+	@override String get noAvailableSpeakersSnackbar => 'Nenhum participante disponível — todos estão silenciados.';
 }
 
 // Path: group.groupGridPage
@@ -16995,6 +17178,9 @@ class _TranslationsWorkspaceWorkspacePagePtBr extends _TranslationsWorkspaceWork
 	@override String get rebuildingChatIndexMessage => 'Reconstruindo índice de conversas...';
 	@override String get selectChatToStartMessagingMessage => 'Selecione uma conversa para começar';
 	@override String get failedToLoadAssistantMessage => 'Falha ao carregar o assistente.';
+	@override String get connectProviderToChatMessage => 'Conecte um provedor de IA para começar a conversar.';
+	@override String get setUpProviderButton => 'Configurar provedor de IA';
+	@override String get startNewChatButton => 'Novo chat';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -17207,6 +17393,7 @@ class _TranslationsEditorRu extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageRu nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageRu._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewRu nodesCanvasView = _TranslationsEditorNodesCanvasViewRu._(_root);
 	@override late final _TranslationsEditorNodeEditorFormRu nodeEditorForm = _TranslationsEditorNodeEditorFormRu._(_root);
+	@override late final _TranslationsEditorContentTransformRu contentTransform = _TranslationsEditorContentTransformRu._(_root);
 }
 
 // Path: grid
@@ -17234,6 +17421,7 @@ class _TranslationsGridRu extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuRu actionMenu = _TranslationsGridActionMenuRu._(_root);
 	@override late final _TranslationsGridControllerMessagesRu controllerMessages = _TranslationsGridControllerMessagesRu._(_root);
 	@override late final _TranslationsGridTagWrapRu tagWrap = _TranslationsGridTagWrapRu._(_root);
+	@override late final _TranslationsGridGridItemRu gridItem = _TranslationsGridGridItemRu._(_root);
 }
 
 // Path: group
@@ -17887,6 +18075,7 @@ class _TranslationsChatChatPageControllerRu extends _TranslationsChatChatPageCon
 	@override String get deleteOrKeepMessage => 'Удалить текущий чат или сохранить его в истории?';
 	@override String get deleteCurrentButton => 'Удалить текущий';
 	@override String get keepCurrentButton => 'Оставить текущий';
+	@override String get connectProviderToChatSnackbar => 'Подключите провайдер ИИ, чтобы начать общение.';
 }
 
 // Path: chat.imageGenerationMixin
@@ -17937,6 +18126,7 @@ class _TranslationsChatAppBarChatRu extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => 'Скрыть панель редактора';
 	@override String get showEditorSideBySideTooltip => 'Показать редактор рядом';
+	@override String get chatOptionsTooltip => 'Параметры чата';
 }
 
 // Path: chat.allChatsDrawerList
@@ -18747,6 +18937,17 @@ class _TranslationsEditorNodeEditorFormRu extends _TranslationsEditorNodeEditorF
 	@override String get predicateLabel => 'Предикат';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformRu extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformRu._(_TranslationsRu root) : this._root = root, super._(root);
+
+	@override final _TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => 'Изменения применены';
+	@override String get undoButton => 'Отменить';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateRu extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateRu._(_TranslationsRu root) : this._root = root, super._(root);
@@ -18856,6 +19057,7 @@ class _TranslationsGridFiltersRu extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => 'Избранное';
 	@override String get variantsTooltip => 'Варианты';
 	@override String indexingProgress({required Object done, required Object total}) => 'Построение поиска ${done} / ${total}…';
+	@override String get cardCountTooltip => 'Количество показанных карточек';
 }
 
 // Path: grid.sortOption
@@ -18991,6 +19193,17 @@ class _TranslationsGridTagWrapRu extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemRu extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemRu._(_TranslationsRu root) : this._root = root, super._(root);
+
+	@override final _TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'Редактировать персонажа';
+	@override String get favoriteToggleTooltip => 'Переключить избранное';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerRu extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerRu._(_TranslationsRu root) : this._root = root, super._(root);
@@ -19020,6 +19233,7 @@ class _TranslationsGroupGroupChatPageRu extends _TranslationsGroupGroupChatPageE
 	@override String get noCharactersYetMessage => 'В этой группе пока нет персонажей.';
 	@override String get addCharacterButton => 'Добавить персонажа';
 	@override String get pickCharacterMessage => 'Выберите персонажа из списка слева.';
+	@override String get noAvailableSpeakersSnackbar => 'Нет доступных участников — все отключены.';
 }
 
 // Path: group.groupGridPage
@@ -19834,6 +20048,9 @@ class _TranslationsWorkspaceWorkspacePageRu extends _TranslationsWorkspaceWorksp
 	@override String get rebuildingChatIndexMessage => 'Перестроение индекса чата...';
 	@override String get selectChatToStartMessagingMessage => 'Выберите чат, чтобы начать переписку';
 	@override String get failedToLoadAssistantMessage => 'Не удалось загрузить ассистента.';
+	@override String get connectProviderToChatMessage => 'Подключите провайдер ИИ, чтобы начать общение.';
+	@override String get setUpProviderButton => 'Настроить провайдер ИИ';
+	@override String get startNewChatButton => 'Новый чат';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -20046,6 +20263,7 @@ class _TranslationsEditorZhHans extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageZhHans nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageZhHans._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewZhHans nodesCanvasView = _TranslationsEditorNodesCanvasViewZhHans._(_root);
 	@override late final _TranslationsEditorNodeEditorFormZhHans nodeEditorForm = _TranslationsEditorNodeEditorFormZhHans._(_root);
+	@override late final _TranslationsEditorContentTransformZhHans contentTransform = _TranslationsEditorContentTransformZhHans._(_root);
 }
 
 // Path: grid
@@ -20073,6 +20291,7 @@ class _TranslationsGridZhHans extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuZhHans actionMenu = _TranslationsGridActionMenuZhHans._(_root);
 	@override late final _TranslationsGridControllerMessagesZhHans controllerMessages = _TranslationsGridControllerMessagesZhHans._(_root);
 	@override late final _TranslationsGridTagWrapZhHans tagWrap = _TranslationsGridTagWrapZhHans._(_root);
+	@override late final _TranslationsGridGridItemZhHans gridItem = _TranslationsGridGridItemZhHans._(_root);
 }
 
 // Path: group
@@ -20720,6 +20939,7 @@ class _TranslationsChatChatPageControllerZhHans extends _TranslationsChatChatPag
 	@override String get deleteOrKeepMessage => '你想删除当前对话，还是将它保留在历史中？';
 	@override String get deleteCurrentButton => '删除当前';
 	@override String get keepCurrentButton => '保留当前';
+	@override String get connectProviderToChatSnackbar => '连接一个 AI 服务商即可开始聊天。';
 }
 
 // Path: chat.imageGenerationMixin
@@ -20770,6 +20990,7 @@ class _TranslationsChatAppBarChatZhHans extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => '隐藏编辑器面板';
 	@override String get showEditorSideBySideTooltip => '并排显示编辑器';
+	@override String get chatOptionsTooltip => '聊天选项';
 }
 
 // Path: chat.allChatsDrawerList
@@ -21565,6 +21786,17 @@ class _TranslationsEditorNodeEditorFormZhHans extends _TranslationsEditorNodeEdi
 	@override String get predicateLabel => '条件';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformZhHans extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHans _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => '更改已应用';
+	@override String get undoButton => '撤销';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateZhHans extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
@@ -21671,6 +21903,7 @@ class _TranslationsGridFiltersZhHans extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => '收藏';
 	@override String get variantsTooltip => '变体';
 	@override String indexingProgress({required Object done, required Object total}) => '正在构建搜索 ${done} / ${total}…';
+	@override String get cardCountTooltip => '显示的卡片数量';
 }
 
 // Path: grid.sortOption
@@ -21806,6 +22039,17 @@ class _TranslationsGridTagWrapZhHans extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemZhHans extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHans _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => '编辑角色';
+	@override String get favoriteToggleTooltip => '切换收藏';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerZhHans extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
@@ -21835,6 +22079,7 @@ class _TranslationsGroupGroupChatPageZhHans extends _TranslationsGroupGroupChatP
 	@override String get noCharactersYetMessage => '该群组还没有角色。';
 	@override String get addCharacterButton => '添加角色';
 	@override String get pickCharacterMessage => '从左侧列表中选择一个角色。';
+	@override String get noAvailableSpeakersSnackbar => '没有可用的发言者——所有人都已静音。';
 }
 
 // Path: group.groupGridPage
@@ -22643,6 +22888,9 @@ class _TranslationsWorkspaceWorkspacePageZhHans extends _TranslationsWorkspaceWo
 	@override String get rebuildingChatIndexMessage => '正在重建对话索引…';
 	@override String get selectChatToStartMessagingMessage => '选择一段对话开始聊天';
 	@override String get failedToLoadAssistantMessage => '加载助手失败。';
+	@override String get connectProviderToChatMessage => '连接一个 AI 服务商即可开始聊天。';
+	@override String get setUpProviderButton => '设置 AI 服务商';
+	@override String get startNewChatButton => '新聊天';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -22855,6 +23103,7 @@ class _TranslationsEditorZhHant extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorNodesRawEditorPageZhHant nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageZhHant._(_root);
 	@override late final _TranslationsEditorNodesCanvasViewZhHant nodesCanvasView = _TranslationsEditorNodesCanvasViewZhHant._(_root);
 	@override late final _TranslationsEditorNodeEditorFormZhHant nodeEditorForm = _TranslationsEditorNodeEditorFormZhHant._(_root);
+	@override late final _TranslationsEditorContentTransformZhHant contentTransform = _TranslationsEditorContentTransformZhHant._(_root);
 }
 
 // Path: grid
@@ -22882,6 +23131,7 @@ class _TranslationsGridZhHant extends _TranslationsGridEn {
 	@override late final _TranslationsGridActionMenuZhHant actionMenu = _TranslationsGridActionMenuZhHant._(_root);
 	@override late final _TranslationsGridControllerMessagesZhHant controllerMessages = _TranslationsGridControllerMessagesZhHant._(_root);
 	@override late final _TranslationsGridTagWrapZhHant tagWrap = _TranslationsGridTagWrapZhHant._(_root);
+	@override late final _TranslationsGridGridItemZhHant gridItem = _TranslationsGridGridItemZhHant._(_root);
 }
 
 // Path: group
@@ -23529,6 +23779,7 @@ class _TranslationsChatChatPageControllerZhHant extends _TranslationsChatChatPag
 	@override String get deleteOrKeepMessage => '你想刪除目前的對話，還是保留在記錄中？';
 	@override String get deleteCurrentButton => '刪除目前';
 	@override String get keepCurrentButton => '保留目前';
+	@override String get connectProviderToChatSnackbar => '連線 AI 服務商即可開始聊天。';
 }
 
 // Path: chat.imageGenerationMixin
@@ -23579,6 +23830,7 @@ class _TranslationsChatAppBarChatZhHant extends _TranslationsChatAppBarChatEn {
 	// Translations
 	@override String get hideEditorPanelTooltip => '隱藏編輯器面板';
 	@override String get showEditorSideBySideTooltip => '並排顯示編輯器';
+	@override String get chatOptionsTooltip => '聊天選項';
 }
 
 // Path: chat.allChatsDrawerList
@@ -24374,6 +24626,17 @@ class _TranslationsEditorNodeEditorFormZhHant extends _TranslationsEditorNodeEdi
 	@override String get predicateLabel => '條件式';
 }
 
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformZhHant extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => '變更已套用';
+	@override String get undoButton => '復原';
+}
+
 // Path: grid.emptyState
 class _TranslationsGridEmptyStateZhHant extends _TranslationsGridEmptyStateEn {
 	_TranslationsGridEmptyStateZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
@@ -24480,6 +24743,7 @@ class _TranslationsGridFiltersZhHant extends _TranslationsGridFiltersEn {
 	@override String get favoritesTooltip => '最愛';
 	@override String get variantsTooltip => '變體';
 	@override String indexingProgress({required Object done, required Object total}) => '正在建立搜尋 ${done} / ${total}…';
+	@override String get cardCountTooltip => '顯示的卡片數量';
 }
 
 // Path: grid.sortOption
@@ -24615,6 +24879,17 @@ class _TranslationsGridTagWrapZhHant extends _TranslationsGridTagWrapEn {
 	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
 }
 
+// Path: grid.gridItem
+class _TranslationsGridGridItemZhHant extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => '編輯角色';
+	@override String get favoriteToggleTooltip => '切換收藏';
+}
+
 // Path: group.groupGridController
 class _TranslationsGroupGroupGridControllerZhHant extends _TranslationsGroupGroupGridControllerEn {
 	_TranslationsGroupGroupGridControllerZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
@@ -24644,6 +24919,7 @@ class _TranslationsGroupGroupChatPageZhHant extends _TranslationsGroupGroupChatP
 	@override String get noCharactersYetMessage => '這個群組還沒有任何角色。';
 	@override String get addCharacterButton => '新增角色';
 	@override String get pickCharacterMessage => '從左側清單挑一個角色。';
+	@override String get noAvailableSpeakersSnackbar => '沒有可用的發言者——所有人都已靜音。';
 }
 
 // Path: group.groupGridPage
@@ -25452,6 +25728,9 @@ class _TranslationsWorkspaceWorkspacePageZhHant extends _TranslationsWorkspaceWo
 	@override String get rebuildingChatIndexMessage => '正在重建對話索引…';
 	@override String get selectChatToStartMessagingMessage => '選擇一段對話開始傳訊';
 	@override String get failedToLoadAssistantMessage => '載入助理失敗。';
+	@override String get connectProviderToChatMessage => '連線 AI 服務商即可開始聊天。';
+	@override String get setUpProviderButton => '設定 AI 服務商';
+	@override String get startNewChatButton => '新聊天';
 }
 
 // Path: character.cardEditApproval.modalityLabel
@@ -25633,6 +25912,7 @@ extension on Translations {
 			case 'chat.chatPageController.deleteOrKeepMessage': return 'Would you like to delete the current chat or keep it in your history?';
 			case 'chat.chatPageController.deleteCurrentButton': return 'Delete Current';
 			case 'chat.chatPageController.keepCurrentButton': return 'Keep Current';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'Connect an AI provider to start chatting.';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Enter a prompt to generate an image.';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return 'No character available for image generation.';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'Image generation is not configured.';
@@ -25647,6 +25927,7 @@ extension on Translations {
 			case 'chat.bubbleWaitingFor.generatingVideo': return 'Generating video…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Hide editor panel';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Show editor side-by-side';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'Chat options';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Rebuilding index...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'No chats found.';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Generate media';
@@ -25989,6 +26270,8 @@ extension on Translations {
 			case 'editor.nodeEditorForm.linkExistingChip': return 'Link existing';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'Unlink';
 			case 'editor.nodeEditorForm.predicateLabel': return 'Predicate';
+			case 'editor.contentTransform.appliedSnackbar': return 'Changes applied';
+			case 'editor.contentTransform.undoButton': return 'Undo';
 			case 'grid.emptyState.noMatches': return 'No characters match your filters';
 			case 'grid.emptyState.noCharacters': return 'No characters imported yet';
 			case 'grid.emptyState.clearAllFilters': return 'Clear all filters';
@@ -26026,6 +26309,7 @@ extension on Translations {
 			case 'grid.filters.favoritesTooltip': return 'Favorites';
 			case 'grid.filters.variantsTooltip': return 'Variants';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Building search ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'Number of cards shown';
 			case 'grid.sortOption.relevance': return 'Relevance ↓';
 			case 'grid.sortOption.nameAsc': return 'Name ↓';
 			case 'grid.sortOption.nameDesc': return 'Name ↑';
@@ -26069,6 +26353,8 @@ extension on Translations {
 			case 'grid.controllerMessages.deleteCardMessage': return 'Are you sure you want to delete this card?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Some files could not be deleted. Check logs for details.';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'Edit character';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'Toggle favorite';
 			case 'group.groupGridController.renameGroupTitle': return 'Rename Group';
 			case 'group.groupGridController.groupNameHint': return 'Group name';
 			case 'group.groupGridController.deleteGroupTitle': return 'Delete Group';
@@ -26082,6 +26368,7 @@ extension on Translations {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'This group has no characters yet.';
 			case 'group.groupChatPage.addCharacterButton': return 'Add a character';
 			case 'group.groupChatPage.pickCharacterMessage': return 'Pick a character from the list on the left.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'No available speakers — everyone is muted.';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Failed to load groups:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return 'unknown error';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'No groups yet — tap + to create one.';
@@ -26415,6 +26702,9 @@ extension on Translations {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Rebuilding chat index...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Select a chat to start messaging';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Failed to load assistant.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Connect an AI provider to start chatting.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'Set up AI provider';
+			case 'workspace.workspacePage.startNewChatButton': return 'New chat';
 			default: return null;
 		}
 	}
@@ -26572,6 +26862,7 @@ extension on _TranslationsEs419 {
 			case 'chat.chatPageController.deleteOrKeepMessage': return '¿Quieres eliminar el chat actual o mantenerlo en tu historial?';
 			case 'chat.chatPageController.deleteCurrentButton': return 'Eliminar actual';
 			case 'chat.chatPageController.keepCurrentButton': return 'Mantener actual';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'Conecta un proveedor de IA para empezar a chatear.';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Ingresa un prompt para generar una imagen.';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return 'No hay ningún personaje disponible para generar imágenes.';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'La generación de imágenes no está configurada.';
@@ -26586,6 +26877,7 @@ extension on _TranslationsEs419 {
 			case 'chat.bubbleWaitingFor.generatingVideo': return 'Generando video…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Ocultar panel del editor';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Mostrar editor lado a lado';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'Opciones de chat';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Reconstruyendo índice...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'No se encontraron chats.';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Generar contenido';
@@ -26928,6 +27220,8 @@ extension on _TranslationsEs419 {
 			case 'editor.nodeEditorForm.linkExistingChip': return 'Vincular existente';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'Desvincular';
 			case 'editor.nodeEditorForm.predicateLabel': return 'Predicado';
+			case 'editor.contentTransform.appliedSnackbar': return 'Cambios aplicados';
+			case 'editor.contentTransform.undoButton': return 'Deshacer';
 			case 'grid.emptyState.noMatches': return 'Ningún personaje coincide con tus filtros';
 			case 'grid.emptyState.noCharacters': return 'Aún no se importaron personajes';
 			case 'grid.emptyState.clearAllFilters': return 'Borrar todos los filtros';
@@ -26965,6 +27259,7 @@ extension on _TranslationsEs419 {
 			case 'grid.filters.favoritesTooltip': return 'Favoritos';
 			case 'grid.filters.variantsTooltip': return 'Variantes';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Creando búsqueda ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'Número de tarjetas mostradas';
 			case 'grid.sortOption.relevance': return 'Relevancia ↓';
 			case 'grid.sortOption.nameAsc': return 'Nombre ↓';
 			case 'grid.sortOption.nameDesc': return 'Nombre ↑';
@@ -27008,6 +27303,8 @@ extension on _TranslationsEs419 {
 			case 'grid.controllerMessages.deleteCardMessage': return '¿Seguro que quieres eliminar esta tarjeta?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Algunos archivos no se pudieron eliminar. Consulta los registros para más detalles.';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'Editar personaje';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'Alternar favorito';
 			case 'group.groupGridController.renameGroupTitle': return 'Renombrar grupo';
 			case 'group.groupGridController.groupNameHint': return 'Nombre del grupo';
 			case 'group.groupGridController.deleteGroupTitle': return 'Eliminar grupo';
@@ -27021,6 +27318,7 @@ extension on _TranslationsEs419 {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'Este grupo aún no tiene personajes.';
 			case 'group.groupChatPage.addCharacterButton': return 'Agregar un personaje';
 			case 'group.groupChatPage.pickCharacterMessage': return 'Elige un personaje de la lista de la izquierda.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'No hay participantes disponibles: todos están silenciados.';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Error al cargar los grupos:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return 'error desconocido';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'Aún no hay grupos: toca + para crear uno.';
@@ -27354,6 +27652,9 @@ extension on _TranslationsEs419 {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruyendo el índice de chats...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Selecciona un chat para empezar a chatear';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Error al cargar el asistente.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Conecta un proveedor de IA para empezar a chatear.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'Configurar proveedor de IA';
+			case 'workspace.workspacePage.startNewChatButton': return 'Nuevo chat';
 			default: return null;
 		}
 	}
@@ -27511,6 +27812,7 @@ extension on _TranslationsHi {
 			case 'chat.chatPageController.deleteOrKeepMessage': return 'क्या आप वर्तमान चैट हटाना चाहते हैं या इसे अपने इतिहास में रखना चाहते हैं?';
 			case 'chat.chatPageController.deleteCurrentButton': return 'वर्तमान हटाएं';
 			case 'chat.chatPageController.keepCurrentButton': return 'वर्तमान रखें';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return 'इमेज जनरेट करने के लिए एक प्रॉम्प्ट दर्ज करें।';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return 'इमेज जनरेशन के लिए कोई कैरेक्टर उपलब्ध नहीं है।';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'इमेज जनरेशन कॉन्फ़िगर नहीं किया गया है।';
@@ -27525,6 +27827,7 @@ extension on _TranslationsHi {
 			case 'chat.bubbleWaitingFor.generatingVideo': return 'वीडियो जनरेट हो रहा है…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'एडिटर पैनल छिपाएं';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'एडिटर साथ-साथ दिखाएं';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'चैट विकल्प';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'इंडेक्स फिर से बन रहा है...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'कोई चैट नहीं मिली।';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'मीडिया जनरेट करें';
@@ -27867,6 +28170,8 @@ extension on _TranslationsHi {
 			case 'editor.nodeEditorForm.linkExistingChip': return 'मौजूदा लिंक करें';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'अनलिंक करें';
 			case 'editor.nodeEditorForm.predicateLabel': return 'प्रेडिकेट';
+			case 'editor.contentTransform.appliedSnackbar': return 'परिवर्तन लागू किए गए';
+			case 'editor.contentTransform.undoButton': return 'पूर्ववत करें';
 			case 'grid.emptyState.noMatches': return 'आपके फ़िल्टर से कोई कैरेक्टर मेल नहीं खाता';
 			case 'grid.emptyState.noCharacters': return 'अभी तक कोई कैरेक्टर इम्पोर्ट नहीं किया गया';
 			case 'grid.emptyState.clearAllFilters': return 'सभी फ़िल्टर साफ़ करें';
@@ -27904,6 +28209,7 @@ extension on _TranslationsHi {
 			case 'grid.filters.favoritesTooltip': return 'पसंदीदा';
 			case 'grid.filters.variantsTooltip': return 'वैरिएंट';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'खोज बन रही है ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'दिखाए गए कार्ड की संख्या';
 			case 'grid.sortOption.relevance': return 'प्रासंगिकता ↓';
 			case 'grid.sortOption.nameAsc': return 'नाम ↓';
 			case 'grid.sortOption.nameDesc': return 'नाम ↑';
@@ -27947,6 +28253,8 @@ extension on _TranslationsHi {
 			case 'grid.controllerMessages.deleteCardMessage': return 'क्या आप वाकई यह कार्ड हटाना चाहते हैं?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'कुछ फ़ाइलें हटाई नहीं जा सकीं। विवरण के लिए लॉग देखें।';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'पात्र संपादित करें';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'पसंदीदा टॉगल करें';
 			case 'group.groupGridController.renameGroupTitle': return 'ग्रुप का नाम बदलें';
 			case 'group.groupGridController.groupNameHint': return 'ग्रुप का नाम';
 			case 'group.groupGridController.deleteGroupTitle': return 'ग्रुप हटाएं';
@@ -27960,6 +28268,7 @@ extension on _TranslationsHi {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'इस ग्रुप में अभी तक कोई कैरेक्टर नहीं है।';
 			case 'group.groupChatPage.addCharacterButton': return 'एक कैरेक्टर जोड़ें';
 			case 'group.groupChatPage.pickCharacterMessage': return 'बाईं ओर की सूची से एक कैरेक्टर चुनें।';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'कोई उपलब्ध वक्ता नहीं — सभी म्यूट हैं।';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'ग्रुप लोड करने में विफल:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return 'अज्ञात त्रुटि';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'अभी तक कोई ग्रुप नहीं — एक बनाने के लिए + टैप करें।';
@@ -28293,6 +28602,9 @@ extension on _TranslationsHi {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'चैट इंडेक्स फिर से बन रहा है...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'मैसेजिंग शुरू करने के लिए एक चैट चुनें';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'असिस्टेंट लोड करने में विफल।';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
+			case 'workspace.workspacePage.setUpProviderButton': return 'AI प्रोवाइडर सेट अप करें';
+			case 'workspace.workspacePage.startNewChatButton': return 'नई चैट';
 			default: return null;
 		}
 	}
@@ -28448,6 +28760,7 @@ extension on _TranslationsJa {
 			case 'chat.chatPageController.deleteOrKeepMessage': return '現在のチャットを削除しますか、それとも履歴に残しますか？';
 			case 'chat.chatPageController.deleteCurrentButton': return '現在のを削除';
 			case 'chat.chatPageController.keepCurrentButton': return '現在のを保持';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'チャットを開始するには AI プロバイダーを接続してください。';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return '画像を生成するにはプロンプトを入力してください。';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return '画像生成に使用できるキャラクターがありません。';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return '画像生成が設定されていません。';
@@ -28462,6 +28775,7 @@ extension on _TranslationsJa {
 			case 'chat.bubbleWaitingFor.generatingVideo': return '動画を生成中…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'エディタパネルを非表示';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'エディタを並べて表示';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'チャットオプション';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'インデックスを再構築中...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'チャットが見つかりません。';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'メディアを生成';
@@ -28799,6 +29113,8 @@ extension on _TranslationsJa {
 			case 'editor.nodeEditorForm.linkExistingChip': return '既存とリンク';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'リンク解除';
 			case 'editor.nodeEditorForm.predicateLabel': return '述語';
+			case 'editor.contentTransform.appliedSnackbar': return '変更を適用しました';
+			case 'editor.contentTransform.undoButton': return '元に戻す';
 			case 'grid.emptyState.noMatches': return 'フィルターに一致するキャラクターがありません';
 			case 'grid.emptyState.noCharacters': return 'まだキャラクターがインポートされていません';
 			case 'grid.emptyState.clearAllFilters': return 'すべてのフィルターをクリア';
@@ -28835,6 +29151,7 @@ extension on _TranslationsJa {
 			case 'grid.filters.favoritesTooltip': return 'お気に入り';
 			case 'grid.filters.variantsTooltip': return 'バリアント';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => '検索を構築中 ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return '表示中のカード数';
 			case 'grid.sortOption.relevance': return '関連度 ↓';
 			case 'grid.sortOption.nameAsc': return '名前 ↓';
 			case 'grid.sortOption.nameDesc': return '名前 ↑';
@@ -28878,6 +29195,8 @@ extension on _TranslationsJa {
 			case 'grid.controllerMessages.deleteCardMessage': return 'このカードを削除してもよろしいですか？';
 			case 'grid.controllerMessages.deletePartialFailure': return '一部のファイルを削除できませんでした。詳細はログを確認してください。';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'キャラクターを編集';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'お気に入りを切り替え';
 			case 'group.groupGridController.renameGroupTitle': return 'グループの名前を変更';
 			case 'group.groupGridController.groupNameHint': return 'グループ名';
 			case 'group.groupGridController.deleteGroupTitle': return 'グループを削除';
@@ -28891,6 +29210,7 @@ extension on _TranslationsJa {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'このグループにはまだキャラクターがいません。';
 			case 'group.groupChatPage.addCharacterButton': return 'キャラクターを追加';
 			case 'group.groupChatPage.pickCharacterMessage': return '左のリストからキャラクターを選択してください。';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return '利用可能な話者がいません — 全員がミュートされています。';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'グループの読み込みに失敗しました:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return '不明なエラー';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'まだグループがありません — + をタップして作成してください。';
@@ -29222,6 +29542,9 @@ extension on _TranslationsJa {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'チャットインデックスを再構築中...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'メッセージを始めるにはチャットを選択してください';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'アシスタントの読み込みに失敗しました。';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'チャットを開始するには AI プロバイダーを接続してください。';
+			case 'workspace.workspacePage.setUpProviderButton': return 'AI プロバイダーを設定';
+			case 'workspace.workspacePage.startNewChatButton': return '新しいチャット';
 			default: return null;
 		}
 	}
@@ -29377,6 +29700,7 @@ extension on _TranslationsKo {
 			case 'chat.chatPageController.deleteOrKeepMessage': return '현재 채팅을 삭제할까요, 아니면 기록에 남겨 둘까요?';
 			case 'chat.chatPageController.deleteCurrentButton': return '현재 삭제';
 			case 'chat.chatPageController.keepCurrentButton': return '현재 유지';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return '채팅을 시작하려면 AI 제공자를 연결하세요.';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return '이미지를 생성하려면 프롬프트를 입력하세요.';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return '이미지 생성에 사용할 캐릭터가 없어요.';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return '이미지 생성이 설정되지 않았어요.';
@@ -29391,6 +29715,7 @@ extension on _TranslationsKo {
 			case 'chat.bubbleWaitingFor.generatingVideo': return '비디오 생성 중…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return '편집기 패널 숨기기';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return '편집기 나란히 보기';
+			case 'chat.appBarChat.chatOptionsTooltip': return '채팅 옵션';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return '색인 다시 만드는 중...';
 			case 'chat.allChatsDrawerList.noChatsFound': return '채팅이 없어요.';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return '미디어 생성';
@@ -29728,6 +30053,8 @@ extension on _TranslationsKo {
 			case 'editor.nodeEditorForm.linkExistingChip': return '기존 연결';
 			case 'editor.nodeEditorForm.unlinkTooltip': return '연결 해제';
 			case 'editor.nodeEditorForm.predicateLabel': return '조건';
+			case 'editor.contentTransform.appliedSnackbar': return '변경 사항이 적용되었습니다';
+			case 'editor.contentTransform.undoButton': return '실행 취소';
 			case 'grid.emptyState.noMatches': return '필터와 일치하는 캐릭터가 없어요';
 			case 'grid.emptyState.noCharacters': return '아직 가져온 캐릭터가 없어요';
 			case 'grid.emptyState.clearAllFilters': return '모든 필터 지우기';
@@ -29764,6 +30091,7 @@ extension on _TranslationsKo {
 			case 'grid.filters.favoritesTooltip': return '즐겨찾기';
 			case 'grid.filters.variantsTooltip': return '변형';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => '검색 색인 생성 중 ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return '표시된 카드 수';
 			case 'grid.sortOption.relevance': return '관련도 ↓';
 			case 'grid.sortOption.nameAsc': return '이름 ↓';
 			case 'grid.sortOption.nameDesc': return '이름 ↑';
@@ -29807,6 +30135,8 @@ extension on _TranslationsKo {
 			case 'grid.controllerMessages.deleteCardMessage': return '이 카드를 삭제할까요?';
 			case 'grid.controllerMessages.deletePartialFailure': return '일부 파일을 삭제하지 못했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return '캐릭터 편집';
+			case 'grid.gridItem.favoriteToggleTooltip': return '즐겨찾기 전환';
 			case 'group.groupGridController.renameGroupTitle': return '그룹 이름 바꾸기';
 			case 'group.groupGridController.groupNameHint': return '그룹 이름';
 			case 'group.groupGridController.deleteGroupTitle': return '그룹 삭제';
@@ -29820,6 +30150,7 @@ extension on _TranslationsKo {
 			case 'group.groupChatPage.noCharactersYetMessage': return '이 그룹에는 아직 캐릭터가 없어요.';
 			case 'group.groupChatPage.addCharacterButton': return '캐릭터 추가';
 			case 'group.groupChatPage.pickCharacterMessage': return '왼쪽 목록에서 캐릭터를 선택하세요.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return '사용 가능한 발언자가 없습니다 — 모두 음소거되었습니다.';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => '그룹을 불러오지 못했어요:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return '알 수 없는 오류';
 			case 'group.groupGridPage.noGroupsYetMessage': return '아직 그룹이 없어요 — +를 눌러 만드세요.';
@@ -30151,6 +30482,9 @@ extension on _TranslationsKo {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '채팅 색인 다시 만드는 중...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '메시지를 시작하려면 채팅을 선택하세요';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '어시스턴트를 불러오지 못했어요.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return '채팅을 시작하려면 AI 제공자를 연결하세요.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'AI 제공자 설정';
+			case 'workspace.workspacePage.startNewChatButton': return '새 채팅';
 			default: return null;
 		}
 	}
@@ -30308,6 +30642,7 @@ extension on _TranslationsPtBr {
 			case 'chat.chatPageController.deleteOrKeepMessage': return 'Deseja excluir a conversa atual ou mantê-la no seu histórico?';
 			case 'chat.chatPageController.deleteCurrentButton': return 'Excluir atual';
 			case 'chat.chatPageController.keepCurrentButton': return 'Manter atual';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'Conecte um provedor de IA para começar a conversar.';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Digite um prompt para gerar uma imagem.';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return 'Nenhum personagem disponível para geração de imagem.';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'A geração de imagem não está configurada.';
@@ -30322,6 +30657,7 @@ extension on _TranslationsPtBr {
 			case 'chat.bubbleWaitingFor.generatingVideo': return 'Gerando vídeo…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Ocultar painel do editor';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Mostrar editor lado a lado';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'Opções de chat';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Reconstruindo índice...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'Nenhuma conversa encontrada.';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Gerar mídia';
@@ -30664,6 +31000,8 @@ extension on _TranslationsPtBr {
 			case 'editor.nodeEditorForm.linkExistingChip': return 'Vincular existente';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'Desvincular';
 			case 'editor.nodeEditorForm.predicateLabel': return 'Predicado';
+			case 'editor.contentTransform.appliedSnackbar': return 'Alterações aplicadas';
+			case 'editor.contentTransform.undoButton': return 'Desfazer';
 			case 'grid.emptyState.noMatches': return 'Nenhum personagem corresponde aos seus filtros';
 			case 'grid.emptyState.noCharacters': return 'Nenhum personagem importado ainda';
 			case 'grid.emptyState.clearAllFilters': return 'Limpar todos os filtros';
@@ -30701,6 +31039,7 @@ extension on _TranslationsPtBr {
 			case 'grid.filters.favoritesTooltip': return 'Favoritos';
 			case 'grid.filters.variantsTooltip': return 'Variantes';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Criando busca ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'Número de cartões exibidos';
 			case 'grid.sortOption.relevance': return 'Relevância ↓';
 			case 'grid.sortOption.nameAsc': return 'Nome ↓';
 			case 'grid.sortOption.nameDesc': return 'Nome ↑';
@@ -30744,6 +31083,8 @@ extension on _TranslationsPtBr {
 			case 'grid.controllerMessages.deleteCardMessage': return 'Tem certeza de que deseja excluir este cartão?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Alguns arquivos não puderam ser excluídos. Veja os logs para detalhes.';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'Editar personagem';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'Alternar favorito';
 			case 'group.groupGridController.renameGroupTitle': return 'Renomear grupo';
 			case 'group.groupGridController.groupNameHint': return 'Nome do grupo';
 			case 'group.groupGridController.deleteGroupTitle': return 'Excluir grupo';
@@ -30757,6 +31098,7 @@ extension on _TranslationsPtBr {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'Este grupo ainda não tem personagens.';
 			case 'group.groupChatPage.addCharacterButton': return 'Adicionar um personagem';
 			case 'group.groupChatPage.pickCharacterMessage': return 'Escolha um personagem na lista à esquerda.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'Nenhum participante disponível — todos estão silenciados.';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Falha ao carregar os grupos:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return 'erro desconhecido';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'Nenhum grupo ainda — toque em + para criar um.';
@@ -31090,6 +31432,9 @@ extension on _TranslationsPtBr {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruindo índice de conversas...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Selecione uma conversa para começar';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Falha ao carregar o assistente.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Conecte um provedor de IA para começar a conversar.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'Configurar provedor de IA';
+			case 'workspace.workspacePage.startNewChatButton': return 'Novo chat';
 			default: return null;
 		}
 	}
@@ -31251,6 +31596,7 @@ extension on _TranslationsRu {
 			case 'chat.chatPageController.deleteOrKeepMessage': return 'Удалить текущий чат или сохранить его в истории?';
 			case 'chat.chatPageController.deleteCurrentButton': return 'Удалить текущий';
 			case 'chat.chatPageController.keepCurrentButton': return 'Оставить текущий';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'Подключите провайдер ИИ, чтобы начать общение.';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Введите промпт для генерации изображения.';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return 'Нет персонажа для генерации изображения.';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'Генерация изображений не настроена.';
@@ -31265,6 +31611,7 @@ extension on _TranslationsRu {
 			case 'chat.bubbleWaitingFor.generatingVideo': return 'Генерация видео…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Скрыть панель редактора';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Показать редактор рядом';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'Параметры чата';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Перестроение индекса...';
 			case 'chat.allChatsDrawerList.noChatsFound': return 'Чаты не найдены.';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Сгенерировать медиа';
@@ -31617,6 +31964,8 @@ extension on _TranslationsRu {
 			case 'editor.nodeEditorForm.linkExistingChip': return 'Связать существующий';
 			case 'editor.nodeEditorForm.unlinkTooltip': return 'Отвязать';
 			case 'editor.nodeEditorForm.predicateLabel': return 'Предикат';
+			case 'editor.contentTransform.appliedSnackbar': return 'Изменения применены';
+			case 'editor.contentTransform.undoButton': return 'Отменить';
 			case 'grid.emptyState.noMatches': return 'Нет персонажей по вашим фильтрам';
 			case 'grid.emptyState.noCharacters': return 'Персонажи ещё не импортированы';
 			case 'grid.emptyState.clearAllFilters': return 'Сбросить все фильтры';
@@ -31656,6 +32005,7 @@ extension on _TranslationsRu {
 			case 'grid.filters.favoritesTooltip': return 'Избранное';
 			case 'grid.filters.variantsTooltip': return 'Варианты';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Построение поиска ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'Количество показанных карточек';
 			case 'grid.sortOption.relevance': return 'Релевантность ↓';
 			case 'grid.sortOption.nameAsc': return 'Имя ↓';
 			case 'grid.sortOption.nameDesc': return 'Имя ↑';
@@ -31699,6 +32049,8 @@ extension on _TranslationsRu {
 			case 'grid.controllerMessages.deleteCardMessage': return 'Вы уверены, что хотите удалить эту карточку?';
 			case 'grid.controllerMessages.deletePartialFailure': return 'Некоторые файлы не удалось удалить. Подробности в логах.';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'Редактировать персонажа';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'Переключить избранное';
 			case 'group.groupGridController.renameGroupTitle': return 'Переименовать группу';
 			case 'group.groupGridController.groupNameHint': return 'Название группы';
 			case 'group.groupGridController.deleteGroupTitle': return 'Удалить группу';
@@ -31712,6 +32064,7 @@ extension on _TranslationsRu {
 			case 'group.groupChatPage.noCharactersYetMessage': return 'В этой группе пока нет персонажей.';
 			case 'group.groupChatPage.addCharacterButton': return 'Добавить персонажа';
 			case 'group.groupChatPage.pickCharacterMessage': return 'Выберите персонажа из списка слева.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'Нет доступных участников — все отключены.';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Не удалось загрузить группы:\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return 'неизвестная ошибка';
 			case 'group.groupGridPage.noGroupsYetMessage': return 'Групп пока нет — нажмите +, чтобы создать.';
@@ -32049,6 +32402,9 @@ extension on _TranslationsRu {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Перестроение индекса чата...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Выберите чат, чтобы начать переписку';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Не удалось загрузить ассистента.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Подключите провайдер ИИ, чтобы начать общение.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'Настроить провайдер ИИ';
+			case 'workspace.workspacePage.startNewChatButton': return 'Новый чат';
 			default: return null;
 		}
 	}
@@ -32204,6 +32560,7 @@ extension on _TranslationsZhHans {
 			case 'chat.chatPageController.deleteOrKeepMessage': return '你想删除当前对话，还是将它保留在历史中？';
 			case 'chat.chatPageController.deleteCurrentButton': return '删除当前';
 			case 'chat.chatPageController.keepCurrentButton': return '保留当前';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return '连接一个 AI 服务商即可开始聊天。';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return '输入提示词以生成图像。';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return '没有可用于图像生成的角色。';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return '尚未配置图像生成。';
@@ -32218,6 +32575,7 @@ extension on _TranslationsZhHans {
 			case 'chat.bubbleWaitingFor.generatingVideo': return '正在生成视频…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return '隐藏编辑器面板';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return '并排显示编辑器';
+			case 'chat.appBarChat.chatOptionsTooltip': return '聊天选项';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return '正在重建索引…';
 			case 'chat.allChatsDrawerList.noChatsFound': return '未找到对话。';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return '生成媒体';
@@ -32555,6 +32913,8 @@ extension on _TranslationsZhHans {
 			case 'editor.nodeEditorForm.linkExistingChip': return '链接现有';
 			case 'editor.nodeEditorForm.unlinkTooltip': return '取消链接';
 			case 'editor.nodeEditorForm.predicateLabel': return '条件';
+			case 'editor.contentTransform.appliedSnackbar': return '更改已应用';
+			case 'editor.contentTransform.undoButton': return '撤销';
 			case 'grid.emptyState.noMatches': return '没有符合筛选条件的角色';
 			case 'grid.emptyState.noCharacters': return '还没有导入任何角色';
 			case 'grid.emptyState.clearAllFilters': return '清除所有筛选';
@@ -32591,6 +32951,7 @@ extension on _TranslationsZhHans {
 			case 'grid.filters.favoritesTooltip': return '收藏';
 			case 'grid.filters.variantsTooltip': return '变体';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => '正在构建搜索 ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return '显示的卡片数量';
 			case 'grid.sortOption.relevance': return '相关度 ↓';
 			case 'grid.sortOption.nameAsc': return '名称 ↓';
 			case 'grid.sortOption.nameDesc': return '名称 ↑';
@@ -32634,6 +32995,8 @@ extension on _TranslationsZhHans {
 			case 'grid.controllerMessages.deleteCardMessage': return '确定要删除这张卡片吗？';
 			case 'grid.controllerMessages.deletePartialFailure': return '部分文件无法删除。详情请查看日志。';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return '编辑角色';
+			case 'grid.gridItem.favoriteToggleTooltip': return '切换收藏';
 			case 'group.groupGridController.renameGroupTitle': return '重命名群组';
 			case 'group.groupGridController.groupNameHint': return '群组名称';
 			case 'group.groupGridController.deleteGroupTitle': return '删除群组';
@@ -32647,6 +33010,7 @@ extension on _TranslationsZhHans {
 			case 'group.groupChatPage.noCharactersYetMessage': return '该群组还没有角色。';
 			case 'group.groupChatPage.addCharacterButton': return '添加角色';
 			case 'group.groupChatPage.pickCharacterMessage': return '从左侧列表中选择一个角色。';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return '没有可用的发言者——所有人都已静音。';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => '加载群组失败：\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return '未知错误';
 			case 'group.groupGridPage.noGroupsYetMessage': return '还没有群组——点击 + 创建一个。';
@@ -32978,6 +33342,9 @@ extension on _TranslationsZhHans {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建对话索引…';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '选择一段对话开始聊天';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '加载助手失败。';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return '连接一个 AI 服务商即可开始聊天。';
+			case 'workspace.workspacePage.setUpProviderButton': return '设置 AI 服务商';
+			case 'workspace.workspacePage.startNewChatButton': return '新聊天';
 			default: return null;
 		}
 	}
@@ -33133,6 +33500,7 @@ extension on _TranslationsZhHant {
 			case 'chat.chatPageController.deleteOrKeepMessage': return '你想刪除目前的對話，還是保留在記錄中？';
 			case 'chat.chatPageController.deleteCurrentButton': return '刪除目前';
 			case 'chat.chatPageController.keepCurrentButton': return '保留目前';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return '連線 AI 服務商即可開始聊天。';
 			case 'chat.imageGenerationMixin.enterPromptMessage': return '請輸入提示詞以生成圖片。';
 			case 'chat.imageGenerationMixin.noCharacterMessage': return '沒有可用於圖片生成的角色。';
 			case 'chat.imageGenerationMixin.notConfiguredMessage': return '尚未設定圖片生成。';
@@ -33147,6 +33515,7 @@ extension on _TranslationsZhHant {
 			case 'chat.bubbleWaitingFor.generatingVideo': return '正在生成影片…';
 			case 'chat.appBarChat.hideEditorPanelTooltip': return '隱藏編輯器面板';
 			case 'chat.appBarChat.showEditorSideBySideTooltip': return '並排顯示編輯器';
+			case 'chat.appBarChat.chatOptionsTooltip': return '聊天選項';
 			case 'chat.allChatsDrawerList.rebuildingIndex': return '正在重建索引…';
 			case 'chat.allChatsDrawerList.noChatsFound': return '找不到對話。';
 			case 'chat.chatInputMediaMenu.generateMediaTooltip': return '生成媒體';
@@ -33484,6 +33853,8 @@ extension on _TranslationsZhHant {
 			case 'editor.nodeEditorForm.linkExistingChip': return '連結現有';
 			case 'editor.nodeEditorForm.unlinkTooltip': return '解除連結';
 			case 'editor.nodeEditorForm.predicateLabel': return '條件式';
+			case 'editor.contentTransform.appliedSnackbar': return '變更已套用';
+			case 'editor.contentTransform.undoButton': return '復原';
 			case 'grid.emptyState.noMatches': return '沒有符合篩選條件的角色';
 			case 'grid.emptyState.noCharacters': return '尚未匯入任何角色';
 			case 'grid.emptyState.clearAllFilters': return '清除所有篩選';
@@ -33520,6 +33891,7 @@ extension on _TranslationsZhHant {
 			case 'grid.filters.favoritesTooltip': return '最愛';
 			case 'grid.filters.variantsTooltip': return '變體';
 			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => '正在建立搜尋 ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return '顯示的卡片數量';
 			case 'grid.sortOption.relevance': return '相關性 ↓';
 			case 'grid.sortOption.nameAsc': return '名稱 ↓';
 			case 'grid.sortOption.nameDesc': return '名稱 ↑';
@@ -33563,6 +33935,8 @@ extension on _TranslationsZhHant {
 			case 'grid.controllerMessages.deleteCardMessage': return '確定要刪除這張卡片嗎？';
 			case 'grid.controllerMessages.deletePartialFailure': return '部分檔案無法刪除。詳情請查看記錄。';
 			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return '編輯角色';
+			case 'grid.gridItem.favoriteToggleTooltip': return '切換收藏';
 			case 'group.groupGridController.renameGroupTitle': return '重新命名群組';
 			case 'group.groupGridController.groupNameHint': return '群組名稱';
 			case 'group.groupGridController.deleteGroupTitle': return '刪除群組';
@@ -33576,6 +33950,7 @@ extension on _TranslationsZhHant {
 			case 'group.groupChatPage.noCharactersYetMessage': return '這個群組還沒有任何角色。';
 			case 'group.groupChatPage.addCharacterButton': return '新增角色';
 			case 'group.groupChatPage.pickCharacterMessage': return '從左側清單挑一個角色。';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return '沒有可用的發言者——所有人都已靜音。';
 			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => '載入群組失敗：\n${error}';
 			case 'group.groupGridPage.unknownErrorFallback': return '未知錯誤';
 			case 'group.groupGridPage.noGroupsYetMessage': return '還沒有群組——點一下 + 建立一個。';
@@ -33907,6 +34282,9 @@ extension on _TranslationsZhHant {
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建對話索引…';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '選擇一段對話開始傳訊';
 			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '載入助理失敗。';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return '連線 AI 服務商即可開始聊天。';
+			case 'workspace.workspacePage.setUpProviderButton': return '設定 AI 服務商';
+			case 'workspace.workspacePage.startNewChatButton': return '新聊天';
 			default: return null;
 		}
 	}

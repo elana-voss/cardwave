@@ -49,7 +49,8 @@
     "recentTooltip": "최근",
     "favoritesTooltip": "즐겨찾기",
     "variantsTooltip": "변형",
-    "indexingProgress": "검색 색인 생성 중 $done / $total…"
+    "indexingProgress": "검색 색인 생성 중 $done / $total…",
+    "cardCountTooltip": "표시된 카드 수"
   },
   "sortOption": {
     "relevance": "관련도 ↓",
@@ -113,5 +114,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "캐릭터 편집",
+    "favoriteToggleTooltip": "즐겨찾기 전환"
   }
 }

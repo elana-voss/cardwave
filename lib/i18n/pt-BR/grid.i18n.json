@@ -50,7 +50,8 @@
     "recentTooltip": "Recentes",
     "favoritesTooltip": "Favoritos",
     "variantsTooltip": "Variantes",
-    "indexingProgress": "Criando busca $done / $total…"
+    "indexingProgress": "Criando busca $done / $total…",
+    "cardCountTooltip": "Número de cartões exibidos"
   },
   "sortOption": {
     "relevance": "Relevância ↓",
@@ -114,5 +115,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "Editar personagem",
+    "favoriteToggleTooltip": "Alternar favorito"
   }
 }

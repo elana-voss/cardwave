@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show AppExitResponse;
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/src/models/chat_index.dart';
@@ -37,8 +38,15 @@ class ChatService extends ChangeNotifier {
         if (state == AppLifecycleState.paused ||
             state == AppLifecycleState.hidden ||
             state == AppLifecycleState.detached) {
-          _flushPendingSaves();
+          unawaited(_flushPendingSaves());
         }
+      },
+      // Desktop window close tears down the process without waiting for the
+      // debounced saves; await them here so the last streamed reply / edit
+      // isn't lost. The paused/hidden path stays fire-and-forget (mobile).
+      onExitRequested: () async {
+        await _flushPendingSaves();
+        return AppExitResponse.exit;
       },
     );
   }
@@ -60,27 +68,30 @@ class ChatService extends ChangeNotifier {
   @override
   void dispose() {
     _lifecycleListener?.dispose();
-    _flushPendingSaves();
+    unawaited(_flushPendingSaves());
     activeChat.dispose();
     super.dispose();
   }
 
-  void _flushPendingSaves() {
+  /// Fires every pending debounced save and awaits them all. Awaited by
+  /// `onExitRequested` so desktop window-close persists the pending writes;
+  /// callers that can't wait (dispose, the paused/hidden lifecycle path) may
+  /// ignore the returned future.
+  Future<void> _flushPendingSaves() async {
+    final futures = <Future<void>>[];
     for (final pending in _pendingSaves.values) {
       pending.timer.cancel();
-      unawaited(chatRepository.saveChat(pending.file, pending.session));
+      futures.add(chatRepository.saveChat(pending.file, pending.session));
     }
     _pendingSaves.clear();
+    await Future.wait(futures);
   }
 
   Future<ChatIndex> getChatsForCharacter(
     CharacterFile file, {
     VoidCallback? onRebuild,
   }) {
-    return chatRepository.getChatsForCharacter(
-      file,
-      onRebuild: onRebuild,
-    );
+    return chatRepository.getChatsForCharacter(file, onRebuild: onRebuild);
   }
 
   Future<ChatSession?> getChat(CharacterFile file, String chatId) {

@@ -257,5 +257,9 @@
     "linkExistingChip": "मौजूदा लिंक करें",
     "unlinkTooltip": "अनलिंक करें",
     "predicateLabel": "प्रेडिकेट"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "परिवर्तन लागू किए गए",
+    "undoButton": "पूर्ववत करें"
   }
 }

@@ -150,7 +150,9 @@ mixin ChatImageGenerationMixin
         configId: systemPresetId,
         providers: settings.providerConfigs,
       );
-    } on Exception catch (e) {
+    } catch (e) {
+      // Plain catch: a stale preset id can trip a cast (TypeError) inside
+      // resolvePreset; surface it rather than let the Error escape.
       NavigationService().showSnackBar(
         UtilsLlm.extractUserFriendlyError(e),
       );
@@ -222,8 +224,6 @@ mixin ChatImageGenerationMixin
           } else {
             session.messages.remove(workingMessage);
           }
-          _isGeneratingImage = false;
-          notifyListeners();
           return false;
         }
         imagePrompt = reviewed;
@@ -247,8 +247,6 @@ mixin ChatImageGenerationMixin
         // saved nor attached (the spend already happened); the controller
         // drops the cancelled reply.
         workingMessage.waitingFor = BubbleWaitingForEnum.complete;
-        _isGeneratingImage = false;
-        notifyListeners();
         return false;
       }
 
@@ -274,11 +272,12 @@ mixin ChatImageGenerationMixin
         workingMessage.attachedImages = [relativePath];
       }
       workingMessage.waitingFor = BubbleWaitingForEnum.complete;
-      _isGeneratingImage = false;
-      notifyListeners();
       imageGenPersistSession();
       return true;
-    } on Exception catch (e, st) {
+    } catch (e, st) {
+      // Plain catch: an Error (e.g. TypeError from a malformed provider
+      // response) must not escape — the finally below guarantees the
+      // generating flag is cleared so the feature isn't stuck disabled.
       LoggingService().error('ChatImageGenerationMixin.generateImage', e, st);
       if (isToolTriggered) {
         // Leave the model's prose visible; the absent image is the
@@ -287,14 +286,19 @@ mixin ChatImageGenerationMixin
       } else {
         session.messages.remove(workingMessage);
       }
-      _isGeneratingImage = false;
       NavigationService().showSnackBar(
         e is ImageGenerationServiceException
             ? e.message
             : UtilsLlm.extractUserFriendlyError(e),
       );
-      notifyListeners();
       return false;
+    } finally {
+      // Always release the generation lock and repaint, on every exit path
+      // (success, cancel, review-cancel, Exception, or Error). Previously an
+      // Error left _isGeneratingImage stuck true, permanently disabling the
+      // feature for the session.
+      _isGeneratingImage = false;
+      notifyListeners();
     }
   }
 

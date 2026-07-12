@@ -19,9 +19,7 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(t.editor.findReplaceDialog.confirmReplaceAllTitle),
-        content: Text(
-          t.editor.findReplaceDialog.confirmReplaceAllMessage,
-        ),
+        content: Text(t.editor.findReplaceDialog.confirmReplaceAllMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -78,14 +76,22 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
               ),
             ),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => _confirmAndApply(
-                (text) => text.replaceAll(
-                  _findController.text,
-                  _replaceController.text,
-                ),
+            // Guard against an empty Find: `''.replaceAll('', r)` inserts `r`
+            // between every character, shredding every string on the card.
+            // Disable Replace All until Find is non-empty.
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _findController,
+              builder: (context, findValue, _) => ElevatedButton(
+                onPressed: findValue.text.isEmpty
+                    ? null
+                    : () => _confirmAndApply(
+                        (text) => text.replaceAll(
+                          _findController.text,
+                          _replaceController.text,
+                        ),
+                      ),
+                child: Text(t.editor.findReplaceDialog.replaceAllButton),
               ),
-              child: Text(t.editor.findReplaceDialog.replaceAllButton),
             ),
           ],
         ),

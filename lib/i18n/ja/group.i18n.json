@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "生成を停止",
     "noCharactersYetMessage": "このグループにはまだキャラクターがいません。",
     "addCharacterButton": "キャラクターを追加",
-    "pickCharacterMessage": "左のリストからキャラクターを選択してください。"
+    "pickCharacterMessage": "左のリストからキャラクターを選択してください。",
+    "noAvailableSpeakersSnackbar": "利用可能な話者がいません — 全員がミュートされています。"
   },
   "groupGridPage": {
     "failedToLoadMessage": "グループの読み込みに失敗しました:\n$error",

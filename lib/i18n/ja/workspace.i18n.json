@@ -41,6 +41,9 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "チャットインデックスを再構築中...",
     "selectChatToStartMessagingMessage": "メッセージを始めるにはチャットを選択してください",
-    "failedToLoadAssistantMessage": "アシスタントの読み込みに失敗しました。"
+    "failedToLoadAssistantMessage": "アシスタントの読み込みに失敗しました。",
+    "connectProviderToChatMessage": "チャットを開始するには AI プロバイダーを接続してください。",
+    "setUpProviderButton": "AI プロバイダーを設定",
+    "startNewChatButton": "新しいチャット"
   }
 }

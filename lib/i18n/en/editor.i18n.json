@@ -257,5 +257,9 @@
     "linkExistingChip": "Link existing",
     "unlinkTooltip": "Unlink",
     "predicateLabel": "Predicate"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "Changes applied",
+    "undoButton": "Undo"
   }
 }

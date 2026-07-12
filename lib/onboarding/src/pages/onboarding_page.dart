@@ -5,8 +5,7 @@ import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/onboarding/src/controllers/onboarding_controller.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,7 +68,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           context,
         ).pushNamedAndRemoveUntil('/', (route) => false);
       }
-    } on Exception catch (e, stackTrace) {
+    } catch (e, stackTrace) {
+      // Plain catch: an Error (TypeError/StateError) inside finishOnboarding
+      // must still log and surface the snackbar, not leave the user stuck on
+      // onboarding with no feedback.
       LoggingService().error(
         '[Onboarding] Failed to finish setup',
         e,
@@ -101,13 +103,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: ListenableBuilder(
           listenable: _controller!,
           builder: (context, _) {
-            return _controller!.hasMultipleSteps
+            final layout = _controller!.hasMultipleSteps
                 ? _buildSteppedLayout()
                 : _OnboardingSinglePageLayout(
                     setupBody: _buildSetupBody(),
                     canFinish: _controller!.canFinish,
                     onFinish: _onStepContinue,
                   );
+            // Keep the form readable on wide desktop windows instead of
+            // stretching fields across the whole screen.
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: layout,
+              ),
+            );
           },
         ),
       ),
@@ -323,11 +333,7 @@ class _LoadedRow extends StatelessWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       leading: const Icon(Icons.check_circle, color: Colors.green),
-      title: Text(
-        modelName,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(modelName, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: Text('$ctxText$kvText'),
       trailing: TextButton(
         onPressed: onChange,
@@ -440,10 +446,7 @@ class _OnboardingStorageSelection extends StatelessWidget {
     if (selectedPath != null) {
       return Text(
         t.onboarding.storageStep.selectedPath(path: selectedPath!),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: successColor,
-        ),
+        style: TextStyle(fontWeight: FontWeight.bold, color: successColor),
       );
     }
     if (useDefaultPath) {
@@ -582,10 +585,18 @@ class _OnboardingDisclaimerRow extends StatelessWidget {
     final linkColor = Theme.of(context).colorScheme.primary;
     return Row(
       children: [
-        Checkbox(
-          key: const Key('onboarding-disclaimer'),
-          value: accepted,
-          onChanged: (val) => onChanged(val ?? false),
+        // The label text lives in a sibling node (with an inline link), so the
+        // bare checkbox reads as unlabeled to screen readers. Carry the
+        // disclaimer text on the checkbox's own semantics.
+        Semantics(
+          label:
+              '${t.onboarding.disclaimer.prefix} '
+              '${t.onboarding.disclaimer.linkText}',
+          child: Checkbox(
+            key: const Key('onboarding-disclaimer'),
+            value: accepted,
+            onChanged: (val) => onChanged(val ?? false),
+          ),
         ),
         Expanded(
           child: Wrap(

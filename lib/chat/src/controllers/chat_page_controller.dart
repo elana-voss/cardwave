@@ -170,6 +170,16 @@ class ChatPageController extends ChangeNotifier {
     if (_isDisposed) return;
 
     if (newChat == null) {
+      // The only reachable reason creation returns null here is a missing
+      // chat-domain preset (no AI provider connected). Tell the user instead
+      // of dead-ending silently on their first click.
+      if (settingsService.settings.domainPresetIds[LlmProviderDomainEnum
+              .chat] ==
+          null) {
+        NavigationService().showSnackBar(
+          t.chat.chatPageController.connectProviderToChatSnackbar,
+        );
+      }
       notifyListeners();
     } else {
       final connection = _checkAndHealConnection(newChat);
@@ -229,9 +239,7 @@ class ChatPageController extends ChangeNotifier {
         context: context,
         builder: (context) => AlertDialog(
           title: Text(t.chat.newChatLabel),
-          content: Text(
-            t.chat.chatPageController.deleteOrKeepMessage,
-          ),
+          content: Text(t.chat.chatPageController.deleteOrKeepMessage),
           actions: [
             TextButton(
               key: const Key('dialog-cancel'),
@@ -245,9 +253,7 @@ class ChatPageController extends ChangeNotifier {
                   Navigator.pop(context, NewChatPromptActionEnum.deleteCurrent),
               child: Text(
                 t.chat.chatPageController.deleteCurrentButton,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
             FilledButton(

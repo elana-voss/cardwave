@@ -156,7 +156,8 @@
     "clearButton": "साफ़ करें",
     "deleteOrKeepMessage": "क्या आप वर्तमान चैट हटाना चाहते हैं या इसे अपने इतिहास में रखना चाहते हैं?",
     "deleteCurrentButton": "वर्तमान हटाएं",
-    "keepCurrentButton": "वर्तमान रखें"
+    "keepCurrentButton": "वर्तमान रखें",
+    "connectProviderToChatSnackbar": "चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।"
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "इमेज जनरेट करने के लिए एक प्रॉम्प्ट दर्ज करें।",
@@ -178,7 +179,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "एडिटर पैनल छिपाएं",
-    "showEditorSideBySideTooltip": "एडिटर साथ-साथ दिखाएं"
+    "showEditorSideBySideTooltip": "एडिटर साथ-साथ दिखाएं",
+    "chatOptionsTooltip": "चैट विकल्प"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "इंडेक्स फिर से बन रहा है...",

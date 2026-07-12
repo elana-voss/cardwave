@@ -155,7 +155,8 @@
     "clearButton": "消去",
     "deleteOrKeepMessage": "現在のチャットを削除しますか、それとも履歴に残しますか？",
     "deleteCurrentButton": "現在のを削除",
-    "keepCurrentButton": "現在のを保持"
+    "keepCurrentButton": "現在のを保持",
+    "connectProviderToChatSnackbar": "チャットを開始するには AI プロバイダーを接続してください。"
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "画像を生成するにはプロンプトを入力してください。",
@@ -177,7 +178,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "エディタパネルを非表示",
-    "showEditorSideBySideTooltip": "エディタを並べて表示"
+    "showEditorSideBySideTooltip": "エディタを並べて表示",
+    "chatOptionsTooltip": "チャットオプション"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "インデックスを再構築中...",

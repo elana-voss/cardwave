@@ -74,13 +74,32 @@ class SettingsService extends ChangeNotifier {
       }
     }
 
-    _settings.characterPath ??=
-        await getNativeDefaultCharacterPath(AppConstants.appPackageName);
+    _settings.characterPath ??= await getNativeDefaultCharacterPath(
+      AppConstants.appPackageName,
+    );
     _settingsRepository.setCardsPath(_settings.characterPath);
     notifyListeners();
   }
 
-  Future<void> saveSettings() async {
+  /// Serializes all settings writes. Up to three async flows call
+  /// [saveSettings] concurrently at startup (`_populateModelOptionsOnStartup`,
+  /// `_maybeRunDailyModelRefresh`, `rebuildFromRecovery`) plus every user
+  /// toggle; chaining them here guarantees the two-file (settings + recovery)
+  /// write of one call never interleaves with another's. Each call still
+  /// snapshots the latest in-memory state at the moment its turn runs, so
+  /// last-writer-wins semantics are preserved.
+  Future<void> _pending = Future<void>.value();
+
+  Future<void> saveSettings() {
+    final next = _pending.then((_) => _doSave());
+    // Swallow failures for the chain-continuation copy so one failed save
+    // doesn't poison every subsequent save; the returned future still
+    // surfaces the error to this caller.
+    _pending = next.catchError((_) {});
+    return next;
+  }
+
+  Future<void> _doSave() async {
     await _settingsRepository.saveSettings(_settings.toJson());
     await _settingsRepository.saveRecovery(
       LlmProvidersRecovery(

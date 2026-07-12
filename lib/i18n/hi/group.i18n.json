@@ -14,7 +14,8 @@
     "stopGenerationTooltip": "जनरेशन रोकें",
     "noCharactersYetMessage": "इस ग्रुप में अभी तक कोई कैरेक्टर नहीं है।",
     "addCharacterButton": "एक कैरेक्टर जोड़ें",
-    "pickCharacterMessage": "बाईं ओर की सूची से एक कैरेक्टर चुनें।"
+    "pickCharacterMessage": "बाईं ओर की सूची से एक कैरेक्टर चुनें।",
+    "noAvailableSpeakersSnackbar": "कोई उपलब्ध वक्ता नहीं — सभी म्यूट हैं।"
   },
   "groupGridPage": {
     "failedToLoadMessage": "ग्रुप लोड करने में विफल:\n$error",

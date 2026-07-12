@@ -158,7 +158,8 @@
     "clearButton": "Очистить",
     "deleteOrKeepMessage": "Удалить текущий чат или сохранить его в истории?",
     "deleteCurrentButton": "Удалить текущий",
-    "keepCurrentButton": "Оставить текущий"
+    "keepCurrentButton": "Оставить текущий",
+    "connectProviderToChatSnackbar": "Подключите провайдер ИИ, чтобы начать общение."
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "Введите промпт для генерации изображения.",
@@ -180,7 +181,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "Скрыть панель редактора",
-    "showEditorSideBySideTooltip": "Показать редактор рядом"
+    "showEditorSideBySideTooltip": "Показать редактор рядом",
+    "chatOptionsTooltip": "Параметры чата"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "Перестроение индекса...",

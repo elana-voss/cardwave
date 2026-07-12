@@ -156,7 +156,8 @@
     "clearButton": "Clear",
     "deleteOrKeepMessage": "Would you like to delete the current chat or keep it in your history?",
     "deleteCurrentButton": "Delete Current",
-    "keepCurrentButton": "Keep Current"
+    "keepCurrentButton": "Keep Current",
+    "connectProviderToChatSnackbar": "Connect an AI provider to start chatting."
   },
   "imageGenerationMixin": {
     "enterPromptMessage": "Enter a prompt to generate an image.",
@@ -178,7 +179,8 @@
   },
   "appBarChat": {
     "hideEditorPanelTooltip": "Hide editor panel",
-    "showEditorSideBySideTooltip": "Show editor side-by-side"
+    "showEditorSideBySideTooltip": "Show editor side-by-side",
+    "chatOptionsTooltip": "Chat options"
   },
   "allChatsDrawerList": {
     "rebuildingIndex": "Rebuilding index...",

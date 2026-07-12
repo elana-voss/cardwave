@@ -52,7 +52,8 @@
     "recentTooltip": "Недавние",
     "favoritesTooltip": "Избранное",
     "variantsTooltip": "Варианты",
-    "indexingProgress": "Построение поиска $done / $total…"
+    "indexingProgress": "Построение поиска $done / $total…",
+    "cardCountTooltip": "Количество показанных карточек"
   },
   "sortOption": {
     "relevance": "Релевантность ↓",
@@ -116,5 +117,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "Редактировать персонажа",
+    "favoriteToggleTooltip": "Переключить избранное"
   }
 }

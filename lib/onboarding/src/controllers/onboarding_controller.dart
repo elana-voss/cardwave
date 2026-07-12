@@ -228,12 +228,22 @@ class OnboardingController extends ChangeNotifier {
         requireZdr: requireZdr,
       );
       settingsService.settings.providerConfigs.add(profile);
-      await _llmManagementService.refreshProviderModels(
-        settings: settingsService.settings,
-        profile: profile,
-        trigger: ModelRefreshTriggerEnum.manual,
-        preFetchedModels: models,
-      );
+      try {
+        await _llmManagementService.refreshProviderModels(
+          settings: settingsService.settings,
+          profile: profile,
+          trigger: ModelRefreshTriggerEnum.manual,
+          preFetchedModels: models,
+        );
+      } catch (_) {
+        // Roll back the half-added provider before rethrowing, so a retry
+        // (tapping Finish again) doesn't duplicate it and no phantom
+        // empty-model provider is left stranded in Settings.
+        settingsService.settings.providerConfigs.removeWhere(
+          (p) => p.id == profile.id,
+        );
+        rethrow;
+      }
     }
 
     if (localGgufProfile != null) {
@@ -245,16 +255,25 @@ class OnboardingController extends ChangeNotifier {
       // chat/assistant/system preset assigned, and the user lands on
       // an empty chat after finishing onboarding. Same call the
       // Settings "Add Local GGUF" flow makes via `applyProviderAdd`.
-      settingsService.settings.providerConfigs.add(localGgufProfile!);
-      await _llmManagementService.refreshProviderModels(
-        settings: settingsService.settings,
-        profile: localGgufProfile!,
-        trigger: ModelRefreshTriggerEnum.manual,
-        preFetchedModels: localGgufProfile!.models,
-      );
+      final localProfile = localGgufProfile!;
+      settingsService.settings.providerConfigs.add(localProfile);
+      try {
+        await _llmManagementService.refreshProviderModels(
+          settings: settingsService.settings,
+          profile: localProfile,
+          trigger: ModelRefreshTriggerEnum.manual,
+          preFetchedModels: localProfile.models,
+        );
+      } catch (_) {
+        // Same rollback as the cloud-provider block above.
+        settingsService.settings.providerConfigs.removeWhere(
+          (p) => p.id == localProfile.id,
+        );
+        rethrow;
+      }
     }
 
-    settingsService.settings.activePersona.name = personaName;
+    settingsService.settings.activePersona.name = personaName.trim();
     settingsService.settings.onboardingComplete = true;
 
     await settingsService.saveSettings();

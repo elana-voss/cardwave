@@ -32,11 +32,11 @@ class TaxonomyRepository {
   final Map<String, TaxonomyTag> _tags = {};
 
   Future<void> init() async {
+    final exists = await AppStorage.instance.fileExists(
+      StorageDomainEnum.settings,
+      AppConstants.taxonomyFileName,
+    );
     try {
-      final exists = await AppStorage.instance.fileExists(
-        StorageDomainEnum.settings,
-        AppConstants.taxonomyFileName,
-      );
       final raw = exists
           ? await AppStorage.instance.readString(
               StorageDomainEnum.settings,
@@ -44,8 +44,25 @@ class TaxonomyRepository {
             )
           : await rootBundle.loadString(AppConstants.taxonomyAssetPath);
       hydrateFromJson(raw);
-    } on Exception catch (e, st) {
+    } catch (e, st) {
+      // Plain catch: a structurally-corrupt user file throws TypeError (an
+      // Error, not an Exception) from the cast/fromJson. When the user copy
+      // was the source, fall back to the bundled seed once before giving up
+      // — the app must not die over a broken file that has a good default.
       loggingService.error('Failed to load taxonomy', e, st);
+      if (exists) {
+        try {
+          hydrateFromJson(
+            await rootBundle.loadString(AppConstants.taxonomyAssetPath),
+          );
+        } catch (e2, st2) {
+          loggingService.error(
+            'Failed to load bundled taxonomy fallback',
+            e2,
+            st2,
+          );
+        }
+      }
     }
   }
 
@@ -54,9 +71,7 @@ class TaxonomyRepository {
   /// and exposed for tests that seed the repo without going through
   /// AppStorage / rootBundle.
   void hydrateFromJson(String raw) {
-    final data = TaxonomyData.fromJson(
-      jsonDecode(raw) as Map<String, dynamic>,
-    );
+    final data = TaxonomyData.fromJson(jsonDecode(raw) as Map<String, dynamic>);
     _groups.clear();
     _tags.clear();
     for (final g in data.groups) {

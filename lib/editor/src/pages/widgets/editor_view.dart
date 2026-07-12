@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
@@ -74,10 +75,42 @@ class EditorViewState extends State<EditorView> {
   // ignore: qcheck/prefer_widget_private_members
   void applyCleaner(String Function(String) processor) {
     if (!mounted) return;
+    // Snapshot the whole card before the bulk transform. The editor has no
+    // general undo, and find/replace + content-cleaner actions touch every
+    // field (name, description, tags, lorebook), so a mistaken run — e.g. an
+    // empty-find replace — would otherwise be unrecoverable. Both callers
+    // funnel through here, so this single snapshot covers all of them.
+    final snapshot = jsonEncode(widget.characterFile.card.toJson());
     widget.characterFile.card.transformAllStrings(processor);
     _editorVersion++;
     _triggerJsonCacheAutoSave();
     setState(() {});
+    _offerUndo(snapshot);
+  }
+
+  /// Shows a snackbar with an Undo action that restores the card from
+  /// [snapshot] (a `jsonEncode`d card taken before a bulk transform),
+  /// re-keying the panels and autosaving the restored state.
+  void _offerUndo(String snapshot) {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.clearSnackBars();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(t.editor.contentTransform.appliedSnackbar),
+        action: SnackBarAction(
+          label: t.editor.contentTransform.undoButton,
+          onPressed: () {
+            if (!mounted) return;
+            widget.characterFile.card = CharacterCardV3.fromJson(
+              jsonDecode(snapshot) as Map<String, dynamic>,
+            );
+            _editorVersion++;
+            _triggerJsonCacheAutoSave();
+            setState(() {});
+          },
+        ),
+      ),
+    );
   }
 
   // Reached via GlobalKey<EditorViewState> from the parent route.
@@ -206,6 +239,7 @@ class EditorViewState extends State<EditorView> {
             ],
           );
         }
+
         ///
         /// Smaller than Desktop
         ///

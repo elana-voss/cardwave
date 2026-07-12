@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show AppExitResponse;
 
 import 'package:cardwave/character/src/models/card_list_item.dart';
 import 'package:cardwave/character/src/models/character_file.dart';
@@ -95,6 +96,14 @@ class CharacterService extends ChangeNotifier {
           unawaited(_flushDirtyFilesToPng());
         }
       },
+      // On desktop, window close fires onExitRequested before the process is
+      // torn down. Await the dirty-PNG flush here (the paused/hidden path
+      // above can stay fire-and-forget on mobile) so unsaved card edits in the
+      // 1s debounce window reach disk before exit.
+      onExitRequested: () async {
+        await _flushDirtyFilesToPng();
+        return AppExitResponse.exit;
+      },
     );
   }
   final CharacterRepository characterRepository;
@@ -184,9 +193,9 @@ class CharacterService extends ChangeNotifier {
     limit: limit,
   );
 
-  Future<Map<String, ({int variantCount, bool isOriginal})>> variantInfoForPaths(
-    List<String> paths,
-  ) => characterRepository.variantInfoForPaths(paths);
+  Future<Map<String, ({int variantCount, bool isOriginal})>>
+  variantInfoForPaths(List<String> paths) =>
+      characterRepository.variantInfoForPaths(paths);
 
   Future<List<CardListItem>> cardsByPaths(
     List<String> paths,
@@ -226,7 +235,9 @@ class CharacterService extends ChangeNotifier {
   Future<List<CharacterFile>> loadByAppCardIds(List<String> ids) =>
       _loadPaths(characterRepository.pathsByAppCardIds(ids));
 
-  Future<List<CharacterFile>> _loadPaths(Future<List<String>> pathsFuture) async {
+  Future<List<CharacterFile>> _loadPaths(
+    Future<List<String>> pathsFuture,
+  ) async {
     final paths = await pathsFuture;
     final files = <CharacterFile>[];
     for (final path in paths) {
@@ -351,9 +362,7 @@ class CharacterService extends ChangeNotifier {
     }
 
     if (hasError) {
-      throw const CharacterDeleteException(
-        'Some files could not be deleted.',
-      );
+      throw const CharacterDeleteException('Some files could not be deleted.');
     }
   }
 
@@ -455,8 +464,11 @@ class CharacterService extends ChangeNotifier {
       await characterFile.updateTokenCounts();
       await characterRepository.saveJsonInPNGandCache(characterFile);
 
-      PaintingBinding.instance.imageCache.clear();
-      PaintingBinding.instance.imageCache.clearLiveImages();
+      // No global imageCache clear here: this path re-embeds JSON into the
+      // PNG without changing the pixels, and card thumbnails/avatars are
+      // rendered via content-keyed `Image.memory` (see ImageCharacter), so a
+      // global clear only forced every unrelated image app-wide to re-decode
+      // — a visible flicker/jank spike — without refreshing this card.
 
       await characterRepository.upsertLibraryRow(characterFile);
       _dirtyCards.remove(characterFile.appCardImagePath);
@@ -630,10 +642,7 @@ class CharacterService extends ChangeNotifier {
                     );
               case CharacterLoadingPhaseEnum.processing:
                 _loadingStatus = t.character.loadingStatus
-                    .loadingCharactersProgress(
-                      current: current,
-                      total: total,
-                    );
+                    .loadingCharactersProgress(current: current, total: total);
             }
             notifyListeners();
           }

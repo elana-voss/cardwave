@@ -40,7 +40,8 @@ class IOGroup {
       );
       final json = jsonDecode(content) as Map<String, dynamic>;
       return GroupFile.fromJson(json);
-    } on Exception catch (e) {
+    } catch (e) {
+      // Plain catch: a corrupt group.json throws TypeError, not Exception.
       loggingService.error('Error loading group $groupId: $e');
       return null;
     }
@@ -85,7 +86,9 @@ class IOGroup {
         );
         final json = jsonDecode(content) as Map<String, dynamic>;
         results.add(GroupFile.fromJson(json));
-      } on Exception catch (e) {
+      } catch (e) {
+        // Plain catch: skip a corrupt group.json (TypeError) rather than
+        // abort the whole listing.
         loggingService.error('Error loading group $filePath: $e');
       }
     }

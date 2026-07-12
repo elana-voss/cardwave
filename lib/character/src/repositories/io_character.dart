@@ -365,6 +365,17 @@ class IOCharacter {
         StorageDomainEnum.cards,
         characterFile.appCardImagePath,
       );
+      // Keep a one-deep backup of the last-known-good PNG before re-embedding
+      // and overwriting it. The atomic write (see AppStorageWindows) prevents a
+      // torn file, but a bug in embedJsonInPng could still produce a valid-but-
+      // wrong PNG; unlike settings.json the user's artwork has no recovery
+      // mirror, so this `.bak` is its only safety net. `.bak` is excluded from
+      // library scans because they filter to the `.png` extension.
+      await appStorage.writeBytes(
+        StorageDomainEnum.cards,
+        '${characterFile.appCardImagePath}.bak',
+        Uint8List.fromList(imageBytes),
+      );
       final newBytes = UtilsPng.embedJsonInPng(
         characterFile.card,
         Uint8List.fromList(imageBytes),
@@ -461,6 +472,12 @@ class IOCharacter {
         StorageDomainEnum.cards,
         characterFile.appCardImagePath,
       );
+    }
+    // Also remove the `.bak` sidecar written by _saveJsonInPNG; otherwise a
+    // full copy of the "deleted" card (artwork + embedded data) stays on disk.
+    final bakPath = '${characterFile.appCardImagePath}.bak';
+    if (await appStorage.fileExists(StorageDomainEnum.cards, bakPath)) {
+      await appStorage.deleteFile(StorageDomainEnum.cards, bakPath);
     }
     // Delete entire character cache folder (card.json, card.thumb.png, chats/).
     if (await appStorage.directoryExists(

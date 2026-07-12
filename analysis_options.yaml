@@ -1,8 +1,8 @@
 include:
-  - ../../qcheck/app/lib/recommended.yaml
-  - ../../qcheck/app/lib/provider.yaml
-  - ../../qcheck/app/lib/flutter.yaml
-  - ../../qcheck/app/lib/pub.yaml
+  - ../qcheck/app/lib/recommended.yaml
+  - ../qcheck/app/lib/provider.yaml
+  - ../qcheck/app/lib/flutter.yaml
+  - ../qcheck/app/lib/pub.yaml
 
 analyzer:
   exclude:
@@ -22,14 +22,14 @@ linter:
     - close_sinks # Prevents memory leaks (qcheck's dispose_class_fields covers only classes with a cleanup method)
 
 # qcheck — Flutter/Dart code-quality analyzer (third-party).
-# CLI: `..\..\qcheck\build\qcheck.exe analyze lib/` (no --preset flag —
+# CLI: `..\qcheck\build\qcheck.exe analyze lib/` (no --preset flag —
 # the `include:` above already selects `recommended`, so the CLI inherits it).
 # In-editor: loaded as an analysis_server_plugin via the top-level `plugins:`
 # block below (NOT `analyzer: plugins:` — that's the legacy mechanism).
-# qcheck lives at `..\..\qcheck` (sibling of `own_card_editor/`), not inside this repo.
+# qcheck lives at `..\qcheck` (sibling of `cardwave/`), not inside this repo.
 plugins:
   qcheck:
-    path: ../../qcheck/app
+    path: ../qcheck/app
 
 qcheck:
   exclude:

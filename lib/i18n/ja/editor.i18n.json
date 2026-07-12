@@ -255,5 +255,9 @@
     "linkExistingChip": "既存とリンク",
     "unlinkTooltip": "リンク解除",
     "predicateLabel": "述語"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "変更を適用しました",
+    "undoButton": "元に戻す"
   }
 }

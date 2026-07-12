@@ -41,6 +41,9 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "चैट इंडेक्स फिर से बन रहा है...",
     "selectChatToStartMessagingMessage": "मैसेजिंग शुरू करने के लिए एक चैट चुनें",
-    "failedToLoadAssistantMessage": "असिस्टेंट लोड करने में विफल।"
+    "failedToLoadAssistantMessage": "असिस्टेंट लोड करने में विफल।",
+    "connectProviderToChatMessage": "चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।",
+    "setUpProviderButton": "AI प्रोवाइडर सेट अप करें",
+    "startNewChatButton": "नई चैट"
   }
 }

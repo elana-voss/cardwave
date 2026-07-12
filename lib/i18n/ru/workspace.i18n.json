@@ -41,6 +41,9 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "Перестроение индекса чата...",
     "selectChatToStartMessagingMessage": "Выберите чат, чтобы начать переписку",
-    "failedToLoadAssistantMessage": "Не удалось загрузить ассистента."
+    "failedToLoadAssistantMessage": "Не удалось загрузить ассистента.",
+    "connectProviderToChatMessage": "Подключите провайдер ИИ, чтобы начать общение.",
+    "setUpProviderButton": "Настроить провайдер ИИ",
+    "startNewChatButton": "Новый чат"
   }
 }

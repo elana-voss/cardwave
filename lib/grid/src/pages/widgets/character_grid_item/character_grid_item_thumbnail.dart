@@ -67,18 +67,21 @@ class _FavoriteOverlay extends StatelessWidget {
           file.card.cardwaveData.isFavorite = !isFavorite;
           unawaited(context.read<CharacterService>().saveJsonInCacheNow(file));
         },
-        child: Container(
-          padding: const EdgeInsets.all(_overlayMargin),
-          decoration: BoxDecoration(
-            color: Colors.black.withAlpha(_backgroundAlphaOverlay),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            isFavorite ? Icons.favorite : Icons.favorite_border,
-            color: isFavorite
-                ? Theme.of(context).colorScheme.error
-                : Colors.white,
-            size: _favoriteIconSize,
+        child: Tooltip(
+          message: Translations.of(context).grid.gridItem.favoriteToggleTooltip,
+          child: Container(
+            padding: const EdgeInsets.all(_overlayMargin),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(_backgroundAlphaOverlay),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite
+                  ? Theme.of(context).colorScheme.error
+                  : Colors.white,
+              size: _favoriteIconSize,
+            ),
           ),
         ),
       ),
@@ -102,7 +105,9 @@ class _RecentOverlay extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.tertiaryContainer,
-          borderRadius: const BorderRadius.all(Radius.circular(_badgeBorderRadius)),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(_badgeBorderRadius),
+          ),
         ),
         child: Text(
           t.grid.thumbnailBadges.recent,
@@ -137,7 +142,9 @@ class _VariantOverlay extends StatelessWidget {
           color: isOriginal
               ? Theme.of(context).colorScheme.secondaryContainer
               : Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: const BorderRadius.all(Radius.circular(_badgeBorderRadius)),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(_badgeBorderRadius),
+          ),
         ),
         child: Text(
           isOriginal

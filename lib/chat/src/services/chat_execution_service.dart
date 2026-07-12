@@ -451,8 +451,12 @@ class ChatExecutionService {
             generationMs: totalMs,
             inputTokens: null,
           );
-        } on Exception catch (e) {
-          streamController.addError(e);
+        } catch (e, st) {
+          // Plain catch: an Error (TypeError from a stale preset cast,
+          // StateError from a provider SDK) must reach the controller as a
+          // stream error. Otherwise `finally` closes the stream cleanly, the
+          // controller sees an empty reply, and the bubble is silently dropped.
+          streamController.addError(e, st);
         } finally {
           await streamController.close();
         }
@@ -557,8 +561,10 @@ class ChatExecutionService {
               modelUsed: model.id,
             ),
           );
-        } on Exception catch (e) {
-          streamController.addError(e);
+        } catch (e, st) {
+          // Plain catch: forward Errors as stream errors too (see the
+          // generate-reply path above) and preserve the stack trace.
+          streamController.addError(e, st);
         } finally {
           await streamController.close();
         }

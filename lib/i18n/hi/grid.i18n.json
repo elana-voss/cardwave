@@ -50,7 +50,8 @@
     "recentTooltip": "हाल का",
     "favoritesTooltip": "पसंदीदा",
     "variantsTooltip": "वैरिएंट",
-    "indexingProgress": "खोज बन रही है $done / $total…"
+    "indexingProgress": "खोज बन रही है $done / $total…",
+    "cardCountTooltip": "दिखाए गए कार्ड की संख्या"
   },
   "sortOption": {
     "relevance": "प्रासंगिकता ↓",
@@ -114,5 +115,9 @@
   },
   "tagWrap": {
     "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "पात्र संपादित करें",
+    "favoriteToggleTooltip": "पसंदीदा टॉगल करें"
   }
 }

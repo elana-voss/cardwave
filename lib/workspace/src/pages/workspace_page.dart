@@ -210,7 +210,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
                               editorKey: _editorKey,
                             ),
                             assistantChat: _AssistantChat(
-                              assistantChatController: _assistantChatController!,
+                              assistantChatController:
+                                  _assistantChatController!,
                               editorController: editorController,
                             ),
                           ),
@@ -265,6 +266,22 @@ class _PrimaryChat extends StatelessWidget {
   final ChatPageController primaryChatController;
   final CharacterFile characterFile;
 
+  /// Opens the Settings add-provider dialog and persists on save, via the
+  /// same [ProvidersController] flow the missing-provider banner uses.
+  Future<void> _openProviderSetup(BuildContext context) async {
+    final settingsService = context.read<SettingsService>();
+    final mgmt = context.read<LlmManagementService>();
+    final added = await ProvidersController.openProviderAddDialog(
+      isLocal: false,
+    );
+    if (added == null) return;
+    await ProvidersController.applyProviderAdd(
+      settingsService: settingsService,
+      mgmt: mgmt,
+      added: added,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Translations.of(context);
@@ -287,8 +304,44 @@ class _PrimaryChat extends StatelessWidget {
       );
     }
     if (primaryChatController.selectedChat == null) {
+      // watch (not read): after the user adds a provider via the button
+      // below, the empty state should rebuild and swap to the "New chat" CTA.
+      final settings = context.watch<SettingsService>().settings;
+      final hasChatPreset =
+          settings.domainPresetIds[LlmProviderDomainEnum.chat] != null;
       return Center(
-        child: Text(t.workspace.workspacePage.selectChatToStartMessagingMessage),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: hasChatPreset
+              ? [
+                  Text(
+                    t.workspace.workspacePage.selectChatToStartMessagingMessage,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: Text(t.workspace.workspacePage.startNewChatButton),
+                    onPressed: () =>
+                        unawaited(primaryChatController.createNewChat()),
+                  ),
+                ]
+              : [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      t.workspace.workspacePage.connectProviderToChatMessage,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.link),
+                    label: Text(t.workspace.workspacePage.setUpProviderButton),
+                    onPressed: () => unawaited(_openProviderSetup(context)),
+                  ),
+                ],
+        ),
       );
     }
     return ChangeNotifierProvider<BaseChatViewController>(
@@ -391,7 +444,7 @@ class _AssistantChat extends StatelessWidget {
             toolDispatcher: ctx.read<ToolDispatcher>(),
             chatRepository: ctx.read<ChatRepository>(),
             memoryService: ctx.read<CardwaveMemoryModule>().memoryService,
-        nodesService: ctx.read<CardwaveNodesModule>().nodesService,
+            nodesService: ctx.read<CardwaveNodesModule>().nodesService,
             dataContextProvider: editorController.getCharacterDataJson,
           ),
           child: ChatView(
