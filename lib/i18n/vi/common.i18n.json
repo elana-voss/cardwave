@@ -1,0 +1,156 @@
+{
+  "actions": {
+    "delete": "Xóa",
+    "ok": "OK",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "tryAgain": "Thử lại",
+    "close": "Đóng"
+  },
+  "appSearchField": {
+    "hint": "Tìm kiếm..."
+  },
+  "aiAction": {
+    "proofread": "Soát lỗi",
+    "compact": "Cô đọng văn bản",
+    "translate": "Dịch sang tiếng Anh",
+    "generatePreview": "Tạo bản xem trước",
+    "autoTag": "Tự động gắn tag"
+  },
+  "aiActionsTooltip": "Thao tác AI",
+  "promptSegmentKind": {
+    "identity": "Danh tính",
+    "systemPrompt": "Prompt hệ thống",
+    "nsfwMode": "Chế độ NSFW",
+    "scenarioMode": "Chế độ kịch bản",
+    "description": "Mô tả",
+    "personality": "Tính cách",
+    "scenario": "Kịch bản",
+    "userPersona": "Persona của bạn",
+    "memory": "Ký ức",
+    "situation": "Tình huống",
+    "cardData": "Dữ liệu thẻ",
+    "tools": "Công cụ",
+    "postHistory": "Sau lịch sử",
+    "depthPrompt": "Prompt theo độ sâu",
+    "worldInfo": "Thông tin thế giới",
+    "injected": "Được chèn",
+    "exampleDialogue": "Hội thoại mẫu",
+    "history": "Lịch sử tin nhắn",
+    "currentMessage": "Tin nhắn hiện tại",
+    "reservedReply": "Dự trữ cho phản hồi"
+  },
+  "promptBreakdown": {
+    "free": "Còn trống"
+  },
+  "logs": {
+    "title": "Nhật ký",
+    "filterTooltip": "Lọc nhật ký",
+    "clearTooltip": "Xóa nhật ký",
+    "exportTooltip": "Xuất nhật ký",
+    "searchHint": "Tìm trong nhật ký...",
+    "noLogsFound": "Không tìm thấy nhật ký nào.",
+    "noLogsToExport": "Không có nhật ký để xuất",
+    "exportedSuccessfully": "Đã xuất nhật ký thành công",
+    "exportFailed": "Không thể xuất nhật ký. Xem nhật ký để biết chi tiết.",
+    "copiedToClipboard": "Đã sao chép vào bộ nhớ tạm",
+    "copyLogButton": "Sao chép nhật ký",
+    "copiedEntryToClipboard": "Đã sao chép mục nhật ký vào bộ nhớ tạm",
+    "errorPrefix": "Lỗi: $error"
+  },
+  "importErrorsDialog": {
+    "title": "Lỗi nhập",
+    "message": "Không thể nhập các tệp sau:"
+  },
+  "updateDialog": {
+    "title": "Có phiên bản mới",
+    "body": "Đã có phiên bản mới hơn của $appName.\n\nPhiên bản hiện tại: $currentVersion\nPhiên bản mới nhất: $latestVersion",
+    "releaseNotesLabel": "Ghi chú phát hành:",
+    "viewReleasesButton": "Xem các bản phát hành"
+  },
+  "importConflictsDialog": {
+    "title": "Xung đột khi nhập",
+    "message(plural)": {
+      "other": "$n nhân vật sau bị trùng tên tệp và sẽ được tự động đổi tên:"
+    }
+  },
+  "missingProviderBanner": {
+    "message": "Kết nối một nhà cung cấp AI.",
+    "setUpNowButton": "Thiết lập ngay"
+  },
+  "modelSelectionDialog": {
+    "searchHint": "Tìm mô hình",
+    "subscriptionOnlyToggle": "Chỉ hiện mô hình thuộc gói đăng ký ($included/$total)"
+  },
+  "showAdvanced": {
+    "less": "Thu gọn",
+    "more": "Xem thêm"
+  },
+  "messageEditDialog": {
+    "title": "Chỉnh sửa tin nhắn"
+  },
+  "promptBreakdownDialog": {
+    "title": "Phân tích prompt",
+    "breakdownTab": "Phân tích",
+    "contentTab": "Nội dung",
+    "promptTotalEstimated": "Tổng prompt (ước tính)",
+    "promptTotalProvider": "Tổng prompt (nhà cung cấp)",
+    "contextWindowLabel": "Cửa sổ ngữ cảnh",
+    "categoryHeader": "DANH MỤC",
+    "tokensHeader": "TOKEN",
+    "usageHeader": "SỬ DỤNG",
+    "noContentToInspect": "Không có nội dung để xem cho phản hồi này.",
+    "estimatedSuffix": " (ước tính)",
+    "usedSummary": "Đã dùng $used / $total"
+  },
+  "jsonPromptDialog": {
+    "title": "Prompt tạo sinh"
+  },
+  "progressDialog": {
+    "defaultMessage": "Đang gửi...",
+    "finished": "Hoàn tất!"
+  },
+  "diffPanel": {
+    "tokenSuffix(plural)": {
+      "other": " ($n token)"
+    }
+  },
+  "selectionDialog": {
+    "searchHint": "Tìm kiếm…"
+  },
+  "zdrSwitch": {
+    "title": "Yêu cầu Zero Data Retention (ZDR)",
+    "subtitle": "Chỉ hiện các mô hình OR có endpoint tuân thủ ZDR. Bật nếu tài khoản openrouter.ai của bạn giới hạn ở các nhà cung cấp ZDR."
+  },
+  "textFieldCard": {
+    "labelWithTokenCount(plural)": {
+      "other": "$label - $n token"
+    },
+    "tokenCountAbbrev": "$count t"
+  },
+  "modelCapability": {
+    "reasoning": "Suy luận",
+    "vision": "Thị giác",
+    "tools": "Công cụ",
+    "json": "JSON",
+    "files": "Tệp",
+    "image": "Hình ảnh",
+    "video": "Video",
+    "speech": "Giọng nói",
+    "music": "Âm nhạc"
+  },
+  "modelUnavailableTooltip": "Mô hình này không còn được nhà cung cấp hỗ trợ — hãy chọn mô hình khác.",
+  "characterImageSemanticLabel": "Ảnh nhân vật",
+  "appConstants": {
+    "maxImageFileSizeLabel": "10 MB",
+    "exportFailedMessage": "Xuất thất bại. Xem nhật ký để biết chi tiết."
+  },
+  "timeAgo": {
+    "years": "$n năm trước",
+    "months": "$n tháng trước",
+    "days": "$n ngày trước",
+    "hours": "$n giờ trước",
+    "minutes": "$n phút trước",
+    "justNow": "Vừa xong"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "promptPrefixDialog": {
+    "styleKeywordsLabel": "Từ khóa phong cách",
+    "imageTitle": "Phong cách hình ảnh",
+    "imageDescription": "Được thêm vào đầu mọi prompt tạo ảnh cho nhân vật này (ví dụ: \"phong cách anime, màu sắc rực rỡ\").",
+    "imageHint": "phong cách anime, màu sắc rực rỡ",
+    "videoTitle": "Phong cách video",
+    "videoDescription": "Được thêm vào đầu mọi prompt tạo video cho nhân vật này (ví dụ: \"điện ảnh, độ sâu trường ảnh nông, hạt phim 24fps\"). Mô hình video phản ứng tốt với từ vựng về chuyển động và máy quay; hãy giữ ngắn gọn.",
+    "videoHint": "điện ảnh, độ sâu trường ảnh nông"
+  },
+  "cardEditApproval": {
+    "denyAll": "Từ chối tất cả",
+    "approveAll": "Duyệt tất cả",
+    "confirm": "Xác nhận",
+    "dialogTitle": "Trợ lý đề xuất thay đổi",
+    "dontAskAgainFor": "Không hỏi lại đối với $modality",
+    "modalityLabel": {
+      "edits": "chỉnh sửa",
+      "additions": "bổ sung",
+      "deletions": "xóa bỏ"
+    },
+    "modalityVerb": {
+      "edit": "Chỉnh sửa",
+      "addition": "Thêm vào",
+      "deletion": "Xóa khỏi"
+    },
+    "tapToDeny": "Nhấn để từ chối",
+    "tapToApprove": "Nhấn để duyệt",
+    "reasonLabel": "Lý do (không bắt buộc, sẽ gửi lại cho trợ lý)",
+    "newEntryTitle": "Mục mới",
+    "removingTitle": "Đang xóa",
+    "beforeTitle": "Trước",
+    "afterTitle": "Sau"
+  },
+  "requireApprovalTile": {
+    "edits": "Yêu cầu duyệt: chỉnh sửa",
+    "additions": "Yêu cầu duyệt: bổ sung",
+    "deletions": "Yêu cầu duyệt: xóa bỏ"
+  },
+  "loadingStatus": {
+    "initial": "Đang tải...",
+    "copyingAssistant": "Đang sao chép trợ lý...",
+    "scanningForCharacters": "Đang quét nhân vật...",
+    "scanningForCharactersProgress": "Đang quét nhân vật...\n$current / $total",
+    "loadingCharactersProgress": "Đang tải nhân vật...\n$current / $total"
+  },
+  "savePathValidation": {
+    "noLibraryFolder": "Chưa cấu hình thư mục thư viện.",
+    "mustBeInsideLibrary": "Nhân vật phải được lưu trong thư mục thư viện của bạn."
+  },
+  "characterFilesTypeGroupLabel": "Tệp nhân vật",
+  "createController": {
+    "pngImagesTypeGroupLabel": "Ảnh PNG",
+    "invalidLocationTitle": "Vị trí không hợp lệ",
+    "creationFailedTitle": "Tạo thất bại",
+    "creationFailedMessage": "Không thể tạo nhân vật. Kiểm tra nhật ký để biết chi tiết."
+  },
+  "importController": {
+    "failedToImport": "Không thể nhập $fileName.",
+    "importedCount(plural)": {
+      "other": "Đã nhập $n nhân vật"
+    }
+  },
+  "aiActionController": {
+    "aiActionFailed": "Thao tác AI thất bại. Kiểm tra nhật ký để biết chi tiết.",
+    "processingProgress": "Đang xử lý $name ($current/$total)...$eta",
+    "etaHoursMinutes": " Còn lại: ${hours}g ${minutes}p",
+    "etaMinutesSeconds": " Còn lại: ${minutes}p ${seconds}s",
+    "etaSeconds": " Còn lại: ${seconds}s",
+    "processingField": "Đang xử lý $fieldName..."
+  }
+}

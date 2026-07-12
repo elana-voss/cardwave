@@ -1,0 +1,54 @@
+{
+  "mediaField": {
+    "imageModel": "Mô hình hình ảnh",
+    "imageAspectRatio": "Tỷ lệ khung hình ảnh",
+    "imageNsfwAllowed": "Cho phép hình ảnh NSFW",
+    "imageToolSelfieAllowed": "Có thể gửi ảnh selfie",
+    "imageToolSelfieCaptionsAllowed": "Cho phép chú thích selfie",
+    "imagePromptPrefix": "Phong cách hình ảnh",
+    "videoModel": "Mô hình video",
+    "videoResolution": "Độ phân giải video",
+    "videoAspectRatio": "Tỷ lệ khung hình video",
+    "videoDuration": "Thời lượng video",
+    "videoNsfwAllowed": "Cho phép video NSFW",
+    "videoToolSendAllowed": "Có thể gửi video",
+    "videoPromptPrefix": "Phong cách video",
+    "ttsModel": "Mô hình TTS",
+    "ttsVoice": "Giọng TTS",
+    "ttsLanguage": "Ngôn ngữ TTS",
+    "webToolFetchAllowed": "Cho phép truy xuất web",
+    "nameToolSuggestAllowed": "Có thể gợi ý tên NPC"
+  },
+  "mediaSection": {
+    "image": "Hình ảnh",
+    "video": "Video",
+    "tts": "TTS",
+    "web": "Web",
+    "names": "Tên"
+  },
+  "tristate": {
+    "on": "Bật",
+    "off": "Tắt",
+    "inherit": "Kế thừa"
+  },
+  "mediaCellMenu": {
+    "change": "Thay đổi…",
+    "clear": "Xóa"
+  },
+  "mediaHeader": {
+    "appDefault": "Mặc định ứng dụng",
+    "character": "Nhân vật",
+    "currentChat": "Cuộc trò chuyện hiện tại",
+    "previousLayerTooltip": "Lớp trước",
+    "nextLayerTooltip": "Lớp sau"
+  },
+  "presetRow": {
+    "changeAppDefaultTitle": "Thay đổi mặc định của ứng dụng?",
+    "changeAppDefaultMessage": "Điều này ảnh hưởng tới mọi cuộc trò chuyện. Tiếp tục?",
+    "continueButton": "Tiếp tục",
+    "chooseModelTitle": "Chọn mô hình $domain"
+  },
+  "mediaCell": {
+    "notApplicable": "Không áp dụng"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "emptyState": {
+    "noMatches": "Không có nhân vật nào khớp với bộ lọc",
+    "noCharacters": "Chưa nhập nhân vật nào",
+    "clearAllFilters": "Xóa tất cả bộ lọc",
+    "importCharacters": "Nhập nhân vật",
+    "createNewCharacter": "Tạo nhân vật mới"
+  },
+  "appBar": {
+    "groups": "Nhóm",
+    "createNew": "Tạo mới",
+    "import": "Nhập",
+    "menuTooltip": "Menu"
+  },
+  "fab": {
+    "addOrImportTooltip": "Thêm hoặc nhập",
+    "import": "Nhập",
+    "create": "Tạo"
+  },
+  "drawer": {
+    "mediaDefaultsApp": "Ứng dụng",
+    "batchAiHeader": "AI hàng loạt",
+    "batchGeneratePreviewsTitle": "Tạo bản xem trước hàng loạt",
+    "batchGeneratePreviewsEmpty": "Tất cả nhân vật đã có bản xem trước.",
+    "batchAutoTagTitle": "Tự động gắn tag hàng loạt",
+    "batchAutoTagEmpty": "Tất cả nhân vật đã có tag.",
+    "libraryHeader": "Thư viện",
+    "reloadCharacters": "Tải lại nhân vật"
+  },
+  "variantBadge": {
+    "tooltip(plural)": {
+      "other": "$n biến thể"
+    }
+  },
+  "dialogActions": {
+    "clearAll": "Xóa tất cả",
+    "apply": "Áp dụng"
+  },
+  "tagFilterDialog": {
+    "title": "Lọc tag",
+    "searchHint": "Tìm tag..."
+  },
+  "filters": {
+    "hideFiltersTooltip": "Ẩn bộ lọc",
+    "moreFiltersTooltip": "Thêm bộ lọc",
+    "folderChip": "Thư mục",
+    "creatorChip": "Tác giả",
+    "tagChip": "Tag",
+    "recentTooltip": "Gần đây",
+    "favoritesTooltip": "Yêu thích",
+    "variantsTooltip": "Biến thể",
+    "indexingProgress": "Đang xây dựng tìm kiếm $done / $total…",
+    "cardCountTooltip": "Số thẻ đang hiển thị"
+  },
+  "sortOption": {
+    "relevance": "Liên quan ↓",
+    "nameAsc": "Tên ↓",
+    "nameDesc": "Tên ↑",
+    "importNewest": "Đã nhập ↓",
+    "importOldest": "Đã nhập ↑",
+    "modifiedNewest": "Đã sửa ↓",
+    "modifiedOldest": "Đã sửa ↑",
+    "interactedNewest": "Tương tác ↓",
+    "interactedOldest": "Tương tác ↑",
+    "tokensHigh": "Token ↓",
+    "tokensLow": "Token ↑"
+  },
+  "filterController": {
+    "filterCreators": "Lọc tác giả",
+    "filterTags": "Lọc tag",
+    "filterByFolder": "Lọc theo thư mục"
+  },
+  "multiSelectDialog": {
+    "nothingToShow": "Chưa có gì để hiển thị.",
+    "noMatches": "Không có kết quả.",
+    "showMore": "Xem thêm"
+  },
+  "createCharacterDialog": {
+    "nameEmptyError": "Tên nhân vật không được để trống.",
+    "nameInvalidCharsError": "Tên chứa ký tự không hợp lệ (<>:\"/\\|?*).",
+    "nameExistsError": "Đã tồn tại nhân vật với tên này.",
+    "nameCheckFailedError": "Không thể kiểm tra tên. Kiểm tra quyền truy cập thư mục và thử lại.",
+    "title": "Tạo nhân vật mới",
+    "nameLabel": "Tên nhân vật",
+    "createButton": "Tạo"
+  },
+  "variantsSheet": {
+    "title": "Biến thể"
+  },
+  "groupAppBar": {
+    "characters": "Nhân vật",
+    "newGroup": "Nhóm mới"
+  },
+  "thumbnailBadges": {
+    "recent": "GẦN ĐÂY",
+    "original": "GỐC",
+    "variant": "BIẾN THỂ"
+  },
+  "actionMenu": {
+    "editNotes": "Sửa ghi chú",
+    "dismissRecent": "Bỏ đánh dấu gần đây",
+    "exportPngV2V3": "Xuất ra PNG (V2/V3)",
+    "exportJsonV3": "Xuất ra JSON (V3)",
+    "exportJsonV2": "Xuất ra JSON (V2)",
+    "duplicate": "Nhân bản"
+  },
+  "controllerMessages": {
+    "duplicateFailed": "Không thể nhân bản nhân vật.",
+    "editVariantNotesTitle": "Sửa ghi chú biến thể",
+    "editVariantNotesHint": "Thêm ghi chú về biến thể này...",
+    "deleteCardTitle": "Xóa thẻ",
+    "deleteCardMessage": "Bạn có chắc muốn xóa thẻ này không?",
+    "deletePartialFailure": "Một số tệp không thể xóa. Kiểm tra nhật ký để biết chi tiết."
+  },
+  "tagWrap": {
+    "tagCountLabel": "$tag ($count)"
+  },
+  "gridItem": {
+    "editTooltip": "Chỉnh sửa nhân vật",
+    "favoriteToggleTooltip": "Bật/tắt yêu thích"
+  }
+}

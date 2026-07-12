@@ -1,0 +1,112 @@
+{
+  "groupGridController": {
+    "renameGroupTitle": "Đổi tên nhóm",
+    "groupNameHint": "Tên nhóm",
+    "deleteGroupTitle": "Xóa nhóm",
+    "deleteGroupMessage": "Bạn có chắc muốn xóa \"$name\" không? Không thể hoàn tác."
+  },
+  "groupChatPage": {
+    "defaultGroupName": "Trò chuyện nhóm",
+    "failedToLoadMessage": "Không thể tải trò chuyện nhóm:\n$error",
+    "nextTurnTooltip": "Lượt tiếp theo",
+    "stopAutoChatTooltip": "Dừng trò chuyện tự động",
+    "startAutoChatTooltip": "Bắt đầu trò chuyện tự động",
+    "stopGenerationTooltip": "Dừng tạo sinh",
+    "noCharactersYetMessage": "Nhóm này chưa có nhân vật nào.",
+    "addCharacterButton": "Thêm nhân vật",
+    "pickCharacterMessage": "Chọn một nhân vật từ danh sách bên trái.",
+    "noAvailableSpeakersSnackbar": "Không có ai để nói — tất cả đều đang bị tắt tiếng."
+  },
+  "groupGridPage": {
+    "failedToLoadMessage": "Không thể tải nhóm:\n$error",
+    "unknownErrorFallback": "lỗi không xác định",
+    "noGroupsYetMessage": "Chưa có nhóm nào — nhấn + để tạo."
+  },
+  "tileAutoChatDelay": {
+    "title": "Độ trễ trò chuyện tự động",
+    "secondsAbbrev": "${seconds}s"
+  },
+  "tileActivationStrategy": {
+    "title": "Chọn người nói",
+    "naturalOption": "Tự nhiên",
+    "roundRobinOption": "Xoay vòng",
+    "randomOption": "Ngẫu nhiên",
+    "changeSelectionTooltip": "Thay đổi cách chọn người nói"
+  },
+  "groupChatPageEndDrawer": {
+    "allowWebFetchTitle": "Cho phép truy xuất web",
+    "allowWebFetchSubtitle": "Đọc trang web công khai khi phù hợp",
+    "reviewUrlTitle": "Xem lại URL trước khi truy xuất",
+    "reviewUrlSubtitle": "Xác nhận từng lần truy xuất",
+    "suggestNpcNamesTitle": "Gợi ý tên NPC",
+    "suggestNpcNamesSubtitle": "Chọn tên từ cơ sở dữ liệu tuyển chọn",
+    "unrestrictedImagesTitle": "Hình ảnh không giới hạn",
+    "allowNsfwImagePromptsSubtitle": "Cho phép prompt hình ảnh NSFW",
+    "characterCanSendSelfiesTitle": "Nhân vật có thể gửi ảnh selfie",
+    "attachSelfieWhenNaturalSubtitle": "Đính kèm ảnh selfie khi tự nhiên",
+    "reviewImagePromptTitle": "Xem lại prompt hình ảnh",
+    "editBeforeGeneratingSubtitle": "Chỉnh sửa trước khi tạo",
+    "reviewToolImagePromptsTitle": "Xem lại prompt hình ảnh từ công cụ",
+    "editToolTriggeredPromptsSubtitle": "Chỉnh sửa prompt do công cụ kích hoạt",
+    "allowSelfieCaptionsTitle": "Cho phép chú thích selfie",
+    "captionRenderedOnImageSubtitle": "Chú thích được vẽ lên hình ảnh",
+    "groupOverridesTitle": "Ghi đè của nhóm",
+    "groupOverridesSubtitle": "Kịch bản chung, prompt chính, hội thoại mẫu",
+    "chatSessionSubtitle": "Phiên trò chuyện",
+    "allChatsLabel": "Tất cả cuộc trò chuyện",
+    "showImageLabel": "Hiện hình ảnh",
+    "groupSectionHeader": "Nhóm",
+    "chatSectionHeader": "Trò chuyện",
+    "chatThemeSectionHeader": "Chủ đề trò chuyện",
+    "unrestrictedVideosTitle": "Video không giới hạn",
+    "allowNsfwVideoPromptsSubtitle": "Cho phép prompt video NSFW",
+    "characterCanSendVideosTitle": "Nhân vật có thể gửi video",
+    "attachShortVideoWhenNaturalSubtitle": "Đính kèm video ngắn khi tự nhiên",
+    "reviewVideoPromptTitle": "Xem lại prompt video"
+  },
+  "groupCharacterPicker": {
+    "addButton": "Thêm",
+    "addWithCountButton": "Thêm $count",
+    "favoritesTooltip": "Yêu thích",
+    "noMatchMessage": "Không có nhân vật nào khớp với \"$query\"",
+    "noFavoritesMessage": "Không có nhân vật yêu thích nào",
+    "allAddedMessage": "Đã thêm tất cả nhân vật"
+  },
+  "groupCharacterTile": {
+    "speakTooltip": "Cho nhân vật này nói",
+    "removeFromChatTitle": "Xóa khỏi cuộc trò chuyện"
+  },
+  "dialogCreateGroup": {
+    "title": "Nhóm mới",
+    "nameLabel": "Tên",
+    "nameHint": "ví dụ: Bob & Alice"
+  },
+  "dialogGroupOverrides": {
+    "explanationMessage": "Chỉ áp dụng cho cuộc trò chuyện này. Mọi thành viên nhóm dùng các giá trị này thay cho những gì thẻ nhân vật của họ định nghĩa. Để trống để dùng lại giá trị trên thẻ.",
+    "scenarioHint": "Bối cảnh chung cho nhóm (ví dụ: \"Trong một quán cà phê ở Paris\")",
+    "mainPromptLabel": "Prompt chính",
+    "mainPromptHint": "Prompt hệ thống áp dụng trong mỗi lượt",
+    "exampleDialogueLabel": "Hội thoại mẫu",
+    "exampleDialogueHint": "Tin nhắn mẫu chung về giọng điệu / định dạng"
+  },
+  "groupCharacterPanel": {
+    "addCharacterButton": "Thêm nhân vật",
+    "noCharactersYetMessage": "Chưa có nhân vật nào.\nNhấn + để thêm."
+  },
+  "dialogSelectGroup": {
+    "deleteGroupTitle": "Xóa nhóm?",
+    "deleteGroupMessage": "\"$name\" và toàn bộ phiên trò chuyện của nhóm sẽ bị xóa vĩnh viễn.",
+    "title": "Nhóm",
+    "noGroupsYetMessage": "Chưa có nhóm nào. Nhấn \"Nhóm mới\" để tạo.",
+    "memberCountLabel(plural)": {
+      "other": "$n thành viên"
+    }
+  },
+  "groupGridItem": {
+    "overflowCountBadge": "+$count",
+    "noMembersYetMessage": "Chưa có thành viên"
+  },
+  "groupFileService": {
+    "defaultGroupName": "Nhóm"
+  }
+}

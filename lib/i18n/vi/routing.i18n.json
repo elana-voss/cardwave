@@ -1,0 +1,11 @@
+{
+  "chatCharacter": {
+    "navigationError": "Lỗi điều hướng tới trò chuyện. Nhân vật: $name"
+  },
+  "editCharacter": {
+    "navigationError": "Lỗi điều hướng tới chỉnh sửa. Nhân vật: $name"
+  },
+  "editPreset": {
+    "navigationError": "Lỗi điều hướng tới chỉnh sửa preset: $presetId"
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "tileAiProvider": {
+    "modelLabel": "Mô hình",
+    "invalidLabel": "Không hợp lệ",
+    "chooseModelTitle": "Chọn một mô hình"
+  },
+  "presetTile": {
+    "tapToChoose": "Nhấn để chọn"
+  },
+  "tileImagePreset": {
+    "titleLabel": "Mô hình hình ảnh",
+    "chooseModelTitle": "Chọn mô hình hình ảnh"
+  },
+  "tileVideoPreset": {
+    "titleLabel": "Mô hình video",
+    "chooseModelTitle": "Chọn mô hình video"
+  },
+  "tileTtsPreset": {
+    "titleLabel": "Mô hình giọng nói",
+    "chooseModelTitle": "Chọn mô hình giọng nói"
+  },
+  "tileImageAspectRatio": {
+    "label": "Tỷ lệ khung hình ảnh"
+  },
+  "tileVideoAspectRatio": {
+    "label": "Tỷ lệ khung hình"
+  },
+  "tileVideoResolution": {
+    "label": "Độ phân giải"
+  },
+  "tileVideoDuration": {
+    "label": "Thời lượng"
+  },
+  "tileTtsVoice": {
+    "label": "Giọng đọc"
+  },
+  "tileTtsLanguage": {
+    "label": "Ngôn ngữ"
+  },
+  "tileNsfw": {
+    "label": "NSFW / Không giới hạn"
+  },
+  "tileScenario": {
+    "label": "Kịch bản"
+  },
+  "tileMaxResponseLength": {
+    "titleWithBucket": "Độ dài phản hồi — $bucket",
+    "sliderLabel": "$bucket ($tokens token)",
+    "bucketVeryShort": "Rất ngắn",
+    "bucketShort": "Ngắn",
+    "bucketMedium": "Trung bình",
+    "bucketLong": "Dài",
+    "bucketVeryLong": "Rất dài"
+  },
+  "tileTrailingParagraph": {
+    "label": "Cắt văn bản thừa ở cuối"
+  },
+  "tileReasoningEffort": {
+    "titleWithEffort": "Suy luận — $effort",
+    "titleOff": "Tắt suy luận",
+    "extraTokensCaption": "Dùng thêm token ngoài độ dài phản hồi tối đa của bạn."
+  },
+  "tileChatTheme": {
+    "label": "Chủ đề"
+  },
+  "tileRecalledMemory": {
+    "label": "Hiện ký ức được gợi lại"
+  },
+  "characterSwitcher": {
+    "favoritesTooltip": "Yêu thích",
+    "recentChatsTooltip": "Cuộc trò chuyện gần đây",
+    "originalBadge": "GỐC",
+    "variantBadge": "BIẾN THỂ",
+    "lastActive": "Hoạt động gần nhất: $timeAgo",
+    "never": "Chưa từng"
+  },
+  "freeImagePromptDialog": {
+    "title": "Tạo hình ảnh",
+    "description": "Mô tả những gì bạn muốn thấy. Một cụm từ ngắn là đủ — mô hình sẽ mở rộng thành danh sách tag đầy đủ.",
+    "subjectLabel": "Chủ thể",
+    "subjectHint": "hẻm cyberpunk, mưa neon",
+    "generateButton": "Tạo"
+  },
+  "freeVideoPromptDialog": {
+    "title": "Tạo video",
+    "description": "Mô tả một khoảnh khắc chuyển động ngắn — cái gì đang chuyển động, như thế nào, ở đâu. Mô hình hệ thống sẽ mở rộng thành prompt T2V điện ảnh.",
+    "subjectLabel": "Chủ thể",
+    "subjectHint": "cô ấy bước đi trong mưa neon, chuyển động chậm",
+    "generateButton": "Tạo"
+  },
+  "imagePromptReviewDialog": {
+    "title": "Xem lại prompt hình ảnh",
+    "description": "Chỉnh sửa prompt bên dưới trước khi tạo, hoặc nhấn Tạo để dùng nguyên bản.",
+    "fieldLabel": "Prompt hình ảnh",
+    "generateButton": "Tạo"
+  },
+  "videoPromptReviewDialog": {
+    "title": "Xem lại prompt video",
+    "description": "Chỉnh sửa prompt bên dưới trước khi gửi, hoặc nhấn Tạo để dùng nguyên bản.",
+    "fieldLabel": "Prompt video",
+    "generateButton": "Tạo"
+  },
+  "urlFetchReviewDialog": {
+    "title": "Cho phép truy xuất web?",
+    "description": "Nhân vật muốn đọc nội dung của URL này.",
+    "purposeLabel": "Mục đích:",
+    "denyButton": "Từ chối",
+    "allowButton": "Cho phép"
+  },
+  "messageActionsRow": {
+    "tokenCountAbbrev": "${count}t",
+    "generationTimeAbbrev": "${seconds}s",
+    "viewGenerationPromptTooltip": "Xem prompt tạo sinh",
+    "messageActionsTooltip": "Thao tác tin nhắn",
+    "editAction": "Chỉnh sửa",
+    "copyAction": "Sao chép",
+    "shareImageAction": "Chia sẻ hình ảnh",
+    "setAsBackgroundAction": "Đặt làm hình nền",
+    "setAsCharacterImageAction": "Đặt làm ảnh nhân vật",
+    "deleteAction": "Xóa",
+    "copiedToClipboard": "Đã sao chép tin nhắn vào bộ nhớ tạm"
+  },
+  "ttsPlayButton": {
+    "stopTooltip": "Dừng",
+    "readAloudTooltip": "Đọc to",
+    "ttsFailed": "TTS thất bại."
+  },
+  "messageSwipeFlipper": {
+    "previousVersionTooltip": "Phiên bản trước",
+    "swipeCounter": "$current / $total",
+    "regenerateTooltip": "Tạo lại",
+    "nextVersionTooltip": "Phiên bản sau"
+  },
+  "videoPlayerInline": {
+    "webUnsupported": "Không hỗ trợ phát video trên web.",
+    "couldNotLoad": "Không thể tải video."
+  },
+  "newChatLabel": "Cuộc trò chuyện mới",
+  "chatListItem": {
+    "messageCount(plural)": {
+      "other": "$n tin nhắn"
+    },
+    "renameAction": "Đổi tên",
+    "deleteChatAction": "Xóa cuộc trò chuyện"
+  },
+  "chatHistoryController": {
+    "renameChatTitle": "Đổi tên cuộc trò chuyện",
+    "chatNameHint": "Tên cuộc trò chuyện",
+    "renameButton": "Đổi tên",
+    "deleteChatTitle": "Xóa cuộc trò chuyện",
+    "deleteChatMessage": "Bạn có chắc muốn xóa lịch sử trò chuyện này không? Hành động này không thể hoàn tác."
+  },
+  "chatPageController": {
+    "clearAssistantHistoryMessage": "Xóa lịch sử trò chuyện với trợ lý?",
+    "clearButton": "Xóa",
+    "deleteOrKeepMessage": "Bạn muốn xóa cuộc trò chuyện hiện tại hay giữ lại trong lịch sử?",
+    "deleteCurrentButton": "Xóa hiện tại",
+    "keepCurrentButton": "Giữ lại",
+    "connectProviderToChatSnackbar": "Kết nối một nhà cung cấp AI để bắt đầu trò chuyện."
+  },
+  "imageGenerationMixin": {
+    "enterPromptMessage": "Nhập prompt để tạo hình ảnh.",
+    "noCharacterMessage": "Không có nhân vật nào để tạo hình ảnh.",
+    "notConfiguredMessage": "Chưa cấu hình tạo hình ảnh.",
+    "noSystemModelMessage": "Chưa cấu hình mô hình hệ thống. Thiết lập trong Cài đặt → AI."
+  },
+  "videoGenerationMixin": {
+    "enterPromptMessage": "Nhập prompt để tạo video.",
+    "noCharacterMessage": "Không có nhân vật nào để tạo video.",
+    "notConfiguredMessage": "Chưa cấu hình tạo video."
+  },
+  "bubbleWaitingFor": {
+    "thinking": "Đang suy nghĩ…",
+    "preparingImagePrompt": "Đang chuẩn bị prompt hình ảnh…",
+    "preparingVideoPrompt": "Đang chuẩn bị prompt video…",
+    "generatingImage": "Đang tạo hình ảnh…",
+    "generatingVideo": "Đang tạo video…"
+  },
+  "appBarChat": {
+    "hideEditorPanelTooltip": "Ẩn bảng chỉnh sửa",
+    "showEditorSideBySideTooltip": "Hiện trình chỉnh sửa song song",
+    "chatOptionsTooltip": "Tùy chọn trò chuyện"
+  },
+  "allChatsDrawerList": {
+    "rebuildingIndex": "Đang xây dựng lại chỉ mục...",
+    "noChatsFound": "Không tìm thấy cuộc trò chuyện nào."
+  },
+  "chatInputMediaMenu": {
+    "generateMediaTooltip": "Tạo media",
+    "generateImageLabel": "Tạo hình ảnh",
+    "generateVideoLabel": "Tạo video"
+  },
+  "chatView": {
+    "deleteMessageTitle": "Xóa tin nhắn",
+    "deleteMessageConfirmation": "Bạn có chắc muốn xóa tin nhắn này không?",
+    "typeMessageHint": "Nhập tin nhắn...",
+    "moreActionsTooltip": "Thêm thao tác",
+    "continueAction": "Tiếp tục",
+    "impersonateAction": "Viết thay bạn",
+    "generateReplyAction": "Tạo phản hồi",
+    "improveMessageAction": "Cải thiện tin nhắn"
+  },
+  "chatMessageBubble": {
+    "imagesTypeGroupLabel": "Hình ảnh",
+    "assistantFallbackName": "Trợ lý",
+    "reasoningLabel": "Suy luận",
+    "sendingToProvider": "Đang gửi tới nhà cung cấp…",
+    "pollingWithPercent": "Đang chờ kết quả… $pct%",
+    "polling": "Đang chờ kết quả…",
+    "downloading": "Đang tải xuống…"
+  }
+}

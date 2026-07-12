@@ -1,0 +1,263 @@
+{
+  "panelLabels": {
+    "basic": "Cơ bản",
+    "greetings": "Lời chào",
+    "prompts": "Prompt",
+    "lorebook": "Lorebook",
+    "group": "Nhóm",
+    "creator": "Tác giả",
+    "appData": "Dữ liệu ứng dụng",
+    "nodes": "Node"
+  },
+  "appBarEditor": {
+    "hideAssistantPanelTooltip": "Ẩn bảng trợ lý",
+    "showChatAssistantTooltip": "Hiện trợ lý trò chuyện song song"
+  },
+  "codeFindPanel": {
+    "noneResult": "không có",
+    "previousTooltip": "Trước",
+    "nextTooltip": "Sau",
+    "closeTooltip": "Đóng",
+    "replaceTooltip": "Thay thế",
+    "replaceAllTooltip": "Thay thế tất cả"
+  },
+  "findReplaceDialog": {
+    "confirmReplaceAllTitle": "Xác nhận thay thế tất cả",
+    "confirmReplaceAllMessage": "Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.",
+    "proceedButton": "Tiếp tục",
+    "title": "Tìm & Thay thế",
+    "findLabel": "Tìm",
+    "replaceWithLabel": "Thay bằng",
+    "replaceAllButton": "Thay thế tất cả"
+  },
+  "objectValueEditor": {
+    "stringType": "chuỗi",
+    "numberType": "số",
+    "boolType": "bool"
+  },
+  "editorBasic": {
+    "nameLabel": "Tên",
+    "nicknameLabel": "Biệt danh (CCv3)",
+    "descriptionLabel": "Mô tả",
+    "personalityLabel": "Tính cách",
+    "scenarioLabel": "Kịch bản",
+    "messageExampleLabel": "Tin nhắn mẫu"
+  },
+  "editorCreatorMetadata": {
+    "systemNameLabel": "Tên hệ thống (CCv3)",
+    "creatorLabel": "Tác giả",
+    "versionLabel": "Phiên bản",
+    "creatorNotesLabel": "Ghi chú của tác giả",
+    "tagsLabel": "Tag (phân tách bằng dấu phẩy)"
+  },
+  "editorPrompts": {
+    "systemPromptLabel": "Prompt hệ thống",
+    "postHistoryInstructionsLabel": "Hướng dẫn sau lịch sử",
+    "depthPromptLabel": "Prompt theo độ sâu (Ghi chú nhân vật)",
+    "insertionDepthLabel": "Độ sâu chèn",
+    "roleLabel": "Vai trò"
+  },
+  "editorAppData": {
+    "variantNotesLabel": "Ghi chú biến thể",
+    "descriptionPreviewLabel": "Xem trước mô tả"
+  },
+  "editorAlternateGreetings": {
+    "deleteGreetingTitle": "Xóa lời chào",
+    "deleteGreetingMessage": "Bạn có chắc muốn xóa lời chào này không?",
+    "addGreetingButton": "Thêm lời chào",
+    "primaryGreetingLabel": "Lời chào chính (first_mes)",
+    "alternateGreetingLabel": "Lời chào thay thế #$index",
+    "removeTooltip": "Xóa"
+  },
+  "editorGroupGreetings": {
+    "greetingLabel": "Lời chào $index"
+  },
+  "editorLorebook": {
+    "newEntryDefaultComment": "Mục mới",
+    "deleteEntryTitle": "Xóa mục",
+    "deleteEntryMessage": "Bạn có chắc muốn xóa mục này không?",
+    "addNewEntryButton": "Thêm mục mới",
+    "noEntriesFound": "Không tìm thấy mục lorebook nào."
+  },
+  "lorebookEntryListTile": {
+    "untitledEntry": "Mục chưa đặt tên",
+    "noKeywords": "Không có từ khóa"
+  },
+  "lorebookEntryEditorPage": {
+    "editEntryTitle": "Chỉnh sửa mục lorebook",
+    "advancedFilter": "Nâng cao",
+    "primaryKeywordsLabel": "Từ khóa chính",
+    "logicLabel": "Logic",
+    "logicAndAny": "AND ANY",
+    "logicAndAll": "AND ALL",
+    "logicNotAny": "NOT ANY",
+    "logicNotAll": "NOT ALL",
+    "optionalFilterLabel": "Bộ lọc tùy chọn",
+    "contentLabel": "Nội dung",
+    "nonRecursableFilter": "Không đệ quy",
+    "preventFurtherRecursionFilter": "Chặn đệ quy tiếp",
+    "delayUntilRecursionFilter": "Hoãn tới khi đệ quy",
+    "ignoreBudgetFilter": "Bỏ qua ngân sách",
+    "prioritizeFilter": "Ưu tiên",
+    "inclusionGroupLabel": "Nhóm bao gồm",
+    "groupWeightLabel": "Trọng số nhóm",
+    "stickyLabel": "Sticky",
+    "cooldownLabel": "Thời gian hồi",
+    "delayLabel": "Độ trễ",
+    "filterToCharactersLabel": "Lọc theo nhân vật hoặc tag",
+    "filterToTriggersLabel": "Lọc theo kích hoạt tạo sinh",
+    "additionalMatchingSourcesLabel": "Nguồn khớp bổ sung:",
+    "personaFilter": "Persona",
+    "descriptionFilter": "Mô tả",
+    "personalityFilter": "Tính cách",
+    "depthPromptFilter": "Prompt theo độ sâu",
+    "scenarioFilter": "Kịch bản",
+    "creatorNotesFilter": "Ghi chú của tác giả"
+  },
+  "lorebookEntryEditorTopSection": {
+    "titleMemoLabel": "Tiêu đề/Ghi nhớ",
+    "strategyLabel": "Chiến lược",
+    "strategyConstant": "Cố định",
+    "strategyEnabled": "Bật",
+    "strategyDisabled": "Tắt",
+    "strategyVectorized": "Vector hóa",
+    "positionLabel": "Vị trí",
+    "positionUpChar": "↑ Char",
+    "positionDownChar": "↓ Char",
+    "positionUpAn": "↑ AN",
+    "positionDownAn": "↓ AN",
+    "positionDepthSystem": "@D Hệ thống",
+    "positionDepthUser": "@D Người dùng",
+    "positionDepthAssistant": "@D Trợ lý",
+    "positionUpEm": "↑ EM",
+    "positionDownEm": "↓ EM",
+    "positionOutlet": "Outlet",
+    "depthLabel": "Độ sâu",
+    "orderLabel": "Thứ tự",
+    "triggerLabel": "Kích hoạt %"
+  },
+  "lorebookEntryEditorScanRow": {
+    "scanDepthLabel": "Độ sâu quét",
+    "automationIdLabel": "ID tự động hóa",
+    "useRegexFilter": "Dùng regex",
+    "caseSensitiveFilter": "Phân biệt hoa thường",
+    "wholeWordsFilter": "Nguyên từ",
+    "groupScoringFilter": "Chấm điểm nhóm"
+  },
+  "dialogContentCleaner": {
+    "confirmActionTitle": "Xác nhận $actionName",
+    "title": "Dọn dẹp nội dung",
+    "normalizeFancyCharsAction": "Chuẩn hóa ký tự trang trí",
+    "normalizeFancyCharsButton": "Chuẩn hóa ký tự trang trí (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)",
+    "purgeHtmlAction": "Xóa HTML",
+    "purgeHtmlButton": "Xóa thẻ HTML",
+    "purgeMarkdownAction": "Xóa liên kết/ảnh Markdown",
+    "purgeEmojisAction": "Xóa emoji",
+    "purgeExtraSpacesAction": "Xóa khoảng trắng thừa",
+    "yoloPurgeAction": "Dọn sạch toàn bộ",
+    "applyAllAboveButton": "Áp dụng tất cả bên trên"
+  },
+  "dialogAiDiffConfirmation": {
+    "applyChangesButton": "Áp dụng thay đổi",
+    "originalTextTitle": "Văn bản gốc",
+    "suggestedTextTitle": "Văn bản đề xuất"
+  },
+  "editorPageController": {
+    "globalActionTitle": "$action toàn cục",
+    "globalAiActionFailed": "Thao tác AI toàn cục thất bại. Kiểm tra nhật ký.",
+    "compositeName": "Tên:\n$value\n",
+    "compositeDescription": "Mô tả:\n$value\n",
+    "compositePersonality": "Tính cách:\n$value\n",
+    "compositeScenario": "Kịch bản:\n$value\n",
+    "compositeFirstMessage": "Tin nhắn đầu tiên:\n$value\n",
+    "compositeMessageExample": "Tin nhắn mẫu:\n$value\n",
+    "compositeCreatorNotes": "Ghi chú của tác giả:\n$value\n",
+    "compositeSystemPrompt": "Prompt hệ thống:\n$value\n",
+    "compositePostHistoryInstructions": "Hướng dẫn sau lịch sử:\n$value\n",
+    "compositeAlternateGreeting": "Lời chào thay thế #$index:\n$value\n",
+    "compositeGroupGreeting": "Lời chào nhóm #$index:\n$value\n",
+    "compositeLorebookEntry": "Mục lorebook #$index:\n$value\n",
+    "imageTooLargeMessage": "Ảnh đã chọn quá lớn. Kích thước tối đa là $maxSize.",
+    "invalidPngMessage": "Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được."
+  },
+  "editorNodes": {
+    "deleteNodeTitle": "Xóa node",
+    "deleteNodeMessage": "Xóa node tự tạo này khỏi thẻ?",
+    "engineSeedTitle": "Seed của engine",
+    "visualEditorTooltip": "Trình chỉnh sửa trực quan",
+    "editJsonTooltip": "Chỉnh sửa JSON",
+    "initialGoalLabel": "Mục tiêu ban đầu",
+    "initialSceneLabel": "Cảnh ban đầu",
+    "locationLabel": "Địa điểm",
+    "timeOfDayLabel": "Thời điểm trong ngày",
+    "presentEntitiesLabel": "Có mặt (phân tách bằng dấu phẩy)",
+    "sensoryHooksLabel": "Chi tiết giác quan (phân tách bằng dấu phẩy)",
+    "addNodeButton": "Thêm node",
+    "noAuthoredNodesYet": "Chưa có node tự tạo nào.",
+    "loadErrorMessage(plural)": {
+      "other": "Khối node của thẻ này có $n vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu."
+    },
+    "moreErrorsSuffix": "… còn $n nữa",
+    "emotionBaselineLabel": "Cảm xúc nền",
+    "emotionChipLabel": "Cảm xúc"
+  },
+  "nodeListTile": {
+    "spawnsLabel": "sinh ra: $count"
+  },
+  "nodesRawEditorPage": {
+    "topLevelMustBeObject": "Cấp cao nhất phải là một đối tượng JSON",
+    "editNodesJsonTitle": "Chỉnh sửa JSON node",
+    "fixProblemsMessage(plural)": {
+      "other": "Sửa $n vấn đề để lưu."
+    }
+  },
+  "nodesCanvasView": {
+    "spawnedByPort": "được sinh bởi",
+    "spawnsPort": "sinh ra",
+    "editNodeLabel": "Chỉnh sửa node",
+    "addNodeTooltip": "Thêm node"
+  },
+  "nodeEditorForm": {
+    "nameLabel": "Tên",
+    "narrativePayloadLabel": "Nội dung tường thuật",
+    "removeSpawnLinkTitle": "Xóa liên kết sinh",
+    "removeSpawnLinkMessage": "Ngừng cho node này sinh ra \"$nodeId\"? Bản thân node vẫn còn trên thẻ.",
+    "removeButton": "Xóa",
+    "typeLabel": "Loại",
+    "scopeLabel": "Phạm vi",
+    "originLabel": "Nguồn gốc",
+    "triggerProbLabel": "Xác suất kích hoạt",
+    "delayHelper": "Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.",
+    "cooldownHelper": "Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.",
+    "stickyHelper": "Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng \"Còn vương lại\" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.",
+    "aliveHelper": "Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.",
+    "setToNeverButton": "Đặt thành không bao giờ",
+    "effectsSectionLabel": "Hiệu ứng",
+    "emotionDeltasTitle": "Biến đổi cảm xúc",
+    "physicalDeltasTitle": "Biến đổi thể chất",
+    "relationshipDeltasTitle": "Biến đổi quan hệ",
+    "addDeltaChip": "Thêm biến đổi",
+    "knowledgeWritesTitle": "Ghi kiến thức",
+    "addFactChip": "Thêm dữ kiện",
+    "topicLabel": "chủ đề",
+    "confidenceLabel": "độ tin cậy",
+    "flagSetTitle": "Đặt cờ",
+    "addFlagChip": "Thêm cờ",
+    "keyLabel": "khóa",
+    "sceneAndFlowTitle": "Cảnh & mạch truyện",
+    "goalChangeLabel": "goalChange (xóa mục tiêu hiện tại khi để trống)",
+    "phaseChangeLabel": "phaseChange",
+    "noneOption": "(không)",
+    "sceneTransitionLabel": "sceneTransition",
+    "sceneTransitionSubtitle": "Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.",
+    "spawnsSectionLabel": "Sinh ra",
+    "addNewChip": "Thêm mới",
+    "linkExistingChip": "Liên kết node có sẵn",
+    "unlinkTooltip": "Hủy liên kết",
+    "predicateLabel": "Điều kiện"
+  },
+  "contentTransform": {
+    "appliedSnackbar": "Đã áp dụng thay đổi",
+    "undoButton": "Hoàn tác"
+  }
+}

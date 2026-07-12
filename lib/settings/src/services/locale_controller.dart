@@ -64,7 +64,7 @@ class LocaleController extends ChangeNotifier {
   /// silent. Called once at bootstrap.
   void _registerPluralResolvers() {
     // Single-category languages: only `other` applies (ja, zh-Hans, zh-Hant,
-    // ko). `language: 'zh'` covers both Chinese scripts.
+    // ko, vi). `language: 'zh'` covers both Chinese scripts.
     String otherOnly(num n,
             {String? zero,
             String? one,
@@ -73,7 +73,7 @@ class LocaleController extends ChangeNotifier {
             String? many,
             String? other}) =>
         other!;
-    for (final language in const ['ja', 'zh', 'ko']) {
+    for (final language in const ['ja', 'zh', 'ko', 'vi']) {
       LocaleSettings.setPluralResolver(
         language: language,
         cardinalResolver: otherOnly,

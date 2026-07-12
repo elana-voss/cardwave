@@ -1,0 +1,49 @@
+{
+  "workspaceEndDrawerImage": {
+    "imageStyleTitle": "Phong cách hình ảnh",
+    "noneValue": "Không có"
+  },
+  "workspaceEndDrawerVideo": {
+    "videoStyleTitle": "Phong cách video"
+  },
+  "workspaceEndDrawerDisplay": {
+    "sectionHeader": "Hiển thị",
+    "showCharacterImageTitle": "Hiện ảnh nhân vật",
+    "wideScreenOnlySubtitle": "Chỉ với trình chỉnh sửa màn hình rộng"
+  },
+  "workspaceEndDrawerAi": {
+    "sectionHeader": "AI"
+  },
+  "workspaceEndDrawerEditing": {
+    "sectionHeader": "Chỉnh sửa"
+  },
+  "workspaceEndDrawerExport": {
+    "sectionHeader": "Xuất",
+    "exportPngTitle": "Xuất ra PNG (V2/V3)",
+    "exportJsonV3Title": "Xuất ra JSON (V3)",
+    "exportJsonV2Title": "Xuất ra JSON (V2)"
+  },
+  "workspaceEndDrawerChatTheme": {
+    "resetImagesTitle": "Đặt lại hình ảnh"
+  },
+  "workspaceEndDrawerChat": {
+    "assistantCardEditsSectionHeader": "Chỉnh sửa thẻ bởi trợ lý"
+  },
+  "workspaceEndDrawer": {
+    "favoriteLabel": "Yêu thích",
+    "nodesEngineTitle": "NODES Engine",
+    "debugSnapshotSubtitle": "Ảnh chụp gỡ lỗi",
+    "characterSubtitle": "Nhân vật"
+  },
+  "stylePresetsDialog": {
+    "noStyleSelectedMessage": "Chưa chọn phong cách nào"
+  },
+  "workspacePage": {
+    "rebuildingChatIndexMessage": "Đang xây dựng lại chỉ mục trò chuyện...",
+    "selectChatToStartMessagingMessage": "Chọn một cuộc trò chuyện để bắt đầu nhắn tin",
+    "failedToLoadAssistantMessage": "Không thể tải trợ lý.",
+    "connectProviderToChatMessage": "Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.",
+    "setUpProviderButton": "Thiết lập nhà cung cấp AI",
+    "startNewChatButton": "Cuộc trò chuyện mới"
+  }
+}

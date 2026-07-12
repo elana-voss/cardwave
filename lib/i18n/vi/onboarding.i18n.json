@@ -1,0 +1,54 @@
+{
+  "finishFailedSnackbar": "Thiết lập thất bại. Xem nhật ký để biết chi tiết.",
+  "appBarTitle": "Thiết lập nhanh",
+  "languageTooltip": "Ngôn ngữ",
+  "webWarning": "Bản web thử nghiệm — bộ nhớ trình duyệt có thể bị đặt lại giữa các bản cập nhật. Dùng bản desktop hoặc Android để lưu dữ liệu lâu dài.",
+  "finishButton": "Hoàn tất thiết lập",
+  "nextButton": "Tiếp theo",
+  "backButton": "Quay lại",
+  "storageStep": {
+    "title": "Lưu trữ nhân vật",
+    "subtitle": "Chúng tôi nên lưu thẻ nhân vật của bạn ở đâu?",
+    "description": "Mặc định lưu trong thư mục ứng dụng. Trỏ tới một thư mục PNG sẵn có để nhập.",
+    "startFresh": "Bắt đầu mới",
+    "haveCards": "Tôi đã có thẻ",
+    "importLaterHint": "Nhập PNG sau qua Tệp → Nhập.",
+    "selectedPath": "Đã chọn: $path",
+    "selectedDefaultFolder": "Đã chọn: Thư mục mặc định của ứng dụng",
+    "noFolderSelected": "Chưa chọn thư mục nào."
+  },
+  "setupStep": {
+    "title": "AI & Persona"
+  },
+  "aiSection": {
+    "heading": "Kết nối AI",
+    "optionalHint": "Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).",
+    "apiKeyLabel": "Khóa API",
+    "apiKeyHint": "Dán khóa của bạn (hoặc bỏ qua)",
+    "supportedProviders": "Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.",
+    "unknownModel": "(mô hình không xác định)",
+    "ctxUnknown": "ctx —",
+    "ctxValue": "ctx $ctx",
+    "kvSuffix": " · KV $kv",
+    "changeButton": "Thay đổi"
+  },
+  "aiStatus": {
+    "connecting": "Đang kết nối…",
+    "connected": "Đã kết nối với $provider. Đã chọn mô hình trò chuyện mặc định.",
+    "detected": "Đã nhận diện: $provider",
+    "unrecognizedKey": "Định dạng khóa không nhận diện được."
+  },
+  "personaSection": {
+    "heading": "Persona của bạn",
+    "hint": "Tên của bạn trong các cuộc trò chuyện. Thêm chi tiết persona trong Cài đặt.",
+    "nameLabel": "Tên của bạn"
+  },
+  "disclaimer": {
+    "prefix": "Tôi đã đọc và đồng ý với ",
+    "linkText": "Tuyên bố miễn trừ trách nhiệm"
+  },
+  "fetchError": {
+    "noModels": "Không nhận được mô hình nào. Kiểm tra khóa API của bạn.",
+    "connectionFailed": "Không thể kết nối. Kiểm tra kết nối mạng và khóa API của bạn."
+  }
+}

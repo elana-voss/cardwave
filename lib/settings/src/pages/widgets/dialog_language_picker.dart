@@ -40,6 +40,7 @@ const List<_LanguageEntry> _languages = [
   ),
   _LanguageEntry(tag: 'ko', native: '한국어', englishName: 'Korean'),
   _LanguageEntry(tag: 'hi', native: 'हिन्दी', englishName: 'Hindi'),
+  _LanguageEntry(tag: 'vi', native: 'Tiếng Việt'),
 ];
 
 /// Flat, scrollable list of every UI language. The first row follows the device

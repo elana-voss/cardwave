@@ -3,8 +3,8 @@
 /// Original: lib/i18n
 /// To regenerate, run: `dart run slang`
 ///
-/// Locales: 9
-/// Strings: 8278 (919 per locale)
+/// Locales: 10
+/// Strings: 9190 (919 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -30,6 +30,7 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 	ko(languageCode: 'ko', build: _TranslationsKo.build),
 	ptBr(languageCode: 'pt', countryCode: 'BR', build: _TranslationsPtBr.build),
 	ru(languageCode: 'ru', build: _TranslationsRu.build),
+	vi(languageCode: 'vi', build: _TranslationsVi.build),
 	zhHans(languageCode: 'zh', scriptCode: 'Hans', build: _TranslationsZhHans.build),
 	zhHant(languageCode: 'zh', scriptCode: 'Hant', build: _TranslationsZhHant.build);
 
@@ -20078,6 +20079,2846 @@ class _TranslationsCharacterCardEditApprovalModalityVerbRu extends _Translations
 }
 
 // Path: <root>
+class _TranslationsVi extends Translations {
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_TranslationsVi.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.vi,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ),
+		  super.build(cardinalResolver: cardinalResolver, ordinalResolver: ordinalResolver) {
+		super.$meta.setFlatMapFunction($meta.getTranslation); // copy base translations to super.$meta
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <vi>.
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
+
+	/// Access flat map
+	@override dynamic operator[](String key) => $meta.getTranslation(key) ?? super.$meta.getTranslation(key);
+
+	@override late final _TranslationsVi _root = this; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsAppVi app = _TranslationsAppVi._(_root);
+	@override late final _TranslationsCharacterVi character = _TranslationsCharacterVi._(_root);
+	@override late final _TranslationsChatVi chat = _TranslationsChatVi._(_root);
+	@override late final _TranslationsCommonVi common = _TranslationsCommonVi._(_root);
+	@override late final _TranslationsEditorVi editor = _TranslationsEditorVi._(_root);
+	@override late final _TranslationsGridVi grid = _TranslationsGridVi._(_root);
+	@override late final _TranslationsGroupVi group = _TranslationsGroupVi._(_root);
+	@override late final _TranslationsLlmAppVi llmApp = _TranslationsLlmAppVi._(_root);
+	@override late final _TranslationsMemoryVi memory = _TranslationsMemoryVi._(_root);
+	@override late final _TranslationsNodesVi nodes = _TranslationsNodesVi._(_root);
+	@override late final _TranslationsOnboardingVi onboarding = _TranslationsOnboardingVi._(_root);
+	@override late final _TranslationsRoutingVi routing = _TranslationsRoutingVi._(_root);
+	@override late final _TranslationsSearchVi search = _TranslationsSearchVi._(_root);
+	@override late final _TranslationsSettingsVi settings = _TranslationsSettingsVi._(_root);
+	@override late final _TranslationsWorkspaceVi workspace = _TranslationsWorkspaceVi._(_root);
+}
+
+// Path: app
+class _TranslationsAppVi extends _TranslationsAppEn {
+	_TranslationsAppVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsAppAppBootstrapperVi appBootstrapper = _TranslationsAppAppBootstrapperVi._(_root);
+}
+
+// Path: character
+class _TranslationsCharacterVi extends _TranslationsCharacterEn {
+	_TranslationsCharacterVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsCharacterPromptPrefixDialogVi promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogVi._(_root);
+	@override late final _TranslationsCharacterCardEditApprovalVi cardEditApproval = _TranslationsCharacterCardEditApprovalVi._(_root);
+	@override late final _TranslationsCharacterRequireApprovalTileVi requireApprovalTile = _TranslationsCharacterRequireApprovalTileVi._(_root);
+	@override late final _TranslationsCharacterLoadingStatusVi loadingStatus = _TranslationsCharacterLoadingStatusVi._(_root);
+	@override late final _TranslationsCharacterSavePathValidationVi savePathValidation = _TranslationsCharacterSavePathValidationVi._(_root);
+	@override String get characterFilesTypeGroupLabel => 'Tệp nhân vật';
+	@override late final _TranslationsCharacterCreateControllerVi createController = _TranslationsCharacterCreateControllerVi._(_root);
+	@override late final _TranslationsCharacterImportControllerVi importController = _TranslationsCharacterImportControllerVi._(_root);
+	@override late final _TranslationsCharacterAiActionControllerVi aiActionController = _TranslationsCharacterAiActionControllerVi._(_root);
+}
+
+// Path: chat
+class _TranslationsChatVi extends _TranslationsChatEn {
+	_TranslationsChatVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsChatTileAiProviderVi tileAiProvider = _TranslationsChatTileAiProviderVi._(_root);
+	@override late final _TranslationsChatPresetTileVi presetTile = _TranslationsChatPresetTileVi._(_root);
+	@override late final _TranslationsChatTileImagePresetVi tileImagePreset = _TranslationsChatTileImagePresetVi._(_root);
+	@override late final _TranslationsChatTileVideoPresetVi tileVideoPreset = _TranslationsChatTileVideoPresetVi._(_root);
+	@override late final _TranslationsChatTileTtsPresetVi tileTtsPreset = _TranslationsChatTileTtsPresetVi._(_root);
+	@override late final _TranslationsChatTileImageAspectRatioVi tileImageAspectRatio = _TranslationsChatTileImageAspectRatioVi._(_root);
+	@override late final _TranslationsChatTileVideoAspectRatioVi tileVideoAspectRatio = _TranslationsChatTileVideoAspectRatioVi._(_root);
+	@override late final _TranslationsChatTileVideoResolutionVi tileVideoResolution = _TranslationsChatTileVideoResolutionVi._(_root);
+	@override late final _TranslationsChatTileVideoDurationVi tileVideoDuration = _TranslationsChatTileVideoDurationVi._(_root);
+	@override late final _TranslationsChatTileTtsVoiceVi tileTtsVoice = _TranslationsChatTileTtsVoiceVi._(_root);
+	@override late final _TranslationsChatTileTtsLanguageVi tileTtsLanguage = _TranslationsChatTileTtsLanguageVi._(_root);
+	@override late final _TranslationsChatTileNsfwVi tileNsfw = _TranslationsChatTileNsfwVi._(_root);
+	@override late final _TranslationsChatTileScenarioVi tileScenario = _TranslationsChatTileScenarioVi._(_root);
+	@override late final _TranslationsChatTileMaxResponseLengthVi tileMaxResponseLength = _TranslationsChatTileMaxResponseLengthVi._(_root);
+	@override late final _TranslationsChatTileTrailingParagraphVi tileTrailingParagraph = _TranslationsChatTileTrailingParagraphVi._(_root);
+	@override late final _TranslationsChatTileReasoningEffortVi tileReasoningEffort = _TranslationsChatTileReasoningEffortVi._(_root);
+	@override late final _TranslationsChatTileChatThemeVi tileChatTheme = _TranslationsChatTileChatThemeVi._(_root);
+	@override late final _TranslationsChatTileRecalledMemoryVi tileRecalledMemory = _TranslationsChatTileRecalledMemoryVi._(_root);
+	@override late final _TranslationsChatCharacterSwitcherVi characterSwitcher = _TranslationsChatCharacterSwitcherVi._(_root);
+	@override late final _TranslationsChatFreeImagePromptDialogVi freeImagePromptDialog = _TranslationsChatFreeImagePromptDialogVi._(_root);
+	@override late final _TranslationsChatFreeVideoPromptDialogVi freeVideoPromptDialog = _TranslationsChatFreeVideoPromptDialogVi._(_root);
+	@override late final _TranslationsChatImagePromptReviewDialogVi imagePromptReviewDialog = _TranslationsChatImagePromptReviewDialogVi._(_root);
+	@override late final _TranslationsChatVideoPromptReviewDialogVi videoPromptReviewDialog = _TranslationsChatVideoPromptReviewDialogVi._(_root);
+	@override late final _TranslationsChatUrlFetchReviewDialogVi urlFetchReviewDialog = _TranslationsChatUrlFetchReviewDialogVi._(_root);
+	@override late final _TranslationsChatMessageActionsRowVi messageActionsRow = _TranslationsChatMessageActionsRowVi._(_root);
+	@override late final _TranslationsChatTtsPlayButtonVi ttsPlayButton = _TranslationsChatTtsPlayButtonVi._(_root);
+	@override late final _TranslationsChatMessageSwipeFlipperVi messageSwipeFlipper = _TranslationsChatMessageSwipeFlipperVi._(_root);
+	@override late final _TranslationsChatVideoPlayerInlineVi videoPlayerInline = _TranslationsChatVideoPlayerInlineVi._(_root);
+	@override String get newChatLabel => 'Cuộc trò chuyện mới';
+	@override late final _TranslationsChatChatListItemVi chatListItem = _TranslationsChatChatListItemVi._(_root);
+	@override late final _TranslationsChatChatHistoryControllerVi chatHistoryController = _TranslationsChatChatHistoryControllerVi._(_root);
+	@override late final _TranslationsChatChatPageControllerVi chatPageController = _TranslationsChatChatPageControllerVi._(_root);
+	@override late final _TranslationsChatImageGenerationMixinVi imageGenerationMixin = _TranslationsChatImageGenerationMixinVi._(_root);
+	@override late final _TranslationsChatVideoGenerationMixinVi videoGenerationMixin = _TranslationsChatVideoGenerationMixinVi._(_root);
+	@override late final _TranslationsChatBubbleWaitingForVi bubbleWaitingFor = _TranslationsChatBubbleWaitingForVi._(_root);
+	@override late final _TranslationsChatAppBarChatVi appBarChat = _TranslationsChatAppBarChatVi._(_root);
+	@override late final _TranslationsChatAllChatsDrawerListVi allChatsDrawerList = _TranslationsChatAllChatsDrawerListVi._(_root);
+	@override late final _TranslationsChatChatInputMediaMenuVi chatInputMediaMenu = _TranslationsChatChatInputMediaMenuVi._(_root);
+	@override late final _TranslationsChatChatViewVi chatView = _TranslationsChatChatViewVi._(_root);
+	@override late final _TranslationsChatChatMessageBubbleVi chatMessageBubble = _TranslationsChatChatMessageBubbleVi._(_root);
+}
+
+// Path: common
+class _TranslationsCommonVi extends _TranslationsCommonEn {
+	_TranslationsCommonVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsCommonActionsVi actions = _TranslationsCommonActionsVi._(_root);
+	@override late final _TranslationsCommonAppSearchFieldVi appSearchField = _TranslationsCommonAppSearchFieldVi._(_root);
+	@override late final _TranslationsCommonAiActionVi aiAction = _TranslationsCommonAiActionVi._(_root);
+	@override String get aiActionsTooltip => 'Thao tác AI';
+	@override late final _TranslationsCommonPromptSegmentKindVi promptSegmentKind = _TranslationsCommonPromptSegmentKindVi._(_root);
+	@override late final _TranslationsCommonPromptBreakdownVi promptBreakdown = _TranslationsCommonPromptBreakdownVi._(_root);
+	@override late final _TranslationsCommonLogsVi logs = _TranslationsCommonLogsVi._(_root);
+	@override late final _TranslationsCommonImportErrorsDialogVi importErrorsDialog = _TranslationsCommonImportErrorsDialogVi._(_root);
+	@override late final _TranslationsCommonUpdateDialogVi updateDialog = _TranslationsCommonUpdateDialogVi._(_root);
+	@override late final _TranslationsCommonImportConflictsDialogVi importConflictsDialog = _TranslationsCommonImportConflictsDialogVi._(_root);
+	@override late final _TranslationsCommonMissingProviderBannerVi missingProviderBanner = _TranslationsCommonMissingProviderBannerVi._(_root);
+	@override late final _TranslationsCommonModelSelectionDialogVi modelSelectionDialog = _TranslationsCommonModelSelectionDialogVi._(_root);
+	@override late final _TranslationsCommonShowAdvancedVi showAdvanced = _TranslationsCommonShowAdvancedVi._(_root);
+	@override late final _TranslationsCommonMessageEditDialogVi messageEditDialog = _TranslationsCommonMessageEditDialogVi._(_root);
+	@override late final _TranslationsCommonPromptBreakdownDialogVi promptBreakdownDialog = _TranslationsCommonPromptBreakdownDialogVi._(_root);
+	@override late final _TranslationsCommonJsonPromptDialogVi jsonPromptDialog = _TranslationsCommonJsonPromptDialogVi._(_root);
+	@override late final _TranslationsCommonProgressDialogVi progressDialog = _TranslationsCommonProgressDialogVi._(_root);
+	@override late final _TranslationsCommonDiffPanelVi diffPanel = _TranslationsCommonDiffPanelVi._(_root);
+	@override late final _TranslationsCommonSelectionDialogVi selectionDialog = _TranslationsCommonSelectionDialogVi._(_root);
+	@override late final _TranslationsCommonZdrSwitchVi zdrSwitch = _TranslationsCommonZdrSwitchVi._(_root);
+	@override late final _TranslationsCommonTextFieldCardVi textFieldCard = _TranslationsCommonTextFieldCardVi._(_root);
+	@override late final _TranslationsCommonModelCapabilityVi modelCapability = _TranslationsCommonModelCapabilityVi._(_root);
+	@override String get modelUnavailableTooltip => 'Mô hình này không còn được nhà cung cấp hỗ trợ — hãy chọn mô hình khác.';
+	@override String get characterImageSemanticLabel => 'Ảnh nhân vật';
+	@override late final _TranslationsCommonAppConstantsVi appConstants = _TranslationsCommonAppConstantsVi._(_root);
+	@override late final _TranslationsCommonTimeAgoVi timeAgo = _TranslationsCommonTimeAgoVi._(_root);
+}
+
+// Path: editor
+class _TranslationsEditorVi extends _TranslationsEditorEn {
+	_TranslationsEditorVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsEditorPanelLabelsVi panelLabels = _TranslationsEditorPanelLabelsVi._(_root);
+	@override late final _TranslationsEditorAppBarEditorVi appBarEditor = _TranslationsEditorAppBarEditorVi._(_root);
+	@override late final _TranslationsEditorCodeFindPanelVi codeFindPanel = _TranslationsEditorCodeFindPanelVi._(_root);
+	@override late final _TranslationsEditorFindReplaceDialogVi findReplaceDialog = _TranslationsEditorFindReplaceDialogVi._(_root);
+	@override late final _TranslationsEditorObjectValueEditorVi objectValueEditor = _TranslationsEditorObjectValueEditorVi._(_root);
+	@override late final _TranslationsEditorEditorBasicVi editorBasic = _TranslationsEditorEditorBasicVi._(_root);
+	@override late final _TranslationsEditorEditorCreatorMetadataVi editorCreatorMetadata = _TranslationsEditorEditorCreatorMetadataVi._(_root);
+	@override late final _TranslationsEditorEditorPromptsVi editorPrompts = _TranslationsEditorEditorPromptsVi._(_root);
+	@override late final _TranslationsEditorEditorAppDataVi editorAppData = _TranslationsEditorEditorAppDataVi._(_root);
+	@override late final _TranslationsEditorEditorAlternateGreetingsVi editorAlternateGreetings = _TranslationsEditorEditorAlternateGreetingsVi._(_root);
+	@override late final _TranslationsEditorEditorGroupGreetingsVi editorGroupGreetings = _TranslationsEditorEditorGroupGreetingsVi._(_root);
+	@override late final _TranslationsEditorEditorLorebookVi editorLorebook = _TranslationsEditorEditorLorebookVi._(_root);
+	@override late final _TranslationsEditorLorebookEntryListTileVi lorebookEntryListTile = _TranslationsEditorLorebookEntryListTileVi._(_root);
+	@override late final _TranslationsEditorLorebookEntryEditorPageVi lorebookEntryEditorPage = _TranslationsEditorLorebookEntryEditorPageVi._(_root);
+	@override late final _TranslationsEditorLorebookEntryEditorTopSectionVi lorebookEntryEditorTopSection = _TranslationsEditorLorebookEntryEditorTopSectionVi._(_root);
+	@override late final _TranslationsEditorLorebookEntryEditorScanRowVi lorebookEntryEditorScanRow = _TranslationsEditorLorebookEntryEditorScanRowVi._(_root);
+	@override late final _TranslationsEditorDialogContentCleanerVi dialogContentCleaner = _TranslationsEditorDialogContentCleanerVi._(_root);
+	@override late final _TranslationsEditorDialogAiDiffConfirmationVi dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationVi._(_root);
+	@override late final _TranslationsEditorEditorPageControllerVi editorPageController = _TranslationsEditorEditorPageControllerVi._(_root);
+	@override late final _TranslationsEditorEditorNodesVi editorNodes = _TranslationsEditorEditorNodesVi._(_root);
+	@override late final _TranslationsEditorNodeListTileVi nodeListTile = _TranslationsEditorNodeListTileVi._(_root);
+	@override late final _TranslationsEditorNodesRawEditorPageVi nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageVi._(_root);
+	@override late final _TranslationsEditorNodesCanvasViewVi nodesCanvasView = _TranslationsEditorNodesCanvasViewVi._(_root);
+	@override late final _TranslationsEditorNodeEditorFormVi nodeEditorForm = _TranslationsEditorNodeEditorFormVi._(_root);
+	@override late final _TranslationsEditorContentTransformVi contentTransform = _TranslationsEditorContentTransformVi._(_root);
+}
+
+// Path: grid
+class _TranslationsGridVi extends _TranslationsGridEn {
+	_TranslationsGridVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsGridEmptyStateVi emptyState = _TranslationsGridEmptyStateVi._(_root);
+	@override late final _TranslationsGridAppBarVi appBar = _TranslationsGridAppBarVi._(_root);
+	@override late final _TranslationsGridFabVi fab = _TranslationsGridFabVi._(_root);
+	@override late final _TranslationsGridDrawerVi drawer = _TranslationsGridDrawerVi._(_root);
+	@override late final _TranslationsGridVariantBadgeVi variantBadge = _TranslationsGridVariantBadgeVi._(_root);
+	@override late final _TranslationsGridDialogActionsVi dialogActions = _TranslationsGridDialogActionsVi._(_root);
+	@override late final _TranslationsGridTagFilterDialogVi tagFilterDialog = _TranslationsGridTagFilterDialogVi._(_root);
+	@override late final _TranslationsGridFiltersVi filters = _TranslationsGridFiltersVi._(_root);
+	@override late final _TranslationsGridSortOptionVi sortOption = _TranslationsGridSortOptionVi._(_root);
+	@override late final _TranslationsGridFilterControllerVi filterController = _TranslationsGridFilterControllerVi._(_root);
+	@override late final _TranslationsGridMultiSelectDialogVi multiSelectDialog = _TranslationsGridMultiSelectDialogVi._(_root);
+	@override late final _TranslationsGridCreateCharacterDialogVi createCharacterDialog = _TranslationsGridCreateCharacterDialogVi._(_root);
+	@override late final _TranslationsGridVariantsSheetVi variantsSheet = _TranslationsGridVariantsSheetVi._(_root);
+	@override late final _TranslationsGridGroupAppBarVi groupAppBar = _TranslationsGridGroupAppBarVi._(_root);
+	@override late final _TranslationsGridThumbnailBadgesVi thumbnailBadges = _TranslationsGridThumbnailBadgesVi._(_root);
+	@override late final _TranslationsGridActionMenuVi actionMenu = _TranslationsGridActionMenuVi._(_root);
+	@override late final _TranslationsGridControllerMessagesVi controllerMessages = _TranslationsGridControllerMessagesVi._(_root);
+	@override late final _TranslationsGridTagWrapVi tagWrap = _TranslationsGridTagWrapVi._(_root);
+	@override late final _TranslationsGridGridItemVi gridItem = _TranslationsGridGridItemVi._(_root);
+}
+
+// Path: group
+class _TranslationsGroupVi extends _TranslationsGroupEn {
+	_TranslationsGroupVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsGroupGroupGridControllerVi groupGridController = _TranslationsGroupGroupGridControllerVi._(_root);
+	@override late final _TranslationsGroupGroupChatPageVi groupChatPage = _TranslationsGroupGroupChatPageVi._(_root);
+	@override late final _TranslationsGroupGroupGridPageVi groupGridPage = _TranslationsGroupGroupGridPageVi._(_root);
+	@override late final _TranslationsGroupTileAutoChatDelayVi tileAutoChatDelay = _TranslationsGroupTileAutoChatDelayVi._(_root);
+	@override late final _TranslationsGroupTileActivationStrategyVi tileActivationStrategy = _TranslationsGroupTileActivationStrategyVi._(_root);
+	@override late final _TranslationsGroupGroupChatPageEndDrawerVi groupChatPageEndDrawer = _TranslationsGroupGroupChatPageEndDrawerVi._(_root);
+	@override late final _TranslationsGroupGroupCharacterPickerVi groupCharacterPicker = _TranslationsGroupGroupCharacterPickerVi._(_root);
+	@override late final _TranslationsGroupGroupCharacterTileVi groupCharacterTile = _TranslationsGroupGroupCharacterTileVi._(_root);
+	@override late final _TranslationsGroupDialogCreateGroupVi dialogCreateGroup = _TranslationsGroupDialogCreateGroupVi._(_root);
+	@override late final _TranslationsGroupDialogGroupOverridesVi dialogGroupOverrides = _TranslationsGroupDialogGroupOverridesVi._(_root);
+	@override late final _TranslationsGroupGroupCharacterPanelVi groupCharacterPanel = _TranslationsGroupGroupCharacterPanelVi._(_root);
+	@override late final _TranslationsGroupDialogSelectGroupVi dialogSelectGroup = _TranslationsGroupDialogSelectGroupVi._(_root);
+	@override late final _TranslationsGroupGroupGridItemVi groupGridItem = _TranslationsGroupGroupGridItemVi._(_root);
+	@override late final _TranslationsGroupGroupFileServiceVi groupFileService = _TranslationsGroupGroupFileServiceVi._(_root);
+}
+
+// Path: llmApp
+class _TranslationsLlmAppVi extends _TranslationsLlmAppEn {
+	_TranslationsLlmAppVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsLlmAppMediaFieldVi mediaField = _TranslationsLlmAppMediaFieldVi._(_root);
+	@override late final _TranslationsLlmAppMediaSectionVi mediaSection = _TranslationsLlmAppMediaSectionVi._(_root);
+	@override late final _TranslationsLlmAppTristateVi tristate = _TranslationsLlmAppTristateVi._(_root);
+	@override late final _TranslationsLlmAppMediaCellMenuVi mediaCellMenu = _TranslationsLlmAppMediaCellMenuVi._(_root);
+	@override late final _TranslationsLlmAppMediaHeaderVi mediaHeader = _TranslationsLlmAppMediaHeaderVi._(_root);
+	@override late final _TranslationsLlmAppPresetRowVi presetRow = _TranslationsLlmAppPresetRowVi._(_root);
+	@override late final _TranslationsLlmAppMediaCellVi mediaCell = _TranslationsLlmAppMediaCellVi._(_root);
+}
+
+// Path: memory
+class _TranslationsMemoryVi extends _TranslationsMemoryEn {
+	_TranslationsMemoryVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+}
+
+// Path: nodes
+class _TranslationsNodesVi extends _TranslationsNodesEn {
+	_TranslationsNodesVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+}
+
+// Path: onboarding
+class _TranslationsOnboardingVi extends _TranslationsOnboardingEn {
+	_TranslationsOnboardingVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get finishFailedSnackbar => 'Thiết lập thất bại. Xem nhật ký để biết chi tiết.';
+	@override String get appBarTitle => 'Thiết lập nhanh';
+	@override String get languageTooltip => 'Ngôn ngữ';
+	@override String get webWarning => 'Bản web thử nghiệm — bộ nhớ trình duyệt có thể bị đặt lại giữa các bản cập nhật. Dùng bản desktop hoặc Android để lưu dữ liệu lâu dài.';
+	@override String get finishButton => 'Hoàn tất thiết lập';
+	@override String get nextButton => 'Tiếp theo';
+	@override String get backButton => 'Quay lại';
+	@override late final _TranslationsOnboardingStorageStepVi storageStep = _TranslationsOnboardingStorageStepVi._(_root);
+	@override late final _TranslationsOnboardingSetupStepVi setupStep = _TranslationsOnboardingSetupStepVi._(_root);
+	@override late final _TranslationsOnboardingAiSectionVi aiSection = _TranslationsOnboardingAiSectionVi._(_root);
+	@override late final _TranslationsOnboardingAiStatusVi aiStatus = _TranslationsOnboardingAiStatusVi._(_root);
+	@override late final _TranslationsOnboardingPersonaSectionVi personaSection = _TranslationsOnboardingPersonaSectionVi._(_root);
+	@override late final _TranslationsOnboardingDisclaimerVi disclaimer = _TranslationsOnboardingDisclaimerVi._(_root);
+	@override late final _TranslationsOnboardingFetchErrorVi fetchError = _TranslationsOnboardingFetchErrorVi._(_root);
+}
+
+// Path: routing
+class _TranslationsRoutingVi extends _TranslationsRoutingEn {
+	_TranslationsRoutingVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsRoutingChatCharacterVi chatCharacter = _TranslationsRoutingChatCharacterVi._(_root);
+	@override late final _TranslationsRoutingEditCharacterVi editCharacter = _TranslationsRoutingEditCharacterVi._(_root);
+	@override late final _TranslationsRoutingEditPresetVi editPreset = _TranslationsRoutingEditPresetVi._(_root);
+}
+
+// Path: search
+class _TranslationsSearchVi extends _TranslationsSearchEn {
+	_TranslationsSearchVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+}
+
+// Path: settings
+class _TranslationsSettingsVi extends _TranslationsSettingsEn {
+	_TranslationsSettingsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get gearLanguage => 'Ngôn ngữ';
+	@override String get languageSystemDefault => 'Mặc định hệ thống';
+	@override late final _TranslationsSettingsGearMenuVi gearMenu = _TranslationsSettingsGearMenuVi._(_root);
+	@override late final _TranslationsSettingsMediaDefaultsDrawerEntryVi mediaDefaultsDrawerEntry = _TranslationsSettingsMediaDefaultsDrawerEntryVi._(_root);
+	@override late final _TranslationsSettingsEndDrawerVi endDrawer = _TranslationsSettingsEndDrawerVi._(_root);
+	@override late final _TranslationsSettingsLoadingStatusVi loadingStatus = _TranslationsSettingsLoadingStatusVi._(_root);
+	@override late final _TranslationsSettingsGeneralVi general = _TranslationsSettingsGeneralVi._(_root);
+	@override late final _TranslationsSettingsAiSettingsTabVi aiSettingsTab = _TranslationsSettingsAiSettingsTabVi._(_root);
+	@override late final _TranslationsSettingsAiTabVi aiTab = _TranslationsSettingsAiTabVi._(_root);
+	@override late final _TranslationsSettingsPresetConfigVi presetConfig = _TranslationsSettingsPresetConfigVi._(_root);
+	@override late final _TranslationsSettingsProviderConfigVi providerConfig = _TranslationsSettingsProviderConfigVi._(_root);
+	@override late final _TranslationsSettingsLocalProviderConfigVi localProviderConfig = _TranslationsSettingsLocalProviderConfigVi._(_root);
+	@override late final _TranslationsSettingsLocalGgufVi localGguf = _TranslationsSettingsLocalGgufVi._(_root);
+	@override late final _TranslationsSettingsPersonaDialogVi personaDialog = _TranslationsSettingsPersonaDialogVi._(_root);
+	@override late final _TranslationsSettingsPersonasTabVi personasTab = _TranslationsSettingsPersonasTabVi._(_root);
+	@override late final _TranslationsSettingsUpdateCheckVi updateCheck = _TranslationsSettingsUpdateCheckVi._(_root);
+}
+
+// Path: workspace
+class _TranslationsWorkspaceVi extends _TranslationsWorkspaceEn {
+	_TranslationsWorkspaceVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerImageVi workspaceEndDrawerImage = _TranslationsWorkspaceWorkspaceEndDrawerImageVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerVideoVi workspaceEndDrawerVideo = _TranslationsWorkspaceWorkspaceEndDrawerVideoVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerDisplayVi workspaceEndDrawerDisplay = _TranslationsWorkspaceWorkspaceEndDrawerDisplayVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerAiVi workspaceEndDrawerAi = _TranslationsWorkspaceWorkspaceEndDrawerAiVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerEditingVi workspaceEndDrawerEditing = _TranslationsWorkspaceWorkspaceEndDrawerEditingVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerExportVi workspaceEndDrawerExport = _TranslationsWorkspaceWorkspaceEndDrawerExportVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerChatThemeVi workspaceEndDrawerChatTheme = _TranslationsWorkspaceWorkspaceEndDrawerChatThemeVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerChatVi workspaceEndDrawerChat = _TranslationsWorkspaceWorkspaceEndDrawerChatVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspaceEndDrawerVi workspaceEndDrawer = _TranslationsWorkspaceWorkspaceEndDrawerVi._(_root);
+	@override late final _TranslationsWorkspaceStylePresetsDialogVi stylePresetsDialog = _TranslationsWorkspaceStylePresetsDialogVi._(_root);
+	@override late final _TranslationsWorkspaceWorkspacePageVi workspacePage = _TranslationsWorkspaceWorkspacePageVi._(_root);
+}
+
+// Path: app.appBootstrapper
+class _TranslationsAppAppBootstrapperVi extends _TranslationsAppAppBootstrapperEn {
+	_TranslationsAppAppBootstrapperVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String failedToInitializeMessage({required Object error}) => 'Không thể khởi tạo ứng dụng:\n\n${error}';
+}
+
+// Path: character.promptPrefixDialog
+class _TranslationsCharacterPromptPrefixDialogVi extends _TranslationsCharacterPromptPrefixDialogEn {
+	_TranslationsCharacterPromptPrefixDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get styleKeywordsLabel => 'Từ khóa phong cách';
+	@override String get imageTitle => 'Phong cách hình ảnh';
+	@override String get imageDescription => 'Được thêm vào đầu mọi prompt tạo ảnh cho nhân vật này (ví dụ: "phong cách anime, màu sắc rực rỡ").';
+	@override String get imageHint => 'phong cách anime, màu sắc rực rỡ';
+	@override String get videoTitle => 'Phong cách video';
+	@override String get videoDescription => 'Được thêm vào đầu mọi prompt tạo video cho nhân vật này (ví dụ: "điện ảnh, độ sâu trường ảnh nông, hạt phim 24fps"). Mô hình video phản ứng tốt với từ vựng về chuyển động và máy quay; hãy giữ ngắn gọn.';
+	@override String get videoHint => 'điện ảnh, độ sâu trường ảnh nông';
+}
+
+// Path: character.cardEditApproval
+class _TranslationsCharacterCardEditApprovalVi extends _TranslationsCharacterCardEditApprovalEn {
+	_TranslationsCharacterCardEditApprovalVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get denyAll => 'Từ chối tất cả';
+	@override String get approveAll => 'Duyệt tất cả';
+	@override String get confirm => 'Xác nhận';
+	@override String get dialogTitle => 'Trợ lý đề xuất thay đổi';
+	@override String dontAskAgainFor({required Object modality}) => 'Không hỏi lại đối với ${modality}';
+	@override late final _TranslationsCharacterCardEditApprovalModalityLabelVi modalityLabel = _TranslationsCharacterCardEditApprovalModalityLabelVi._(_root);
+	@override late final _TranslationsCharacterCardEditApprovalModalityVerbVi modalityVerb = _TranslationsCharacterCardEditApprovalModalityVerbVi._(_root);
+	@override String get tapToDeny => 'Nhấn để từ chối';
+	@override String get tapToApprove => 'Nhấn để duyệt';
+	@override String get reasonLabel => 'Lý do (không bắt buộc, sẽ gửi lại cho trợ lý)';
+	@override String get newEntryTitle => 'Mục mới';
+	@override String get removingTitle => 'Đang xóa';
+	@override String get beforeTitle => 'Trước';
+	@override String get afterTitle => 'Sau';
+}
+
+// Path: character.requireApprovalTile
+class _TranslationsCharacterRequireApprovalTileVi extends _TranslationsCharacterRequireApprovalTileEn {
+	_TranslationsCharacterRequireApprovalTileVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get edits => 'Yêu cầu duyệt: chỉnh sửa';
+	@override String get additions => 'Yêu cầu duyệt: bổ sung';
+	@override String get deletions => 'Yêu cầu duyệt: xóa bỏ';
+}
+
+// Path: character.loadingStatus
+class _TranslationsCharacterLoadingStatusVi extends _TranslationsCharacterLoadingStatusEn {
+	_TranslationsCharacterLoadingStatusVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get initial => 'Đang tải...';
+	@override String get copyingAssistant => 'Đang sao chép trợ lý...';
+	@override String get scanningForCharacters => 'Đang quét nhân vật...';
+	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'Đang quét nhân vật...\n${current} / ${total}';
+	@override String loadingCharactersProgress({required Object current, required Object total}) => 'Đang tải nhân vật...\n${current} / ${total}';
+}
+
+// Path: character.savePathValidation
+class _TranslationsCharacterSavePathValidationVi extends _TranslationsCharacterSavePathValidationEn {
+	_TranslationsCharacterSavePathValidationVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noLibraryFolder => 'Chưa cấu hình thư mục thư viện.';
+	@override String get mustBeInsideLibrary => 'Nhân vật phải được lưu trong thư mục thư viện của bạn.';
+}
+
+// Path: character.createController
+class _TranslationsCharacterCreateControllerVi extends _TranslationsCharacterCreateControllerEn {
+	_TranslationsCharacterCreateControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get pngImagesTypeGroupLabel => 'Ảnh PNG';
+	@override String get invalidLocationTitle => 'Vị trí không hợp lệ';
+	@override String get creationFailedTitle => 'Tạo thất bại';
+	@override String get creationFailedMessage => 'Không thể tạo nhân vật. Kiểm tra nhật ký để biết chi tiết.';
+}
+
+// Path: character.importController
+class _TranslationsCharacterImportControllerVi extends _TranslationsCharacterImportControllerEn {
+	_TranslationsCharacterImportControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String failedToImport({required Object fileName}) => 'Không thể nhập ${fileName}.';
+	@override String importedCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: 'Đã nhập ${n} nhân vật',
+	);
+}
+
+// Path: character.aiActionController
+class _TranslationsCharacterAiActionControllerVi extends _TranslationsCharacterAiActionControllerEn {
+	_TranslationsCharacterAiActionControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get aiActionFailed => 'Thao tác AI thất bại. Kiểm tra nhật ký để biết chi tiết.';
+	@override String processingProgress({required Object name, required Object current, required Object total, required Object eta}) => 'Đang xử lý ${name} (${current}/${total})...${eta}';
+	@override String etaHoursMinutes({required Object hours, required Object minutes}) => ' Còn lại: ${hours}g ${minutes}p';
+	@override String etaMinutesSeconds({required Object minutes, required Object seconds}) => ' Còn lại: ${minutes}p ${seconds}s';
+	@override String etaSeconds({required Object seconds}) => ' Còn lại: ${seconds}s';
+	@override String processingField({required Object fieldName}) => 'Đang xử lý ${fieldName}...';
+}
+
+// Path: chat.tileAiProvider
+class _TranslationsChatTileAiProviderVi extends _TranslationsChatTileAiProviderEn {
+	_TranslationsChatTileAiProviderVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get modelLabel => 'Mô hình';
+	@override String get invalidLabel => 'Không hợp lệ';
+	@override String get chooseModelTitle => 'Chọn một mô hình';
+}
+
+// Path: chat.presetTile
+class _TranslationsChatPresetTileVi extends _TranslationsChatPresetTileEn {
+	_TranslationsChatPresetTileVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get tapToChoose => 'Nhấn để chọn';
+}
+
+// Path: chat.tileImagePreset
+class _TranslationsChatTileImagePresetVi extends _TranslationsChatTileImagePresetEn {
+	_TranslationsChatTileImagePresetVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get titleLabel => 'Mô hình hình ảnh';
+	@override String get chooseModelTitle => 'Chọn mô hình hình ảnh';
+}
+
+// Path: chat.tileVideoPreset
+class _TranslationsChatTileVideoPresetVi extends _TranslationsChatTileVideoPresetEn {
+	_TranslationsChatTileVideoPresetVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get titleLabel => 'Mô hình video';
+	@override String get chooseModelTitle => 'Chọn mô hình video';
+}
+
+// Path: chat.tileTtsPreset
+class _TranslationsChatTileTtsPresetVi extends _TranslationsChatTileTtsPresetEn {
+	_TranslationsChatTileTtsPresetVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get titleLabel => 'Mô hình giọng nói';
+	@override String get chooseModelTitle => 'Chọn mô hình giọng nói';
+}
+
+// Path: chat.tileImageAspectRatio
+class _TranslationsChatTileImageAspectRatioVi extends _TranslationsChatTileImageAspectRatioEn {
+	_TranslationsChatTileImageAspectRatioVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Tỷ lệ khung hình ảnh';
+}
+
+// Path: chat.tileVideoAspectRatio
+class _TranslationsChatTileVideoAspectRatioVi extends _TranslationsChatTileVideoAspectRatioEn {
+	_TranslationsChatTileVideoAspectRatioVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Tỷ lệ khung hình';
+}
+
+// Path: chat.tileVideoResolution
+class _TranslationsChatTileVideoResolutionVi extends _TranslationsChatTileVideoResolutionEn {
+	_TranslationsChatTileVideoResolutionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Độ phân giải';
+}
+
+// Path: chat.tileVideoDuration
+class _TranslationsChatTileVideoDurationVi extends _TranslationsChatTileVideoDurationEn {
+	_TranslationsChatTileVideoDurationVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Thời lượng';
+}
+
+// Path: chat.tileTtsVoice
+class _TranslationsChatTileTtsVoiceVi extends _TranslationsChatTileTtsVoiceEn {
+	_TranslationsChatTileTtsVoiceVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Giọng đọc';
+}
+
+// Path: chat.tileTtsLanguage
+class _TranslationsChatTileTtsLanguageVi extends _TranslationsChatTileTtsLanguageEn {
+	_TranslationsChatTileTtsLanguageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Ngôn ngữ';
+}
+
+// Path: chat.tileNsfw
+class _TranslationsChatTileNsfwVi extends _TranslationsChatTileNsfwEn {
+	_TranslationsChatTileNsfwVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'NSFW / Không giới hạn';
+}
+
+// Path: chat.tileScenario
+class _TranslationsChatTileScenarioVi extends _TranslationsChatTileScenarioEn {
+	_TranslationsChatTileScenarioVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Kịch bản';
+}
+
+// Path: chat.tileMaxResponseLength
+class _TranslationsChatTileMaxResponseLengthVi extends _TranslationsChatTileMaxResponseLengthEn {
+	_TranslationsChatTileMaxResponseLengthVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String titleWithBucket({required Object bucket}) => 'Độ dài phản hồi — ${bucket}';
+	@override String sliderLabel({required Object bucket, required Object tokens}) => '${bucket} (${tokens} token)';
+	@override String get bucketVeryShort => 'Rất ngắn';
+	@override String get bucketShort => 'Ngắn';
+	@override String get bucketMedium => 'Trung bình';
+	@override String get bucketLong => 'Dài';
+	@override String get bucketVeryLong => 'Rất dài';
+}
+
+// Path: chat.tileTrailingParagraph
+class _TranslationsChatTileTrailingParagraphVi extends _TranslationsChatTileTrailingParagraphEn {
+	_TranslationsChatTileTrailingParagraphVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Cắt văn bản thừa ở cuối';
+}
+
+// Path: chat.tileReasoningEffort
+class _TranslationsChatTileReasoningEffortVi extends _TranslationsChatTileReasoningEffortEn {
+	_TranslationsChatTileReasoningEffortVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String titleWithEffort({required Object effort}) => 'Suy luận — ${effort}';
+	@override String get titleOff => 'Tắt suy luận';
+	@override String get extraTokensCaption => 'Dùng thêm token ngoài độ dài phản hồi tối đa của bạn.';
+}
+
+// Path: chat.tileChatTheme
+class _TranslationsChatTileChatThemeVi extends _TranslationsChatTileChatThemeEn {
+	_TranslationsChatTileChatThemeVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Chủ đề';
+}
+
+// Path: chat.tileRecalledMemory
+class _TranslationsChatTileRecalledMemoryVi extends _TranslationsChatTileRecalledMemoryEn {
+	_TranslationsChatTileRecalledMemoryVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get label => 'Hiện ký ức được gợi lại';
+}
+
+// Path: chat.characterSwitcher
+class _TranslationsChatCharacterSwitcherVi extends _TranslationsChatCharacterSwitcherEn {
+	_TranslationsChatCharacterSwitcherVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get favoritesTooltip => 'Yêu thích';
+	@override String get recentChatsTooltip => 'Cuộc trò chuyện gần đây';
+	@override String get originalBadge => 'GỐC';
+	@override String get variantBadge => 'BIẾN THỂ';
+	@override String lastActive({required Object timeAgo}) => 'Hoạt động gần nhất: ${timeAgo}';
+	@override String get never => 'Chưa từng';
+}
+
+// Path: chat.freeImagePromptDialog
+class _TranslationsChatFreeImagePromptDialogVi extends _TranslationsChatFreeImagePromptDialogEn {
+	_TranslationsChatFreeImagePromptDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Tạo hình ảnh';
+	@override String get description => 'Mô tả những gì bạn muốn thấy. Một cụm từ ngắn là đủ — mô hình sẽ mở rộng thành danh sách tag đầy đủ.';
+	@override String get subjectLabel => 'Chủ thể';
+	@override String get subjectHint => 'hẻm cyberpunk, mưa neon';
+	@override String get generateButton => 'Tạo';
+}
+
+// Path: chat.freeVideoPromptDialog
+class _TranslationsChatFreeVideoPromptDialogVi extends _TranslationsChatFreeVideoPromptDialogEn {
+	_TranslationsChatFreeVideoPromptDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Tạo video';
+	@override String get description => 'Mô tả một khoảnh khắc chuyển động ngắn — cái gì đang chuyển động, như thế nào, ở đâu. Mô hình hệ thống sẽ mở rộng thành prompt T2V điện ảnh.';
+	@override String get subjectLabel => 'Chủ thể';
+	@override String get subjectHint => 'cô ấy bước đi trong mưa neon, chuyển động chậm';
+	@override String get generateButton => 'Tạo';
+}
+
+// Path: chat.imagePromptReviewDialog
+class _TranslationsChatImagePromptReviewDialogVi extends _TranslationsChatImagePromptReviewDialogEn {
+	_TranslationsChatImagePromptReviewDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Xem lại prompt hình ảnh';
+	@override String get description => 'Chỉnh sửa prompt bên dưới trước khi tạo, hoặc nhấn Tạo để dùng nguyên bản.';
+	@override String get fieldLabel => 'Prompt hình ảnh';
+	@override String get generateButton => 'Tạo';
+}
+
+// Path: chat.videoPromptReviewDialog
+class _TranslationsChatVideoPromptReviewDialogVi extends _TranslationsChatVideoPromptReviewDialogEn {
+	_TranslationsChatVideoPromptReviewDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Xem lại prompt video';
+	@override String get description => 'Chỉnh sửa prompt bên dưới trước khi gửi, hoặc nhấn Tạo để dùng nguyên bản.';
+	@override String get fieldLabel => 'Prompt video';
+	@override String get generateButton => 'Tạo';
+}
+
+// Path: chat.urlFetchReviewDialog
+class _TranslationsChatUrlFetchReviewDialogVi extends _TranslationsChatUrlFetchReviewDialogEn {
+	_TranslationsChatUrlFetchReviewDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Cho phép truy xuất web?';
+	@override String get description => 'Nhân vật muốn đọc nội dung của URL này.';
+	@override String get purposeLabel => 'Mục đích:';
+	@override String get denyButton => 'Từ chối';
+	@override String get allowButton => 'Cho phép';
+}
+
+// Path: chat.messageActionsRow
+class _TranslationsChatMessageActionsRowVi extends _TranslationsChatMessageActionsRowEn {
+	_TranslationsChatMessageActionsRowVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String tokenCountAbbrev({required Object count}) => '${count}t';
+	@override String generationTimeAbbrev({required Object seconds}) => '${seconds}s';
+	@override String get viewGenerationPromptTooltip => 'Xem prompt tạo sinh';
+	@override String get messageActionsTooltip => 'Thao tác tin nhắn';
+	@override String get editAction => 'Chỉnh sửa';
+	@override String get copyAction => 'Sao chép';
+	@override String get shareImageAction => 'Chia sẻ hình ảnh';
+	@override String get setAsBackgroundAction => 'Đặt làm hình nền';
+	@override String get setAsCharacterImageAction => 'Đặt làm ảnh nhân vật';
+	@override String get deleteAction => 'Xóa';
+	@override String get copiedToClipboard => 'Đã sao chép tin nhắn vào bộ nhớ tạm';
+}
+
+// Path: chat.ttsPlayButton
+class _TranslationsChatTtsPlayButtonVi extends _TranslationsChatTtsPlayButtonEn {
+	_TranslationsChatTtsPlayButtonVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get stopTooltip => 'Dừng';
+	@override String get readAloudTooltip => 'Đọc to';
+	@override String get ttsFailed => 'TTS thất bại.';
+}
+
+// Path: chat.messageSwipeFlipper
+class _TranslationsChatMessageSwipeFlipperVi extends _TranslationsChatMessageSwipeFlipperEn {
+	_TranslationsChatMessageSwipeFlipperVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get previousVersionTooltip => 'Phiên bản trước';
+	@override String swipeCounter({required Object current, required Object total}) => '${current} / ${total}';
+	@override String get regenerateTooltip => 'Tạo lại';
+	@override String get nextVersionTooltip => 'Phiên bản sau';
+}
+
+// Path: chat.videoPlayerInline
+class _TranslationsChatVideoPlayerInlineVi extends _TranslationsChatVideoPlayerInlineEn {
+	_TranslationsChatVideoPlayerInlineVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get webUnsupported => 'Không hỗ trợ phát video trên web.';
+	@override String get couldNotLoad => 'Không thể tải video.';
+}
+
+// Path: chat.chatListItem
+class _TranslationsChatChatListItemVi extends _TranslationsChatChatListItemEn {
+	_TranslationsChatChatListItemVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String messageCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: '${n} tin nhắn',
+	);
+	@override String get renameAction => 'Đổi tên';
+	@override String get deleteChatAction => 'Xóa cuộc trò chuyện';
+}
+
+// Path: chat.chatHistoryController
+class _TranslationsChatChatHistoryControllerVi extends _TranslationsChatChatHistoryControllerEn {
+	_TranslationsChatChatHistoryControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get renameChatTitle => 'Đổi tên cuộc trò chuyện';
+	@override String get chatNameHint => 'Tên cuộc trò chuyện';
+	@override String get renameButton => 'Đổi tên';
+	@override String get deleteChatTitle => 'Xóa cuộc trò chuyện';
+	@override String get deleteChatMessage => 'Bạn có chắc muốn xóa lịch sử trò chuyện này không? Hành động này không thể hoàn tác.';
+}
+
+// Path: chat.chatPageController
+class _TranslationsChatChatPageControllerVi extends _TranslationsChatChatPageControllerEn {
+	_TranslationsChatChatPageControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get clearAssistantHistoryMessage => 'Xóa lịch sử trò chuyện với trợ lý?';
+	@override String get clearButton => 'Xóa';
+	@override String get deleteOrKeepMessage => 'Bạn muốn xóa cuộc trò chuyện hiện tại hay giữ lại trong lịch sử?';
+	@override String get deleteCurrentButton => 'Xóa hiện tại';
+	@override String get keepCurrentButton => 'Giữ lại';
+	@override String get connectProviderToChatSnackbar => 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
+}
+
+// Path: chat.imageGenerationMixin
+class _TranslationsChatImageGenerationMixinVi extends _TranslationsChatImageGenerationMixinEn {
+	_TranslationsChatImageGenerationMixinVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get enterPromptMessage => 'Nhập prompt để tạo hình ảnh.';
+	@override String get noCharacterMessage => 'Không có nhân vật nào để tạo hình ảnh.';
+	@override String get notConfiguredMessage => 'Chưa cấu hình tạo hình ảnh.';
+	@override String get noSystemModelMessage => 'Chưa cấu hình mô hình hệ thống. Thiết lập trong Cài đặt → AI.';
+}
+
+// Path: chat.videoGenerationMixin
+class _TranslationsChatVideoGenerationMixinVi extends _TranslationsChatVideoGenerationMixinEn {
+	_TranslationsChatVideoGenerationMixinVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get enterPromptMessage => 'Nhập prompt để tạo video.';
+	@override String get noCharacterMessage => 'Không có nhân vật nào để tạo video.';
+	@override String get notConfiguredMessage => 'Chưa cấu hình tạo video.';
+}
+
+// Path: chat.bubbleWaitingFor
+class _TranslationsChatBubbleWaitingForVi extends _TranslationsChatBubbleWaitingForEn {
+	_TranslationsChatBubbleWaitingForVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get thinking => 'Đang suy nghĩ…';
+	@override String get preparingImagePrompt => 'Đang chuẩn bị prompt hình ảnh…';
+	@override String get preparingVideoPrompt => 'Đang chuẩn bị prompt video…';
+	@override String get generatingImage => 'Đang tạo hình ảnh…';
+	@override String get generatingVideo => 'Đang tạo video…';
+}
+
+// Path: chat.appBarChat
+class _TranslationsChatAppBarChatVi extends _TranslationsChatAppBarChatEn {
+	_TranslationsChatAppBarChatVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get hideEditorPanelTooltip => 'Ẩn bảng chỉnh sửa';
+	@override String get showEditorSideBySideTooltip => 'Hiện trình chỉnh sửa song song';
+	@override String get chatOptionsTooltip => 'Tùy chọn trò chuyện';
+}
+
+// Path: chat.allChatsDrawerList
+class _TranslationsChatAllChatsDrawerListVi extends _TranslationsChatAllChatsDrawerListEn {
+	_TranslationsChatAllChatsDrawerListVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get rebuildingIndex => 'Đang xây dựng lại chỉ mục...';
+	@override String get noChatsFound => 'Không tìm thấy cuộc trò chuyện nào.';
+}
+
+// Path: chat.chatInputMediaMenu
+class _TranslationsChatChatInputMediaMenuVi extends _TranslationsChatChatInputMediaMenuEn {
+	_TranslationsChatChatInputMediaMenuVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get generateMediaTooltip => 'Tạo media';
+	@override String get generateImageLabel => 'Tạo hình ảnh';
+	@override String get generateVideoLabel => 'Tạo video';
+}
+
+// Path: chat.chatView
+class _TranslationsChatChatViewVi extends _TranslationsChatChatViewEn {
+	_TranslationsChatChatViewVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get deleteMessageTitle => 'Xóa tin nhắn';
+	@override String get deleteMessageConfirmation => 'Bạn có chắc muốn xóa tin nhắn này không?';
+	@override String get typeMessageHint => 'Nhập tin nhắn...';
+	@override String get moreActionsTooltip => 'Thêm thao tác';
+	@override String get continueAction => 'Tiếp tục';
+	@override String get impersonateAction => 'Viết thay bạn';
+	@override String get generateReplyAction => 'Tạo phản hồi';
+	@override String get improveMessageAction => 'Cải thiện tin nhắn';
+}
+
+// Path: chat.chatMessageBubble
+class _TranslationsChatChatMessageBubbleVi extends _TranslationsChatChatMessageBubbleEn {
+	_TranslationsChatChatMessageBubbleVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get imagesTypeGroupLabel => 'Hình ảnh';
+	@override String get assistantFallbackName => 'Trợ lý';
+	@override String get reasoningLabel => 'Suy luận';
+	@override String get sendingToProvider => 'Đang gửi tới nhà cung cấp…';
+	@override String pollingWithPercent({required Object pct}) => 'Đang chờ kết quả… ${pct}%';
+	@override String get polling => 'Đang chờ kết quả…';
+	@override String get downloading => 'Đang tải xuống…';
+}
+
+// Path: common.actions
+class _TranslationsCommonActionsVi extends _TranslationsCommonActionsEn {
+	_TranslationsCommonActionsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get delete => 'Xóa';
+	@override String get ok => 'OK';
+	@override String get cancel => 'Hủy';
+	@override String get save => 'Lưu';
+	@override String get tryAgain => 'Thử lại';
+	@override String get close => 'Đóng';
+}
+
+// Path: common.appSearchField
+class _TranslationsCommonAppSearchFieldVi extends _TranslationsCommonAppSearchFieldEn {
+	_TranslationsCommonAppSearchFieldVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get hint => 'Tìm kiếm...';
+}
+
+// Path: common.aiAction
+class _TranslationsCommonAiActionVi extends _TranslationsCommonAiActionEn {
+	_TranslationsCommonAiActionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get proofread => 'Soát lỗi';
+	@override String get compact => 'Cô đọng văn bản';
+	@override String get translate => 'Dịch sang tiếng Anh';
+	@override String get generatePreview => 'Tạo bản xem trước';
+	@override String get autoTag => 'Tự động gắn tag';
+}
+
+// Path: common.promptSegmentKind
+class _TranslationsCommonPromptSegmentKindVi extends _TranslationsCommonPromptSegmentKindEn {
+	_TranslationsCommonPromptSegmentKindVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get identity => 'Danh tính';
+	@override String get systemPrompt => 'Prompt hệ thống';
+	@override String get nsfwMode => 'Chế độ NSFW';
+	@override String get scenarioMode => 'Chế độ kịch bản';
+	@override String get description => 'Mô tả';
+	@override String get personality => 'Tính cách';
+	@override String get scenario => 'Kịch bản';
+	@override String get userPersona => 'Persona của bạn';
+	@override String get memory => 'Ký ức';
+	@override String get situation => 'Tình huống';
+	@override String get cardData => 'Dữ liệu thẻ';
+	@override String get tools => 'Công cụ';
+	@override String get postHistory => 'Sau lịch sử';
+	@override String get depthPrompt => 'Prompt theo độ sâu';
+	@override String get worldInfo => 'Thông tin thế giới';
+	@override String get injected => 'Được chèn';
+	@override String get exampleDialogue => 'Hội thoại mẫu';
+	@override String get history => 'Lịch sử tin nhắn';
+	@override String get currentMessage => 'Tin nhắn hiện tại';
+	@override String get reservedReply => 'Dự trữ cho phản hồi';
+}
+
+// Path: common.promptBreakdown
+class _TranslationsCommonPromptBreakdownVi extends _TranslationsCommonPromptBreakdownEn {
+	_TranslationsCommonPromptBreakdownVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get free => 'Còn trống';
+}
+
+// Path: common.logs
+class _TranslationsCommonLogsVi extends _TranslationsCommonLogsEn {
+	_TranslationsCommonLogsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Nhật ký';
+	@override String get filterTooltip => 'Lọc nhật ký';
+	@override String get clearTooltip => 'Xóa nhật ký';
+	@override String get exportTooltip => 'Xuất nhật ký';
+	@override String get searchHint => 'Tìm trong nhật ký...';
+	@override String get noLogsFound => 'Không tìm thấy nhật ký nào.';
+	@override String get noLogsToExport => 'Không có nhật ký để xuất';
+	@override String get exportedSuccessfully => 'Đã xuất nhật ký thành công';
+	@override String get exportFailed => 'Không thể xuất nhật ký. Xem nhật ký để biết chi tiết.';
+	@override String get copiedToClipboard => 'Đã sao chép vào bộ nhớ tạm';
+	@override String get copyLogButton => 'Sao chép nhật ký';
+	@override String get copiedEntryToClipboard => 'Đã sao chép mục nhật ký vào bộ nhớ tạm';
+	@override String errorPrefix({required Object error}) => 'Lỗi: ${error}';
+}
+
+// Path: common.importErrorsDialog
+class _TranslationsCommonImportErrorsDialogVi extends _TranslationsCommonImportErrorsDialogEn {
+	_TranslationsCommonImportErrorsDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Lỗi nhập';
+	@override String get message => 'Không thể nhập các tệp sau:';
+}
+
+// Path: common.updateDialog
+class _TranslationsCommonUpdateDialogVi extends _TranslationsCommonUpdateDialogEn {
+	_TranslationsCommonUpdateDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Có phiên bản mới';
+	@override String body({required Object appName, required Object currentVersion, required Object latestVersion}) => 'Đã có phiên bản mới hơn của ${appName}.\n\nPhiên bản hiện tại: ${currentVersion}\nPhiên bản mới nhất: ${latestVersion}';
+	@override String get releaseNotesLabel => 'Ghi chú phát hành:';
+	@override String get viewReleasesButton => 'Xem các bản phát hành';
+}
+
+// Path: common.importConflictsDialog
+class _TranslationsCommonImportConflictsDialogVi extends _TranslationsCommonImportConflictsDialogEn {
+	_TranslationsCommonImportConflictsDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Xung đột khi nhập';
+	@override String message({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: '${n} nhân vật sau bị trùng tên tệp và sẽ được tự động đổi tên:',
+	);
+}
+
+// Path: common.missingProviderBanner
+class _TranslationsCommonMissingProviderBannerVi extends _TranslationsCommonMissingProviderBannerEn {
+	_TranslationsCommonMissingProviderBannerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get message => 'Kết nối một nhà cung cấp AI.';
+	@override String get setUpNowButton => 'Thiết lập ngay';
+}
+
+// Path: common.modelSelectionDialog
+class _TranslationsCommonModelSelectionDialogVi extends _TranslationsCommonModelSelectionDialogEn {
+	_TranslationsCommonModelSelectionDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get searchHint => 'Tìm mô hình';
+	@override String subscriptionOnlyToggle({required Object included, required Object total}) => 'Chỉ hiện mô hình thuộc gói đăng ký (${included}/${total})';
+}
+
+// Path: common.showAdvanced
+class _TranslationsCommonShowAdvancedVi extends _TranslationsCommonShowAdvancedEn {
+	_TranslationsCommonShowAdvancedVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get less => 'Thu gọn';
+	@override String get more => 'Xem thêm';
+}
+
+// Path: common.messageEditDialog
+class _TranslationsCommonMessageEditDialogVi extends _TranslationsCommonMessageEditDialogEn {
+	_TranslationsCommonMessageEditDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Chỉnh sửa tin nhắn';
+}
+
+// Path: common.promptBreakdownDialog
+class _TranslationsCommonPromptBreakdownDialogVi extends _TranslationsCommonPromptBreakdownDialogEn {
+	_TranslationsCommonPromptBreakdownDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Phân tích prompt';
+	@override String get breakdownTab => 'Phân tích';
+	@override String get contentTab => 'Nội dung';
+	@override String get promptTotalEstimated => 'Tổng prompt (ước tính)';
+	@override String get promptTotalProvider => 'Tổng prompt (nhà cung cấp)';
+	@override String get contextWindowLabel => 'Cửa sổ ngữ cảnh';
+	@override String get categoryHeader => 'DANH MỤC';
+	@override String get tokensHeader => 'TOKEN';
+	@override String get usageHeader => 'SỬ DỤNG';
+	@override String get noContentToInspect => 'Không có nội dung để xem cho phản hồi này.';
+	@override String get estimatedSuffix => ' (ước tính)';
+	@override String usedSummary({required Object used, required Object total}) => 'Đã dùng ${used} / ${total}';
+}
+
+// Path: common.jsonPromptDialog
+class _TranslationsCommonJsonPromptDialogVi extends _TranslationsCommonJsonPromptDialogEn {
+	_TranslationsCommonJsonPromptDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Prompt tạo sinh';
+}
+
+// Path: common.progressDialog
+class _TranslationsCommonProgressDialogVi extends _TranslationsCommonProgressDialogEn {
+	_TranslationsCommonProgressDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get defaultMessage => 'Đang gửi...';
+	@override String get finished => 'Hoàn tất!';
+}
+
+// Path: common.diffPanel
+class _TranslationsCommonDiffPanelVi extends _TranslationsCommonDiffPanelEn {
+	_TranslationsCommonDiffPanelVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String tokenSuffix({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: ' (${n} token)',
+	);
+}
+
+// Path: common.selectionDialog
+class _TranslationsCommonSelectionDialogVi extends _TranslationsCommonSelectionDialogEn {
+	_TranslationsCommonSelectionDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get searchHint => 'Tìm kiếm…';
+}
+
+// Path: common.zdrSwitch
+class _TranslationsCommonZdrSwitchVi extends _TranslationsCommonZdrSwitchEn {
+	_TranslationsCommonZdrSwitchVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Yêu cầu Zero Data Retention (ZDR)';
+	@override String get subtitle => 'Chỉ hiện các mô hình OR có endpoint tuân thủ ZDR. Bật nếu tài khoản openrouter.ai của bạn giới hạn ở các nhà cung cấp ZDR.';
+}
+
+// Path: common.textFieldCard
+class _TranslationsCommonTextFieldCardVi extends _TranslationsCommonTextFieldCardEn {
+	_TranslationsCommonTextFieldCardVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String labelWithTokenCount({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: '${label} - ${n} token',
+	);
+	@override String tokenCountAbbrev({required Object count}) => '${count} t';
+}
+
+// Path: common.modelCapability
+class _TranslationsCommonModelCapabilityVi extends _TranslationsCommonModelCapabilityEn {
+	_TranslationsCommonModelCapabilityVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get reasoning => 'Suy luận';
+	@override String get vision => 'Thị giác';
+	@override String get tools => 'Công cụ';
+	@override String get json => 'JSON';
+	@override String get files => 'Tệp';
+	@override String get image => 'Hình ảnh';
+	@override String get video => 'Video';
+	@override String get speech => 'Giọng nói';
+	@override String get music => 'Âm nhạc';
+}
+
+// Path: common.appConstants
+class _TranslationsCommonAppConstantsVi extends _TranslationsCommonAppConstantsEn {
+	_TranslationsCommonAppConstantsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get maxImageFileSizeLabel => '10 MB';
+	@override String get exportFailedMessage => 'Xuất thất bại. Xem nhật ký để biết chi tiết.';
+}
+
+// Path: common.timeAgo
+class _TranslationsCommonTimeAgoVi extends _TranslationsCommonTimeAgoEn {
+	_TranslationsCommonTimeAgoVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String years({required Object n}) => '${n} năm trước';
+	@override String months({required Object n}) => '${n} tháng trước';
+	@override String days({required Object n}) => '${n} ngày trước';
+	@override String hours({required Object n}) => '${n} giờ trước';
+	@override String minutes({required Object n}) => '${n} phút trước';
+	@override String get justNow => 'Vừa xong';
+}
+
+// Path: editor.panelLabels
+class _TranslationsEditorPanelLabelsVi extends _TranslationsEditorPanelLabelsEn {
+	_TranslationsEditorPanelLabelsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get basic => 'Cơ bản';
+	@override String get greetings => 'Lời chào';
+	@override String get prompts => 'Prompt';
+	@override String get lorebook => 'Lorebook';
+	@override String get group => 'Nhóm';
+	@override String get creator => 'Tác giả';
+	@override String get appData => 'Dữ liệu ứng dụng';
+	@override String get nodes => 'Node';
+}
+
+// Path: editor.appBarEditor
+class _TranslationsEditorAppBarEditorVi extends _TranslationsEditorAppBarEditorEn {
+	_TranslationsEditorAppBarEditorVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get hideAssistantPanelTooltip => 'Ẩn bảng trợ lý';
+	@override String get showChatAssistantTooltip => 'Hiện trợ lý trò chuyện song song';
+}
+
+// Path: editor.codeFindPanel
+class _TranslationsEditorCodeFindPanelVi extends _TranslationsEditorCodeFindPanelEn {
+	_TranslationsEditorCodeFindPanelVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noneResult => 'không có';
+	@override String get previousTooltip => 'Trước';
+	@override String get nextTooltip => 'Sau';
+	@override String get closeTooltip => 'Đóng';
+	@override String get replaceTooltip => 'Thay thế';
+	@override String get replaceAllTooltip => 'Thay thế tất cả';
+}
+
+// Path: editor.findReplaceDialog
+class _TranslationsEditorFindReplaceDialogVi extends _TranslationsEditorFindReplaceDialogEn {
+	_TranslationsEditorFindReplaceDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get confirmReplaceAllTitle => 'Xác nhận thay thế tất cả';
+	@override String get confirmReplaceAllMessage => 'Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.';
+	@override String get proceedButton => 'Tiếp tục';
+	@override String get title => 'Tìm & Thay thế';
+	@override String get findLabel => 'Tìm';
+	@override String get replaceWithLabel => 'Thay bằng';
+	@override String get replaceAllButton => 'Thay thế tất cả';
+}
+
+// Path: editor.objectValueEditor
+class _TranslationsEditorObjectValueEditorVi extends _TranslationsEditorObjectValueEditorEn {
+	_TranslationsEditorObjectValueEditorVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get stringType => 'chuỗi';
+	@override String get numberType => 'số';
+	@override String get boolType => 'bool';
+}
+
+// Path: editor.editorBasic
+class _TranslationsEditorEditorBasicVi extends _TranslationsEditorEditorBasicEn {
+	_TranslationsEditorEditorBasicVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get nameLabel => 'Tên';
+	@override String get nicknameLabel => 'Biệt danh (CCv3)';
+	@override String get descriptionLabel => 'Mô tả';
+	@override String get personalityLabel => 'Tính cách';
+	@override String get scenarioLabel => 'Kịch bản';
+	@override String get messageExampleLabel => 'Tin nhắn mẫu';
+}
+
+// Path: editor.editorCreatorMetadata
+class _TranslationsEditorEditorCreatorMetadataVi extends _TranslationsEditorEditorCreatorMetadataEn {
+	_TranslationsEditorEditorCreatorMetadataVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get systemNameLabel => 'Tên hệ thống (CCv3)';
+	@override String get creatorLabel => 'Tác giả';
+	@override String get versionLabel => 'Phiên bản';
+	@override String get creatorNotesLabel => 'Ghi chú của tác giả';
+	@override String get tagsLabel => 'Tag (phân tách bằng dấu phẩy)';
+}
+
+// Path: editor.editorPrompts
+class _TranslationsEditorEditorPromptsVi extends _TranslationsEditorEditorPromptsEn {
+	_TranslationsEditorEditorPromptsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get systemPromptLabel => 'Prompt hệ thống';
+	@override String get postHistoryInstructionsLabel => 'Hướng dẫn sau lịch sử';
+	@override String get depthPromptLabel => 'Prompt theo độ sâu (Ghi chú nhân vật)';
+	@override String get insertionDepthLabel => 'Độ sâu chèn';
+	@override String get roleLabel => 'Vai trò';
+}
+
+// Path: editor.editorAppData
+class _TranslationsEditorEditorAppDataVi extends _TranslationsEditorEditorAppDataEn {
+	_TranslationsEditorEditorAppDataVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get variantNotesLabel => 'Ghi chú biến thể';
+	@override String get descriptionPreviewLabel => 'Xem trước mô tả';
+}
+
+// Path: editor.editorAlternateGreetings
+class _TranslationsEditorEditorAlternateGreetingsVi extends _TranslationsEditorEditorAlternateGreetingsEn {
+	_TranslationsEditorEditorAlternateGreetingsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get deleteGreetingTitle => 'Xóa lời chào';
+	@override String get deleteGreetingMessage => 'Bạn có chắc muốn xóa lời chào này không?';
+	@override String get addGreetingButton => 'Thêm lời chào';
+	@override String get primaryGreetingLabel => 'Lời chào chính (first_mes)';
+	@override String alternateGreetingLabel({required Object index}) => 'Lời chào thay thế #${index}';
+	@override String get removeTooltip => 'Xóa';
+}
+
+// Path: editor.editorGroupGreetings
+class _TranslationsEditorEditorGroupGreetingsVi extends _TranslationsEditorEditorGroupGreetingsEn {
+	_TranslationsEditorEditorGroupGreetingsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String greetingLabel({required Object index}) => 'Lời chào ${index}';
+}
+
+// Path: editor.editorLorebook
+class _TranslationsEditorEditorLorebookVi extends _TranslationsEditorEditorLorebookEn {
+	_TranslationsEditorEditorLorebookVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get newEntryDefaultComment => 'Mục mới';
+	@override String get deleteEntryTitle => 'Xóa mục';
+	@override String get deleteEntryMessage => 'Bạn có chắc muốn xóa mục này không?';
+	@override String get addNewEntryButton => 'Thêm mục mới';
+	@override String get noEntriesFound => 'Không tìm thấy mục lorebook nào.';
+}
+
+// Path: editor.lorebookEntryListTile
+class _TranslationsEditorLorebookEntryListTileVi extends _TranslationsEditorLorebookEntryListTileEn {
+	_TranslationsEditorLorebookEntryListTileVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get untitledEntry => 'Mục chưa đặt tên';
+	@override String get noKeywords => 'Không có từ khóa';
+}
+
+// Path: editor.lorebookEntryEditorPage
+class _TranslationsEditorLorebookEntryEditorPageVi extends _TranslationsEditorLorebookEntryEditorPageEn {
+	_TranslationsEditorLorebookEntryEditorPageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editEntryTitle => 'Chỉnh sửa mục lorebook';
+	@override String get advancedFilter => 'Nâng cao';
+	@override String get primaryKeywordsLabel => 'Từ khóa chính';
+	@override String get logicLabel => 'Logic';
+	@override String get logicAndAny => 'AND ANY';
+	@override String get logicAndAll => 'AND ALL';
+	@override String get logicNotAny => 'NOT ANY';
+	@override String get logicNotAll => 'NOT ALL';
+	@override String get optionalFilterLabel => 'Bộ lọc tùy chọn';
+	@override String get contentLabel => 'Nội dung';
+	@override String get nonRecursableFilter => 'Không đệ quy';
+	@override String get preventFurtherRecursionFilter => 'Chặn đệ quy tiếp';
+	@override String get delayUntilRecursionFilter => 'Hoãn tới khi đệ quy';
+	@override String get ignoreBudgetFilter => 'Bỏ qua ngân sách';
+	@override String get prioritizeFilter => 'Ưu tiên';
+	@override String get inclusionGroupLabel => 'Nhóm bao gồm';
+	@override String get groupWeightLabel => 'Trọng số nhóm';
+	@override String get stickyLabel => 'Sticky';
+	@override String get cooldownLabel => 'Thời gian hồi';
+	@override String get delayLabel => 'Độ trễ';
+	@override String get filterToCharactersLabel => 'Lọc theo nhân vật hoặc tag';
+	@override String get filterToTriggersLabel => 'Lọc theo kích hoạt tạo sinh';
+	@override String get additionalMatchingSourcesLabel => 'Nguồn khớp bổ sung:';
+	@override String get personaFilter => 'Persona';
+	@override String get descriptionFilter => 'Mô tả';
+	@override String get personalityFilter => 'Tính cách';
+	@override String get depthPromptFilter => 'Prompt theo độ sâu';
+	@override String get scenarioFilter => 'Kịch bản';
+	@override String get creatorNotesFilter => 'Ghi chú của tác giả';
+}
+
+// Path: editor.lorebookEntryEditorTopSection
+class _TranslationsEditorLorebookEntryEditorTopSectionVi extends _TranslationsEditorLorebookEntryEditorTopSectionEn {
+	_TranslationsEditorLorebookEntryEditorTopSectionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get titleMemoLabel => 'Tiêu đề/Ghi nhớ';
+	@override String get strategyLabel => 'Chiến lược';
+	@override String get strategyConstant => 'Cố định';
+	@override String get strategyEnabled => 'Bật';
+	@override String get strategyDisabled => 'Tắt';
+	@override String get strategyVectorized => 'Vector hóa';
+	@override String get positionLabel => 'Vị trí';
+	@override String get positionUpChar => '↑ Char';
+	@override String get positionDownChar => '↓ Char';
+	@override String get positionUpAn => '↑ AN';
+	@override String get positionDownAn => '↓ AN';
+	@override String get positionDepthSystem => '@D Hệ thống';
+	@override String get positionDepthUser => '@D Người dùng';
+	@override String get positionDepthAssistant => '@D Trợ lý';
+	@override String get positionUpEm => '↑ EM';
+	@override String get positionDownEm => '↓ EM';
+	@override String get positionOutlet => 'Outlet';
+	@override String get depthLabel => 'Độ sâu';
+	@override String get orderLabel => 'Thứ tự';
+	@override String get triggerLabel => 'Kích hoạt %';
+}
+
+// Path: editor.lorebookEntryEditorScanRow
+class _TranslationsEditorLorebookEntryEditorScanRowVi extends _TranslationsEditorLorebookEntryEditorScanRowEn {
+	_TranslationsEditorLorebookEntryEditorScanRowVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get scanDepthLabel => 'Độ sâu quét';
+	@override String get automationIdLabel => 'ID tự động hóa';
+	@override String get useRegexFilter => 'Dùng regex';
+	@override String get caseSensitiveFilter => 'Phân biệt hoa thường';
+	@override String get wholeWordsFilter => 'Nguyên từ';
+	@override String get groupScoringFilter => 'Chấm điểm nhóm';
+}
+
+// Path: editor.dialogContentCleaner
+class _TranslationsEditorDialogContentCleanerVi extends _TranslationsEditorDialogContentCleanerEn {
+	_TranslationsEditorDialogContentCleanerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String confirmActionTitle({required Object actionName}) => 'Xác nhận ${actionName}';
+	@override String get title => 'Dọn dẹp nội dung';
+	@override String get normalizeFancyCharsAction => 'Chuẩn hóa ký tự trang trí';
+	@override String get normalizeFancyCharsButton => 'Chuẩn hóa ký tự trang trí (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)';
+	@override String get purgeHtmlAction => 'Xóa HTML';
+	@override String get purgeHtmlButton => 'Xóa thẻ HTML';
+	@override String get purgeMarkdownAction => 'Xóa liên kết/ảnh Markdown';
+	@override String get purgeEmojisAction => 'Xóa emoji';
+	@override String get purgeExtraSpacesAction => 'Xóa khoảng trắng thừa';
+	@override String get yoloPurgeAction => 'Dọn sạch toàn bộ';
+	@override String get applyAllAboveButton => 'Áp dụng tất cả bên trên';
+}
+
+// Path: editor.dialogAiDiffConfirmation
+class _TranslationsEditorDialogAiDiffConfirmationVi extends _TranslationsEditorDialogAiDiffConfirmationEn {
+	_TranslationsEditorDialogAiDiffConfirmationVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get applyChangesButton => 'Áp dụng thay đổi';
+	@override String get originalTextTitle => 'Văn bản gốc';
+	@override String get suggestedTextTitle => 'Văn bản đề xuất';
+}
+
+// Path: editor.editorPageController
+class _TranslationsEditorEditorPageControllerVi extends _TranslationsEditorEditorPageControllerEn {
+	_TranslationsEditorEditorPageControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String globalActionTitle({required Object action}) => '${action} toàn cục';
+	@override String get globalAiActionFailed => 'Thao tác AI toàn cục thất bại. Kiểm tra nhật ký.';
+	@override String compositeName({required Object value}) => 'Tên:\n${value}\n';
+	@override String compositeDescription({required Object value}) => 'Mô tả:\n${value}\n';
+	@override String compositePersonality({required Object value}) => 'Tính cách:\n${value}\n';
+	@override String compositeScenario({required Object value}) => 'Kịch bản:\n${value}\n';
+	@override String compositeFirstMessage({required Object value}) => 'Tin nhắn đầu tiên:\n${value}\n';
+	@override String compositeMessageExample({required Object value}) => 'Tin nhắn mẫu:\n${value}\n';
+	@override String compositeCreatorNotes({required Object value}) => 'Ghi chú của tác giả:\n${value}\n';
+	@override String compositeSystemPrompt({required Object value}) => 'Prompt hệ thống:\n${value}\n';
+	@override String compositePostHistoryInstructions({required Object value}) => 'Hướng dẫn sau lịch sử:\n${value}\n';
+	@override String compositeAlternateGreeting({required Object index, required Object value}) => 'Lời chào thay thế #${index}:\n${value}\n';
+	@override String compositeGroupGreeting({required Object index, required Object value}) => 'Lời chào nhóm #${index}:\n${value}\n';
+	@override String compositeLorebookEntry({required Object index, required Object value}) => 'Mục lorebook #${index}:\n${value}\n';
+	@override String imageTooLargeMessage({required Object maxSize}) => 'Ảnh đã chọn quá lớn. Kích thước tối đa là ${maxSize}.';
+	@override String get invalidPngMessage => 'Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được.';
+}
+
+// Path: editor.editorNodes
+class _TranslationsEditorEditorNodesVi extends _TranslationsEditorEditorNodesEn {
+	_TranslationsEditorEditorNodesVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get deleteNodeTitle => 'Xóa node';
+	@override String get deleteNodeMessage => 'Xóa node tự tạo này khỏi thẻ?';
+	@override String get engineSeedTitle => 'Seed của engine';
+	@override String get visualEditorTooltip => 'Trình chỉnh sửa trực quan';
+	@override String get editJsonTooltip => 'Chỉnh sửa JSON';
+	@override String get initialGoalLabel => 'Mục tiêu ban đầu';
+	@override String get initialSceneLabel => 'Cảnh ban đầu';
+	@override String get locationLabel => 'Địa điểm';
+	@override String get timeOfDayLabel => 'Thời điểm trong ngày';
+	@override String get presentEntitiesLabel => 'Có mặt (phân tách bằng dấu phẩy)';
+	@override String get sensoryHooksLabel => 'Chi tiết giác quan (phân tách bằng dấu phẩy)';
+	@override String get addNodeButton => 'Thêm node';
+	@override String get noAuthoredNodesYet => 'Chưa có node tự tạo nào.';
+	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: 'Khối node của thẻ này có ${n} vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu.',
+	);
+	@override String moreErrorsSuffix({required Object n}) => '… còn ${n} nữa';
+	@override String get emotionBaselineLabel => 'Cảm xúc nền';
+	@override String get emotionChipLabel => 'Cảm xúc';
+}
+
+// Path: editor.nodeListTile
+class _TranslationsEditorNodeListTileVi extends _TranslationsEditorNodeListTileEn {
+	_TranslationsEditorNodeListTileVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String spawnsLabel({required Object count}) => 'sinh ra: ${count}';
+}
+
+// Path: editor.nodesRawEditorPage
+class _TranslationsEditorNodesRawEditorPageVi extends _TranslationsEditorNodesRawEditorPageEn {
+	_TranslationsEditorNodesRawEditorPageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get topLevelMustBeObject => 'Cấp cao nhất phải là một đối tượng JSON';
+	@override String get editNodesJsonTitle => 'Chỉnh sửa JSON node';
+	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: 'Sửa ${n} vấn đề để lưu.',
+	);
+}
+
+// Path: editor.nodesCanvasView
+class _TranslationsEditorNodesCanvasViewVi extends _TranslationsEditorNodesCanvasViewEn {
+	_TranslationsEditorNodesCanvasViewVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get spawnedByPort => 'được sinh bởi';
+	@override String get spawnsPort => 'sinh ra';
+	@override String get editNodeLabel => 'Chỉnh sửa node';
+	@override String get addNodeTooltip => 'Thêm node';
+}
+
+// Path: editor.nodeEditorForm
+class _TranslationsEditorNodeEditorFormVi extends _TranslationsEditorNodeEditorFormEn {
+	_TranslationsEditorNodeEditorFormVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get nameLabel => 'Tên';
+	@override String get narrativePayloadLabel => 'Nội dung tường thuật';
+	@override String get removeSpawnLinkTitle => 'Xóa liên kết sinh';
+	@override String removeSpawnLinkMessage({required Object nodeId}) => 'Ngừng cho node này sinh ra "${nodeId}"? Bản thân node vẫn còn trên thẻ.';
+	@override String get removeButton => 'Xóa';
+	@override String get typeLabel => 'Loại';
+	@override String get scopeLabel => 'Phạm vi';
+	@override String get originLabel => 'Nguồn gốc';
+	@override String get triggerProbLabel => 'Xác suất kích hoạt';
+	@override String get delayHelper => 'Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.';
+	@override String get cooldownHelper => 'Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.';
+	@override String get stickyHelper => 'Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng "Còn vương lại" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.';
+	@override String get aliveHelper => 'Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.';
+	@override String get setToNeverButton => 'Đặt thành không bao giờ';
+	@override String get effectsSectionLabel => 'Hiệu ứng';
+	@override String get emotionDeltasTitle => 'Biến đổi cảm xúc';
+	@override String get physicalDeltasTitle => 'Biến đổi thể chất';
+	@override String get relationshipDeltasTitle => 'Biến đổi quan hệ';
+	@override String get addDeltaChip => 'Thêm biến đổi';
+	@override String get knowledgeWritesTitle => 'Ghi kiến thức';
+	@override String get addFactChip => 'Thêm dữ kiện';
+	@override String get topicLabel => 'chủ đề';
+	@override String get confidenceLabel => 'độ tin cậy';
+	@override String get flagSetTitle => 'Đặt cờ';
+	@override String get addFlagChip => 'Thêm cờ';
+	@override String get keyLabel => 'khóa';
+	@override String get sceneAndFlowTitle => 'Cảnh & mạch truyện';
+	@override String get goalChangeLabel => 'goalChange (xóa mục tiêu hiện tại khi để trống)';
+	@override String get phaseChangeLabel => 'phaseChange';
+	@override String get noneOption => '(không)';
+	@override String get sceneTransitionLabel => 'sceneTransition';
+	@override String get sceneTransitionSubtitle => 'Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.';
+	@override String get spawnsSectionLabel => 'Sinh ra';
+	@override String get addNewChip => 'Thêm mới';
+	@override String get linkExistingChip => 'Liên kết node có sẵn';
+	@override String get unlinkTooltip => 'Hủy liên kết';
+	@override String get predicateLabel => 'Điều kiện';
+}
+
+// Path: editor.contentTransform
+class _TranslationsEditorContentTransformVi extends _TranslationsEditorContentTransformEn {
+	_TranslationsEditorContentTransformVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get appliedSnackbar => 'Đã áp dụng thay đổi';
+	@override String get undoButton => 'Hoàn tác';
+}
+
+// Path: grid.emptyState
+class _TranslationsGridEmptyStateVi extends _TranslationsGridEmptyStateEn {
+	_TranslationsGridEmptyStateVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noMatches => 'Không có nhân vật nào khớp với bộ lọc';
+	@override String get noCharacters => 'Chưa nhập nhân vật nào';
+	@override String get clearAllFilters => 'Xóa tất cả bộ lọc';
+	@override String get importCharacters => 'Nhập nhân vật';
+	@override String get createNewCharacter => 'Tạo nhân vật mới';
+}
+
+// Path: grid.appBar
+class _TranslationsGridAppBarVi extends _TranslationsGridAppBarEn {
+	_TranslationsGridAppBarVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get groups => 'Nhóm';
+	@override String get createNew => 'Tạo mới';
+	@override String get import => 'Nhập';
+	@override String get menuTooltip => 'Menu';
+}
+
+// Path: grid.fab
+class _TranslationsGridFabVi extends _TranslationsGridFabEn {
+	_TranslationsGridFabVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get addOrImportTooltip => 'Thêm hoặc nhập';
+	@override String get import => 'Nhập';
+	@override String get create => 'Tạo';
+}
+
+// Path: grid.drawer
+class _TranslationsGridDrawerVi extends _TranslationsGridDrawerEn {
+	_TranslationsGridDrawerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get mediaDefaultsApp => 'Ứng dụng';
+	@override String get batchAiHeader => 'AI hàng loạt';
+	@override String get batchGeneratePreviewsTitle => 'Tạo bản xem trước hàng loạt';
+	@override String get batchGeneratePreviewsEmpty => 'Tất cả nhân vật đã có bản xem trước.';
+	@override String get batchAutoTagTitle => 'Tự động gắn tag hàng loạt';
+	@override String get batchAutoTagEmpty => 'Tất cả nhân vật đã có tag.';
+	@override String get libraryHeader => 'Thư viện';
+	@override String get reloadCharacters => 'Tải lại nhân vật';
+}
+
+// Path: grid.variantBadge
+class _TranslationsGridVariantBadgeVi extends _TranslationsGridVariantBadgeEn {
+	_TranslationsGridVariantBadgeVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String tooltip({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: '${n} biến thể',
+	);
+}
+
+// Path: grid.dialogActions
+class _TranslationsGridDialogActionsVi extends _TranslationsGridDialogActionsEn {
+	_TranslationsGridDialogActionsVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get clearAll => 'Xóa tất cả';
+	@override String get apply => 'Áp dụng';
+}
+
+// Path: grid.tagFilterDialog
+class _TranslationsGridTagFilterDialogVi extends _TranslationsGridTagFilterDialogEn {
+	_TranslationsGridTagFilterDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Lọc tag';
+	@override String get searchHint => 'Tìm tag...';
+}
+
+// Path: grid.filters
+class _TranslationsGridFiltersVi extends _TranslationsGridFiltersEn {
+	_TranslationsGridFiltersVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get hideFiltersTooltip => 'Ẩn bộ lọc';
+	@override String get moreFiltersTooltip => 'Thêm bộ lọc';
+	@override String get folderChip => 'Thư mục';
+	@override String get creatorChip => 'Tác giả';
+	@override String get tagChip => 'Tag';
+	@override String get recentTooltip => 'Gần đây';
+	@override String get favoritesTooltip => 'Yêu thích';
+	@override String get variantsTooltip => 'Biến thể';
+	@override String indexingProgress({required Object done, required Object total}) => 'Đang xây dựng tìm kiếm ${done} / ${total}…';
+	@override String get cardCountTooltip => 'Số thẻ đang hiển thị';
+}
+
+// Path: grid.sortOption
+class _TranslationsGridSortOptionVi extends _TranslationsGridSortOptionEn {
+	_TranslationsGridSortOptionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get relevance => 'Liên quan ↓';
+	@override String get nameAsc => 'Tên ↓';
+	@override String get nameDesc => 'Tên ↑';
+	@override String get importNewest => 'Đã nhập ↓';
+	@override String get importOldest => 'Đã nhập ↑';
+	@override String get modifiedNewest => 'Đã sửa ↓';
+	@override String get modifiedOldest => 'Đã sửa ↑';
+	@override String get interactedNewest => 'Tương tác ↓';
+	@override String get interactedOldest => 'Tương tác ↑';
+	@override String get tokensHigh => 'Token ↓';
+	@override String get tokensLow => 'Token ↑';
+}
+
+// Path: grid.filterController
+class _TranslationsGridFilterControllerVi extends _TranslationsGridFilterControllerEn {
+	_TranslationsGridFilterControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get filterCreators => 'Lọc tác giả';
+	@override String get filterTags => 'Lọc tag';
+	@override String get filterByFolder => 'Lọc theo thư mục';
+}
+
+// Path: grid.multiSelectDialog
+class _TranslationsGridMultiSelectDialogVi extends _TranslationsGridMultiSelectDialogEn {
+	_TranslationsGridMultiSelectDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get nothingToShow => 'Chưa có gì để hiển thị.';
+	@override String get noMatches => 'Không có kết quả.';
+	@override String get showMore => 'Xem thêm';
+}
+
+// Path: grid.createCharacterDialog
+class _TranslationsGridCreateCharacterDialogVi extends _TranslationsGridCreateCharacterDialogEn {
+	_TranslationsGridCreateCharacterDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get nameEmptyError => 'Tên nhân vật không được để trống.';
+	@override String get nameInvalidCharsError => 'Tên chứa ký tự không hợp lệ (<>:"/\|?*).';
+	@override String get nameExistsError => 'Đã tồn tại nhân vật với tên này.';
+	@override String get nameCheckFailedError => 'Không thể kiểm tra tên. Kiểm tra quyền truy cập thư mục và thử lại.';
+	@override String get title => 'Tạo nhân vật mới';
+	@override String get nameLabel => 'Tên nhân vật';
+	@override String get createButton => 'Tạo';
+}
+
+// Path: grid.variantsSheet
+class _TranslationsGridVariantsSheetVi extends _TranslationsGridVariantsSheetEn {
+	_TranslationsGridVariantsSheetVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Biến thể';
+}
+
+// Path: grid.groupAppBar
+class _TranslationsGridGroupAppBarVi extends _TranslationsGridGroupAppBarEn {
+	_TranslationsGridGroupAppBarVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get characters => 'Nhân vật';
+	@override String get newGroup => 'Nhóm mới';
+}
+
+// Path: grid.thumbnailBadges
+class _TranslationsGridThumbnailBadgesVi extends _TranslationsGridThumbnailBadgesEn {
+	_TranslationsGridThumbnailBadgesVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get recent => 'GẦN ĐÂY';
+	@override String get original => 'GỐC';
+	@override String get variant => 'BIẾN THỂ';
+}
+
+// Path: grid.actionMenu
+class _TranslationsGridActionMenuVi extends _TranslationsGridActionMenuEn {
+	_TranslationsGridActionMenuVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editNotes => 'Sửa ghi chú';
+	@override String get dismissRecent => 'Bỏ đánh dấu gần đây';
+	@override String get exportPngV2V3 => 'Xuất ra PNG (V2/V3)';
+	@override String get exportJsonV3 => 'Xuất ra JSON (V3)';
+	@override String get exportJsonV2 => 'Xuất ra JSON (V2)';
+	@override String get duplicate => 'Nhân bản';
+}
+
+// Path: grid.controllerMessages
+class _TranslationsGridControllerMessagesVi extends _TranslationsGridControllerMessagesEn {
+	_TranslationsGridControllerMessagesVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get duplicateFailed => 'Không thể nhân bản nhân vật.';
+	@override String get editVariantNotesTitle => 'Sửa ghi chú biến thể';
+	@override String get editVariantNotesHint => 'Thêm ghi chú về biến thể này...';
+	@override String get deleteCardTitle => 'Xóa thẻ';
+	@override String get deleteCardMessage => 'Bạn có chắc muốn xóa thẻ này không?';
+	@override String get deletePartialFailure => 'Một số tệp không thể xóa. Kiểm tra nhật ký để biết chi tiết.';
+}
+
+// Path: grid.tagWrap
+class _TranslationsGridTagWrapVi extends _TranslationsGridTagWrapEn {
+	_TranslationsGridTagWrapVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String tagCountLabel({required Object tag, required Object count}) => '${tag} (${count})';
+}
+
+// Path: grid.gridItem
+class _TranslationsGridGridItemVi extends _TranslationsGridGridItemEn {
+	_TranslationsGridGridItemVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get editTooltip => 'Chỉnh sửa nhân vật';
+	@override String get favoriteToggleTooltip => 'Bật/tắt yêu thích';
+}
+
+// Path: group.groupGridController
+class _TranslationsGroupGroupGridControllerVi extends _TranslationsGroupGroupGridControllerEn {
+	_TranslationsGroupGroupGridControllerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get renameGroupTitle => 'Đổi tên nhóm';
+	@override String get groupNameHint => 'Tên nhóm';
+	@override String get deleteGroupTitle => 'Xóa nhóm';
+	@override String deleteGroupMessage({required Object name}) => 'Bạn có chắc muốn xóa "${name}" không? Không thể hoàn tác.';
+}
+
+// Path: group.groupChatPage
+class _TranslationsGroupGroupChatPageVi extends _TranslationsGroupGroupChatPageEn {
+	_TranslationsGroupGroupChatPageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get defaultGroupName => 'Trò chuyện nhóm';
+	@override String failedToLoadMessage({required Object error}) => 'Không thể tải trò chuyện nhóm:\n${error}';
+	@override String get nextTurnTooltip => 'Lượt tiếp theo';
+	@override String get stopAutoChatTooltip => 'Dừng trò chuyện tự động';
+	@override String get startAutoChatTooltip => 'Bắt đầu trò chuyện tự động';
+	@override String get stopGenerationTooltip => 'Dừng tạo sinh';
+	@override String get noCharactersYetMessage => 'Nhóm này chưa có nhân vật nào.';
+	@override String get addCharacterButton => 'Thêm nhân vật';
+	@override String get pickCharacterMessage => 'Chọn một nhân vật từ danh sách bên trái.';
+	@override String get noAvailableSpeakersSnackbar => 'Không có ai để nói — tất cả đều đang bị tắt tiếng.';
+}
+
+// Path: group.groupGridPage
+class _TranslationsGroupGroupGridPageVi extends _TranslationsGroupGroupGridPageEn {
+	_TranslationsGroupGroupGridPageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String failedToLoadMessage({required Object error}) => 'Không thể tải nhóm:\n${error}';
+	@override String get unknownErrorFallback => 'lỗi không xác định';
+	@override String get noGroupsYetMessage => 'Chưa có nhóm nào — nhấn + để tạo.';
+}
+
+// Path: group.tileAutoChatDelay
+class _TranslationsGroupTileAutoChatDelayVi extends _TranslationsGroupTileAutoChatDelayEn {
+	_TranslationsGroupTileAutoChatDelayVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Độ trễ trò chuyện tự động';
+	@override String secondsAbbrev({required Object seconds}) => '${seconds}s';
+}
+
+// Path: group.tileActivationStrategy
+class _TranslationsGroupTileActivationStrategyVi extends _TranslationsGroupTileActivationStrategyEn {
+	_TranslationsGroupTileActivationStrategyVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Chọn người nói';
+	@override String get naturalOption => 'Tự nhiên';
+	@override String get roundRobinOption => 'Xoay vòng';
+	@override String get randomOption => 'Ngẫu nhiên';
+	@override String get changeSelectionTooltip => 'Thay đổi cách chọn người nói';
+}
+
+// Path: group.groupChatPageEndDrawer
+class _TranslationsGroupGroupChatPageEndDrawerVi extends _TranslationsGroupGroupChatPageEndDrawerEn {
+	_TranslationsGroupGroupChatPageEndDrawerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get allowWebFetchTitle => 'Cho phép truy xuất web';
+	@override String get allowWebFetchSubtitle => 'Đọc trang web công khai khi phù hợp';
+	@override String get reviewUrlTitle => 'Xem lại URL trước khi truy xuất';
+	@override String get reviewUrlSubtitle => 'Xác nhận từng lần truy xuất';
+	@override String get suggestNpcNamesTitle => 'Gợi ý tên NPC';
+	@override String get suggestNpcNamesSubtitle => 'Chọn tên từ cơ sở dữ liệu tuyển chọn';
+	@override String get unrestrictedImagesTitle => 'Hình ảnh không giới hạn';
+	@override String get allowNsfwImagePromptsSubtitle => 'Cho phép prompt hình ảnh NSFW';
+	@override String get characterCanSendSelfiesTitle => 'Nhân vật có thể gửi ảnh selfie';
+	@override String get attachSelfieWhenNaturalSubtitle => 'Đính kèm ảnh selfie khi tự nhiên';
+	@override String get reviewImagePromptTitle => 'Xem lại prompt hình ảnh';
+	@override String get editBeforeGeneratingSubtitle => 'Chỉnh sửa trước khi tạo';
+	@override String get reviewToolImagePromptsTitle => 'Xem lại prompt hình ảnh từ công cụ';
+	@override String get editToolTriggeredPromptsSubtitle => 'Chỉnh sửa prompt do công cụ kích hoạt';
+	@override String get allowSelfieCaptionsTitle => 'Cho phép chú thích selfie';
+	@override String get captionRenderedOnImageSubtitle => 'Chú thích được vẽ lên hình ảnh';
+	@override String get groupOverridesTitle => 'Ghi đè của nhóm';
+	@override String get groupOverridesSubtitle => 'Kịch bản chung, prompt chính, hội thoại mẫu';
+	@override String get chatSessionSubtitle => 'Phiên trò chuyện';
+	@override String get allChatsLabel => 'Tất cả cuộc trò chuyện';
+	@override String get showImageLabel => 'Hiện hình ảnh';
+	@override String get groupSectionHeader => 'Nhóm';
+	@override String get chatSectionHeader => 'Trò chuyện';
+	@override String get chatThemeSectionHeader => 'Chủ đề trò chuyện';
+	@override String get unrestrictedVideosTitle => 'Video không giới hạn';
+	@override String get allowNsfwVideoPromptsSubtitle => 'Cho phép prompt video NSFW';
+	@override String get characterCanSendVideosTitle => 'Nhân vật có thể gửi video';
+	@override String get attachShortVideoWhenNaturalSubtitle => 'Đính kèm video ngắn khi tự nhiên';
+	@override String get reviewVideoPromptTitle => 'Xem lại prompt video';
+}
+
+// Path: group.groupCharacterPicker
+class _TranslationsGroupGroupCharacterPickerVi extends _TranslationsGroupGroupCharacterPickerEn {
+	_TranslationsGroupGroupCharacterPickerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get addButton => 'Thêm';
+	@override String addWithCountButton({required Object count}) => 'Thêm ${count}';
+	@override String get favoritesTooltip => 'Yêu thích';
+	@override String noMatchMessage({required Object query}) => 'Không có nhân vật nào khớp với "${query}"';
+	@override String get noFavoritesMessage => 'Không có nhân vật yêu thích nào';
+	@override String get allAddedMessage => 'Đã thêm tất cả nhân vật';
+}
+
+// Path: group.groupCharacterTile
+class _TranslationsGroupGroupCharacterTileVi extends _TranslationsGroupGroupCharacterTileEn {
+	_TranslationsGroupGroupCharacterTileVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get speakTooltip => 'Cho nhân vật này nói';
+	@override String get removeFromChatTitle => 'Xóa khỏi cuộc trò chuyện';
+}
+
+// Path: group.dialogCreateGroup
+class _TranslationsGroupDialogCreateGroupVi extends _TranslationsGroupDialogCreateGroupEn {
+	_TranslationsGroupDialogCreateGroupVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Nhóm mới';
+	@override String get nameLabel => 'Tên';
+	@override String get nameHint => 'ví dụ: Bob & Alice';
+}
+
+// Path: group.dialogGroupOverrides
+class _TranslationsGroupDialogGroupOverridesVi extends _TranslationsGroupDialogGroupOverridesEn {
+	_TranslationsGroupDialogGroupOverridesVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get explanationMessage => 'Chỉ áp dụng cho cuộc trò chuyện này. Mọi thành viên nhóm dùng các giá trị này thay cho những gì thẻ nhân vật của họ định nghĩa. Để trống để dùng lại giá trị trên thẻ.';
+	@override String get scenarioHint => 'Bối cảnh chung cho nhóm (ví dụ: "Trong một quán cà phê ở Paris")';
+	@override String get mainPromptLabel => 'Prompt chính';
+	@override String get mainPromptHint => 'Prompt hệ thống áp dụng trong mỗi lượt';
+	@override String get exampleDialogueLabel => 'Hội thoại mẫu';
+	@override String get exampleDialogueHint => 'Tin nhắn mẫu chung về giọng điệu / định dạng';
+}
+
+// Path: group.groupCharacterPanel
+class _TranslationsGroupGroupCharacterPanelVi extends _TranslationsGroupGroupCharacterPanelEn {
+	_TranslationsGroupGroupCharacterPanelVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get addCharacterButton => 'Thêm nhân vật';
+	@override String get noCharactersYetMessage => 'Chưa có nhân vật nào.\nNhấn + để thêm.';
+}
+
+// Path: group.dialogSelectGroup
+class _TranslationsGroupDialogSelectGroupVi extends _TranslationsGroupDialogSelectGroupEn {
+	_TranslationsGroupDialogSelectGroupVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get deleteGroupTitle => 'Xóa nhóm?';
+	@override String deleteGroupMessage({required Object name}) => '"${name}" và toàn bộ phiên trò chuyện của nhóm sẽ bị xóa vĩnh viễn.';
+	@override String get title => 'Nhóm';
+	@override String get noGroupsYetMessage => 'Chưa có nhóm nào. Nhấn "Nhóm mới" để tạo.';
+	@override String memberCountLabel({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: '${n} thành viên',
+	);
+}
+
+// Path: group.groupGridItem
+class _TranslationsGroupGroupGridItemVi extends _TranslationsGroupGroupGridItemEn {
+	_TranslationsGroupGroupGridItemVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String overflowCountBadge({required Object count}) => '+${count}';
+	@override String get noMembersYetMessage => 'Chưa có thành viên';
+}
+
+// Path: group.groupFileService
+class _TranslationsGroupGroupFileServiceVi extends _TranslationsGroupGroupFileServiceEn {
+	_TranslationsGroupGroupFileServiceVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get defaultGroupName => 'Nhóm';
+}
+
+// Path: llmApp.mediaField
+class _TranslationsLlmAppMediaFieldVi extends _TranslationsLlmAppMediaFieldEn {
+	_TranslationsLlmAppMediaFieldVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get imageModel => 'Mô hình hình ảnh';
+	@override String get imageAspectRatio => 'Tỷ lệ khung hình ảnh';
+	@override String get imageNsfwAllowed => 'Cho phép hình ảnh NSFW';
+	@override String get imageToolSelfieAllowed => 'Có thể gửi ảnh selfie';
+	@override String get imageToolSelfieCaptionsAllowed => 'Cho phép chú thích selfie';
+	@override String get imagePromptPrefix => 'Phong cách hình ảnh';
+	@override String get videoModel => 'Mô hình video';
+	@override String get videoResolution => 'Độ phân giải video';
+	@override String get videoAspectRatio => 'Tỷ lệ khung hình video';
+	@override String get videoDuration => 'Thời lượng video';
+	@override String get videoNsfwAllowed => 'Cho phép video NSFW';
+	@override String get videoToolSendAllowed => 'Có thể gửi video';
+	@override String get videoPromptPrefix => 'Phong cách video';
+	@override String get ttsModel => 'Mô hình TTS';
+	@override String get ttsVoice => 'Giọng TTS';
+	@override String get ttsLanguage => 'Ngôn ngữ TTS';
+	@override String get webToolFetchAllowed => 'Cho phép truy xuất web';
+	@override String get nameToolSuggestAllowed => 'Có thể gợi ý tên NPC';
+}
+
+// Path: llmApp.mediaSection
+class _TranslationsLlmAppMediaSectionVi extends _TranslationsLlmAppMediaSectionEn {
+	_TranslationsLlmAppMediaSectionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get image => 'Hình ảnh';
+	@override String get video => 'Video';
+	@override String get tts => 'TTS';
+	@override String get web => 'Web';
+	@override String get names => 'Tên';
+}
+
+// Path: llmApp.tristate
+class _TranslationsLlmAppTristateVi extends _TranslationsLlmAppTristateEn {
+	_TranslationsLlmAppTristateVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get on => 'Bật';
+	@override String get off => 'Tắt';
+	@override String get inherit => 'Kế thừa';
+}
+
+// Path: llmApp.mediaCellMenu
+class _TranslationsLlmAppMediaCellMenuVi extends _TranslationsLlmAppMediaCellMenuEn {
+	_TranslationsLlmAppMediaCellMenuVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get change => 'Thay đổi…';
+	@override String get clear => 'Xóa';
+}
+
+// Path: llmApp.mediaHeader
+class _TranslationsLlmAppMediaHeaderVi extends _TranslationsLlmAppMediaHeaderEn {
+	_TranslationsLlmAppMediaHeaderVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get appDefault => 'Mặc định ứng dụng';
+	@override String get character => 'Nhân vật';
+	@override String get currentChat => 'Cuộc trò chuyện hiện tại';
+	@override String get previousLayerTooltip => 'Lớp trước';
+	@override String get nextLayerTooltip => 'Lớp sau';
+}
+
+// Path: llmApp.presetRow
+class _TranslationsLlmAppPresetRowVi extends _TranslationsLlmAppPresetRowEn {
+	_TranslationsLlmAppPresetRowVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get changeAppDefaultTitle => 'Thay đổi mặc định của ứng dụng?';
+	@override String get changeAppDefaultMessage => 'Điều này ảnh hưởng tới mọi cuộc trò chuyện. Tiếp tục?';
+	@override String get continueButton => 'Tiếp tục';
+	@override String chooseModelTitle({required Object domain}) => 'Chọn mô hình ${domain}';
+}
+
+// Path: llmApp.mediaCell
+class _TranslationsLlmAppMediaCellVi extends _TranslationsLlmAppMediaCellEn {
+	_TranslationsLlmAppMediaCellVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get notApplicable => 'Không áp dụng';
+}
+
+// Path: onboarding.storageStep
+class _TranslationsOnboardingStorageStepVi extends _TranslationsOnboardingStorageStepEn {
+	_TranslationsOnboardingStorageStepVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Lưu trữ nhân vật';
+	@override String get subtitle => 'Chúng tôi nên lưu thẻ nhân vật của bạn ở đâu?';
+	@override String get description => 'Mặc định lưu trong thư mục ứng dụng. Trỏ tới một thư mục PNG sẵn có để nhập.';
+	@override String get startFresh => 'Bắt đầu mới';
+	@override String get haveCards => 'Tôi đã có thẻ';
+	@override String get importLaterHint => 'Nhập PNG sau qua Tệp → Nhập.';
+	@override String selectedPath({required Object path}) => 'Đã chọn: ${path}';
+	@override String get selectedDefaultFolder => 'Đã chọn: Thư mục mặc định của ứng dụng';
+	@override String get noFolderSelected => 'Chưa chọn thư mục nào.';
+}
+
+// Path: onboarding.setupStep
+class _TranslationsOnboardingSetupStepVi extends _TranslationsOnboardingSetupStepEn {
+	_TranslationsOnboardingSetupStepVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'AI & Persona';
+}
+
+// Path: onboarding.aiSection
+class _TranslationsOnboardingAiSectionVi extends _TranslationsOnboardingAiSectionEn {
+	_TranslationsOnboardingAiSectionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get heading => 'Kết nối AI';
+	@override String get optionalHint => 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).';
+	@override String get apiKeyLabel => 'Khóa API';
+	@override String get apiKeyHint => 'Dán khóa của bạn (hoặc bỏ qua)';
+	@override String get supportedProviders => 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.';
+	@override String get unknownModel => '(mô hình không xác định)';
+	@override String get ctxUnknown => 'ctx —';
+	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
+	@override String kvSuffix({required Object kv}) => ' · KV ${kv}';
+	@override String get changeButton => 'Thay đổi';
+}
+
+// Path: onboarding.aiStatus
+class _TranslationsOnboardingAiStatusVi extends _TranslationsOnboardingAiStatusEn {
+	_TranslationsOnboardingAiStatusVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get connecting => 'Đang kết nối…';
+	@override String connected({required Object provider}) => 'Đã kết nối với ${provider}. Đã chọn mô hình trò chuyện mặc định.';
+	@override String detected({required Object provider}) => 'Đã nhận diện: ${provider}';
+	@override String get unrecognizedKey => 'Định dạng khóa không nhận diện được.';
+}
+
+// Path: onboarding.personaSection
+class _TranslationsOnboardingPersonaSectionVi extends _TranslationsOnboardingPersonaSectionEn {
+	_TranslationsOnboardingPersonaSectionVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get heading => 'Persona của bạn';
+	@override String get hint => 'Tên của bạn trong các cuộc trò chuyện. Thêm chi tiết persona trong Cài đặt.';
+	@override String get nameLabel => 'Tên của bạn';
+}
+
+// Path: onboarding.disclaimer
+class _TranslationsOnboardingDisclaimerVi extends _TranslationsOnboardingDisclaimerEn {
+	_TranslationsOnboardingDisclaimerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get prefix => 'Tôi đã đọc và đồng ý với ';
+	@override String get linkText => 'Tuyên bố miễn trừ trách nhiệm';
+}
+
+// Path: onboarding.fetchError
+class _TranslationsOnboardingFetchErrorVi extends _TranslationsOnboardingFetchErrorEn {
+	_TranslationsOnboardingFetchErrorVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noModels => 'Không nhận được mô hình nào. Kiểm tra khóa API của bạn.';
+	@override String get connectionFailed => 'Không thể kết nối. Kiểm tra kết nối mạng và khóa API của bạn.';
+}
+
+// Path: routing.chatCharacter
+class _TranslationsRoutingChatCharacterVi extends _TranslationsRoutingChatCharacterEn {
+	_TranslationsRoutingChatCharacterVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String navigationError({required Object name}) => 'Lỗi điều hướng tới trò chuyện. Nhân vật: ${name}';
+}
+
+// Path: routing.editCharacter
+class _TranslationsRoutingEditCharacterVi extends _TranslationsRoutingEditCharacterEn {
+	_TranslationsRoutingEditCharacterVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String navigationError({required Object name}) => 'Lỗi điều hướng tới chỉnh sửa. Nhân vật: ${name}';
+}
+
+// Path: routing.editPreset
+class _TranslationsRoutingEditPresetVi extends _TranslationsRoutingEditPresetEn {
+	_TranslationsRoutingEditPresetVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String navigationError({required Object presetId}) => 'Lỗi điều hướng tới chỉnh sửa preset: ${presetId}';
+}
+
+// Path: settings.gearMenu
+class _TranslationsSettingsGearMenuVi extends _TranslationsSettingsGearMenuEn {
+	_TranslationsSettingsGearMenuVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get settingsTooltip => 'Cài đặt';
+	@override String get mediaDefaultsApp => 'Ứng dụng';
+	@override String get mediaDefaultsCharacter => 'Nhân vật';
+	@override String get mediaDefaultsChat => 'Trò chuyện';
+	@override String get appSettings => 'Cài đặt ứng dụng';
+	@override String get logs => 'Nhật ký';
+}
+
+// Path: settings.mediaDefaultsDrawerEntry
+class _TranslationsSettingsMediaDefaultsDrawerEntryVi extends _TranslationsSettingsMediaDefaultsDrawerEntryEn {
+	_TranslationsSettingsMediaDefaultsDrawerEntryVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get configurationHeader => 'Cấu hình';
+}
+
+// Path: settings.endDrawer
+class _TranslationsSettingsEndDrawerVi extends _TranslationsSettingsEndDrawerEn {
+	_TranslationsSettingsEndDrawerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get switchPersonaTooltip => 'Chuyển persona';
+}
+
+// Path: settings.loadingStatus
+class _TranslationsSettingsLoadingStatusVi extends _TranslationsSettingsLoadingStatusEn {
+	_TranslationsSettingsLoadingStatusVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get restoringProviders => 'Đang khôi phục nhà cung cấp…';
+	@override String fetchingModelsProgress({required Object completed, required Object total}) => 'Đang tải mô hình (${completed}/${total})…';
+}
+
+// Path: settings.general
+class _TranslationsSettingsGeneralVi extends _TranslationsSettingsGeneralEn {
+	_TranslationsSettingsGeneralVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get characterFolderTitle => 'Thư mục nhân vật';
+	@override String get characterFolderNotSet => 'Chưa thiết lập. Bắt buộc để ứng dụng hoạt động.';
+	@override String get browseButton => 'Duyệt...';
+	@override String get taxonomyTagsTitle => 'Tag phân loại';
+	@override String get appThemeTitle => 'Chủ đề ứng dụng';
+	@override String get themeSystem => 'Hệ thống';
+	@override String get themeLight => 'Sáng';
+	@override String get themeDark => 'Tối';
+	@override String get themeStyleTitle => 'Kiểu chủ đề';
+	@override String get themeStyleDefault => 'Mặc định';
+	@override String get themeStyleNeon => 'Neon';
+	@override String get storyMemoryTitle => 'Ký ức câu chuyện';
+	@override String get storyMemorySubtitle => 'Ghi nhớ các khoảnh khắc trước đó và đưa những phần liên quan trở lại trong các cuộc trò chuyện dài.';
+	@override String get narrativeEngineTitle => 'Công cụ tường thuật';
+	@override String get narrativeEngineSubtitle => 'Theo dõi bối cảnh và nhân vật, đẩy câu chuyện tiến triển khi bạn trò chuyện.';
+	@override String get promptBreakdownTitle => 'Hiện phân tích prompt';
+	@override String get promptBreakdownSubtitle => 'Hiển thị một thanh dưới mỗi phản hồi phân tích cách prompt lấp đầy cửa sổ ngữ cảnh của mô hình.';
+	@override String get checkUpdatesTitle => 'Kiểm tra cập nhật';
+	@override String get checkUpdatesSubtitle => 'Kiểm tra xem có phiên bản mới hơn của ứng dụng không.';
+	@override String get websiteTitle => 'Trang web';
+	@override String get websiteSubtitle => 'Truy cập trang web chính thức để xem cập nhật và thông tin.';
+	@override String get disclaimerTitle => 'Miễn trừ trách nhiệm & Điều khoản';
+	@override String get disclaimerSubtitle => 'Đọc tuyên bố miễn trừ trách nhiệm và điều khoản sử dụng của ứng dụng.';
+	@override String versionLabel({required Object version, required Object buildNumber}) => 'Phiên bản ${version}+${buildNumber}';
+}
+
+// Path: settings.aiSettingsTab
+class _TranslationsSettingsAiSettingsTabVi extends _TranslationsSettingsAiSettingsTabEn {
+	_TranslationsSettingsAiSettingsTabVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get aiProviders => 'Nhà cung cấp AI';
+	@override String get mediaDefaults => 'Mặc định media';
+}
+
+// Path: settings.aiTab
+class _TranslationsSettingsAiTabVi extends _TranslationsSettingsAiTabEn {
+	_TranslationsSettingsAiTabVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
+	@override String get newProviderButton => 'Nhà cung cấp mới';
+	@override String get cloudProviderMenuItem => 'Nhà cung cấp đám mây';
+	@override String get localProviderMenuItem => 'Nhà cung cấp cục bộ';
+	@override String get localGgufMenuItem => 'GGUF cục bộ';
+	@override String get noProvidersConfigured => 'Chưa cấu hình nhà cung cấp API nào.';
+	@override String get addingProviderOverlay => 'Đang thêm nhà cung cấp…';
+	@override String get neverRefreshed => 'Chưa làm mới lần nào';
+	@override String lastRefreshedLabel({required Object time}) => 'Làm mới lần cuối: ${time}';
+	@override String get refreshModelsButton => 'Làm mới mô hình';
+	@override String get refreshNowMenuItem => 'Làm mới ngay';
+	@override String get autoNeverMenuItem => 'Tự động: Không bao giờ';
+	@override String get autoDailyMenuItem => 'Tự động: Hằng ngày khi khởi động';
+	@override String get defaultModelsHeader => 'Mô hình mặc định cho cuộc trò chuyện mới';
+	@override String get editModelTooltip => 'Chỉnh sửa mô hình';
+	@override String get noModelsPlaceholder => 'Không có mô hình';
+	@override String get noCompatibleModelsPlaceholder => 'Không có mô hình tương thích';
+	@override String get tapToChoosePlaceholder => 'Nhấn để chọn';
+	@override String get modelUsedForPrefix => 'Mô hình dùng để tạo ';
+	@override String get modelUsedForSuffix => '';
+	@override String get chooseModelTitle => 'Chọn một mô hình';
+	@override String temperatureLabel({required Object value}) => 'Temp ${value}';
+	@override String get setDefaultButton => 'Đặt làm mặc định';
+	@override String get addModelButton => 'Thêm mô hình';
+	@override String get editProviderMenuItem => 'Chỉnh sửa nhà cung cấp';
+	@override String get moreTooltip => 'Thêm';
+	@override String get noModelsForProvider => 'Chưa cấu hình mô hình nào cho nhà cung cấp này.';
+	@override String setDefaultConfirmTitle({required Object provider}) => 'Đặt ${provider} làm mặc định cho mọi tính năng AI?';
+	@override String get setDefaultConfirmMessage => 'Bạn có thể tự chọn mô hình cho các tính năng không được hỗ trợ\n(như hình ảnh hoặc video) từ nhà cung cấp khác.';
+	@override String localGgufSubtitle({required Object loaded, required Object native, required Object kv}) => '${loaded} ctx (tối đa ${native}) · KV ${kv}';
+	@override String get testTtsTooltip => 'Thử TTS';
+	@override String get ttsTestPhrase => 'Xin chào, đây là câu thử giọng đọc.';
+	@override String get ttsFailedError => 'TTS thất bại.';
+	@override String get testVideoTooltip => 'Thử tạo video';
+	@override String get videoGeneratedWebFallback => 'Đã tạo video thành công (không xem trước được trên web).';
+	@override String get videoFailedError => 'Video thất bại.';
+	@override String get videoLoadFailedMessage => 'Không thể tải video đã tạo.';
+	@override String get presetPickerSearchHint => 'Tìm theo nhà cung cấp, mô hình hoặc preset…';
+	@override String tempParamAbbrev({required Object value}) => 'temp ${value}';
+	@override String reasoningParamLabel({required Object level}) => 'suy luận ${level}';
+}
+
+// Path: settings.presetConfig
+class _TranslationsSettingsPresetConfigVi extends _TranslationsSettingsPresetConfigEn {
+	_TranslationsSettingsPresetConfigVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get testMessageButton => 'Gửi tin nhắn thử';
+	@override String get testSuccessLabel => 'Thành công';
+	@override String get testFailedLabel => 'Thất bại';
+	@override String get deleteModelTitle => 'Xóa mô hình?';
+	@override String deleteModelMessage({required Object name}) => 'Xóa vĩnh viễn "${name}"? Không thể hoàn tác.';
+	@override String get editModelHeader => 'Chỉnh sửa mô hình';
+	@override String get addModelHeader => 'Thêm mô hình';
+	@override String get resetToDefaultsTooltip => 'Đặt lại về mặc định';
+	@override String get modelNameLabel => 'Tên mô hình';
+	@override String get clearTooltip => 'Xóa';
+	@override String get nameRequiredError => 'Bắt buộc nhập tên';
+	@override String get modelLabel => 'Mô hình';
+	@override String get selectModelHint => 'Chọn một mô hình';
+	@override String get modelRequiredError => 'Bắt buộc chọn mô hình';
+	@override String filteredDomainsNote({required Object domains}) => 'Mô hình được lọc theo các miền đang dùng: ${domains}';
+	@override String get requiredValidator => 'Bắt buộc';
+	@override String get invalidValidator => 'Không hợp lệ';
+	@override String get testResponseTitle => 'Phản hồi';
+}
+
+// Path: settings.providerConfig
+class _TranslationsSettingsProviderConfigVi extends _TranslationsSettingsProviderConfigEn {
+	_TranslationsSettingsProviderConfigVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noModelsError => 'Không nhận được mô hình nào. Kiểm tra khóa API của bạn.';
+	@override String get connectionFailedError => 'Không thể kết nối. Kiểm tra kết nối mạng và khóa API của bạn.';
+	@override String get deleteProviderTitle => 'Xóa nhà cung cấp?';
+	@override String deleteProviderMessage({required Object provider}) => 'Xóa vĩnh viễn nhà cung cấp ${provider} và toàn bộ preset của nó? Không thể hoàn tác.';
+	@override String lockHint({required Object roles}) => 'Không thể xóa: đang được dùng bởi ${roles}.';
+	@override String get editProviderHeader => 'Chỉnh sửa nhà cung cấp';
+	@override String get addProviderHeader => 'Thêm nhà cung cấp';
+	@override String get apiKeyLabel => 'Khóa API';
+	@override String get apiKeyHintRotate => 'Dán khóa mới để thay khóa';
+	@override String get apiKeyHintNew => 'Dán khóa của bạn — nhà cung cấp được tự nhận diện';
+	@override String get supportedProvidersNote => 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.';
+	@override String keyMismatchError({required Object owner, required Object profile}) => 'Khóa này thuộc về ${owner}, nhưng hồ sơ này là ${profile}. Hãy xóa hồ sơ này và thêm hồ sơ mới.';
+	@override String get anotherProviderFallback => 'nhà cung cấp khác';
+	@override String get connectingStatus => 'Đang kết nối…';
+	@override String connectedStatus({required Object provider}) => 'Đã kết nối với ${provider}. Các preset mặc định sẽ được tạo.';
+	@override String detectedStatus({required Object provider}) => 'Đã nhận diện: ${provider}';
+	@override String get unrecognizedKeyStatus => 'Định dạng khóa không nhận diện được.';
+}
+
+// Path: settings.localProviderConfig
+class _TranslationsSettingsLocalProviderConfigVi extends _TranslationsSettingsLocalProviderConfigEn {
+	_TranslationsSettingsLocalProviderConfigVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String serverUnreachableMessage({required Object url}) => 'Không thể kết nối tới ${url}. Hãy chắc chắn máy chủ cục bộ của bạn (KoboldCpp / Ollama / LM Studio / llama.cpp) đang chạy.';
+	@override String get noModelsError => 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trong máy chủ cục bộ trước.';
+	@override String get deleteProviderMessage => 'Xóa vĩnh viễn nhà cung cấp cục bộ này và toàn bộ preset của nó? Không thể hoàn tác.';
+	@override String get editHeader => 'Chỉnh sửa nhà cung cấp cục bộ';
+	@override String get addHeader => 'Thêm nhà cung cấp cục bộ';
+	@override String get serverUrlLabel => 'URL máy chủ';
+	@override String get serverUrlLockedHelper => 'Đã khóa. Xóa nhà cung cấp này và thêm mới để trỏ tới máy chủ khác.';
+	@override String get apiKeyOptionalLabel => 'Khóa API (không bắt buộc)';
+	@override String get apiKeyOptionalHint => 'Để trống — hầu hết máy chủ cục bộ không cần';
+	@override String get connectFetchButton => 'Kết nối & tải mô hình';
+	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+		other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
+	);
+}
+
+// Path: settings.localGguf
+class _TranslationsSettingsLocalGgufVi extends _TranslationsSettingsLocalGgufEn {
+	_TranslationsSettingsLocalGgufVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get haveLocalGgufExpanderTitle => 'Tôi có tệp GGUF cục bộ';
+	@override String get pickFileLabel => 'Chọn tệp GGUF...';
+	@override String get loadModelLabel => 'Nạp mô hình';
+	@override String get nativeContextLabel => 'Ngữ cảnh gốc';
+	@override String get freeVramLabel => 'VRAM trống';
+	@override String get contextSizeLabel => 'Kích thước ngữ cảnh';
+	@override String get kvCacheLabel => 'KV cache';
+	@override String get kvCacheAutoLabel => 'Tự động';
+	@override String modelTooLargeForVramMessage({required Object neededMb, required Object freeMb}) => 'Mô hình này cần khoảng ${neededMb}MB bộ nhớ GPU nhưng chỉ còn trống ${freeMb}MB. Đóng các ứng dụng GPU khác hoặc chọn mô hình nhỏ hơn / lượng tử hóa mạnh hơn.';
+	@override String modelBarelyFitsMessage({required Object minimumContext}) => 'Mô hình này chỉ vừa khít ngay cả với KV cache q4_0 ở ${minimumContext} token. Cân nhắc dùng tệp mô hình lượng tử hóa mạnh hơn.';
+	@override String get readingMetadata => 'Đang đọc metadata mô hình…';
+	@override String get architectureLabel => 'Kiến trúc';
+	@override String autoKvHint({required Object picked, required Object max}) => 'tự động: ${picked} (tối đa ${max})';
+	@override String maxKvHint({required Object max, required Object picked}) => 'tối đa ${max} ở KV ${picked}';
+	@override String ctxExceedsMaxError({required Object max, required Object picked}) => 'vượt ${max} ở KV ${picked} — nạp có thể hết bộ nhớ';
+	@override String get vramNotDetected => 'không phát hiện được';
+	@override String readMetadataFailedError({required Object error}) => 'Không thể đọc metadata GGUF: ${error}';
+	@override String loadModelFailedError({required Object error}) => 'Không thể nạp mô hình: ${error}';
+}
+
+// Path: settings.personaDialog
+class _TranslationsSettingsPersonaDialogVi extends _TranslationsSettingsPersonaDialogEn {
+	_TranslationsSettingsPersonaDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get newTitle => 'Persona mới';
+	@override String get editTitle => 'Chỉnh sửa persona';
+	@override String get nameLabel => 'Tên';
+	@override String get nameRequiredError => 'Bắt buộc nhập tên';
+	@override String get descriptionLabel => 'Mô tả';
+	@override String get descriptionHint => 'Ngoại hình, tính cách, xuất thân, v.v.';
+}
+
+// Path: settings.personasTab
+class _TranslationsSettingsPersonasTabVi extends _TranslationsSettingsPersonasTabEn {
+	_TranslationsSettingsPersonasTabVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get cannotDeleteDefaultTooltip => 'Không thể xóa persona mặc định';
+	@override String get deleteTooltip => 'Xóa persona';
+	@override String get cannotDeleteDefaultSnackbar => 'Không thể xóa persona mặc định.';
+	@override String get deleteConfirmTitle => 'Xóa persona';
+	@override String deleteConfirmMessage({required Object name}) => 'Bạn có chắc muốn xóa "${name}" không?';
+}
+
+// Path: settings.updateCheck
+class _TranslationsSettingsUpdateCheckVi extends _TranslationsSettingsUpdateCheckEn {
+	_TranslationsSettingsUpdateCheckVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get upToDateTitle => 'Đã là mới nhất';
+	@override String upToDateMessage({required Object version}) => 'Bạn đang dùng phiên bản hiện hành (${version}).';
+	@override String get notApplicableTitle => 'Kiểm tra cập nhật';
+	@override String get notApplicableMessage => 'Không áp dụng kiểm tra phiên bản trên Web.';
+	@override String get errorTitle => 'Lỗi';
+	@override String get serverErrorMessage => 'Không thể kiểm tra cập nhật. Lỗi máy chủ.';
+	@override String get connectionErrorMessage => 'Không thể kiểm tra cập nhật. Kiểm tra kết nối của bạn.';
+}
+
+// Path: workspace.workspaceEndDrawerImage
+class _TranslationsWorkspaceWorkspaceEndDrawerImageVi extends _TranslationsWorkspaceWorkspaceEndDrawerImageEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerImageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get imageStyleTitle => 'Phong cách hình ảnh';
+	@override String get noneValue => 'Không có';
+}
+
+// Path: workspace.workspaceEndDrawerVideo
+class _TranslationsWorkspaceWorkspaceEndDrawerVideoVi extends _TranslationsWorkspaceWorkspaceEndDrawerVideoEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerVideoVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get videoStyleTitle => 'Phong cách video';
+}
+
+// Path: workspace.workspaceEndDrawerDisplay
+class _TranslationsWorkspaceWorkspaceEndDrawerDisplayVi extends _TranslationsWorkspaceWorkspaceEndDrawerDisplayEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerDisplayVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get sectionHeader => 'Hiển thị';
+	@override String get showCharacterImageTitle => 'Hiện ảnh nhân vật';
+	@override String get wideScreenOnlySubtitle => 'Chỉ với trình chỉnh sửa màn hình rộng';
+}
+
+// Path: workspace.workspaceEndDrawerAi
+class _TranslationsWorkspaceWorkspaceEndDrawerAiVi extends _TranslationsWorkspaceWorkspaceEndDrawerAiEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerAiVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get sectionHeader => 'AI';
+}
+
+// Path: workspace.workspaceEndDrawerEditing
+class _TranslationsWorkspaceWorkspaceEndDrawerEditingVi extends _TranslationsWorkspaceWorkspaceEndDrawerEditingEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerEditingVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get sectionHeader => 'Chỉnh sửa';
+}
+
+// Path: workspace.workspaceEndDrawerExport
+class _TranslationsWorkspaceWorkspaceEndDrawerExportVi extends _TranslationsWorkspaceWorkspaceEndDrawerExportEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerExportVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get sectionHeader => 'Xuất';
+	@override String get exportPngTitle => 'Xuất ra PNG (V2/V3)';
+	@override String get exportJsonV3Title => 'Xuất ra JSON (V3)';
+	@override String get exportJsonV2Title => 'Xuất ra JSON (V2)';
+}
+
+// Path: workspace.workspaceEndDrawerChatTheme
+class _TranslationsWorkspaceWorkspaceEndDrawerChatThemeVi extends _TranslationsWorkspaceWorkspaceEndDrawerChatThemeEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerChatThemeVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get resetImagesTitle => 'Đặt lại hình ảnh';
+}
+
+// Path: workspace.workspaceEndDrawerChat
+class _TranslationsWorkspaceWorkspaceEndDrawerChatVi extends _TranslationsWorkspaceWorkspaceEndDrawerChatEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerChatVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get assistantCardEditsSectionHeader => 'Chỉnh sửa thẻ bởi trợ lý';
+}
+
+// Path: workspace.workspaceEndDrawer
+class _TranslationsWorkspaceWorkspaceEndDrawerVi extends _TranslationsWorkspaceWorkspaceEndDrawerEn {
+	_TranslationsWorkspaceWorkspaceEndDrawerVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get favoriteLabel => 'Yêu thích';
+	@override String get nodesEngineTitle => 'NODES Engine';
+	@override String get debugSnapshotSubtitle => 'Ảnh chụp gỡ lỗi';
+	@override String get characterSubtitle => 'Nhân vật';
+}
+
+// Path: workspace.stylePresetsDialog
+class _TranslationsWorkspaceStylePresetsDialogVi extends _TranslationsWorkspaceStylePresetsDialogEn {
+	_TranslationsWorkspaceStylePresetsDialogVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get noStyleSelectedMessage => 'Chưa chọn phong cách nào';
+}
+
+// Path: workspace.workspacePage
+class _TranslationsWorkspaceWorkspacePageVi extends _TranslationsWorkspaceWorkspacePageEn {
+	_TranslationsWorkspaceWorkspacePageVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get rebuildingChatIndexMessage => 'Đang xây dựng lại chỉ mục trò chuyện...';
+	@override String get selectChatToStartMessagingMessage => 'Chọn một cuộc trò chuyện để bắt đầu nhắn tin';
+	@override String get failedToLoadAssistantMessage => 'Không thể tải trợ lý.';
+	@override String get connectProviderToChatMessage => 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
+	@override String get setUpProviderButton => 'Thiết lập nhà cung cấp AI';
+	@override String get startNewChatButton => 'Cuộc trò chuyện mới';
+}
+
+// Path: character.cardEditApproval.modalityLabel
+class _TranslationsCharacterCardEditApprovalModalityLabelVi extends _TranslationsCharacterCardEditApprovalModalityLabelEn {
+	_TranslationsCharacterCardEditApprovalModalityLabelVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get edits => 'chỉnh sửa';
+	@override String get additions => 'bổ sung';
+	@override String get deletions => 'xóa bỏ';
+}
+
+// Path: character.cardEditApproval.modalityVerb
+class _TranslationsCharacterCardEditApprovalModalityVerbVi extends _TranslationsCharacterCardEditApprovalModalityVerbEn {
+	_TranslationsCharacterCardEditApprovalModalityVerbVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String get edit => 'Chỉnh sửa';
+	@override String get addition => 'Thêm vào';
+	@override String get deletion => 'Xóa khỏi';
+}
+
+// Path: <root>
 class _TranslationsZhHans extends Translations {
 	/// You can call this constructor and build your own translation instance of this locale.
 	/// Constructing via the enum [AppLocale.build] is preferred.
@@ -32405,6 +35246,946 @@ extension on _TranslationsRu {
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Подключите провайдер ИИ, чтобы начать общение.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Настроить провайдер ИИ';
 			case 'workspace.workspacePage.startNewChatButton': return 'Новый чат';
+			default: return null;
+		}
+	}
+}
+
+extension on _TranslationsVi {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'app.appBootstrapper.failedToInitializeMessage': return ({required Object error}) => 'Không thể khởi tạo ứng dụng:\n\n${error}';
+			case 'character.promptPrefixDialog.styleKeywordsLabel': return 'Từ khóa phong cách';
+			case 'character.promptPrefixDialog.imageTitle': return 'Phong cách hình ảnh';
+			case 'character.promptPrefixDialog.imageDescription': return 'Được thêm vào đầu mọi prompt tạo ảnh cho nhân vật này (ví dụ: "phong cách anime, màu sắc rực rỡ").';
+			case 'character.promptPrefixDialog.imageHint': return 'phong cách anime, màu sắc rực rỡ';
+			case 'character.promptPrefixDialog.videoTitle': return 'Phong cách video';
+			case 'character.promptPrefixDialog.videoDescription': return 'Được thêm vào đầu mọi prompt tạo video cho nhân vật này (ví dụ: "điện ảnh, độ sâu trường ảnh nông, hạt phim 24fps"). Mô hình video phản ứng tốt với từ vựng về chuyển động và máy quay; hãy giữ ngắn gọn.';
+			case 'character.promptPrefixDialog.videoHint': return 'điện ảnh, độ sâu trường ảnh nông';
+			case 'character.cardEditApproval.denyAll': return 'Từ chối tất cả';
+			case 'character.cardEditApproval.approveAll': return 'Duyệt tất cả';
+			case 'character.cardEditApproval.confirm': return 'Xác nhận';
+			case 'character.cardEditApproval.dialogTitle': return 'Trợ lý đề xuất thay đổi';
+			case 'character.cardEditApproval.dontAskAgainFor': return ({required Object modality}) => 'Không hỏi lại đối với ${modality}';
+			case 'character.cardEditApproval.modalityLabel.edits': return 'chỉnh sửa';
+			case 'character.cardEditApproval.modalityLabel.additions': return 'bổ sung';
+			case 'character.cardEditApproval.modalityLabel.deletions': return 'xóa bỏ';
+			case 'character.cardEditApproval.modalityVerb.edit': return 'Chỉnh sửa';
+			case 'character.cardEditApproval.modalityVerb.addition': return 'Thêm vào';
+			case 'character.cardEditApproval.modalityVerb.deletion': return 'Xóa khỏi';
+			case 'character.cardEditApproval.tapToDeny': return 'Nhấn để từ chối';
+			case 'character.cardEditApproval.tapToApprove': return 'Nhấn để duyệt';
+			case 'character.cardEditApproval.reasonLabel': return 'Lý do (không bắt buộc, sẽ gửi lại cho trợ lý)';
+			case 'character.cardEditApproval.newEntryTitle': return 'Mục mới';
+			case 'character.cardEditApproval.removingTitle': return 'Đang xóa';
+			case 'character.cardEditApproval.beforeTitle': return 'Trước';
+			case 'character.cardEditApproval.afterTitle': return 'Sau';
+			case 'character.requireApprovalTile.edits': return 'Yêu cầu duyệt: chỉnh sửa';
+			case 'character.requireApprovalTile.additions': return 'Yêu cầu duyệt: bổ sung';
+			case 'character.requireApprovalTile.deletions': return 'Yêu cầu duyệt: xóa bỏ';
+			case 'character.loadingStatus.initial': return 'Đang tải...';
+			case 'character.loadingStatus.copyingAssistant': return 'Đang sao chép trợ lý...';
+			case 'character.loadingStatus.scanningForCharacters': return 'Đang quét nhân vật...';
+			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Đang quét nhân vật...\n${current} / ${total}';
+			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Đang tải nhân vật...\n${current} / ${total}';
+			case 'character.savePathValidation.noLibraryFolder': return 'Chưa cấu hình thư mục thư viện.';
+			case 'character.savePathValidation.mustBeInsideLibrary': return 'Nhân vật phải được lưu trong thư mục thư viện của bạn.';
+			case 'character.characterFilesTypeGroupLabel': return 'Tệp nhân vật';
+			case 'character.createController.pngImagesTypeGroupLabel': return 'Ảnh PNG';
+			case 'character.createController.invalidLocationTitle': return 'Vị trí không hợp lệ';
+			case 'character.createController.creationFailedTitle': return 'Tạo thất bại';
+			case 'character.createController.creationFailedMessage': return 'Không thể tạo nhân vật. Kiểm tra nhật ký để biết chi tiết.';
+			case 'character.importController.failedToImport': return ({required Object fileName}) => 'Không thể nhập ${fileName}.';
+			case 'character.importController.importedCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: 'Đã nhập ${n} nhân vật',
+			);
+			case 'character.aiActionController.aiActionFailed': return 'Thao tác AI thất bại. Kiểm tra nhật ký để biết chi tiết.';
+			case 'character.aiActionController.processingProgress': return ({required Object name, required Object current, required Object total, required Object eta}) => 'Đang xử lý ${name} (${current}/${total})...${eta}';
+			case 'character.aiActionController.etaHoursMinutes': return ({required Object hours, required Object minutes}) => ' Còn lại: ${hours}g ${minutes}p';
+			case 'character.aiActionController.etaMinutesSeconds': return ({required Object minutes, required Object seconds}) => ' Còn lại: ${minutes}p ${seconds}s';
+			case 'character.aiActionController.etaSeconds': return ({required Object seconds}) => ' Còn lại: ${seconds}s';
+			case 'character.aiActionController.processingField': return ({required Object fieldName}) => 'Đang xử lý ${fieldName}...';
+			case 'chat.tileAiProvider.modelLabel': return 'Mô hình';
+			case 'chat.tileAiProvider.invalidLabel': return 'Không hợp lệ';
+			case 'chat.tileAiProvider.chooseModelTitle': return 'Chọn một mô hình';
+			case 'chat.presetTile.tapToChoose': return 'Nhấn để chọn';
+			case 'chat.tileImagePreset.titleLabel': return 'Mô hình hình ảnh';
+			case 'chat.tileImagePreset.chooseModelTitle': return 'Chọn mô hình hình ảnh';
+			case 'chat.tileVideoPreset.titleLabel': return 'Mô hình video';
+			case 'chat.tileVideoPreset.chooseModelTitle': return 'Chọn mô hình video';
+			case 'chat.tileTtsPreset.titleLabel': return 'Mô hình giọng nói';
+			case 'chat.tileTtsPreset.chooseModelTitle': return 'Chọn mô hình giọng nói';
+			case 'chat.tileImageAspectRatio.label': return 'Tỷ lệ khung hình ảnh';
+			case 'chat.tileVideoAspectRatio.label': return 'Tỷ lệ khung hình';
+			case 'chat.tileVideoResolution.label': return 'Độ phân giải';
+			case 'chat.tileVideoDuration.label': return 'Thời lượng';
+			case 'chat.tileTtsVoice.label': return 'Giọng đọc';
+			case 'chat.tileTtsLanguage.label': return 'Ngôn ngữ';
+			case 'chat.tileNsfw.label': return 'NSFW / Không giới hạn';
+			case 'chat.tileScenario.label': return 'Kịch bản';
+			case 'chat.tileMaxResponseLength.titleWithBucket': return ({required Object bucket}) => 'Độ dài phản hồi — ${bucket}';
+			case 'chat.tileMaxResponseLength.sliderLabel': return ({required Object bucket, required Object tokens}) => '${bucket} (${tokens} token)';
+			case 'chat.tileMaxResponseLength.bucketVeryShort': return 'Rất ngắn';
+			case 'chat.tileMaxResponseLength.bucketShort': return 'Ngắn';
+			case 'chat.tileMaxResponseLength.bucketMedium': return 'Trung bình';
+			case 'chat.tileMaxResponseLength.bucketLong': return 'Dài';
+			case 'chat.tileMaxResponseLength.bucketVeryLong': return 'Rất dài';
+			case 'chat.tileTrailingParagraph.label': return 'Cắt văn bản thừa ở cuối';
+			case 'chat.tileReasoningEffort.titleWithEffort': return ({required Object effort}) => 'Suy luận — ${effort}';
+			case 'chat.tileReasoningEffort.titleOff': return 'Tắt suy luận';
+			case 'chat.tileReasoningEffort.extraTokensCaption': return 'Dùng thêm token ngoài độ dài phản hồi tối đa của bạn.';
+			case 'chat.tileChatTheme.label': return 'Chủ đề';
+			case 'chat.tileRecalledMemory.label': return 'Hiện ký ức được gợi lại';
+			case 'chat.characterSwitcher.favoritesTooltip': return 'Yêu thích';
+			case 'chat.characterSwitcher.recentChatsTooltip': return 'Cuộc trò chuyện gần đây';
+			case 'chat.characterSwitcher.originalBadge': return 'GỐC';
+			case 'chat.characterSwitcher.variantBadge': return 'BIẾN THỂ';
+			case 'chat.characterSwitcher.lastActive': return ({required Object timeAgo}) => 'Hoạt động gần nhất: ${timeAgo}';
+			case 'chat.characterSwitcher.never': return 'Chưa từng';
+			case 'chat.freeImagePromptDialog.title': return 'Tạo hình ảnh';
+			case 'chat.freeImagePromptDialog.description': return 'Mô tả những gì bạn muốn thấy. Một cụm từ ngắn là đủ — mô hình sẽ mở rộng thành danh sách tag đầy đủ.';
+			case 'chat.freeImagePromptDialog.subjectLabel': return 'Chủ thể';
+			case 'chat.freeImagePromptDialog.subjectHint': return 'hẻm cyberpunk, mưa neon';
+			case 'chat.freeImagePromptDialog.generateButton': return 'Tạo';
+			case 'chat.freeVideoPromptDialog.title': return 'Tạo video';
+			case 'chat.freeVideoPromptDialog.description': return 'Mô tả một khoảnh khắc chuyển động ngắn — cái gì đang chuyển động, như thế nào, ở đâu. Mô hình hệ thống sẽ mở rộng thành prompt T2V điện ảnh.';
+			case 'chat.freeVideoPromptDialog.subjectLabel': return 'Chủ thể';
+			case 'chat.freeVideoPromptDialog.subjectHint': return 'cô ấy bước đi trong mưa neon, chuyển động chậm';
+			case 'chat.freeVideoPromptDialog.generateButton': return 'Tạo';
+			case 'chat.imagePromptReviewDialog.title': return 'Xem lại prompt hình ảnh';
+			case 'chat.imagePromptReviewDialog.description': return 'Chỉnh sửa prompt bên dưới trước khi tạo, hoặc nhấn Tạo để dùng nguyên bản.';
+			case 'chat.imagePromptReviewDialog.fieldLabel': return 'Prompt hình ảnh';
+			case 'chat.imagePromptReviewDialog.generateButton': return 'Tạo';
+			case 'chat.videoPromptReviewDialog.title': return 'Xem lại prompt video';
+			case 'chat.videoPromptReviewDialog.description': return 'Chỉnh sửa prompt bên dưới trước khi gửi, hoặc nhấn Tạo để dùng nguyên bản.';
+			case 'chat.videoPromptReviewDialog.fieldLabel': return 'Prompt video';
+			case 'chat.videoPromptReviewDialog.generateButton': return 'Tạo';
+			case 'chat.urlFetchReviewDialog.title': return 'Cho phép truy xuất web?';
+			case 'chat.urlFetchReviewDialog.description': return 'Nhân vật muốn đọc nội dung của URL này.';
+			case 'chat.urlFetchReviewDialog.purposeLabel': return 'Mục đích:';
+			case 'chat.urlFetchReviewDialog.denyButton': return 'Từ chối';
+			case 'chat.urlFetchReviewDialog.allowButton': return 'Cho phép';
+			case 'chat.messageActionsRow.tokenCountAbbrev': return ({required Object count}) => '${count}t';
+			case 'chat.messageActionsRow.generationTimeAbbrev': return ({required Object seconds}) => '${seconds}s';
+			case 'chat.messageActionsRow.viewGenerationPromptTooltip': return 'Xem prompt tạo sinh';
+			case 'chat.messageActionsRow.messageActionsTooltip': return 'Thao tác tin nhắn';
+			case 'chat.messageActionsRow.editAction': return 'Chỉnh sửa';
+			case 'chat.messageActionsRow.copyAction': return 'Sao chép';
+			case 'chat.messageActionsRow.shareImageAction': return 'Chia sẻ hình ảnh';
+			case 'chat.messageActionsRow.setAsBackgroundAction': return 'Đặt làm hình nền';
+			case 'chat.messageActionsRow.setAsCharacterImageAction': return 'Đặt làm ảnh nhân vật';
+			case 'chat.messageActionsRow.deleteAction': return 'Xóa';
+			case 'chat.messageActionsRow.copiedToClipboard': return 'Đã sao chép tin nhắn vào bộ nhớ tạm';
+			case 'chat.ttsPlayButton.stopTooltip': return 'Dừng';
+			case 'chat.ttsPlayButton.readAloudTooltip': return 'Đọc to';
+			case 'chat.ttsPlayButton.ttsFailed': return 'TTS thất bại.';
+			case 'chat.messageSwipeFlipper.previousVersionTooltip': return 'Phiên bản trước';
+			case 'chat.messageSwipeFlipper.swipeCounter': return ({required Object current, required Object total}) => '${current} / ${total}';
+			case 'chat.messageSwipeFlipper.regenerateTooltip': return 'Tạo lại';
+			case 'chat.messageSwipeFlipper.nextVersionTooltip': return 'Phiên bản sau';
+			case 'chat.videoPlayerInline.webUnsupported': return 'Không hỗ trợ phát video trên web.';
+			case 'chat.videoPlayerInline.couldNotLoad': return 'Không thể tải video.';
+			case 'chat.newChatLabel': return 'Cuộc trò chuyện mới';
+			case 'chat.chatListItem.messageCount': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: '${n} tin nhắn',
+			);
+			case 'chat.chatListItem.renameAction': return 'Đổi tên';
+			case 'chat.chatListItem.deleteChatAction': return 'Xóa cuộc trò chuyện';
+			case 'chat.chatHistoryController.renameChatTitle': return 'Đổi tên cuộc trò chuyện';
+			case 'chat.chatHistoryController.chatNameHint': return 'Tên cuộc trò chuyện';
+			case 'chat.chatHistoryController.renameButton': return 'Đổi tên';
+			case 'chat.chatHistoryController.deleteChatTitle': return 'Xóa cuộc trò chuyện';
+			case 'chat.chatHistoryController.deleteChatMessage': return 'Bạn có chắc muốn xóa lịch sử trò chuyện này không? Hành động này không thể hoàn tác.';
+			case 'chat.chatPageController.clearAssistantHistoryMessage': return 'Xóa lịch sử trò chuyện với trợ lý?';
+			case 'chat.chatPageController.clearButton': return 'Xóa';
+			case 'chat.chatPageController.deleteOrKeepMessage': return 'Bạn muốn xóa cuộc trò chuyện hiện tại hay giữ lại trong lịch sử?';
+			case 'chat.chatPageController.deleteCurrentButton': return 'Xóa hiện tại';
+			case 'chat.chatPageController.keepCurrentButton': return 'Giữ lại';
+			case 'chat.chatPageController.connectProviderToChatSnackbar': return 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
+			case 'chat.imageGenerationMixin.enterPromptMessage': return 'Nhập prompt để tạo hình ảnh.';
+			case 'chat.imageGenerationMixin.noCharacterMessage': return 'Không có nhân vật nào để tạo hình ảnh.';
+			case 'chat.imageGenerationMixin.notConfiguredMessage': return 'Chưa cấu hình tạo hình ảnh.';
+			case 'chat.imageGenerationMixin.noSystemModelMessage': return 'Chưa cấu hình mô hình hệ thống. Thiết lập trong Cài đặt → AI.';
+			case 'chat.videoGenerationMixin.enterPromptMessage': return 'Nhập prompt để tạo video.';
+			case 'chat.videoGenerationMixin.noCharacterMessage': return 'Không có nhân vật nào để tạo video.';
+			case 'chat.videoGenerationMixin.notConfiguredMessage': return 'Chưa cấu hình tạo video.';
+			case 'chat.bubbleWaitingFor.thinking': return 'Đang suy nghĩ…';
+			case 'chat.bubbleWaitingFor.preparingImagePrompt': return 'Đang chuẩn bị prompt hình ảnh…';
+			case 'chat.bubbleWaitingFor.preparingVideoPrompt': return 'Đang chuẩn bị prompt video…';
+			case 'chat.bubbleWaitingFor.generatingImage': return 'Đang tạo hình ảnh…';
+			case 'chat.bubbleWaitingFor.generatingVideo': return 'Đang tạo video…';
+			case 'chat.appBarChat.hideEditorPanelTooltip': return 'Ẩn bảng chỉnh sửa';
+			case 'chat.appBarChat.showEditorSideBySideTooltip': return 'Hiện trình chỉnh sửa song song';
+			case 'chat.appBarChat.chatOptionsTooltip': return 'Tùy chọn trò chuyện';
+			case 'chat.allChatsDrawerList.rebuildingIndex': return 'Đang xây dựng lại chỉ mục...';
+			case 'chat.allChatsDrawerList.noChatsFound': return 'Không tìm thấy cuộc trò chuyện nào.';
+			case 'chat.chatInputMediaMenu.generateMediaTooltip': return 'Tạo media';
+			case 'chat.chatInputMediaMenu.generateImageLabel': return 'Tạo hình ảnh';
+			case 'chat.chatInputMediaMenu.generateVideoLabel': return 'Tạo video';
+			case 'chat.chatView.deleteMessageTitle': return 'Xóa tin nhắn';
+			case 'chat.chatView.deleteMessageConfirmation': return 'Bạn có chắc muốn xóa tin nhắn này không?';
+			case 'chat.chatView.typeMessageHint': return 'Nhập tin nhắn...';
+			case 'chat.chatView.moreActionsTooltip': return 'Thêm thao tác';
+			case 'chat.chatView.continueAction': return 'Tiếp tục';
+			case 'chat.chatView.impersonateAction': return 'Viết thay bạn';
+			case 'chat.chatView.generateReplyAction': return 'Tạo phản hồi';
+			case 'chat.chatView.improveMessageAction': return 'Cải thiện tin nhắn';
+			case 'chat.chatMessageBubble.imagesTypeGroupLabel': return 'Hình ảnh';
+			case 'chat.chatMessageBubble.assistantFallbackName': return 'Trợ lý';
+			case 'chat.chatMessageBubble.reasoningLabel': return 'Suy luận';
+			case 'chat.chatMessageBubble.sendingToProvider': return 'Đang gửi tới nhà cung cấp…';
+			case 'chat.chatMessageBubble.pollingWithPercent': return ({required Object pct}) => 'Đang chờ kết quả… ${pct}%';
+			case 'chat.chatMessageBubble.polling': return 'Đang chờ kết quả…';
+			case 'chat.chatMessageBubble.downloading': return 'Đang tải xuống…';
+			case 'common.actions.delete': return 'Xóa';
+			case 'common.actions.ok': return 'OK';
+			case 'common.actions.cancel': return 'Hủy';
+			case 'common.actions.save': return 'Lưu';
+			case 'common.actions.tryAgain': return 'Thử lại';
+			case 'common.actions.close': return 'Đóng';
+			case 'common.appSearchField.hint': return 'Tìm kiếm...';
+			case 'common.aiAction.proofread': return 'Soát lỗi';
+			case 'common.aiAction.compact': return 'Cô đọng văn bản';
+			case 'common.aiAction.translate': return 'Dịch sang tiếng Anh';
+			case 'common.aiAction.generatePreview': return 'Tạo bản xem trước';
+			case 'common.aiAction.autoTag': return 'Tự động gắn tag';
+			case 'common.aiActionsTooltip': return 'Thao tác AI';
+			case 'common.promptSegmentKind.identity': return 'Danh tính';
+			case 'common.promptSegmentKind.systemPrompt': return 'Prompt hệ thống';
+			case 'common.promptSegmentKind.nsfwMode': return 'Chế độ NSFW';
+			case 'common.promptSegmentKind.scenarioMode': return 'Chế độ kịch bản';
+			case 'common.promptSegmentKind.description': return 'Mô tả';
+			case 'common.promptSegmentKind.personality': return 'Tính cách';
+			case 'common.promptSegmentKind.scenario': return 'Kịch bản';
+			case 'common.promptSegmentKind.userPersona': return 'Persona của bạn';
+			case 'common.promptSegmentKind.memory': return 'Ký ức';
+			case 'common.promptSegmentKind.situation': return 'Tình huống';
+			case 'common.promptSegmentKind.cardData': return 'Dữ liệu thẻ';
+			case 'common.promptSegmentKind.tools': return 'Công cụ';
+			case 'common.promptSegmentKind.postHistory': return 'Sau lịch sử';
+			case 'common.promptSegmentKind.depthPrompt': return 'Prompt theo độ sâu';
+			case 'common.promptSegmentKind.worldInfo': return 'Thông tin thế giới';
+			case 'common.promptSegmentKind.injected': return 'Được chèn';
+			case 'common.promptSegmentKind.exampleDialogue': return 'Hội thoại mẫu';
+			case 'common.promptSegmentKind.history': return 'Lịch sử tin nhắn';
+			case 'common.promptSegmentKind.currentMessage': return 'Tin nhắn hiện tại';
+			case 'common.promptSegmentKind.reservedReply': return 'Dự trữ cho phản hồi';
+			case 'common.promptBreakdown.free': return 'Còn trống';
+			case 'common.logs.title': return 'Nhật ký';
+			case 'common.logs.filterTooltip': return 'Lọc nhật ký';
+			case 'common.logs.clearTooltip': return 'Xóa nhật ký';
+			case 'common.logs.exportTooltip': return 'Xuất nhật ký';
+			case 'common.logs.searchHint': return 'Tìm trong nhật ký...';
+			case 'common.logs.noLogsFound': return 'Không tìm thấy nhật ký nào.';
+			case 'common.logs.noLogsToExport': return 'Không có nhật ký để xuất';
+			case 'common.logs.exportedSuccessfully': return 'Đã xuất nhật ký thành công';
+			case 'common.logs.exportFailed': return 'Không thể xuất nhật ký. Xem nhật ký để biết chi tiết.';
+			case 'common.logs.copiedToClipboard': return 'Đã sao chép vào bộ nhớ tạm';
+			case 'common.logs.copyLogButton': return 'Sao chép nhật ký';
+			case 'common.logs.copiedEntryToClipboard': return 'Đã sao chép mục nhật ký vào bộ nhớ tạm';
+			case 'common.logs.errorPrefix': return ({required Object error}) => 'Lỗi: ${error}';
+			case 'common.importErrorsDialog.title': return 'Lỗi nhập';
+			case 'common.importErrorsDialog.message': return 'Không thể nhập các tệp sau:';
+			case 'common.updateDialog.title': return 'Có phiên bản mới';
+			case 'common.updateDialog.body': return ({required Object appName, required Object currentVersion, required Object latestVersion}) => 'Đã có phiên bản mới hơn của ${appName}.\n\nPhiên bản hiện tại: ${currentVersion}\nPhiên bản mới nhất: ${latestVersion}';
+			case 'common.updateDialog.releaseNotesLabel': return 'Ghi chú phát hành:';
+			case 'common.updateDialog.viewReleasesButton': return 'Xem các bản phát hành';
+			case 'common.importConflictsDialog.title': return 'Xung đột khi nhập';
+			case 'common.importConflictsDialog.message': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: '${n} nhân vật sau bị trùng tên tệp và sẽ được tự động đổi tên:',
+			);
+			case 'common.missingProviderBanner.message': return 'Kết nối một nhà cung cấp AI.';
+			case 'common.missingProviderBanner.setUpNowButton': return 'Thiết lập ngay';
+			case 'common.modelSelectionDialog.searchHint': return 'Tìm mô hình';
+			case 'common.modelSelectionDialog.subscriptionOnlyToggle': return ({required Object included, required Object total}) => 'Chỉ hiện mô hình thuộc gói đăng ký (${included}/${total})';
+			case 'common.showAdvanced.less': return 'Thu gọn';
+			case 'common.showAdvanced.more': return 'Xem thêm';
+			case 'common.messageEditDialog.title': return 'Chỉnh sửa tin nhắn';
+			case 'common.promptBreakdownDialog.title': return 'Phân tích prompt';
+			case 'common.promptBreakdownDialog.breakdownTab': return 'Phân tích';
+			case 'common.promptBreakdownDialog.contentTab': return 'Nội dung';
+			case 'common.promptBreakdownDialog.promptTotalEstimated': return 'Tổng prompt (ước tính)';
+			case 'common.promptBreakdownDialog.promptTotalProvider': return 'Tổng prompt (nhà cung cấp)';
+			case 'common.promptBreakdownDialog.contextWindowLabel': return 'Cửa sổ ngữ cảnh';
+			case 'common.promptBreakdownDialog.categoryHeader': return 'DANH MỤC';
+			case 'common.promptBreakdownDialog.tokensHeader': return 'TOKEN';
+			case 'common.promptBreakdownDialog.usageHeader': return 'SỬ DỤNG';
+			case 'common.promptBreakdownDialog.noContentToInspect': return 'Không có nội dung để xem cho phản hồi này.';
+			case 'common.promptBreakdownDialog.estimatedSuffix': return ' (ước tính)';
+			case 'common.promptBreakdownDialog.usedSummary': return ({required Object used, required Object total}) => 'Đã dùng ${used} / ${total}';
+			case 'common.jsonPromptDialog.title': return 'Prompt tạo sinh';
+			case 'common.progressDialog.defaultMessage': return 'Đang gửi...';
+			case 'common.progressDialog.finished': return 'Hoàn tất!';
+			case 'common.diffPanel.tokenSuffix': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: ' (${n} token)',
+			);
+			case 'common.selectionDialog.searchHint': return 'Tìm kiếm…';
+			case 'common.zdrSwitch.title': return 'Yêu cầu Zero Data Retention (ZDR)';
+			case 'common.zdrSwitch.subtitle': return 'Chỉ hiện các mô hình OR có endpoint tuân thủ ZDR. Bật nếu tài khoản openrouter.ai của bạn giới hạn ở các nhà cung cấp ZDR.';
+			case 'common.textFieldCard.labelWithTokenCount': return ({required num n, required Object label}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: '${label} - ${n} token',
+			);
+			case 'common.textFieldCard.tokenCountAbbrev': return ({required Object count}) => '${count} t';
+			case 'common.modelCapability.reasoning': return 'Suy luận';
+			case 'common.modelCapability.vision': return 'Thị giác';
+			case 'common.modelCapability.tools': return 'Công cụ';
+			case 'common.modelCapability.json': return 'JSON';
+			case 'common.modelCapability.files': return 'Tệp';
+			case 'common.modelCapability.image': return 'Hình ảnh';
+			case 'common.modelCapability.video': return 'Video';
+			case 'common.modelCapability.speech': return 'Giọng nói';
+			case 'common.modelCapability.music': return 'Âm nhạc';
+			case 'common.modelUnavailableTooltip': return 'Mô hình này không còn được nhà cung cấp hỗ trợ — hãy chọn mô hình khác.';
+			case 'common.characterImageSemanticLabel': return 'Ảnh nhân vật';
+			case 'common.appConstants.maxImageFileSizeLabel': return '10 MB';
+			case 'common.appConstants.exportFailedMessage': return 'Xuất thất bại. Xem nhật ký để biết chi tiết.';
+			case 'common.timeAgo.years': return ({required Object n}) => '${n} năm trước';
+			case 'common.timeAgo.months': return ({required Object n}) => '${n} tháng trước';
+			case 'common.timeAgo.days': return ({required Object n}) => '${n} ngày trước';
+			case 'common.timeAgo.hours': return ({required Object n}) => '${n} giờ trước';
+			case 'common.timeAgo.minutes': return ({required Object n}) => '${n} phút trước';
+			case 'common.timeAgo.justNow': return 'Vừa xong';
+			case 'editor.panelLabels.basic': return 'Cơ bản';
+			case 'editor.panelLabels.greetings': return 'Lời chào';
+			case 'editor.panelLabels.prompts': return 'Prompt';
+			case 'editor.panelLabels.lorebook': return 'Lorebook';
+			case 'editor.panelLabels.group': return 'Nhóm';
+			case 'editor.panelLabels.creator': return 'Tác giả';
+			case 'editor.panelLabels.appData': return 'Dữ liệu ứng dụng';
+			case 'editor.panelLabels.nodes': return 'Node';
+			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ẩn bảng trợ lý';
+			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Hiện trợ lý trò chuyện song song';
+			case 'editor.codeFindPanel.noneResult': return 'không có';
+			case 'editor.codeFindPanel.previousTooltip': return 'Trước';
+			case 'editor.codeFindPanel.nextTooltip': return 'Sau';
+			case 'editor.codeFindPanel.closeTooltip': return 'Đóng';
+			case 'editor.codeFindPanel.replaceTooltip': return 'Thay thế';
+			case 'editor.codeFindPanel.replaceAllTooltip': return 'Thay thế tất cả';
+			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Xác nhận thay thế tất cả';
+			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.';
+			case 'editor.findReplaceDialog.proceedButton': return 'Tiếp tục';
+			case 'editor.findReplaceDialog.title': return 'Tìm & Thay thế';
+			case 'editor.findReplaceDialog.findLabel': return 'Tìm';
+			case 'editor.findReplaceDialog.replaceWithLabel': return 'Thay bằng';
+			case 'editor.findReplaceDialog.replaceAllButton': return 'Thay thế tất cả';
+			case 'editor.objectValueEditor.stringType': return 'chuỗi';
+			case 'editor.objectValueEditor.numberType': return 'số';
+			case 'editor.objectValueEditor.boolType': return 'bool';
+			case 'editor.editorBasic.nameLabel': return 'Tên';
+			case 'editor.editorBasic.nicknameLabel': return 'Biệt danh (CCv3)';
+			case 'editor.editorBasic.descriptionLabel': return 'Mô tả';
+			case 'editor.editorBasic.personalityLabel': return 'Tính cách';
+			case 'editor.editorBasic.scenarioLabel': return 'Kịch bản';
+			case 'editor.editorBasic.messageExampleLabel': return 'Tin nhắn mẫu';
+			case 'editor.editorCreatorMetadata.systemNameLabel': return 'Tên hệ thống (CCv3)';
+			case 'editor.editorCreatorMetadata.creatorLabel': return 'Tác giả';
+			case 'editor.editorCreatorMetadata.versionLabel': return 'Phiên bản';
+			case 'editor.editorCreatorMetadata.creatorNotesLabel': return 'Ghi chú của tác giả';
+			case 'editor.editorCreatorMetadata.tagsLabel': return 'Tag (phân tách bằng dấu phẩy)';
+			case 'editor.editorPrompts.systemPromptLabel': return 'Prompt hệ thống';
+			case 'editor.editorPrompts.postHistoryInstructionsLabel': return 'Hướng dẫn sau lịch sử';
+			case 'editor.editorPrompts.depthPromptLabel': return 'Prompt theo độ sâu (Ghi chú nhân vật)';
+			case 'editor.editorPrompts.insertionDepthLabel': return 'Độ sâu chèn';
+			case 'editor.editorPrompts.roleLabel': return 'Vai trò';
+			case 'editor.editorAppData.variantNotesLabel': return 'Ghi chú biến thể';
+			case 'editor.editorAppData.descriptionPreviewLabel': return 'Xem trước mô tả';
+			case 'editor.editorAlternateGreetings.deleteGreetingTitle': return 'Xóa lời chào';
+			case 'editor.editorAlternateGreetings.deleteGreetingMessage': return 'Bạn có chắc muốn xóa lời chào này không?';
+			case 'editor.editorAlternateGreetings.addGreetingButton': return 'Thêm lời chào';
+			case 'editor.editorAlternateGreetings.primaryGreetingLabel': return 'Lời chào chính (first_mes)';
+			case 'editor.editorAlternateGreetings.alternateGreetingLabel': return ({required Object index}) => 'Lời chào thay thế #${index}';
+			case 'editor.editorAlternateGreetings.removeTooltip': return 'Xóa';
+			case 'editor.editorGroupGreetings.greetingLabel': return ({required Object index}) => 'Lời chào ${index}';
+			case 'editor.editorLorebook.newEntryDefaultComment': return 'Mục mới';
+			case 'editor.editorLorebook.deleteEntryTitle': return 'Xóa mục';
+			case 'editor.editorLorebook.deleteEntryMessage': return 'Bạn có chắc muốn xóa mục này không?';
+			case 'editor.editorLorebook.addNewEntryButton': return 'Thêm mục mới';
+			case 'editor.editorLorebook.noEntriesFound': return 'Không tìm thấy mục lorebook nào.';
+			case 'editor.lorebookEntryListTile.untitledEntry': return 'Mục chưa đặt tên';
+			case 'editor.lorebookEntryListTile.noKeywords': return 'Không có từ khóa';
+			case 'editor.lorebookEntryEditorPage.editEntryTitle': return 'Chỉnh sửa mục lorebook';
+			case 'editor.lorebookEntryEditorPage.advancedFilter': return 'Nâng cao';
+			case 'editor.lorebookEntryEditorPage.primaryKeywordsLabel': return 'Từ khóa chính';
+			case 'editor.lorebookEntryEditorPage.logicLabel': return 'Logic';
+			case 'editor.lorebookEntryEditorPage.logicAndAny': return 'AND ANY';
+			case 'editor.lorebookEntryEditorPage.logicAndAll': return 'AND ALL';
+			case 'editor.lorebookEntryEditorPage.logicNotAny': return 'NOT ANY';
+			case 'editor.lorebookEntryEditorPage.logicNotAll': return 'NOT ALL';
+			case 'editor.lorebookEntryEditorPage.optionalFilterLabel': return 'Bộ lọc tùy chọn';
+			case 'editor.lorebookEntryEditorPage.contentLabel': return 'Nội dung';
+			case 'editor.lorebookEntryEditorPage.nonRecursableFilter': return 'Không đệ quy';
+			case 'editor.lorebookEntryEditorPage.preventFurtherRecursionFilter': return 'Chặn đệ quy tiếp';
+			case 'editor.lorebookEntryEditorPage.delayUntilRecursionFilter': return 'Hoãn tới khi đệ quy';
+			case 'editor.lorebookEntryEditorPage.ignoreBudgetFilter': return 'Bỏ qua ngân sách';
+			case 'editor.lorebookEntryEditorPage.prioritizeFilter': return 'Ưu tiên';
+			case 'editor.lorebookEntryEditorPage.inclusionGroupLabel': return 'Nhóm bao gồm';
+			case 'editor.lorebookEntryEditorPage.groupWeightLabel': return 'Trọng số nhóm';
+			case 'editor.lorebookEntryEditorPage.stickyLabel': return 'Sticky';
+			case 'editor.lorebookEntryEditorPage.cooldownLabel': return 'Thời gian hồi';
+			case 'editor.lorebookEntryEditorPage.delayLabel': return 'Độ trễ';
+			case 'editor.lorebookEntryEditorPage.filterToCharactersLabel': return 'Lọc theo nhân vật hoặc tag';
+			case 'editor.lorebookEntryEditorPage.filterToTriggersLabel': return 'Lọc theo kích hoạt tạo sinh';
+			case 'editor.lorebookEntryEditorPage.additionalMatchingSourcesLabel': return 'Nguồn khớp bổ sung:';
+			case 'editor.lorebookEntryEditorPage.personaFilter': return 'Persona';
+			case 'editor.lorebookEntryEditorPage.descriptionFilter': return 'Mô tả';
+			case 'editor.lorebookEntryEditorPage.personalityFilter': return 'Tính cách';
+			case 'editor.lorebookEntryEditorPage.depthPromptFilter': return 'Prompt theo độ sâu';
+			case 'editor.lorebookEntryEditorPage.scenarioFilter': return 'Kịch bản';
+			case 'editor.lorebookEntryEditorPage.creatorNotesFilter': return 'Ghi chú của tác giả';
+			case 'editor.lorebookEntryEditorTopSection.titleMemoLabel': return 'Tiêu đề/Ghi nhớ';
+			case 'editor.lorebookEntryEditorTopSection.strategyLabel': return 'Chiến lược';
+			case 'editor.lorebookEntryEditorTopSection.strategyConstant': return 'Cố định';
+			case 'editor.lorebookEntryEditorTopSection.strategyEnabled': return 'Bật';
+			case 'editor.lorebookEntryEditorTopSection.strategyDisabled': return 'Tắt';
+			case 'editor.lorebookEntryEditorTopSection.strategyVectorized': return 'Vector hóa';
+			case 'editor.lorebookEntryEditorTopSection.positionLabel': return 'Vị trí';
+			case 'editor.lorebookEntryEditorTopSection.positionUpChar': return '↑ Char';
+			case 'editor.lorebookEntryEditorTopSection.positionDownChar': return '↓ Char';
+			case 'editor.lorebookEntryEditorTopSection.positionUpAn': return '↑ AN';
+			case 'editor.lorebookEntryEditorTopSection.positionDownAn': return '↓ AN';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthSystem': return '@D Hệ thống';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthUser': return '@D Người dùng';
+			case 'editor.lorebookEntryEditorTopSection.positionDepthAssistant': return '@D Trợ lý';
+			case 'editor.lorebookEntryEditorTopSection.positionUpEm': return '↑ EM';
+			case 'editor.lorebookEntryEditorTopSection.positionDownEm': return '↓ EM';
+			case 'editor.lorebookEntryEditorTopSection.positionOutlet': return 'Outlet';
+			case 'editor.lorebookEntryEditorTopSection.depthLabel': return 'Độ sâu';
+			case 'editor.lorebookEntryEditorTopSection.orderLabel': return 'Thứ tự';
+			case 'editor.lorebookEntryEditorTopSection.triggerLabel': return 'Kích hoạt %';
+			case 'editor.lorebookEntryEditorScanRow.scanDepthLabel': return 'Độ sâu quét';
+			case 'editor.lorebookEntryEditorScanRow.automationIdLabel': return 'ID tự động hóa';
+			case 'editor.lorebookEntryEditorScanRow.useRegexFilter': return 'Dùng regex';
+			case 'editor.lorebookEntryEditorScanRow.caseSensitiveFilter': return 'Phân biệt hoa thường';
+			case 'editor.lorebookEntryEditorScanRow.wholeWordsFilter': return 'Nguyên từ';
+			case 'editor.lorebookEntryEditorScanRow.groupScoringFilter': return 'Chấm điểm nhóm';
+			case 'editor.dialogContentCleaner.confirmActionTitle': return ({required Object actionName}) => 'Xác nhận ${actionName}';
+			case 'editor.dialogContentCleaner.title': return 'Dọn dẹp nội dung';
+			case 'editor.dialogContentCleaner.normalizeFancyCharsAction': return 'Chuẩn hóa ký tự trang trí';
+			case 'editor.dialogContentCleaner.normalizeFancyCharsButton': return 'Chuẩn hóa ký tự trang trí (𝑻𝒉𝒆 𝒑𝒍𝒂𝒄𝒆)';
+			case 'editor.dialogContentCleaner.purgeHtmlAction': return 'Xóa HTML';
+			case 'editor.dialogContentCleaner.purgeHtmlButton': return 'Xóa thẻ HTML';
+			case 'editor.dialogContentCleaner.purgeMarkdownAction': return 'Xóa liên kết/ảnh Markdown';
+			case 'editor.dialogContentCleaner.purgeEmojisAction': return 'Xóa emoji';
+			case 'editor.dialogContentCleaner.purgeExtraSpacesAction': return 'Xóa khoảng trắng thừa';
+			case 'editor.dialogContentCleaner.yoloPurgeAction': return 'Dọn sạch toàn bộ';
+			case 'editor.dialogContentCleaner.applyAllAboveButton': return 'Áp dụng tất cả bên trên';
+			case 'editor.dialogAiDiffConfirmation.applyChangesButton': return 'Áp dụng thay đổi';
+			case 'editor.dialogAiDiffConfirmation.originalTextTitle': return 'Văn bản gốc';
+			case 'editor.dialogAiDiffConfirmation.suggestedTextTitle': return 'Văn bản đề xuất';
+			case 'editor.editorPageController.globalActionTitle': return ({required Object action}) => '${action} toàn cục';
+			case 'editor.editorPageController.globalAiActionFailed': return 'Thao tác AI toàn cục thất bại. Kiểm tra nhật ký.';
+			case 'editor.editorPageController.compositeName': return ({required Object value}) => 'Tên:\n${value}\n';
+			case 'editor.editorPageController.compositeDescription': return ({required Object value}) => 'Mô tả:\n${value}\n';
+			case 'editor.editorPageController.compositePersonality': return ({required Object value}) => 'Tính cách:\n${value}\n';
+			case 'editor.editorPageController.compositeScenario': return ({required Object value}) => 'Kịch bản:\n${value}\n';
+			case 'editor.editorPageController.compositeFirstMessage': return ({required Object value}) => 'Tin nhắn đầu tiên:\n${value}\n';
+			case 'editor.editorPageController.compositeMessageExample': return ({required Object value}) => 'Tin nhắn mẫu:\n${value}\n';
+			case 'editor.editorPageController.compositeCreatorNotes': return ({required Object value}) => 'Ghi chú của tác giả:\n${value}\n';
+			case 'editor.editorPageController.compositeSystemPrompt': return ({required Object value}) => 'Prompt hệ thống:\n${value}\n';
+			case 'editor.editorPageController.compositePostHistoryInstructions': return ({required Object value}) => 'Hướng dẫn sau lịch sử:\n${value}\n';
+			case 'editor.editorPageController.compositeAlternateGreeting': return ({required Object index, required Object value}) => 'Lời chào thay thế #${index}:\n${value}\n';
+			case 'editor.editorPageController.compositeGroupGreeting': return ({required Object index, required Object value}) => 'Lời chào nhóm #${index}:\n${value}\n';
+			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Mục lorebook #${index}:\n${value}\n';
+			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Ảnh đã chọn quá lớn. Kích thước tối đa là ${maxSize}.';
+			case 'editor.editorPageController.invalidPngMessage': return 'Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được.';
+			case 'editor.editorNodes.deleteNodeTitle': return 'Xóa node';
+			case 'editor.editorNodes.deleteNodeMessage': return 'Xóa node tự tạo này khỏi thẻ?';
+			case 'editor.editorNodes.engineSeedTitle': return 'Seed của engine';
+			case 'editor.editorNodes.visualEditorTooltip': return 'Trình chỉnh sửa trực quan';
+			case 'editor.editorNodes.editJsonTooltip': return 'Chỉnh sửa JSON';
+			case 'editor.editorNodes.initialGoalLabel': return 'Mục tiêu ban đầu';
+			case 'editor.editorNodes.initialSceneLabel': return 'Cảnh ban đầu';
+			case 'editor.editorNodes.locationLabel': return 'Địa điểm';
+			case 'editor.editorNodes.timeOfDayLabel': return 'Thời điểm trong ngày';
+			case 'editor.editorNodes.presentEntitiesLabel': return 'Có mặt (phân tách bằng dấu phẩy)';
+			case 'editor.editorNodes.sensoryHooksLabel': return 'Chi tiết giác quan (phân tách bằng dấu phẩy)';
+			case 'editor.editorNodes.addNodeButton': return 'Thêm node';
+			case 'editor.editorNodes.noAuthoredNodesYet': return 'Chưa có node tự tạo nào.';
+			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: 'Khối node của thẻ này có ${n} vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu.',
+			);
+			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… còn ${n} nữa';
+			case 'editor.editorNodes.emotionBaselineLabel': return 'Cảm xúc nền';
+			case 'editor.editorNodes.emotionChipLabel': return 'Cảm xúc';
+			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'sinh ra: ${count}';
+			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'Cấp cao nhất phải là một đối tượng JSON';
+			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Chỉnh sửa JSON node';
+			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: 'Sửa ${n} vấn đề để lưu.',
+			);
+			case 'editor.nodesCanvasView.spawnedByPort': return 'được sinh bởi';
+			case 'editor.nodesCanvasView.spawnsPort': return 'sinh ra';
+			case 'editor.nodesCanvasView.editNodeLabel': return 'Chỉnh sửa node';
+			case 'editor.nodesCanvasView.addNodeTooltip': return 'Thêm node';
+			case 'editor.nodeEditorForm.nameLabel': return 'Tên';
+			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Nội dung tường thuật';
+			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Xóa liên kết sinh';
+			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Ngừng cho node này sinh ra "${nodeId}"? Bản thân node vẫn còn trên thẻ.';
+			case 'editor.nodeEditorForm.removeButton': return 'Xóa';
+			case 'editor.nodeEditorForm.typeLabel': return 'Loại';
+			case 'editor.nodeEditorForm.scopeLabel': return 'Phạm vi';
+			case 'editor.nodeEditorForm.originLabel': return 'Nguồn gốc';
+			case 'editor.nodeEditorForm.triggerProbLabel': return 'Xác suất kích hoạt';
+			case 'editor.nodeEditorForm.delayHelper': return 'Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.';
+			case 'editor.nodeEditorForm.cooldownHelper': return 'Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.';
+			case 'editor.nodeEditorForm.stickyHelper': return 'Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng "Còn vương lại" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.';
+			case 'editor.nodeEditorForm.aliveHelper': return 'Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.';
+			case 'editor.nodeEditorForm.setToNeverButton': return 'Đặt thành không bao giờ';
+			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Hiệu ứng';
+			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Biến đổi cảm xúc';
+			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Biến đổi thể chất';
+			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Biến đổi quan hệ';
+			case 'editor.nodeEditorForm.addDeltaChip': return 'Thêm biến đổi';
+			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Ghi kiến thức';
+			case 'editor.nodeEditorForm.addFactChip': return 'Thêm dữ kiện';
+			case 'editor.nodeEditorForm.topicLabel': return 'chủ đề';
+			case 'editor.nodeEditorForm.confidenceLabel': return 'độ tin cậy';
+			case 'editor.nodeEditorForm.flagSetTitle': return 'Đặt cờ';
+			case 'editor.nodeEditorForm.addFlagChip': return 'Thêm cờ';
+			case 'editor.nodeEditorForm.keyLabel': return 'khóa';
+			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Cảnh & mạch truyện';
+			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (xóa mục tiêu hiện tại khi để trống)';
+			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
+			case 'editor.nodeEditorForm.noneOption': return '(không)';
+			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
+			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.';
+			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Sinh ra';
+			case 'editor.nodeEditorForm.addNewChip': return 'Thêm mới';
+			case 'editor.nodeEditorForm.linkExistingChip': return 'Liên kết node có sẵn';
+			case 'editor.nodeEditorForm.unlinkTooltip': return 'Hủy liên kết';
+			case 'editor.nodeEditorForm.predicateLabel': return 'Điều kiện';
+			case 'editor.contentTransform.appliedSnackbar': return 'Đã áp dụng thay đổi';
+			case 'editor.contentTransform.undoButton': return 'Hoàn tác';
+			case 'grid.emptyState.noMatches': return 'Không có nhân vật nào khớp với bộ lọc';
+			case 'grid.emptyState.noCharacters': return 'Chưa nhập nhân vật nào';
+			case 'grid.emptyState.clearAllFilters': return 'Xóa tất cả bộ lọc';
+			case 'grid.emptyState.importCharacters': return 'Nhập nhân vật';
+			case 'grid.emptyState.createNewCharacter': return 'Tạo nhân vật mới';
+			case 'grid.appBar.groups': return 'Nhóm';
+			case 'grid.appBar.createNew': return 'Tạo mới';
+			case 'grid.appBar.import': return 'Nhập';
+			case 'grid.appBar.menuTooltip': return 'Menu';
+			case 'grid.fab.addOrImportTooltip': return 'Thêm hoặc nhập';
+			case 'grid.fab.import': return 'Nhập';
+			case 'grid.fab.create': return 'Tạo';
+			case 'grid.drawer.mediaDefaultsApp': return 'Ứng dụng';
+			case 'grid.drawer.batchAiHeader': return 'AI hàng loạt';
+			case 'grid.drawer.batchGeneratePreviewsTitle': return 'Tạo bản xem trước hàng loạt';
+			case 'grid.drawer.batchGeneratePreviewsEmpty': return 'Tất cả nhân vật đã có bản xem trước.';
+			case 'grid.drawer.batchAutoTagTitle': return 'Tự động gắn tag hàng loạt';
+			case 'grid.drawer.batchAutoTagEmpty': return 'Tất cả nhân vật đã có tag.';
+			case 'grid.drawer.libraryHeader': return 'Thư viện';
+			case 'grid.drawer.reloadCharacters': return 'Tải lại nhân vật';
+			case 'grid.variantBadge.tooltip': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: '${n} biến thể',
+			);
+			case 'grid.dialogActions.clearAll': return 'Xóa tất cả';
+			case 'grid.dialogActions.apply': return 'Áp dụng';
+			case 'grid.tagFilterDialog.title': return 'Lọc tag';
+			case 'grid.tagFilterDialog.searchHint': return 'Tìm tag...';
+			case 'grid.filters.hideFiltersTooltip': return 'Ẩn bộ lọc';
+			case 'grid.filters.moreFiltersTooltip': return 'Thêm bộ lọc';
+			case 'grid.filters.folderChip': return 'Thư mục';
+			case 'grid.filters.creatorChip': return 'Tác giả';
+			case 'grid.filters.tagChip': return 'Tag';
+			case 'grid.filters.recentTooltip': return 'Gần đây';
+			case 'grid.filters.favoritesTooltip': return 'Yêu thích';
+			case 'grid.filters.variantsTooltip': return 'Biến thể';
+			case 'grid.filters.indexingProgress': return ({required Object done, required Object total}) => 'Đang xây dựng tìm kiếm ${done} / ${total}…';
+			case 'grid.filters.cardCountTooltip': return 'Số thẻ đang hiển thị';
+			case 'grid.sortOption.relevance': return 'Liên quan ↓';
+			case 'grid.sortOption.nameAsc': return 'Tên ↓';
+			case 'grid.sortOption.nameDesc': return 'Tên ↑';
+			case 'grid.sortOption.importNewest': return 'Đã nhập ↓';
+			case 'grid.sortOption.importOldest': return 'Đã nhập ↑';
+			case 'grid.sortOption.modifiedNewest': return 'Đã sửa ↓';
+			case 'grid.sortOption.modifiedOldest': return 'Đã sửa ↑';
+			case 'grid.sortOption.interactedNewest': return 'Tương tác ↓';
+			case 'grid.sortOption.interactedOldest': return 'Tương tác ↑';
+			case 'grid.sortOption.tokensHigh': return 'Token ↓';
+			case 'grid.sortOption.tokensLow': return 'Token ↑';
+			case 'grid.filterController.filterCreators': return 'Lọc tác giả';
+			case 'grid.filterController.filterTags': return 'Lọc tag';
+			case 'grid.filterController.filterByFolder': return 'Lọc theo thư mục';
+			case 'grid.multiSelectDialog.nothingToShow': return 'Chưa có gì để hiển thị.';
+			case 'grid.multiSelectDialog.noMatches': return 'Không có kết quả.';
+			case 'grid.multiSelectDialog.showMore': return 'Xem thêm';
+			case 'grid.createCharacterDialog.nameEmptyError': return 'Tên nhân vật không được để trống.';
+			case 'grid.createCharacterDialog.nameInvalidCharsError': return 'Tên chứa ký tự không hợp lệ (<>:"/\|?*).';
+			case 'grid.createCharacterDialog.nameExistsError': return 'Đã tồn tại nhân vật với tên này.';
+			case 'grid.createCharacterDialog.nameCheckFailedError': return 'Không thể kiểm tra tên. Kiểm tra quyền truy cập thư mục và thử lại.';
+			case 'grid.createCharacterDialog.title': return 'Tạo nhân vật mới';
+			case 'grid.createCharacterDialog.nameLabel': return 'Tên nhân vật';
+			case 'grid.createCharacterDialog.createButton': return 'Tạo';
+			case 'grid.variantsSheet.title': return 'Biến thể';
+			case 'grid.groupAppBar.characters': return 'Nhân vật';
+			case 'grid.groupAppBar.newGroup': return 'Nhóm mới';
+			case 'grid.thumbnailBadges.recent': return 'GẦN ĐÂY';
+			case 'grid.thumbnailBadges.original': return 'GỐC';
+			case 'grid.thumbnailBadges.variant': return 'BIẾN THỂ';
+			case 'grid.actionMenu.editNotes': return 'Sửa ghi chú';
+			case 'grid.actionMenu.dismissRecent': return 'Bỏ đánh dấu gần đây';
+			case 'grid.actionMenu.exportPngV2V3': return 'Xuất ra PNG (V2/V3)';
+			case 'grid.actionMenu.exportJsonV3': return 'Xuất ra JSON (V3)';
+			case 'grid.actionMenu.exportJsonV2': return 'Xuất ra JSON (V2)';
+			case 'grid.actionMenu.duplicate': return 'Nhân bản';
+			case 'grid.controllerMessages.duplicateFailed': return 'Không thể nhân bản nhân vật.';
+			case 'grid.controllerMessages.editVariantNotesTitle': return 'Sửa ghi chú biến thể';
+			case 'grid.controllerMessages.editVariantNotesHint': return 'Thêm ghi chú về biến thể này...';
+			case 'grid.controllerMessages.deleteCardTitle': return 'Xóa thẻ';
+			case 'grid.controllerMessages.deleteCardMessage': return 'Bạn có chắc muốn xóa thẻ này không?';
+			case 'grid.controllerMessages.deletePartialFailure': return 'Một số tệp không thể xóa. Kiểm tra nhật ký để biết chi tiết.';
+			case 'grid.tagWrap.tagCountLabel': return ({required Object tag, required Object count}) => '${tag} (${count})';
+			case 'grid.gridItem.editTooltip': return 'Chỉnh sửa nhân vật';
+			case 'grid.gridItem.favoriteToggleTooltip': return 'Bật/tắt yêu thích';
+			case 'group.groupGridController.renameGroupTitle': return 'Đổi tên nhóm';
+			case 'group.groupGridController.groupNameHint': return 'Tên nhóm';
+			case 'group.groupGridController.deleteGroupTitle': return 'Xóa nhóm';
+			case 'group.groupGridController.deleteGroupMessage': return ({required Object name}) => 'Bạn có chắc muốn xóa "${name}" không? Không thể hoàn tác.';
+			case 'group.groupChatPage.defaultGroupName': return 'Trò chuyện nhóm';
+			case 'group.groupChatPage.failedToLoadMessage': return ({required Object error}) => 'Không thể tải trò chuyện nhóm:\n${error}';
+			case 'group.groupChatPage.nextTurnTooltip': return 'Lượt tiếp theo';
+			case 'group.groupChatPage.stopAutoChatTooltip': return 'Dừng trò chuyện tự động';
+			case 'group.groupChatPage.startAutoChatTooltip': return 'Bắt đầu trò chuyện tự động';
+			case 'group.groupChatPage.stopGenerationTooltip': return 'Dừng tạo sinh';
+			case 'group.groupChatPage.noCharactersYetMessage': return 'Nhóm này chưa có nhân vật nào.';
+			case 'group.groupChatPage.addCharacterButton': return 'Thêm nhân vật';
+			case 'group.groupChatPage.pickCharacterMessage': return 'Chọn một nhân vật từ danh sách bên trái.';
+			case 'group.groupChatPage.noAvailableSpeakersSnackbar': return 'Không có ai để nói — tất cả đều đang bị tắt tiếng.';
+			case 'group.groupGridPage.failedToLoadMessage': return ({required Object error}) => 'Không thể tải nhóm:\n${error}';
+			case 'group.groupGridPage.unknownErrorFallback': return 'lỗi không xác định';
+			case 'group.groupGridPage.noGroupsYetMessage': return 'Chưa có nhóm nào — nhấn + để tạo.';
+			case 'group.tileAutoChatDelay.title': return 'Độ trễ trò chuyện tự động';
+			case 'group.tileAutoChatDelay.secondsAbbrev': return ({required Object seconds}) => '${seconds}s';
+			case 'group.tileActivationStrategy.title': return 'Chọn người nói';
+			case 'group.tileActivationStrategy.naturalOption': return 'Tự nhiên';
+			case 'group.tileActivationStrategy.roundRobinOption': return 'Xoay vòng';
+			case 'group.tileActivationStrategy.randomOption': return 'Ngẫu nhiên';
+			case 'group.tileActivationStrategy.changeSelectionTooltip': return 'Thay đổi cách chọn người nói';
+			case 'group.groupChatPageEndDrawer.allowWebFetchTitle': return 'Cho phép truy xuất web';
+			case 'group.groupChatPageEndDrawer.allowWebFetchSubtitle': return 'Đọc trang web công khai khi phù hợp';
+			case 'group.groupChatPageEndDrawer.reviewUrlTitle': return 'Xem lại URL trước khi truy xuất';
+			case 'group.groupChatPageEndDrawer.reviewUrlSubtitle': return 'Xác nhận từng lần truy xuất';
+			case 'group.groupChatPageEndDrawer.suggestNpcNamesTitle': return 'Gợi ý tên NPC';
+			case 'group.groupChatPageEndDrawer.suggestNpcNamesSubtitle': return 'Chọn tên từ cơ sở dữ liệu tuyển chọn';
+			case 'group.groupChatPageEndDrawer.unrestrictedImagesTitle': return 'Hình ảnh không giới hạn';
+			case 'group.groupChatPageEndDrawer.allowNsfwImagePromptsSubtitle': return 'Cho phép prompt hình ảnh NSFW';
+			case 'group.groupChatPageEndDrawer.characterCanSendSelfiesTitle': return 'Nhân vật có thể gửi ảnh selfie';
+			case 'group.groupChatPageEndDrawer.attachSelfieWhenNaturalSubtitle': return 'Đính kèm ảnh selfie khi tự nhiên';
+			case 'group.groupChatPageEndDrawer.reviewImagePromptTitle': return 'Xem lại prompt hình ảnh';
+			case 'group.groupChatPageEndDrawer.editBeforeGeneratingSubtitle': return 'Chỉnh sửa trước khi tạo';
+			case 'group.groupChatPageEndDrawer.reviewToolImagePromptsTitle': return 'Xem lại prompt hình ảnh từ công cụ';
+			case 'group.groupChatPageEndDrawer.editToolTriggeredPromptsSubtitle': return 'Chỉnh sửa prompt do công cụ kích hoạt';
+			case 'group.groupChatPageEndDrawer.allowSelfieCaptionsTitle': return 'Cho phép chú thích selfie';
+			case 'group.groupChatPageEndDrawer.captionRenderedOnImageSubtitle': return 'Chú thích được vẽ lên hình ảnh';
+			case 'group.groupChatPageEndDrawer.groupOverridesTitle': return 'Ghi đè của nhóm';
+			case 'group.groupChatPageEndDrawer.groupOverridesSubtitle': return 'Kịch bản chung, prompt chính, hội thoại mẫu';
+			case 'group.groupChatPageEndDrawer.chatSessionSubtitle': return 'Phiên trò chuyện';
+			case 'group.groupChatPageEndDrawer.allChatsLabel': return 'Tất cả cuộc trò chuyện';
+			case 'group.groupChatPageEndDrawer.showImageLabel': return 'Hiện hình ảnh';
+			case 'group.groupChatPageEndDrawer.groupSectionHeader': return 'Nhóm';
+			case 'group.groupChatPageEndDrawer.chatSectionHeader': return 'Trò chuyện';
+			case 'group.groupChatPageEndDrawer.chatThemeSectionHeader': return 'Chủ đề trò chuyện';
+			case 'group.groupChatPageEndDrawer.unrestrictedVideosTitle': return 'Video không giới hạn';
+			case 'group.groupChatPageEndDrawer.allowNsfwVideoPromptsSubtitle': return 'Cho phép prompt video NSFW';
+			case 'group.groupChatPageEndDrawer.characterCanSendVideosTitle': return 'Nhân vật có thể gửi video';
+			case 'group.groupChatPageEndDrawer.attachShortVideoWhenNaturalSubtitle': return 'Đính kèm video ngắn khi tự nhiên';
+			case 'group.groupChatPageEndDrawer.reviewVideoPromptTitle': return 'Xem lại prompt video';
+			case 'group.groupCharacterPicker.addButton': return 'Thêm';
+			case 'group.groupCharacterPicker.addWithCountButton': return ({required Object count}) => 'Thêm ${count}';
+			case 'group.groupCharacterPicker.favoritesTooltip': return 'Yêu thích';
+			case 'group.groupCharacterPicker.noMatchMessage': return ({required Object query}) => 'Không có nhân vật nào khớp với "${query}"';
+			case 'group.groupCharacterPicker.noFavoritesMessage': return 'Không có nhân vật yêu thích nào';
+			case 'group.groupCharacterPicker.allAddedMessage': return 'Đã thêm tất cả nhân vật';
+			case 'group.groupCharacterTile.speakTooltip': return 'Cho nhân vật này nói';
+			case 'group.groupCharacterTile.removeFromChatTitle': return 'Xóa khỏi cuộc trò chuyện';
+			case 'group.dialogCreateGroup.title': return 'Nhóm mới';
+			case 'group.dialogCreateGroup.nameLabel': return 'Tên';
+			case 'group.dialogCreateGroup.nameHint': return 'ví dụ: Bob & Alice';
+			case 'group.dialogGroupOverrides.explanationMessage': return 'Chỉ áp dụng cho cuộc trò chuyện này. Mọi thành viên nhóm dùng các giá trị này thay cho những gì thẻ nhân vật của họ định nghĩa. Để trống để dùng lại giá trị trên thẻ.';
+			case 'group.dialogGroupOverrides.scenarioHint': return 'Bối cảnh chung cho nhóm (ví dụ: "Trong một quán cà phê ở Paris")';
+			case 'group.dialogGroupOverrides.mainPromptLabel': return 'Prompt chính';
+			case 'group.dialogGroupOverrides.mainPromptHint': return 'Prompt hệ thống áp dụng trong mỗi lượt';
+			case 'group.dialogGroupOverrides.exampleDialogueLabel': return 'Hội thoại mẫu';
+			case 'group.dialogGroupOverrides.exampleDialogueHint': return 'Tin nhắn mẫu chung về giọng điệu / định dạng';
+			case 'group.groupCharacterPanel.addCharacterButton': return 'Thêm nhân vật';
+			case 'group.groupCharacterPanel.noCharactersYetMessage': return 'Chưa có nhân vật nào.\nNhấn + để thêm.';
+			case 'group.dialogSelectGroup.deleteGroupTitle': return 'Xóa nhóm?';
+			case 'group.dialogSelectGroup.deleteGroupMessage': return ({required Object name}) => '"${name}" và toàn bộ phiên trò chuyện của nhóm sẽ bị xóa vĩnh viễn.';
+			case 'group.dialogSelectGroup.title': return 'Nhóm';
+			case 'group.dialogSelectGroup.noGroupsYetMessage': return 'Chưa có nhóm nào. Nhấn "Nhóm mới" để tạo.';
+			case 'group.dialogSelectGroup.memberCountLabel': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: '${n} thành viên',
+			);
+			case 'group.groupGridItem.overflowCountBadge': return ({required Object count}) => '+${count}';
+			case 'group.groupGridItem.noMembersYetMessage': return 'Chưa có thành viên';
+			case 'group.groupFileService.defaultGroupName': return 'Nhóm';
+			case 'llmApp.mediaField.imageModel': return 'Mô hình hình ảnh';
+			case 'llmApp.mediaField.imageAspectRatio': return 'Tỷ lệ khung hình ảnh';
+			case 'llmApp.mediaField.imageNsfwAllowed': return 'Cho phép hình ảnh NSFW';
+			case 'llmApp.mediaField.imageToolSelfieAllowed': return 'Có thể gửi ảnh selfie';
+			case 'llmApp.mediaField.imageToolSelfieCaptionsAllowed': return 'Cho phép chú thích selfie';
+			case 'llmApp.mediaField.imagePromptPrefix': return 'Phong cách hình ảnh';
+			case 'llmApp.mediaField.videoModel': return 'Mô hình video';
+			case 'llmApp.mediaField.videoResolution': return 'Độ phân giải video';
+			case 'llmApp.mediaField.videoAspectRatio': return 'Tỷ lệ khung hình video';
+			case 'llmApp.mediaField.videoDuration': return 'Thời lượng video';
+			case 'llmApp.mediaField.videoNsfwAllowed': return 'Cho phép video NSFW';
+			case 'llmApp.mediaField.videoToolSendAllowed': return 'Có thể gửi video';
+			case 'llmApp.mediaField.videoPromptPrefix': return 'Phong cách video';
+			case 'llmApp.mediaField.ttsModel': return 'Mô hình TTS';
+			case 'llmApp.mediaField.ttsVoice': return 'Giọng TTS';
+			case 'llmApp.mediaField.ttsLanguage': return 'Ngôn ngữ TTS';
+			case 'llmApp.mediaField.webToolFetchAllowed': return 'Cho phép truy xuất web';
+			case 'llmApp.mediaField.nameToolSuggestAllowed': return 'Có thể gợi ý tên NPC';
+			case 'llmApp.mediaSection.image': return 'Hình ảnh';
+			case 'llmApp.mediaSection.video': return 'Video';
+			case 'llmApp.mediaSection.tts': return 'TTS';
+			case 'llmApp.mediaSection.web': return 'Web';
+			case 'llmApp.mediaSection.names': return 'Tên';
+			case 'llmApp.tristate.on': return 'Bật';
+			case 'llmApp.tristate.off': return 'Tắt';
+			case 'llmApp.tristate.inherit': return 'Kế thừa';
+			case 'llmApp.mediaCellMenu.change': return 'Thay đổi…';
+			case 'llmApp.mediaCellMenu.clear': return 'Xóa';
+			case 'llmApp.mediaHeader.appDefault': return 'Mặc định ứng dụng';
+			case 'llmApp.mediaHeader.character': return 'Nhân vật';
+			case 'llmApp.mediaHeader.currentChat': return 'Cuộc trò chuyện hiện tại';
+			case 'llmApp.mediaHeader.previousLayerTooltip': return 'Lớp trước';
+			case 'llmApp.mediaHeader.nextLayerTooltip': return 'Lớp sau';
+			case 'llmApp.presetRow.changeAppDefaultTitle': return 'Thay đổi mặc định của ứng dụng?';
+			case 'llmApp.presetRow.changeAppDefaultMessage': return 'Điều này ảnh hưởng tới mọi cuộc trò chuyện. Tiếp tục?';
+			case 'llmApp.presetRow.continueButton': return 'Tiếp tục';
+			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Chọn mô hình ${domain}';
+			case 'llmApp.mediaCell.notApplicable': return 'Không áp dụng';
+			case 'onboarding.finishFailedSnackbar': return 'Thiết lập thất bại. Xem nhật ký để biết chi tiết.';
+			case 'onboarding.appBarTitle': return 'Thiết lập nhanh';
+			case 'onboarding.languageTooltip': return 'Ngôn ngữ';
+			case 'onboarding.webWarning': return 'Bản web thử nghiệm — bộ nhớ trình duyệt có thể bị đặt lại giữa các bản cập nhật. Dùng bản desktop hoặc Android để lưu dữ liệu lâu dài.';
+			case 'onboarding.finishButton': return 'Hoàn tất thiết lập';
+			case 'onboarding.nextButton': return 'Tiếp theo';
+			case 'onboarding.backButton': return 'Quay lại';
+			case 'onboarding.storageStep.title': return 'Lưu trữ nhân vật';
+			case 'onboarding.storageStep.subtitle': return 'Chúng tôi nên lưu thẻ nhân vật của bạn ở đâu?';
+			case 'onboarding.storageStep.description': return 'Mặc định lưu trong thư mục ứng dụng. Trỏ tới một thư mục PNG sẵn có để nhập.';
+			case 'onboarding.storageStep.startFresh': return 'Bắt đầu mới';
+			case 'onboarding.storageStep.haveCards': return 'Tôi đã có thẻ';
+			case 'onboarding.storageStep.importLaterHint': return 'Nhập PNG sau qua Tệp → Nhập.';
+			case 'onboarding.storageStep.selectedPath': return ({required Object path}) => 'Đã chọn: ${path}';
+			case 'onboarding.storageStep.selectedDefaultFolder': return 'Đã chọn: Thư mục mặc định của ứng dụng';
+			case 'onboarding.storageStep.noFolderSelected': return 'Chưa chọn thư mục nào.';
+			case 'onboarding.setupStep.title': return 'AI & Persona';
+			case 'onboarding.aiSection.heading': return 'Kết nối AI';
+			case 'onboarding.aiSection.optionalHint': return 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).';
+			case 'onboarding.aiSection.apiKeyLabel': return 'Khóa API';
+			case 'onboarding.aiSection.apiKeyHint': return 'Dán khóa của bạn (hoặc bỏ qua)';
+			case 'onboarding.aiSection.supportedProviders': return 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.';
+			case 'onboarding.aiSection.unknownModel': return '(mô hình không xác định)';
+			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
+			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
+			case 'onboarding.aiSection.kvSuffix': return ({required Object kv}) => ' · KV ${kv}';
+			case 'onboarding.aiSection.changeButton': return 'Thay đổi';
+			case 'onboarding.aiStatus.connecting': return 'Đang kết nối…';
+			case 'onboarding.aiStatus.connected': return ({required Object provider}) => 'Đã kết nối với ${provider}. Đã chọn mô hình trò chuyện mặc định.';
+			case 'onboarding.aiStatus.detected': return ({required Object provider}) => 'Đã nhận diện: ${provider}';
+			case 'onboarding.aiStatus.unrecognizedKey': return 'Định dạng khóa không nhận diện được.';
+			case 'onboarding.personaSection.heading': return 'Persona của bạn';
+			case 'onboarding.personaSection.hint': return 'Tên của bạn trong các cuộc trò chuyện. Thêm chi tiết persona trong Cài đặt.';
+			case 'onboarding.personaSection.nameLabel': return 'Tên của bạn';
+			case 'onboarding.disclaimer.prefix': return 'Tôi đã đọc và đồng ý với ';
+			case 'onboarding.disclaimer.linkText': return 'Tuyên bố miễn trừ trách nhiệm';
+			case 'onboarding.fetchError.noModels': return 'Không nhận được mô hình nào. Kiểm tra khóa API của bạn.';
+			case 'onboarding.fetchError.connectionFailed': return 'Không thể kết nối. Kiểm tra kết nối mạng và khóa API của bạn.';
+			case 'routing.chatCharacter.navigationError': return ({required Object name}) => 'Lỗi điều hướng tới trò chuyện. Nhân vật: ${name}';
+			case 'routing.editCharacter.navigationError': return ({required Object name}) => 'Lỗi điều hướng tới chỉnh sửa. Nhân vật: ${name}';
+			case 'routing.editPreset.navigationError': return ({required Object presetId}) => 'Lỗi điều hướng tới chỉnh sửa preset: ${presetId}';
+			case 'settings.gearLanguage': return 'Ngôn ngữ';
+			case 'settings.languageSystemDefault': return 'Mặc định hệ thống';
+			case 'settings.gearMenu.settingsTooltip': return 'Cài đặt';
+			case 'settings.gearMenu.mediaDefaultsApp': return 'Ứng dụng';
+			case 'settings.gearMenu.mediaDefaultsCharacter': return 'Nhân vật';
+			case 'settings.gearMenu.mediaDefaultsChat': return 'Trò chuyện';
+			case 'settings.gearMenu.appSettings': return 'Cài đặt ứng dụng';
+			case 'settings.gearMenu.logs': return 'Nhật ký';
+			case 'settings.mediaDefaultsDrawerEntry.configurationHeader': return 'Cấu hình';
+			case 'settings.endDrawer.switchPersonaTooltip': return 'Chuyển persona';
+			case 'settings.loadingStatus.restoringProviders': return 'Đang khôi phục nhà cung cấp…';
+			case 'settings.loadingStatus.fetchingModelsProgress': return ({required Object completed, required Object total}) => 'Đang tải mô hình (${completed}/${total})…';
+			case 'settings.general.characterFolderTitle': return 'Thư mục nhân vật';
+			case 'settings.general.characterFolderNotSet': return 'Chưa thiết lập. Bắt buộc để ứng dụng hoạt động.';
+			case 'settings.general.browseButton': return 'Duyệt...';
+			case 'settings.general.taxonomyTagsTitle': return 'Tag phân loại';
+			case 'settings.general.appThemeTitle': return 'Chủ đề ứng dụng';
+			case 'settings.general.themeSystem': return 'Hệ thống';
+			case 'settings.general.themeLight': return 'Sáng';
+			case 'settings.general.themeDark': return 'Tối';
+			case 'settings.general.themeStyleTitle': return 'Kiểu chủ đề';
+			case 'settings.general.themeStyleDefault': return 'Mặc định';
+			case 'settings.general.themeStyleNeon': return 'Neon';
+			case 'settings.general.storyMemoryTitle': return 'Ký ức câu chuyện';
+			case 'settings.general.storyMemorySubtitle': return 'Ghi nhớ các khoảnh khắc trước đó và đưa những phần liên quan trở lại trong các cuộc trò chuyện dài.';
+			case 'settings.general.narrativeEngineTitle': return 'Công cụ tường thuật';
+			case 'settings.general.narrativeEngineSubtitle': return 'Theo dõi bối cảnh và nhân vật, đẩy câu chuyện tiến triển khi bạn trò chuyện.';
+			case 'settings.general.promptBreakdownTitle': return 'Hiện phân tích prompt';
+			case 'settings.general.promptBreakdownSubtitle': return 'Hiển thị một thanh dưới mỗi phản hồi phân tích cách prompt lấp đầy cửa sổ ngữ cảnh của mô hình.';
+			case 'settings.general.checkUpdatesTitle': return 'Kiểm tra cập nhật';
+			case 'settings.general.checkUpdatesSubtitle': return 'Kiểm tra xem có phiên bản mới hơn của ứng dụng không.';
+			case 'settings.general.websiteTitle': return 'Trang web';
+			case 'settings.general.websiteSubtitle': return 'Truy cập trang web chính thức để xem cập nhật và thông tin.';
+			case 'settings.general.disclaimerTitle': return 'Miễn trừ trách nhiệm & Điều khoản';
+			case 'settings.general.disclaimerSubtitle': return 'Đọc tuyên bố miễn trừ trách nhiệm và điều khoản sử dụng của ứng dụng.';
+			case 'settings.general.versionLabel': return ({required Object version, required Object buildNumber}) => 'Phiên bản ${version}+${buildNumber}';
+			case 'settings.aiSettingsTab.aiProviders': return 'Nhà cung cấp AI';
+			case 'settings.aiSettingsTab.mediaDefaults': return 'Mặc định media';
+			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
+			case 'settings.aiTab.newProviderButton': return 'Nhà cung cấp mới';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Nhà cung cấp đám mây';
+			case 'settings.aiTab.localProviderMenuItem': return 'Nhà cung cấp cục bộ';
+			case 'settings.aiTab.localGgufMenuItem': return 'GGUF cục bộ';
+			case 'settings.aiTab.noProvidersConfigured': return 'Chưa cấu hình nhà cung cấp API nào.';
+			case 'settings.aiTab.addingProviderOverlay': return 'Đang thêm nhà cung cấp…';
+			case 'settings.aiTab.neverRefreshed': return 'Chưa làm mới lần nào';
+			case 'settings.aiTab.lastRefreshedLabel': return ({required Object time}) => 'Làm mới lần cuối: ${time}';
+			case 'settings.aiTab.refreshModelsButton': return 'Làm mới mô hình';
+			case 'settings.aiTab.refreshNowMenuItem': return 'Làm mới ngay';
+			case 'settings.aiTab.autoNeverMenuItem': return 'Tự động: Không bao giờ';
+			case 'settings.aiTab.autoDailyMenuItem': return 'Tự động: Hằng ngày khi khởi động';
+			case 'settings.aiTab.defaultModelsHeader': return 'Mô hình mặc định cho cuộc trò chuyện mới';
+			case 'settings.aiTab.editModelTooltip': return 'Chỉnh sửa mô hình';
+			case 'settings.aiTab.noModelsPlaceholder': return 'Không có mô hình';
+			case 'settings.aiTab.noCompatibleModelsPlaceholder': return 'Không có mô hình tương thích';
+			case 'settings.aiTab.tapToChoosePlaceholder': return 'Nhấn để chọn';
+			case 'settings.aiTab.modelUsedForPrefix': return 'Mô hình dùng để tạo ';
+			case 'settings.aiTab.modelUsedForSuffix': return '';
+			case 'settings.aiTab.chooseModelTitle': return 'Chọn một mô hình';
+			case 'settings.aiTab.temperatureLabel': return ({required Object value}) => 'Temp ${value}';
+			case 'settings.aiTab.setDefaultButton': return 'Đặt làm mặc định';
+			case 'settings.aiTab.addModelButton': return 'Thêm mô hình';
+			case 'settings.aiTab.editProviderMenuItem': return 'Chỉnh sửa nhà cung cấp';
+			case 'settings.aiTab.moreTooltip': return 'Thêm';
+			case 'settings.aiTab.noModelsForProvider': return 'Chưa cấu hình mô hình nào cho nhà cung cấp này.';
+			case 'settings.aiTab.setDefaultConfirmTitle': return ({required Object provider}) => 'Đặt ${provider} làm mặc định cho mọi tính năng AI?';
+			case 'settings.aiTab.setDefaultConfirmMessage': return 'Bạn có thể tự chọn mô hình cho các tính năng không được hỗ trợ\n(như hình ảnh hoặc video) từ nhà cung cấp khác.';
+			case 'settings.aiTab.localGgufSubtitle': return ({required Object loaded, required Object native, required Object kv}) => '${loaded} ctx (tối đa ${native}) · KV ${kv}';
+			case 'settings.aiTab.testTtsTooltip': return 'Thử TTS';
+			case 'settings.aiTab.ttsTestPhrase': return 'Xin chào, đây là câu thử giọng đọc.';
+			case 'settings.aiTab.ttsFailedError': return 'TTS thất bại.';
+			case 'settings.aiTab.testVideoTooltip': return 'Thử tạo video';
+			case 'settings.aiTab.videoGeneratedWebFallback': return 'Đã tạo video thành công (không xem trước được trên web).';
+			case 'settings.aiTab.videoFailedError': return 'Video thất bại.';
+			case 'settings.aiTab.videoLoadFailedMessage': return 'Không thể tải video đã tạo.';
+			case 'settings.aiTab.presetPickerSearchHint': return 'Tìm theo nhà cung cấp, mô hình hoặc preset…';
+			case 'settings.aiTab.tempParamAbbrev': return ({required Object value}) => 'temp ${value}';
+			case 'settings.aiTab.reasoningParamLabel': return ({required Object level}) => 'suy luận ${level}';
+			case 'settings.presetConfig.testMessageButton': return 'Gửi tin nhắn thử';
+			case 'settings.presetConfig.testSuccessLabel': return 'Thành công';
+			case 'settings.presetConfig.testFailedLabel': return 'Thất bại';
+			case 'settings.presetConfig.deleteModelTitle': return 'Xóa mô hình?';
+			case 'settings.presetConfig.deleteModelMessage': return ({required Object name}) => 'Xóa vĩnh viễn "${name}"? Không thể hoàn tác.';
+			case 'settings.presetConfig.editModelHeader': return 'Chỉnh sửa mô hình';
+			case 'settings.presetConfig.addModelHeader': return 'Thêm mô hình';
+			case 'settings.presetConfig.resetToDefaultsTooltip': return 'Đặt lại về mặc định';
+			case 'settings.presetConfig.modelNameLabel': return 'Tên mô hình';
+			case 'settings.presetConfig.clearTooltip': return 'Xóa';
+			case 'settings.presetConfig.nameRequiredError': return 'Bắt buộc nhập tên';
+			case 'settings.presetConfig.modelLabel': return 'Mô hình';
+			case 'settings.presetConfig.selectModelHint': return 'Chọn một mô hình';
+			case 'settings.presetConfig.modelRequiredError': return 'Bắt buộc chọn mô hình';
+			case 'settings.presetConfig.filteredDomainsNote': return ({required Object domains}) => 'Mô hình được lọc theo các miền đang dùng: ${domains}';
+			case 'settings.presetConfig.requiredValidator': return 'Bắt buộc';
+			case 'settings.presetConfig.invalidValidator': return 'Không hợp lệ';
+			case 'settings.presetConfig.testResponseTitle': return 'Phản hồi';
+			case 'settings.providerConfig.noModelsError': return 'Không nhận được mô hình nào. Kiểm tra khóa API của bạn.';
+			case 'settings.providerConfig.connectionFailedError': return 'Không thể kết nối. Kiểm tra kết nối mạng và khóa API của bạn.';
+			case 'settings.providerConfig.deleteProviderTitle': return 'Xóa nhà cung cấp?';
+			case 'settings.providerConfig.deleteProviderMessage': return ({required Object provider}) => 'Xóa vĩnh viễn nhà cung cấp ${provider} và toàn bộ preset của nó? Không thể hoàn tác.';
+			case 'settings.providerConfig.lockHint': return ({required Object roles}) => 'Không thể xóa: đang được dùng bởi ${roles}.';
+			case 'settings.providerConfig.editProviderHeader': return 'Chỉnh sửa nhà cung cấp';
+			case 'settings.providerConfig.addProviderHeader': return 'Thêm nhà cung cấp';
+			case 'settings.providerConfig.apiKeyLabel': return 'Khóa API';
+			case 'settings.providerConfig.apiKeyHintRotate': return 'Dán khóa mới để thay khóa';
+			case 'settings.providerConfig.apiKeyHintNew': return 'Dán khóa của bạn — nhà cung cấp được tự nhận diện';
+			case 'settings.providerConfig.supportedProvidersNote': return 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT.';
+			case 'settings.providerConfig.keyMismatchError': return ({required Object owner, required Object profile}) => 'Khóa này thuộc về ${owner}, nhưng hồ sơ này là ${profile}. Hãy xóa hồ sơ này và thêm hồ sơ mới.';
+			case 'settings.providerConfig.anotherProviderFallback': return 'nhà cung cấp khác';
+			case 'settings.providerConfig.connectingStatus': return 'Đang kết nối…';
+			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Đã kết nối với ${provider}. Các preset mặc định sẽ được tạo.';
+			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Đã nhận diện: ${provider}';
+			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Định dạng khóa không nhận diện được.';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Không thể kết nối tới ${url}. Hãy chắc chắn máy chủ cục bộ của bạn (KoboldCpp / Ollama / LM Studio / llama.cpp) đang chạy.';
+			case 'settings.localProviderConfig.noModelsError': return 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trong máy chủ cục bộ trước.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Xóa vĩnh viễn nhà cung cấp cục bộ này và toàn bộ preset của nó? Không thể hoàn tác.';
+			case 'settings.localProviderConfig.editHeader': return 'Chỉnh sửa nhà cung cấp cục bộ';
+			case 'settings.localProviderConfig.addHeader': return 'Thêm nhà cung cấp cục bộ';
+			case 'settings.localProviderConfig.serverUrlLabel': return 'URL máy chủ';
+			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Đã khóa. Xóa nhà cung cấp này và thêm mới để trỏ tới máy chủ khác.';
+			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'Khóa API (không bắt buộc)';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Để trống — hầu hết máy chủ cục bộ không cần';
+			case 'settings.localProviderConfig.connectFetchButton': return 'Kết nối & tải mô hình';
+			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
+				other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
+			);
+			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'Tôi có tệp GGUF cục bộ';
+			case 'settings.localGguf.pickFileLabel': return 'Chọn tệp GGUF...';
+			case 'settings.localGguf.loadModelLabel': return 'Nạp mô hình';
+			case 'settings.localGguf.nativeContextLabel': return 'Ngữ cảnh gốc';
+			case 'settings.localGguf.freeVramLabel': return 'VRAM trống';
+			case 'settings.localGguf.contextSizeLabel': return 'Kích thước ngữ cảnh';
+			case 'settings.localGguf.kvCacheLabel': return 'KV cache';
+			case 'settings.localGguf.kvCacheAutoLabel': return 'Tự động';
+			case 'settings.localGguf.modelTooLargeForVramMessage': return ({required Object neededMb, required Object freeMb}) => 'Mô hình này cần khoảng ${neededMb}MB bộ nhớ GPU nhưng chỉ còn trống ${freeMb}MB. Đóng các ứng dụng GPU khác hoặc chọn mô hình nhỏ hơn / lượng tử hóa mạnh hơn.';
+			case 'settings.localGguf.modelBarelyFitsMessage': return ({required Object minimumContext}) => 'Mô hình này chỉ vừa khít ngay cả với KV cache q4_0 ở ${minimumContext} token. Cân nhắc dùng tệp mô hình lượng tử hóa mạnh hơn.';
+			case 'settings.localGguf.readingMetadata': return 'Đang đọc metadata mô hình…';
+			case 'settings.localGguf.architectureLabel': return 'Kiến trúc';
+			case 'settings.localGguf.autoKvHint': return ({required Object picked, required Object max}) => 'tự động: ${picked} (tối đa ${max})';
+			case 'settings.localGguf.maxKvHint': return ({required Object max, required Object picked}) => 'tối đa ${max} ở KV ${picked}';
+			case 'settings.localGguf.ctxExceedsMaxError': return ({required Object max, required Object picked}) => 'vượt ${max} ở KV ${picked} — nạp có thể hết bộ nhớ';
+			case 'settings.localGguf.vramNotDetected': return 'không phát hiện được';
+			case 'settings.localGguf.readMetadataFailedError': return ({required Object error}) => 'Không thể đọc metadata GGUF: ${error}';
+			case 'settings.localGguf.loadModelFailedError': return ({required Object error}) => 'Không thể nạp mô hình: ${error}';
+			case 'settings.personaDialog.newTitle': return 'Persona mới';
+			case 'settings.personaDialog.editTitle': return 'Chỉnh sửa persona';
+			case 'settings.personaDialog.nameLabel': return 'Tên';
+			case 'settings.personaDialog.nameRequiredError': return 'Bắt buộc nhập tên';
+			case 'settings.personaDialog.descriptionLabel': return 'Mô tả';
+			case 'settings.personaDialog.descriptionHint': return 'Ngoại hình, tính cách, xuất thân, v.v.';
+			case 'settings.personasTab.cannotDeleteDefaultTooltip': return 'Không thể xóa persona mặc định';
+			case 'settings.personasTab.deleteTooltip': return 'Xóa persona';
+			case 'settings.personasTab.cannotDeleteDefaultSnackbar': return 'Không thể xóa persona mặc định.';
+			case 'settings.personasTab.deleteConfirmTitle': return 'Xóa persona';
+			case 'settings.personasTab.deleteConfirmMessage': return ({required Object name}) => 'Bạn có chắc muốn xóa "${name}" không?';
+			case 'settings.updateCheck.upToDateTitle': return 'Đã là mới nhất';
+			case 'settings.updateCheck.upToDateMessage': return ({required Object version}) => 'Bạn đang dùng phiên bản hiện hành (${version}).';
+			case 'settings.updateCheck.notApplicableTitle': return 'Kiểm tra cập nhật';
+			case 'settings.updateCheck.notApplicableMessage': return 'Không áp dụng kiểm tra phiên bản trên Web.';
+			case 'settings.updateCheck.errorTitle': return 'Lỗi';
+			case 'settings.updateCheck.serverErrorMessage': return 'Không thể kiểm tra cập nhật. Lỗi máy chủ.';
+			case 'settings.updateCheck.connectionErrorMessage': return 'Không thể kiểm tra cập nhật. Kiểm tra kết nối của bạn.';
+			case 'workspace.workspaceEndDrawerImage.imageStyleTitle': return 'Phong cách hình ảnh';
+			case 'workspace.workspaceEndDrawerImage.noneValue': return 'Không có';
+			case 'workspace.workspaceEndDrawerVideo.videoStyleTitle': return 'Phong cách video';
+			case 'workspace.workspaceEndDrawerDisplay.sectionHeader': return 'Hiển thị';
+			case 'workspace.workspaceEndDrawerDisplay.showCharacterImageTitle': return 'Hiện ảnh nhân vật';
+			case 'workspace.workspaceEndDrawerDisplay.wideScreenOnlySubtitle': return 'Chỉ với trình chỉnh sửa màn hình rộng';
+			case 'workspace.workspaceEndDrawerAi.sectionHeader': return 'AI';
+			case 'workspace.workspaceEndDrawerEditing.sectionHeader': return 'Chỉnh sửa';
+			case 'workspace.workspaceEndDrawerExport.sectionHeader': return 'Xuất';
+			case 'workspace.workspaceEndDrawerExport.exportPngTitle': return 'Xuất ra PNG (V2/V3)';
+			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Xuất ra JSON (V3)';
+			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Xuất ra JSON (V2)';
+			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Đặt lại hình ảnh';
+			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Chỉnh sửa thẻ bởi trợ lý';
+			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Yêu thích';
+			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES Engine';
+			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Ảnh chụp gỡ lỗi';
+			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Nhân vật';
+			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Chưa chọn phong cách nào';
+			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Đang xây dựng lại chỉ mục trò chuyện...';
+			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Chọn một cuộc trò chuyện để bắt đầu nhắn tin';
+			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Không thể tải trợ lý.';
+			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
+			case 'workspace.workspacePage.setUpProviderButton': return 'Thiết lập nhà cung cấp AI';
+			case 'workspace.workspacePage.startNewChatButton': return 'Cuộc trò chuyện mới';
 			default: return null;
 		}
 	}
