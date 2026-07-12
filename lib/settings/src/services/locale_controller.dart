@@ -24,6 +24,15 @@ class LocaleController extends ChangeNotifier {
   /// Applies [tag] as the UI language (null = follow the device locale),
   /// switches the live slang locale, persists it, and notifies listeners so
   /// the language modal re-marks its checkmark.
+  ///
+  /// The persistence write is guarded on [AppSettings.onboardingComplete]:
+  /// [SettingsService.saveSettings] writes the recovery mirror with a
+  /// `characterPath!` null-assertion, and `characterPath` is only assigned when
+  /// onboarding finishes. Picking a language from the onboarding language dialog
+  /// would otherwise crash. During onboarding the in-memory [tag] is still set,
+  /// so `OnboardingController.finishOnboarding`'s own save persists it. Accepted
+  /// trade-off: a language picked but abandoned before finishing onboarding is
+  /// lost.
   void setLocale(String? tag) {
     if (tag == null) {
       LocaleSettings.useDeviceLocale();
@@ -32,7 +41,9 @@ class LocaleController extends ChangeNotifier {
     }
     final settingsService = SettingsService();
     settingsService.settings.localeTag = tag;
-    unawaited(settingsService.saveSettings());
+    if (settingsService.settings.onboardingComplete) {
+      unawaited(settingsService.saveSettings());
+    }
     notifyListeners();
   }
 

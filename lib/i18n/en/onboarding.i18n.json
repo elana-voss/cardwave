@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "Setup failed. See logs for details.",
   "appBarTitle": "Quick Setup",
+  "languageTooltip": "Language",
   "webWarning": "Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.",
   "finishButton": "Finish Setup",
   "nextButton": "Next",

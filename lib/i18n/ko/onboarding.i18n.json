@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "설정에 실패했어요. 자세한 내용은 로그를 확인하세요.",
   "appBarTitle": "빠른 설정",
+  "languageTooltip": "언어",
   "webWarning": "실험적인 웹 빌드예요 — 업데이트 사이에 브라우저 저장소가 초기화될 수 있어요. 데이터를 유지하려면 데스크톱이나 Android를 사용하세요.",
   "finishButton": "설정 완료",
   "nextButton": "다음",

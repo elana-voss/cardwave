@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "設定失敗。詳情請查看記錄。",
   "appBarTitle": "快速設定",
+  "languageTooltip": "語言",
   "webWarning": "實驗性網頁版——瀏覽器儲存空間可能在更新之間重設。若需要持久保存資料，請使用桌面版或 Android。",
   "finishButton": "完成設定",
   "nextButton": "下一步",

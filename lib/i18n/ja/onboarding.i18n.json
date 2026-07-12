@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "セットアップに失敗しました。詳細はログを確認してください。",
   "appBarTitle": "クイックセットアップ",
+  "languageTooltip": "言語",
   "webWarning": "実験的なウェブビルドです — ブラウザのストレージは更新のたびにリセットされる場合があります。データを永続的に保存するにはデスクトップまたはAndroidをご利用ください。",
   "finishButton": "セットアップを完了",
   "nextButton": "次へ",

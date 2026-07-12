@@ -86,6 +86,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
       appBar: AppBar(
         title: Text(t.onboarding.appBarTitle),
         centerTitle: true,
+        actions: [
+          IconButton(
+            key: const Key('onboarding-language'),
+            icon: const Icon(Icons.language),
+            tooltip: t.onboarding.languageTooltip,
+            onPressed: () =>
+                unawaited(NavigationService().showLanguageDialog()),
+          ),
+        ],
       ),
       body: FocusTraversalGroup(
         policy: WidgetOrderTraversalPolicy(),

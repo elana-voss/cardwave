@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "La configuración falló. Consulta los registros para más detalles.",
   "appBarTitle": "Configuración rápida",
+  "languageTooltip": "Idioma",
   "webWarning": "Compilación web experimental — el almacenamiento del navegador puede reiniciarse entre actualizaciones. Usa el escritorio o Android para conservar los datos.",
   "finishButton": "Finalizar configuración",
   "nextButton": "Siguiente",

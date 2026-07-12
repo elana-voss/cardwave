@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "设置失败。详情请查看日志。",
   "appBarTitle": "快速设置",
+  "languageTooltip": "语言",
   "webWarning": "实验性网页版——浏览器存储可能在更新之间被重置。如需持久保存数据，请使用桌面版或 Android。",
   "finishButton": "完成设置",
   "nextButton": "下一步",

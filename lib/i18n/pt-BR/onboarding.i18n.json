@@ -1,6 +1,7 @@
 {
   "finishFailedSnackbar": "Falha na configuração. Veja os logs para detalhes.",
   "appBarTitle": "Configuração rápida",
+  "languageTooltip": "Idioma",
   "webWarning": "Build web experimental — o armazenamento do navegador pode ser redefinido entre atualizações. Use desktop ou Android para dados persistentes.",
   "finishButton": "Concluir configuração",
   "nextButton": "Avançar",

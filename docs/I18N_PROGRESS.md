@@ -19,10 +19,13 @@ as the work it describes. Conversation context is disposable; this file is not.
   Context-based `t` migration (132 widget files) makes locale changes repaint
   without reload; 6 count strings pluralized ×9 locales. Live switch web-verified
   in en→ru→ja without reload; ru plurals spot-checked. `feat/i18n` ready to merge.
-- [ ] Step 8 — Language picker on the onboarding page (**Opus**) — added 2026-07-12
+- [x] Step 8 — Language picker on the onboarding page (**Opus**) — done 2026-07-12
   (plan §8). Globe icon in the onboarding AppBar → existing `showLanguageDialog`;
-  requires the §8.1 persistence guard in `LocaleController.setLocale` first
-  (saving settings pre-onboarding crashes on `characterPath!`).
+  §8.1 persistence guard added to `LocaleController.setLocale` (save only when
+  `onboardingComplete`, so the pre-onboarding `characterPath!` crash can't fire).
+  Fresh-storage web run verified: pick ru → onboarding repaints live + no crash,
+  System default → no crash, finish onboarding → grid in ru, reload → still ru.
+  `feat/i18n` ready to merge.
 
 ## Step 2 checklist (Opus)
 - [x] 2.1 branch `feat/i18n` + deps + slang.yaml + locale skeleton files + first generate
@@ -375,18 +378,32 @@ Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
   → n=1 `Вариант: 1` (one), n=3 `Варианта: 3` (few), n=5 `Вариантов: 5` (many);
   `messageCount` → n=1 `Сообщение: 1` (one). All pass.
 
-## Step 8 checklist (Opus) — plan §8
-- [ ] 8.1 persistence guard in `LocaleController.setLocale` (`saveSettings()` only when
+## Step 8 checklist (Opus) — plan §8 — done 2026-07-12
+- [x] 8.1 persistence guard in `LocaleController.setLocale` (`saveSettings()` only when
   `settings.onboardingComplete`; in-memory `localeTag` still set so `finishOnboarding`'s
-  save persists it)
-- [ ] 8.2 globe `IconButton` (`Key('onboarding-language')`) in the onboarding AppBar →
-  `NavigationService().showLanguageDialog()`
-- [ ] 8.3 `onboarding.languageTooltip` key ×9 locales (values copied from each locale's
-  `settings.gearLanguage`) + `dart run slang`
-- [ ] 8.4 DONE criteria: analyze/test/slang-analyze clean; fresh-storage web run — dialog
-  opens, ru switch live + no crash, System default no crash, finish → grid in ru,
-  reload → still ru; console clean; single commit `i18n(onboarding): language picker
-  in onboarding`
+  save persists it). Doc comment updated to explain the guard.
+- [x] 8.2 globe `IconButton` (`Key('onboarding-language')`, `Icons.language`,
+  `tooltip: t.onboarding.languageTooltip`) added to the onboarding AppBar `actions:` →
+  `unawaited(NavigationService().showLanguageDialog())`. No other onboarding code changed;
+  the existing `final t = Translations.of(context)` in `build` already registers the
+  locale dependency, so the whole page repaints live on switch.
+- [x] 8.3 `onboarding.languageTooltip` key ×9 locales (values copied verbatim from each
+  locale's `settings.gearLanguage`: en Language / ru Язык / pt-BR + es-419 Idioma /
+  ja 言語 / zh-Hans 语言 / zh-Hant 語言 / ko 언어 / hi भाषा) + `dart run slang`.
+- [x] 8.4 DONE criteria met. `flutter analyze` = only the 36 pre-existing qcheck
+  include-path warnings; `flutter test` 68/68; `dart run slang analyze` 0 missing /
+  0 unused. **Fresh-storage web run** (`flutter run -d web-server` :8080, isolated
+  incognito context so onboarding shows, chrome-devtools MCP, a11y placeholder enabled):
+  (1) globe visible in the AppBar, tap → language dialog opens (10 entries);
+  (2) pick **Русский** → onboarding repaints in Russian immediately (title, sections,
+  buttons, AND the globe tooltip → «Язык»), **no crash** (exercises the §8.1 guard);
+  (3) re-open → **System default** → back to English device locale, no crash;
+  (4) pick Русский again, tick disclaimer, **Завершить настройку** → lands on the grid
+  in Russian («Создать»/«Импорт»/«Группы»/«Поиск…»); **reload → still Russian** (proves
+  `finishOnboarding` persisted the tag). Console clean during the switches — only INFO
+  logs + benign Flutter-web DOM notices; the one post-reload `dwds/src/injected/client.js`
+  deserialize error is a `flutter run` debug-harness reconnect artifact, not app code.
+  Single commit `i18n(onboarding): language picker in onboarding`.
 
 ## Open questions (append; do not delete resolved ones — mark them)
 - **[grid] "Cardwave" wordmark** (`lib/grid/src/pages/widgets/app_bar_grid.dart`,

@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 9
-/// Strings: 8170 (907 per locale)
+/// Strings: 8179 (908 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -408,6 +408,7 @@ class _TranslationsOnboardingEn {
 	// Translations
 	String get finishFailedSnackbar => 'Setup failed. See logs for details.';
 	String get appBarTitle => 'Quick Setup';
+	String get languageTooltip => 'Language';
 	String get webWarning => 'Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.';
 	String get finishButton => 'Finish Setup';
 	String get nextButton => 'Next';
@@ -3226,6 +3227,7 @@ class _TranslationsOnboardingEs419 extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => 'La configuración falló. Consulta los registros para más detalles.';
 	@override String get appBarTitle => 'Configuración rápida';
+	@override String get languageTooltip => 'Idioma';
 	@override String get webWarning => 'Compilación web experimental — el almacenamiento del navegador puede reiniciarse entre actualizaciones. Usa el escritorio o Android para conservar los datos.';
 	@override String get finishButton => 'Finalizar configuración';
 	@override String get nextButton => 'Siguiente';
@@ -6044,6 +6046,7 @@ class _TranslationsOnboardingHi extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => 'सेटअप विफल हुआ। विवरण के लिए लॉग देखें।';
 	@override String get appBarTitle => 'त्वरित सेटअप';
+	@override String get languageTooltip => 'भाषा';
 	@override String get webWarning => 'प्रायोगिक वेब बिल्ड — अपडेट के बीच ब्राउज़र स्टोरेज रीसेट हो सकता है। स्थायी डेटा के लिए डेस्कटॉप या Android का उपयोग करें।';
 	@override String get finishButton => 'सेटअप पूर्ण करें';
 	@override String get nextButton => 'अगला';
@@ -8862,6 +8865,7 @@ class _TranslationsOnboardingJa extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => 'セットアップに失敗しました。詳細はログを確認してください。';
 	@override String get appBarTitle => 'クイックセットアップ';
+	@override String get languageTooltip => '言語';
 	@override String get webWarning => '実験的なウェブビルドです — ブラウザのストレージは更新のたびにリセットされる場合があります。データを永続的に保存するにはデスクトップまたはAndroidをご利用ください。';
 	@override String get finishButton => 'セットアップを完了';
 	@override String get nextButton => '次へ';
@@ -11670,6 +11674,7 @@ class _TranslationsOnboardingKo extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => '설정에 실패했어요. 자세한 내용은 로그를 확인하세요.';
 	@override String get appBarTitle => '빠른 설정';
+	@override String get languageTooltip => '언어';
 	@override String get webWarning => '실험적인 웹 빌드예요 — 업데이트 사이에 브라우저 저장소가 초기화될 수 있어요. 데이터를 유지하려면 데스크톱이나 Android를 사용하세요.';
 	@override String get finishButton => '설정 완료';
 	@override String get nextButton => '다음';
@@ -14478,6 +14483,7 @@ class _TranslationsOnboardingPtBr extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => 'Falha na configuração. Veja os logs para detalhes.';
 	@override String get appBarTitle => 'Configuração rápida';
+	@override String get languageTooltip => 'Idioma';
 	@override String get webWarning => 'Build web experimental — o armazenamento do navegador pode ser redefinido entre atualizações. Use desktop ou Android para dados persistentes.';
 	@override String get finishButton => 'Concluir configuração';
 	@override String get nextButton => 'Avançar';
@@ -17296,6 +17302,7 @@ class _TranslationsOnboardingRu extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => 'Не удалось завершить настройку. Подробности в логах.';
 	@override String get appBarTitle => 'Быстрая настройка';
+	@override String get languageTooltip => 'Язык';
 	@override String get webWarning => 'Экспериментальная веб-сборка — хранилище браузера может сбрасываться между обновлениями. Для постоянного хранения данных используйте десктоп или Android.';
 	@override String get finishButton => 'Завершить настройку';
 	@override String get nextButton => 'Далее';
@@ -20134,6 +20141,7 @@ class _TranslationsOnboardingZhHans extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => '设置失败。详情请查看日志。';
 	@override String get appBarTitle => '快速设置';
+	@override String get languageTooltip => '语言';
 	@override String get webWarning => '实验性网页版——浏览器存储可能在更新之间被重置。如需持久保存数据，请使用桌面版或 Android。';
 	@override String get finishButton => '完成设置';
 	@override String get nextButton => '下一步';
@@ -22942,6 +22950,7 @@ class _TranslationsOnboardingZhHant extends _TranslationsOnboardingEn {
 	// Translations
 	@override String get finishFailedSnackbar => '設定失敗。詳情請查看記錄。';
 	@override String get appBarTitle => '快速設定';
+	@override String get languageTooltip => '語言';
 	@override String get webWarning => '實驗性網頁版——瀏覽器儲存空間可能在更新之間重設。若需要持久保存資料，請使用桌面版或 Android。';
 	@override String get finishButton => '完成設定';
 	@override String get nextButton => '下一步';
@@ -26182,6 +26191,7 @@ extension on Translations {
 			case 'llmApp.mediaCell.notApplicable': return 'Not applicable';
 			case 'onboarding.finishFailedSnackbar': return 'Setup failed. See logs for details.';
 			case 'onboarding.appBarTitle': return 'Quick Setup';
+			case 'onboarding.languageTooltip': return 'Language';
 			case 'onboarding.webWarning': return 'Experimental web build — browser storage may reset between updates. Use desktop or Android for persistent data.';
 			case 'onboarding.finishButton': return 'Finish Setup';
 			case 'onboarding.nextButton': return 'Next';
@@ -27120,6 +27130,7 @@ extension on _TranslationsEs419 {
 			case 'llmApp.mediaCell.notApplicable': return 'No aplicable';
 			case 'onboarding.finishFailedSnackbar': return 'La configuración falló. Consulta los registros para más detalles.';
 			case 'onboarding.appBarTitle': return 'Configuración rápida';
+			case 'onboarding.languageTooltip': return 'Idioma';
 			case 'onboarding.webWarning': return 'Compilación web experimental — el almacenamiento del navegador puede reiniciarse entre actualizaciones. Usa el escritorio o Android para conservar los datos.';
 			case 'onboarding.finishButton': return 'Finalizar configuración';
 			case 'onboarding.nextButton': return 'Siguiente';
@@ -28058,6 +28069,7 @@ extension on _TranslationsHi {
 			case 'llmApp.mediaCell.notApplicable': return 'लागू नहीं';
 			case 'onboarding.finishFailedSnackbar': return 'सेटअप विफल हुआ। विवरण के लिए लॉग देखें।';
 			case 'onboarding.appBarTitle': return 'त्वरित सेटअप';
+			case 'onboarding.languageTooltip': return 'भाषा';
 			case 'onboarding.webWarning': return 'प्रायोगिक वेब बिल्ड — अपडेट के बीच ब्राउज़र स्टोरेज रीसेट हो सकता है। स्थायी डेटा के लिए डेस्कटॉप या Android का उपयोग करें।';
 			case 'onboarding.finishButton': return 'सेटअप पूर्ण करें';
 			case 'onboarding.nextButton': return 'अगला';
@@ -28987,6 +28999,7 @@ extension on _TranslationsJa {
 			case 'llmApp.mediaCell.notApplicable': return '該当なし';
 			case 'onboarding.finishFailedSnackbar': return 'セットアップに失敗しました。詳細はログを確認してください。';
 			case 'onboarding.appBarTitle': return 'クイックセットアップ';
+			case 'onboarding.languageTooltip': return '言語';
 			case 'onboarding.webWarning': return '実験的なウェブビルドです — ブラウザのストレージは更新のたびにリセットされる場合があります。データを永続的に保存するにはデスクトップまたはAndroidをご利用ください。';
 			case 'onboarding.finishButton': return 'セットアップを完了';
 			case 'onboarding.nextButton': return '次へ';
@@ -29915,6 +29928,7 @@ extension on _TranslationsKo {
 			case 'llmApp.mediaCell.notApplicable': return '해당 없음';
 			case 'onboarding.finishFailedSnackbar': return '설정에 실패했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'onboarding.appBarTitle': return '빠른 설정';
+			case 'onboarding.languageTooltip': return '언어';
 			case 'onboarding.webWarning': return '실험적인 웹 빌드예요 — 업데이트 사이에 브라우저 저장소가 초기화될 수 있어요. 데이터를 유지하려면 데스크톱이나 Android를 사용하세요.';
 			case 'onboarding.finishButton': return '설정 완료';
 			case 'onboarding.nextButton': return '다음';
@@ -30852,6 +30866,7 @@ extension on _TranslationsPtBr {
 			case 'llmApp.mediaCell.notApplicable': return 'Não aplicável';
 			case 'onboarding.finishFailedSnackbar': return 'Falha na configuração. Veja os logs para detalhes.';
 			case 'onboarding.appBarTitle': return 'Configuração rápida';
+			case 'onboarding.languageTooltip': return 'Idioma';
 			case 'onboarding.webWarning': return 'Build web experimental — o armazenamento do navegador pode ser redefinido entre atualizações. Use desktop ou Android para dados persistentes.';
 			case 'onboarding.finishButton': return 'Concluir configuração';
 			case 'onboarding.nextButton': return 'Avançar';
@@ -31808,6 +31823,7 @@ extension on _TranslationsRu {
 			case 'llmApp.mediaCell.notApplicable': return 'Неприменимо';
 			case 'onboarding.finishFailedSnackbar': return 'Не удалось завершить настройку. Подробности в логах.';
 			case 'onboarding.appBarTitle': return 'Быстрая настройка';
+			case 'onboarding.languageTooltip': return 'Язык';
 			case 'onboarding.webWarning': return 'Экспериментальная веб-сборка — хранилище браузера может сбрасываться между обновлениями. Для постоянного хранения данных используйте десктоп или Android.';
 			case 'onboarding.finishButton': return 'Завершить настройку';
 			case 'onboarding.nextButton': return 'Далее';
@@ -32739,6 +32755,7 @@ extension on _TranslationsZhHans {
 			case 'llmApp.mediaCell.notApplicable': return '不适用';
 			case 'onboarding.finishFailedSnackbar': return '设置失败。详情请查看日志。';
 			case 'onboarding.appBarTitle': return '快速设置';
+			case 'onboarding.languageTooltip': return '语言';
 			case 'onboarding.webWarning': return '实验性网页版——浏览器存储可能在更新之间被重置。如需持久保存数据，请使用桌面版或 Android。';
 			case 'onboarding.finishButton': return '完成设置';
 			case 'onboarding.nextButton': return '下一步';
@@ -33667,6 +33684,7 @@ extension on _TranslationsZhHant {
 			case 'llmApp.mediaCell.notApplicable': return '不適用';
 			case 'onboarding.finishFailedSnackbar': return '設定失敗。詳情請查看記錄。';
 			case 'onboarding.appBarTitle': return '快速設定';
+			case 'onboarding.languageTooltip': return '語言';
 			case 'onboarding.webWarning': return '實驗性網頁版——瀏覽器儲存空間可能在更新之間重設。若需要持久保存資料，請使用桌面版或 Android。';
 			case 'onboarding.finishButton': return '完成設定';
 			case 'onboarding.nextButton': return '下一步';
