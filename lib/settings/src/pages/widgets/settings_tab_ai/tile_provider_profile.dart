@@ -40,6 +40,7 @@ class _TileProviderProfileState extends State<TileProviderProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final presets = widget.profile.allModelPresets.toList();
     final theme = Theme.of(context);
     return Column(
@@ -221,6 +222,7 @@ class _PresetInventoryRowState extends State<_PresetInventoryRow> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final service = context.watch<SettingsService>();
     final settings = service.settings;
     final theme = Theme.of(context);

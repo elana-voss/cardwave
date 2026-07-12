@@ -111,6 +111,7 @@ class _DialogPresetConfigState extends State<DialogPresetConfig> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ChangeNotifierProvider<DialogPresetConfigController>.value(
       value: _controller!,
       child: Consumer<DialogPresetConfigController>(
@@ -216,6 +217,7 @@ class _DialogHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Row(
       children: [
         Text(

@@ -125,6 +125,7 @@ class _ImageThumbnailState extends State<ImageThumbnail> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return FutureBuilder<Uint8List?>(
       future: _thumbnailFuture,
       builder: (context, snapshot) {

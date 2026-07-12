@@ -6,6 +6,7 @@ class _WorkspaceEndDrawerAi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

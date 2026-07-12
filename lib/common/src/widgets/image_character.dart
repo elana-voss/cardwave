@@ -48,6 +48,7 @@ class _ImageCharacterState extends State<ImageCharacter> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return FutureBuilder<Uint8List>(
       future: _imageFuture,
       builder: (context, snapshot) {

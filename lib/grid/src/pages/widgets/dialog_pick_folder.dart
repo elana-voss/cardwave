@@ -86,6 +86,7 @@ class _DialogPickFolderState extends State<DialogPickFolder> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final isCleared = widget.selectedItem == widget.allFoldersKey;
     return AppDialog(
       isScrollable: false,

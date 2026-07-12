@@ -241,6 +241,7 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     // While a fetch is in flight, block accidental dismissal (back
     // button via PopScope) and disable Delete (destructive — the user
     // should explicitly cancel the current action first). Cancel stays
@@ -357,6 +358,7 @@ class _LocalProviderStatusLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (isFetching) {
       return Row(
         spacing: 8,

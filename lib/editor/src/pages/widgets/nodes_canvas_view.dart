@@ -297,6 +297,7 @@ class _NodesCanvasViewState extends State<NodesCanvasView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Stack(
       children: [
         FlNodeEditorWidget(

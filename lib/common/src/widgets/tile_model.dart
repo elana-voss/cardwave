@@ -22,6 +22,7 @@ class TileModel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     final muted = theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7);
 

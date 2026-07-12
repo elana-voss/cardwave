@@ -14,6 +14,7 @@ class TileTrailingParagraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return DrawerSwitchTile(
       title: Text(t.chat.tileTrailingParagraph.label),
       value: chatSession?.removeTrailingSentences ?? false,

@@ -22,6 +22,7 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final date = DateTime.fromMillisecondsSinceEpoch(chat.lastActive);
     final dateStr = DateFormat.yMMMd(
       LocaleSettings.currentLocale.languageTag,

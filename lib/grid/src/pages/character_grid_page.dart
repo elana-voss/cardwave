@@ -39,6 +39,7 @@ class _CharacterGridPageState extends State<CharacterGridPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ChangeNotifierProvider(
       create: (context) => FilterController(
         characterService: context.read<CharacterService>(),

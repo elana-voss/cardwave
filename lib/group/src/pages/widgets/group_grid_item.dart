@@ -228,6 +228,7 @@ class _OverflowCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       alignment: Alignment.center,
@@ -330,6 +331,7 @@ class _GroupGridActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return PopupMenuButton<_GroupGridItemActionEnum>(
       padding: EdgeInsets.zero,
       onSelected: (value) {
@@ -373,6 +375,7 @@ class _GroupGridItemDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final memberNames = resolvedMembers.map((m) => m.card.name).join(', ');
     return Expanded(
       child: Text(
@@ -396,6 +399,7 @@ class _GroupGridItemFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final memberCount = group.group.memberAppCardIds.length;
     return Text.rich(
       TextSpan(

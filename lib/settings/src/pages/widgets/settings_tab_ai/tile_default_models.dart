@@ -21,6 +21,7 @@ class TileDefaultModels extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final providerLabels = activeProviders
         .map((e) => LlmProvider.of(e).label)
         .join(' · ');

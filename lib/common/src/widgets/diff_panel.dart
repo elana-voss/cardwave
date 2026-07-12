@@ -18,6 +18,7 @@ class DiffPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final tokenText = tokenCount != null
         ? t.common.diffPanel.tokenSuffix(count: tokenCount!)
         : '';

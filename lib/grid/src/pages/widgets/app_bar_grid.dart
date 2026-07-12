@@ -13,6 +13,7 @@ class AppBarGrid extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final service = context.watch<CharacterService>();
     final isNeon = context.select<ThemeNotifier, bool>(
       (t) => t.themeStyle == ThemeStyleEnum.neon,

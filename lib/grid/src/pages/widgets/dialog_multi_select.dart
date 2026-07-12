@@ -100,6 +100,7 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return AppDialog(
       isScrollable: false,

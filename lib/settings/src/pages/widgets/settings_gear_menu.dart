@@ -37,6 +37,7 @@ class SettingsGearMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return PopupMenuButton<_GearActionEnum>(
       key: const Key('settings-gear-menu'),
       icon: const Icon(Icons.settings),

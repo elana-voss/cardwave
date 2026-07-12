@@ -63,6 +63,7 @@ class _ChatInputMediaMenuState extends State<ChatInputMediaMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final hasImage = widget.onGenerateImage != null;
     final hasVideo = widget.onGenerateVideo != null;
     if (!hasImage && !hasVideo) return const SizedBox.shrink();

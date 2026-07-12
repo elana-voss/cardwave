@@ -28,6 +28,7 @@ class _DialogMessageEditState extends State<DialogMessageEdit> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       actions: [
         FilledButton(

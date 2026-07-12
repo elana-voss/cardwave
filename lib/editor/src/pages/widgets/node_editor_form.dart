@@ -176,6 +176,7 @@ class _NodeEditorFormState extends State<NodeEditorForm> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     // Returns the form body only (no Scaffold/AppBar) so it can be hosted
     // either full-page or inside an AppDialog. Hosts supply their own
     // chrome.
@@ -477,6 +478,7 @@ class _BasicFieldsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
@@ -491,8 +493,8 @@ class _BasicFieldsSection extends StatelessWidget {
                 label: t.editor.nodeEditorForm.typeLabel,
                 value: node.type,
                 items: [
-                  for (final t in NodeTypeEnum.values)
-                    DropdownMenuItem(value: t, child: Text(t.name)),
+                  for (final type in NodeTypeEnum.values)
+                    DropdownMenuItem(value: type, child: Text(type.name)),
                 ],
                 onChanged: onTypeChanged,
               ),
@@ -570,6 +572,7 @@ class _TriggerProbRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -615,6 +618,7 @@ class _CountdownRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     // Two-row layout. Phones are too narrow to fit
     // `[label] [field] [Set to never] [helper text]` side-by-side
@@ -705,6 +709,7 @@ class _EffectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -810,6 +815,7 @@ class _DeltaMapEditor<E extends Enum> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final current = binding.current;
     final remaining =
         allValues.where((v) => !current.containsKey(v)).toList();
@@ -925,6 +931,7 @@ class _DeltaRowState<E extends Enum> extends State<_DeltaRow<E>> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
@@ -1013,6 +1020,7 @@ class _KnowledgeWritesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final records = binding.current;
     return ExpansionTile(
       title: Row(
@@ -1105,6 +1113,7 @@ class _KnowledgeRowState extends State<_KnowledgeRow> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
@@ -1203,6 +1212,7 @@ class _FlagSetSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final keys = binding.flags.keys.toList();
     return ExpansionTile(
       title: Row(
@@ -1291,6 +1301,7 @@ class _FlagRowState extends State<_FlagRow> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -1371,6 +1382,7 @@ class _SceneAndFlowSectionState extends State<_SceneAndFlowSection> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ExpansionTile(
       title: Row(
         children: [
@@ -1466,6 +1478,7 @@ class _SpawnsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     // Nodes that can still be linked: every node except this one and
     // those already linked. A node may not spawn itself.
     final linkable = allNodes
@@ -1541,6 +1554,7 @@ class _SpawnRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -1638,6 +1652,7 @@ class _PredicateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

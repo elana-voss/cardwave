@@ -89,6 +89,7 @@ class _VideoPlayerInlineState extends State<VideoPlayerInline> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (kIsWeb) {
       return Padding(
         padding: const EdgeInsets.all(8),

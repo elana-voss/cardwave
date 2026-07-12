@@ -18,6 +18,7 @@ class TagWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Wrap(
       spacing: 8,
       runSpacing: 8,

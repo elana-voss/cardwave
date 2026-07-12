@@ -81,6 +81,7 @@ class _DialogCreateCharacterState extends State<DialogCreateCharacter> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       builder: (context, isMobile) {
         return Column(

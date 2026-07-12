@@ -103,6 +103,7 @@ class EditorGroupGreetingsState extends State<EditorGroupGreetings> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       children: [
         Padding(

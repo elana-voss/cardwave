@@ -49,6 +49,7 @@ class _DialogFindReplaceState extends State<DialogFindReplace> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       builder: (context, isMobile) => Center(
         child: Column(

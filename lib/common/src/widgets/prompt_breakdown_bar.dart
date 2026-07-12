@@ -75,6 +75,7 @@ class PromptBreakdownBar extends StatelessWidget {
   }
 
   TextSpan _legend(BuildContext context) {
+    final t = Translations.of(context);
     final lines = <TextSpan>[
       for (final row in breakdown.displayRows)
         TextSpan(

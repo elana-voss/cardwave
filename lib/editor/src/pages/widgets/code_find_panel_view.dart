@@ -68,6 +68,7 @@ class _FindRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final cs = Theme.of(context).colorScheme;
     final result = value.result == null
         ? t.editor.codeFindPanel.noneResult
@@ -145,6 +146,7 @@ class _ReplaceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Row(
       children: [
         SizedBox(

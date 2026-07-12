@@ -18,6 +18,7 @@ class _WorkspaceEndDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     // Read (not watch) as references — the drawer body uses these inside an
     // in-route `ListenableBuilder` (a SettingsService notify out here
     // doesn't reach the pushed drawer route; see the comment in

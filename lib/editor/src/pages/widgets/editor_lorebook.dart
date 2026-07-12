@@ -125,6 +125,7 @@ class LorebookEditorWidgetState extends State<LorebookEditorWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final lorebook = widget.characterFile?.card.lorebook;
     final entries = lorebook?.entries;
     final theme = Theme.of(context);

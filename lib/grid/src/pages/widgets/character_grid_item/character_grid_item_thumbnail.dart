@@ -91,6 +91,7 @@ class _RecentOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Positioned(
       top: _overlayMargin,
       right: _overlayMargin,
@@ -122,6 +123,7 @@ class _VariantOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final isOriginal = variantStatus == VariantStatusEnum.original;
     return Positioned(
       bottom: _variantBadgeBottomMargin,

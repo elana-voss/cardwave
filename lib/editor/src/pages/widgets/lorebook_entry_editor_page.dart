@@ -247,6 +247,7 @@ class _LorebookEntryEditorPageState extends State<LorebookEntryEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(t.editor.lorebookEntryEditorPage.editEntryTitle),
@@ -353,6 +354,7 @@ class _EntryKeywordsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
@@ -421,6 +423,7 @@ class _EntryContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return TextFieldCard.multiLine(
       controller: content,
       label: t.editor.lorebookEntryEditorPage.contentLabel,
@@ -442,6 +445,7 @@ class _EntryRecursionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Wrap(
       spacing: 8,
       runSpacing: 4,
@@ -503,6 +507,7 @@ class _EntryInclusionGroupRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 8,
@@ -551,6 +556,7 @@ class _EntryTimedEffectsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Wrap(
       spacing: 16,
       runSpacing: 16,
@@ -590,6 +596,7 @@ class _EntryFilterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 16,
@@ -614,6 +621,7 @@ class _EntryMatchingOptionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,

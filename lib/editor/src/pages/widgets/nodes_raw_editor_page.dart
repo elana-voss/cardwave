@@ -118,6 +118,7 @@ class _NodesRawEditorState extends State<NodesRawEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final cs = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
@@ -189,6 +190,7 @@ class _RawEditorProblemList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final cs = Theme.of(context).colorScheme;
     return ValueListenableBuilder<List<CardExtensionLoadError>>(
       valueListenable: problems,

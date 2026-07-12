@@ -6,6 +6,7 @@ class _WorkspaceEndDrawerDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final settings = settingsService.settings;
     return Column(
       mainAxisSize: MainAxisSize.min,

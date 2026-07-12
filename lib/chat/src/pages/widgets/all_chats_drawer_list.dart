@@ -76,6 +76,7 @@ class _AllChatsDrawerListState extends State<AllChatsDrawerList> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (_chatIndex == null) {
       return Center(
         child: Column(

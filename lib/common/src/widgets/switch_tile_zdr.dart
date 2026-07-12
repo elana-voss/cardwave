@@ -12,6 +12,7 @@ class SwitchTileZdr extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: SwitchListTile(

@@ -56,6 +56,7 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     final allCharacters = _allCharacters;
     if (allCharacters == null) {

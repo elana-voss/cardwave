@@ -234,6 +234,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final lockingRoles = _lockingRoleLabels;
     final isLocked = lockingRoles.isNotEmpty;
     final lockHint = isLocked
@@ -369,6 +370,7 @@ class _ProviderStatusLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     if (isEdit && editKeyMismatch) {
       final owner = keyOwner;

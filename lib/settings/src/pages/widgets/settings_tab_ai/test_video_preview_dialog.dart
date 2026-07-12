@@ -72,6 +72,7 @@ class _TestVideoPreviewDialogState extends State<TestVideoPreviewDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       builder: (_, _) {
         if (_initFailed) {

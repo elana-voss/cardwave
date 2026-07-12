@@ -122,6 +122,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (_loadError != null) {
       return Scaffold(
         appBar: AppBar(title: Text(t.group.groupChatPage.defaultGroupName)),
@@ -175,6 +176,7 @@ class _GroupChatAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     final hasCharacters = controller.characters.isNotEmpty;
     final isAuto = controller.isAutoChatActive;
@@ -253,6 +255,7 @@ class _NarrowChatBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     if (controller.characters.isEmpty) {
       return _GroupEmptyState(
@@ -288,6 +291,7 @@ class _WideLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     final isEmpty = controller.characters.isEmpty;
     // Guarded by `isEmpty` above.

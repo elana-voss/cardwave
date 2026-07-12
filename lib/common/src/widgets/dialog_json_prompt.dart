@@ -11,6 +11,7 @@ class DialogJsonPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     var content = rawContent;
     try {
       if (content.isNotEmpty) {

@@ -295,9 +295,46 @@ developer surfaces (`dialog_taxonomy_editor.dart`, `nodes_debug_*`,
 Wire it into cardwave's `analysis_options.yaml` include chain once implemented.
 
 ## Step 7 checklist (Opus) — plan §7
-- [ ] 7.1 context-`t` pass (`final t = Translations.of(context);` at the top of
+- [x] 7.1 context-`t` pass (`final t = Translations.of(context);` at the top of
   every widget build that renders translations) — commit
-  `i18n(l10n): live locale switching`
+  `i18n(l10n): live locale switching`. **132 lib widget files** transformed by a
+  brace-matched script (`scratchpad/ctx_t.py`): it inserts the local `t` at the
+  top of each `build(BuildContext context)` whose body reads `\bt\.`, skipping
+  builds with an existing `final/var/Translations t =` collision. The local `t`
+  shadows the global import, so no other line changed. Verified: `flutter
+  analyze` = only the 36 pre-existing qcheck warnings; `flutter test` 68/68.
+  Manual edge cases handled beyond the mechanical pass:
+  - **`main.dart` `_AppBootstrapperState.build` reverted to global `t`**: this
+    build *creates* the `TranslationProvider` (wraps `MyApp`), so no provider is
+    an ancestor yet — `Translations.of(context)` would throw on the error/loading
+    screens. Kept global `t` there (matches plan §2.4: those screens run before
+    settings load, content stays English). It was the only build above the
+    provider.
+  - **5 delegating builds** whose build body renders translations only via a
+    no-`context` helper or enum-`label` getter (so the mechanical pass, which
+    keys on `t.` in the build body, skipped them) — found via a class-level
+    analyzer (`scratchpad/analyze_classes.py`). Registered the dependency
+    explicitly: `prompt_breakdown_bar._legend(context)` got `final t =
+    Translations.of(context)` (it takes context + uses `t`); the other three
+    (`tile_assistant_card_edit_require_approval`, `chat_message_bubble.
+    _BubbleWaitingIndicator`, `media_settings_preset_row`) got a bare
+    `Translations.of(context);` subscribe-only line + comment. `_SaveStatusText`
+    in `dialog_taxonomy_editor` was a false positive (`t.hour/minute/second` is a
+    `DateTime` local named `t`, not translations) — left as-is.
+  - **`node_editor_form.dart`**: a `for (final t in NodeTypeEnum.values)` loop var
+    collided with the inserted build-top `t`; renamed the loop var to `type`.
+    (`app_bar_grid.dart`'s `(t) => t.themeStyle` is a closure param that legally
+    shadows — left as-is.)
+  - **2 widget tests** (`dialog_card_edit_approval_test`,
+    `card_edit_approval_resolution_test`) pump `DialogCardEditApproval`, which now
+    calls `Translations.of(context)` → needs an ancestor `TranslationProvider`.
+    Wrapped each pumped `MaterialApp` in `TranslationProvider` (plan §3.5 rule E,
+    fix (b)).
+  - Residual (known limitation): widgets whose build renders a translated enum
+    `.label` getter but have **no** direct `t.` in the class and weren't caught by
+    the class analyzer will still not repaint live (their `t` lives on the enum,
+    not the widget class). The verified hot surfaces (grid app bar, search hint,
+    gear menu) all read `t.` directly and are covered.
 - [ ] 7.2 pluralize the 6 count strings ×9 locales — commit
   `i18n(l10n): pluralize count strings`
 - [ ] 7.3 analyze/test/slang-analyze clean; live switch verified WITHOUT reload

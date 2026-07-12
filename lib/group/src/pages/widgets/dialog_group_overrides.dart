@@ -52,6 +52,7 @@ class _DialogGroupOverridesState extends State<DialogGroupOverrides> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       builder: (context, isMobile) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -110,6 +111,7 @@ class _OverrideField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return TextField(
       controller: controller,
       minLines: 3,

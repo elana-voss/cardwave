@@ -15,6 +15,7 @@ class TileRecalledMemory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final svc = context.watch<SettingsService>();
     if (!svc.settings.memoryEnabled) return const SizedBox.shrink();
     return DrawerSwitchTile(

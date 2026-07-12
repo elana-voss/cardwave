@@ -22,6 +22,7 @@ class AppBarEditor extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final workspace = context.watch<WorkspaceController>();
     final isSidePanelOn = workspace.editorSidePanel && !isSmallScreen;
 

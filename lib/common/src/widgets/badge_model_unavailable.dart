@@ -6,6 +6,7 @@ class BadgeModelUnavailable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Tooltip(
       message: t.common.modelUnavailableTooltip,
       child: const Icon(

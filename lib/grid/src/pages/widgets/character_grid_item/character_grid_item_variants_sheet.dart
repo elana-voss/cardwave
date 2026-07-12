@@ -60,6 +60,7 @@ class _CharacterGridItemVariantsSheetState
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final variants = _variants;
     if (variants == null) {
       return const SizedBox(

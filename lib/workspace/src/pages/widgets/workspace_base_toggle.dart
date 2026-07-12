@@ -19,6 +19,7 @@ class WorkspaceBaseToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return SegmentedButton<WorkspaceBaseEnum>(
       segments: [
         ButtonSegment(

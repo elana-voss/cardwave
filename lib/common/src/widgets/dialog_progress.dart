@@ -53,6 +53,7 @@ class _DialogProgressState extends State<DialogProgress> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return PopScope(
       canPop: false,
       child: AlertDialog(

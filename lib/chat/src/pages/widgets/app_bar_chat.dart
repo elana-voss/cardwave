@@ -21,6 +21,7 @@ class AppBarChat extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final workspace = context.watch<WorkspaceController>();
 
     return AppBar(

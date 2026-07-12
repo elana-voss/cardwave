@@ -21,6 +21,7 @@ class TileAssistantCardEditRequireApproval extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Translations.of(context); // subscribe to locale changes; _title reads t
     final svc = context.watch<SettingsService>();
     return DrawerSwitchTile(
       title: Text(_title),

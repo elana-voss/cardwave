@@ -29,6 +29,7 @@ class _DialogPromptBreakdownState extends State<DialogPromptBreakdown>
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final breakdown = widget.breakdown;
     final theme = Theme.of(context);
     final rows = breakdown.displayRows;
@@ -87,6 +88,7 @@ class _SummaryTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final realNote = breakdown.realInputTokens == null
         ? t.common.promptBreakdownDialog.promptTotalEstimated
         : t.common.promptBreakdownDialog.promptTotalProvider;
@@ -129,6 +131,7 @@ class _SummaryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final style = Theme.of(context).textTheme.labelSmall?.copyWith(
       color: Theme.of(context).colorScheme.onSurfaceVariant,
       letterSpacing: 0.8,
@@ -222,6 +225,7 @@ class _ContentTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (rows.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),

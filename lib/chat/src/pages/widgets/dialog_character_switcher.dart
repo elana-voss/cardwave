@@ -64,6 +64,7 @@ class _DialogCharacterSwitcherState extends State<DialogCharacterSwitcher> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       isScrollable: false,
       builder: (context, isMobile) {
@@ -159,6 +160,7 @@ class _CharacterSwitcherItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final lastActivity =
         (characterFile.appCardTimestampLastChatted ?? 0) >
             (characterFile.appCardTimestampLastSaved ?? 0)

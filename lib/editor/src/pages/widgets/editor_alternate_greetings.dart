@@ -116,6 +116,7 @@ class EditorAlternateGreetingsState extends State<EditorAlternateGreetings> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       children: [
         Padding(

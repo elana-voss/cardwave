@@ -69,6 +69,7 @@ class _StylePresetsDialogState extends State<StylePresetsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final combined = widget.characterFile.configMedia?.imagePromptPrefix ?? '';
     return AppDialog(
       builder: (ctx, isMobile) => Column(

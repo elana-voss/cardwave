@@ -399,6 +399,7 @@ class _EditorNodesState extends State<EditorNodes> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final remainingEmotions = EmotionEnum.values
         .where((e) => !_extension.emotionBaseline.containsKey(e))
         .toList();
@@ -600,6 +601,7 @@ class _LoadErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return Card(
       color: theme.colorScheme.errorContainer,
@@ -664,6 +666,7 @@ class _BaselineSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -22,6 +22,7 @@ class TileReasoningEffort extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (chatSession == null) return const SizedBox.shrink();
 
     final settingsService = context.watch<SettingsService>();

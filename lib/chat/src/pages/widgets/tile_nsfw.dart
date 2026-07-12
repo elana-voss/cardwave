@@ -14,6 +14,7 @@ class TileNsfw extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return DrawerSwitchTile(
       title: Text(t.chat.tileNsfw.label),
       value: chatSession?.isNsfw ?? false,

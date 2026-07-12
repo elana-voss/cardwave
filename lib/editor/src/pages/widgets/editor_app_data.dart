@@ -51,6 +51,7 @@ class EditorAppDataState extends State<EditorAppData> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       spacing: 8,
       children: [

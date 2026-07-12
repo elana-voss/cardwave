@@ -30,6 +30,7 @@ class TileDomainPreset extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final d = domain;
     final validPresets = _resolveValidPresets(context);
     final activePresetId = _resolveActivePresetId(context);

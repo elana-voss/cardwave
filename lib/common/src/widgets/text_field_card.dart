@@ -218,6 +218,7 @@ class TextFieldCardState extends State<TextFieldCard> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final isMultiLine = widget.maxLines == null;
     final textStyle = Theme.of(
       context,
@@ -348,6 +349,7 @@ class _ExpandedEditorDialogState extends State<_ExpandedEditorDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWideScreen =

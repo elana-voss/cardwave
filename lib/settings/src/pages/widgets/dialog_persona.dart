@@ -45,6 +45,7 @@ class _DialogPersonaState extends State<DialogPersona> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       actions: [
         FilledButton(

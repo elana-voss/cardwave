@@ -74,6 +74,7 @@ class _MissingProviderBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final hasProvider = context.select<SettingsService, bool>(
       (s) => s.settings.providerConfigs.isNotEmpty,
     );

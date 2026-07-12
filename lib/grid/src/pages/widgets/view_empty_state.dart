@@ -10,6 +10,7 @@ class ViewEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final filterController = context.watch<FilterController>();
 
     return Center(

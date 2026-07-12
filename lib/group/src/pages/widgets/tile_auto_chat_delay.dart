@@ -13,6 +13,7 @@ class TileAutoChatDelay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final seconds = value.inSeconds;
     return ListTile(
       leading: const Icon(Icons.timer_outlined),

@@ -10,6 +10,7 @@ class AppBarGroupGrid extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWideScreen =

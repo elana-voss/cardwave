@@ -11,6 +11,7 @@ class GroupCharacterPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     final characters = controller.characters;
 

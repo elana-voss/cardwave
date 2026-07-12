@@ -48,6 +48,7 @@ class _SettingsTabPersonasState extends State<SettingsTabPersonas> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final settings = context.watch<SettingsService>().settings;
 
     return Column(

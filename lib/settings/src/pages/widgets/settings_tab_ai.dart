@@ -340,6 +340,7 @@ class _RefreshMenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final lastLabel = lastRefreshMillis == null
         ? t.settings.aiTab.neverRefreshed
         : t.settings.aiTab.lastRefreshedLabel(

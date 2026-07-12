@@ -20,6 +20,7 @@ class TileActivationStrategy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ListTile(
       leading: const Icon(Icons.record_voice_over_outlined),
       title: Text(t.group.tileActivationStrategy.title),

@@ -72,6 +72,7 @@ class _DialogLocalGgufProviderConfigState
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ListenableBuilder(
       listenable: _controller!,
       builder: (context, _) {

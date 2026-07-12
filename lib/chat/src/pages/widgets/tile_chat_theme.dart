@@ -16,6 +16,7 @@ class TileChatTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ListTile(
       leading: const Icon(Icons.palette),
       title: Text(t.chat.tileChatTheme.label),

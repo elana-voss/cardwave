@@ -60,6 +60,7 @@ class _DialogPresetConfigParameterInputWidgetState extends State<DialogPresetCon
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final def = widget.parameter;
     final controller = widget.controller;
 

@@ -131,6 +131,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final messages = _controller.messages;
     final isLastMessageAI =
         messages.isNotEmpty &&

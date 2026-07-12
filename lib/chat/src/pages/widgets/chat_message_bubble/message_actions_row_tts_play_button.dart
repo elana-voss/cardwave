@@ -14,6 +14,7 @@ class _TtsPlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final tts = context.watch<TextToSpeechController>();
     // Resolve the speaking character for this message so per-character
     // media settings (voice, preset) flow into the resolver. In 1:1 chats

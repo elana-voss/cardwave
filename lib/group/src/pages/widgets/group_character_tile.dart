@@ -10,6 +10,7 @@ class GroupCharacterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     final isMuted = controller.isMuted(character.appCardId);
     final isLastSpeaker =

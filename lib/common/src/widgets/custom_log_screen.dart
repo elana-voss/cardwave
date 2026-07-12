@@ -38,6 +38,7 @@ class _CustomLogScreenState extends State<CustomLogScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

@@ -45,6 +45,7 @@ class MediaSettingsPresetRow extends StatefulWidget {
 class _MediaSettingsPresetRowState extends State<MediaSettingsPresetRow> {
   @override
   Widget build(BuildContext context) {
+    Translations.of(context); // subscribe to locale; field.label reads t
     final domain = MediaSettingsController.domainForPresetField(widget.field);
     final profiles = widget.settings.providerConfigs;
 

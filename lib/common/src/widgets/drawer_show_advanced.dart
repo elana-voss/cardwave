@@ -17,6 +17,7 @@ class DrawerShowAdvanced extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return ListTile(
       onTap: onToggle,

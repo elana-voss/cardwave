@@ -244,6 +244,7 @@ class _PanelNavigationTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     var selectedIndex = _panels.indexOf(selected);
     if (selectedIndex == -1) selectedIndex = 0;
 

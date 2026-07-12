@@ -38,6 +38,7 @@ class _ButtonTestVideoState extends State<ButtonTestVideo> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final options = widget.model.optionsVideo;
     if (options == null ||
         options.resolutions.isEmpty ||

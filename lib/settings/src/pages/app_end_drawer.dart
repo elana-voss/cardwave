@@ -63,6 +63,7 @@ class _MainDrawerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final settingsService = context.watch<SettingsService>();
     final settings = settingsService.settings;
     final activePersona = settings.activePersona;

@@ -267,6 +267,7 @@ class _PrimaryChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final chatTheme = context.select<SettingsService, ChatTheme>(
       (s) => s.settings.chatTheme,
     );
@@ -350,6 +351,7 @@ class _AssistantChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final chatTheme = context.select<SettingsService, ChatTheme>(
       (s) => s.settings.chatTheme,
     );

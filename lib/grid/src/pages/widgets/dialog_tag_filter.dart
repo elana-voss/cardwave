@@ -35,6 +35,7 @@ class _DialogTagFilterState extends State<DialogTagFilter> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final query = _searchController.text.toLowerCase();
     final filteredTags = widget.availableTags.entries.where((e) {
       return e.key.contains(query);

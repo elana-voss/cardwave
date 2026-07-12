@@ -52,6 +52,7 @@ class DialogLanguagePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = LocaleController();
     final currentTag = controller.localeTag;
 

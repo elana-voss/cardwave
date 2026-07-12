@@ -29,6 +29,7 @@ class TileImagePreset extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final session = chatSession;
     if (session == null) return const SizedBox.shrink();
 

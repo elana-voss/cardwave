@@ -65,6 +65,7 @@ class _DialogSelectGroupState extends State<DialogSelectGroup> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AppDialog(
       // Single `SizedBox(8)`; an adjacent `FutureBuilder` has 0 gap
       // that would become 8 if `spacing:` were applied.
@@ -152,6 +153,7 @@ class _GroupRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final memberCount = group.group.memberAppCardIds.length;
     return ListTile(
       leading: const Icon(Icons.group),

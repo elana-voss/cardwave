@@ -38,6 +38,7 @@ class MediaSettingsTristateRow extends StatefulWidget {
 class _MediaSettingsTristateRowState extends State<MediaSettingsTristateRow> {
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final charValue = MediaSettingsController.readCharBool(
       widget.character,
       widget.field,

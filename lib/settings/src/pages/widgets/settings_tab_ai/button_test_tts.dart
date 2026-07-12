@@ -28,6 +28,7 @@ class _ButtonTestTtsState extends State<ButtonTestTts> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final options = widget.model.optionsTts;
     if (options == null || options.voices.isEmpty) {
       return const SizedBox.shrink();

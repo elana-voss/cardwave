@@ -429,6 +429,7 @@ class _ReasoningRevealState extends State<_ReasoningReveal> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -487,6 +488,7 @@ class _BubbleWaitingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Translations.of(context); // subscribe to locale; label/_videoJobLabel read t
     if (message.swipes.isEmpty) return const SizedBox.shrink();
     final swipe = message.activeSwipe;
     if (!swipe.waitingFor.showsIndicator) return const SizedBox.shrink();

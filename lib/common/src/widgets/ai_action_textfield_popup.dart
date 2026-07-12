@@ -41,6 +41,7 @@ class AiActionTextfieldPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return PopupMenuButton<AiActionEnum>(
       icon: Icon(
         Icons.auto_awesome,

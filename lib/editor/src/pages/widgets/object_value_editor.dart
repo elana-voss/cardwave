@@ -100,6 +100,7 @@ class _ObjectValueEditorState extends State<ObjectValueEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 8,

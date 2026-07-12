@@ -86,6 +86,7 @@ class EditorPromptsState extends State<EditorPrompts> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       children: [
         TextFieldCard.multiLine(

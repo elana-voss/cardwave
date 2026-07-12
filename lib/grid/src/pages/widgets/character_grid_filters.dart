@@ -17,6 +17,7 @@ class _CharacterGridFiltersState extends State<CharacterGridFilters> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final controller = context.watch<FilterController>();
 
     final hasDirectories = controller.hasFolders;
@@ -330,6 +331,7 @@ class _IndexingProgressLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Selector<SearchService, ({int done, int total})>(
       selector: (_, service) => service.progress,
       builder: (context, progress, _) {

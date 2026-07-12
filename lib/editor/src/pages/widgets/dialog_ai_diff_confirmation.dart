@@ -42,6 +42,7 @@ class _DialogAiDiffConfirmationState extends State<DialogAiDiffConfirmation> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final dmp = DiffMatchPatch();
     final diffs = dmp.diff(widget.originalText, widget.suggestedText);
     dmp.diffCleanupSemantic(diffs);

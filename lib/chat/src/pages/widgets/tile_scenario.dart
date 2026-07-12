@@ -14,6 +14,7 @@ class TileScenario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return DrawerSwitchTile(
       title: Text(t.chat.tileScenario.label),
       value: chatSession?.isScenario ?? false,

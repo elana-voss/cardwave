@@ -82,6 +82,7 @@ class _DialogCardEditApprovalState extends State<DialogCardEditApproval> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     final modalities = widget.proposals.map((p) => p.modality).toSet();
 
@@ -178,6 +179,7 @@ class _ProposalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +240,7 @@ class _ProposalDiff extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final p = proposal;
     if (p is CardScalarSetProposal) {
       return _EditDiff(oldValue: p.oldValue, newValue: p.newValue);
@@ -302,6 +305,7 @@ class _EditDiffState extends State<_EditDiff> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 8,

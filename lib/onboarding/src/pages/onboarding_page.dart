@@ -81,6 +81,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(t.onboarding.appBarTitle),
@@ -298,6 +299,7 @@ class _LoadedRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final firstModel = profile.models.firstOrNull;
     final modelName = firstModel?.name ?? t.onboarding.aiSection.unknownModel;
     final ctx = profile.contextSize;
@@ -341,6 +343,7 @@ class _OnboardingSinglePageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       children: [
@@ -383,6 +386,7 @@ class _OnboardingStepperControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final isLastStep = currentStep == setupStepIndex;
     final blockContinue = isLastStep && !canFinish;
     return Padding(
@@ -422,6 +426,7 @@ class _OnboardingStorageSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final successColor = Theme.of(context).colorScheme.primary;
     if (selectedPath != null) {
       return Text(
@@ -463,6 +468,7 @@ class _OnboardingAiStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     if (isFetchingModels) {
       return Row(
         spacing: 8,
@@ -527,6 +533,7 @@ class _OnboardingPersonaSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -562,6 +569,7 @@ class _OnboardingDisclaimerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final linkColor = Theme.of(context).colorScheme.primary;
     return Row(
       children: [

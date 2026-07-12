@@ -91,6 +91,7 @@ class EditorBasicState extends State<EditorBasic> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return Column(
       spacing: 8,
       children: [

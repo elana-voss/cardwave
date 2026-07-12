@@ -49,6 +49,7 @@ class _GroupGridPageState extends State<GroupGridPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWideScreen =

@@ -49,6 +49,7 @@ class _DialogCreateGroupState extends State<DialogCreateGroup> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return AlertDialog(
       title: Text(t.group.dialogCreateGroup.title),
       content: TextField(

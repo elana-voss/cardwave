@@ -31,6 +31,7 @@ class CharacterGridActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     return PopupMenuButton<Object>(
       padding: EdgeInsets.zero,
       onSelected: (value) {

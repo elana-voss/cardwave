@@ -17,6 +17,7 @@ class GroupCharacterDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     final scaffold = Scaffold(
       backgroundColor: embedded

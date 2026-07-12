@@ -39,6 +39,7 @@ class MediaSettingsGridHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final theme = Theme.of(context);
     final style = theme.textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w600,

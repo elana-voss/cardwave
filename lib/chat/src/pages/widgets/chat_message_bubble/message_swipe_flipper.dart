@@ -23,6 +23,7 @@ class MessageSwipeFlipper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final canCycleRight = isFirstMessage && message.swipes.length > 1;
     final canCycleLeft = message.swipes.length > 1;
     final canSwipeLeft = isLastMessage && !isGenerating && canCycleLeft;

@@ -72,6 +72,7 @@ class _PresetPickerBodyState extends State<_PresetPickerBody> {
 
   @override
   Widget build(BuildContext context) {
+    final t = Translations.of(context);
     final query = _query.trim().toLowerCase();
     final filtered = query.isEmpty
         ? widget.validPresets
