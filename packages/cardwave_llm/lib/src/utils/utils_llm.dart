@@ -8,8 +8,11 @@ class UtilsLlm {
   // Paired: stripThinkTags and extractThinkContent must agree on what counts
   // as a tag, so they share one regex. Handles both <think> and <thinking>
   // because open-weights models (R1, QwQ, Hermes, Kimi) emit either.
+  // The closing tag is optional: a reply cut off at max_tokens mid-reasoning
+  // leaves an unclosed opener, so we treat everything from the opener to
+  // end-of-string as thinking content (otherwise the raw <think> tag leaks).
   static final RegExp _thinkTagRegex = RegExp(
-    r'<think(?:ing)?\s*>([\s\S]*?)<\/think(?:ing)?\s*>',
+    r'<think(?:ing)?\s*>([\s\S]*?)(?:<\/think(?:ing)?\s*>|$)',
     caseSensitive: false,
   );
 
