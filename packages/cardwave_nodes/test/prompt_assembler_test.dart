@@ -156,11 +156,11 @@ void main() {
           reason: 'cardDefinition is the host\'s responsibility');
       expect(result.text, isNot(contains('User: Hello')),
           reason: 'user input is the host\'s responsibility');
-      expect(result.breakdown.sceneChars, greaterThan(0));
-      expect(result.breakdown.stateChars, greaterThan(0));
-      expect(result.breakdown.lingeringChars, greaterThan(0));
-      expect(result.breakdown.nowChars, greaterThan(0));
-      expect(result.breakdown.totalChars, greaterThan(0));
+      expect(result.breakdown.sceneTokens, greaterThan(0));
+      expect(result.breakdown.stateTokens, greaterThan(0));
+      expect(result.breakdown.lingeringTokens, greaterThan(0));
+      expect(result.breakdown.nowTokens, greaterThan(0));
+      expect(result.breakdown.totalTokens, greaterThan(0));
     });
 
     test('empty world: only the always-on state slice (phase) survives',
@@ -193,7 +193,7 @@ void main() {
       );
       expect(result.text, contains('## Directives'));
       expect(result.text, contains('softening only slightly'));
-      expect(result.breakdown.directivesChars, greaterThan(0));
+      expect(result.breakdown.directivesTokens, greaterThan(0));
     });
   });
 
@@ -264,9 +264,9 @@ void main() {
         pool: NodePool(),
         firedThisTurn: const [],
         userInput: 'hi',
-        maxContextTokens: 8000, // 10% budget = 800 * 4 = 3200 chars
+        maxContextTokens: 8000, // 10% budget = 800 tokens
       );
-      // All 10 entries are ~65 chars each ≈ 650 chars total; fits easily.
+      // All 10 ASCII entries are ~65 chars ≈ 17 tokens each; fits easily.
       for (var i = 0; i < 10; i++) {
         expect(prompt, contains('event $i'));
       }
@@ -274,8 +274,8 @@ void main() {
 
     test('with tight budget, only most recent few fit', () async {
       final state = _seedState();
-      // 30 entries × ~80 chars = ~2400 chars. State slice ~60 chars eats
-      // first; remaining ~420 chars fits ~5 most-recent entries.
+      // Budget = 120 tokens. Each ASCII entry is ~78 chars ≈ 21 tokens;
+      // the state slice eats first, the remainder fits ~5 recent entries.
       for (var i = 0; i < 30; i++) {
         state.eventLog.add(EventLogEntry(
           turn: i,
@@ -319,14 +319,15 @@ void main() {
         text: 'a tavern brawl broke out',
         significance: 0.7,
       ));
-      // State slice ~60 chars + only one entry fits after that.
+      // Budget = 25 tokens; the state slice eats 16, leaving 9 — the
+      // 7-token tavern entry fits, a second entry (6 more) does not.
       final prompt = await assembler.assemble(
         cardDefinition: 'CARD',
         state: state,
         pool: NodePool(),
         firedThisTurn: const [],
         userInput: 'Hello tavern',
-        maxContextTokens: 220,
+        maxContextTokens: 250,
       );
       expect(prompt, contains('tavern brawl broke out'));
       expect(prompt, isNot(contains('unrelated event one')));

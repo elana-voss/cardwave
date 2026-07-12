@@ -351,18 +351,18 @@ class _PromptBreakdownBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (breakdown.totalChars == 0 && breakdown.budgetChars == 0) {
+    if (breakdown.totalTokens == 0 && breakdown.budgetTokens == 0) {
       return const Text('No prompt assembled yet.');
     }
     final lines = <String>[
-      'scene: ${breakdown.sceneChars}',
-      'state: ${breakdown.stateChars}',
-      'lingering: ${breakdown.lingeringChars}',
-      'directives: ${breakdown.directivesChars}',
-      'now: ${breakdown.nowChars}',
-      'earlier: ${breakdown.earlierChars}',
-      'total: ${breakdown.totalChars} / budget ${breakdown.budgetChars} '
-          '(${_pct(breakdown.totalChars, breakdown.budgetChars)})',
+      'scene: ${breakdown.sceneTokens}',
+      'state: ${breakdown.stateTokens}',
+      'lingering: ${breakdown.lingeringTokens}',
+      'directives: ${breakdown.directivesTokens}',
+      'now: ${breakdown.nowTokens}',
+      'earlier: ${breakdown.earlierTokens}',
+      'total: ${breakdown.totalTokens} / budget ${breakdown.budgetTokens} '
+          'tokens (${_pct(breakdown.totalTokens, breakdown.budgetTokens)})',
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

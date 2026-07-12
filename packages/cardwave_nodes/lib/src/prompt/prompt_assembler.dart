@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cardwave_embeddings/cardwave_embeddings.dart';
+import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_nodes/src/models/event_log_entry.dart';
 import 'package:cardwave_nodes/src/models/session_state.dart';
 import 'package:cardwave_nodes/src/nodes/node.dart';
@@ -8,50 +9,47 @@ import 'package:cardwave_nodes/src/nodes/node_pool.dart';
 import 'package:cardwave_nodes/src/utils/constants.dart';
 import 'package:cardwave_retrieval/cardwave_retrieval.dart';
 
-/// Rough char-to-token ratio for the budget estimate. Real tokenizers
-/// vary by model and language; 4 is the standard rule of thumb for
-/// English-language tokenizers and is the value the spec assumes.
-const double _charsPerToken = 4.0;
-
 /// Emotion value above which the state slice surfaces the field in the
 /// actor's prompt. Below it, the emotion is too quiet to mention.
 const double _prominentEmotionThreshold = 0.5;
 
-/// Per-section character counts for the assembled dynamic block, plus
+/// Per-section token estimates for the assembled dynamic block, plus
 /// the running total and the budget the assembler was given. The debug
 /// view shows this so a developer can see which section ate the budget
-/// and which got dropped under pressure.
+/// and which got dropped under pressure. Counts come from
+/// [UtilsLlm.countTokens], which weighs scripts differently (CJK text
+/// costs ~4x more tokens per character than English).
 class PromptBreakdown {
   const PromptBreakdown({
-    required this.sceneChars,
-    required this.stateChars,
-    required this.lingeringChars,
-    required this.directivesChars,
-    required this.nowChars,
-    required this.earlierChars,
-    required this.totalChars,
-    required this.budgetChars,
+    required this.sceneTokens,
+    required this.stateTokens,
+    required this.lingeringTokens,
+    required this.directivesTokens,
+    required this.nowTokens,
+    required this.earlierTokens,
+    required this.totalTokens,
+    required this.budgetTokens,
   });
 
   static const PromptBreakdown empty = PromptBreakdown(
-    sceneChars: 0,
-    stateChars: 0,
-    lingeringChars: 0,
-    directivesChars: 0,
-    nowChars: 0,
-    earlierChars: 0,
-    totalChars: 0,
-    budgetChars: 0,
+    sceneTokens: 0,
+    stateTokens: 0,
+    lingeringTokens: 0,
+    directivesTokens: 0,
+    nowTokens: 0,
+    earlierTokens: 0,
+    totalTokens: 0,
+    budgetTokens: 0,
   );
 
-  final int sceneChars;
-  final int stateChars;
-  final int lingeringChars;
-  final int directivesChars;
-  final int nowChars;
-  final int earlierChars;
-  final int totalChars;
-  final int budgetChars;
+  final int sceneTokens;
+  final int stateTokens;
+  final int lingeringTokens;
+  final int directivesTokens;
+  final int nowTokens;
+  final int earlierTokens;
+  final int totalTokens;
+  final int budgetTokens;
 }
 
 /// What [PromptAssembler.assembleDynamicSections] returns: the dynamic
@@ -154,8 +152,7 @@ class PromptAssembler {
     required String userInput,
     required int maxContextTokens,
   }) async {
-    final budgetChars =
-        (maxContextTokens * injectionBudgetFraction * _charsPerToken).round();
+    final budgetTokens = (maxContextTokens * injectionBudgetFraction).round();
     final scene = _renderSceneAndWorld(state);
     final variableParts = await _renderVariableSections(
       state: state,
@@ -163,21 +160,25 @@ class PromptAssembler {
       firedThisTurn: firedThisTurn,
       pendingDirectives: pendingDirectives,
       userInput: userInput,
-      budgetChars: budgetChars,
+      budgetTokens: budgetTokens,
     );
     final variable = variableParts.text;
-    final totalChars = scene.length +
-        (scene.isNotEmpty && variable.isNotEmpty ? 2 : 0) +
-        variable.length;
+    final sceneTokens = await UtilsLlm.countTokens(scene);
+    final totalTokens = sceneTokens +
+        variableParts.stateTokens +
+        variableParts.lingeringTokens +
+        variableParts.directivesTokens +
+        variableParts.nowTokens +
+        variableParts.earlierTokens;
     final breakdown = PromptBreakdown(
-      sceneChars: scene.length,
-      stateChars: variableParts.stateChars,
-      lingeringChars: variableParts.lingeringChars,
-      directivesChars: variableParts.directivesChars,
-      nowChars: variableParts.nowChars,
-      earlierChars: variableParts.earlierChars,
-      totalChars: totalChars,
-      budgetChars: budgetChars,
+      sceneTokens: sceneTokens,
+      stateTokens: variableParts.stateTokens,
+      lingeringTokens: variableParts.lingeringTokens,
+      directivesTokens: variableParts.directivesTokens,
+      nowTokens: variableParts.nowTokens,
+      earlierTokens: variableParts.earlierTokens,
+      totalTokens: totalTokens,
+      budgetTokens: budgetTokens,
     );
     return (scene: scene, variable: variable, breakdown: breakdown);
   }
@@ -200,40 +201,41 @@ class PromptAssembler {
   Future<
       ({
         String text,
-        int stateChars,
-        int lingeringChars,
-        int directivesChars,
-        int nowChars,
-        int earlierChars,
+        int stateTokens,
+        int lingeringTokens,
+        int directivesTokens,
+        int nowTokens,
+        int earlierTokens,
       })> _renderVariableSections({
     required SessionState state,
     required NodePool pool,
     required List<Node> firedThisTurn,
     required List<String> pendingDirectives,
     required String userInput,
-    required int budgetChars,
+    required int budgetTokens,
   }) async {
     final parts = <String>[];
     var used = 0;
 
-    int addRendered(String block) {
+    Future<int> addRendered(String block) async {
       if (block.isEmpty) return 0;
       parts.add(block);
-      used += block.length;
-      return block.length;
+      final tokens = await UtilsLlm.countTokens(block);
+      used += tokens;
+      return tokens;
     }
 
-    int addBullets(String title, Iterable<String> items) {
+    Future<int> addBullets(String title, Iterable<String> items) {
       final lines = items.where((p) => p.isNotEmpty).toList();
-      if (lines.isEmpty) return 0;
+      if (lines.isEmpty) return Future.value(0);
       return addRendered(_renderBulletSection(title, lines));
     }
 
     // 1. Session state slice (goal, phase, prominent per-character emotions)
-    final stateChars = addRendered(_renderStateSlice(state));
+    final stateTokens = await addRendered(_renderStateSlice(state));
 
     // 2. Sticky directives (lingering payloads from prior firings).
-    final lingeringChars = addBullets(
+    final lingeringTokens = await addBullets(
       'Lingering',
       pool.active
           .where((n) => n.currentSticky > 0 || n.currentSticky == -1)
@@ -241,31 +243,31 @@ class PromptAssembler {
     );
 
     // 3. Director directives for THIS reply (spec §6.2).
-    final directivesChars = addBullets('Directives', pendingDirectives);
+    final directivesTokens = await addBullets('Directives', pendingDirectives);
 
     // 4. New firings this turn.
-    final nowChars =
-        addBullets('Now', firedThisTurn.map((n) => n.narrativePayload));
+    final nowTokens =
+        await addBullets('Now', firedThisTurn.map((n) => n.narrativePayload));
 
     // 5. Event-log memories, only if budget remains.
-    var earlierChars = 0;
-    final remaining = budgetChars - used;
+    var earlierTokens = 0;
+    final remaining = budgetTokens - used;
     if (remaining > 0 && state.eventLog.isNotEmpty) {
       final memoryLines = await _surfaceMemories(
         log: state.eventLog,
         userInput: userInput,
-        budgetChars: remaining,
+        budgetTokens: remaining,
       );
-      earlierChars = addBullets('Earlier', memoryLines);
+      earlierTokens = await addBullets('Earlier', memoryLines);
     }
 
     return (
       text: parts.join('\n\n'),
-      stateChars: stateChars,
-      lingeringChars: lingeringChars,
-      directivesChars: directivesChars,
-      nowChars: nowChars,
-      earlierChars: earlierChars,
+      stateTokens: stateTokens,
+      lingeringTokens: lingeringTokens,
+      directivesTokens: directivesTokens,
+      nowTokens: nowTokens,
+      earlierTokens: earlierTokens,
     );
   }
 
@@ -291,23 +293,26 @@ class PromptAssembler {
   Future<List<String>> _surfaceMemories({
     required List<EventLogEntry> log,
     required String userInput,
-    required int budgetChars,
+    required int budgetTokens,
   }) async {
     final picked = embedder == null
-        ? _byRecency(log, budgetChars)
-        : await _byCosine(log, userInput, budgetChars);
+        ? await _byRecency(log, budgetTokens)
+        : await _byCosine(log, userInput, budgetTokens);
     // Render in narrative order (oldest first) regardless of pick order.
     picked.sort((a, b) => a.turn.compareTo(b.turn));
     return picked.map((e) => e.text).toList();
   }
 
-  List<EventLogEntry> _byRecency(List<EventLogEntry> log, int budgetChars) =>
-      _fitToBudget(log.reversed, budgetChars, _entryCost);
+  Future<List<EventLogEntry>> _byRecency(
+    List<EventLogEntry> log,
+    int budgetTokens,
+  ) =>
+      _fitToBudget(log.reversed, budgetTokens, _entryCost);
 
   Future<List<EventLogEntry>> _byCosine(
     List<EventLogEntry> log,
     String userInput,
-    int budgetChars,
+    int budgetTokens,
   ) async {
     final emb = embedder!;
     final query = await emb.embedOne(userInput, task: EmbedTaskEnum.query);
@@ -318,31 +323,32 @@ class PromptAssembler {
       scored.add((entry: entry, score: cosineNormalized(query, vec)));
     }
     scored.sort((a, b) => b.score.compareTo(a.score));
-    return _fitToBudget(scored, budgetChars, (s) => _entryCost(s.entry))
-        .map((s) => s.entry)
-        .toList();
+    final picked =
+        await _fitToBudget(scored, budgetTokens, (s) => _entryCost(s.entry));
+    return picked.map((s) => s.entry).toList();
   }
 }
 
 /// Walks [items] in order, accepting each whose [costFn] fits the
-/// remaining char budget. Stops at the first item that does not fit.
-List<T> _fitToBudget<T>(
+/// remaining token budget. Stops at the first item that does not fit.
+Future<List<T>> _fitToBudget<T>(
   Iterable<T> items,
-  int budgetChars,
-  int Function(T) costFn,
-) {
+  int budgetTokens,
+  Future<int> Function(T) costFn,
+) async {
   final out = <T>[];
   var used = 0;
   for (final item in items) {
-    final cost = costFn(item);
-    if (used + cost > budgetChars) break;
+    final cost = await costFn(item);
+    if (used + cost > budgetTokens) break;
     out.add(item);
     used += cost;
   }
   return out;
 }
 
-// Each surfaced line is rendered as "- <text>\n"; cost = text + 2.
-int _entryCost(EventLogEntry e) => e.text.length + 2;
+// Each surfaced line is rendered as "- <text>\n"; +1 covers the bullet.
+Future<int> _entryCost(EventLogEntry e) async =>
+    await UtilsLlm.countTokens(e.text) + 1;
 
 typedef _ScoredEntry = ({EventLogEntry entry, double score});

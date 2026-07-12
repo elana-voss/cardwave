@@ -35,10 +35,27 @@ class UtilsLlm {
     return joined.isEmpty ? null : joined;
   }
 
-  // Rough heuristic: ~4 characters per token. Good enough for UI budgeting
-  // until a real tokenizer is wired in. Known to over-estimate for CJK text
-  // and under-estimate for code.
-  static const double _charsPerToken = 4;
+  // Script-aware heuristic: tokens-per-character varies wildly by writing
+  // system under BPE tokenizers (~0.25 for English, ~1.0 for CJK), so a flat
+  // chars/4 rule under-counts non-Latin text by 2-4x. Weights below are
+  // rounded from typical GPT/Claude/Llama tokenizer behavior — good enough
+  // for UI budgeting until a real tokenizer is wired in.
+  static double _tokensPerRune(int rune) {
+    // ASCII — English and code, ~4 chars per token.
+    if (rune < 0x80) return 0.25;
+    // European alphabets: Latin supplements/extensions, Greek, Cyrillic.
+    if (rune < 0x530) return 0.5;
+    // Latin Extended Additional (Vietnamese) and Greek Extended.
+    if (rune >= 0x1E00 && rune < 0x2000) return 0.5;
+    // CJK ideographs, kana, CJK punctuation, and compatibility blocks.
+    if (rune >= 0x2E80 && rune < 0xA000) return 1.0;
+    // Hangul syllables (plus the small jamo-extended tail).
+    if (rune >= 0xAC00 && rune < 0xD800) return 1.0;
+    // Supplementary planes: rare CJK ideographs, emoji, symbols.
+    if (rune >= 0x10000) return 1.0;
+    // Everything else: Hebrew, Arabic, Indic scripts, Thai, symbols, ...
+    return 0.75;
+  }
 
   static void warmUp() {/* no-op until a real tokenizer is wired in */}
 
@@ -92,7 +109,11 @@ class UtilsLlm {
 
     await Future.delayed(Duration.zero);
 
-    final count = (text.length / _charsPerToken).ceil();
+    var estimate = 0.0;
+    for (final rune in text.runes) {
+      estimate += _tokensPerRune(rune);
+    }
+    final count = estimate.ceil();
 
     if (_tokenCache.length >= _maxCacheEntries) {
       // Guarded by the length check above; `_maxCacheEntries` is positive.
