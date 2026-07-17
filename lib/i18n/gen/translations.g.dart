@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 10
-/// Strings: 9200 (920 per locale)
+/// Strings: 8446 (844 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -163,7 +163,6 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	late final _TranslationsGroupEn group = _TranslationsGroupEn._(_root);
 	late final _TranslationsLlmAppEn llmApp = _TranslationsLlmAppEn._(_root);
 	late final _TranslationsMemoryEn memory = _TranslationsMemoryEn._(_root);
-	late final _TranslationsNodesEn nodes = _TranslationsNodesEn._(_root);
 	late final _TranslationsOnboardingEn onboarding = _TranslationsOnboardingEn._(_root);
 	late final _TranslationsRoutingEn routing = _TranslationsRoutingEn._(_root);
 	late final _TranslationsSearchEn search = _TranslationsSearchEn._(_root);
@@ -292,7 +291,6 @@ class _TranslationsEditorEn {
 	// Translations
 	late final _TranslationsEditorPanelLabelsEn panelLabels = _TranslationsEditorPanelLabelsEn._(_root);
 	late final _TranslationsEditorAppBarEditorEn appBarEditor = _TranslationsEditorAppBarEditorEn._(_root);
-	late final _TranslationsEditorCodeFindPanelEn codeFindPanel = _TranslationsEditorCodeFindPanelEn._(_root);
 	late final _TranslationsEditorFindReplaceDialogEn findReplaceDialog = _TranslationsEditorFindReplaceDialogEn._(_root);
 	late final _TranslationsEditorObjectValueEditorEn objectValueEditor = _TranslationsEditorObjectValueEditorEn._(_root);
 	late final _TranslationsEditorEditorBasicEn editorBasic = _TranslationsEditorEditorBasicEn._(_root);
@@ -309,11 +307,6 @@ class _TranslationsEditorEn {
 	late final _TranslationsEditorDialogContentCleanerEn dialogContentCleaner = _TranslationsEditorDialogContentCleanerEn._(_root);
 	late final _TranslationsEditorDialogAiDiffConfirmationEn dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationEn._(_root);
 	late final _TranslationsEditorEditorPageControllerEn editorPageController = _TranslationsEditorEditorPageControllerEn._(_root);
-	late final _TranslationsEditorEditorNodesEn editorNodes = _TranslationsEditorEditorNodesEn._(_root);
-	late final _TranslationsEditorNodeListTileEn nodeListTile = _TranslationsEditorNodeListTileEn._(_root);
-	late final _TranslationsEditorNodesRawEditorPageEn nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageEn._(_root);
-	late final _TranslationsEditorNodesCanvasViewEn nodesCanvasView = _TranslationsEditorNodesCanvasViewEn._(_root);
-	late final _TranslationsEditorNodeEditorFormEn nodeEditorForm = _TranslationsEditorNodeEditorFormEn._(_root);
 	late final _TranslationsEditorContentTransformEn contentTransform = _TranslationsEditorContentTransformEn._(_root);
 }
 
@@ -391,16 +384,6 @@ class _TranslationsMemoryEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesEn {
-	_TranslationsNodesEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	late final _TranslationsNodesServiceEn service = _TranslationsNodesServiceEn._(_root);
 }
 
 // Path: onboarding
@@ -1432,7 +1415,6 @@ class _TranslationsEditorPanelLabelsEn {
 	String get group => 'Group';
 	String get creator => 'Creator';
 	String get appData => 'App Data';
-	String get nodes => 'Nodes';
 }
 
 // Path: editor.appBarEditor
@@ -1444,21 +1426,6 @@ class _TranslationsEditorAppBarEditorEn {
 	// Translations
 	String get hideAssistantPanelTooltip => 'Hide assistant panel';
 	String get showChatAssistantTooltip => 'Show chat assistant side-by-side';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get noneResult => 'none';
-	String get previousTooltip => 'Previous';
-	String get nextTooltip => 'Next';
-	String get closeTooltip => 'Close';
-	String get replaceTooltip => 'Replace';
-	String get replaceAllTooltip => 'Replace All';
 }
 
 // Path: editor.findReplaceDialog
@@ -1730,119 +1697,6 @@ class _TranslationsEditorEditorPageControllerEn {
 	String compositeLorebookEntry({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
 	String imageTooLargeMessage({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
 	String get invalidPngMessage => 'Selected image is not a valid PNG or could not be read.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get deleteNodeTitle => 'Delete node';
-	String get deleteNodeMessage => 'Remove this authored node from the card?';
-	String get engineSeedTitle => 'Engine seed';
-	String get visualEditorTooltip => 'Visual editor';
-	String get editJsonTooltip => 'Edit JSON';
-	String get initialGoalLabel => 'Initial goal';
-	String get initialSceneLabel => 'Initial scene';
-	String get locationLabel => 'Location';
-	String get timeOfDayLabel => 'Time of day';
-	String get presentEntitiesLabel => 'Present (comma-separated)';
-	String get sensoryHooksLabel => 'Sensory hooks (comma-separated)';
-	String get addNodeButton => 'Add Node';
-	String get noAuthoredNodesYet => 'No authored nodes yet.';
-	String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-		one: 'This card\'s nodes block has ${n} problem; editing here will overwrite the broken parts on save.',
-		other: 'This card\'s nodes block has ${n} problems; editing here will overwrite the broken parts on save.',
-	);
-	String moreErrorsSuffix({required Object n}) => '… ${n} more';
-	String get emotionBaselineLabel => 'Emotion baseline';
-	String get emotionChipLabel => 'Emotion';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String spawnsLabel({required Object count}) => 'spawns: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get topLevelMustBeObject => 'Top level must be a JSON object';
-	String get editNodesJsonTitle => 'Edit nodes JSON';
-	String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-		one: 'Fix ${n} problem to save.',
-		other: 'Fix ${n} problems to save.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get spawnedByPort => 'spawned by';
-	String get spawnsPort => 'spawns';
-	String get editNodeLabel => 'Edit node';
-	String get addNodeTooltip => 'Add node';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get nameLabel => 'Name';
-	String get narrativePayloadLabel => 'Narrative payload';
-	String get removeSpawnLinkTitle => 'Remove spawn link';
-	String removeSpawnLinkMessage({required Object nodeId}) => 'Stop this node from spawning "${nodeId}"? The node itself stays on the card.';
-	String get removeButton => 'Remove';
-	String get typeLabel => 'Type';
-	String get scopeLabel => 'Scope';
-	String get originLabel => 'Origin';
-	String get triggerProbLabel => 'Trigger prob';
-	String get delayHelper => 'Turns to wait before becoming eligible. -1 acts as 0.';
-	String get cooldownHelper => 'Turns locked out after firing. -1 means no cooldown.';
-	String get stickyHelper => 'Turns the narrative payload keeps appearing as "Lingering" after firing. -1 means permanent.';
-	String get aliveHelper => 'Turns the node stays in the pool before removal. -1 means forever.';
-	String get setToNeverButton => 'Set to never';
-	String get effectsSectionLabel => 'Effects';
-	String get emotionDeltasTitle => 'Emotion deltas';
-	String get physicalDeltasTitle => 'Physical deltas';
-	String get relationshipDeltasTitle => 'Relationship deltas';
-	String get addDeltaChip => 'Add delta';
-	String get knowledgeWritesTitle => 'Knowledge writes';
-	String get addFactChip => 'Add fact';
-	String get topicLabel => 'topic';
-	String get confidenceLabel => 'confidence';
-	String get flagSetTitle => 'Flag set';
-	String get addFlagChip => 'Add flag';
-	String get keyLabel => 'key';
-	String get sceneAndFlowTitle => 'Scene & flow';
-	String get goalChangeLabel => 'goalChange (clears the current goal when empty)';
-	String get phaseChangeLabel => 'phaseChange';
-	String get noneOption => '(none)';
-	String get sceneTransitionLabel => 'sceneTransition';
-	String get sceneTransitionSubtitle => 'When true, the engine marks the firing as a scene shift.';
-	String get spawnsSectionLabel => 'Spawns';
-	String get addNewChip => 'Add new';
-	String get linkExistingChip => 'Link existing';
-	String get unlinkTooltip => 'Unlink';
-	String get predicateLabel => 'Predicate';
 }
 
 // Path: editor.contentTransform
@@ -2420,16 +2274,6 @@ class _TranslationsLlmAppMediaCellEn {
 	String get notApplicable => 'Not applicable';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String invalidNodesDroppedSnackbar({required Object count}) => '${count} behavior node(s) disabled — check the node editor.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepEn._(this._root);
@@ -2620,8 +2464,6 @@ class _TranslationsSettingsGeneralEn {
 	String get themeStyleNeon => 'Neon';
 	String get storyMemoryTitle => 'Story Memory';
 	String get storyMemorySubtitle => 'Remember earlier moments and bring the relevant ones back into long chats.';
-	String get narrativeEngineTitle => 'Narrative Engine';
-	String get narrativeEngineSubtitle => 'Track the scene and characters and move the story along as you chat.';
 	String get promptBreakdownTitle => 'Show Prompt Breakdown';
 	String get promptBreakdownSubtitle => 'Show a bar under each reply breaking down how the prompt filled the model context window.';
 	String get checkUpdatesTitle => 'Check for Updates';
@@ -2935,8 +2777,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerEn {
 
 	// Translations
 	String get favoriteLabel => 'Favorite';
-	String get nodesEngineTitle => 'NODES Engine';
-	String get debugSnapshotSubtitle => 'Debug snapshot';
 	String get characterSubtitle => 'Character';
 }
 
@@ -3024,7 +2864,6 @@ class _TranslationsEs419 extends Translations {
 	@override late final _TranslationsGroupEs419 group = _TranslationsGroupEs419._(_root);
 	@override late final _TranslationsLlmAppEs419 llmApp = _TranslationsLlmAppEs419._(_root);
 	@override late final _TranslationsMemoryEs419 memory = _TranslationsMemoryEs419._(_root);
-	@override late final _TranslationsNodesEs419 nodes = _TranslationsNodesEs419._(_root);
 	@override late final _TranslationsOnboardingEs419 onboarding = _TranslationsOnboardingEs419._(_root);
 	@override late final _TranslationsRoutingEs419 routing = _TranslationsRoutingEs419._(_root);
 	@override late final _TranslationsSearchEs419 search = _TranslationsSearchEs419._(_root);
@@ -3153,7 +2992,6 @@ class _TranslationsEditorEs419 extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsEs419 panelLabels = _TranslationsEditorPanelLabelsEs419._(_root);
 	@override late final _TranslationsEditorAppBarEditorEs419 appBarEditor = _TranslationsEditorAppBarEditorEs419._(_root);
-	@override late final _TranslationsEditorCodeFindPanelEs419 codeFindPanel = _TranslationsEditorCodeFindPanelEs419._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogEs419 findReplaceDialog = _TranslationsEditorFindReplaceDialogEs419._(_root);
 	@override late final _TranslationsEditorObjectValueEditorEs419 objectValueEditor = _TranslationsEditorObjectValueEditorEs419._(_root);
 	@override late final _TranslationsEditorEditorBasicEs419 editorBasic = _TranslationsEditorEditorBasicEs419._(_root);
@@ -3170,11 +3008,6 @@ class _TranslationsEditorEs419 extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerEs419 dialogContentCleaner = _TranslationsEditorDialogContentCleanerEs419._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationEs419 dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationEs419._(_root);
 	@override late final _TranslationsEditorEditorPageControllerEs419 editorPageController = _TranslationsEditorEditorPageControllerEs419._(_root);
-	@override late final _TranslationsEditorEditorNodesEs419 editorNodes = _TranslationsEditorEditorNodesEs419._(_root);
-	@override late final _TranslationsEditorNodeListTileEs419 nodeListTile = _TranslationsEditorNodeListTileEs419._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageEs419 nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageEs419._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewEs419 nodesCanvasView = _TranslationsEditorNodesCanvasViewEs419._(_root);
-	@override late final _TranslationsEditorNodeEditorFormEs419 nodeEditorForm = _TranslationsEditorNodeEditorFormEs419._(_root);
 	@override late final _TranslationsEditorContentTransformEs419 contentTransform = _TranslationsEditorContentTransformEs419._(_root);
 }
 
@@ -3252,16 +3085,6 @@ class _TranslationsMemoryEs419 extends _TranslationsMemoryEn {
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesEs419 extends _TranslationsNodesEn {
-	_TranslationsNodesEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceEs419 service = _TranslationsNodesServiceEs419._(_root);
 }
 
 // Path: onboarding
@@ -4293,7 +4116,6 @@ class _TranslationsEditorPanelLabelsEs419 extends _TranslationsEditorPanelLabels
 	@override String get group => 'Grupo';
 	@override String get creator => 'Creador';
 	@override String get appData => 'Datos de la app';
-	@override String get nodes => 'Nodos';
 }
 
 // Path: editor.appBarEditor
@@ -4305,21 +4127,6 @@ class _TranslationsEditorAppBarEditorEs419 extends _TranslationsEditorAppBarEdit
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'Ocultar panel del asistente';
 	@override String get showChatAssistantTooltip => 'Mostrar asistente de chat lado a lado';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelEs419 extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'ninguno';
-	@override String get previousTooltip => 'Anterior';
-	@override String get nextTooltip => 'Siguiente';
-	@override String get closeTooltip => 'Cerrar';
-	@override String get replaceTooltip => 'Reemplazar';
-	@override String get replaceAllTooltip => 'Reemplazar todo';
 }
 
 // Path: editor.findReplaceDialog
@@ -4591,119 +4398,6 @@ class _TranslationsEditorEditorPageControllerEs419 extends _TranslationsEditorEd
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'Entrada de lorebook n.º ${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => 'La imagen seleccionada es demasiado grande. El tamaño máximo es ${maxSize}.';
 	@override String get invalidPngMessage => 'La imagen seleccionada no es un PNG válido o no se pudo leer.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesEs419 extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'Eliminar nodo';
-	@override String get deleteNodeMessage => '¿Quitar este nodo de autor de la tarjeta?';
-	@override String get engineSeedTitle => 'Semilla del motor';
-	@override String get visualEditorTooltip => 'Editor visual';
-	@override String get editJsonTooltip => 'Editar JSON';
-	@override String get initialGoalLabel => 'Objetivo inicial';
-	@override String get initialSceneLabel => 'Escena inicial';
-	@override String get locationLabel => 'Ubicación';
-	@override String get timeOfDayLabel => 'Hora del día';
-	@override String get presentEntitiesLabel => 'Presentes (separados por comas)';
-	@override String get sensoryHooksLabel => 'Ganchos sensoriales (separados por comas)';
-	@override String get addNodeButton => 'Agregar nodo';
-	@override String get noAuthoredNodesYet => 'Aún no hay nodos de autor.';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
-		one: 'El bloque de nodos de esta tarjeta tiene ${n} problema; editar aquí sobrescribirá las partes dañadas al guardar.',
-		other: 'El bloque de nodos de esta tarjeta tiene ${n} problemas; editar aquí sobrescribirá las partes dañadas al guardar.',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… ${n} más';
-	@override String get emotionBaselineLabel => 'Emoción base';
-	@override String get emotionChipLabel => 'Emoción';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileEs419 extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'genera: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageEs419 extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'El nivel superior debe ser un objeto JSON';
-	@override String get editNodesJsonTitle => 'Editar JSON de nodos';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
-		one: 'Corrige ${n} problema para guardar.',
-		other: 'Corrige ${n} problemas para guardar.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewEs419 extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'generado por';
-	@override String get spawnsPort => 'genera';
-	@override String get editNodeLabel => 'Editar nodo';
-	@override String get addNodeTooltip => 'Agregar nodo';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormEs419 extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => 'Nombre';
-	@override String get narrativePayloadLabel => 'Carga narrativa';
-	@override String get removeSpawnLinkTitle => 'Quitar vínculo de generación';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => '¿Impedir que este nodo genere "${nodeId}"? El nodo en sí permanece en la tarjeta.';
-	@override String get removeButton => 'Quitar';
-	@override String get typeLabel => 'Tipo';
-	@override String get scopeLabel => 'Alcance';
-	@override String get originLabel => 'Origen';
-	@override String get triggerProbLabel => 'Prob. de disparo';
-	@override String get delayHelper => 'Turnos a esperar antes de ser elegible. -1 actúa como 0.';
-	@override String get cooldownHelper => 'Turnos bloqueado tras dispararse. -1 significa sin tiempo de espera.';
-	@override String get stickyHelper => 'Turnos en que la carga narrativa sigue apareciendo como "Persistente" tras dispararse. -1 significa permanente.';
-	@override String get aliveHelper => 'Turnos en que el nodo permanece en el grupo antes de eliminarse. -1 significa para siempre.';
-	@override String get setToNeverButton => 'Establecer en nunca';
-	@override String get effectsSectionLabel => 'Efectos';
-	@override String get emotionDeltasTitle => 'Variaciones de emoción';
-	@override String get physicalDeltasTitle => 'Variaciones físicas';
-	@override String get relationshipDeltasTitle => 'Variaciones de relación';
-	@override String get addDeltaChip => 'Agregar variación';
-	@override String get knowledgeWritesTitle => 'Escrituras de conocimiento';
-	@override String get addFactChip => 'Agregar hecho';
-	@override String get topicLabel => 'tema';
-	@override String get confidenceLabel => 'confianza';
-	@override String get flagSetTitle => 'Conjunto de flags';
-	@override String get addFlagChip => 'Agregar flag';
-	@override String get keyLabel => 'clave';
-	@override String get sceneAndFlowTitle => 'Escena y flujo';
-	@override String get goalChangeLabel => 'goalChange (borra el objetivo actual cuando está vacío)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(ninguno)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'Cuando es verdadero, el motor marca el disparo como un cambio de escena.';
-	@override String get spawnsSectionLabel => 'Generaciones';
-	@override String get addNewChip => 'Agregar nuevo';
-	@override String get linkExistingChip => 'Vincular existente';
-	@override String get unlinkTooltip => 'Desvincular';
-	@override String get predicateLabel => 'Predicado';
 }
 
 // Path: editor.contentTransform
@@ -5281,16 +4975,6 @@ class _TranslationsLlmAppMediaCellEs419 extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'No aplicable';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceEs419 extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} nodo(s) de comportamiento desactivado(s): revisa el editor de nodos.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepEs419 extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
@@ -5481,8 +5165,6 @@ class _TranslationsSettingsGeneralEs419 extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'Neón';
 	@override String get storyMemoryTitle => 'Memoria de la historia';
 	@override String get storyMemorySubtitle => 'Recuerda momentos anteriores y trae los relevantes de vuelta en chats largos.';
-	@override String get narrativeEngineTitle => 'Motor narrativo';
-	@override String get narrativeEngineSubtitle => 'Sigue la escena y los personajes y hace avanzar la historia mientras chateas.';
 	@override String get promptBreakdownTitle => 'Mostrar desglose del prompt';
 	@override String get promptBreakdownSubtitle => 'Muestra una barra bajo cada respuesta que desglosa cómo el prompt llenó la ventana de contexto del modelo.';
 	@override String get checkUpdatesTitle => 'Buscar actualizaciones';
@@ -5796,8 +5478,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerEs419 extends _TranslationsWorkspa
 
 	// Translations
 	@override String get favoriteLabel => 'Favorito';
-	@override String get nodesEngineTitle => 'Motor NODES';
-	@override String get debugSnapshotSubtitle => 'Captura de depuración';
 	@override String get characterSubtitle => 'Personaje';
 }
 
@@ -5885,7 +5565,6 @@ class _TranslationsHi extends Translations {
 	@override late final _TranslationsGroupHi group = _TranslationsGroupHi._(_root);
 	@override late final _TranslationsLlmAppHi llmApp = _TranslationsLlmAppHi._(_root);
 	@override late final _TranslationsMemoryHi memory = _TranslationsMemoryHi._(_root);
-	@override late final _TranslationsNodesHi nodes = _TranslationsNodesHi._(_root);
 	@override late final _TranslationsOnboardingHi onboarding = _TranslationsOnboardingHi._(_root);
 	@override late final _TranslationsRoutingHi routing = _TranslationsRoutingHi._(_root);
 	@override late final _TranslationsSearchHi search = _TranslationsSearchHi._(_root);
@@ -6014,7 +5693,6 @@ class _TranslationsEditorHi extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsHi panelLabels = _TranslationsEditorPanelLabelsHi._(_root);
 	@override late final _TranslationsEditorAppBarEditorHi appBarEditor = _TranslationsEditorAppBarEditorHi._(_root);
-	@override late final _TranslationsEditorCodeFindPanelHi codeFindPanel = _TranslationsEditorCodeFindPanelHi._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogHi findReplaceDialog = _TranslationsEditorFindReplaceDialogHi._(_root);
 	@override late final _TranslationsEditorObjectValueEditorHi objectValueEditor = _TranslationsEditorObjectValueEditorHi._(_root);
 	@override late final _TranslationsEditorEditorBasicHi editorBasic = _TranslationsEditorEditorBasicHi._(_root);
@@ -6031,11 +5709,6 @@ class _TranslationsEditorHi extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerHi dialogContentCleaner = _TranslationsEditorDialogContentCleanerHi._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationHi dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationHi._(_root);
 	@override late final _TranslationsEditorEditorPageControllerHi editorPageController = _TranslationsEditorEditorPageControllerHi._(_root);
-	@override late final _TranslationsEditorEditorNodesHi editorNodes = _TranslationsEditorEditorNodesHi._(_root);
-	@override late final _TranslationsEditorNodeListTileHi nodeListTile = _TranslationsEditorNodeListTileHi._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageHi nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageHi._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewHi nodesCanvasView = _TranslationsEditorNodesCanvasViewHi._(_root);
-	@override late final _TranslationsEditorNodeEditorFormHi nodeEditorForm = _TranslationsEditorNodeEditorFormHi._(_root);
 	@override late final _TranslationsEditorContentTransformHi contentTransform = _TranslationsEditorContentTransformHi._(_root);
 }
 
@@ -6113,16 +5786,6 @@ class _TranslationsMemoryHi extends _TranslationsMemoryEn {
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesHi extends _TranslationsNodesEn {
-	_TranslationsNodesHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceHi service = _TranslationsNodesServiceHi._(_root);
 }
 
 // Path: onboarding
@@ -7154,7 +6817,6 @@ class _TranslationsEditorPanelLabelsHi extends _TranslationsEditorPanelLabelsEn 
 	@override String get group => 'ग्रुप';
 	@override String get creator => 'निर्माता';
 	@override String get appData => 'ऐप डेटा';
-	@override String get nodes => 'नोड';
 }
 
 // Path: editor.appBarEditor
@@ -7166,21 +6828,6 @@ class _TranslationsEditorAppBarEditorHi extends _TranslationsEditorAppBarEditorE
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'असिस्टेंट पैनल छिपाएं';
 	@override String get showChatAssistantTooltip => 'चैट असिस्टेंट साथ-साथ दिखाएं';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelHi extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'कोई नहीं';
-	@override String get previousTooltip => 'पिछला';
-	@override String get nextTooltip => 'अगला';
-	@override String get closeTooltip => 'बंद करें';
-	@override String get replaceTooltip => 'बदलें';
-	@override String get replaceAllTooltip => 'सभी बदलें';
 }
 
 // Path: editor.findReplaceDialog
@@ -7452,119 +7099,6 @@ class _TranslationsEditorEditorPageControllerHi extends _TranslationsEditorEdito
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'लोरबुक प्रविष्टि #${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => 'चयनित इमेज बहुत बड़ी है। अधिकतम आकार ${maxSize} है।';
 	@override String get invalidPngMessage => 'चयनित इमेज एक मान्य PNG नहीं है या पढ़ी नहीं जा सकी।';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesHi extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'नोड हटाएं';
-	@override String get deleteNodeMessage => 'क्या इस लिखे गए नोड को कार्ड से हटाएं?';
-	@override String get engineSeedTitle => 'इंजन सीड';
-	@override String get visualEditorTooltip => 'विज़ुअल एडिटर';
-	@override String get editJsonTooltip => 'JSON एडिट करें';
-	@override String get initialGoalLabel => 'प्रारंभिक लक्ष्य';
-	@override String get initialSceneLabel => 'प्रारंभिक दृश्य';
-	@override String get locationLabel => 'स्थान';
-	@override String get timeOfDayLabel => 'दिन का समय';
-	@override String get presentEntitiesLabel => 'उपस्थित (अल्पविराम से अलग)';
-	@override String get sensoryHooksLabel => 'संवेदी हुक (अल्पविराम से अलग)';
-	@override String get addNodeButton => 'नोड जोड़ें';
-	@override String get noAuthoredNodesYet => 'अभी तक कोई लिखा गया नोड नहीं।';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
-		one: 'इस कार्ड के नोड ब्लॉक में ${n} समस्या है; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।',
-		other: 'इस कार्ड के नोड ब्लॉक में ${n} समस्याएं हैं; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… ${n} और';
-	@override String get emotionBaselineLabel => 'भावना आधाररेखा';
-	@override String get emotionChipLabel => 'भावना';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileHi extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'स्पॉन: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageHi extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'शीर्ष स्तर एक JSON ऑब्जेक्ट होना चाहिए';
-	@override String get editNodesJsonTitle => 'नोड JSON एडिट करें';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
-		one: 'सहेजने के लिए ${n} समस्या ठीक करें।',
-		other: 'सहेजने के लिए ${n} समस्याएं ठीक करें।',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewHi extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'स्पॉन स्रोत';
-	@override String get spawnsPort => 'स्पॉन';
-	@override String get editNodeLabel => 'नोड एडिट करें';
-	@override String get addNodeTooltip => 'नोड जोड़ें';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormHi extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => 'नाम';
-	@override String get narrativePayloadLabel => 'नैरेटिव पेलोड';
-	@override String get removeSpawnLinkTitle => 'स्पॉन लिंक हटाएं';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => 'इस नोड को "${nodeId}" स्पॉन करने से रोकें? नोड स्वयं कार्ड पर बना रहेगा।';
-	@override String get removeButton => 'हटाएं';
-	@override String get typeLabel => 'प्रकार';
-	@override String get scopeLabel => 'स्कोप';
-	@override String get originLabel => 'मूल';
-	@override String get triggerProbLabel => 'ट्रिगर प्रायिकता';
-	@override String get delayHelper => 'पात्र बनने से पहले प्रतीक्षा के टर्न। -1 का अर्थ 0 है।';
-	@override String get cooldownHelper => 'फायर होने के बाद लॉक रहने के टर्न। -1 का अर्थ कोई कूलडाउन नहीं।';
-	@override String get stickyHelper => 'फायर होने के बाद नैरेटिव पेलोड जितने टर्न "Lingering" के रूप में दिखता रहता है। -1 का अर्थ स्थायी।';
-	@override String get aliveHelper => 'हटाए जाने से पहले नोड पूल में जितने टर्न रहता है। -1 का अर्थ हमेशा के लिए।';
-	@override String get setToNeverButton => 'कभी नहीं पर सेट करें';
-	@override String get effectsSectionLabel => 'प्रभाव';
-	@override String get emotionDeltasTitle => 'भावना डेल्टा';
-	@override String get physicalDeltasTitle => 'भौतिक डेल्टा';
-	@override String get relationshipDeltasTitle => 'संबंध डेल्टा';
-	@override String get addDeltaChip => 'डेल्टा जोड़ें';
-	@override String get knowledgeWritesTitle => 'ज्ञान लेखन';
-	@override String get addFactChip => 'तथ्य जोड़ें';
-	@override String get topicLabel => 'विषय';
-	@override String get confidenceLabel => 'विश्वास';
-	@override String get flagSetTitle => 'फ्लैग सेट';
-	@override String get addFlagChip => 'फ्लैग जोड़ें';
-	@override String get keyLabel => 'कुंजी';
-	@override String get sceneAndFlowTitle => 'दृश्य और प्रवाह';
-	@override String get goalChangeLabel => 'goalChange (खाली होने पर वर्तमान लक्ष्य साफ़ कर देता है)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(कोई नहीं)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'true होने पर, इंजन इस फायरिंग को दृश्य परिवर्तन के रूप में चिह्नित करता है।';
-	@override String get spawnsSectionLabel => 'स्पॉन';
-	@override String get addNewChip => 'नया जोड़ें';
-	@override String get linkExistingChip => 'मौजूदा लिंक करें';
-	@override String get unlinkTooltip => 'अनलिंक करें';
-	@override String get predicateLabel => 'प्रेडिकेट';
 }
 
 // Path: editor.contentTransform
@@ -8142,16 +7676,6 @@ class _TranslationsLlmAppMediaCellHi extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'लागू नहीं';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceHi extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} व्यवहार नोड अक्षम किए गए — नोड संपादक जांचें।';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepHi extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepHi._(_TranslationsHi root) : this._root = root, super._(root);
@@ -8342,8 +7866,6 @@ class _TranslationsSettingsGeneralHi extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'नियॉन';
 	@override String get storyMemoryTitle => 'स्टोरी मेमोरी';
 	@override String get storyMemorySubtitle => 'पहले के क्षणों को याद रखें और प्रासंगिक क्षणों को लंबी चैट में वापस लाएं।';
-	@override String get narrativeEngineTitle => 'नैरेटिव इंजन';
-	@override String get narrativeEngineSubtitle => 'दृश्य और कैरेक्टर को ट्रैक करें और चैट करते समय कहानी को आगे बढ़ाएं।';
 	@override String get promptBreakdownTitle => 'प्रॉम्प्ट विश्लेषण दिखाएं';
 	@override String get promptBreakdownSubtitle => 'हर जवाब के नीचे एक बार दिखाएं जो बताता है कि प्रॉम्प्ट ने मॉडल कॉन्टेक्स्ट विंडो को कैसे भरा।';
 	@override String get checkUpdatesTitle => 'अपडेट जांचें';
@@ -8657,8 +8179,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerHi extends _TranslationsWorkspaceW
 
 	// Translations
 	@override String get favoriteLabel => 'पसंदीदा';
-	@override String get nodesEngineTitle => 'NODES इंजन';
-	@override String get debugSnapshotSubtitle => 'डीबग स्नैपशॉट';
 	@override String get characterSubtitle => 'कैरेक्टर';
 }
 
@@ -8746,7 +8266,6 @@ class _TranslationsJa extends Translations {
 	@override late final _TranslationsGroupJa group = _TranslationsGroupJa._(_root);
 	@override late final _TranslationsLlmAppJa llmApp = _TranslationsLlmAppJa._(_root);
 	@override late final _TranslationsMemoryJa memory = _TranslationsMemoryJa._(_root);
-	@override late final _TranslationsNodesJa nodes = _TranslationsNodesJa._(_root);
 	@override late final _TranslationsOnboardingJa onboarding = _TranslationsOnboardingJa._(_root);
 	@override late final _TranslationsRoutingJa routing = _TranslationsRoutingJa._(_root);
 	@override late final _TranslationsSearchJa search = _TranslationsSearchJa._(_root);
@@ -8875,7 +8394,6 @@ class _TranslationsEditorJa extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsJa panelLabels = _TranslationsEditorPanelLabelsJa._(_root);
 	@override late final _TranslationsEditorAppBarEditorJa appBarEditor = _TranslationsEditorAppBarEditorJa._(_root);
-	@override late final _TranslationsEditorCodeFindPanelJa codeFindPanel = _TranslationsEditorCodeFindPanelJa._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogJa findReplaceDialog = _TranslationsEditorFindReplaceDialogJa._(_root);
 	@override late final _TranslationsEditorObjectValueEditorJa objectValueEditor = _TranslationsEditorObjectValueEditorJa._(_root);
 	@override late final _TranslationsEditorEditorBasicJa editorBasic = _TranslationsEditorEditorBasicJa._(_root);
@@ -8892,11 +8410,6 @@ class _TranslationsEditorJa extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerJa dialogContentCleaner = _TranslationsEditorDialogContentCleanerJa._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationJa dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationJa._(_root);
 	@override late final _TranslationsEditorEditorPageControllerJa editorPageController = _TranslationsEditorEditorPageControllerJa._(_root);
-	@override late final _TranslationsEditorEditorNodesJa editorNodes = _TranslationsEditorEditorNodesJa._(_root);
-	@override late final _TranslationsEditorNodeListTileJa nodeListTile = _TranslationsEditorNodeListTileJa._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageJa nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageJa._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewJa nodesCanvasView = _TranslationsEditorNodesCanvasViewJa._(_root);
-	@override late final _TranslationsEditorNodeEditorFormJa nodeEditorForm = _TranslationsEditorNodeEditorFormJa._(_root);
 	@override late final _TranslationsEditorContentTransformJa contentTransform = _TranslationsEditorContentTransformJa._(_root);
 }
 
@@ -8974,16 +8487,6 @@ class _TranslationsMemoryJa extends _TranslationsMemoryEn {
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesJa extends _TranslationsNodesEn {
-	_TranslationsNodesJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceJa service = _TranslationsNodesServiceJa._(_root);
 }
 
 // Path: onboarding
@@ -10010,7 +9513,6 @@ class _TranslationsEditorPanelLabelsJa extends _TranslationsEditorPanelLabelsEn 
 	@override String get group => 'グループ';
 	@override String get creator => '作成者';
 	@override String get appData => 'アプリデータ';
-	@override String get nodes => 'ノード';
 }
 
 // Path: editor.appBarEditor
@@ -10022,21 +9524,6 @@ class _TranslationsEditorAppBarEditorJa extends _TranslationsEditorAppBarEditorE
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'アシスタントパネルを非表示';
 	@override String get showChatAssistantTooltip => 'チャットアシスタントを並べて表示';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelJa extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'なし';
-	@override String get previousTooltip => '前へ';
-	@override String get nextTooltip => '次へ';
-	@override String get closeTooltip => '閉じる';
-	@override String get replaceTooltip => '置換';
-	@override String get replaceAllTooltip => 'すべて置換';
 }
 
 // Path: editor.findReplaceDialog
@@ -10308,117 +9795,6 @@ class _TranslationsEditorEditorPageControllerJa extends _TranslationsEditorEdito
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'ロアブックエントリ #${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => '選択した画像が大きすぎます。最大サイズは ${maxSize} です。';
 	@override String get invalidPngMessage => '選択した画像は有効なPNGでないか、読み取れませんでした。';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesJa extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'ノードを削除';
-	@override String get deleteNodeMessage => 'この作成済みノードをカードから削除しますか？';
-	@override String get engineSeedTitle => 'エンジンシード';
-	@override String get visualEditorTooltip => 'ビジュアルエディタ';
-	@override String get editJsonTooltip => 'JSONを編集';
-	@override String get initialGoalLabel => '初期目標';
-	@override String get initialSceneLabel => '初期シーン';
-	@override String get locationLabel => '場所';
-	@override String get timeOfDayLabel => '時間帯';
-	@override String get presentEntitiesLabel => '登場中（カンマ区切り）';
-	@override String get sensoryHooksLabel => '感覚的フック（カンマ区切り）';
-	@override String get addNodeButton => 'ノードを追加';
-	@override String get noAuthoredNodesYet => 'まだ作成済みノードがありません。';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
-		other: 'このカードのノードブロックに ${n} 件の問題があります。ここで編集すると、保存時に破損した部分が上書きされます。',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… 他 ${n} 件';
-	@override String get emotionBaselineLabel => '感情のベースライン';
-	@override String get emotionChipLabel => '感情';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileJa extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'スポーン: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageJa extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'トップレベルはJSONオブジェクトである必要があります';
-	@override String get editNodesJsonTitle => 'ノードのJSONを編集';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
-		other: '保存するには ${n} 件の問題を修正してください。',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewJa extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'スポーン元';
-	@override String get spawnsPort => 'スポーン先';
-	@override String get editNodeLabel => 'ノードを編集';
-	@override String get addNodeTooltip => 'ノードを追加';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormJa extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => '名前';
-	@override String get narrativePayloadLabel => 'ナラティブペイロード';
-	@override String get removeSpawnLinkTitle => 'スポーンリンクを削除';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => 'このノードが「${nodeId}」をスポーンしないようにしますか？ノード自体はカードに残ります。';
-	@override String get removeButton => '削除';
-	@override String get typeLabel => 'タイプ';
-	@override String get scopeLabel => 'スコープ';
-	@override String get originLabel => '起点';
-	@override String get triggerProbLabel => 'トリガー確率';
-	@override String get delayHelper => '対象になるまで待機するターン数。-1 は 0 として扱われます。';
-	@override String get cooldownHelper => '発火後にロックされるターン数。-1 はクールダウンなしを意味します。';
-	@override String get stickyHelper => '発火後、ナラティブペイロードが「継続中」として表示され続けるターン数。-1 は永続を意味します。';
-	@override String get aliveHelper => '削除されるまでノードがプールに残るターン数。-1 は無期限を意味します。';
-	@override String get setToNeverButton => '「なし」に設定';
-	@override String get effectsSectionLabel => '効果';
-	@override String get emotionDeltasTitle => '感情の変化量';
-	@override String get physicalDeltasTitle => '身体の変化量';
-	@override String get relationshipDeltasTitle => '関係の変化量';
-	@override String get addDeltaChip => '変化量を追加';
-	@override String get knowledgeWritesTitle => '知識の書き込み';
-	@override String get addFactChip => '事実を追加';
-	@override String get topicLabel => 'トピック';
-	@override String get confidenceLabel => '確信度';
-	@override String get flagSetTitle => 'フラグ設定';
-	@override String get addFlagChip => 'フラグを追加';
-	@override String get keyLabel => 'キー';
-	@override String get sceneAndFlowTitle => 'シーンと流れ';
-	@override String get goalChangeLabel => 'goalChange（空の場合は現在の目標をクリアします）';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '（なし）';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'true の場合、エンジンはその発火をシーンの切り替えとしてマークします。';
-	@override String get spawnsSectionLabel => 'スポーン';
-	@override String get addNewChip => '新規追加';
-	@override String get linkExistingChip => '既存とリンク';
-	@override String get unlinkTooltip => 'リンク解除';
-	@override String get predicateLabel => '述語';
 }
 
 // Path: editor.contentTransform
@@ -10994,16 +10370,6 @@ class _TranslationsLlmAppMediaCellJa extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => '該当なし';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceJa extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count}個の動作ノードが無効になりました — ノードエディターを確認してください。';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepJa extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepJa._(_TranslationsJa root) : this._root = root, super._(root);
@@ -11194,8 +10560,6 @@ class _TranslationsSettingsGeneralJa extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'ネオン';
 	@override String get storyMemoryTitle => 'ストーリーメモリ';
 	@override String get storyMemorySubtitle => '以前の場面を記憶し、長いチャットで関連するものを呼び戻します。';
-	@override String get narrativeEngineTitle => 'ナラティブエンジン';
-	@override String get narrativeEngineSubtitle => 'シーンとキャラクターを追跡し、チャットしながら物語を進めます。';
 	@override String get promptBreakdownTitle => 'プロンプトの内訳を表示';
 	@override String get promptBreakdownSubtitle => '各応答の下に、プロンプトがモデルのコンテキストウィンドウをどのように埋めたかを示すバーを表示します。';
 	@override String get checkUpdatesTitle => '更新を確認';
@@ -11508,8 +10872,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerJa extends _TranslationsWorkspaceW
 
 	// Translations
 	@override String get favoriteLabel => 'お気に入り';
-	@override String get nodesEngineTitle => 'NODESエンジン';
-	@override String get debugSnapshotSubtitle => 'デバッグスナップショット';
 	@override String get characterSubtitle => 'キャラクター';
 }
 
@@ -11597,7 +10959,6 @@ class _TranslationsKo extends Translations {
 	@override late final _TranslationsGroupKo group = _TranslationsGroupKo._(_root);
 	@override late final _TranslationsLlmAppKo llmApp = _TranslationsLlmAppKo._(_root);
 	@override late final _TranslationsMemoryKo memory = _TranslationsMemoryKo._(_root);
-	@override late final _TranslationsNodesKo nodes = _TranslationsNodesKo._(_root);
 	@override late final _TranslationsOnboardingKo onboarding = _TranslationsOnboardingKo._(_root);
 	@override late final _TranslationsRoutingKo routing = _TranslationsRoutingKo._(_root);
 	@override late final _TranslationsSearchKo search = _TranslationsSearchKo._(_root);
@@ -11726,7 +11087,6 @@ class _TranslationsEditorKo extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsKo panelLabels = _TranslationsEditorPanelLabelsKo._(_root);
 	@override late final _TranslationsEditorAppBarEditorKo appBarEditor = _TranslationsEditorAppBarEditorKo._(_root);
-	@override late final _TranslationsEditorCodeFindPanelKo codeFindPanel = _TranslationsEditorCodeFindPanelKo._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogKo findReplaceDialog = _TranslationsEditorFindReplaceDialogKo._(_root);
 	@override late final _TranslationsEditorObjectValueEditorKo objectValueEditor = _TranslationsEditorObjectValueEditorKo._(_root);
 	@override late final _TranslationsEditorEditorBasicKo editorBasic = _TranslationsEditorEditorBasicKo._(_root);
@@ -11743,11 +11103,6 @@ class _TranslationsEditorKo extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerKo dialogContentCleaner = _TranslationsEditorDialogContentCleanerKo._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationKo dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationKo._(_root);
 	@override late final _TranslationsEditorEditorPageControllerKo editorPageController = _TranslationsEditorEditorPageControllerKo._(_root);
-	@override late final _TranslationsEditorEditorNodesKo editorNodes = _TranslationsEditorEditorNodesKo._(_root);
-	@override late final _TranslationsEditorNodeListTileKo nodeListTile = _TranslationsEditorNodeListTileKo._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageKo nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageKo._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewKo nodesCanvasView = _TranslationsEditorNodesCanvasViewKo._(_root);
-	@override late final _TranslationsEditorNodeEditorFormKo nodeEditorForm = _TranslationsEditorNodeEditorFormKo._(_root);
 	@override late final _TranslationsEditorContentTransformKo contentTransform = _TranslationsEditorContentTransformKo._(_root);
 }
 
@@ -11825,16 +11180,6 @@ class _TranslationsMemoryKo extends _TranslationsMemoryEn {
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesKo extends _TranslationsNodesEn {
-	_TranslationsNodesKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceKo service = _TranslationsNodesServiceKo._(_root);
 }
 
 // Path: onboarding
@@ -12861,7 +12206,6 @@ class _TranslationsEditorPanelLabelsKo extends _TranslationsEditorPanelLabelsEn 
 	@override String get group => '그룹';
 	@override String get creator => '제작자';
 	@override String get appData => '앱 데이터';
-	@override String get nodes => '노드';
 }
 
 // Path: editor.appBarEditor
@@ -12873,21 +12217,6 @@ class _TranslationsEditorAppBarEditorKo extends _TranslationsEditorAppBarEditorE
 	// Translations
 	@override String get hideAssistantPanelTooltip => '어시스턴트 패널 숨기기';
 	@override String get showChatAssistantTooltip => '채팅 어시스턴트 나란히 보기';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelKo extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => '없음';
-	@override String get previousTooltip => '이전';
-	@override String get nextTooltip => '다음';
-	@override String get closeTooltip => '닫기';
-	@override String get replaceTooltip => '바꾸기';
-	@override String get replaceAllTooltip => '모두 바꾸기';
 }
 
 // Path: editor.findReplaceDialog
@@ -13159,117 +12488,6 @@ class _TranslationsEditorEditorPageControllerKo extends _TranslationsEditorEdito
 	@override String compositeLorebookEntry({required Object index, required Object value}) => '로어북 항목 #${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => '선택한 이미지가 너무 커요. 최대 크기는 ${maxSize}까지예요.';
 	@override String get invalidPngMessage => '선택한 이미지가 유효한 PNG가 아니거나 읽을 수 없어요.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesKo extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => '노드 삭제';
-	@override String get deleteNodeMessage => '이 작성된 노드를 카드에서 제거할까요?';
-	@override String get engineSeedTitle => '엔진 시드';
-	@override String get visualEditorTooltip => '비주얼 편집기';
-	@override String get editJsonTooltip => 'JSON 편집';
-	@override String get initialGoalLabel => '초기 목표';
-	@override String get initialSceneLabel => '초기 장면';
-	@override String get locationLabel => '장소';
-	@override String get timeOfDayLabel => '시간대';
-	@override String get presentEntitiesLabel => '등장 대상 (쉼표로 구분)';
-	@override String get sensoryHooksLabel => '감각 요소 (쉼표로 구분)';
-	@override String get addNodeButton => '노드 추가';
-	@override String get noAuthoredNodesYet => '아직 작성된 노드가 없어요.';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
-		other: '이 카드의 노드 블록에 ${n}개의 문제가 있어요. 여기서 편집하면 저장할 때 손상된 부분을 덮어써요.',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… 외 ${n}개';
-	@override String get emotionBaselineLabel => '감정 기준선';
-	@override String get emotionChipLabel => '감정';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileKo extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => '생성: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageKo extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => '최상위는 JSON 객체여야 해요';
-	@override String get editNodesJsonTitle => '노드 JSON 편집';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
-		other: '저장하려면 문제 ${n}개를 해결하세요.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewKo extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => '생성 출처';
-	@override String get spawnsPort => '생성';
-	@override String get editNodeLabel => '노드 편집';
-	@override String get addNodeTooltip => '노드 추가';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormKo extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => '이름';
-	@override String get narrativePayloadLabel => '내러티브 페이로드';
-	@override String get removeSpawnLinkTitle => '생성 연결 제거';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => '이 노드가 "${nodeId}"을(를) 생성하지 않도록 할까요? 노드 자체는 카드에 남아 있어요.';
-	@override String get removeButton => '제거';
-	@override String get typeLabel => '유형';
-	@override String get scopeLabel => '범위';
-	@override String get originLabel => '출처';
-	@override String get triggerProbLabel => '트리거 확률';
-	@override String get delayHelper => '적용 대상이 되기 전 대기할 턴 수. -1은 0으로 동작해요.';
-	@override String get cooldownHelper => '발동 후 잠기는 턴 수. -1은 쿨다운 없음을 의미해요.';
-	@override String get stickyHelper => '발동 후 내러티브 페이로드가 "Lingering" 상태로 계속 나타나는 턴 수. -1은 영구를 의미해요.';
-	@override String get aliveHelper => '노드가 제거되기 전 풀에 남아 있는 턴 수. -1은 영원을 의미해요.';
-	@override String get setToNeverButton => '안 함으로 설정';
-	@override String get effectsSectionLabel => '효과';
-	@override String get emotionDeltasTitle => '감정 변화량';
-	@override String get physicalDeltasTitle => '신체 변화량';
-	@override String get relationshipDeltasTitle => '관계 변화량';
-	@override String get addDeltaChip => '변화량 추가';
-	@override String get knowledgeWritesTitle => '지식 기록';
-	@override String get addFactChip => '사실 추가';
-	@override String get topicLabel => '주제';
-	@override String get confidenceLabel => '신뢰도';
-	@override String get flagSetTitle => '플래그 설정';
-	@override String get addFlagChip => '플래그 추가';
-	@override String get keyLabel => '키';
-	@override String get sceneAndFlowTitle => '장면 및 흐름';
-	@override String get goalChangeLabel => 'goalChange (비우면 현재 목표를 지워요)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(없음)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'true이면 엔진이 이 발동을 장면 전환으로 표시해요.';
-	@override String get spawnsSectionLabel => '생성';
-	@override String get addNewChip => '새로 추가';
-	@override String get linkExistingChip => '기존 연결';
-	@override String get unlinkTooltip => '연결 해제';
-	@override String get predicateLabel => '조건';
 }
 
 // Path: editor.contentTransform
@@ -13845,16 +13063,6 @@ class _TranslationsLlmAppMediaCellKo extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => '해당 없음';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceKo extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '동작 노드 ${count}개가 비활성화되었습니다 — 노드 편집기를 확인하세요.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepKo extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepKo._(_TranslationsKo root) : this._root = root, super._(root);
@@ -14045,8 +13253,6 @@ class _TranslationsSettingsGeneralKo extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => '네온';
 	@override String get storyMemoryTitle => '스토리 기억';
 	@override String get storyMemorySubtitle => '이전 순간들을 기억하고 긴 채팅에서 관련된 내용을 다시 불러와요.';
-	@override String get narrativeEngineTitle => '내러티브 엔진';
-	@override String get narrativeEngineSubtitle => '장면과 캐릭터를 추적하고 채팅하면서 이야기를 진행해요.';
 	@override String get promptBreakdownTitle => '프롬프트 분석 표시';
 	@override String get promptBreakdownSubtitle => '각 응답 아래에 프롬프트가 모델 컨텍스트 윈도우를 어떻게 채웠는지 보여 주는 막대를 표시해요.';
 	@override String get checkUpdatesTitle => '업데이트 확인';
@@ -14359,8 +13565,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerKo extends _TranslationsWorkspaceW
 
 	// Translations
 	@override String get favoriteLabel => '즐겨찾기';
-	@override String get nodesEngineTitle => 'NODES 엔진';
-	@override String get debugSnapshotSubtitle => '디버그 스냅샷';
 	@override String get characterSubtitle => '캐릭터';
 }
 
@@ -14448,7 +13652,6 @@ class _TranslationsPtBr extends Translations {
 	@override late final _TranslationsGroupPtBr group = _TranslationsGroupPtBr._(_root);
 	@override late final _TranslationsLlmAppPtBr llmApp = _TranslationsLlmAppPtBr._(_root);
 	@override late final _TranslationsMemoryPtBr memory = _TranslationsMemoryPtBr._(_root);
-	@override late final _TranslationsNodesPtBr nodes = _TranslationsNodesPtBr._(_root);
 	@override late final _TranslationsOnboardingPtBr onboarding = _TranslationsOnboardingPtBr._(_root);
 	@override late final _TranslationsRoutingPtBr routing = _TranslationsRoutingPtBr._(_root);
 	@override late final _TranslationsSearchPtBr search = _TranslationsSearchPtBr._(_root);
@@ -14577,7 +13780,6 @@ class _TranslationsEditorPtBr extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsPtBr panelLabels = _TranslationsEditorPanelLabelsPtBr._(_root);
 	@override late final _TranslationsEditorAppBarEditorPtBr appBarEditor = _TranslationsEditorAppBarEditorPtBr._(_root);
-	@override late final _TranslationsEditorCodeFindPanelPtBr codeFindPanel = _TranslationsEditorCodeFindPanelPtBr._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogPtBr findReplaceDialog = _TranslationsEditorFindReplaceDialogPtBr._(_root);
 	@override late final _TranslationsEditorObjectValueEditorPtBr objectValueEditor = _TranslationsEditorObjectValueEditorPtBr._(_root);
 	@override late final _TranslationsEditorEditorBasicPtBr editorBasic = _TranslationsEditorEditorBasicPtBr._(_root);
@@ -14594,11 +13796,6 @@ class _TranslationsEditorPtBr extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerPtBr dialogContentCleaner = _TranslationsEditorDialogContentCleanerPtBr._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationPtBr dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationPtBr._(_root);
 	@override late final _TranslationsEditorEditorPageControllerPtBr editorPageController = _TranslationsEditorEditorPageControllerPtBr._(_root);
-	@override late final _TranslationsEditorEditorNodesPtBr editorNodes = _TranslationsEditorEditorNodesPtBr._(_root);
-	@override late final _TranslationsEditorNodeListTilePtBr nodeListTile = _TranslationsEditorNodeListTilePtBr._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPagePtBr nodesRawEditorPage = _TranslationsEditorNodesRawEditorPagePtBr._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewPtBr nodesCanvasView = _TranslationsEditorNodesCanvasViewPtBr._(_root);
-	@override late final _TranslationsEditorNodeEditorFormPtBr nodeEditorForm = _TranslationsEditorNodeEditorFormPtBr._(_root);
 	@override late final _TranslationsEditorContentTransformPtBr contentTransform = _TranslationsEditorContentTransformPtBr._(_root);
 }
 
@@ -14676,16 +13873,6 @@ class _TranslationsMemoryPtBr extends _TranslationsMemoryEn {
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesPtBr extends _TranslationsNodesEn {
-	_TranslationsNodesPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServicePtBr service = _TranslationsNodesServicePtBr._(_root);
 }
 
 // Path: onboarding
@@ -15717,7 +14904,6 @@ class _TranslationsEditorPanelLabelsPtBr extends _TranslationsEditorPanelLabelsE
 	@override String get group => 'Grupo';
 	@override String get creator => 'Criador';
 	@override String get appData => 'Dados do app';
-	@override String get nodes => 'Nós';
 }
 
 // Path: editor.appBarEditor
@@ -15729,21 +14915,6 @@ class _TranslationsEditorAppBarEditorPtBr extends _TranslationsEditorAppBarEdito
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'Ocultar painel do assistente';
 	@override String get showChatAssistantTooltip => 'Mostrar assistente de conversa lado a lado';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelPtBr extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'nenhum';
-	@override String get previousTooltip => 'Anterior';
-	@override String get nextTooltip => 'Próximo';
-	@override String get closeTooltip => 'Fechar';
-	@override String get replaceTooltip => 'Substituir';
-	@override String get replaceAllTooltip => 'Substituir tudo';
 }
 
 // Path: editor.findReplaceDialog
@@ -16015,119 +15186,6 @@ class _TranslationsEditorEditorPageControllerPtBr extends _TranslationsEditorEdi
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'Entrada de lorebook nº${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => 'A imagem selecionada é grande demais. O tamanho máximo é ${maxSize}.';
 	@override String get invalidPngMessage => 'A imagem selecionada não é um PNG válido ou não pôde ser lida.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesPtBr extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'Excluir nó';
-	@override String get deleteNodeMessage => 'Remover este nó autoral do cartão?';
-	@override String get engineSeedTitle => 'Semente do motor';
-	@override String get visualEditorTooltip => 'Editor visual';
-	@override String get editJsonTooltip => 'Editar JSON';
-	@override String get initialGoalLabel => 'Objetivo inicial';
-	@override String get initialSceneLabel => 'Cena inicial';
-	@override String get locationLabel => 'Local';
-	@override String get timeOfDayLabel => 'Hora do dia';
-	@override String get presentEntitiesLabel => 'Presentes (separados por vírgula)';
-	@override String get sensoryHooksLabel => 'Ganchos sensoriais (separados por vírgula)';
-	@override String get addNodeButton => 'Adicionar nó';
-	@override String get noAuthoredNodesYet => 'Nenhum nó autoral ainda.';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
-		one: 'O bloco de nós deste cartão tem ${n} problema; editar aqui sobrescreverá as partes corrompidas ao salvar.',
-		other: 'O bloco de nós deste cartão tem ${n} problemas; editar aqui sobrescreverá as partes corrompidas ao salvar.',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… mais ${n}';
-	@override String get emotionBaselineLabel => 'Emoção base';
-	@override String get emotionChipLabel => 'Emoção';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTilePtBr extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTilePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'gera: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPagePtBr extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPagePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'O nível superior deve ser um objeto JSON';
-	@override String get editNodesJsonTitle => 'Editar JSON dos nós';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
-		one: 'Corrija ${n} problema para salvar.',
-		other: 'Corrija ${n} problemas para salvar.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewPtBr extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'gerado por';
-	@override String get spawnsPort => 'gera';
-	@override String get editNodeLabel => 'Editar nó';
-	@override String get addNodeTooltip => 'Adicionar nó';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormPtBr extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => 'Nome';
-	@override String get narrativePayloadLabel => 'Carga narrativa';
-	@override String get removeSpawnLinkTitle => 'Remover vínculo de geração';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => 'Impedir este nó de gerar "${nodeId}"? O nó em si permanece no cartão.';
-	@override String get removeButton => 'Remover';
-	@override String get typeLabel => 'Tipo';
-	@override String get scopeLabel => 'Escopo';
-	@override String get originLabel => 'Origem';
-	@override String get triggerProbLabel => 'Prob. de gatilho';
-	@override String get delayHelper => 'Turnos a esperar antes de ficar elegível. -1 age como 0.';
-	@override String get cooldownHelper => 'Turnos bloqueado após disparar. -1 significa sem tempo de espera.';
-	@override String get stickyHelper => 'Turnos em que a carga narrativa continua aparecendo como "Persistente" após disparar. -1 significa permanente.';
-	@override String get aliveHelper => 'Turnos em que o nó permanece no pool antes da remoção. -1 significa para sempre.';
-	@override String get setToNeverButton => 'Definir como nunca';
-	@override String get effectsSectionLabel => 'Efeitos';
-	@override String get emotionDeltasTitle => 'Variações de emoção';
-	@override String get physicalDeltasTitle => 'Variações físicas';
-	@override String get relationshipDeltasTitle => 'Variações de relacionamento';
-	@override String get addDeltaChip => 'Adicionar variação';
-	@override String get knowledgeWritesTitle => 'Escritas de conhecimento';
-	@override String get addFactChip => 'Adicionar fato';
-	@override String get topicLabel => 'tópico';
-	@override String get confidenceLabel => 'confiança';
-	@override String get flagSetTitle => 'Definição de flag';
-	@override String get addFlagChip => 'Adicionar flag';
-	@override String get keyLabel => 'chave';
-	@override String get sceneAndFlowTitle => 'Cena e fluxo';
-	@override String get goalChangeLabel => 'goalChange (limpa o objetivo atual quando vazio)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(nenhum)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'Quando verdadeiro, o motor marca o disparo como uma mudança de cena.';
-	@override String get spawnsSectionLabel => 'Gerações';
-	@override String get addNewChip => 'Adicionar novo';
-	@override String get linkExistingChip => 'Vincular existente';
-	@override String get unlinkTooltip => 'Desvincular';
-	@override String get predicateLabel => 'Predicado';
 }
 
 // Path: editor.contentTransform
@@ -16705,16 +15763,6 @@ class _TranslationsLlmAppMediaCellPtBr extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Não aplicável';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServicePtBr extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServicePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} nó(s) de comportamento desativado(s) — verifique o editor de nós.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepPtBr extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
@@ -16905,8 +15953,6 @@ class _TranslationsSettingsGeneralPtBr extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'Neon';
 	@override String get storyMemoryTitle => 'Memória da história';
 	@override String get storyMemorySubtitle => 'Lembra momentos anteriores e traz os relevantes de volta em conversas longas.';
-	@override String get narrativeEngineTitle => 'Motor narrativo';
-	@override String get narrativeEngineSubtitle => 'Acompanha a cena e os personagens e faz a história avançar enquanto você conversa.';
 	@override String get promptBreakdownTitle => 'Mostrar detalhamento do prompt';
 	@override String get promptBreakdownSubtitle => 'Mostra uma barra sob cada resposta detalhando como o prompt preencheu a janela de contexto do modelo.';
 	@override String get checkUpdatesTitle => 'Verificar atualizações';
@@ -17220,8 +16266,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerPtBr extends _TranslationsWorkspac
 
 	// Translations
 	@override String get favoriteLabel => 'Favorito';
-	@override String get nodesEngineTitle => 'Motor NODES';
-	@override String get debugSnapshotSubtitle => 'Captura de depuração';
 	@override String get characterSubtitle => 'Personagem';
 }
 
@@ -17309,7 +16353,6 @@ class _TranslationsRu extends Translations {
 	@override late final _TranslationsGroupRu group = _TranslationsGroupRu._(_root);
 	@override late final _TranslationsLlmAppRu llmApp = _TranslationsLlmAppRu._(_root);
 	@override late final _TranslationsMemoryRu memory = _TranslationsMemoryRu._(_root);
-	@override late final _TranslationsNodesRu nodes = _TranslationsNodesRu._(_root);
 	@override late final _TranslationsOnboardingRu onboarding = _TranslationsOnboardingRu._(_root);
 	@override late final _TranslationsRoutingRu routing = _TranslationsRoutingRu._(_root);
 	@override late final _TranslationsSearchRu search = _TranslationsSearchRu._(_root);
@@ -17438,7 +16481,6 @@ class _TranslationsEditorRu extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsRu panelLabels = _TranslationsEditorPanelLabelsRu._(_root);
 	@override late final _TranslationsEditorAppBarEditorRu appBarEditor = _TranslationsEditorAppBarEditorRu._(_root);
-	@override late final _TranslationsEditorCodeFindPanelRu codeFindPanel = _TranslationsEditorCodeFindPanelRu._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogRu findReplaceDialog = _TranslationsEditorFindReplaceDialogRu._(_root);
 	@override late final _TranslationsEditorObjectValueEditorRu objectValueEditor = _TranslationsEditorObjectValueEditorRu._(_root);
 	@override late final _TranslationsEditorEditorBasicRu editorBasic = _TranslationsEditorEditorBasicRu._(_root);
@@ -17455,11 +16497,6 @@ class _TranslationsEditorRu extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerRu dialogContentCleaner = _TranslationsEditorDialogContentCleanerRu._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationRu dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationRu._(_root);
 	@override late final _TranslationsEditorEditorPageControllerRu editorPageController = _TranslationsEditorEditorPageControllerRu._(_root);
-	@override late final _TranslationsEditorEditorNodesRu editorNodes = _TranslationsEditorEditorNodesRu._(_root);
-	@override late final _TranslationsEditorNodeListTileRu nodeListTile = _TranslationsEditorNodeListTileRu._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageRu nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageRu._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewRu nodesCanvasView = _TranslationsEditorNodesCanvasViewRu._(_root);
-	@override late final _TranslationsEditorNodeEditorFormRu nodeEditorForm = _TranslationsEditorNodeEditorFormRu._(_root);
 	@override late final _TranslationsEditorContentTransformRu contentTransform = _TranslationsEditorContentTransformRu._(_root);
 }
 
@@ -17537,16 +16574,6 @@ class _TranslationsMemoryRu extends _TranslationsMemoryEn {
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesRu extends _TranslationsNodesEn {
-	_TranslationsNodesRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceRu service = _TranslationsNodesServiceRu._(_root);
 }
 
 // Path: onboarding
@@ -18588,7 +17615,6 @@ class _TranslationsEditorPanelLabelsRu extends _TranslationsEditorPanelLabelsEn 
 	@override String get group => 'Группа';
 	@override String get creator => 'Автор';
 	@override String get appData => 'Данные приложения';
-	@override String get nodes => 'Узлы';
 }
 
 // Path: editor.appBarEditor
@@ -18600,21 +17626,6 @@ class _TranslationsEditorAppBarEditorRu extends _TranslationsEditorAppBarEditorE
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'Скрыть панель ассистента';
 	@override String get showChatAssistantTooltip => 'Показать чат-ассистент рядом';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelRu extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'нет';
-	@override String get previousTooltip => 'Предыдущее';
-	@override String get nextTooltip => 'Следующее';
-	@override String get closeTooltip => 'Закрыть';
-	@override String get replaceTooltip => 'Заменить';
-	@override String get replaceAllTooltip => 'Заменить всё';
 }
 
 // Path: editor.findReplaceDialog
@@ -18886,123 +17897,6 @@ class _TranslationsEditorEditorPageControllerRu extends _TranslationsEditorEdito
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'Запись лорбука №${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => 'Выбранное изображение слишком большое. Максимальный размер — ${maxSize}.';
 	@override String get invalidPngMessage => 'Выбранное изображение не является корректным PNG или не может быть прочитано.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesRu extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'Удалить узел';
-	@override String get deleteNodeMessage => 'Удалить этот авторский узел из карточки?';
-	@override String get engineSeedTitle => 'Начальное состояние движка';
-	@override String get visualEditorTooltip => 'Визуальный редактор';
-	@override String get editJsonTooltip => 'Редактировать JSON';
-	@override String get initialGoalLabel => 'Начальная цель';
-	@override String get initialSceneLabel => 'Начальная сцена';
-	@override String get locationLabel => 'Место';
-	@override String get timeOfDayLabel => 'Время суток';
-	@override String get presentEntitiesLabel => 'Присутствуют (через запятую)';
-	@override String get sensoryHooksLabel => 'Сенсорные зацепки (через запятую)';
-	@override String get addNodeButton => 'Добавить узел';
-	@override String get noAuthoredNodesYet => 'Авторских узлов пока нет.';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
-		one: 'В блоке узлов этой карточки ${n} проблема; редактирование здесь перезапишет повреждённые части при сохранении.',
-		few: 'В блоке узлов этой карточки ${n} проблемы; редактирование здесь перезапишет повреждённые части при сохранении.',
-		many: 'В блоке узлов этой карточки ${n} проблем; редактирование здесь перезапишет повреждённые части при сохранении.',
-		other: 'В блоке узлов этой карточки ${n} проблемы; редактирование здесь перезапишет повреждённые части при сохранении.',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… ещё ${n}';
-	@override String get emotionBaselineLabel => 'Базовая эмоция';
-	@override String get emotionChipLabel => 'Эмоция';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileRu extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'порождает: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageRu extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'Верхний уровень должен быть объектом JSON';
-	@override String get editNodesJsonTitle => 'Редактировать JSON узлов';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
-		one: 'Исправьте ${n} проблему, чтобы сохранить.',
-		few: 'Исправьте ${n} проблемы, чтобы сохранить.',
-		many: 'Исправьте ${n} проблем, чтобы сохранить.',
-		other: 'Исправьте ${n} проблемы, чтобы сохранить.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewRu extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'порождён';
-	@override String get spawnsPort => 'порождает';
-	@override String get editNodeLabel => 'Редактировать узел';
-	@override String get addNodeTooltip => 'Добавить узел';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormRu extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => 'Имя';
-	@override String get narrativePayloadLabel => 'Нарративная нагрузка';
-	@override String get removeSpawnLinkTitle => 'Удалить связь порождения';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => 'Запретить этому узлу порождать «${nodeId}»? Сам узел останется на карточке.';
-	@override String get removeButton => 'Удалить';
-	@override String get typeLabel => 'Тип';
-	@override String get scopeLabel => 'Область';
-	@override String get originLabel => 'Источник';
-	@override String get triggerProbLabel => 'Вероятность триггера';
-	@override String get delayHelper => 'Ходов ожидания перед активацией. -1 равно 0.';
-	@override String get cooldownHelper => 'Ходов блокировки после срабатывания. -1 означает без перезарядки.';
-	@override String get stickyHelper => 'Ходов, в течение которых нарративная нагрузка остаётся как «Сохраняющаяся» после срабатывания. -1 означает навсегда.';
-	@override String get aliveHelper => 'Ходов, в течение которых узел остаётся в пуле до удаления. -1 означает бесконечно.';
-	@override String get setToNeverButton => 'Установить «никогда»';
-	@override String get effectsSectionLabel => 'Эффекты';
-	@override String get emotionDeltasTitle => 'Изменения эмоций';
-	@override String get physicalDeltasTitle => 'Физические изменения';
-	@override String get relationshipDeltasTitle => 'Изменения отношений';
-	@override String get addDeltaChip => 'Добавить изменение';
-	@override String get knowledgeWritesTitle => 'Записи знаний';
-	@override String get addFactChip => 'Добавить факт';
-	@override String get topicLabel => 'тема';
-	@override String get confidenceLabel => 'уверенность';
-	@override String get flagSetTitle => 'Набор флагов';
-	@override String get addFlagChip => 'Добавить флаг';
-	@override String get keyLabel => 'ключ';
-	@override String get sceneAndFlowTitle => 'Сцена и ход';
-	@override String get goalChangeLabel => 'goalChange (очищает текущую цель, если пусто)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(нет)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'Если true, движок помечает срабатывание как смену сцены.';
-	@override String get spawnsSectionLabel => 'Порождения';
-	@override String get addNewChip => 'Добавить новый';
-	@override String get linkExistingChip => 'Связать существующий';
-	@override String get unlinkTooltip => 'Отвязать';
-	@override String get predicateLabel => 'Предикат';
 }
 
 // Path: editor.contentTransform
@@ -19584,16 +18478,6 @@ class _TranslationsLlmAppMediaCellRu extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Неприменимо';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceRu extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => 'Отключено узлов поведения: ${count} — проверьте редактор узлов.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepRu extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepRu._(_TranslationsRu root) : this._root = root, super._(root);
@@ -19784,8 +18668,6 @@ class _TranslationsSettingsGeneralRu extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'Неон';
 	@override String get storyMemoryTitle => 'Память истории';
 	@override String get storyMemorySubtitle => 'Запоминать ранние моменты и возвращать нужные из них в длинных чатах.';
-	@override String get narrativeEngineTitle => 'Нарративный движок';
-	@override String get narrativeEngineSubtitle => 'Отслеживать сцену и персонажей и двигать историю по мере вашей переписки.';
 	@override String get promptBreakdownTitle => 'Показывать разбор промпта';
 	@override String get promptBreakdownSubtitle => 'Показывать под каждым ответом полосу, разбивающую, как промпт заполнил контекстное окно модели.';
 	@override String get checkUpdatesTitle => 'Проверить обновления';
@@ -20101,8 +18983,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerRu extends _TranslationsWorkspaceW
 
 	// Translations
 	@override String get favoriteLabel => 'Избранное';
-	@override String get nodesEngineTitle => 'Движок NODES';
-	@override String get debugSnapshotSubtitle => 'Отладочный снимок';
 	@override String get characterSubtitle => 'Персонаж';
 }
 
@@ -20190,7 +19070,6 @@ class _TranslationsVi extends Translations {
 	@override late final _TranslationsGroupVi group = _TranslationsGroupVi._(_root);
 	@override late final _TranslationsLlmAppVi llmApp = _TranslationsLlmAppVi._(_root);
 	@override late final _TranslationsMemoryVi memory = _TranslationsMemoryVi._(_root);
-	@override late final _TranslationsNodesVi nodes = _TranslationsNodesVi._(_root);
 	@override late final _TranslationsOnboardingVi onboarding = _TranslationsOnboardingVi._(_root);
 	@override late final _TranslationsRoutingVi routing = _TranslationsRoutingVi._(_root);
 	@override late final _TranslationsSearchVi search = _TranslationsSearchVi._(_root);
@@ -20319,7 +19198,6 @@ class _TranslationsEditorVi extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsVi panelLabels = _TranslationsEditorPanelLabelsVi._(_root);
 	@override late final _TranslationsEditorAppBarEditorVi appBarEditor = _TranslationsEditorAppBarEditorVi._(_root);
-	@override late final _TranslationsEditorCodeFindPanelVi codeFindPanel = _TranslationsEditorCodeFindPanelVi._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogVi findReplaceDialog = _TranslationsEditorFindReplaceDialogVi._(_root);
 	@override late final _TranslationsEditorObjectValueEditorVi objectValueEditor = _TranslationsEditorObjectValueEditorVi._(_root);
 	@override late final _TranslationsEditorEditorBasicVi editorBasic = _TranslationsEditorEditorBasicVi._(_root);
@@ -20336,11 +19214,6 @@ class _TranslationsEditorVi extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerVi dialogContentCleaner = _TranslationsEditorDialogContentCleanerVi._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationVi dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationVi._(_root);
 	@override late final _TranslationsEditorEditorPageControllerVi editorPageController = _TranslationsEditorEditorPageControllerVi._(_root);
-	@override late final _TranslationsEditorEditorNodesVi editorNodes = _TranslationsEditorEditorNodesVi._(_root);
-	@override late final _TranslationsEditorNodeListTileVi nodeListTile = _TranslationsEditorNodeListTileVi._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageVi nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageVi._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewVi nodesCanvasView = _TranslationsEditorNodesCanvasViewVi._(_root);
-	@override late final _TranslationsEditorNodeEditorFormVi nodeEditorForm = _TranslationsEditorNodeEditorFormVi._(_root);
 	@override late final _TranslationsEditorContentTransformVi contentTransform = _TranslationsEditorContentTransformVi._(_root);
 }
 
@@ -20418,16 +19291,6 @@ class _TranslationsMemoryVi extends _TranslationsMemoryEn {
 	@override final _TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesVi extends _TranslationsNodesEn {
-	_TranslationsNodesVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceVi service = _TranslationsNodesServiceVi._(_root);
 }
 
 // Path: onboarding
@@ -21454,7 +20317,6 @@ class _TranslationsEditorPanelLabelsVi extends _TranslationsEditorPanelLabelsEn 
 	@override String get group => 'Nhóm';
 	@override String get creator => 'Tác giả';
 	@override String get appData => 'Dữ liệu ứng dụng';
-	@override String get nodes => 'Node';
 }
 
 // Path: editor.appBarEditor
@@ -21466,21 +20328,6 @@ class _TranslationsEditorAppBarEditorVi extends _TranslationsEditorAppBarEditorE
 	// Translations
 	@override String get hideAssistantPanelTooltip => 'Ẩn bảng trợ lý';
 	@override String get showChatAssistantTooltip => 'Hiện trợ lý trò chuyện song song';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelVi extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => 'không có';
-	@override String get previousTooltip => 'Trước';
-	@override String get nextTooltip => 'Sau';
-	@override String get closeTooltip => 'Đóng';
-	@override String get replaceTooltip => 'Thay thế';
-	@override String get replaceAllTooltip => 'Thay thế tất cả';
 }
 
 // Path: editor.findReplaceDialog
@@ -21752,117 +20599,6 @@ class _TranslationsEditorEditorPageControllerVi extends _TranslationsEditorEdito
 	@override String compositeLorebookEntry({required Object index, required Object value}) => 'Mục lorebook #${index}:\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => 'Ảnh đã chọn quá lớn. Kích thước tối đa là ${maxSize}.';
 	@override String get invalidPngMessage => 'Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được.';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesVi extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => 'Xóa node';
-	@override String get deleteNodeMessage => 'Xóa node tự tạo này khỏi thẻ?';
-	@override String get engineSeedTitle => 'Seed của engine';
-	@override String get visualEditorTooltip => 'Trình chỉnh sửa trực quan';
-	@override String get editJsonTooltip => 'Chỉnh sửa JSON';
-	@override String get initialGoalLabel => 'Mục tiêu ban đầu';
-	@override String get initialSceneLabel => 'Cảnh ban đầu';
-	@override String get locationLabel => 'Địa điểm';
-	@override String get timeOfDayLabel => 'Thời điểm trong ngày';
-	@override String get presentEntitiesLabel => 'Có mặt (phân tách bằng dấu phẩy)';
-	@override String get sensoryHooksLabel => 'Chi tiết giác quan (phân tách bằng dấu phẩy)';
-	@override String get addNodeButton => 'Thêm node';
-	@override String get noAuthoredNodesYet => 'Chưa có node tự tạo nào.';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
-		other: 'Khối node của thẻ này có ${n} vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu.',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… còn ${n} nữa';
-	@override String get emotionBaselineLabel => 'Cảm xúc nền';
-	@override String get emotionChipLabel => 'Cảm xúc';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileVi extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => 'sinh ra: ${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageVi extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => 'Cấp cao nhất phải là một đối tượng JSON';
-	@override String get editNodesJsonTitle => 'Chỉnh sửa JSON node';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
-		other: 'Sửa ${n} vấn đề để lưu.',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewVi extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => 'được sinh bởi';
-	@override String get spawnsPort => 'sinh ra';
-	@override String get editNodeLabel => 'Chỉnh sửa node';
-	@override String get addNodeTooltip => 'Thêm node';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormVi extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => 'Tên';
-	@override String get narrativePayloadLabel => 'Nội dung tường thuật';
-	@override String get removeSpawnLinkTitle => 'Xóa liên kết sinh';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => 'Ngừng cho node này sinh ra "${nodeId}"? Bản thân node vẫn còn trên thẻ.';
-	@override String get removeButton => 'Xóa';
-	@override String get typeLabel => 'Loại';
-	@override String get scopeLabel => 'Phạm vi';
-	@override String get originLabel => 'Nguồn gốc';
-	@override String get triggerProbLabel => 'Xác suất kích hoạt';
-	@override String get delayHelper => 'Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.';
-	@override String get cooldownHelper => 'Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.';
-	@override String get stickyHelper => 'Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng "Còn vương lại" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.';
-	@override String get aliveHelper => 'Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.';
-	@override String get setToNeverButton => 'Đặt thành không bao giờ';
-	@override String get effectsSectionLabel => 'Hiệu ứng';
-	@override String get emotionDeltasTitle => 'Biến đổi cảm xúc';
-	@override String get physicalDeltasTitle => 'Biến đổi thể chất';
-	@override String get relationshipDeltasTitle => 'Biến đổi quan hệ';
-	@override String get addDeltaChip => 'Thêm biến đổi';
-	@override String get knowledgeWritesTitle => 'Ghi kiến thức';
-	@override String get addFactChip => 'Thêm dữ kiện';
-	@override String get topicLabel => 'chủ đề';
-	@override String get confidenceLabel => 'độ tin cậy';
-	@override String get flagSetTitle => 'Đặt cờ';
-	@override String get addFlagChip => 'Thêm cờ';
-	@override String get keyLabel => 'khóa';
-	@override String get sceneAndFlowTitle => 'Cảnh & mạch truyện';
-	@override String get goalChangeLabel => 'goalChange (xóa mục tiêu hiện tại khi để trống)';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '(không)';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => 'Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.';
-	@override String get spawnsSectionLabel => 'Sinh ra';
-	@override String get addNewChip => 'Thêm mới';
-	@override String get linkExistingChip => 'Liên kết node có sẵn';
-	@override String get unlinkTooltip => 'Hủy liên kết';
-	@override String get predicateLabel => 'Điều kiện';
 }
 
 // Path: editor.contentTransform
@@ -22438,16 +21174,6 @@ class _TranslationsLlmAppMediaCellVi extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Không áp dụng';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceVi extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => 'Đã tắt ${count} nút hành vi — hãy kiểm tra trình chỉnh sửa nút.';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepVi extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepVi._(_TranslationsVi root) : this._root = root, super._(root);
@@ -22638,8 +21364,6 @@ class _TranslationsSettingsGeneralVi extends _TranslationsSettingsGeneralEn {
 	@override String get themeStyleNeon => 'Neon';
 	@override String get storyMemoryTitle => 'Ký ức câu chuyện';
 	@override String get storyMemorySubtitle => 'Ghi nhớ các khoảnh khắc trước đó và đưa những phần liên quan trở lại trong các cuộc trò chuyện dài.';
-	@override String get narrativeEngineTitle => 'Công cụ tường thuật';
-	@override String get narrativeEngineSubtitle => 'Theo dõi bối cảnh và nhân vật, đẩy câu chuyện tiến triển khi bạn trò chuyện.';
 	@override String get promptBreakdownTitle => 'Hiện phân tích prompt';
 	@override String get promptBreakdownSubtitle => 'Hiển thị một thanh dưới mỗi phản hồi phân tích cách prompt lấp đầy cửa sổ ngữ cảnh của mô hình.';
 	@override String get checkUpdatesTitle => 'Kiểm tra cập nhật';
@@ -22952,8 +21676,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerVi extends _TranslationsWorkspaceW
 
 	// Translations
 	@override String get favoriteLabel => 'Yêu thích';
-	@override String get nodesEngineTitle => 'NODES Engine';
-	@override String get debugSnapshotSubtitle => 'Ảnh chụp gỡ lỗi';
 	@override String get characterSubtitle => 'Nhân vật';
 }
 
@@ -23041,7 +21763,6 @@ class _TranslationsZhHans extends Translations {
 	@override late final _TranslationsGroupZhHans group = _TranslationsGroupZhHans._(_root);
 	@override late final _TranslationsLlmAppZhHans llmApp = _TranslationsLlmAppZhHans._(_root);
 	@override late final _TranslationsMemoryZhHans memory = _TranslationsMemoryZhHans._(_root);
-	@override late final _TranslationsNodesZhHans nodes = _TranslationsNodesZhHans._(_root);
 	@override late final _TranslationsOnboardingZhHans onboarding = _TranslationsOnboardingZhHans._(_root);
 	@override late final _TranslationsRoutingZhHans routing = _TranslationsRoutingZhHans._(_root);
 	@override late final _TranslationsSearchZhHans search = _TranslationsSearchZhHans._(_root);
@@ -23170,7 +21891,6 @@ class _TranslationsEditorZhHans extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsZhHans panelLabels = _TranslationsEditorPanelLabelsZhHans._(_root);
 	@override late final _TranslationsEditorAppBarEditorZhHans appBarEditor = _TranslationsEditorAppBarEditorZhHans._(_root);
-	@override late final _TranslationsEditorCodeFindPanelZhHans codeFindPanel = _TranslationsEditorCodeFindPanelZhHans._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogZhHans findReplaceDialog = _TranslationsEditorFindReplaceDialogZhHans._(_root);
 	@override late final _TranslationsEditorObjectValueEditorZhHans objectValueEditor = _TranslationsEditorObjectValueEditorZhHans._(_root);
 	@override late final _TranslationsEditorEditorBasicZhHans editorBasic = _TranslationsEditorEditorBasicZhHans._(_root);
@@ -23187,11 +21907,6 @@ class _TranslationsEditorZhHans extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerZhHans dialogContentCleaner = _TranslationsEditorDialogContentCleanerZhHans._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationZhHans dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationZhHans._(_root);
 	@override late final _TranslationsEditorEditorPageControllerZhHans editorPageController = _TranslationsEditorEditorPageControllerZhHans._(_root);
-	@override late final _TranslationsEditorEditorNodesZhHans editorNodes = _TranslationsEditorEditorNodesZhHans._(_root);
-	@override late final _TranslationsEditorNodeListTileZhHans nodeListTile = _TranslationsEditorNodeListTileZhHans._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageZhHans nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageZhHans._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewZhHans nodesCanvasView = _TranslationsEditorNodesCanvasViewZhHans._(_root);
-	@override late final _TranslationsEditorNodeEditorFormZhHans nodeEditorForm = _TranslationsEditorNodeEditorFormZhHans._(_root);
 	@override late final _TranslationsEditorContentTransformZhHans contentTransform = _TranslationsEditorContentTransformZhHans._(_root);
 }
 
@@ -23269,16 +21984,6 @@ class _TranslationsMemoryZhHans extends _TranslationsMemoryEn {
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesZhHans extends _TranslationsNodesEn {
-	_TranslationsNodesZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceZhHans service = _TranslationsNodesServiceZhHans._(_root);
 }
 
 // Path: onboarding
@@ -24305,7 +23010,6 @@ class _TranslationsEditorPanelLabelsZhHans extends _TranslationsEditorPanelLabel
 	@override String get group => '群组';
 	@override String get creator => '创作者';
 	@override String get appData => '应用数据';
-	@override String get nodes => '节点';
 }
 
 // Path: editor.appBarEditor
@@ -24317,21 +23021,6 @@ class _TranslationsEditorAppBarEditorZhHans extends _TranslationsEditorAppBarEdi
 	// Translations
 	@override String get hideAssistantPanelTooltip => '隐藏助手面板';
 	@override String get showChatAssistantTooltip => '并排显示对话助手';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelZhHans extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => '无';
-	@override String get previousTooltip => '上一个';
-	@override String get nextTooltip => '下一个';
-	@override String get closeTooltip => '关闭';
-	@override String get replaceTooltip => '替换';
-	@override String get replaceAllTooltip => '全部替换';
 }
 
 // Path: editor.findReplaceDialog
@@ -24603,117 +23292,6 @@ class _TranslationsEditorEditorPageControllerZhHans extends _TranslationsEditorE
 	@override String compositeLorebookEntry({required Object index, required Object value}) => '世界书条目 #${index}：\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => '所选图像过大。最大尺寸为 ${maxSize}。';
 	@override String get invalidPngMessage => '所选图像不是有效的 PNG，或无法读取。';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesZhHans extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => '删除节点';
-	@override String get deleteNodeMessage => '从卡片中移除这个已创建的节点？';
-	@override String get engineSeedTitle => '引擎种子';
-	@override String get visualEditorTooltip => '可视化编辑器';
-	@override String get editJsonTooltip => '编辑 JSON';
-	@override String get initialGoalLabel => '初始目标';
-	@override String get initialSceneLabel => '初始场景';
-	@override String get locationLabel => '地点';
-	@override String get timeOfDayLabel => '时段';
-	@override String get presentEntitiesLabel => '在场（逗号分隔）';
-	@override String get sensoryHooksLabel => '感官钩子（逗号分隔）';
-	@override String get addNodeButton => '添加节点';
-	@override String get noAuthoredNodesYet => '还没有已创建的节点。';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-		other: '这张卡片的节点块有 ${n} 个问题；在此编辑会在保存时覆盖损坏的部分。',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '…还有 ${n} 个';
-	@override String get emotionBaselineLabel => '情绪基线';
-	@override String get emotionChipLabel => '情绪';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileZhHans extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => '生成：${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageZhHans extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => '顶层必须是一个 JSON 对象';
-	@override String get editNodesJsonTitle => '编辑节点 JSON';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-		other: '修复 ${n} 个问题后才能保存。',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewZhHans extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => '生成自';
-	@override String get spawnsPort => '生成';
-	@override String get editNodeLabel => '编辑节点';
-	@override String get addNodeTooltip => '添加节点';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormZhHans extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => '名称';
-	@override String get narrativePayloadLabel => '叙事内容';
-	@override String get removeSpawnLinkTitle => '移除生成链接';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => '停止此节点生成“${nodeId}”？节点本身仍保留在卡片上。';
-	@override String get removeButton => '移除';
-	@override String get typeLabel => '类型';
-	@override String get scopeLabel => '范围';
-	@override String get originLabel => '来源';
-	@override String get triggerProbLabel => '触发概率';
-	@override String get delayHelper => '生效前需等待的回合数。-1 等同于 0。';
-	@override String get cooldownHelper => '触发后锁定的回合数。-1 表示无冷却。';
-	@override String get stickyHelper => '触发后叙事内容以“残留”形式持续出现的回合数。-1 表示永久。';
-	@override String get aliveHelper => '节点在被移除前留在池中的回合数。-1 表示永远。';
-	@override String get setToNeverButton => '设为从不';
-	@override String get effectsSectionLabel => '效果';
-	@override String get emotionDeltasTitle => '情绪变化量';
-	@override String get physicalDeltasTitle => '身体变化量';
-	@override String get relationshipDeltasTitle => '关系变化量';
-	@override String get addDeltaChip => '添加变化量';
-	@override String get knowledgeWritesTitle => '知识写入';
-	@override String get addFactChip => '添加事实';
-	@override String get topicLabel => '主题';
-	@override String get confidenceLabel => '置信度';
-	@override String get flagSetTitle => '标志设置';
-	@override String get addFlagChip => '添加标志';
-	@override String get keyLabel => '键';
-	@override String get sceneAndFlowTitle => '场景与流程';
-	@override String get goalChangeLabel => 'goalChange（留空时清除当前目标）';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '（无）';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => '为 true 时，引擎会将这次触发标记为场景切换。';
-	@override String get spawnsSectionLabel => '生成';
-	@override String get addNewChip => '新建';
-	@override String get linkExistingChip => '链接现有';
-	@override String get unlinkTooltip => '取消链接';
-	@override String get predicateLabel => '条件';
 }
 
 // Path: editor.contentTransform
@@ -25289,16 +23867,6 @@ class _TranslationsLlmAppMediaCellZhHans extends _TranslationsLlmAppMediaCellEn 
 	@override String get notApplicable => '不适用';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceZhHans extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} 个行为节点已停用——请检查节点编辑器。';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepZhHans extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
@@ -25489,8 +24057,6 @@ class _TranslationsSettingsGeneralZhHans extends _TranslationsSettingsGeneralEn 
 	@override String get themeStyleNeon => '霓虹';
 	@override String get storyMemoryTitle => '故事记忆';
 	@override String get storyMemorySubtitle => '记住早前的情节，并在长对话中把相关内容重新带回。';
-	@override String get narrativeEngineTitle => '叙事引擎';
-	@override String get narrativeEngineSubtitle => '跟踪场景与角色，随着聊天推进故事发展。';
 	@override String get promptBreakdownTitle => '显示提示词构成';
 	@override String get promptBreakdownSubtitle => '在每条回复下方显示一个进度条，展示提示词如何填满模型的上下文窗口。';
 	@override String get checkUpdatesTitle => '检查更新';
@@ -25803,8 +24369,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerZhHans extends _TranslationsWorksp
 
 	// Translations
 	@override String get favoriteLabel => '收藏';
-	@override String get nodesEngineTitle => 'NODES 引擎';
-	@override String get debugSnapshotSubtitle => '调试快照';
 	@override String get characterSubtitle => '角色';
 }
 
@@ -25892,7 +24456,6 @@ class _TranslationsZhHant extends Translations {
 	@override late final _TranslationsGroupZhHant group = _TranslationsGroupZhHant._(_root);
 	@override late final _TranslationsLlmAppZhHant llmApp = _TranslationsLlmAppZhHant._(_root);
 	@override late final _TranslationsMemoryZhHant memory = _TranslationsMemoryZhHant._(_root);
-	@override late final _TranslationsNodesZhHant nodes = _TranslationsNodesZhHant._(_root);
 	@override late final _TranslationsOnboardingZhHant onboarding = _TranslationsOnboardingZhHant._(_root);
 	@override late final _TranslationsRoutingZhHant routing = _TranslationsRoutingZhHant._(_root);
 	@override late final _TranslationsSearchZhHant search = _TranslationsSearchZhHant._(_root);
@@ -26021,7 +24584,6 @@ class _TranslationsEditorZhHant extends _TranslationsEditorEn {
 	// Translations
 	@override late final _TranslationsEditorPanelLabelsZhHant panelLabels = _TranslationsEditorPanelLabelsZhHant._(_root);
 	@override late final _TranslationsEditorAppBarEditorZhHant appBarEditor = _TranslationsEditorAppBarEditorZhHant._(_root);
-	@override late final _TranslationsEditorCodeFindPanelZhHant codeFindPanel = _TranslationsEditorCodeFindPanelZhHant._(_root);
 	@override late final _TranslationsEditorFindReplaceDialogZhHant findReplaceDialog = _TranslationsEditorFindReplaceDialogZhHant._(_root);
 	@override late final _TranslationsEditorObjectValueEditorZhHant objectValueEditor = _TranslationsEditorObjectValueEditorZhHant._(_root);
 	@override late final _TranslationsEditorEditorBasicZhHant editorBasic = _TranslationsEditorEditorBasicZhHant._(_root);
@@ -26038,11 +24600,6 @@ class _TranslationsEditorZhHant extends _TranslationsEditorEn {
 	@override late final _TranslationsEditorDialogContentCleanerZhHant dialogContentCleaner = _TranslationsEditorDialogContentCleanerZhHant._(_root);
 	@override late final _TranslationsEditorDialogAiDiffConfirmationZhHant dialogAiDiffConfirmation = _TranslationsEditorDialogAiDiffConfirmationZhHant._(_root);
 	@override late final _TranslationsEditorEditorPageControllerZhHant editorPageController = _TranslationsEditorEditorPageControllerZhHant._(_root);
-	@override late final _TranslationsEditorEditorNodesZhHant editorNodes = _TranslationsEditorEditorNodesZhHant._(_root);
-	@override late final _TranslationsEditorNodeListTileZhHant nodeListTile = _TranslationsEditorNodeListTileZhHant._(_root);
-	@override late final _TranslationsEditorNodesRawEditorPageZhHant nodesRawEditorPage = _TranslationsEditorNodesRawEditorPageZhHant._(_root);
-	@override late final _TranslationsEditorNodesCanvasViewZhHant nodesCanvasView = _TranslationsEditorNodesCanvasViewZhHant._(_root);
-	@override late final _TranslationsEditorNodeEditorFormZhHant nodeEditorForm = _TranslationsEditorNodeEditorFormZhHant._(_root);
 	@override late final _TranslationsEditorContentTransformZhHant contentTransform = _TranslationsEditorContentTransformZhHant._(_root);
 }
 
@@ -26120,16 +24677,6 @@ class _TranslationsMemoryZhHant extends _TranslationsMemoryEn {
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-}
-
-// Path: nodes
-class _TranslationsNodesZhHant extends _TranslationsNodesEn {
-	_TranslationsNodesZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override late final _TranslationsNodesServiceZhHant service = _TranslationsNodesServiceZhHant._(_root);
 }
 
 // Path: onboarding
@@ -27156,7 +25703,6 @@ class _TranslationsEditorPanelLabelsZhHant extends _TranslationsEditorPanelLabel
 	@override String get group => '群組';
 	@override String get creator => '作者';
 	@override String get appData => 'App 資料';
-	@override String get nodes => '節點';
 }
 
 // Path: editor.appBarEditor
@@ -27168,21 +25714,6 @@ class _TranslationsEditorAppBarEditorZhHant extends _TranslationsEditorAppBarEdi
 	// Translations
 	@override String get hideAssistantPanelTooltip => '隱藏助理面板';
 	@override String get showChatAssistantTooltip => '並排顯示對話助理';
-}
-
-// Path: editor.codeFindPanel
-class _TranslationsEditorCodeFindPanelZhHant extends _TranslationsEditorCodeFindPanelEn {
-	_TranslationsEditorCodeFindPanelZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get noneResult => '無';
-	@override String get previousTooltip => '上一個';
-	@override String get nextTooltip => '下一個';
-	@override String get closeTooltip => '關閉';
-	@override String get replaceTooltip => '取代';
-	@override String get replaceAllTooltip => '全部取代';
 }
 
 // Path: editor.findReplaceDialog
@@ -27454,117 +25985,6 @@ class _TranslationsEditorEditorPageControllerZhHant extends _TranslationsEditorE
 	@override String compositeLorebookEntry({required Object index, required Object value}) => '世界書條目 #${index}：\n${value}\n';
 	@override String imageTooLargeMessage({required Object maxSize}) => '所選圖片太大。上限為 ${maxSize}。';
 	@override String get invalidPngMessage => '所選圖片不是有效的 PNG，或無法讀取。';
-}
-
-// Path: editor.editorNodes
-class _TranslationsEditorEditorNodesZhHant extends _TranslationsEditorEditorNodesEn {
-	_TranslationsEditorEditorNodesZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get deleteNodeTitle => '刪除節點';
-	@override String get deleteNodeMessage => '要從卡片中移除這個自訂節點嗎？';
-	@override String get engineSeedTitle => '引擎種子';
-	@override String get visualEditorTooltip => '視覺化編輯器';
-	@override String get editJsonTooltip => '編輯 JSON';
-	@override String get initialGoalLabel => '初始目標';
-	@override String get initialSceneLabel => '初始場景';
-	@override String get locationLabel => '地點';
-	@override String get timeOfDayLabel => '時段';
-	@override String get presentEntitiesLabel => '在場者（以逗號分隔）';
-	@override String get sensoryHooksLabel => '感官提示（以逗號分隔）';
-	@override String get addNodeButton => '新增節點';
-	@override String get noAuthoredNodesYet => '尚無自訂節點。';
-	@override String loadErrorMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-		other: '這張卡片的節點區塊有 ${n} 個問題；在此編輯時，儲存會覆寫損壞的部分。',
-	);
-	@override String moreErrorsSuffix({required Object n}) => '… 還有 ${n} 個';
-	@override String get emotionBaselineLabel => '情緒基準';
-	@override String get emotionChipLabel => '情緒';
-}
-
-// Path: editor.nodeListTile
-class _TranslationsEditorNodeListTileZhHant extends _TranslationsEditorNodeListTileEn {
-	_TranslationsEditorNodeListTileZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String spawnsLabel({required Object count}) => '衍生：${count}';
-}
-
-// Path: editor.nodesRawEditorPage
-class _TranslationsEditorNodesRawEditorPageZhHant extends _TranslationsEditorNodesRawEditorPageEn {
-	_TranslationsEditorNodesRawEditorPageZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get topLevelMustBeObject => '最上層必須是 JSON 物件';
-	@override String get editNodesJsonTitle => '編輯節點 JSON';
-	@override String fixProblemsMessage({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-		other: '修正 ${n} 個問題才能儲存。',
-	);
-}
-
-// Path: editor.nodesCanvasView
-class _TranslationsEditorNodesCanvasViewZhHant extends _TranslationsEditorNodesCanvasViewEn {
-	_TranslationsEditorNodesCanvasViewZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get spawnedByPort => '衍生來源';
-	@override String get spawnsPort => '衍生';
-	@override String get editNodeLabel => '編輯節點';
-	@override String get addNodeTooltip => '新增節點';
-}
-
-// Path: editor.nodeEditorForm
-class _TranslationsEditorNodeEditorFormZhHant extends _TranslationsEditorNodeEditorFormEn {
-	_TranslationsEditorNodeEditorFormZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get nameLabel => '名稱';
-	@override String get narrativePayloadLabel => '敘事內容';
-	@override String get removeSpawnLinkTitle => '移除衍生連結';
-	@override String removeSpawnLinkMessage({required Object nodeId}) => '要讓這個節點不再衍生「${nodeId}」嗎？節點本身仍會保留在卡片上。';
-	@override String get removeButton => '移除';
-	@override String get typeLabel => '類型';
-	@override String get scopeLabel => '範圍';
-	@override String get originLabel => '來源';
-	@override String get triggerProbLabel => '觸發機率';
-	@override String get delayHelper => '在符合條件前要等待的回合數。-1 等同於 0。';
-	@override String get cooldownHelper => '觸發後鎖定的回合數。-1 表示無冷卻。';
-	@override String get stickyHelper => '觸發後敘事內容以「殘留」形式持續出現的回合數。-1 表示永久。';
-	@override String get aliveHelper => '節點在被移除前留在集區中的回合數。-1 表示永遠。';
-	@override String get setToNeverButton => '設為永不';
-	@override String get effectsSectionLabel => '效果';
-	@override String get emotionDeltasTitle => '情緒變化量';
-	@override String get physicalDeltasTitle => '生理變化量';
-	@override String get relationshipDeltasTitle => '關係變化量';
-	@override String get addDeltaChip => '新增變化量';
-	@override String get knowledgeWritesTitle => '知識寫入';
-	@override String get addFactChip => '新增事實';
-	@override String get topicLabel => '主題';
-	@override String get confidenceLabel => '信心度';
-	@override String get flagSetTitle => '旗標設定';
-	@override String get addFlagChip => '新增旗標';
-	@override String get keyLabel => '鍵';
-	@override String get sceneAndFlowTitle => '場景與流程';
-	@override String get goalChangeLabel => 'goalChange（留空時會清除目前的目標）';
-	@override String get phaseChangeLabel => 'phaseChange';
-	@override String get noneOption => '（無）';
-	@override String get sceneTransitionLabel => 'sceneTransition';
-	@override String get sceneTransitionSubtitle => '設為 true 時，引擎會將此次觸發標記為場景轉換。';
-	@override String get spawnsSectionLabel => '衍生';
-	@override String get addNewChip => '新增';
-	@override String get linkExistingChip => '連結現有';
-	@override String get unlinkTooltip => '解除連結';
-	@override String get predicateLabel => '條件式';
 }
 
 // Path: editor.contentTransform
@@ -28140,16 +26560,6 @@ class _TranslationsLlmAppMediaCellZhHant extends _TranslationsLlmAppMediaCellEn 
 	@override String get notApplicable => '不適用';
 }
 
-// Path: nodes.service
-class _TranslationsNodesServiceZhHant extends _TranslationsNodesServiceEn {
-	_TranslationsNodesServiceZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} 個行為節點已停用——請檢查節點編輯器。';
-}
-
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepZhHant extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
@@ -28340,8 +26750,6 @@ class _TranslationsSettingsGeneralZhHant extends _TranslationsSettingsGeneralEn 
 	@override String get themeStyleNeon => '霓虹';
 	@override String get storyMemoryTitle => '故事記憶';
 	@override String get storyMemorySubtitle => '記住先前的時刻，並在長對話中把相關的內容帶回來。';
-	@override String get narrativeEngineTitle => '敘事引擎';
-	@override String get narrativeEngineSubtitle => '追蹤場景與角色，隨著你的對話推進故事。';
 	@override String get promptBreakdownTitle => '顯示提示詞分析';
 	@override String get promptBreakdownSubtitle => '在每則回覆下方顯示一條長條圖，分析提示詞如何填滿模型的上下文視窗。';
 	@override String get checkUpdatesTitle => '檢查更新';
@@ -28654,8 +27062,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerZhHant extends _TranslationsWorksp
 
 	// Translations
 	@override String get favoriteLabel => '最愛';
-	@override String get nodesEngineTitle => 'NODES 引擎';
-	@override String get debugSnapshotSubtitle => '除錯快照';
 	@override String get characterSubtitle => '角色';
 }
 
@@ -29017,15 +27423,8 @@ extension on Translations {
 			case 'editor.panelLabels.group': return 'Group';
 			case 'editor.panelLabels.creator': return 'Creator';
 			case 'editor.panelLabels.appData': return 'App Data';
-			case 'editor.panelLabels.nodes': return 'Nodes';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Hide assistant panel';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Show chat assistant side-by-side';
-			case 'editor.codeFindPanel.noneResult': return 'none';
-			case 'editor.codeFindPanel.previousTooltip': return 'Previous';
-			case 'editor.codeFindPanel.nextTooltip': return 'Next';
-			case 'editor.codeFindPanel.closeTooltip': return 'Close';
-			case 'editor.codeFindPanel.replaceTooltip': return 'Replace';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'Replace All';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirm Replace All';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Proceed';
@@ -29153,74 +27552,6 @@ extension on Translations {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Lorebook Entry #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Selected image is too large. Maximum size is ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'Selected image is not a valid PNG or could not be read.';
-			case 'editor.editorNodes.deleteNodeTitle': return 'Delete node';
-			case 'editor.editorNodes.deleteNodeMessage': return 'Remove this authored node from the card?';
-			case 'editor.editorNodes.engineSeedTitle': return 'Engine seed';
-			case 'editor.editorNodes.visualEditorTooltip': return 'Visual editor';
-			case 'editor.editorNodes.editJsonTooltip': return 'Edit JSON';
-			case 'editor.editorNodes.initialGoalLabel': return 'Initial goal';
-			case 'editor.editorNodes.initialSceneLabel': return 'Initial scene';
-			case 'editor.editorNodes.locationLabel': return 'Location';
-			case 'editor.editorNodes.timeOfDayLabel': return 'Time of day';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'Present (comma-separated)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'Sensory hooks (comma-separated)';
-			case 'editor.editorNodes.addNodeButton': return 'Add Node';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'No authored nodes yet.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-				one: 'This card\'s nodes block has ${n} problem; editing here will overwrite the broken parts on save.',
-				other: 'This card\'s nodes block has ${n} problems; editing here will overwrite the broken parts on save.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… ${n} more';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'Emotion baseline';
-			case 'editor.editorNodes.emotionChipLabel': return 'Emotion';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'spawns: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'Top level must be a JSON object';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Edit nodes JSON';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
-				one: 'Fix ${n} problem to save.',
-				other: 'Fix ${n} problems to save.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'spawned by';
-			case 'editor.nodesCanvasView.spawnsPort': return 'spawns';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'Edit node';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'Add node';
-			case 'editor.nodeEditorForm.nameLabel': return 'Name';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Narrative payload';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Remove spawn link';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Stop this node from spawning "${nodeId}"? The node itself stays on the card.';
-			case 'editor.nodeEditorForm.removeButton': return 'Remove';
-			case 'editor.nodeEditorForm.typeLabel': return 'Type';
-			case 'editor.nodeEditorForm.scopeLabel': return 'Scope';
-			case 'editor.nodeEditorForm.originLabel': return 'Origin';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'Trigger prob';
-			case 'editor.nodeEditorForm.delayHelper': return 'Turns to wait before becoming eligible. -1 acts as 0.';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'Turns locked out after firing. -1 means no cooldown.';
-			case 'editor.nodeEditorForm.stickyHelper': return 'Turns the narrative payload keeps appearing as "Lingering" after firing. -1 means permanent.';
-			case 'editor.nodeEditorForm.aliveHelper': return 'Turns the node stays in the pool before removal. -1 means forever.';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'Set to never';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Effects';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Emotion deltas';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Physical deltas';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Relationship deltas';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'Add delta';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Knowledge writes';
-			case 'editor.nodeEditorForm.addFactChip': return 'Add fact';
-			case 'editor.nodeEditorForm.topicLabel': return 'topic';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'confidence';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'Flag set';
-			case 'editor.nodeEditorForm.addFlagChip': return 'Add flag';
-			case 'editor.nodeEditorForm.keyLabel': return 'key';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Scene & flow';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (clears the current goal when empty)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(none)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'When true, the engine marks the firing as a scene shift.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Spawns';
-			case 'editor.nodeEditorForm.addNewChip': return 'Add new';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'Link existing';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'Unlink';
-			case 'editor.nodeEditorForm.predicateLabel': return 'Predicate';
 			case 'editor.contentTransform.appliedSnackbar': return 'Changes applied';
 			case 'editor.contentTransform.undoButton': return 'Undo';
 			case 'grid.emptyState.noMatches': return 'No characters match your filters';
@@ -29427,7 +27758,6 @@ extension on Translations {
 			case 'llmApp.presetRow.continueButton': return 'Continue';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Choose a ${domain} model';
 			case 'llmApp.mediaCell.notApplicable': return 'Not applicable';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} behavior node(s) disabled — check the node editor.';
 			case 'onboarding.finishFailedSnackbar': return 'Setup failed. See logs for details.';
 			case 'onboarding.appBarTitle': return 'Quick Setup';
 			case 'onboarding.languageTooltip': return 'Language';
@@ -29494,8 +27824,6 @@ extension on Translations {
 			case 'settings.general.themeStyleNeon': return 'Neon';
 			case 'settings.general.storyMemoryTitle': return 'Story Memory';
 			case 'settings.general.storyMemorySubtitle': return 'Remember earlier moments and bring the relevant ones back into long chats.';
-			case 'settings.general.narrativeEngineTitle': return 'Narrative Engine';
-			case 'settings.general.narrativeEngineSubtitle': return 'Track the scene and characters and move the story along as you chat.';
 			case 'settings.general.promptBreakdownTitle': return 'Show Prompt Breakdown';
 			case 'settings.general.promptBreakdownSubtitle': return 'Show a bar under each reply breaking down how the prompt filled the model context window.';
 			case 'settings.general.checkUpdatesTitle': return 'Check for Updates';
@@ -29647,8 +27975,6 @@ extension on Translations {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Reset Images';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Assistant Card Edits';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorite';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES Engine';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Debug snapshot';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Character';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'No style selected';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Rebuilding chat index...';
@@ -29968,15 +28294,8 @@ extension on _TranslationsEs419 {
 			case 'editor.panelLabels.group': return 'Grupo';
 			case 'editor.panelLabels.creator': return 'Creador';
 			case 'editor.panelLabels.appData': return 'Datos de la app';
-			case 'editor.panelLabels.nodes': return 'Nodos';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ocultar panel del asistente';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Mostrar asistente de chat lado a lado';
-			case 'editor.codeFindPanel.noneResult': return 'ninguno';
-			case 'editor.codeFindPanel.previousTooltip': return 'Anterior';
-			case 'editor.codeFindPanel.nextTooltip': return 'Siguiente';
-			case 'editor.codeFindPanel.closeTooltip': return 'Cerrar';
-			case 'editor.codeFindPanel.replaceTooltip': return 'Reemplazar';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'Reemplazar todo';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirmar Reemplazar todo';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '¿Seguro que quieres continuar?\nEsta acción es irreversible y afecta a todos los campos.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Continuar';
@@ -30104,74 +28423,6 @@ extension on _TranslationsEs419 {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Entrada de lorebook n.º ${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'La imagen seleccionada es demasiado grande. El tamaño máximo es ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'La imagen seleccionada no es un PNG válido o no se pudo leer.';
-			case 'editor.editorNodes.deleteNodeTitle': return 'Eliminar nodo';
-			case 'editor.editorNodes.deleteNodeMessage': return '¿Quitar este nodo de autor de la tarjeta?';
-			case 'editor.editorNodes.engineSeedTitle': return 'Semilla del motor';
-			case 'editor.editorNodes.visualEditorTooltip': return 'Editor visual';
-			case 'editor.editorNodes.editJsonTooltip': return 'Editar JSON';
-			case 'editor.editorNodes.initialGoalLabel': return 'Objetivo inicial';
-			case 'editor.editorNodes.initialSceneLabel': return 'Escena inicial';
-			case 'editor.editorNodes.locationLabel': return 'Ubicación';
-			case 'editor.editorNodes.timeOfDayLabel': return 'Hora del día';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'Presentes (separados por comas)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'Ganchos sensoriales (separados por comas)';
-			case 'editor.editorNodes.addNodeButton': return 'Agregar nodo';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'Aún no hay nodos de autor.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
-				one: 'El bloque de nodos de esta tarjeta tiene ${n} problema; editar aquí sobrescribirá las partes dañadas al guardar.',
-				other: 'El bloque de nodos de esta tarjeta tiene ${n} problemas; editar aquí sobrescribirá las partes dañadas al guardar.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… ${n} más';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'Emoción base';
-			case 'editor.editorNodes.emotionChipLabel': return 'Emoción';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'genera: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'El nivel superior debe ser un objeto JSON';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Editar JSON de nodos';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
-				one: 'Corrige ${n} problema para guardar.',
-				other: 'Corrige ${n} problemas para guardar.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'generado por';
-			case 'editor.nodesCanvasView.spawnsPort': return 'genera';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'Editar nodo';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'Agregar nodo';
-			case 'editor.nodeEditorForm.nameLabel': return 'Nombre';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Carga narrativa';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Quitar vínculo de generación';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => '¿Impedir que este nodo genere "${nodeId}"? El nodo en sí permanece en la tarjeta.';
-			case 'editor.nodeEditorForm.removeButton': return 'Quitar';
-			case 'editor.nodeEditorForm.typeLabel': return 'Tipo';
-			case 'editor.nodeEditorForm.scopeLabel': return 'Alcance';
-			case 'editor.nodeEditorForm.originLabel': return 'Origen';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'Prob. de disparo';
-			case 'editor.nodeEditorForm.delayHelper': return 'Turnos a esperar antes de ser elegible. -1 actúa como 0.';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'Turnos bloqueado tras dispararse. -1 significa sin tiempo de espera.';
-			case 'editor.nodeEditorForm.stickyHelper': return 'Turnos en que la carga narrativa sigue apareciendo como "Persistente" tras dispararse. -1 significa permanente.';
-			case 'editor.nodeEditorForm.aliveHelper': return 'Turnos en que el nodo permanece en el grupo antes de eliminarse. -1 significa para siempre.';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'Establecer en nunca';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Efectos';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Variaciones de emoción';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Variaciones físicas';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Variaciones de relación';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'Agregar variación';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Escrituras de conocimiento';
-			case 'editor.nodeEditorForm.addFactChip': return 'Agregar hecho';
-			case 'editor.nodeEditorForm.topicLabel': return 'tema';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'confianza';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'Conjunto de flags';
-			case 'editor.nodeEditorForm.addFlagChip': return 'Agregar flag';
-			case 'editor.nodeEditorForm.keyLabel': return 'clave';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Escena y flujo';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (borra el objetivo actual cuando está vacío)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(ninguno)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'Cuando es verdadero, el motor marca el disparo como un cambio de escena.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Generaciones';
-			case 'editor.nodeEditorForm.addNewChip': return 'Agregar nuevo';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'Vincular existente';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'Desvincular';
-			case 'editor.nodeEditorForm.predicateLabel': return 'Predicado';
 			case 'editor.contentTransform.appliedSnackbar': return 'Cambios aplicados';
 			case 'editor.contentTransform.undoButton': return 'Deshacer';
 			case 'grid.emptyState.noMatches': return 'Ningún personaje coincide con tus filtros';
@@ -30378,7 +28629,6 @@ extension on _TranslationsEs419 {
 			case 'llmApp.presetRow.continueButton': return 'Continuar';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Elige un modelo de ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'No aplicable';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} nodo(s) de comportamiento desactivado(s): revisa el editor de nodos.';
 			case 'onboarding.finishFailedSnackbar': return 'La configuración falló. Consulta los registros para más detalles.';
 			case 'onboarding.appBarTitle': return 'Configuración rápida';
 			case 'onboarding.languageTooltip': return 'Idioma';
@@ -30445,8 +28695,6 @@ extension on _TranslationsEs419 {
 			case 'settings.general.themeStyleNeon': return 'Neón';
 			case 'settings.general.storyMemoryTitle': return 'Memoria de la historia';
 			case 'settings.general.storyMemorySubtitle': return 'Recuerda momentos anteriores y trae los relevantes de vuelta en chats largos.';
-			case 'settings.general.narrativeEngineTitle': return 'Motor narrativo';
-			case 'settings.general.narrativeEngineSubtitle': return 'Sigue la escena y los personajes y hace avanzar la historia mientras chateas.';
 			case 'settings.general.promptBreakdownTitle': return 'Mostrar desglose del prompt';
 			case 'settings.general.promptBreakdownSubtitle': return 'Muestra una barra bajo cada respuesta que desglosa cómo el prompt llenó la ventana de contexto del modelo.';
 			case 'settings.general.checkUpdatesTitle': return 'Buscar actualizaciones';
@@ -30598,8 +28846,6 @@ extension on _TranslationsEs419 {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Restablecer imágenes';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Ediciones de tarjeta por el asistente';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorito';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'Motor NODES';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Captura de depuración';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Personaje';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Ningún estilo seleccionado';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruyendo el índice de chats...';
@@ -30919,15 +29165,8 @@ extension on _TranslationsHi {
 			case 'editor.panelLabels.group': return 'ग्रुप';
 			case 'editor.panelLabels.creator': return 'निर्माता';
 			case 'editor.panelLabels.appData': return 'ऐप डेटा';
-			case 'editor.panelLabels.nodes': return 'नोड';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'असिस्टेंट पैनल छिपाएं';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'चैट असिस्टेंट साथ-साथ दिखाएं';
-			case 'editor.codeFindPanel.noneResult': return 'कोई नहीं';
-			case 'editor.codeFindPanel.previousTooltip': return 'पिछला';
-			case 'editor.codeFindPanel.nextTooltip': return 'अगला';
-			case 'editor.codeFindPanel.closeTooltip': return 'बंद करें';
-			case 'editor.codeFindPanel.replaceTooltip': return 'बदलें';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'सभी बदलें';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'सभी बदलने की पुष्टि करें';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'क्या आप वाकई आगे बढ़ना चाहते हैं?\nयह क्रिया अपरिवर्तनीय है और सभी फ़ील्ड को प्रभावित करती है।';
 			case 'editor.findReplaceDialog.proceedButton': return 'आगे बढ़ें';
@@ -31055,74 +29294,6 @@ extension on _TranslationsHi {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'लोरबुक प्रविष्टि #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'चयनित इमेज बहुत बड़ी है। अधिकतम आकार ${maxSize} है।';
 			case 'editor.editorPageController.invalidPngMessage': return 'चयनित इमेज एक मान्य PNG नहीं है या पढ़ी नहीं जा सकी।';
-			case 'editor.editorNodes.deleteNodeTitle': return 'नोड हटाएं';
-			case 'editor.editorNodes.deleteNodeMessage': return 'क्या इस लिखे गए नोड को कार्ड से हटाएं?';
-			case 'editor.editorNodes.engineSeedTitle': return 'इंजन सीड';
-			case 'editor.editorNodes.visualEditorTooltip': return 'विज़ुअल एडिटर';
-			case 'editor.editorNodes.editJsonTooltip': return 'JSON एडिट करें';
-			case 'editor.editorNodes.initialGoalLabel': return 'प्रारंभिक लक्ष्य';
-			case 'editor.editorNodes.initialSceneLabel': return 'प्रारंभिक दृश्य';
-			case 'editor.editorNodes.locationLabel': return 'स्थान';
-			case 'editor.editorNodes.timeOfDayLabel': return 'दिन का समय';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'उपस्थित (अल्पविराम से अलग)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'संवेदी हुक (अल्पविराम से अलग)';
-			case 'editor.editorNodes.addNodeButton': return 'नोड जोड़ें';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'अभी तक कोई लिखा गया नोड नहीं।';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
-				one: 'इस कार्ड के नोड ब्लॉक में ${n} समस्या है; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।',
-				other: 'इस कार्ड के नोड ब्लॉक में ${n} समस्याएं हैं; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… ${n} और';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'भावना आधाररेखा';
-			case 'editor.editorNodes.emotionChipLabel': return 'भावना';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'स्पॉन: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'शीर्ष स्तर एक JSON ऑब्जेक्ट होना चाहिए';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'नोड JSON एडिट करें';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
-				one: 'सहेजने के लिए ${n} समस्या ठीक करें।',
-				other: 'सहेजने के लिए ${n} समस्याएं ठीक करें।',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'स्पॉन स्रोत';
-			case 'editor.nodesCanvasView.spawnsPort': return 'स्पॉन';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'नोड एडिट करें';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'नोड जोड़ें';
-			case 'editor.nodeEditorForm.nameLabel': return 'नाम';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'नैरेटिव पेलोड';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'स्पॉन लिंक हटाएं';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'इस नोड को "${nodeId}" स्पॉन करने से रोकें? नोड स्वयं कार्ड पर बना रहेगा।';
-			case 'editor.nodeEditorForm.removeButton': return 'हटाएं';
-			case 'editor.nodeEditorForm.typeLabel': return 'प्रकार';
-			case 'editor.nodeEditorForm.scopeLabel': return 'स्कोप';
-			case 'editor.nodeEditorForm.originLabel': return 'मूल';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'ट्रिगर प्रायिकता';
-			case 'editor.nodeEditorForm.delayHelper': return 'पात्र बनने से पहले प्रतीक्षा के टर्न। -1 का अर्थ 0 है।';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'फायर होने के बाद लॉक रहने के टर्न। -1 का अर्थ कोई कूलडाउन नहीं।';
-			case 'editor.nodeEditorForm.stickyHelper': return 'फायर होने के बाद नैरेटिव पेलोड जितने टर्न "Lingering" के रूप में दिखता रहता है। -1 का अर्थ स्थायी।';
-			case 'editor.nodeEditorForm.aliveHelper': return 'हटाए जाने से पहले नोड पूल में जितने टर्न रहता है। -1 का अर्थ हमेशा के लिए।';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'कभी नहीं पर सेट करें';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'प्रभाव';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'भावना डेल्टा';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'भौतिक डेल्टा';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'संबंध डेल्टा';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'डेल्टा जोड़ें';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'ज्ञान लेखन';
-			case 'editor.nodeEditorForm.addFactChip': return 'तथ्य जोड़ें';
-			case 'editor.nodeEditorForm.topicLabel': return 'विषय';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'विश्वास';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'फ्लैग सेट';
-			case 'editor.nodeEditorForm.addFlagChip': return 'फ्लैग जोड़ें';
-			case 'editor.nodeEditorForm.keyLabel': return 'कुंजी';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'दृश्य और प्रवाह';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (खाली होने पर वर्तमान लक्ष्य साफ़ कर देता है)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(कोई नहीं)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'true होने पर, इंजन इस फायरिंग को दृश्य परिवर्तन के रूप में चिह्नित करता है।';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'स्पॉन';
-			case 'editor.nodeEditorForm.addNewChip': return 'नया जोड़ें';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'मौजूदा लिंक करें';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'अनलिंक करें';
-			case 'editor.nodeEditorForm.predicateLabel': return 'प्रेडिकेट';
 			case 'editor.contentTransform.appliedSnackbar': return 'परिवर्तन लागू किए गए';
 			case 'editor.contentTransform.undoButton': return 'पूर्ववत करें';
 			case 'grid.emptyState.noMatches': return 'आपके फ़िल्टर से कोई कैरेक्टर मेल नहीं खाता';
@@ -31329,7 +29500,6 @@ extension on _TranslationsHi {
 			case 'llmApp.presetRow.continueButton': return 'जारी रखें';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'एक ${domain} मॉडल चुनें';
 			case 'llmApp.mediaCell.notApplicable': return 'लागू नहीं';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} व्यवहार नोड अक्षम किए गए — नोड संपादक जांचें।';
 			case 'onboarding.finishFailedSnackbar': return 'सेटअप विफल हुआ। विवरण के लिए लॉग देखें।';
 			case 'onboarding.appBarTitle': return 'त्वरित सेटअप';
 			case 'onboarding.languageTooltip': return 'भाषा';
@@ -31396,8 +29566,6 @@ extension on _TranslationsHi {
 			case 'settings.general.themeStyleNeon': return 'नियॉन';
 			case 'settings.general.storyMemoryTitle': return 'स्टोरी मेमोरी';
 			case 'settings.general.storyMemorySubtitle': return 'पहले के क्षणों को याद रखें और प्रासंगिक क्षणों को लंबी चैट में वापस लाएं।';
-			case 'settings.general.narrativeEngineTitle': return 'नैरेटिव इंजन';
-			case 'settings.general.narrativeEngineSubtitle': return 'दृश्य और कैरेक्टर को ट्रैक करें और चैट करते समय कहानी को आगे बढ़ाएं।';
 			case 'settings.general.promptBreakdownTitle': return 'प्रॉम्प्ट विश्लेषण दिखाएं';
 			case 'settings.general.promptBreakdownSubtitle': return 'हर जवाब के नीचे एक बार दिखाएं जो बताता है कि प्रॉम्प्ट ने मॉडल कॉन्टेक्स्ट विंडो को कैसे भरा।';
 			case 'settings.general.checkUpdatesTitle': return 'अपडेट जांचें';
@@ -31549,8 +29717,6 @@ extension on _TranslationsHi {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'इमेज रीसेट करें';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'असिस्टेंट कार्ड एडिट';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'पसंदीदा';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES इंजन';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'डीबग स्नैपशॉट';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'कैरेक्टर';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'कोई स्टाइल चयनित नहीं';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'चैट इंडेक्स फिर से बन रहा है...';
@@ -31865,15 +30031,8 @@ extension on _TranslationsJa {
 			case 'editor.panelLabels.group': return 'グループ';
 			case 'editor.panelLabels.creator': return '作成者';
 			case 'editor.panelLabels.appData': return 'アプリデータ';
-			case 'editor.panelLabels.nodes': return 'ノード';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'アシスタントパネルを非表示';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'チャットアシスタントを並べて表示';
-			case 'editor.codeFindPanel.noneResult': return 'なし';
-			case 'editor.codeFindPanel.previousTooltip': return '前へ';
-			case 'editor.codeFindPanel.nextTooltip': return '次へ';
-			case 'editor.codeFindPanel.closeTooltip': return '閉じる';
-			case 'editor.codeFindPanel.replaceTooltip': return '置換';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'すべて置換';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'すべて置換の確認';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '続行してもよろしいですか？\nこの操作は取り消せず、すべてのフィールドに影響します。';
 			case 'editor.findReplaceDialog.proceedButton': return '続行';
@@ -32001,72 +30160,6 @@ extension on _TranslationsJa {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'ロアブックエントリ #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => '選択した画像が大きすぎます。最大サイズは ${maxSize} です。';
 			case 'editor.editorPageController.invalidPngMessage': return '選択した画像は有効なPNGでないか、読み取れませんでした。';
-			case 'editor.editorNodes.deleteNodeTitle': return 'ノードを削除';
-			case 'editor.editorNodes.deleteNodeMessage': return 'この作成済みノードをカードから削除しますか？';
-			case 'editor.editorNodes.engineSeedTitle': return 'エンジンシード';
-			case 'editor.editorNodes.visualEditorTooltip': return 'ビジュアルエディタ';
-			case 'editor.editorNodes.editJsonTooltip': return 'JSONを編集';
-			case 'editor.editorNodes.initialGoalLabel': return '初期目標';
-			case 'editor.editorNodes.initialSceneLabel': return '初期シーン';
-			case 'editor.editorNodes.locationLabel': return '場所';
-			case 'editor.editorNodes.timeOfDayLabel': return '時間帯';
-			case 'editor.editorNodes.presentEntitiesLabel': return '登場中（カンマ区切り）';
-			case 'editor.editorNodes.sensoryHooksLabel': return '感覚的フック（カンマ区切り）';
-			case 'editor.editorNodes.addNodeButton': return 'ノードを追加';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'まだ作成済みノードがありません。';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
-				other: 'このカードのノードブロックに ${n} 件の問題があります。ここで編集すると、保存時に破損した部分が上書きされます。',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… 他 ${n} 件';
-			case 'editor.editorNodes.emotionBaselineLabel': return '感情のベースライン';
-			case 'editor.editorNodes.emotionChipLabel': return '感情';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'スポーン: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'トップレベルはJSONオブジェクトである必要があります';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'ノードのJSONを編集';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
-				other: '保存するには ${n} 件の問題を修正してください。',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'スポーン元';
-			case 'editor.nodesCanvasView.spawnsPort': return 'スポーン先';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'ノードを編集';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'ノードを追加';
-			case 'editor.nodeEditorForm.nameLabel': return '名前';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'ナラティブペイロード';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'スポーンリンクを削除';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'このノードが「${nodeId}」をスポーンしないようにしますか？ノード自体はカードに残ります。';
-			case 'editor.nodeEditorForm.removeButton': return '削除';
-			case 'editor.nodeEditorForm.typeLabel': return 'タイプ';
-			case 'editor.nodeEditorForm.scopeLabel': return 'スコープ';
-			case 'editor.nodeEditorForm.originLabel': return '起点';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'トリガー確率';
-			case 'editor.nodeEditorForm.delayHelper': return '対象になるまで待機するターン数。-1 は 0 として扱われます。';
-			case 'editor.nodeEditorForm.cooldownHelper': return '発火後にロックされるターン数。-1 はクールダウンなしを意味します。';
-			case 'editor.nodeEditorForm.stickyHelper': return '発火後、ナラティブペイロードが「継続中」として表示され続けるターン数。-1 は永続を意味します。';
-			case 'editor.nodeEditorForm.aliveHelper': return '削除されるまでノードがプールに残るターン数。-1 は無期限を意味します。';
-			case 'editor.nodeEditorForm.setToNeverButton': return '「なし」に設定';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return '効果';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return '感情の変化量';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return '身体の変化量';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return '関係の変化量';
-			case 'editor.nodeEditorForm.addDeltaChip': return '変化量を追加';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return '知識の書き込み';
-			case 'editor.nodeEditorForm.addFactChip': return '事実を追加';
-			case 'editor.nodeEditorForm.topicLabel': return 'トピック';
-			case 'editor.nodeEditorForm.confidenceLabel': return '確信度';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'フラグ設定';
-			case 'editor.nodeEditorForm.addFlagChip': return 'フラグを追加';
-			case 'editor.nodeEditorForm.keyLabel': return 'キー';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'シーンと流れ';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange（空の場合は現在の目標をクリアします）';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '（なし）';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'true の場合、エンジンはその発火をシーンの切り替えとしてマークします。';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'スポーン';
-			case 'editor.nodeEditorForm.addNewChip': return '新規追加';
-			case 'editor.nodeEditorForm.linkExistingChip': return '既存とリンク';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'リンク解除';
-			case 'editor.nodeEditorForm.predicateLabel': return '述語';
 			case 'editor.contentTransform.appliedSnackbar': return '変更を適用しました';
 			case 'editor.contentTransform.undoButton': return '元に戻す';
 			case 'grid.emptyState.noMatches': return 'フィルターに一致するキャラクターがありません';
@@ -32271,7 +30364,6 @@ extension on _TranslationsJa {
 			case 'llmApp.presetRow.continueButton': return '続行';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '${domain} モデルを選択';
 			case 'llmApp.mediaCell.notApplicable': return '該当なし';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count}個の動作ノードが無効になりました — ノードエディターを確認してください。';
 			case 'onboarding.finishFailedSnackbar': return 'セットアップに失敗しました。詳細はログを確認してください。';
 			case 'onboarding.appBarTitle': return 'クイックセットアップ';
 			case 'onboarding.languageTooltip': return '言語';
@@ -32338,8 +30430,6 @@ extension on _TranslationsJa {
 			case 'settings.general.themeStyleNeon': return 'ネオン';
 			case 'settings.general.storyMemoryTitle': return 'ストーリーメモリ';
 			case 'settings.general.storyMemorySubtitle': return '以前の場面を記憶し、長いチャットで関連するものを呼び戻します。';
-			case 'settings.general.narrativeEngineTitle': return 'ナラティブエンジン';
-			case 'settings.general.narrativeEngineSubtitle': return 'シーンとキャラクターを追跡し、チャットしながら物語を進めます。';
 			case 'settings.general.promptBreakdownTitle': return 'プロンプトの内訳を表示';
 			case 'settings.general.promptBreakdownSubtitle': return '各応答の下に、プロンプトがモデルのコンテキストウィンドウをどのように埋めたかを示すバーを表示します。';
 			case 'settings.general.checkUpdatesTitle': return '更新を確認';
@@ -32490,8 +30580,6 @@ extension on _TranslationsJa {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '画像をリセット';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'アシスタントによるカード編集';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'お気に入り';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODESエンジン';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'デバッグスナップショット';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'キャラクター';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'スタイルが選択されていません';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'チャットインデックスを再構築中...';
@@ -32806,15 +30894,8 @@ extension on _TranslationsKo {
 			case 'editor.panelLabels.group': return '그룹';
 			case 'editor.panelLabels.creator': return '제작자';
 			case 'editor.panelLabels.appData': return '앱 데이터';
-			case 'editor.panelLabels.nodes': return '노드';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '어시스턴트 패널 숨기기';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return '채팅 어시스턴트 나란히 보기';
-			case 'editor.codeFindPanel.noneResult': return '없음';
-			case 'editor.codeFindPanel.previousTooltip': return '이전';
-			case 'editor.codeFindPanel.nextTooltip': return '다음';
-			case 'editor.codeFindPanel.closeTooltip': return '닫기';
-			case 'editor.codeFindPanel.replaceTooltip': return '바꾸기';
-			case 'editor.codeFindPanel.replaceAllTooltip': return '모두 바꾸기';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '모두 바꾸기 확인';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '계속할까요?\n이 작업은 되돌릴 수 없으며 모든 필드에 영향을 줘요.';
 			case 'editor.findReplaceDialog.proceedButton': return '계속';
@@ -32942,72 +31023,6 @@ extension on _TranslationsKo {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => '로어북 항목 #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => '선택한 이미지가 너무 커요. 최대 크기는 ${maxSize}까지예요.';
 			case 'editor.editorPageController.invalidPngMessage': return '선택한 이미지가 유효한 PNG가 아니거나 읽을 수 없어요.';
-			case 'editor.editorNodes.deleteNodeTitle': return '노드 삭제';
-			case 'editor.editorNodes.deleteNodeMessage': return '이 작성된 노드를 카드에서 제거할까요?';
-			case 'editor.editorNodes.engineSeedTitle': return '엔진 시드';
-			case 'editor.editorNodes.visualEditorTooltip': return '비주얼 편집기';
-			case 'editor.editorNodes.editJsonTooltip': return 'JSON 편집';
-			case 'editor.editorNodes.initialGoalLabel': return '초기 목표';
-			case 'editor.editorNodes.initialSceneLabel': return '초기 장면';
-			case 'editor.editorNodes.locationLabel': return '장소';
-			case 'editor.editorNodes.timeOfDayLabel': return '시간대';
-			case 'editor.editorNodes.presentEntitiesLabel': return '등장 대상 (쉼표로 구분)';
-			case 'editor.editorNodes.sensoryHooksLabel': return '감각 요소 (쉼표로 구분)';
-			case 'editor.editorNodes.addNodeButton': return '노드 추가';
-			case 'editor.editorNodes.noAuthoredNodesYet': return '아직 작성된 노드가 없어요.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
-				other: '이 카드의 노드 블록에 ${n}개의 문제가 있어요. 여기서 편집하면 저장할 때 손상된 부분을 덮어써요.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… 외 ${n}개';
-			case 'editor.editorNodes.emotionBaselineLabel': return '감정 기준선';
-			case 'editor.editorNodes.emotionChipLabel': return '감정';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => '생성: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return '최상위는 JSON 객체여야 해요';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return '노드 JSON 편집';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
-				other: '저장하려면 문제 ${n}개를 해결하세요.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return '생성 출처';
-			case 'editor.nodesCanvasView.spawnsPort': return '생성';
-			case 'editor.nodesCanvasView.editNodeLabel': return '노드 편집';
-			case 'editor.nodesCanvasView.addNodeTooltip': return '노드 추가';
-			case 'editor.nodeEditorForm.nameLabel': return '이름';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return '내러티브 페이로드';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return '생성 연결 제거';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => '이 노드가 "${nodeId}"을(를) 생성하지 않도록 할까요? 노드 자체는 카드에 남아 있어요.';
-			case 'editor.nodeEditorForm.removeButton': return '제거';
-			case 'editor.nodeEditorForm.typeLabel': return '유형';
-			case 'editor.nodeEditorForm.scopeLabel': return '범위';
-			case 'editor.nodeEditorForm.originLabel': return '출처';
-			case 'editor.nodeEditorForm.triggerProbLabel': return '트리거 확률';
-			case 'editor.nodeEditorForm.delayHelper': return '적용 대상이 되기 전 대기할 턴 수. -1은 0으로 동작해요.';
-			case 'editor.nodeEditorForm.cooldownHelper': return '발동 후 잠기는 턴 수. -1은 쿨다운 없음을 의미해요.';
-			case 'editor.nodeEditorForm.stickyHelper': return '발동 후 내러티브 페이로드가 "Lingering" 상태로 계속 나타나는 턴 수. -1은 영구를 의미해요.';
-			case 'editor.nodeEditorForm.aliveHelper': return '노드가 제거되기 전 풀에 남아 있는 턴 수. -1은 영원을 의미해요.';
-			case 'editor.nodeEditorForm.setToNeverButton': return '안 함으로 설정';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return '효과';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return '감정 변화량';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return '신체 변화량';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return '관계 변화량';
-			case 'editor.nodeEditorForm.addDeltaChip': return '변화량 추가';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return '지식 기록';
-			case 'editor.nodeEditorForm.addFactChip': return '사실 추가';
-			case 'editor.nodeEditorForm.topicLabel': return '주제';
-			case 'editor.nodeEditorForm.confidenceLabel': return '신뢰도';
-			case 'editor.nodeEditorForm.flagSetTitle': return '플래그 설정';
-			case 'editor.nodeEditorForm.addFlagChip': return '플래그 추가';
-			case 'editor.nodeEditorForm.keyLabel': return '키';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return '장면 및 흐름';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (비우면 현재 목표를 지워요)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(없음)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'true이면 엔진이 이 발동을 장면 전환으로 표시해요.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return '생성';
-			case 'editor.nodeEditorForm.addNewChip': return '새로 추가';
-			case 'editor.nodeEditorForm.linkExistingChip': return '기존 연결';
-			case 'editor.nodeEditorForm.unlinkTooltip': return '연결 해제';
-			case 'editor.nodeEditorForm.predicateLabel': return '조건';
 			case 'editor.contentTransform.appliedSnackbar': return '변경 사항이 적용되었습니다';
 			case 'editor.contentTransform.undoButton': return '실행 취소';
 			case 'grid.emptyState.noMatches': return '필터와 일치하는 캐릭터가 없어요';
@@ -33212,7 +31227,6 @@ extension on _TranslationsKo {
 			case 'llmApp.presetRow.continueButton': return '계속';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '${domain} 모델 선택';
 			case 'llmApp.mediaCell.notApplicable': return '해당 없음';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '동작 노드 ${count}개가 비활성화되었습니다 — 노드 편집기를 확인하세요.';
 			case 'onboarding.finishFailedSnackbar': return '설정에 실패했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'onboarding.appBarTitle': return '빠른 설정';
 			case 'onboarding.languageTooltip': return '언어';
@@ -33279,8 +31293,6 @@ extension on _TranslationsKo {
 			case 'settings.general.themeStyleNeon': return '네온';
 			case 'settings.general.storyMemoryTitle': return '스토리 기억';
 			case 'settings.general.storyMemorySubtitle': return '이전 순간들을 기억하고 긴 채팅에서 관련된 내용을 다시 불러와요.';
-			case 'settings.general.narrativeEngineTitle': return '내러티브 엔진';
-			case 'settings.general.narrativeEngineSubtitle': return '장면과 캐릭터를 추적하고 채팅하면서 이야기를 진행해요.';
 			case 'settings.general.promptBreakdownTitle': return '프롬프트 분석 표시';
 			case 'settings.general.promptBreakdownSubtitle': return '각 응답 아래에 프롬프트가 모델 컨텍스트 윈도우를 어떻게 채웠는지 보여 주는 막대를 표시해요.';
 			case 'settings.general.checkUpdatesTitle': return '업데이트 확인';
@@ -33431,8 +31443,6 @@ extension on _TranslationsKo {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '이미지 초기화';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '어시스턴트 카드 편집';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '즐겨찾기';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES 엔진';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return '디버그 스냅샷';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '캐릭터';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '선택된 스타일이 없어요';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '채팅 색인 다시 만드는 중...';
@@ -33752,15 +31762,8 @@ extension on _TranslationsPtBr {
 			case 'editor.panelLabels.group': return 'Grupo';
 			case 'editor.panelLabels.creator': return 'Criador';
 			case 'editor.panelLabels.appData': return 'Dados do app';
-			case 'editor.panelLabels.nodes': return 'Nós';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ocultar painel do assistente';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Mostrar assistente de conversa lado a lado';
-			case 'editor.codeFindPanel.noneResult': return 'nenhum';
-			case 'editor.codeFindPanel.previousTooltip': return 'Anterior';
-			case 'editor.codeFindPanel.nextTooltip': return 'Próximo';
-			case 'editor.codeFindPanel.closeTooltip': return 'Fechar';
-			case 'editor.codeFindPanel.replaceTooltip': return 'Substituir';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'Substituir tudo';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirmar Substituir tudo';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Tem certeza de que deseja continuar?\nEsta ação é irreversível e afeta todos os campos.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Prosseguir';
@@ -33888,74 +31891,6 @@ extension on _TranslationsPtBr {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Entrada de lorebook nº${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'A imagem selecionada é grande demais. O tamanho máximo é ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'A imagem selecionada não é um PNG válido ou não pôde ser lida.';
-			case 'editor.editorNodes.deleteNodeTitle': return 'Excluir nó';
-			case 'editor.editorNodes.deleteNodeMessage': return 'Remover este nó autoral do cartão?';
-			case 'editor.editorNodes.engineSeedTitle': return 'Semente do motor';
-			case 'editor.editorNodes.visualEditorTooltip': return 'Editor visual';
-			case 'editor.editorNodes.editJsonTooltip': return 'Editar JSON';
-			case 'editor.editorNodes.initialGoalLabel': return 'Objetivo inicial';
-			case 'editor.editorNodes.initialSceneLabel': return 'Cena inicial';
-			case 'editor.editorNodes.locationLabel': return 'Local';
-			case 'editor.editorNodes.timeOfDayLabel': return 'Hora do dia';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'Presentes (separados por vírgula)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'Ganchos sensoriais (separados por vírgula)';
-			case 'editor.editorNodes.addNodeButton': return 'Adicionar nó';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'Nenhum nó autoral ainda.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
-				one: 'O bloco de nós deste cartão tem ${n} problema; editar aqui sobrescreverá as partes corrompidas ao salvar.',
-				other: 'O bloco de nós deste cartão tem ${n} problemas; editar aqui sobrescreverá as partes corrompidas ao salvar.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… mais ${n}';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'Emoção base';
-			case 'editor.editorNodes.emotionChipLabel': return 'Emoção';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'gera: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'O nível superior deve ser um objeto JSON';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Editar JSON dos nós';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
-				one: 'Corrija ${n} problema para salvar.',
-				other: 'Corrija ${n} problemas para salvar.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'gerado por';
-			case 'editor.nodesCanvasView.spawnsPort': return 'gera';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'Editar nó';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'Adicionar nó';
-			case 'editor.nodeEditorForm.nameLabel': return 'Nome';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Carga narrativa';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Remover vínculo de geração';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Impedir este nó de gerar "${nodeId}"? O nó em si permanece no cartão.';
-			case 'editor.nodeEditorForm.removeButton': return 'Remover';
-			case 'editor.nodeEditorForm.typeLabel': return 'Tipo';
-			case 'editor.nodeEditorForm.scopeLabel': return 'Escopo';
-			case 'editor.nodeEditorForm.originLabel': return 'Origem';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'Prob. de gatilho';
-			case 'editor.nodeEditorForm.delayHelper': return 'Turnos a esperar antes de ficar elegível. -1 age como 0.';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'Turnos bloqueado após disparar. -1 significa sem tempo de espera.';
-			case 'editor.nodeEditorForm.stickyHelper': return 'Turnos em que a carga narrativa continua aparecendo como "Persistente" após disparar. -1 significa permanente.';
-			case 'editor.nodeEditorForm.aliveHelper': return 'Turnos em que o nó permanece no pool antes da remoção. -1 significa para sempre.';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'Definir como nunca';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Efeitos';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Variações de emoção';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Variações físicas';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Variações de relacionamento';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'Adicionar variação';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Escritas de conhecimento';
-			case 'editor.nodeEditorForm.addFactChip': return 'Adicionar fato';
-			case 'editor.nodeEditorForm.topicLabel': return 'tópico';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'confiança';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'Definição de flag';
-			case 'editor.nodeEditorForm.addFlagChip': return 'Adicionar flag';
-			case 'editor.nodeEditorForm.keyLabel': return 'chave';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Cena e fluxo';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (limpa o objetivo atual quando vazio)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(nenhum)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'Quando verdadeiro, o motor marca o disparo como uma mudança de cena.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Gerações';
-			case 'editor.nodeEditorForm.addNewChip': return 'Adicionar novo';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'Vincular existente';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'Desvincular';
-			case 'editor.nodeEditorForm.predicateLabel': return 'Predicado';
 			case 'editor.contentTransform.appliedSnackbar': return 'Alterações aplicadas';
 			case 'editor.contentTransform.undoButton': return 'Desfazer';
 			case 'grid.emptyState.noMatches': return 'Nenhum personagem corresponde aos seus filtros';
@@ -34162,7 +32097,6 @@ extension on _TranslationsPtBr {
 			case 'llmApp.presetRow.continueButton': return 'Continuar';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Escolha um modelo de ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'Não aplicável';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} nó(s) de comportamento desativado(s) — verifique o editor de nós.';
 			case 'onboarding.finishFailedSnackbar': return 'Falha na configuração. Veja os logs para detalhes.';
 			case 'onboarding.appBarTitle': return 'Configuração rápida';
 			case 'onboarding.languageTooltip': return 'Idioma';
@@ -34229,8 +32163,6 @@ extension on _TranslationsPtBr {
 			case 'settings.general.themeStyleNeon': return 'Neon';
 			case 'settings.general.storyMemoryTitle': return 'Memória da história';
 			case 'settings.general.storyMemorySubtitle': return 'Lembra momentos anteriores e traz os relevantes de volta em conversas longas.';
-			case 'settings.general.narrativeEngineTitle': return 'Motor narrativo';
-			case 'settings.general.narrativeEngineSubtitle': return 'Acompanha a cena e os personagens e faz a história avançar enquanto você conversa.';
 			case 'settings.general.promptBreakdownTitle': return 'Mostrar detalhamento do prompt';
 			case 'settings.general.promptBreakdownSubtitle': return 'Mostra uma barra sob cada resposta detalhando como o prompt preencheu a janela de contexto do modelo.';
 			case 'settings.general.checkUpdatesTitle': return 'Verificar atualizações';
@@ -34382,8 +32314,6 @@ extension on _TranslationsPtBr {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Redefinir imagens';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Edições de cartão pelo assistente';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorito';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'Motor NODES';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Captura de depuração';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Personagem';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Nenhum estilo selecionado';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruindo índice de conversas...';
@@ -34713,15 +32643,8 @@ extension on _TranslationsRu {
 			case 'editor.panelLabels.group': return 'Группа';
 			case 'editor.panelLabels.creator': return 'Автор';
 			case 'editor.panelLabels.appData': return 'Данные приложения';
-			case 'editor.panelLabels.nodes': return 'Узлы';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Скрыть панель ассистента';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Показать чат-ассистент рядом';
-			case 'editor.codeFindPanel.noneResult': return 'нет';
-			case 'editor.codeFindPanel.previousTooltip': return 'Предыдущее';
-			case 'editor.codeFindPanel.nextTooltip': return 'Следующее';
-			case 'editor.codeFindPanel.closeTooltip': return 'Закрыть';
-			case 'editor.codeFindPanel.replaceTooltip': return 'Заменить';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'Заменить всё';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Подтвердите «Заменить всё»';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Вы уверены, что хотите продолжить?\nЭто действие необратимо и затрагивает все поля.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Продолжить';
@@ -34849,78 +32772,6 @@ extension on _TranslationsRu {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Запись лорбука №${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Выбранное изображение слишком большое. Максимальный размер — ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'Выбранное изображение не является корректным PNG или не может быть прочитано.';
-			case 'editor.editorNodes.deleteNodeTitle': return 'Удалить узел';
-			case 'editor.editorNodes.deleteNodeMessage': return 'Удалить этот авторский узел из карточки?';
-			case 'editor.editorNodes.engineSeedTitle': return 'Начальное состояние движка';
-			case 'editor.editorNodes.visualEditorTooltip': return 'Визуальный редактор';
-			case 'editor.editorNodes.editJsonTooltip': return 'Редактировать JSON';
-			case 'editor.editorNodes.initialGoalLabel': return 'Начальная цель';
-			case 'editor.editorNodes.initialSceneLabel': return 'Начальная сцена';
-			case 'editor.editorNodes.locationLabel': return 'Место';
-			case 'editor.editorNodes.timeOfDayLabel': return 'Время суток';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'Присутствуют (через запятую)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'Сенсорные зацепки (через запятую)';
-			case 'editor.editorNodes.addNodeButton': return 'Добавить узел';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'Авторских узлов пока нет.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
-				one: 'В блоке узлов этой карточки ${n} проблема; редактирование здесь перезапишет повреждённые части при сохранении.',
-				few: 'В блоке узлов этой карточки ${n} проблемы; редактирование здесь перезапишет повреждённые части при сохранении.',
-				many: 'В блоке узлов этой карточки ${n} проблем; редактирование здесь перезапишет повреждённые части при сохранении.',
-				other: 'В блоке узлов этой карточки ${n} проблемы; редактирование здесь перезапишет повреждённые части при сохранении.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… ещё ${n}';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'Базовая эмоция';
-			case 'editor.editorNodes.emotionChipLabel': return 'Эмоция';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'порождает: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'Верхний уровень должен быть объектом JSON';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Редактировать JSON узлов';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
-				one: 'Исправьте ${n} проблему, чтобы сохранить.',
-				few: 'Исправьте ${n} проблемы, чтобы сохранить.',
-				many: 'Исправьте ${n} проблем, чтобы сохранить.',
-				other: 'Исправьте ${n} проблемы, чтобы сохранить.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'порождён';
-			case 'editor.nodesCanvasView.spawnsPort': return 'порождает';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'Редактировать узел';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'Добавить узел';
-			case 'editor.nodeEditorForm.nameLabel': return 'Имя';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Нарративная нагрузка';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Удалить связь порождения';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Запретить этому узлу порождать «${nodeId}»? Сам узел останется на карточке.';
-			case 'editor.nodeEditorForm.removeButton': return 'Удалить';
-			case 'editor.nodeEditorForm.typeLabel': return 'Тип';
-			case 'editor.nodeEditorForm.scopeLabel': return 'Область';
-			case 'editor.nodeEditorForm.originLabel': return 'Источник';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'Вероятность триггера';
-			case 'editor.nodeEditorForm.delayHelper': return 'Ходов ожидания перед активацией. -1 равно 0.';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'Ходов блокировки после срабатывания. -1 означает без перезарядки.';
-			case 'editor.nodeEditorForm.stickyHelper': return 'Ходов, в течение которых нарративная нагрузка остаётся как «Сохраняющаяся» после срабатывания. -1 означает навсегда.';
-			case 'editor.nodeEditorForm.aliveHelper': return 'Ходов, в течение которых узел остаётся в пуле до удаления. -1 означает бесконечно.';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'Установить «никогда»';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Эффекты';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Изменения эмоций';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Физические изменения';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Изменения отношений';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'Добавить изменение';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Записи знаний';
-			case 'editor.nodeEditorForm.addFactChip': return 'Добавить факт';
-			case 'editor.nodeEditorForm.topicLabel': return 'тема';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'уверенность';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'Набор флагов';
-			case 'editor.nodeEditorForm.addFlagChip': return 'Добавить флаг';
-			case 'editor.nodeEditorForm.keyLabel': return 'ключ';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Сцена и ход';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (очищает текущую цель, если пусто)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(нет)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'Если true, движок помечает срабатывание как смену сцены.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Порождения';
-			case 'editor.nodeEditorForm.addNewChip': return 'Добавить новый';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'Связать существующий';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'Отвязать';
-			case 'editor.nodeEditorForm.predicateLabel': return 'Предикат';
 			case 'editor.contentTransform.appliedSnackbar': return 'Изменения применены';
 			case 'editor.contentTransform.undoButton': return 'Отменить';
 			case 'grid.emptyState.noMatches': return 'Нет персонажей по вашим фильтрам';
@@ -35131,7 +32982,6 @@ extension on _TranslationsRu {
 			case 'llmApp.presetRow.continueButton': return 'Продолжить';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Выберите модель для «${domain}»';
 			case 'llmApp.mediaCell.notApplicable': return 'Неприменимо';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => 'Отключено узлов поведения: ${count} — проверьте редактор узлов.';
 			case 'onboarding.finishFailedSnackbar': return 'Не удалось завершить настройку. Подробности в логах.';
 			case 'onboarding.appBarTitle': return 'Быстрая настройка';
 			case 'onboarding.languageTooltip': return 'Язык';
@@ -35198,8 +33048,6 @@ extension on _TranslationsRu {
 			case 'settings.general.themeStyleNeon': return 'Неон';
 			case 'settings.general.storyMemoryTitle': return 'Память истории';
 			case 'settings.general.storyMemorySubtitle': return 'Запоминать ранние моменты и возвращать нужные из них в длинных чатах.';
-			case 'settings.general.narrativeEngineTitle': return 'Нарративный движок';
-			case 'settings.general.narrativeEngineSubtitle': return 'Отслеживать сцену и персонажей и двигать историю по мере вашей переписки.';
 			case 'settings.general.promptBreakdownTitle': return 'Показывать разбор промпта';
 			case 'settings.general.promptBreakdownSubtitle': return 'Показывать под каждым ответом полосу, разбивающую, как промпт заполнил контекстное окно модели.';
 			case 'settings.general.checkUpdatesTitle': return 'Проверить обновления';
@@ -35353,8 +33201,6 @@ extension on _TranslationsRu {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Сбросить изображения';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Правки карточки ассистентом';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Избранное';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'Движок NODES';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Отладочный снимок';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Персонаж';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Стиль не выбран';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Перестроение индекса чата...';
@@ -35669,15 +33515,8 @@ extension on _TranslationsVi {
 			case 'editor.panelLabels.group': return 'Nhóm';
 			case 'editor.panelLabels.creator': return 'Tác giả';
 			case 'editor.panelLabels.appData': return 'Dữ liệu ứng dụng';
-			case 'editor.panelLabels.nodes': return 'Node';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ẩn bảng trợ lý';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Hiện trợ lý trò chuyện song song';
-			case 'editor.codeFindPanel.noneResult': return 'không có';
-			case 'editor.codeFindPanel.previousTooltip': return 'Trước';
-			case 'editor.codeFindPanel.nextTooltip': return 'Sau';
-			case 'editor.codeFindPanel.closeTooltip': return 'Đóng';
-			case 'editor.codeFindPanel.replaceTooltip': return 'Thay thế';
-			case 'editor.codeFindPanel.replaceAllTooltip': return 'Thay thế tất cả';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Xác nhận thay thế tất cả';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Tiếp tục';
@@ -35805,72 +33644,6 @@ extension on _TranslationsVi {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => 'Mục lorebook #${index}:\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => 'Ảnh đã chọn quá lớn. Kích thước tối đa là ${maxSize}.';
 			case 'editor.editorPageController.invalidPngMessage': return 'Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được.';
-			case 'editor.editorNodes.deleteNodeTitle': return 'Xóa node';
-			case 'editor.editorNodes.deleteNodeMessage': return 'Xóa node tự tạo này khỏi thẻ?';
-			case 'editor.editorNodes.engineSeedTitle': return 'Seed của engine';
-			case 'editor.editorNodes.visualEditorTooltip': return 'Trình chỉnh sửa trực quan';
-			case 'editor.editorNodes.editJsonTooltip': return 'Chỉnh sửa JSON';
-			case 'editor.editorNodes.initialGoalLabel': return 'Mục tiêu ban đầu';
-			case 'editor.editorNodes.initialSceneLabel': return 'Cảnh ban đầu';
-			case 'editor.editorNodes.locationLabel': return 'Địa điểm';
-			case 'editor.editorNodes.timeOfDayLabel': return 'Thời điểm trong ngày';
-			case 'editor.editorNodes.presentEntitiesLabel': return 'Có mặt (phân tách bằng dấu phẩy)';
-			case 'editor.editorNodes.sensoryHooksLabel': return 'Chi tiết giác quan (phân tách bằng dấu phẩy)';
-			case 'editor.editorNodes.addNodeButton': return 'Thêm node';
-			case 'editor.editorNodes.noAuthoredNodesYet': return 'Chưa có node tự tạo nào.';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
-				other: 'Khối node của thẻ này có ${n} vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu.',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… còn ${n} nữa';
-			case 'editor.editorNodes.emotionBaselineLabel': return 'Cảm xúc nền';
-			case 'editor.editorNodes.emotionChipLabel': return 'Cảm xúc';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => 'sinh ra: ${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return 'Cấp cao nhất phải là một đối tượng JSON';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return 'Chỉnh sửa JSON node';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
-				other: 'Sửa ${n} vấn đề để lưu.',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return 'được sinh bởi';
-			case 'editor.nodesCanvasView.spawnsPort': return 'sinh ra';
-			case 'editor.nodesCanvasView.editNodeLabel': return 'Chỉnh sửa node';
-			case 'editor.nodesCanvasView.addNodeTooltip': return 'Thêm node';
-			case 'editor.nodeEditorForm.nameLabel': return 'Tên';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return 'Nội dung tường thuật';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return 'Xóa liên kết sinh';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => 'Ngừng cho node này sinh ra "${nodeId}"? Bản thân node vẫn còn trên thẻ.';
-			case 'editor.nodeEditorForm.removeButton': return 'Xóa';
-			case 'editor.nodeEditorForm.typeLabel': return 'Loại';
-			case 'editor.nodeEditorForm.scopeLabel': return 'Phạm vi';
-			case 'editor.nodeEditorForm.originLabel': return 'Nguồn gốc';
-			case 'editor.nodeEditorForm.triggerProbLabel': return 'Xác suất kích hoạt';
-			case 'editor.nodeEditorForm.delayHelper': return 'Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.';
-			case 'editor.nodeEditorForm.cooldownHelper': return 'Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.';
-			case 'editor.nodeEditorForm.stickyHelper': return 'Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng "Còn vương lại" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.';
-			case 'editor.nodeEditorForm.aliveHelper': return 'Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.';
-			case 'editor.nodeEditorForm.setToNeverButton': return 'Đặt thành không bao giờ';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return 'Hiệu ứng';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return 'Biến đổi cảm xúc';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return 'Biến đổi thể chất';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return 'Biến đổi quan hệ';
-			case 'editor.nodeEditorForm.addDeltaChip': return 'Thêm biến đổi';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return 'Ghi kiến thức';
-			case 'editor.nodeEditorForm.addFactChip': return 'Thêm dữ kiện';
-			case 'editor.nodeEditorForm.topicLabel': return 'chủ đề';
-			case 'editor.nodeEditorForm.confidenceLabel': return 'độ tin cậy';
-			case 'editor.nodeEditorForm.flagSetTitle': return 'Đặt cờ';
-			case 'editor.nodeEditorForm.addFlagChip': return 'Thêm cờ';
-			case 'editor.nodeEditorForm.keyLabel': return 'khóa';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return 'Cảnh & mạch truyện';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange (xóa mục tiêu hiện tại khi để trống)';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '(không)';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return 'Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return 'Sinh ra';
-			case 'editor.nodeEditorForm.addNewChip': return 'Thêm mới';
-			case 'editor.nodeEditorForm.linkExistingChip': return 'Liên kết node có sẵn';
-			case 'editor.nodeEditorForm.unlinkTooltip': return 'Hủy liên kết';
-			case 'editor.nodeEditorForm.predicateLabel': return 'Điều kiện';
 			case 'editor.contentTransform.appliedSnackbar': return 'Đã áp dụng thay đổi';
 			case 'editor.contentTransform.undoButton': return 'Hoàn tác';
 			case 'grid.emptyState.noMatches': return 'Không có nhân vật nào khớp với bộ lọc';
@@ -36075,7 +33848,6 @@ extension on _TranslationsVi {
 			case 'llmApp.presetRow.continueButton': return 'Tiếp tục';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Chọn mô hình ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'Không áp dụng';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => 'Đã tắt ${count} nút hành vi — hãy kiểm tra trình chỉnh sửa nút.';
 			case 'onboarding.finishFailedSnackbar': return 'Thiết lập thất bại. Xem nhật ký để biết chi tiết.';
 			case 'onboarding.appBarTitle': return 'Thiết lập nhanh';
 			case 'onboarding.languageTooltip': return 'Ngôn ngữ';
@@ -36142,8 +33914,6 @@ extension on _TranslationsVi {
 			case 'settings.general.themeStyleNeon': return 'Neon';
 			case 'settings.general.storyMemoryTitle': return 'Ký ức câu chuyện';
 			case 'settings.general.storyMemorySubtitle': return 'Ghi nhớ các khoảnh khắc trước đó và đưa những phần liên quan trở lại trong các cuộc trò chuyện dài.';
-			case 'settings.general.narrativeEngineTitle': return 'Công cụ tường thuật';
-			case 'settings.general.narrativeEngineSubtitle': return 'Theo dõi bối cảnh và nhân vật, đẩy câu chuyện tiến triển khi bạn trò chuyện.';
 			case 'settings.general.promptBreakdownTitle': return 'Hiện phân tích prompt';
 			case 'settings.general.promptBreakdownSubtitle': return 'Hiển thị một thanh dưới mỗi phản hồi phân tích cách prompt lấp đầy cửa sổ ngữ cảnh của mô hình.';
 			case 'settings.general.checkUpdatesTitle': return 'Kiểm tra cập nhật';
@@ -36294,8 +34064,6 @@ extension on _TranslationsVi {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Đặt lại hình ảnh';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Chỉnh sửa thẻ bởi trợ lý';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Yêu thích';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES Engine';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return 'Ảnh chụp gỡ lỗi';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Nhân vật';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Chưa chọn phong cách nào';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Đang xây dựng lại chỉ mục trò chuyện...';
@@ -36610,15 +34378,8 @@ extension on _TranslationsZhHans {
 			case 'editor.panelLabels.group': return '群组';
 			case 'editor.panelLabels.creator': return '创作者';
 			case 'editor.panelLabels.appData': return '应用数据';
-			case 'editor.panelLabels.nodes': return '节点';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '隐藏助手面板';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return '并排显示对话助手';
-			case 'editor.codeFindPanel.noneResult': return '无';
-			case 'editor.codeFindPanel.previousTooltip': return '上一个';
-			case 'editor.codeFindPanel.nextTooltip': return '下一个';
-			case 'editor.codeFindPanel.closeTooltip': return '关闭';
-			case 'editor.codeFindPanel.replaceTooltip': return '替换';
-			case 'editor.codeFindPanel.replaceAllTooltip': return '全部替换';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '确认全部替换';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '确定要继续吗？\n此操作不可逆，并会影响所有字段。';
 			case 'editor.findReplaceDialog.proceedButton': return '继续';
@@ -36746,72 +34507,6 @@ extension on _TranslationsZhHans {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => '世界书条目 #${index}：\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => '所选图像过大。最大尺寸为 ${maxSize}。';
 			case 'editor.editorPageController.invalidPngMessage': return '所选图像不是有效的 PNG，或无法读取。';
-			case 'editor.editorNodes.deleteNodeTitle': return '删除节点';
-			case 'editor.editorNodes.deleteNodeMessage': return '从卡片中移除这个已创建的节点？';
-			case 'editor.editorNodes.engineSeedTitle': return '引擎种子';
-			case 'editor.editorNodes.visualEditorTooltip': return '可视化编辑器';
-			case 'editor.editorNodes.editJsonTooltip': return '编辑 JSON';
-			case 'editor.editorNodes.initialGoalLabel': return '初始目标';
-			case 'editor.editorNodes.initialSceneLabel': return '初始场景';
-			case 'editor.editorNodes.locationLabel': return '地点';
-			case 'editor.editorNodes.timeOfDayLabel': return '时段';
-			case 'editor.editorNodes.presentEntitiesLabel': return '在场（逗号分隔）';
-			case 'editor.editorNodes.sensoryHooksLabel': return '感官钩子（逗号分隔）';
-			case 'editor.editorNodes.addNodeButton': return '添加节点';
-			case 'editor.editorNodes.noAuthoredNodesYet': return '还没有已创建的节点。';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-				other: '这张卡片的节点块有 ${n} 个问题；在此编辑会在保存时覆盖损坏的部分。',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '…还有 ${n} 个';
-			case 'editor.editorNodes.emotionBaselineLabel': return '情绪基线';
-			case 'editor.editorNodes.emotionChipLabel': return '情绪';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => '生成：${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return '顶层必须是一个 JSON 对象';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return '编辑节点 JSON';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-				other: '修复 ${n} 个问题后才能保存。',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return '生成自';
-			case 'editor.nodesCanvasView.spawnsPort': return '生成';
-			case 'editor.nodesCanvasView.editNodeLabel': return '编辑节点';
-			case 'editor.nodesCanvasView.addNodeTooltip': return '添加节点';
-			case 'editor.nodeEditorForm.nameLabel': return '名称';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return '叙事内容';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return '移除生成链接';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => '停止此节点生成“${nodeId}”？节点本身仍保留在卡片上。';
-			case 'editor.nodeEditorForm.removeButton': return '移除';
-			case 'editor.nodeEditorForm.typeLabel': return '类型';
-			case 'editor.nodeEditorForm.scopeLabel': return '范围';
-			case 'editor.nodeEditorForm.originLabel': return '来源';
-			case 'editor.nodeEditorForm.triggerProbLabel': return '触发概率';
-			case 'editor.nodeEditorForm.delayHelper': return '生效前需等待的回合数。-1 等同于 0。';
-			case 'editor.nodeEditorForm.cooldownHelper': return '触发后锁定的回合数。-1 表示无冷却。';
-			case 'editor.nodeEditorForm.stickyHelper': return '触发后叙事内容以“残留”形式持续出现的回合数。-1 表示永久。';
-			case 'editor.nodeEditorForm.aliveHelper': return '节点在被移除前留在池中的回合数。-1 表示永远。';
-			case 'editor.nodeEditorForm.setToNeverButton': return '设为从不';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return '效果';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return '情绪变化量';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return '身体变化量';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return '关系变化量';
-			case 'editor.nodeEditorForm.addDeltaChip': return '添加变化量';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return '知识写入';
-			case 'editor.nodeEditorForm.addFactChip': return '添加事实';
-			case 'editor.nodeEditorForm.topicLabel': return '主题';
-			case 'editor.nodeEditorForm.confidenceLabel': return '置信度';
-			case 'editor.nodeEditorForm.flagSetTitle': return '标志设置';
-			case 'editor.nodeEditorForm.addFlagChip': return '添加标志';
-			case 'editor.nodeEditorForm.keyLabel': return '键';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return '场景与流程';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange（留空时清除当前目标）';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '（无）';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return '为 true 时，引擎会将这次触发标记为场景切换。';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return '生成';
-			case 'editor.nodeEditorForm.addNewChip': return '新建';
-			case 'editor.nodeEditorForm.linkExistingChip': return '链接现有';
-			case 'editor.nodeEditorForm.unlinkTooltip': return '取消链接';
-			case 'editor.nodeEditorForm.predicateLabel': return '条件';
 			case 'editor.contentTransform.appliedSnackbar': return '更改已应用';
 			case 'editor.contentTransform.undoButton': return '撤销';
 			case 'grid.emptyState.noMatches': return '没有符合筛选条件的角色';
@@ -37016,7 +34711,6 @@ extension on _TranslationsZhHans {
 			case 'llmApp.presetRow.continueButton': return '继续';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '选择一个 ${domain} 模型';
 			case 'llmApp.mediaCell.notApplicable': return '不适用';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} 个行为节点已停用——请检查节点编辑器。';
 			case 'onboarding.finishFailedSnackbar': return '设置失败。详情请查看日志。';
 			case 'onboarding.appBarTitle': return '快速设置';
 			case 'onboarding.languageTooltip': return '语言';
@@ -37083,8 +34777,6 @@ extension on _TranslationsZhHans {
 			case 'settings.general.themeStyleNeon': return '霓虹';
 			case 'settings.general.storyMemoryTitle': return '故事记忆';
 			case 'settings.general.storyMemorySubtitle': return '记住早前的情节，并在长对话中把相关内容重新带回。';
-			case 'settings.general.narrativeEngineTitle': return '叙事引擎';
-			case 'settings.general.narrativeEngineSubtitle': return '跟踪场景与角色，随着聊天推进故事发展。';
 			case 'settings.general.promptBreakdownTitle': return '显示提示词构成';
 			case 'settings.general.promptBreakdownSubtitle': return '在每条回复下方显示一个进度条，展示提示词如何填满模型的上下文窗口。';
 			case 'settings.general.checkUpdatesTitle': return '检查更新';
@@ -37235,8 +34927,6 @@ extension on _TranslationsZhHans {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '重置图像';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '助手卡片编辑';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '收藏';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES 引擎';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return '调试快照';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '角色';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '未选择风格';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建对话索引…';
@@ -37551,15 +35241,8 @@ extension on _TranslationsZhHant {
 			case 'editor.panelLabels.group': return '群組';
 			case 'editor.panelLabels.creator': return '作者';
 			case 'editor.panelLabels.appData': return 'App 資料';
-			case 'editor.panelLabels.nodes': return '節點';
 			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '隱藏助理面板';
 			case 'editor.appBarEditor.showChatAssistantTooltip': return '並排顯示對話助理';
-			case 'editor.codeFindPanel.noneResult': return '無';
-			case 'editor.codeFindPanel.previousTooltip': return '上一個';
-			case 'editor.codeFindPanel.nextTooltip': return '下一個';
-			case 'editor.codeFindPanel.closeTooltip': return '關閉';
-			case 'editor.codeFindPanel.replaceTooltip': return '取代';
-			case 'editor.codeFindPanel.replaceAllTooltip': return '全部取代';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '確認全部取代';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '確定要繼續嗎？\n此動作無法復原，且會影響所有欄位。';
 			case 'editor.findReplaceDialog.proceedButton': return '繼續';
@@ -37687,72 +35370,6 @@ extension on _TranslationsZhHant {
 			case 'editor.editorPageController.compositeLorebookEntry': return ({required Object index, required Object value}) => '世界書條目 #${index}：\n${value}\n';
 			case 'editor.editorPageController.imageTooLargeMessage': return ({required Object maxSize}) => '所選圖片太大。上限為 ${maxSize}。';
 			case 'editor.editorPageController.invalidPngMessage': return '所選圖片不是有效的 PNG，或無法讀取。';
-			case 'editor.editorNodes.deleteNodeTitle': return '刪除節點';
-			case 'editor.editorNodes.deleteNodeMessage': return '要從卡片中移除這個自訂節點嗎？';
-			case 'editor.editorNodes.engineSeedTitle': return '引擎種子';
-			case 'editor.editorNodes.visualEditorTooltip': return '視覺化編輯器';
-			case 'editor.editorNodes.editJsonTooltip': return '編輯 JSON';
-			case 'editor.editorNodes.initialGoalLabel': return '初始目標';
-			case 'editor.editorNodes.initialSceneLabel': return '初始場景';
-			case 'editor.editorNodes.locationLabel': return '地點';
-			case 'editor.editorNodes.timeOfDayLabel': return '時段';
-			case 'editor.editorNodes.presentEntitiesLabel': return '在場者（以逗號分隔）';
-			case 'editor.editorNodes.sensoryHooksLabel': return '感官提示（以逗號分隔）';
-			case 'editor.editorNodes.addNodeButton': return '新增節點';
-			case 'editor.editorNodes.noAuthoredNodesYet': return '尚無自訂節點。';
-			case 'editor.editorNodes.loadErrorMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-				other: '這張卡片的節點區塊有 ${n} 個問題；在此編輯時，儲存會覆寫損壞的部分。',
-			);
-			case 'editor.editorNodes.moreErrorsSuffix': return ({required Object n}) => '… 還有 ${n} 個';
-			case 'editor.editorNodes.emotionBaselineLabel': return '情緒基準';
-			case 'editor.editorNodes.emotionChipLabel': return '情緒';
-			case 'editor.nodeListTile.spawnsLabel': return ({required Object count}) => '衍生：${count}';
-			case 'editor.nodesRawEditorPage.topLevelMustBeObject': return '最上層必須是 JSON 物件';
-			case 'editor.nodesRawEditorPage.editNodesJsonTitle': return '編輯節點 JSON';
-			case 'editor.nodesRawEditorPage.fixProblemsMessage': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
-				other: '修正 ${n} 個問題才能儲存。',
-			);
-			case 'editor.nodesCanvasView.spawnedByPort': return '衍生來源';
-			case 'editor.nodesCanvasView.spawnsPort': return '衍生';
-			case 'editor.nodesCanvasView.editNodeLabel': return '編輯節點';
-			case 'editor.nodesCanvasView.addNodeTooltip': return '新增節點';
-			case 'editor.nodeEditorForm.nameLabel': return '名稱';
-			case 'editor.nodeEditorForm.narrativePayloadLabel': return '敘事內容';
-			case 'editor.nodeEditorForm.removeSpawnLinkTitle': return '移除衍生連結';
-			case 'editor.nodeEditorForm.removeSpawnLinkMessage': return ({required Object nodeId}) => '要讓這個節點不再衍生「${nodeId}」嗎？節點本身仍會保留在卡片上。';
-			case 'editor.nodeEditorForm.removeButton': return '移除';
-			case 'editor.nodeEditorForm.typeLabel': return '類型';
-			case 'editor.nodeEditorForm.scopeLabel': return '範圍';
-			case 'editor.nodeEditorForm.originLabel': return '來源';
-			case 'editor.nodeEditorForm.triggerProbLabel': return '觸發機率';
-			case 'editor.nodeEditorForm.delayHelper': return '在符合條件前要等待的回合數。-1 等同於 0。';
-			case 'editor.nodeEditorForm.cooldownHelper': return '觸發後鎖定的回合數。-1 表示無冷卻。';
-			case 'editor.nodeEditorForm.stickyHelper': return '觸發後敘事內容以「殘留」形式持續出現的回合數。-1 表示永久。';
-			case 'editor.nodeEditorForm.aliveHelper': return '節點在被移除前留在集區中的回合數。-1 表示永遠。';
-			case 'editor.nodeEditorForm.setToNeverButton': return '設為永不';
-			case 'editor.nodeEditorForm.effectsSectionLabel': return '效果';
-			case 'editor.nodeEditorForm.emotionDeltasTitle': return '情緒變化量';
-			case 'editor.nodeEditorForm.physicalDeltasTitle': return '生理變化量';
-			case 'editor.nodeEditorForm.relationshipDeltasTitle': return '關係變化量';
-			case 'editor.nodeEditorForm.addDeltaChip': return '新增變化量';
-			case 'editor.nodeEditorForm.knowledgeWritesTitle': return '知識寫入';
-			case 'editor.nodeEditorForm.addFactChip': return '新增事實';
-			case 'editor.nodeEditorForm.topicLabel': return '主題';
-			case 'editor.nodeEditorForm.confidenceLabel': return '信心度';
-			case 'editor.nodeEditorForm.flagSetTitle': return '旗標設定';
-			case 'editor.nodeEditorForm.addFlagChip': return '新增旗標';
-			case 'editor.nodeEditorForm.keyLabel': return '鍵';
-			case 'editor.nodeEditorForm.sceneAndFlowTitle': return '場景與流程';
-			case 'editor.nodeEditorForm.goalChangeLabel': return 'goalChange（留空時會清除目前的目標）';
-			case 'editor.nodeEditorForm.phaseChangeLabel': return 'phaseChange';
-			case 'editor.nodeEditorForm.noneOption': return '（無）';
-			case 'editor.nodeEditorForm.sceneTransitionLabel': return 'sceneTransition';
-			case 'editor.nodeEditorForm.sceneTransitionSubtitle': return '設為 true 時，引擎會將此次觸發標記為場景轉換。';
-			case 'editor.nodeEditorForm.spawnsSectionLabel': return '衍生';
-			case 'editor.nodeEditorForm.addNewChip': return '新增';
-			case 'editor.nodeEditorForm.linkExistingChip': return '連結現有';
-			case 'editor.nodeEditorForm.unlinkTooltip': return '解除連結';
-			case 'editor.nodeEditorForm.predicateLabel': return '條件式';
 			case 'editor.contentTransform.appliedSnackbar': return '變更已套用';
 			case 'editor.contentTransform.undoButton': return '復原';
 			case 'grid.emptyState.noMatches': return '沒有符合篩選條件的角色';
@@ -37957,7 +35574,6 @@ extension on _TranslationsZhHant {
 			case 'llmApp.presetRow.continueButton': return '繼續';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '選擇 ${domain} 模型';
 			case 'llmApp.mediaCell.notApplicable': return '不適用';
-			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} 個行為節點已停用——請檢查節點編輯器。';
 			case 'onboarding.finishFailedSnackbar': return '設定失敗。詳情請查看記錄。';
 			case 'onboarding.appBarTitle': return '快速設定';
 			case 'onboarding.languageTooltip': return '語言';
@@ -38024,8 +35640,6 @@ extension on _TranslationsZhHant {
 			case 'settings.general.themeStyleNeon': return '霓虹';
 			case 'settings.general.storyMemoryTitle': return '故事記憶';
 			case 'settings.general.storyMemorySubtitle': return '記住先前的時刻，並在長對話中把相關的內容帶回來。';
-			case 'settings.general.narrativeEngineTitle': return '敘事引擎';
-			case 'settings.general.narrativeEngineSubtitle': return '追蹤場景與角色，隨著你的對話推進故事。';
 			case 'settings.general.promptBreakdownTitle': return '顯示提示詞分析';
 			case 'settings.general.promptBreakdownSubtitle': return '在每則回覆下方顯示一條長條圖，分析提示詞如何填滿模型的上下文視窗。';
 			case 'settings.general.checkUpdatesTitle': return '檢查更新';
@@ -38176,8 +35790,6 @@ extension on _TranslationsZhHant {
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '重設圖片';
 			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '助理卡片編輯';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '最愛';
-			case 'workspace.workspaceEndDrawer.nodesEngineTitle': return 'NODES 引擎';
-			case 'workspace.workspaceEndDrawer.debugSnapshotSubtitle': return '除錯快照';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '角色';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '未選擇任何風格';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建對話索引…';

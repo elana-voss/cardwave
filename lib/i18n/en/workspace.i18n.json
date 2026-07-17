@@ -31,8 +31,6 @@
   },
   "workspaceEndDrawer": {
     "favoriteLabel": "Favorite",
-    "nodesEngineTitle": "NODES Engine",
-    "debugSnapshotSubtitle": "Debug snapshot",
     "characterSubtitle": "Character"
   },
   "stylePresetsDialog": {

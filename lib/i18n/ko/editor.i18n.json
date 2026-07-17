@@ -6,20 +6,11 @@
     "lorebook": "로어북",
     "group": "그룹",
     "creator": "제작자",
-    "appData": "앱 데이터",
-    "nodes": "노드"
+    "appData": "앱 데이터"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "어시스턴트 패널 숨기기",
     "showChatAssistantTooltip": "채팅 어시스턴트 나란히 보기"
-  },
-  "codeFindPanel": {
-    "noneResult": "없음",
-    "previousTooltip": "이전",
-    "nextTooltip": "다음",
-    "closeTooltip": "닫기",
-    "replaceTooltip": "바꾸기",
-    "replaceAllTooltip": "모두 바꾸기"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "모두 바꾸기 확인",
@@ -179,82 +170,6 @@
     "compositeLorebookEntry": "로어북 항목 #$index:\n$value\n",
     "imageTooLargeMessage": "선택한 이미지가 너무 커요. 최대 크기는 $maxSize까지예요.",
     "invalidPngMessage": "선택한 이미지가 유효한 PNG가 아니거나 읽을 수 없어요."
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "노드 삭제",
-    "deleteNodeMessage": "이 작성된 노드를 카드에서 제거할까요?",
-    "engineSeedTitle": "엔진 시드",
-    "visualEditorTooltip": "비주얼 편집기",
-    "editJsonTooltip": "JSON 편집",
-    "initialGoalLabel": "초기 목표",
-    "initialSceneLabel": "초기 장면",
-    "locationLabel": "장소",
-    "timeOfDayLabel": "시간대",
-    "presentEntitiesLabel": "등장 대상 (쉼표로 구분)",
-    "sensoryHooksLabel": "감각 요소 (쉼표로 구분)",
-    "addNodeButton": "노드 추가",
-    "noAuthoredNodesYet": "아직 작성된 노드가 없어요.",
-    "loadErrorMessage(plural)": {
-      "other": "이 카드의 노드 블록에 $n개의 문제가 있어요. 여기서 편집하면 저장할 때 손상된 부분을 덮어써요."
-    },
-    "moreErrorsSuffix": "… 외 $n개",
-    "emotionBaselineLabel": "감정 기준선",
-    "emotionChipLabel": "감정"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "생성: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "최상위는 JSON 객체여야 해요",
-    "editNodesJsonTitle": "노드 JSON 편집",
-    "fixProblemsMessage(plural)": {
-      "other": "저장하려면 문제 $n개를 해결하세요."
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "생성 출처",
-    "spawnsPort": "생성",
-    "editNodeLabel": "노드 편집",
-    "addNodeTooltip": "노드 추가"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "이름",
-    "narrativePayloadLabel": "내러티브 페이로드",
-    "removeSpawnLinkTitle": "생성 연결 제거",
-    "removeSpawnLinkMessage": "이 노드가 \"$nodeId\"을(를) 생성하지 않도록 할까요? 노드 자체는 카드에 남아 있어요.",
-    "removeButton": "제거",
-    "typeLabel": "유형",
-    "scopeLabel": "범위",
-    "originLabel": "출처",
-    "triggerProbLabel": "트리거 확률",
-    "delayHelper": "적용 대상이 되기 전 대기할 턴 수. -1은 0으로 동작해요.",
-    "cooldownHelper": "발동 후 잠기는 턴 수. -1은 쿨다운 없음을 의미해요.",
-    "stickyHelper": "발동 후 내러티브 페이로드가 \"Lingering\" 상태로 계속 나타나는 턴 수. -1은 영구를 의미해요.",
-    "aliveHelper": "노드가 제거되기 전 풀에 남아 있는 턴 수. -1은 영원을 의미해요.",
-    "setToNeverButton": "안 함으로 설정",
-    "effectsSectionLabel": "효과",
-    "emotionDeltasTitle": "감정 변화량",
-    "physicalDeltasTitle": "신체 변화량",
-    "relationshipDeltasTitle": "관계 변화량",
-    "addDeltaChip": "변화량 추가",
-    "knowledgeWritesTitle": "지식 기록",
-    "addFactChip": "사실 추가",
-    "topicLabel": "주제",
-    "confidenceLabel": "신뢰도",
-    "flagSetTitle": "플래그 설정",
-    "addFlagChip": "플래그 추가",
-    "keyLabel": "키",
-    "sceneAndFlowTitle": "장면 및 흐름",
-    "goalChangeLabel": "goalChange (비우면 현재 목표를 지워요)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(없음)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "true이면 엔진이 이 발동을 장면 전환으로 표시해요.",
-    "spawnsSectionLabel": "생성",
-    "addNewChip": "새로 추가",
-    "linkExistingChip": "기존 연결",
-    "unlinkTooltip": "연결 해제",
-    "predicateLabel": "조건"
   },
   "contentTransform": {
     "appliedSnackbar": "변경 사항이 적용되었습니다",

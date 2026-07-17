@@ -6,20 +6,11 @@
     "lorebook": "Lorebook",
     "group": "Nhóm",
     "creator": "Tác giả",
-    "appData": "Dữ liệu ứng dụng",
-    "nodes": "Node"
+    "appData": "Dữ liệu ứng dụng"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "Ẩn bảng trợ lý",
     "showChatAssistantTooltip": "Hiện trợ lý trò chuyện song song"
-  },
-  "codeFindPanel": {
-    "noneResult": "không có",
-    "previousTooltip": "Trước",
-    "nextTooltip": "Sau",
-    "closeTooltip": "Đóng",
-    "replaceTooltip": "Thay thế",
-    "replaceAllTooltip": "Thay thế tất cả"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Xác nhận thay thế tất cả",
@@ -179,82 +170,6 @@
     "compositeLorebookEntry": "Mục lorebook #$index:\n$value\n",
     "imageTooLargeMessage": "Ảnh đã chọn quá lớn. Kích thước tối đa là $maxSize.",
     "invalidPngMessage": "Ảnh đã chọn không phải PNG hợp lệ hoặc không đọc được."
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "Xóa node",
-    "deleteNodeMessage": "Xóa node tự tạo này khỏi thẻ?",
-    "engineSeedTitle": "Seed của engine",
-    "visualEditorTooltip": "Trình chỉnh sửa trực quan",
-    "editJsonTooltip": "Chỉnh sửa JSON",
-    "initialGoalLabel": "Mục tiêu ban đầu",
-    "initialSceneLabel": "Cảnh ban đầu",
-    "locationLabel": "Địa điểm",
-    "timeOfDayLabel": "Thời điểm trong ngày",
-    "presentEntitiesLabel": "Có mặt (phân tách bằng dấu phẩy)",
-    "sensoryHooksLabel": "Chi tiết giác quan (phân tách bằng dấu phẩy)",
-    "addNodeButton": "Thêm node",
-    "noAuthoredNodesYet": "Chưa có node tự tạo nào.",
-    "loadErrorMessage(plural)": {
-      "other": "Khối node của thẻ này có $n vấn đề; chỉnh sửa ở đây sẽ ghi đè các phần hỏng khi lưu."
-    },
-    "moreErrorsSuffix": "… còn $n nữa",
-    "emotionBaselineLabel": "Cảm xúc nền",
-    "emotionChipLabel": "Cảm xúc"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "sinh ra: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "Cấp cao nhất phải là một đối tượng JSON",
-    "editNodesJsonTitle": "Chỉnh sửa JSON node",
-    "fixProblemsMessage(plural)": {
-      "other": "Sửa $n vấn đề để lưu."
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "được sinh bởi",
-    "spawnsPort": "sinh ra",
-    "editNodeLabel": "Chỉnh sửa node",
-    "addNodeTooltip": "Thêm node"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "Tên",
-    "narrativePayloadLabel": "Nội dung tường thuật",
-    "removeSpawnLinkTitle": "Xóa liên kết sinh",
-    "removeSpawnLinkMessage": "Ngừng cho node này sinh ra \"$nodeId\"? Bản thân node vẫn còn trên thẻ.",
-    "removeButton": "Xóa",
-    "typeLabel": "Loại",
-    "scopeLabel": "Phạm vi",
-    "originLabel": "Nguồn gốc",
-    "triggerProbLabel": "Xác suất kích hoạt",
-    "delayHelper": "Số lượt chờ trước khi đủ điều kiện. -1 tính là 0.",
-    "cooldownHelper": "Số lượt bị khóa sau khi kích hoạt. -1 nghĩa là không có thời gian hồi.",
-    "stickyHelper": "Số lượt nội dung tường thuật tiếp tục xuất hiện dưới dạng \"Còn vương lại\" sau khi kích hoạt. -1 nghĩa là vĩnh viễn.",
-    "aliveHelper": "Số lượt node còn trong nhóm chờ trước khi bị loại. -1 nghĩa là mãi mãi.",
-    "setToNeverButton": "Đặt thành không bao giờ",
-    "effectsSectionLabel": "Hiệu ứng",
-    "emotionDeltasTitle": "Biến đổi cảm xúc",
-    "physicalDeltasTitle": "Biến đổi thể chất",
-    "relationshipDeltasTitle": "Biến đổi quan hệ",
-    "addDeltaChip": "Thêm biến đổi",
-    "knowledgeWritesTitle": "Ghi kiến thức",
-    "addFactChip": "Thêm dữ kiện",
-    "topicLabel": "chủ đề",
-    "confidenceLabel": "độ tin cậy",
-    "flagSetTitle": "Đặt cờ",
-    "addFlagChip": "Thêm cờ",
-    "keyLabel": "khóa",
-    "sceneAndFlowTitle": "Cảnh & mạch truyện",
-    "goalChangeLabel": "goalChange (xóa mục tiêu hiện tại khi để trống)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(không)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "Khi bật, engine đánh dấu lần kích hoạt là một chuyển cảnh.",
-    "spawnsSectionLabel": "Sinh ra",
-    "addNewChip": "Thêm mới",
-    "linkExistingChip": "Liên kết node có sẵn",
-    "unlinkTooltip": "Hủy liên kết",
-    "predicateLabel": "Điều kiện"
   },
   "contentTransform": {
     "appliedSnackbar": "Đã áp dụng thay đổi",

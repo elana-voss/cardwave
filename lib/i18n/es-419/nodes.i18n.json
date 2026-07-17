@@ -1,5 +1,0 @@
-{
-  "service": {
-    "invalidNodesDroppedSnackbar": "${count} nodo(s) de comportamiento desactivado(s): revisa el editor de nodos."
-  }
-}

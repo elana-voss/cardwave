@@ -6,20 +6,11 @@
     "lorebook": "Lorebook",
     "group": "Grupo",
     "creator": "Criador",
-    "appData": "Dados do app",
-    "nodes": "Nós"
+    "appData": "Dados do app"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "Ocultar painel do assistente",
     "showChatAssistantTooltip": "Mostrar assistente de conversa lado a lado"
-  },
-  "codeFindPanel": {
-    "noneResult": "nenhum",
-    "previousTooltip": "Anterior",
-    "nextTooltip": "Próximo",
-    "closeTooltip": "Fechar",
-    "replaceTooltip": "Substituir",
-    "replaceAllTooltip": "Substituir tudo"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Confirmar Substituir tudo",
@@ -179,84 +170,6 @@
     "compositeLorebookEntry": "Entrada de lorebook nº$index:\n$value\n",
     "imageTooLargeMessage": "A imagem selecionada é grande demais. O tamanho máximo é $maxSize.",
     "invalidPngMessage": "A imagem selecionada não é um PNG válido ou não pôde ser lida."
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "Excluir nó",
-    "deleteNodeMessage": "Remover este nó autoral do cartão?",
-    "engineSeedTitle": "Semente do motor",
-    "visualEditorTooltip": "Editor visual",
-    "editJsonTooltip": "Editar JSON",
-    "initialGoalLabel": "Objetivo inicial",
-    "initialSceneLabel": "Cena inicial",
-    "locationLabel": "Local",
-    "timeOfDayLabel": "Hora do dia",
-    "presentEntitiesLabel": "Presentes (separados por vírgula)",
-    "sensoryHooksLabel": "Ganchos sensoriais (separados por vírgula)",
-    "addNodeButton": "Adicionar nó",
-    "noAuthoredNodesYet": "Nenhum nó autoral ainda.",
-    "loadErrorMessage(plural)": {
-      "one": "O bloco de nós deste cartão tem $n problema; editar aqui sobrescreverá as partes corrompidas ao salvar.",
-      "other": "O bloco de nós deste cartão tem $n problemas; editar aqui sobrescreverá as partes corrompidas ao salvar."
-    },
-    "moreErrorsSuffix": "… mais $n",
-    "emotionBaselineLabel": "Emoção base",
-    "emotionChipLabel": "Emoção"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "gera: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "O nível superior deve ser um objeto JSON",
-    "editNodesJsonTitle": "Editar JSON dos nós",
-    "fixProblemsMessage(plural)": {
-      "one": "Corrija $n problema para salvar.",
-      "other": "Corrija $n problemas para salvar."
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "gerado por",
-    "spawnsPort": "gera",
-    "editNodeLabel": "Editar nó",
-    "addNodeTooltip": "Adicionar nó"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "Nome",
-    "narrativePayloadLabel": "Carga narrativa",
-    "removeSpawnLinkTitle": "Remover vínculo de geração",
-    "removeSpawnLinkMessage": "Impedir este nó de gerar \"$nodeId\"? O nó em si permanece no cartão.",
-    "removeButton": "Remover",
-    "typeLabel": "Tipo",
-    "scopeLabel": "Escopo",
-    "originLabel": "Origem",
-    "triggerProbLabel": "Prob. de gatilho",
-    "delayHelper": "Turnos a esperar antes de ficar elegível. -1 age como 0.",
-    "cooldownHelper": "Turnos bloqueado após disparar. -1 significa sem tempo de espera.",
-    "stickyHelper": "Turnos em que a carga narrativa continua aparecendo como \"Persistente\" após disparar. -1 significa permanente.",
-    "aliveHelper": "Turnos em que o nó permanece no pool antes da remoção. -1 significa para sempre.",
-    "setToNeverButton": "Definir como nunca",
-    "effectsSectionLabel": "Efeitos",
-    "emotionDeltasTitle": "Variações de emoção",
-    "physicalDeltasTitle": "Variações físicas",
-    "relationshipDeltasTitle": "Variações de relacionamento",
-    "addDeltaChip": "Adicionar variação",
-    "knowledgeWritesTitle": "Escritas de conhecimento",
-    "addFactChip": "Adicionar fato",
-    "topicLabel": "tópico",
-    "confidenceLabel": "confiança",
-    "flagSetTitle": "Definição de flag",
-    "addFlagChip": "Adicionar flag",
-    "keyLabel": "chave",
-    "sceneAndFlowTitle": "Cena e fluxo",
-    "goalChangeLabel": "goalChange (limpa o objetivo atual quando vazio)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(nenhum)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "Quando verdadeiro, o motor marca o disparo como uma mudança de cena.",
-    "spawnsSectionLabel": "Gerações",
-    "addNewChip": "Adicionar novo",
-    "linkExistingChip": "Vincular existente",
-    "unlinkTooltip": "Desvincular",
-    "predicateLabel": "Predicado"
   },
   "contentTransform": {
     "appliedSnackbar": "Alterações aplicadas",

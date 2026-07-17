@@ -6,20 +6,11 @@
     "lorebook": "世界书",
     "group": "群组",
     "creator": "创作者",
-    "appData": "应用数据",
-    "nodes": "节点"
+    "appData": "应用数据"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "隐藏助手面板",
     "showChatAssistantTooltip": "并排显示对话助手"
-  },
-  "codeFindPanel": {
-    "noneResult": "无",
-    "previousTooltip": "上一个",
-    "nextTooltip": "下一个",
-    "closeTooltip": "关闭",
-    "replaceTooltip": "替换",
-    "replaceAllTooltip": "全部替换"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "确认全部替换",
@@ -179,82 +170,6 @@
     "compositeLorebookEntry": "世界书条目 #$index：\n$value\n",
     "imageTooLargeMessage": "所选图像过大。最大尺寸为 $maxSize。",
     "invalidPngMessage": "所选图像不是有效的 PNG，或无法读取。"
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "删除节点",
-    "deleteNodeMessage": "从卡片中移除这个已创建的节点？",
-    "engineSeedTitle": "引擎种子",
-    "visualEditorTooltip": "可视化编辑器",
-    "editJsonTooltip": "编辑 JSON",
-    "initialGoalLabel": "初始目标",
-    "initialSceneLabel": "初始场景",
-    "locationLabel": "地点",
-    "timeOfDayLabel": "时段",
-    "presentEntitiesLabel": "在场（逗号分隔）",
-    "sensoryHooksLabel": "感官钩子（逗号分隔）",
-    "addNodeButton": "添加节点",
-    "noAuthoredNodesYet": "还没有已创建的节点。",
-    "loadErrorMessage(plural)": {
-      "other": "这张卡片的节点块有 $n 个问题；在此编辑会在保存时覆盖损坏的部分。"
-    },
-    "moreErrorsSuffix": "…还有 $n 个",
-    "emotionBaselineLabel": "情绪基线",
-    "emotionChipLabel": "情绪"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "生成：$count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "顶层必须是一个 JSON 对象",
-    "editNodesJsonTitle": "编辑节点 JSON",
-    "fixProblemsMessage(plural)": {
-      "other": "修复 $n 个问题后才能保存。"
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "生成自",
-    "spawnsPort": "生成",
-    "editNodeLabel": "编辑节点",
-    "addNodeTooltip": "添加节点"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "名称",
-    "narrativePayloadLabel": "叙事内容",
-    "removeSpawnLinkTitle": "移除生成链接",
-    "removeSpawnLinkMessage": "停止此节点生成“$nodeId”？节点本身仍保留在卡片上。",
-    "removeButton": "移除",
-    "typeLabel": "类型",
-    "scopeLabel": "范围",
-    "originLabel": "来源",
-    "triggerProbLabel": "触发概率",
-    "delayHelper": "生效前需等待的回合数。-1 等同于 0。",
-    "cooldownHelper": "触发后锁定的回合数。-1 表示无冷却。",
-    "stickyHelper": "触发后叙事内容以“残留”形式持续出现的回合数。-1 表示永久。",
-    "aliveHelper": "节点在被移除前留在池中的回合数。-1 表示永远。",
-    "setToNeverButton": "设为从不",
-    "effectsSectionLabel": "效果",
-    "emotionDeltasTitle": "情绪变化量",
-    "physicalDeltasTitle": "身体变化量",
-    "relationshipDeltasTitle": "关系变化量",
-    "addDeltaChip": "添加变化量",
-    "knowledgeWritesTitle": "知识写入",
-    "addFactChip": "添加事实",
-    "topicLabel": "主题",
-    "confidenceLabel": "置信度",
-    "flagSetTitle": "标志设置",
-    "addFlagChip": "添加标志",
-    "keyLabel": "键",
-    "sceneAndFlowTitle": "场景与流程",
-    "goalChangeLabel": "goalChange（留空时清除当前目标）",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "（无）",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "为 true 时，引擎会将这次触发标记为场景切换。",
-    "spawnsSectionLabel": "生成",
-    "addNewChip": "新建",
-    "linkExistingChip": "链接现有",
-    "unlinkTooltip": "取消链接",
-    "predicateLabel": "条件"
   },
   "contentTransform": {
     "appliedSnackbar": "更改已应用",

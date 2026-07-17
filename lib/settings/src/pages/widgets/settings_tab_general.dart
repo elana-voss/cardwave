@@ -176,16 +176,6 @@ class _SettingsTabGeneralState extends State<SettingsTabGeneral> {
               },
             ),
             SwitchListTile(
-              secondary: const Icon(Icons.auto_stories),
-              title: Text(t.settings.general.narrativeEngineTitle),
-              subtitle: Text(t.settings.general.narrativeEngineSubtitle),
-              value: settings.nodesEnabled,
-              onChanged: (value) {
-                settings.nodesEnabled = value;
-                unawaited(settingsService.saveSettings());
-              },
-            ),
-            SwitchListTile(
               secondary: const Icon(Icons.data_usage),
               title: Text(t.settings.general.promptBreakdownTitle),
               subtitle: Text(t.settings.general.promptBreakdownSubtitle),

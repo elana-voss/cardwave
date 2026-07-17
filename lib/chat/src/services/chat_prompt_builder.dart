@@ -20,7 +20,6 @@ class ChatPromptBuilder {
     this.isImpersonating = false,
     this.dataContext,
     this.memoryContext,
-    this.nodesContext,
     this.enabledTools = const [],
   }) : _charName = (characterFile.card.nickname?.isNotEmpty == true)
            ? characterFile.card.nickname!
@@ -48,12 +47,6 @@ class ChatPromptBuilder {
   /// section — never folded into [dataContext], which assistant-mode card JSON
   /// owns. Null or empty ⇒ no section.
   final String? memoryContext;
-
-  /// Assembled NODES dynamic content (scene + state slice + sticky directives
-  /// + this-turn payloads + surfaced memories) for the `<situation>` prompt
-  /// section. Built before the actor call by `NodesService.assembleNodesPrompt`.
-  /// Null or empty ⇒ no section.
-  final String? nodesContext;
 
   /// Tools enabled for this generation, derived from per-domain tool flags
   /// on the session's media config and gated by `model.capabilities.toolCalling`.
@@ -214,15 +207,6 @@ class ChatPromptBuilder {
         PromptSegmentKindEnum.memory,
         'memory',
         memoryContext!,
-      );
-    }
-
-    if (nodesContext != null && nodesContext!.isNotEmpty) {
-      await _addCountedSection(
-        systemBuffer,
-        PromptSegmentKindEnum.situation,
-        'situation',
-        nodesContext!,
       );
     }
 

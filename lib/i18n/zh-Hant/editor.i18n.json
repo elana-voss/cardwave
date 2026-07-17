@@ -6,20 +6,11 @@
     "lorebook": "世界書",
     "group": "群組",
     "creator": "作者",
-    "appData": "App 資料",
-    "nodes": "節點"
+    "appData": "App 資料"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "隱藏助理面板",
     "showChatAssistantTooltip": "並排顯示對話助理"
-  },
-  "codeFindPanel": {
-    "noneResult": "無",
-    "previousTooltip": "上一個",
-    "nextTooltip": "下一個",
-    "closeTooltip": "關閉",
-    "replaceTooltip": "取代",
-    "replaceAllTooltip": "全部取代"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "確認全部取代",
@@ -179,82 +170,6 @@
     "compositeLorebookEntry": "世界書條目 #$index：\n$value\n",
     "imageTooLargeMessage": "所選圖片太大。上限為 $maxSize。",
     "invalidPngMessage": "所選圖片不是有效的 PNG，或無法讀取。"
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "刪除節點",
-    "deleteNodeMessage": "要從卡片中移除這個自訂節點嗎？",
-    "engineSeedTitle": "引擎種子",
-    "visualEditorTooltip": "視覺化編輯器",
-    "editJsonTooltip": "編輯 JSON",
-    "initialGoalLabel": "初始目標",
-    "initialSceneLabel": "初始場景",
-    "locationLabel": "地點",
-    "timeOfDayLabel": "時段",
-    "presentEntitiesLabel": "在場者（以逗號分隔）",
-    "sensoryHooksLabel": "感官提示（以逗號分隔）",
-    "addNodeButton": "新增節點",
-    "noAuthoredNodesYet": "尚無自訂節點。",
-    "loadErrorMessage(plural)": {
-      "other": "這張卡片的節點區塊有 $n 個問題；在此編輯時，儲存會覆寫損壞的部分。"
-    },
-    "moreErrorsSuffix": "… 還有 $n 個",
-    "emotionBaselineLabel": "情緒基準",
-    "emotionChipLabel": "情緒"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "衍生：$count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "最上層必須是 JSON 物件",
-    "editNodesJsonTitle": "編輯節點 JSON",
-    "fixProblemsMessage(plural)": {
-      "other": "修正 $n 個問題才能儲存。"
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "衍生來源",
-    "spawnsPort": "衍生",
-    "editNodeLabel": "編輯節點",
-    "addNodeTooltip": "新增節點"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "名稱",
-    "narrativePayloadLabel": "敘事內容",
-    "removeSpawnLinkTitle": "移除衍生連結",
-    "removeSpawnLinkMessage": "要讓這個節點不再衍生「$nodeId」嗎？節點本身仍會保留在卡片上。",
-    "removeButton": "移除",
-    "typeLabel": "類型",
-    "scopeLabel": "範圍",
-    "originLabel": "來源",
-    "triggerProbLabel": "觸發機率",
-    "delayHelper": "在符合條件前要等待的回合數。-1 等同於 0。",
-    "cooldownHelper": "觸發後鎖定的回合數。-1 表示無冷卻。",
-    "stickyHelper": "觸發後敘事內容以「殘留」形式持續出現的回合數。-1 表示永久。",
-    "aliveHelper": "節點在被移除前留在集區中的回合數。-1 表示永遠。",
-    "setToNeverButton": "設為永不",
-    "effectsSectionLabel": "效果",
-    "emotionDeltasTitle": "情緒變化量",
-    "physicalDeltasTitle": "生理變化量",
-    "relationshipDeltasTitle": "關係變化量",
-    "addDeltaChip": "新增變化量",
-    "knowledgeWritesTitle": "知識寫入",
-    "addFactChip": "新增事實",
-    "topicLabel": "主題",
-    "confidenceLabel": "信心度",
-    "flagSetTitle": "旗標設定",
-    "addFlagChip": "新增旗標",
-    "keyLabel": "鍵",
-    "sceneAndFlowTitle": "場景與流程",
-    "goalChangeLabel": "goalChange（留空時會清除目前的目標）",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "（無）",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "設為 true 時，引擎會將此次觸發標記為場景轉換。",
-    "spawnsSectionLabel": "衍生",
-    "addNewChip": "新增",
-    "linkExistingChip": "連結現有",
-    "unlinkTooltip": "解除連結",
-    "predicateLabel": "條件式"
   },
   "contentTransform": {
     "appliedSnackbar": "變更已套用",

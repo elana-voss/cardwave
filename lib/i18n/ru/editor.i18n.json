@@ -6,20 +6,11 @@
     "lorebook": "Лорбук",
     "group": "Группа",
     "creator": "Автор",
-    "appData": "Данные приложения",
-    "nodes": "Узлы"
+    "appData": "Данные приложения"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "Скрыть панель ассистента",
     "showChatAssistantTooltip": "Показать чат-ассистент рядом"
-  },
-  "codeFindPanel": {
-    "noneResult": "нет",
-    "previousTooltip": "Предыдущее",
-    "nextTooltip": "Следующее",
-    "closeTooltip": "Закрыть",
-    "replaceTooltip": "Заменить",
-    "replaceAllTooltip": "Заменить всё"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Подтвердите «Заменить всё»",
@@ -179,88 +170,6 @@
     "compositeLorebookEntry": "Запись лорбука №$index:\n$value\n",
     "imageTooLargeMessage": "Выбранное изображение слишком большое. Максимальный размер — $maxSize.",
     "invalidPngMessage": "Выбранное изображение не является корректным PNG или не может быть прочитано."
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "Удалить узел",
-    "deleteNodeMessage": "Удалить этот авторский узел из карточки?",
-    "engineSeedTitle": "Начальное состояние движка",
-    "visualEditorTooltip": "Визуальный редактор",
-    "editJsonTooltip": "Редактировать JSON",
-    "initialGoalLabel": "Начальная цель",
-    "initialSceneLabel": "Начальная сцена",
-    "locationLabel": "Место",
-    "timeOfDayLabel": "Время суток",
-    "presentEntitiesLabel": "Присутствуют (через запятую)",
-    "sensoryHooksLabel": "Сенсорные зацепки (через запятую)",
-    "addNodeButton": "Добавить узел",
-    "noAuthoredNodesYet": "Авторских узлов пока нет.",
-    "loadErrorMessage(plural)": {
-      "one": "В блоке узлов этой карточки $n проблема; редактирование здесь перезапишет повреждённые части при сохранении.",
-      "few": "В блоке узлов этой карточки $n проблемы; редактирование здесь перезапишет повреждённые части при сохранении.",
-      "many": "В блоке узлов этой карточки $n проблем; редактирование здесь перезапишет повреждённые части при сохранении.",
-      "other": "В блоке узлов этой карточки $n проблемы; редактирование здесь перезапишет повреждённые части при сохранении."
-    },
-    "moreErrorsSuffix": "… ещё $n",
-    "emotionBaselineLabel": "Базовая эмоция",
-    "emotionChipLabel": "Эмоция"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "порождает: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "Верхний уровень должен быть объектом JSON",
-    "editNodesJsonTitle": "Редактировать JSON узлов",
-    "fixProblemsMessage(plural)": {
-      "one": "Исправьте $n проблему, чтобы сохранить.",
-      "few": "Исправьте $n проблемы, чтобы сохранить.",
-      "many": "Исправьте $n проблем, чтобы сохранить.",
-      "other": "Исправьте $n проблемы, чтобы сохранить."
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "порождён",
-    "spawnsPort": "порождает",
-    "editNodeLabel": "Редактировать узел",
-    "addNodeTooltip": "Добавить узел"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "Имя",
-    "narrativePayloadLabel": "Нарративная нагрузка",
-    "removeSpawnLinkTitle": "Удалить связь порождения",
-    "removeSpawnLinkMessage": "Запретить этому узлу порождать «$nodeId»? Сам узел останется на карточке.",
-    "removeButton": "Удалить",
-    "typeLabel": "Тип",
-    "scopeLabel": "Область",
-    "originLabel": "Источник",
-    "triggerProbLabel": "Вероятность триггера",
-    "delayHelper": "Ходов ожидания перед активацией. -1 равно 0.",
-    "cooldownHelper": "Ходов блокировки после срабатывания. -1 означает без перезарядки.",
-    "stickyHelper": "Ходов, в течение которых нарративная нагрузка остаётся как «Сохраняющаяся» после срабатывания. -1 означает навсегда.",
-    "aliveHelper": "Ходов, в течение которых узел остаётся в пуле до удаления. -1 означает бесконечно.",
-    "setToNeverButton": "Установить «никогда»",
-    "effectsSectionLabel": "Эффекты",
-    "emotionDeltasTitle": "Изменения эмоций",
-    "physicalDeltasTitle": "Физические изменения",
-    "relationshipDeltasTitle": "Изменения отношений",
-    "addDeltaChip": "Добавить изменение",
-    "knowledgeWritesTitle": "Записи знаний",
-    "addFactChip": "Добавить факт",
-    "topicLabel": "тема",
-    "confidenceLabel": "уверенность",
-    "flagSetTitle": "Набор флагов",
-    "addFlagChip": "Добавить флаг",
-    "keyLabel": "ключ",
-    "sceneAndFlowTitle": "Сцена и ход",
-    "goalChangeLabel": "goalChange (очищает текущую цель, если пусто)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(нет)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "Если true, движок помечает срабатывание как смену сцены.",
-    "spawnsSectionLabel": "Порождения",
-    "addNewChip": "Добавить новый",
-    "linkExistingChip": "Связать существующий",
-    "unlinkTooltip": "Отвязать",
-    "predicateLabel": "Предикат"
   },
   "contentTransform": {
     "appliedSnackbar": "Изменения применены",

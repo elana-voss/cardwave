@@ -16,7 +16,6 @@ class _PanelNavigationRail extends StatelessWidget {
     PanelEnum.groupSettings,
     PanelEnum.creatorMetadata,
     PanelEnum.appData,
-    PanelEnum.nodes,
   ];
 
   @override
@@ -74,11 +73,6 @@ class _PanelNavigationRail extends StatelessWidget {
                     icon: const Icon(Icons.data_object_outlined),
                     selectedIcon: const Icon(Icons.data_object),
                     label: Text(t.editor.panelLabels.appData),
-                  ),
-                  NavigationRailDestination(
-                    icon: const Icon(Icons.hub_outlined),
-                    selectedIcon: const Icon(Icons.hub),
-                    label: Text(t.editor.panelLabels.nodes),
                   ),
                 ],
                 // trailingAtBottom: true,

@@ -11,8 +11,6 @@ import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/group/group.dart';
 import 'package:cardwave/memory/memory.dart';
-import 'package:cardwave/nodes/nodes.dart';
-import 'package:cardwave_nodes/cardwave_nodes.dart' as cwn;
 import 'package:cardwave_names/cardwave_names.dart';
 import 'package:cardwave/search/search.dart';
 import 'package:cardwave/search/src/repositories/search_repository.dart';
@@ -85,8 +83,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
   late final CardwaveEmbeddingsModule _cardwaveEmbeddingsModule;
   late final MemoryService _memoryService;
   late final CardwaveMemoryModule _cardwaveMemoryModule;
-  late final NodesService _nodesService;
-  late final CardwaveNodesModule _cardwaveNodesModule;
   late final GroupRepository _groupRepository;
   late final GroupFileService _groupFileService;
   late final GroupChatService _groupChatService;
@@ -199,15 +195,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
             obj.stackTrace,
             obj.dataContext,
           );
-        } else if (obj is cwn.TurnFiringEvent) {
-          // NODES turn summary — one log entry per turn, listing every
-          // fire / roll / skip. The package debounces per-event noise
-          // into this single record so a 10-node pool doesn't flood
-          // the log viewer with 10+ entries per turn. Spec §10's
-          // firing-roll log is reachable from the viewer by searching
-          // for `[NODES]`; the headline summarises, the indented
-          // detail lines carry the per-node breakdown.
-          _loggingService.info(_formatTurnFiring(obj));
         }
       });
 
@@ -269,20 +256,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
       );
       _cardwaveMemoryModule = CardwaveMemoryModule(
         memoryService: _memoryService,
-      );
-
-      _nodesService = NodesService(
-        repository: NodesRepository(
-          loggingService: _loggingService,
-          appStorage: _appStorage,
-        ),
-        embedder: _cardwaveEmbeddingsModule.embedder,
-        loggingService: _loggingService,
-        settingsService: _settingsService,
-        pureHelpers: _pureHelpers,
-      );
-      _cardwaveNodesModule = CardwaveNodesModule(
-        nodesService: _nodesService,
       );
 
       _textToSpeechService = const TextToSpeechService();
@@ -413,7 +386,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         promptRepository: _promptRepository,
         toolRegistry: _toolRegistry,
         memoryService: _memoryService,
-        nodesService: _nodesService,
       );
 
       _imageGenerationService = ImageGenerationService(
@@ -580,49 +552,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     }
   }
 
-  /// Renders a [cwn.TurnFiringEvent] as a single multi-line log
-  /// message. Headline: turn + counts; indented detail lines: per-node
-  /// breakdown matching the format the spec §10 debug view describes
-  /// (`prob=X + pressure=Y draw=Z → won/lost`, skip reasons by enum
-  /// name). One log entry per turn, regardless of pool size.
-  String _formatTurnFiring(cwn.TurnFiringEvent event) {
-    final buffer = StringBuffer('[NODES] turn ${event.turn}: ');
-    if (event.fired.isEmpty &&
-        event.rolled.isEmpty &&
-        event.skipped.isEmpty) {
-      buffer.write('no activity');
-      return buffer.toString();
-    }
-    final parts = <String>[];
-    if (event.fired.isNotEmpty) {
-      final names = event.fired.map((f) => '"${f.nodeId}"').join(', ');
-      parts.add('${event.fired.length} fired ($names)');
-    }
-    if (event.rolled.isNotEmpty) {
-      final won = event.rolled.where((r) => r.won).length;
-      parts.add('${event.rolled.length} rolled ($won won)');
-    }
-    if (event.skipped.isNotEmpty) {
-      parts.add('${event.skipped.length} skipped');
-    }
-    buffer.write(parts.join(', '));
-    for (final f in event.fired) {
-      buffer.write('\n  fired "${f.nodeId}" → ${f.narrativePayload}');
-    }
-    for (final r in event.rolled) {
-      buffer.write(
-        '\n  rolled "${r.nodeId}" '
-        'prob=${r.triggerProb.toStringAsFixed(2)} '
-        '+ pressure=${r.pressure.toStringAsFixed(2)} '
-        'draw=${r.draw.toStringAsFixed(2)} → ${r.won ? "won" : "lost"}',
-      );
-    }
-    for (final s in event.skipped) {
-      buffer.write('\n  skipped "${s.nodeId}" (${s.reason.name})');
-    }
-    return buffer.toString();
-  }
-
   void _maybeRunDailyModelRefresh() {
     final settings = _settingsService.settings;
     if (settings.refreshPolicy != ModelRefreshPolicyEnum.daily) return;
@@ -711,7 +640,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
         Provider<Embedder>.value(value: _cardwaveEmbeddingsModule.embedder),
         ChangeNotifierProvider<SearchService>.value(value: _searchService),
         Provider<CardwaveMemoryModule>.value(value: _cardwaveMemoryModule),
-        Provider<CardwaveNodesModule>.value(value: _cardwaveNodesModule),
         ChangeNotifierProvider<TextToSpeechController>.value(
           value: _textToSpeechController,
         ),

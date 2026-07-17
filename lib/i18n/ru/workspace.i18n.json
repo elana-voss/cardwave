@@ -31,8 +31,6 @@
   },
   "workspaceEndDrawer": {
     "favoriteLabel": "Избранное",
-    "nodesEngineTitle": "Движок NODES",
-    "debugSnapshotSubtitle": "Отладочный снимок",
     "characterSubtitle": "Персонаж"
   },
   "stylePresetsDialog": {

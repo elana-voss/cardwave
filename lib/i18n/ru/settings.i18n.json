@@ -33,8 +33,6 @@
     "themeStyleNeon": "Неон",
     "storyMemoryTitle": "Память истории",
     "storyMemorySubtitle": "Запоминать ранние моменты и возвращать нужные из них в длинных чатах.",
-    "narrativeEngineTitle": "Нарративный движок",
-    "narrativeEngineSubtitle": "Отслеживать сцену и персонажей и двигать историю по мере вашей переписки.",
     "promptBreakdownTitle": "Показывать разбор промпта",
     "promptBreakdownSubtitle": "Показывать под каждым ответом полосу, разбивающую, как промпт заполнил контекстное окно модели.",
     "checkUpdatesTitle": "Проверить обновления",

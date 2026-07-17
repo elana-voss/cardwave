@@ -27,8 +27,6 @@ class _WorkspaceEndDrawer extends StatelessWidget {
     final settingsService = context.read<SettingsService>();
     // ignore: qcheck/avoid_read_inside_build
     final characterService = context.read<CharacterService>();
-    // ignore: qcheck/avoid_read_inside_build
-    final nodesService = context.read<CardwaveNodesModule>().nodesService;
     final workspace = context.watch<WorkspaceController>();
 
     final showEditorTools = workspace.base == WorkspaceBaseEnum.editor;
@@ -208,23 +206,6 @@ class _WorkspaceEndDrawer extends StatelessWidget {
                     _WorkspaceEndDrawerNames(
                       visibleChatController: visibleChatController,
                     ),
-                    // NODES debug snapshot — development/tuning tool per
-                    // spec §10, hidden from release builds.
-                    if (kDebugMode)
-                      ListTile(
-                        leading: const Icon(Icons.bug_report_outlined),
-                        title: Text(t.workspace.workspaceEndDrawer.nodesEngineTitle),
-                        subtitle:
-                            Text(t.workspace.workspaceEndDrawer.debugSnapshotSubtitle),
-                        onTap: () {
-                          Navigator.of(navContext, rootNavigator: true).pop();
-                          unawaited(
-                            NodesDebugController.show(
-                              nodesService: nodesService,
-                            ),
-                          );
-                        },
-                      ),
                   ]
                   // ------------------------------------------------------------------
                   // EDITOR

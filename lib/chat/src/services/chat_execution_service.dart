@@ -8,11 +8,9 @@ import 'package:cardwave/chat/src/models/chat_tool_call_record.dart';
 import 'package:cardwave/chat/src/models/generation_event.dart';
 import 'package:cardwave/chat/src/services/chat_prompt_builder.dart';
 import 'package:cardwave/chat/src/services/chat_service.dart';
-import 'package:cardwave/chat/src/utils/chat_message_text.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/llm_app/llm_app.dart';
 import 'package:cardwave/memory/memory.dart';
-import 'package:cardwave/nodes/nodes.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:cardwave_names/cardwave_names.dart';
@@ -42,7 +40,6 @@ class ChatExecutionService {
     required this.promptRepository,
     required this.toolRegistry,
     required this.memoryService,
-    required this.nodesService,
   });
   final LlmPureHelpers pureHelpers;
   final SettingsService settingsService;
@@ -50,7 +47,6 @@ class ChatExecutionService {
   final PromptRepository promptRepository;
   final ToolRegistry toolRegistry;
   final MemoryService memoryService;
-  final NodesService nodesService;
 
   /// Before running a local-GGUF chat, free any other GGUF still resident in
   /// VRAM (a different profile, or one a domain was just reassigned away
@@ -183,26 +179,6 @@ class ChatExecutionService {
               ? await memoryService.retrieveContext(session, characterFile)
               : const <String>[];
 
-          // NODES — advances the engine and assembles the dynamic section
-          // (scene + state slice + sticky directives + fired payloads +
-          // surfaced memories) for the <situation> section. Skipped for the
-          // assistant chat (no character interiority to model). Returns an
-          // empty context on any failure, so it never blocks the reply.
-          //
-          // `userInput` is the latest user turn (not just `messages.last`):
-          // on reroll/swipe/continue the last message is the assistant's
-          // reply, and the embedder needs to rank memories against the
-          // user's question, not the bot's prior answer.
-          final NodesActorContext nodesContext =
-              session.isAssistant || !settingsService.settings.nodesEnabled
-              ? NodesActorContext.empty
-              : await nodesService.assembleNodesPrompt(
-                  session: session,
-                  file: characterFile,
-                  userInput: latestUserText(session.messages),
-                  maxContextTokens: contextSize,
-                );
-
           final builder = ChatPromptBuilder(
             contextSize: contextSize,
             maxResponseLength: maxResponseLength,
@@ -214,9 +190,6 @@ class ChatExecutionService {
             isImpersonating: isImpersonating,
             dataContext: dataContext,
             memoryContext: memoryLines.isEmpty ? null : memoryLines.join('\n'),
-            nodesContext: nodesContext.promptSection.isEmpty
-                ? null
-                : nodesContext.promptSection,
             enabledTools: enabledTools,
             toolRegistry: toolRegistry,
           );

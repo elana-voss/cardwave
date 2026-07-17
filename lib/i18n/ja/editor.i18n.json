@@ -6,20 +6,11 @@
     "lorebook": "ロアブック",
     "group": "グループ",
     "creator": "作成者",
-    "appData": "アプリデータ",
-    "nodes": "ノード"
+    "appData": "アプリデータ"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "アシスタントパネルを非表示",
     "showChatAssistantTooltip": "チャットアシスタントを並べて表示"
-  },
-  "codeFindPanel": {
-    "noneResult": "なし",
-    "previousTooltip": "前へ",
-    "nextTooltip": "次へ",
-    "closeTooltip": "閉じる",
-    "replaceTooltip": "置換",
-    "replaceAllTooltip": "すべて置換"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "すべて置換の確認",
@@ -179,82 +170,6 @@
     "compositeLorebookEntry": "ロアブックエントリ #$index:\n$value\n",
     "imageTooLargeMessage": "選択した画像が大きすぎます。最大サイズは $maxSize です。",
     "invalidPngMessage": "選択した画像は有効なPNGでないか、読み取れませんでした。"
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "ノードを削除",
-    "deleteNodeMessage": "この作成済みノードをカードから削除しますか？",
-    "engineSeedTitle": "エンジンシード",
-    "visualEditorTooltip": "ビジュアルエディタ",
-    "editJsonTooltip": "JSONを編集",
-    "initialGoalLabel": "初期目標",
-    "initialSceneLabel": "初期シーン",
-    "locationLabel": "場所",
-    "timeOfDayLabel": "時間帯",
-    "presentEntitiesLabel": "登場中（カンマ区切り）",
-    "sensoryHooksLabel": "感覚的フック（カンマ区切り）",
-    "addNodeButton": "ノードを追加",
-    "noAuthoredNodesYet": "まだ作成済みノードがありません。",
-    "loadErrorMessage(plural)": {
-      "other": "このカードのノードブロックに $n 件の問題があります。ここで編集すると、保存時に破損した部分が上書きされます。"
-    },
-    "moreErrorsSuffix": "… 他 $n 件",
-    "emotionBaselineLabel": "感情のベースライン",
-    "emotionChipLabel": "感情"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "スポーン: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "トップレベルはJSONオブジェクトである必要があります",
-    "editNodesJsonTitle": "ノードのJSONを編集",
-    "fixProblemsMessage(plural)": {
-      "other": "保存するには $n 件の問題を修正してください。"
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "スポーン元",
-    "spawnsPort": "スポーン先",
-    "editNodeLabel": "ノードを編集",
-    "addNodeTooltip": "ノードを追加"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "名前",
-    "narrativePayloadLabel": "ナラティブペイロード",
-    "removeSpawnLinkTitle": "スポーンリンクを削除",
-    "removeSpawnLinkMessage": "このノードが「$nodeId」をスポーンしないようにしますか？ノード自体はカードに残ります。",
-    "removeButton": "削除",
-    "typeLabel": "タイプ",
-    "scopeLabel": "スコープ",
-    "originLabel": "起点",
-    "triggerProbLabel": "トリガー確率",
-    "delayHelper": "対象になるまで待機するターン数。-1 は 0 として扱われます。",
-    "cooldownHelper": "発火後にロックされるターン数。-1 はクールダウンなしを意味します。",
-    "stickyHelper": "発火後、ナラティブペイロードが「継続中」として表示され続けるターン数。-1 は永続を意味します。",
-    "aliveHelper": "削除されるまでノードがプールに残るターン数。-1 は無期限を意味します。",
-    "setToNeverButton": "「なし」に設定",
-    "effectsSectionLabel": "効果",
-    "emotionDeltasTitle": "感情の変化量",
-    "physicalDeltasTitle": "身体の変化量",
-    "relationshipDeltasTitle": "関係の変化量",
-    "addDeltaChip": "変化量を追加",
-    "knowledgeWritesTitle": "知識の書き込み",
-    "addFactChip": "事実を追加",
-    "topicLabel": "トピック",
-    "confidenceLabel": "確信度",
-    "flagSetTitle": "フラグ設定",
-    "addFlagChip": "フラグを追加",
-    "keyLabel": "キー",
-    "sceneAndFlowTitle": "シーンと流れ",
-    "goalChangeLabel": "goalChange（空の場合は現在の目標をクリアします）",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "（なし）",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "true の場合、エンジンはその発火をシーンの切り替えとしてマークします。",
-    "spawnsSectionLabel": "スポーン",
-    "addNewChip": "新規追加",
-    "linkExistingChip": "既存とリンク",
-    "unlinkTooltip": "リンク解除",
-    "predicateLabel": "述語"
   },
   "contentTransform": {
     "appliedSnackbar": "変更を適用しました",

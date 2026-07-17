@@ -33,8 +33,6 @@
     "themeStyleNeon": "Neon",
     "storyMemoryTitle": "Ký ức câu chuyện",
     "storyMemorySubtitle": "Ghi nhớ các khoảnh khắc trước đó và đưa những phần liên quan trở lại trong các cuộc trò chuyện dài.",
-    "narrativeEngineTitle": "Công cụ tường thuật",
-    "narrativeEngineSubtitle": "Theo dõi bối cảnh và nhân vật, đẩy câu chuyện tiến triển khi bạn trò chuyện.",
     "promptBreakdownTitle": "Hiện phân tích prompt",
     "promptBreakdownSubtitle": "Hiển thị một thanh dưới mỗi phản hồi phân tích cách prompt lấp đầy cửa sổ ngữ cảnh của mô hình.",
     "checkUpdatesTitle": "Kiểm tra cập nhật",

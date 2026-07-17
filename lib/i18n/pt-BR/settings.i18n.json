@@ -33,8 +33,6 @@
     "themeStyleNeon": "Neon",
     "storyMemoryTitle": "Memória da história",
     "storyMemorySubtitle": "Lembra momentos anteriores e traz os relevantes de volta em conversas longas.",
-    "narrativeEngineTitle": "Motor narrativo",
-    "narrativeEngineSubtitle": "Acompanha a cena e os personagens e faz a história avançar enquanto você conversa.",
     "promptBreakdownTitle": "Mostrar detalhamento do prompt",
     "promptBreakdownSubtitle": "Mostra uma barra sob cada resposta detalhando como o prompt preencheu a janela de contexto do modelo.",
     "checkUpdatesTitle": "Verificar atualizações",

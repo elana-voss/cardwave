@@ -1,5 +1,0 @@
-{
-  "service": {
-    "invalidNodesDroppedSnackbar": "${count} 個行為節點已停用——請檢查節點編輯器。"
-  }
-}

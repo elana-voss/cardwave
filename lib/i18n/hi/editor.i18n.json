@@ -6,20 +6,11 @@
     "lorebook": "लोरबुक",
     "group": "ग्रुप",
     "creator": "निर्माता",
-    "appData": "ऐप डेटा",
-    "nodes": "नोड"
+    "appData": "ऐप डेटा"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "असिस्टेंट पैनल छिपाएं",
     "showChatAssistantTooltip": "चैट असिस्टेंट साथ-साथ दिखाएं"
-  },
-  "codeFindPanel": {
-    "noneResult": "कोई नहीं",
-    "previousTooltip": "पिछला",
-    "nextTooltip": "अगला",
-    "closeTooltip": "बंद करें",
-    "replaceTooltip": "बदलें",
-    "replaceAllTooltip": "सभी बदलें"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "सभी बदलने की पुष्टि करें",
@@ -179,84 +170,6 @@
     "compositeLorebookEntry": "लोरबुक प्रविष्टि #$index:\n$value\n",
     "imageTooLargeMessage": "चयनित इमेज बहुत बड़ी है। अधिकतम आकार $maxSize है।",
     "invalidPngMessage": "चयनित इमेज एक मान्य PNG नहीं है या पढ़ी नहीं जा सकी।"
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "नोड हटाएं",
-    "deleteNodeMessage": "क्या इस लिखे गए नोड को कार्ड से हटाएं?",
-    "engineSeedTitle": "इंजन सीड",
-    "visualEditorTooltip": "विज़ुअल एडिटर",
-    "editJsonTooltip": "JSON एडिट करें",
-    "initialGoalLabel": "प्रारंभिक लक्ष्य",
-    "initialSceneLabel": "प्रारंभिक दृश्य",
-    "locationLabel": "स्थान",
-    "timeOfDayLabel": "दिन का समय",
-    "presentEntitiesLabel": "उपस्थित (अल्पविराम से अलग)",
-    "sensoryHooksLabel": "संवेदी हुक (अल्पविराम से अलग)",
-    "addNodeButton": "नोड जोड़ें",
-    "noAuthoredNodesYet": "अभी तक कोई लिखा गया नोड नहीं।",
-    "loadErrorMessage(plural)": {
-      "one": "इस कार्ड के नोड ब्लॉक में $n समस्या है; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।",
-      "other": "इस कार्ड के नोड ब्लॉक में $n समस्याएं हैं; यहाँ एडिट करने पर सहेजते समय टूटे हुए भाग अधिलेखित हो जाएंगे।"
-    },
-    "moreErrorsSuffix": "… $n और",
-    "emotionBaselineLabel": "भावना आधाररेखा",
-    "emotionChipLabel": "भावना"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "स्पॉन: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "शीर्ष स्तर एक JSON ऑब्जेक्ट होना चाहिए",
-    "editNodesJsonTitle": "नोड JSON एडिट करें",
-    "fixProblemsMessage(plural)": {
-      "one": "सहेजने के लिए $n समस्या ठीक करें।",
-      "other": "सहेजने के लिए $n समस्याएं ठीक करें।"
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "स्पॉन स्रोत",
-    "spawnsPort": "स्पॉन",
-    "editNodeLabel": "नोड एडिट करें",
-    "addNodeTooltip": "नोड जोड़ें"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "नाम",
-    "narrativePayloadLabel": "नैरेटिव पेलोड",
-    "removeSpawnLinkTitle": "स्पॉन लिंक हटाएं",
-    "removeSpawnLinkMessage": "इस नोड को \"$nodeId\" स्पॉन करने से रोकें? नोड स्वयं कार्ड पर बना रहेगा।",
-    "removeButton": "हटाएं",
-    "typeLabel": "प्रकार",
-    "scopeLabel": "स्कोप",
-    "originLabel": "मूल",
-    "triggerProbLabel": "ट्रिगर प्रायिकता",
-    "delayHelper": "पात्र बनने से पहले प्रतीक्षा के टर्न। -1 का अर्थ 0 है।",
-    "cooldownHelper": "फायर होने के बाद लॉक रहने के टर्न। -1 का अर्थ कोई कूलडाउन नहीं।",
-    "stickyHelper": "फायर होने के बाद नैरेटिव पेलोड जितने टर्न \"Lingering\" के रूप में दिखता रहता है। -1 का अर्थ स्थायी।",
-    "aliveHelper": "हटाए जाने से पहले नोड पूल में जितने टर्न रहता है। -1 का अर्थ हमेशा के लिए।",
-    "setToNeverButton": "कभी नहीं पर सेट करें",
-    "effectsSectionLabel": "प्रभाव",
-    "emotionDeltasTitle": "भावना डेल्टा",
-    "physicalDeltasTitle": "भौतिक डेल्टा",
-    "relationshipDeltasTitle": "संबंध डेल्टा",
-    "addDeltaChip": "डेल्टा जोड़ें",
-    "knowledgeWritesTitle": "ज्ञान लेखन",
-    "addFactChip": "तथ्य जोड़ें",
-    "topicLabel": "विषय",
-    "confidenceLabel": "विश्वास",
-    "flagSetTitle": "फ्लैग सेट",
-    "addFlagChip": "फ्लैग जोड़ें",
-    "keyLabel": "कुंजी",
-    "sceneAndFlowTitle": "दृश्य और प्रवाह",
-    "goalChangeLabel": "goalChange (खाली होने पर वर्तमान लक्ष्य साफ़ कर देता है)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(कोई नहीं)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "true होने पर, इंजन इस फायरिंग को दृश्य परिवर्तन के रूप में चिह्नित करता है।",
-    "spawnsSectionLabel": "स्पॉन",
-    "addNewChip": "नया जोड़ें",
-    "linkExistingChip": "मौजूदा लिंक करें",
-    "unlinkTooltip": "अनलिंक करें",
-    "predicateLabel": "प्रेडिकेट"
   },
   "contentTransform": {
     "appliedSnackbar": "परिवर्तन लागू किए गए",

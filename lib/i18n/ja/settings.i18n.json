@@ -33,8 +33,6 @@
     "themeStyleNeon": "ネオン",
     "storyMemoryTitle": "ストーリーメモリ",
     "storyMemorySubtitle": "以前の場面を記憶し、長いチャットで関連するものを呼び戻します。",
-    "narrativeEngineTitle": "ナラティブエンジン",
-    "narrativeEngineSubtitle": "シーンとキャラクターを追跡し、チャットしながら物語を進めます。",
     "promptBreakdownTitle": "プロンプトの内訳を表示",
     "promptBreakdownSubtitle": "各応答の下に、プロンプトがモデルのコンテキストウィンドウをどのように埋めたかを示すバーを表示します。",
     "checkUpdatesTitle": "更新を確認",

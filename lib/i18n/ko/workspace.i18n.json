@@ -31,8 +31,6 @@
   },
   "workspaceEndDrawer": {
     "favoriteLabel": "즐겨찾기",
-    "nodesEngineTitle": "NODES 엔진",
-    "debugSnapshotSubtitle": "디버그 스냅샷",
     "characterSubtitle": "캐릭터"
   },
   "stylePresetsDialog": {

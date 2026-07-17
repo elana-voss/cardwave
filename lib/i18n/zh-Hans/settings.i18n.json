@@ -33,8 +33,6 @@
     "themeStyleNeon": "霓虹",
     "storyMemoryTitle": "故事记忆",
     "storyMemorySubtitle": "记住早前的情节，并在长对话中把相关内容重新带回。",
-    "narrativeEngineTitle": "叙事引擎",
-    "narrativeEngineSubtitle": "跟踪场景与角色，随着聊天推进故事发展。",
     "promptBreakdownTitle": "显示提示词构成",
     "promptBreakdownSubtitle": "在每条回复下方显示一个进度条，展示提示词如何填满模型的上下文窗口。",
     "checkUpdatesTitle": "检查更新",

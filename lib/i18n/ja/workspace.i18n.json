@@ -31,8 +31,6 @@
   },
   "workspaceEndDrawer": {
     "favoriteLabel": "お気に入り",
-    "nodesEngineTitle": "NODESエンジン",
-    "debugSnapshotSubtitle": "デバッグスナップショット",
     "characterSubtitle": "キャラクター"
   },
   "stylePresetsDialog": {

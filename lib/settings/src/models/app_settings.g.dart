@@ -54,7 +54,6 @@ AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) =>
         chatImageVisible: json['chat_image_visible'] as bool? ?? true,
         editorImageVisible: json['editor_image_visible'] as bool? ?? false,
         memoryEnabled: json['memory_enabled'] as bool? ?? false,
-        nodesEnabled: json['nodes_enabled'] as bool? ?? false,
         showRecalledMemory: json['show_recalled_memory'] as bool? ?? false,
         showPromptBreakdown: json['show_prompt_breakdown'] as bool? ?? false,
         assistantCardEditRequireApprovalForEdits:
@@ -112,7 +111,6 @@ Map<String, dynamic> _$AppSettingsToJson(
   'chat_image_visible': instance.chatImageVisible,
   'editor_image_visible': instance.editorImageVisible,
   'memory_enabled': instance.memoryEnabled,
-  'nodes_enabled': instance.nodesEnabled,
   'show_recalled_memory': instance.showRecalledMemory,
   'show_prompt_breakdown': instance.showPromptBreakdown,
   'assistant_card_edit_require_approval_for_edits':

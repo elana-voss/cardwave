@@ -30,7 +30,6 @@ class AppSettings {
     this.chatImageVisible = true,
     this.editorImageVisible = false,
     this.memoryEnabled = false,
-    this.nodesEnabled = false,
     this.showRecalledMemory = false,
     this.showPromptBreakdown = false,
     this.assistantCardEditRequireApprovalForEdits = true,
@@ -129,13 +128,6 @@ class AppSettings {
   /// in Settings, not onboarding.
   @JsonKey(defaultValue: false)
   bool memoryEnabled;
-
-  /// Narrative engine (NODES): when on, the app tracks the scene and character
-  /// state for a chat and moves the story forward between turns (an extra
-  /// background LLM call per turn). Gated like [memoryEnabled]; off disables
-  /// the situation prompt section and the director entirely. A power feature.
-  @JsonKey(defaultValue: false)
-  bool nodesEnabled;
 
   /// When on, each AI reply shows, beneath its text, the story-memory lines
   /// that informed it (dimmed footnotes). An insight aid for power users; off

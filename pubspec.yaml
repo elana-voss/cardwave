@@ -11,7 +11,6 @@ workspace:
   - packages/cardwave_retrieval
   - packages/cardwave_emotion
   - packages/cardwave_memory
-  - packages/cardwave_nodes
 
 environment:
   sdk: ^3.10.8
@@ -71,13 +70,6 @@ dependencies:
   cardwave_memory:
     path: packages/cardwave_memory
 
-  # The cardwave_nodes package owns the character immersion engine: state
-  # model (emotions, physical, relationship, knowledge, scene, event log),
-  # node pool, predicates, firing logic, and the director LLM call. No app
-  # deps. Wired into the app in a later phase.
-  cardwave_nodes:
-    path: packages/cardwave_nodes
-
   # Schema-validated tools — used both by the LLM module and by the
   # taxonomy editor in lib/character/, so it stays as a root dep too.
   schemantic: ^0.2.0
@@ -108,15 +100,6 @@ dependencies:
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7
-
-  # Native code editor for the nodes raw-JSON editor (bracket folding,
-  # find/replace, large-document performance). re_highlight is pulled
-  # transitively but declared because the JSON language and atom-one
-  # theme maps are imported directly.
-  re_editor: ^0.8.0
-  re_highlight: ^0.0.3
-  fl_nodes: ^0.5.0+1
-  flutter_context_menu: ^0.3.0
   drift: ^2.34.0
   drift_flutter: ^0.3.0
   sqlite3: ^3.3.3
@@ -150,15 +133,6 @@ dependency_overrides:
     git:
       url: https://github.com/elana-voss/llamadart.git
       ref: 2dc1af68752aa14eca708a185e48977047bcb956
-  # Maintained fork of re_editor: upstream (reqable/re-editor) is stale and not
-  # merging fixes. Our fork carries the Flutter 3.44 onFocusReceived fix, the
-  # wasm-safe isolate_manager bump (so no app-side override is needed), and a
-  # find-panel listener-disposal fix. Keep the fork public for the public CI.
-  re_editor:
-    git:
-      url: https://github.com/elana-voss/re-editor.git
-      ref: 69be8c55a34972cb1523f064b588cc72f3c5db99
-
 # Native backend opt-in for the llamadart hook. Lives in the build-target
 # pubspec (this one) because workspace packages don't propagate
 # `hooks.user_defines` to native build hooks. Without this, llamadart
@@ -183,12 +157,6 @@ hooks:
 
 flutter:
   uses-material-design: true
-
-  # fl_nodes 0.5.0+1 ships its grid shader under lib/ but its own pubspec
-  # declares no shaders, so the app must bundle it or the canvas throws
-  # "Asset 'packages/fl_nodes/shaders/grid.frag' not found" at runtime.
-  shaders:
-    - packages/fl_nodes/shaders/grid.frag
 
   assets:
     - assets/images/default_character.png

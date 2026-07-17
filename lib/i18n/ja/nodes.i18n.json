@@ -1,5 +1,0 @@
-{
-  "service": {
-    "invalidNodesDroppedSnackbar": "${count}個の動作ノードが無効になりました — ノードエディターを確認してください。"
-  }
-}

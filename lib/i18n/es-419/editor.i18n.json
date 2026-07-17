@@ -6,20 +6,11 @@
     "lorebook": "Lorebook",
     "group": "Grupo",
     "creator": "Creador",
-    "appData": "Datos de la app",
-    "nodes": "Nodos"
+    "appData": "Datos de la app"
   },
   "appBarEditor": {
     "hideAssistantPanelTooltip": "Ocultar panel del asistente",
     "showChatAssistantTooltip": "Mostrar asistente de chat lado a lado"
-  },
-  "codeFindPanel": {
-    "noneResult": "ninguno",
-    "previousTooltip": "Anterior",
-    "nextTooltip": "Siguiente",
-    "closeTooltip": "Cerrar",
-    "replaceTooltip": "Reemplazar",
-    "replaceAllTooltip": "Reemplazar todo"
   },
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Confirmar Reemplazar todo",
@@ -179,84 +170,6 @@
     "compositeLorebookEntry": "Entrada de lorebook n.º $index:\n$value\n",
     "imageTooLargeMessage": "La imagen seleccionada es demasiado grande. El tamaño máximo es $maxSize.",
     "invalidPngMessage": "La imagen seleccionada no es un PNG válido o no se pudo leer."
-  },
-  "editorNodes": {
-    "deleteNodeTitle": "Eliminar nodo",
-    "deleteNodeMessage": "¿Quitar este nodo de autor de la tarjeta?",
-    "engineSeedTitle": "Semilla del motor",
-    "visualEditorTooltip": "Editor visual",
-    "editJsonTooltip": "Editar JSON",
-    "initialGoalLabel": "Objetivo inicial",
-    "initialSceneLabel": "Escena inicial",
-    "locationLabel": "Ubicación",
-    "timeOfDayLabel": "Hora del día",
-    "presentEntitiesLabel": "Presentes (separados por comas)",
-    "sensoryHooksLabel": "Ganchos sensoriales (separados por comas)",
-    "addNodeButton": "Agregar nodo",
-    "noAuthoredNodesYet": "Aún no hay nodos de autor.",
-    "loadErrorMessage(plural)": {
-      "one": "El bloque de nodos de esta tarjeta tiene $n problema; editar aquí sobrescribirá las partes dañadas al guardar.",
-      "other": "El bloque de nodos de esta tarjeta tiene $n problemas; editar aquí sobrescribirá las partes dañadas al guardar."
-    },
-    "moreErrorsSuffix": "… $n más",
-    "emotionBaselineLabel": "Emoción base",
-    "emotionChipLabel": "Emoción"
-  },
-  "nodeListTile": {
-    "spawnsLabel": "genera: $count"
-  },
-  "nodesRawEditorPage": {
-    "topLevelMustBeObject": "El nivel superior debe ser un objeto JSON",
-    "editNodesJsonTitle": "Editar JSON de nodos",
-    "fixProblemsMessage(plural)": {
-      "one": "Corrige $n problema para guardar.",
-      "other": "Corrige $n problemas para guardar."
-    }
-  },
-  "nodesCanvasView": {
-    "spawnedByPort": "generado por",
-    "spawnsPort": "genera",
-    "editNodeLabel": "Editar nodo",
-    "addNodeTooltip": "Agregar nodo"
-  },
-  "nodeEditorForm": {
-    "nameLabel": "Nombre",
-    "narrativePayloadLabel": "Carga narrativa",
-    "removeSpawnLinkTitle": "Quitar vínculo de generación",
-    "removeSpawnLinkMessage": "¿Impedir que este nodo genere \"$nodeId\"? El nodo en sí permanece en la tarjeta.",
-    "removeButton": "Quitar",
-    "typeLabel": "Tipo",
-    "scopeLabel": "Alcance",
-    "originLabel": "Origen",
-    "triggerProbLabel": "Prob. de disparo",
-    "delayHelper": "Turnos a esperar antes de ser elegible. -1 actúa como 0.",
-    "cooldownHelper": "Turnos bloqueado tras dispararse. -1 significa sin tiempo de espera.",
-    "stickyHelper": "Turnos en que la carga narrativa sigue apareciendo como \"Persistente\" tras dispararse. -1 significa permanente.",
-    "aliveHelper": "Turnos en que el nodo permanece en el grupo antes de eliminarse. -1 significa para siempre.",
-    "setToNeverButton": "Establecer en nunca",
-    "effectsSectionLabel": "Efectos",
-    "emotionDeltasTitle": "Variaciones de emoción",
-    "physicalDeltasTitle": "Variaciones físicas",
-    "relationshipDeltasTitle": "Variaciones de relación",
-    "addDeltaChip": "Agregar variación",
-    "knowledgeWritesTitle": "Escrituras de conocimiento",
-    "addFactChip": "Agregar hecho",
-    "topicLabel": "tema",
-    "confidenceLabel": "confianza",
-    "flagSetTitle": "Conjunto de flags",
-    "addFlagChip": "Agregar flag",
-    "keyLabel": "clave",
-    "sceneAndFlowTitle": "Escena y flujo",
-    "goalChangeLabel": "goalChange (borra el objetivo actual cuando está vacío)",
-    "phaseChangeLabel": "phaseChange",
-    "noneOption": "(ninguno)",
-    "sceneTransitionLabel": "sceneTransition",
-    "sceneTransitionSubtitle": "Cuando es verdadero, el motor marca el disparo como un cambio de escena.",
-    "spawnsSectionLabel": "Generaciones",
-    "addNewChip": "Agregar nuevo",
-    "linkExistingChip": "Vincular existente",
-    "unlinkTooltip": "Desvincular",
-    "predicateLabel": "Predicado"
   },
   "contentTransform": {
     "appliedSnackbar": "Cambios aplicados",

@@ -33,8 +33,6 @@
     "themeStyleNeon": "Neón",
     "storyMemoryTitle": "Memoria de la historia",
     "storyMemorySubtitle": "Recuerda momentos anteriores y trae los relevantes de vuelta en chats largos.",
-    "narrativeEngineTitle": "Motor narrativo",
-    "narrativeEngineSubtitle": "Sigue la escena y los personajes y hace avanzar la historia mientras chateas.",
     "promptBreakdownTitle": "Mostrar desglose del prompt",
     "promptBreakdownSubtitle": "Muestra una barra bajo cada respuesta que desglosa cómo el prompt llenó la ventana de contexto del modelo.",
     "checkUpdatesTitle": "Buscar actualizaciones",

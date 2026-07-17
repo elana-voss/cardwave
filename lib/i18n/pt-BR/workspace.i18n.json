@@ -31,8 +31,6 @@
   },
   "workspaceEndDrawer": {
     "favoriteLabel": "Favorito",
-    "nodesEngineTitle": "Motor NODES",
-    "debugSnapshotSubtitle": "Captura de depuração",
     "characterSubtitle": "Personagem"
   },
   "stylePresetsDialog": {
