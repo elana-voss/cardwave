@@ -383,8 +383,9 @@ class NanoGptProvider extends LlmProvider {
             .whereType<Map<String, dynamic>>()
             .map((m) => {...m, '_kind': kind})
             .toList();
-      } on Exception {
-        // One endpoint failing shouldn't sink the whole catalog.
+      } catch (_) {
+        // Plain catch — a non-list `data` value is a TypeError (an
+        // Error): one endpoint failing shouldn't sink the whole catalog.
         return const [];
       }
     }

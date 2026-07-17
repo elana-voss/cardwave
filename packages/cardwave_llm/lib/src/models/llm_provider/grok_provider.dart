@@ -327,8 +327,9 @@ class GrokProvider extends LlmProvider {
             .whereType<Map<String, dynamic>>()
             .map((m) => {...m, '_kind': kind})
             .toList();
-      } on Exception {
-        // One endpoint failing shouldn't sink the whole list.
+      } catch (_) {
+        // Plain catch — a non-list `models` value is a TypeError (an
+        // Error): one endpoint failing shouldn't sink the whole list.
         return const [];
       }
     }
@@ -439,6 +440,8 @@ class GrokProvider extends LlmProvider {
       temperature: r.resolve(LlmParameterDefinitionIdEnum.temperature),
       maxTokens: r.resolveInt(LlmParameterDefinitionIdEnum.maxResponseLength),
       topP: r.resolve(LlmParameterDefinitionIdEnum.topP),
+      frequencyPenalty: r.resolve(LlmParameterDefinitionIdEnum.frequencyPenalty),
+      presencePenalty: r.resolve(LlmParameterDefinitionIdEnum.presencePenalty),
     );
     return LlmRunner(model: genkitModel, genkit: _genkit, config: opts);
   }

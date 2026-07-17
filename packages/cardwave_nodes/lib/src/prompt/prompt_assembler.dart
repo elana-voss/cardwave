@@ -70,10 +70,13 @@ typedef DynamicSectionsResult = ({
 ///   7. relevant earlier memories
 ///   8. the user's input
 ///
-/// Sections 3–7 share an injection budget of `injectionBudgetFraction *
-/// maxContextTokens`. Memory surfacing uses [embedder] when provided
-/// (ranks event-log entries by cosine similarity to the user input).
-/// Falls back to recency if [embedder] is null.
+/// Only section 7 (earlier memories) is capped by the injection budget
+/// (`injectionBudgetFraction * maxContextTokens`): sections 3–6 are
+/// always appended in full — dropping state or directives would change
+/// behavior — and merely reduce what memories may use of the budget.
+/// Memory surfacing uses [embedder] when provided (ranks event-log
+/// entries by cosine similarity to the user input). Falls back to
+/// recency if [embedder] is null.
 class PromptAssembler {
   PromptAssembler({this.embedder});
 
@@ -82,8 +85,9 @@ class PromptAssembler {
   final Embedder? embedder;
 
   /// Per-text vector cache so the same event-log entry is not embedded
-  /// every turn. Cleared automatically when the entry's text changes
-  /// (the cache key is the text itself).
+  /// every turn. Keyed by the entry's text; after each ranking pass,
+  /// keys no longer present in the log (reworded or trimmed entries)
+  /// are evicted so the cache can't grow for the whole session.
   final Map<String, Float32List> _vectorCache = {};
 
   Future<String> assemble({
@@ -322,6 +326,8 @@ class PromptAssembler {
           await emb.embedOne(entry.text, task: EmbedTaskEnum.passage);
       scored.add((entry: entry, score: cosineNormalized(query, vec)));
     }
+    final currentTexts = {for (final entry in log) entry.text};
+    _vectorCache.removeWhere((text, _) => !currentTexts.contains(text));
     scored.sort((a, b) => b.score.compareTo(a.score));
     final picked =
         await _fitToBudget(scored, budgetTokens, (s) => _entryCost(s.entry));

@@ -1,6 +1,7 @@
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/chat/chat.dart';
 import 'package:cardwave/common/common.dart';
+import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/nodes/src/models/chat_nodes_state.dart';
 import 'package:cardwave/nodes/src/nodes_card_extension_key.dart';
 import 'package:cardwave/nodes/src/repositories/nodes_repository.dart';
@@ -37,6 +38,10 @@ class NodesService {
   final LlmPureHelpers pureHelpers;
   final FiringEngine _firingEngine = FiringEngine();
   final PromptAssembler _assembler;
+
+  /// Cards the "N behavior nodes disabled" snackbar was already shown
+  /// for this app session — shown once per card, not on every reopen.
+  final Set<String> _invalidNodesWarnedCardIds = {};
 
   String? _currentSessionId;
   SessionState? _state;
@@ -100,7 +105,9 @@ class NodesService {
         promptSection: result.text,
         firedThisTurn: fired,
       );
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: a NODES problem must never block the reply, and
+      // TypeErrors in state/JSON handling are Errors, not Exceptions.
       loggingService.warning(
         'NODES turn assembly failed; replying without NODES context.',
         error,
@@ -144,7 +151,9 @@ class NodesService {
         _applyAndStashDirective(output);
       }
       await _persistCurrent(file, session.id);
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: same never-block-the-reply contract as
+      // [assembleNodesPrompt] — Errors must degrade too.
       loggingService.warning(
         'NODES per-turn director/persist failed; retrying next turn.',
         error,
@@ -196,10 +205,25 @@ class NodesService {
     final extJson = file.card.extensions[nodesCardExtensionKey];
     if (extJson is! Map<String, dynamic>) return null;
     final result = loadCardNodesExtension(extJson);
+    // A node whose predicate can't parse would throw on every firing
+    // pass; drop just the broken nodes so the valid ones keep working
+    // instead of one typo disabling the card's whole NODES behavior.
+    final broken = result.extension.authoredNodes
+        .where((node) => findPredicateProblems(node.predicate).isNotEmpty)
+        .toList();
+    if (broken.isNotEmpty) {
+      result.extension.authoredNodes.removeWhere(broken.contains);
+      if (_invalidNodesWarnedCardIds.add(file.appCardId)) {
+        NavigationService().showSnackBar(
+          t.nodes.service.invalidNodesDroppedSnackbar(count: broken.length),
+        );
+      }
+    }
     if (result.errors.isNotEmpty) {
       loggingService.warning(
         'NODES extension on ${file.card.name} has '
-        '${result.errors.length} issue(s); using the valid pieces.',
+        '${result.errors.length} issue(s); dropped ${broken.length} '
+        'node(s) with invalid predicates and kept the rest.',
       );
     }
     return result.extension;
@@ -283,7 +307,9 @@ class NodesService {
         model: resolved.model,
         preset: resolved.preset,
       );
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: a stale preset id can hit a cast/null-assert
+      // (TypeError) in resolvePreset — degrade the same as any failure.
       loggingService.warning(
         'NODES: system model unresolved; director writeback off this turn.',
         error,

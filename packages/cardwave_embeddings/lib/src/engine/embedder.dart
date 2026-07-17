@@ -56,10 +56,10 @@ class Embedder {
   Future<void> _runInit() async {
     final LlamaEngine engine;
     try {
-      final modelSource = kIsWeb ? _webModelUrl() : await _extractAsset();
-      engine = LlamaEngine(LlamaBackend());
-      await engine.loadModel(modelSource, modelParams: _modelParams());
-    } on Exception catch (e, st) {
+      engine = await _loadEngine();
+    } catch (e, st) {
+      // Plain catch: llamadart FFI failures can surface as Errors, which
+      // must still reset the init cache and wrap into the typed exception.
       _initFuture = null;
       Error.throwWithStackTrace(
         EmbeddingsException(
@@ -76,6 +76,36 @@ class Embedder {
       return;
     }
     _engine = engine;
+  }
+
+  /// Loads the model into a fresh engine. On native, a cached extract that
+  /// fails to load (e.g. truncated by a pre-atomic-write app kill) is
+  /// deleted and re-extracted once before the failure surfaces — otherwise
+  /// a corrupt cache file would break search/recall every session.
+  Future<LlamaEngine> _loadEngine() async {
+    if (kIsWeb) {
+      final engine = LlamaEngine(LlamaBackend());
+      await engine.loadModel(_webModelUrl(), modelParams: _modelParams());
+      return engine;
+    }
+    final extracted = await _extractAsset();
+    try {
+      final engine = LlamaEngine(LlamaBackend());
+      await engine.loadModel(extracted.path, modelParams: _modelParams());
+      return engine;
+    } catch (_) {
+      if (!extracted.fromCache) rethrow;
+      try {
+        File(extracted.path).deleteSync();
+      } on Exception {
+        // Re-extraction renames over the target, so a failed delete is
+        // not fatal here.
+      }
+      final fresh = await _extractAsset();
+      final engine = LlamaEngine(LlamaBackend());
+      await engine.loadModel(fresh.path, modelParams: _modelParams());
+      return engine;
+    }
   }
 
   ModelParams _modelParams() => kIsWeb
@@ -125,7 +155,9 @@ class Embedder {
       final prefixed = texts.map((t) => '$prefix$t').toList();
       final response = await _runSerialized(() => engine.embedBatch(prefixed));
       return response.map(Float32List.fromList).toList();
-    } on Exception catch (e, st) {
+    } catch (e, st) {
+      // Plain catch: llamadart FFI Errors must not bypass the
+      // EmbeddingsException wrap callers key their handling on.
       Error.throwWithStackTrace(
         EmbeddingsException('Embedding generation failed.', cause: e),
         st,
@@ -172,23 +204,29 @@ class Embedder {
   }
 
   /// Writes the bundled package asset to OS-managed cache space if not
-  /// already present, returning the absolute path. The OS may evict; the
-  /// module re-extracts on the next call. `LlamaEngine.loadModel` requires
-  /// an absolute filesystem path — Flutter asset URIs are not accepted.
-  Future<String> _extractAsset() async {
+  /// already present, returning the absolute path plus whether an already-
+  /// cached file was reused. The OS may evict; the module re-extracts on
+  /// the next call. `LlamaEngine.loadModel` requires an absolute filesystem
+  /// path — Flutter asset URIs are not accepted.
+  ///
+  /// The write is tmp+rename (same pattern as `AppStorageWindows`): an app
+  /// kill mid-extract must not leave a truncated file that passes the
+  /// existence check on every later launch.
+  Future<({String path, bool fromCache})> _extractAsset() async {
     final cacheDir = await getApplicationCacheDirectory();
     final dir = Directory(p.join(cacheDir.path, 'cardwave_embeddings'))
       ..createSync(recursive: true);
     final target = p.join(dir.path, embeddingsModelFilename);
-    final file = File(target);
-    if (file.existsSync()) return target;
+    if (File(target).existsSync()) return (path: target, fromCache: true);
     final bytes = await rootBundle.load(
       'packages/cardwave_embeddings/assets/models/$embeddingsModelFilename',
     );
-    await file.writeAsBytes(
+    final tmpFile = File('$target.tmp');
+    await tmpFile.writeAsBytes(
       bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
       flush: true,
     );
-    return target;
+    await tmpFile.rename(target);
+    return (path: target, fromCache: false);
   }
 }

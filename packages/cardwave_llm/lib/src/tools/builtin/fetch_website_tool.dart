@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cardwave_llm/src/observability/llm_log_event.dart';
 import 'package:cardwave_llm/src/observability/llm_loggers.dart';
@@ -123,9 +125,15 @@ class FetchWebsiteTool extends ToolDefinition {
       return const ToolResult.failure('User declined fetch.');
     }
 
-    final http.Response response;
+    // send() instead of get(): the status line and headers arrive before
+    // the body, so oversized/non-HTML responses can be rejected without
+    // buffering them, and the body read below can abort at maxBodyBytes
+    // instead of holding a multi-GB response in memory first.
+    final http.StreamedResponse response;
     try {
-      response = await _httpClient.get(uri).timeout(requestTimeout);
+      response = await _httpClient
+          .send(http.Request('GET', uri))
+          .timeout(requestTimeout);
     } on Exception catch (e, st) {
       toolsLogger.warning(
         LlmDiagnosticEvent(
@@ -138,10 +146,24 @@ class FetchWebsiteTool extends ToolDefinition {
       return ToolResult.failure('Network error fetching $url: $e');
     }
     if (ctx.isCancelled) {
+      _discardBody(response);
       return const ToolResult.failure('Cancelled by user.');
     }
 
+    // The user confirmed uri's host, not wherever a redirect chain lands;
+    // a cross-host redirect would silently fetch from an unapproved host.
+    final finalUrl = response.request?.url;
+    if (finalUrl != null && finalUrl.host != uri.host) {
+      _discardBody(response);
+      return ToolResult.failure(
+        'fetch_website blocked a redirect to a different host '
+        '(${uri.host} -> ${finalUrl.host}). Ask the user to fetch '
+        '$finalUrl directly if it is wanted.',
+      );
+    }
+
     if (response.statusCode != 200) {
+      _discardBody(response);
       return ToolResult.failure(
         'HTTP ${response.statusCode} fetching $url.',
       );
@@ -149,14 +171,34 @@ class FetchWebsiteTool extends ToolDefinition {
 
     final contentType = response.headers['content-type'] ?? '';
     if (!contentType.toLowerCase().contains('text/html')) {
+      _discardBody(response);
       return ToolResult.failure(
         'Non-HTML content at $url (content-type: $contentType).',
       );
     }
 
-    final bytes = response.bodyBytes.length > maxBodyBytes
-        ? response.bodyBytes.sublist(0, maxBodyBytes)
-        : response.bodyBytes;
+    final builder = BytesBuilder(copy: false);
+    try {
+      await for (final chunk in response.stream.timeout(requestTimeout)) {
+        builder.add(chunk);
+        // Breaking out of the await-for cancels the subscription, which
+        // aborts the download instead of buffering the rest.
+        if (builder.length >= maxBodyBytes) break;
+      }
+    } on Exception catch (e, st) {
+      toolsLogger.warning(
+        LlmDiagnosticEvent(
+          level: LlmDiagnosticLevel.warning,
+          message: 'fetch_website body read failed for $url',
+          error: e,
+          stackTrace: st,
+        ),
+      );
+      return ToolResult.failure('Network error fetching $url: $e');
+    }
+    final raw = builder.takeBytes();
+    final bytes =
+        raw.length > maxBodyBytes ? raw.sublist(0, maxBodyBytes) : raw;
     final bodyText = utf8.decode(bytes, allowMalformed: true);
 
     final document = html_parser.parse(bodyText);
@@ -172,6 +214,12 @@ class FetchWebsiteTool extends ToolDefinition {
     final body =
         '$resultDelimiterBegin [url=$url]\n\n$capped\n\n$resultDelimiterEnd';
     return ToolResult.ok(data: body);
+  }
+
+  /// Aborts an unread response body so the connection isn't left holding
+  /// a download nobody will consume (rejected status/type, cancel).
+  static void _discardBody(http.StreamedResponse response) {
+    unawaited(response.stream.listen(null).cancel());
   }
 
   /// Picks the most content-rich subtree to convert. Preference order:

@@ -8,6 +8,12 @@ enum NodeSkipReason {
 
   /// Node's predicate evaluated to false against the current state.
   predicateFalse,
+
+  /// Node's predicate failed to parse. Authored nodes with bad
+  /// predicates are filtered out at load, so this is a belt-and-braces
+  /// guard (persisted or director-spawned nodes) — the node is skipped
+  /// instead of the parse error killing the whole turn.
+  predicateInvalid,
 }
 
 /// Node was not rolled this turn because an eligibility gate stopped

@@ -1,1 +1,5 @@
-{}
+{
+  "service": {
+    "invalidNodesDroppedSnackbar": "Đã tắt ${count} nút hành vi — hãy kiểm tra trình chỉnh sửa nút."
+  }
+}

@@ -1,1 +1,5 @@
-{}
+{
+  "service": {
+    "invalidNodesDroppedSnackbar": "동작 노드 ${count}개가 비활성화되었습니다 — 노드 편집기를 확인하세요."
+  }
+}

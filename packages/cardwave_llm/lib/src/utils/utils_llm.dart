@@ -16,8 +16,10 @@ class UtilsLlm {
     caseSensitive: false,
   );
 
-  static bool _hasThinkTag(String raw) =>
-      raw.contains('<think') || raw.contains('<THINK');
+  // Lowercased to match the regex's case-insensitivity — models emit
+  // mixed-case tags like <Think> too. Runs on full raw strings, not
+  // per-token, so the toLowerCase() allocation is fine.
+  static bool _hasThinkTag(String raw) => raw.toLowerCase().contains('<think');
 
   static String stripThinkTags(String raw) {
     if (raw.isEmpty || !_hasThinkTag(raw)) return raw;

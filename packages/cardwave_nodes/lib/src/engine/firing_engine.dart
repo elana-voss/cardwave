@@ -162,8 +162,24 @@ class FiringEngine {
         ));
         continue;
       }
-      final predicate = _predicateCache[node.predicate] ??=
-          parsePredicate(node.predicate);
+      final PredicateNode predicate;
+      try {
+        final cached = _predicateCache[node.predicate];
+        if (cached != null) {
+          predicate = cached;
+        } else {
+          predicate = parsePredicate(node.predicate);
+          _predicateCache[node.predicate] = predicate;
+        }
+      } catch (_) {
+        // One node with an unparsable predicate must skip just that
+        // node — a throw here would abort the whole turn's firing pass.
+        skipped.add(NodeSkipRecord(
+          nodeId: node.id,
+          reason: NodeSkipReason.predicateInvalid,
+        ));
+        continue;
+      }
       if (!evaluatePredicate(predicate, state)) {
         skipped.add(NodeSkipRecord(
           nodeId: node.id,

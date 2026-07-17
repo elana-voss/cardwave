@@ -134,7 +134,9 @@ class MemoryExtractor {
         _buildPrompt(context, numberToMessage, labelToFact, labelToThread),
         _buildSchema(labelToFact.keys.toList(), labelToThread.keys.toList()),
       );
-    } on Exception catch (error, stackTrace) {
+    } catch (error, stackTrace) {
+      // Plain catch: genkit/provider Errors must also downgrade to
+      // retry-next-pass, not abort the extraction loop.
       logMemoryWarning(
         'Memory extraction failed via model "${runner.modelName}"; window '
         'will be retried next pass.',

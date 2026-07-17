@@ -1,1 +1,5 @@
-{}
+{
+  "service": {
+    "invalidNodesDroppedSnackbar": "${count} व्यवहार नोड अक्षम किए गए — नोड संपादक जांचें।"
+  }
+}

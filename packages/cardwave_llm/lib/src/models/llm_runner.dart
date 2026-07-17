@@ -124,7 +124,9 @@ class LlmRunner {
               _appendToolCallIfRequest(part, toolCalls);
             }
           }
-        } on Exception catch (e, st) {
+        } catch (e, st) {
+          // Plain catch: this is a best-effort fallback — an Error from the
+          // adapter must not sink a reply whose tokens already streamed.
           runnerLogger.warning(
             LlmDiagnosticEvent(
               level: LlmDiagnosticLevel.warning,
@@ -321,7 +323,9 @@ class LlmRunner {
       // ignore: qcheck/avoid_dynamic
       final json = (cfg as dynamic).toJson();
       return const JsonEncoder.withIndent('  ').convert(json);
-    } on Exception {
+    } catch (_) {
+      // Plain catch: a config without toJson() throws NoSuchMethodError
+      // (an Error) — telemetry must fall back, never crash the request.
       return cfg.toString();
     }
   }

@@ -1,1 +1,5 @@
-{}
+{
+  "service": {
+    "invalidNodesDroppedSnackbar": "${count} nó(s) de comportamento desativado(s) — verifique o editor de nós."
+  }
+}

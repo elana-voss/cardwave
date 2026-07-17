@@ -1,1 +1,5 @@
-{}
+{
+  "service": {
+    "invalidNodesDroppedSnackbar": "Отключено узлов поведения: ${count} — проверьте редактор узлов."
+  }
+}

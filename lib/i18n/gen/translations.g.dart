@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 10
-/// Strings: 9190 (919 per locale)
+/// Strings: 9200 (920 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -400,6 +400,7 @@ class _TranslationsNodesEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
+	late final _TranslationsNodesServiceEn service = _TranslationsNodesServiceEn._(_root);
 }
 
 // Path: onboarding
@@ -2419,6 +2420,16 @@ class _TranslationsLlmAppMediaCellEn {
 	String get notApplicable => 'Not applicable';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceEn._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+	String invalidNodesDroppedSnackbar({required Object count}) => '${count} behavior node(s) disabled — check the node editor.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepEn._(this._root);
@@ -3250,6 +3261,7 @@ class _TranslationsNodesEs419 extends _TranslationsNodesEn {
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceEs419 service = _TranslationsNodesServiceEs419._(_root);
 }
 
 // Path: onboarding
@@ -5269,6 +5281,16 @@ class _TranslationsLlmAppMediaCellEs419 extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'No aplicable';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceEs419 extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
+
+	@override final _TranslationsEs419 _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} nodo(s) de comportamiento desactivado(s): revisa el editor de nodos.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepEs419 extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
@@ -6100,6 +6122,7 @@ class _TranslationsNodesHi extends _TranslationsNodesEn {
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceHi service = _TranslationsNodesServiceHi._(_root);
 }
 
 // Path: onboarding
@@ -8119,6 +8142,16 @@ class _TranslationsLlmAppMediaCellHi extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'लागू नहीं';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceHi extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceHi._(_TranslationsHi root) : this._root = root, super._(root);
+
+	@override final _TranslationsHi _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} व्यवहार नोड अक्षम किए गए — नोड संपादक जांचें।';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepHi extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepHi._(_TranslationsHi root) : this._root = root, super._(root);
@@ -8950,6 +8983,7 @@ class _TranslationsNodesJa extends _TranslationsNodesEn {
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceJa service = _TranslationsNodesServiceJa._(_root);
 }
 
 // Path: onboarding
@@ -10960,6 +10994,16 @@ class _TranslationsLlmAppMediaCellJa extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => '該当なし';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceJa extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceJa._(_TranslationsJa root) : this._root = root, super._(root);
+
+	@override final _TranslationsJa _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count}個の動作ノードが無効になりました — ノードエディターを確認してください。';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepJa extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepJa._(_TranslationsJa root) : this._root = root, super._(root);
@@ -11790,6 +11834,7 @@ class _TranslationsNodesKo extends _TranslationsNodesEn {
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceKo service = _TranslationsNodesServiceKo._(_root);
 }
 
 // Path: onboarding
@@ -13800,6 +13845,16 @@ class _TranslationsLlmAppMediaCellKo extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => '해당 없음';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceKo extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceKo._(_TranslationsKo root) : this._root = root, super._(root);
+
+	@override final _TranslationsKo _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '동작 노드 ${count}개가 비활성화되었습니다 — 노드 편집기를 확인하세요.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepKo extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepKo._(_TranslationsKo root) : this._root = root, super._(root);
@@ -14630,6 +14685,7 @@ class _TranslationsNodesPtBr extends _TranslationsNodesEn {
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServicePtBr service = _TranslationsNodesServicePtBr._(_root);
 }
 
 // Path: onboarding
@@ -16649,6 +16705,16 @@ class _TranslationsLlmAppMediaCellPtBr extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Não aplicável';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServicePtBr extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServicePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
+
+	@override final _TranslationsPtBr _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} nó(s) de comportamento desativado(s) — verifique o editor de nós.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepPtBr extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
@@ -17480,6 +17546,7 @@ class _TranslationsNodesRu extends _TranslationsNodesEn {
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceRu service = _TranslationsNodesServiceRu._(_root);
 }
 
 // Path: onboarding
@@ -19517,6 +19584,16 @@ class _TranslationsLlmAppMediaCellRu extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Неприменимо';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceRu extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceRu._(_TranslationsRu root) : this._root = root, super._(root);
+
+	@override final _TranslationsRu _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => 'Отключено узлов поведения: ${count} — проверьте редактор узлов.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepRu extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepRu._(_TranslationsRu root) : this._root = root, super._(root);
@@ -20350,6 +20427,7 @@ class _TranslationsNodesVi extends _TranslationsNodesEn {
 	@override final _TranslationsVi _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceVi service = _TranslationsNodesServiceVi._(_root);
 }
 
 // Path: onboarding
@@ -22360,6 +22438,16 @@ class _TranslationsLlmAppMediaCellVi extends _TranslationsLlmAppMediaCellEn {
 	@override String get notApplicable => 'Không áp dụng';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceVi extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceVi._(_TranslationsVi root) : this._root = root, super._(root);
+
+	@override final _TranslationsVi _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => 'Đã tắt ${count} nút hành vi — hãy kiểm tra trình chỉnh sửa nút.';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepVi extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepVi._(_TranslationsVi root) : this._root = root, super._(root);
@@ -23190,6 +23278,7 @@ class _TranslationsNodesZhHans extends _TranslationsNodesEn {
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceZhHans service = _TranslationsNodesServiceZhHans._(_root);
 }
 
 // Path: onboarding
@@ -25200,6 +25289,16 @@ class _TranslationsLlmAppMediaCellZhHans extends _TranslationsLlmAppMediaCellEn 
 	@override String get notApplicable => '不适用';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceZhHans extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHans _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} 个行为节点已停用——请检查节点编辑器。';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepZhHans extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
@@ -26030,6 +26129,7 @@ class _TranslationsNodesZhHant extends _TranslationsNodesEn {
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
+	@override late final _TranslationsNodesServiceZhHant service = _TranslationsNodesServiceZhHant._(_root);
 }
 
 // Path: onboarding
@@ -28040,6 +28140,16 @@ class _TranslationsLlmAppMediaCellZhHant extends _TranslationsLlmAppMediaCellEn 
 	@override String get notApplicable => '不適用';
 }
 
+// Path: nodes.service
+class _TranslationsNodesServiceZhHant extends _TranslationsNodesServiceEn {
+	_TranslationsNodesServiceZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
+
+	@override final _TranslationsZhHant _root; // ignore: unused_field
+
+	// Translations
+	@override String invalidNodesDroppedSnackbar({required Object count}) => '${count} 個行為節點已停用——請檢查節點編輯器。';
+}
+
 // Path: onboarding.storageStep
 class _TranslationsOnboardingStorageStepZhHant extends _TranslationsOnboardingStorageStepEn {
 	_TranslationsOnboardingStorageStepZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
@@ -29317,6 +29427,7 @@ extension on Translations {
 			case 'llmApp.presetRow.continueButton': return 'Continue';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Choose a ${domain} model';
 			case 'llmApp.mediaCell.notApplicable': return 'Not applicable';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} behavior node(s) disabled — check the node editor.';
 			case 'onboarding.finishFailedSnackbar': return 'Setup failed. See logs for details.';
 			case 'onboarding.appBarTitle': return 'Quick Setup';
 			case 'onboarding.languageTooltip': return 'Language';
@@ -30267,6 +30378,7 @@ extension on _TranslationsEs419 {
 			case 'llmApp.presetRow.continueButton': return 'Continuar';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Elige un modelo de ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'No aplicable';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} nodo(s) de comportamiento desactivado(s): revisa el editor de nodos.';
 			case 'onboarding.finishFailedSnackbar': return 'La configuración falló. Consulta los registros para más detalles.';
 			case 'onboarding.appBarTitle': return 'Configuración rápida';
 			case 'onboarding.languageTooltip': return 'Idioma';
@@ -31217,6 +31329,7 @@ extension on _TranslationsHi {
 			case 'llmApp.presetRow.continueButton': return 'जारी रखें';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'एक ${domain} मॉडल चुनें';
 			case 'llmApp.mediaCell.notApplicable': return 'लागू नहीं';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} व्यवहार नोड अक्षम किए गए — नोड संपादक जांचें।';
 			case 'onboarding.finishFailedSnackbar': return 'सेटअप विफल हुआ। विवरण के लिए लॉग देखें।';
 			case 'onboarding.appBarTitle': return 'त्वरित सेटअप';
 			case 'onboarding.languageTooltip': return 'भाषा';
@@ -32158,6 +32271,7 @@ extension on _TranslationsJa {
 			case 'llmApp.presetRow.continueButton': return '続行';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '${domain} モデルを選択';
 			case 'llmApp.mediaCell.notApplicable': return '該当なし';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count}個の動作ノードが無効になりました — ノードエディターを確認してください。';
 			case 'onboarding.finishFailedSnackbar': return 'セットアップに失敗しました。詳細はログを確認してください。';
 			case 'onboarding.appBarTitle': return 'クイックセットアップ';
 			case 'onboarding.languageTooltip': return '言語';
@@ -33098,6 +33212,7 @@ extension on _TranslationsKo {
 			case 'llmApp.presetRow.continueButton': return '계속';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '${domain} 모델 선택';
 			case 'llmApp.mediaCell.notApplicable': return '해당 없음';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '동작 노드 ${count}개가 비활성화되었습니다 — 노드 편집기를 확인하세요.';
 			case 'onboarding.finishFailedSnackbar': return '설정에 실패했어요. 자세한 내용은 로그를 확인하세요.';
 			case 'onboarding.appBarTitle': return '빠른 설정';
 			case 'onboarding.languageTooltip': return '언어';
@@ -34047,6 +34162,7 @@ extension on _TranslationsPtBr {
 			case 'llmApp.presetRow.continueButton': return 'Continuar';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Escolha um modelo de ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'Não aplicável';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} nó(s) de comportamento desativado(s) — verifique o editor de nós.';
 			case 'onboarding.finishFailedSnackbar': return 'Falha na configuração. Veja os logs para detalhes.';
 			case 'onboarding.appBarTitle': return 'Configuração rápida';
 			case 'onboarding.languageTooltip': return 'Idioma';
@@ -35015,6 +35131,7 @@ extension on _TranslationsRu {
 			case 'llmApp.presetRow.continueButton': return 'Продолжить';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Выберите модель для «${domain}»';
 			case 'llmApp.mediaCell.notApplicable': return 'Неприменимо';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => 'Отключено узлов поведения: ${count} — проверьте редактор узлов.';
 			case 'onboarding.finishFailedSnackbar': return 'Не удалось завершить настройку. Подробности в логах.';
 			case 'onboarding.appBarTitle': return 'Быстрая настройка';
 			case 'onboarding.languageTooltip': return 'Язык';
@@ -35958,6 +36075,7 @@ extension on _TranslationsVi {
 			case 'llmApp.presetRow.continueButton': return 'Tiếp tục';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => 'Chọn mô hình ${domain}';
 			case 'llmApp.mediaCell.notApplicable': return 'Không áp dụng';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => 'Đã tắt ${count} nút hành vi — hãy kiểm tra trình chỉnh sửa nút.';
 			case 'onboarding.finishFailedSnackbar': return 'Thiết lập thất bại. Xem nhật ký để biết chi tiết.';
 			case 'onboarding.appBarTitle': return 'Thiết lập nhanh';
 			case 'onboarding.languageTooltip': return 'Ngôn ngữ';
@@ -36898,6 +37016,7 @@ extension on _TranslationsZhHans {
 			case 'llmApp.presetRow.continueButton': return '继续';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '选择一个 ${domain} 模型';
 			case 'llmApp.mediaCell.notApplicable': return '不适用';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} 个行为节点已停用——请检查节点编辑器。';
 			case 'onboarding.finishFailedSnackbar': return '设置失败。详情请查看日志。';
 			case 'onboarding.appBarTitle': return '快速设置';
 			case 'onboarding.languageTooltip': return '语言';
@@ -37838,6 +37957,7 @@ extension on _TranslationsZhHant {
 			case 'llmApp.presetRow.continueButton': return '繼續';
 			case 'llmApp.presetRow.chooseModelTitle': return ({required Object domain}) => '選擇 ${domain} 模型';
 			case 'llmApp.mediaCell.notApplicable': return '不適用';
+			case 'nodes.service.invalidNodesDroppedSnackbar': return ({required Object count}) => '${count} 個行為節點已停用——請檢查節點編輯器。';
 			case 'onboarding.finishFailedSnackbar': return '設定失敗。詳情請查看記錄。';
 			case 'onboarding.appBarTitle': return '快速設定';
 			case 'onboarding.languageTooltip': return '語言';

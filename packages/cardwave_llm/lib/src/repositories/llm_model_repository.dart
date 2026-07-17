@@ -9,9 +9,10 @@ import 'package:http/http.dart' as http;
 /// module never holds a catalog cache; callers (the management service)
 /// memoise on their side if they need to.
 class LlmModelRepository {
-  LlmModelRepository();
+  LlmModelRepository({http.Client? httpClient})
+      : _httpClient = httpClient ?? http.Client();
 
-  final http.Client _httpClient = http.Client();
+  final http.Client _httpClient;
 
   void dispose() {
     _httpClient.close();
@@ -52,13 +53,17 @@ class LlmModelRepository {
 
     final models = <LlmModel>[];
     for (final e in rawModels) {
-      final map = Map<String, dynamic>.of((e as Map).cast<String, dynamic>());
+      // Everything per-entry stays inside the try, and the catch is plain:
+      // a non-map entry or a wrong-typed field throws TypeError (an Error),
+      // and one odd catalog entry must never sink the whole model list.
+      Map<String, dynamic>? map;
       try {
+        map = Map<String, dynamic>.of((e as Map).cast<String, dynamic>());
         final model = provider.parseModel(map, openRouterLookup: orLookup);
         if (zdrIds != null && !zdrIds.contains(model.id)) continue;
         models.add(model);
-      } on Exception catch (err) {
-        final entryId = map['id']?.toString() ?? '<unknown>';
+      } catch (err) {
+        final entryId = map?['id']?.toString() ?? '<unknown>';
         modelsLogger.severe(
           LlmDiagnosticEvent(
             level: LlmDiagnosticLevel.error,

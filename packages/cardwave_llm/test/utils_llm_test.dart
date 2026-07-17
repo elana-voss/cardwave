@@ -15,6 +15,18 @@ Future<void> expectTokensInBand(String text, int min, int max) async {
 }
 
 void main() {
+  group('think-tag stripping', () {
+    test('mixed-case <Think> tags are stripped and extracted', () {
+      const raw = '<Think>foo</Think>reply';
+      expect(UtilsLlm.stripThinkTags(raw), 'reply');
+      expect(UtilsLlm.extractThinkContent(raw), 'foo');
+    });
+
+    test('mixed-case <Thinking> variant is stripped too', () {
+      expect(UtilsLlm.stripThinkTags('<Thinking>foo</Thinking>bar'), 'bar');
+    });
+  });
+
   group('countTokens basics', () {
     test('empty string is zero tokens', () async {
       expect(await UtilsLlm.countTokens(''), 0);

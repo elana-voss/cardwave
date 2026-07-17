@@ -70,7 +70,10 @@ class ToolDispatcher {
         final result = await tool.execute(ctx, call.arguments);
         _logToolResult(call.name, result);
         results.add(result);
-      } on Exception catch (e, st) {
+      } catch (e, st) {
+        // Plain catch: malformed model-sent args throw TypeError (an Error,
+        // not an Exception). One bad call must fail as a ToolResult the
+        // model can recover from, not abort the whole reply.
         toolsLogger.severe(
           LlmDiagnosticEvent(
             level: LlmDiagnosticLevel.error,
