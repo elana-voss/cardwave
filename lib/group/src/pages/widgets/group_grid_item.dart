@@ -291,7 +291,6 @@ class _GroupGridItemHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     // Adjacent `Expanded`/`IconButton` pair is flush (0 gap);
     // `spacing:` would add an unwanted gap.
-    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         Expanded(

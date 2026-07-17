@@ -344,7 +344,6 @@ class _GroupEmptyState extends StatelessWidget {
     return Center(
       // Non-uniform: `SizedBox(16)` and conditional `SizedBox(24)`;
       // single `spacing:` can't express both.
-      // ignore: qcheck/prefer_spacing
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

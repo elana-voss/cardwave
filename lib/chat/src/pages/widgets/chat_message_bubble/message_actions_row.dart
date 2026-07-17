@@ -52,7 +52,6 @@ class MessageActionsRow extends StatelessWidget {
     );
 
     // Non-uniform spacers (8 and 4 mixed); single `spacing:` can't express both.
-    // ignore: qcheck/prefer_spacing
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

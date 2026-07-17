@@ -117,7 +117,6 @@ class _DialogMultiSelectState extends State<DialogMultiSelect> {
       ],
       // Non-uniform: `SizedBox(16)` and conditional `SizedBox(12)`;
       // single `spacing:` can't express both.
-      // ignore: qcheck/prefer_spacing
       builder: (context, isMobile) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

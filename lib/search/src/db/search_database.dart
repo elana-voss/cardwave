@@ -204,7 +204,6 @@ class SearchDatabase extends _$SearchDatabase {
       for (var i = 0; i < blobs.length; i++) {
         // The insert runs whether or not the add-on is ready; only the mirror
         // row below is conditional, so this cannot move inside the guard.
-        // ignore: qcheck/move_variable_closer_to_its_usage
         final rowId = await into(cardVectors).insert(
           CardVectorsCompanion.insert(
             cardId: cardId,

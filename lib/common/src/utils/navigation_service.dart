@@ -489,7 +489,6 @@ class NavigationService {
         content: SingleChildScrollView(
           // Spread children carry their own `Padding(bottom: 4)`; a single
           // `spacing:` would compound with that and change effective gaps.
-          // ignore: qcheck/prefer_spacing
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

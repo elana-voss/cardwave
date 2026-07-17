@@ -330,7 +330,6 @@ class _DialogTaxonomyEditorState extends State<DialogTaxonomyEditor> {
             // wrapped over 7 lines, pushing the toolbar buttons up.
             // Single `SizedBox(8)`; other pairs in the Row are flush
             // and would gain an unwanted gap.
-            // ignore: qcheck/prefer_spacing
             Row(
               children: [
                 Expanded(
@@ -532,7 +531,6 @@ class _GroupRowBody extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     // Single `SizedBox(6)` among 4 `_CompactIcon` siblings that are
     // otherwise flush; `spacing:` would gap all of them.
-    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         IconButton(

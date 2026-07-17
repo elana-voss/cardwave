@@ -243,7 +243,6 @@ class _BranchRow extends StatelessWidget {
     final outline = Theme.of(context).colorScheme.outline;
     // `Spacer` pushes the chevron to the trailing edge; `spacing:` would
     // insert a fixed 8px gap after the Spacer and break that alignment.
-    // ignore: qcheck/prefer_spacing
     return Row(
       children: [
         Icon(icon, size: 20),

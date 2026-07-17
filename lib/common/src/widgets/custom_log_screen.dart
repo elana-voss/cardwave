@@ -228,7 +228,6 @@ class _LogEntryWidgetState extends State<_LogEntryWidget> {
         ),
         // Non-uniform: `SizedBox(4)` and a conditional `Padding(top: 8)`
         // mixed; single `spacing:` can't express both.
-        // ignore: qcheck/prefer_spacing
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

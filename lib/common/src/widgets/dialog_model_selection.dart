@@ -51,7 +51,6 @@ class DialogModelSelectionState extends State<DialogModelSelection> {
       builder: (context, isMobile) {
         // Non-uniform: `SizedBox(8)` and `SizedBox(16)` mixed; single
         // `spacing:` can't express both.
-        // ignore: qcheck/prefer_spacing
         return Column(
           children: [
             AppSearchField(

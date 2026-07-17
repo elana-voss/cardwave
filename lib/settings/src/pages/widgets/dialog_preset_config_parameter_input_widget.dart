@@ -68,7 +68,6 @@ class _DialogPresetConfigParameterInputWidgetState extends State<DialogPresetCon
       padding: const EdgeInsets.only(bottom: 8),
       // Mobile branch combines `Spacer` + `SizedBox(16)` whose effect
       // is 16px; `spacing: 16` would double the gap to 32.
-      // ignore: qcheck/prefer_spacing
       child: Row(
         children: [
           SizedBox(

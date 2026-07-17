@@ -260,7 +260,6 @@ class _ContentTab extends StatelessWidget {
               // `spacing: 8` is not equivalent here: it would also insert a gap
               // between the label and the token count, where there is none
               // today. Keeping the single SizedBox preserves the current layout.
-              // ignore: qcheck/prefer_spacing
               title: Row(
                 children: [
                   Container(
