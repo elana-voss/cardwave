@@ -48,9 +48,7 @@ void main() {
       // First entry's trailing PopupMenuButton (Icons.more_vert) — scope
       // to the AllChatsDrawerList so we don't hit a chat-bubble more_vert
       // sitting in the underlying chat view (still mounted under the
-      // drawer overlay). Two entries appear in the list because the seed character
-      // boots both a regular chat AND the editor's assistant chat;
-      // either is a valid target for the rename.
+      // drawer overlay).
       final drawerMoreVerts = find.descendant(
         of: find.byType(AllChatsDrawerList),
         matching: find.byIcon(Icons.more_vert),
@@ -92,8 +90,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Underlying use case: the renamed chat persisted to the index on
-      // disk — the freshly-loaded list still shows the new name. The
-      // OTHER chat (the assistant chat) keeps its original name.
+      // disk — the freshly-loaded list still shows the new name.
       expect(
         find.text(newName),
         findsOneWidget,

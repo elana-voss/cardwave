@@ -139,7 +139,6 @@ const _$ThemeStyleEnumEnumMap = {
 const _$LlmProviderDomainEnumEnumMap = {
   LlmProviderDomainEnum.chat: 'chat',
   LlmProviderDomainEnum.system: 'system',
-  LlmProviderDomainEnum.assistant: 'assistant',
   LlmProviderDomainEnum.image: 'image',
   LlmProviderDomainEnum.audioTts: 'audioTts',
   LlmProviderDomainEnum.audioMusic: 'audioMusic',

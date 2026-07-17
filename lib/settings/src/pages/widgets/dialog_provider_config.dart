@@ -126,7 +126,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
   bool get _zdrDirty => _isEdit && _requireZdr != _profile.requireZdr;
 
-  /// App-domain roles (Chat, Assistant, Image, …) currently backed by one of
+  /// App-domain roles (Chat, System, Image, …) currently backed by one of
   /// this provider's presets. Non-empty means the provider can't be deleted —
   /// a feature still points at it. Drives both the hidden Delete button and
   /// the reason hint shown in its place.
@@ -341,7 +341,7 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
 }
 
-/// "Chat", "Chat and Assistant", "Chat, Assistant and Image".
+/// "Chat", "Chat and System", "Chat, System and Image".
 String _joinRoles(List<String> roles) => roles.length == 1
     ? roles.first
     : '${roles.sublist(0, roles.length - 1).join(', ')} and ${roles.last}';

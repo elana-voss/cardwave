@@ -79,9 +79,9 @@ class AppSettings {
 
   ChatTheme chatTheme;
 
-  /// Default preset id per non-media domain (`chat`, `assistant`, `system`).
+  /// Default preset id per non-media domain (`chat`, `system`).
   /// Media-domain preset ids live on [configMedia] instead — keep the two
-  /// stores aligned with each domain's natural surface (chat/assistant/system
+  /// stores aligned with each domain's natural surface (chat/system
   /// have no aspect/voice/etc. so a flat map fits; media domains carry
   /// secondary fields that benefit from the per-layer config-class shape).
   /// Missing entries mean the user has no preset for that domain yet.
@@ -186,7 +186,7 @@ class AppSettings {
 
   /// Reads the app-layer default preset id for [domain]. Routes media
   /// domains (image / video / audioTts) to [configMedia] and non-media
-  /// domains (chat / assistant / system) to [domainPresetIds]. Returns
+  /// domains (chat / system) to [domainPresetIds]. Returns
   /// null when no preset is set for that domain at the app layer.
   String? getAppDomainPresetId(LlmProviderDomainEnum domain) {
     switch (domain) {
@@ -197,7 +197,6 @@ class AppSettings {
       case LlmProviderDomainEnum.audioTts:
         return configMedia?.ttsPresetId;
       case LlmProviderDomainEnum.chat:
-      case LlmProviderDomainEnum.assistant:
       case LlmProviderDomainEnum.system:
       case LlmProviderDomainEnum.audioMusic:
         return domainPresetIds[domain];
@@ -206,7 +205,7 @@ class AppSettings {
 
   /// Writes the app-layer default preset id for [domain]. Routes media
   /// domains (image / video / audioTts) to [configMedia] (allocating it
-  /// if null) and other domains (chat / assistant / system / audioMusic)
+  /// if null) and other domains (chat / system / audioMusic)
   /// to [domainPresetIds]. Pass `null` to clear the domain.
   void setAppDomainPresetId(LlmProviderDomainEnum domain, String? presetId) {
     switch (domain) {
@@ -217,7 +216,6 @@ class AppSettings {
       case LlmProviderDomainEnum.audioTts:
         (configMedia ??= ConfigMediaApp()).ttsPresetId = presetId;
       case LlmProviderDomainEnum.chat:
-      case LlmProviderDomainEnum.assistant:
       case LlmProviderDomainEnum.system:
       case LlmProviderDomainEnum.audioMusic:
         if (presetId == null) {
@@ -229,8 +227,8 @@ class AppSettings {
   }
 
   /// Snapshot of every preset id currently assigned at the app layer,
-  /// across all domains (image / video / TTS plus chat / assistant /
-  /// system / audio-music). Used by the settings dialogs' "is this
+  /// across all domains (image / video / TTS plus chat / system /
+  /// audio-music). Used by the settings dialogs' "is this
   /// provider/preset in active use?" lock checks and by the preset-edit
   /// route's "active domains" display.
   Set<String> get activeAppDomainPresetIds => {

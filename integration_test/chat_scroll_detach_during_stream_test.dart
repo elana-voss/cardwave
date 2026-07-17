@@ -63,7 +63,6 @@ void main() {
         ],
         domainPresetIds: const {
           LlmProviderDomainEnum.chat: presetId,
-          LlmProviderDomainEnum.assistant: presetId,
         },
         refreshPolicy: ModelRefreshPolicyEnum.never,
       );

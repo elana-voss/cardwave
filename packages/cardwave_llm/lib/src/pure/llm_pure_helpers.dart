@@ -344,7 +344,6 @@ class LlmPureHelpers {
     switch (domain) {
       case LlmProviderDomainEnum.chat:
       case LlmProviderDomainEnum.system:
-      case LlmProviderDomainEnum.assistant:
         return LlmModelCapabilitiesEnum.text;
       case LlmProviderDomainEnum.image:
         return LlmModelCapabilitiesEnum.image;

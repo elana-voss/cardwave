@@ -252,7 +252,7 @@ class OnboardingController extends ChangeNotifier {
       // short-circuits for localGguf, but its preset-seeding step
       // (`_seedDefaultDomainPresetsIfEmpty`) is still required. Without
       // it the new profile shows up in providerConfigs but has no
-      // chat/assistant/system preset assigned, and the user lands on
+      // chat/system preset assigned, and the user lands on
       // an empty chat after finishing onboarding. Same call the
       // Settings "Add Local GGUF" flow makes via `applyProviderAdd`.
       final localProfile = localGgufProfile!;

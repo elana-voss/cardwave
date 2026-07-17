@@ -1,7 +1,6 @@
 enum LlmProviderDomainEnum {
   chat,
   system,
-  assistant,
   image,
   audioTts,
   audioMusic,
@@ -15,8 +14,6 @@ extension LlmProviderDomainEnumExtension on LlmProviderDomainEnum {
         return 1;
       case LlmProviderDomainEnum.system:
         return 0.1;
-      case LlmProviderDomainEnum.assistant:
-        return 0.7;
       case LlmProviderDomainEnum.image:
       case LlmProviderDomainEnum.audioTts:
       case LlmProviderDomainEnum.audioMusic:
@@ -26,7 +23,7 @@ extension LlmProviderDomainEnumExtension on LlmProviderDomainEnum {
   }
 
   /// Domains the user may leave unassigned (no feature hard-depends on them).
-  /// Chat/system/assistant always auto-fill to the first valid preset.
+  /// Chat/system always auto-fill to the first valid preset.
   bool get isOptional {
     switch (this) {
       case LlmProviderDomainEnum.image:
@@ -36,7 +33,6 @@ extension LlmProviderDomainEnumExtension on LlmProviderDomainEnum {
         return true;
       case LlmProviderDomainEnum.chat:
       case LlmProviderDomainEnum.system:
-      case LlmProviderDomainEnum.assistant:
         return false;
     }
   }
@@ -47,8 +43,6 @@ extension LlmProviderDomainEnumExtension on LlmProviderDomainEnum {
         return 'Chat';
       case LlmProviderDomainEnum.system:
         return 'System';
-      case LlmProviderDomainEnum.assistant:
-        return 'Assistant';
       case LlmProviderDomainEnum.image:
         return 'Image';
       case LlmProviderDomainEnum.audioTts:

@@ -87,7 +87,7 @@ void main() {
       // fetches providers in parallel, so seeding order in the
       // recovery file does NOT decide which provider claims app
       // defaults — observed in practice: NanoGPT often finishes first
-      // and claims chat / assistant / system / image / video / TTS.
+      // and claims chat / system / image / video / TTS.
       // The test is about image-domain fallback; if any other domain
       // is set to a NanoGPT preset, deleting NanoGPT later orphans
       // the chat's modelPresetId and surfaces an "Active AI connection

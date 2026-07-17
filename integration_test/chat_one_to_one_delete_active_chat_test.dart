@@ -103,8 +103,7 @@ void main() {
 
       // Underlying use case: controller auto-loads chat A (the next
       // regular chat by lastActive) — user is not stuck on a deleted or
-      // null session, and the assistant chat is correctly skipped by the
-      // isAssistant filter even though it has its own lastActive.
+      // null session.
       final reloaded = tester
           .element(find.byType(ChatView))
           .read<BaseChatViewController>();

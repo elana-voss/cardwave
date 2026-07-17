@@ -74,7 +74,6 @@ void main() {
         // The system domain drives memory extraction; chat drives replies.
         domainPresetIds: const {
           LlmProviderDomainEnum.chat: presetId,
-          LlmProviderDomainEnum.assistant: presetId,
           LlmProviderDomainEnum.system: presetId,
         },
         refreshPolicy: ModelRefreshPolicyEnum.never,

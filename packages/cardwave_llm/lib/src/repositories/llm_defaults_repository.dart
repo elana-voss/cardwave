@@ -5,7 +5,7 @@ import 'package:cardwave_llm/src/models/llm_provider_enum.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 /// The "best model" defaults per provider and per domain (chat / system /
-/// assistant / image / speech / video), loaded once from a bundled JSON asset
+/// image / speech / video), loaded once from a bundled JSON asset
 /// so they can be hand-edited (and later script-updated) without touching Dart.
 ///
 /// The JSON is keyed by [LLMProviderEnum.name] then [LlmProviderDomainEnum.name].
