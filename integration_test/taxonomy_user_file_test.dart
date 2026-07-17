@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
@@ -59,7 +58,7 @@ void main() {
           customJson,
         );
       } else {
-        final dir = await getApplicationDocumentsDirectory();
+        final dir = await appDataDir();
         final userFile = File(
           '${dir.path}${Platform.pathSeparator}'
           '${AppConstants.taxonomyFileName}',

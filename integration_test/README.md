@@ -78,7 +78,14 @@ Or run the test on a real device — `flutter test integration_test/video_genera
 
 `app_test_helpers.dart`:
 
-- `wipeAppData()` clears `getApplicationDocumentsDirectory()` so each test starts fresh.
+- `wipeAppData()` clears `appDataDir()` so each test starts fresh. On Android/iOS that is the app's own documents directory (disposable). **On Windows/desktop the suite refuses to run unless `CARDWAVE_APPDATA_DIR` points at a disposable sandbox folder** — without the guard it would wipe the contents of your real `Documents` folder. The app honours the same variable (plus `CARDWAVE_LIBRARY_DIR` for the default card library), so app and tests share one sandbox; delete the folder to reset. Windows runs also need `GGML_VK_DISABLE_COOPMAT=1` and `GGML_VK_DISABLE_COOPMAT2=1`, and stale `cardwave.exe` processes killed first. Example:
+
+  ```powershell
+  Get-Process cardwave -ErrorAction SilentlyContinue | Stop-Process -Force
+  $env:CARDWAVE_APPDATA_DIR = "$PWD\.sandbox\appdata"
+  $env:GGML_VK_DISABLE_COOPMAT = '1'; $env:GGML_VK_DISABLE_COOPMAT2 = '1'
+  flutter test integration_test/grid_search_filter_test.dart -d windows
+  ```
 - `seedGrokRecovery()` writes `llm-providers-recovery.json` with the Grok key + a character path. The app's `SettingsService.init` finds no `cardwave_settings.json` but a valid recovery file, seeds the Grok provider, and flips `_needsRebuildFromRecovery=true`. `MyApp`'s first-frame callback then fetches Grok models, assigns default domain presets, and saves settings. End state: fully configured app with Grok ready to chat, onboarding skipped. No production code changes.
 - `awaitAppReady(tester)` polls `SettingsService.isLoading` since `pumpAndSettle` alone won't wait for in-flight HTTP.
 - `grokApiKey` / `runVideo` / `hasGrokKey` are the `--dart-define`-backed flags.

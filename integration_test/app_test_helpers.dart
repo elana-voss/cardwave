@@ -46,6 +46,33 @@ bool get hasGrokKey => grokApiKey.isNotEmpty;
 /// two-provider matrix should also gate on this.
 bool get hasNanogptKey => nanogptApiKey.isNotEmpty;
 
+/// Resolves the directory the suite treats as the app-data root: settings,
+/// the recovery file, and seeded cards all go here, and [wipeAppData]
+/// clears it. Every test-side disk access must go through this — never
+/// call `getApplicationDocumentsDirectory()` directly.
+///
+/// On Android/iOS this is the app's own (disposable) documents directory,
+/// which is also what `getNativeAppDataPath` returns there, so tests and
+/// app agree on one folder. On desktop, path_provider's documents
+/// directory is the user's REAL Documents folder — wiping it destroys
+/// their data — so desktop runs REQUIRE the `CARDWAVE_APPDATA_DIR`
+/// sandbox override (which `getNativeAppDataPath` honours too, keeping
+/// tests and app aligned on the same disposable folder).
+Future<Directory> appDataDir() async {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    final override = Platform.environment[kAppDataDirEnvVar];
+    if (override == null || override.isEmpty) {
+      throw StateError(
+        'Desktop integration runs need $kAppDataDirEnvVar set to a '
+        'disposable folder — without it wipeAppData() would delete the '
+        'contents of your real Documents folder.',
+      );
+    }
+    return Directory(override).create(recursive: true);
+  }
+  return getApplicationDocumentsDirectory();
+}
+
 /// Deletes every file in the app data directory so each test starts from
 /// a fresh-install state. The directory itself stays so path_provider's
 /// returned path remains valid. On Android, also wipes the sibling
@@ -68,7 +95,7 @@ Future<void> wipeAppData() async {
     return;
   }
 
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await appDataDir();
   if (!dir.existsSync()) return;
   for (final entity in dir.listSync()) {
     try {
@@ -119,7 +146,7 @@ Future<bool> seedGrokRecovery() async {
     );
     return true;
   }
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await appDataDir();
   final recoveryFile = File(
     '${dir.path}${Platform.pathSeparator}'
     '${AppConstants.llmProvidersRecoveryFileName}',
@@ -174,7 +201,7 @@ Future<bool> seedGrokAndNanogptRecovery() async {
     );
     return true;
   }
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await appDataDir();
   final recoveryFile = File(
     '${dir.path}${Platform.pathSeparator}'
     '${AppConstants.llmProvidersRecoveryFileName}',
@@ -213,7 +240,7 @@ Future<void> seedOnboardingComplete() async {
     );
     return;
   }
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await appDataDir();
   final settings = AppSettings(
     characterPath: dir.path,
     onboardingComplete: true,
@@ -244,7 +271,7 @@ Future<void> seedBundledCard(String filename) async {
     );
     return;
   }
-  final dir = await getApplicationDocumentsDirectory();
+  final dir = await appDataDir();
   final cardFile = File('${dir.path}${Platform.pathSeparator}$filename');
   await cardFile.writeAsBytes(bytes);
 }

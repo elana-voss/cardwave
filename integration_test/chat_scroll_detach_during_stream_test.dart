@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:genkit/genkit.dart' as gk;
 import 'package:integration_test/integration_test.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
@@ -42,7 +41,7 @@ void main() {
       // Web has no real filesystem; seed settings through AppStorage
       // (IndexedDB) instead of a dart:io file, same as app_test_helpers.
       final docsPath =
-          kIsWeb ? '' : (await getApplicationDocumentsDirectory()).path;
+          kIsWeb ? '' : (await appDataDir()).path;
       const presetId = 'fake-preset';
       final settings = AppSettings(
         characterPath: docsPath,

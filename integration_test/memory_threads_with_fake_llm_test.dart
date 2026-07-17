@@ -14,7 +14,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:genkit/genkit.dart' as gk;
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:schemantic/schemantic.dart';
 
@@ -50,7 +49,7 @@ void main() {
       const presetId = 'fake-preset';
       const modelId = 'fake-model';
       const providerId = 'fake-provider';
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await appDataDir();
       final settings = AppSettings(
         characterPath: dir.path,
         onboardingComplete: true,
