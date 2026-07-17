@@ -70,3 +70,10 @@ tools/chromedriver/chromedriver.exe
 # Name-database build artifacts — reproducible from corpora + scripts.
 tools/generate_names/.cache/
 tools/generate_names/.progress
+
+# Disposable fresh-install sandbox for the "(Debug & Sandbox)" launch config
+# and Windows integration runs (CARDWAVE_APPDATA_DIR / CARDWAVE_LIBRARY_DIR).
+.sandbox/
+
+# Local-only work logs / notes — kept out of the repo but trackable on this machine.
+docs-local/

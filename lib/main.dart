@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:cardwave/app_router.dart';
@@ -94,62 +92,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
     unawaited(_initServices());
   }
 
-  // `bool.fromEnvironment` only accepts the literal strings "true"/"false" —
-  // `--dart-define=FRESH=1` would silently evaluate to false. Use String
-  // detection so any non-empty value activates the flag.
-  static const bool _freshReset =
-      bool.hasEnvironment('FRESH') &&
-      String.fromEnvironment('FRESH') != '' &&
-      String.fromEnvironment('FRESH') != 'false' &&
-      String.fromEnvironment('FRESH') != '0';
-
-  /// Debug-only fresh reset: wipes the app data folder and the in-character
-  /// cache subfolder so the next launch starts at onboarding. The user's
-  /// character folder itself and any PNG/JSON files inside it are never
-  /// touched. Release builds ignore this flag entirely.
-  ///
-  /// Activated by launching with `--dart-define=FRESH=1` (see the
-  /// "Flutter Windows (Debug & Fresh)" entry in `.vscode/launch.json`).
-  Future<void> _maybeFreshReset(String appDataPath) async {
-    if (!kDebugMode || !_freshReset) return;
-
-    debugPrint('[FRESH] resetting app state');
-
-    // 1. Read settings.json directly (without booting SettingsService) to
-    //    discover the user's character folder, so we can wipe its cache
-    //    subfolder before deleting the settings file itself.
-    final settingsFile = File(
-      '$appDataPath${Platform.pathSeparator}${AppConstants.settingsFileName}',
-    );
-    String? characterPath;
-    if (settingsFile.existsSync()) {
-      try {
-        final map =
-            jsonDecode(await settingsFile.readAsString())
-                as Map<String, dynamic>;
-        characterPath = map['character_path'] as String?;
-      } on Exception catch (e) {
-        debugPrint('[FRESH] failed to read settings.json: $e');
-      }
-    }
-
-    if (characterPath != null && characterPath.isNotEmpty) {
-      final cacheRoot = Directory(
-        '$characterPath${Platform.pathSeparator}${AppConstants.customCacheRootPath}',
-      );
-      if (cacheRoot.existsSync()) {
-        debugPrint('[FRESH] deleting cache: ${cacheRoot.path}');
-        await cacheRoot.delete(recursive: true);
-      }
-    }
-
-    final appDataDir = Directory(appDataPath);
-    if (appDataDir.existsSync()) {
-      debugPrint('[FRESH] deleting app data: ${appDataDir.path}');
-      await appDataDir.delete(recursive: true);
-    }
-  }
-
   Future<void> _initServices() async {
     try {
       _loggingService = LoggingService();
@@ -200,8 +142,6 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
       final nativeDataPath =
           await getNativeAppDataPath(AppConstants.appPackageName);
-
-      await _maybeFreshReset(nativeDataPath);
 
       _settingsService = SettingsService();
       await _settingsService.init(nativeDataPath);

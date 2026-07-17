@@ -2,7 +2,19 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+/// Overrides the app-data (settings) folder when set to a non-empty path.
+/// Lets a dev or test run point the app at a disposable sandbox instead of
+/// the real `%APPDATA%` folder. See `.vscode/launch.json` "(Sandbox)".
+const String kAppDataDirEnvVar = 'CARDWAVE_APPDATA_DIR';
+
+/// Overrides the *default* character-library folder when set to a non-empty
+/// path. Only consulted while `settings.json` has no `character_path` yet
+/// (fresh install / onboarding), same as the normal Documents default.
+const String kLibraryDirEnvVar = 'CARDWAVE_LIBRARY_DIR';
+
 Future<String> getNativeAppDataPath(String appName) async {
+  final override = Platform.environment[kAppDataDirEnvVar];
+  if (override != null && override.isNotEmpty) return override;
   if (Platform.isWindows) {
     final appData = Platform.environment['APPDATA'];
     if (appData != null) {
@@ -17,6 +29,8 @@ Future<String> getNativeAppDataPath(String appName) async {
 }
 
 Future<String> getNativeDefaultCharacterPath(String appName) async {
+  final override = Platform.environment[kLibraryDirEnvVar];
+  if (override != null && override.isNotEmpty) return override;
   String? docPath;
   if (Platform.isWindows) {
     final userProfile = Platform.environment['USERPROFILE'];
