@@ -8,15 +8,14 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// Group chat smoke. Covers: navigate to group grid, create new group,
-/// add Cass as the single member, send message, assert reply. With only
-/// one group member available (Cass is the bundled asset), this tests the
-/// group-prompt path without multi-character activation complexity. One
-/// chat API call.
+/// add the seed character as the single member, send message, assert
+/// reply. With only one group member seeded, this tests the group-prompt
+/// path without multi-character activation complexity. One chat API call.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'Group chat smoke — create group, add Cass, send',
+    'Group chat smoke — create group, add a character, send',
     timeout: const Timeout(Duration(minutes: 3)),
     (tester) async {
       if (!hasGrokKey) {
@@ -25,6 +24,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -64,8 +64,8 @@ void main() {
       await tester.tap(find.byKey(const Key('group-add-character-drawer')));
       await tester.pumpAndSettle();
 
-      // GroupCharacterPicker is open. Tap the Cass row, then "Add 1".
-      // First ListTile inside the picker dialog is Cass.
+      // GroupCharacterPicker is open. Tap the seed character's row, then
+      // "Add 1". First ListTile inside the picker dialog is the seed card.
       await tester.tap(find.byType(ListTile).first);
       await tester.pump();
       await tester.tap(find.textContaining('Add 1'));

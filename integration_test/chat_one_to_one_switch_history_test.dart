@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// Switch back to a historical chat via the All Chats drawer entry.
-/// Sets up two chats for Cass: chat A holds a user turn + reply
+/// Sets up two chats for the seed character: chat A holds a user turn + reply
 /// (3 messages), chat B is fresh from "Keep Current" (1 greeting).
 /// Opens the drawer → All Chats list, taps the entry with the
 /// '3 messages' subtitle, and asserts the controller now holds
@@ -31,13 +31,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // ─── Chat A: greeting + user + reply ────────────────────────────

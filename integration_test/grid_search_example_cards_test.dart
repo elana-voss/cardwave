@@ -11,12 +11,12 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 // The grid is virtualized (off-viewport tiles aren't mounted), so widget
-// counts for the unfiltered ten-card pool would only show the ~4 visible
+// counts for the unfiltered nine-card pool would only show the ~4 visible
 // rows. Assert membership via FilterController.filteredCount for the full
 // pool; widget-count assertions only apply to small filtered result sets.
 
 /// Calibration probe for the search pipeline. Seeds nine diverse cards
-/// (plus Cass) and runs a battery of queries: tight literal-token cutoffs
+/// and runs a battery of queries: tight literal-token cutoffs
 /// (each query should match exactly one card), discovery probes (a
 /// near-synonym query that no card contains literally), and a nonsense
 /// query (no admission at all). Failures here mean the threshold or the
@@ -75,7 +75,7 @@ void main() {
       while (DateTime.now().isBefore(deadline)) {
         await tester.pump(const Duration(milliseconds: 500));
         final paths = await characterService.allCardPaths();
-        if (paths.length < 10) continue;
+        if (paths.length < kExampleCardFilenames.length) continue;
         final fully = paths.every((path) {
           final hashes = searchService.fieldHashesFor(path);
           return hashes != null &&
@@ -89,14 +89,14 @@ void main() {
       expect(
         allIndexed,
         isTrue,
-        reason: 'all ten cards should be fully indexed before query probes',
+        reason: 'all nine cards should be fully indexed before query probes',
       );
 
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(
         filterController.filteredCount,
-        equals(10),
-        reason: 'seed + auto-copy should put ten cards in the filter pool',
+        equals(kExampleCardFilenames.length),
+        reason: 'the seed should put all nine cards in the filter pool',
       );
 
       // Helper: type a query, wait for debounce + rank, return the count
@@ -198,8 +198,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
       expect(
         filterController.filteredCount,
-        equals(10),
-        reason: 'clearing the search restores the full ten-card pool',
+        equals(kExampleCardFilenames.length),
+        reason: 'clearing the search restores the full nine-card pool',
       );
     },
   );

@@ -12,7 +12,7 @@ import 'app_test_helpers.dart';
 
 /// Stale-preset fallback. Setup: seed Grok + NanoGPT in the recovery
 /// file (Grok first so it claims the image-domain app default). Open
-/// Cass chat, drawer-pick a NanoGPT image preset (writes a session-layer
+/// the seed character's chat, drawer-pick a NanoGPT image preset (writes a session-layer
 /// override different from the app default), send a short message so the
 /// session JSON flushes to disk with the override present. Pop back to
 /// grid, delete the NanoGPT provider via AI Settings, re-enter the
@@ -45,6 +45,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokAndNanogptRecovery();
 
       app.main();
@@ -118,8 +119,8 @@ void main() {
       );
       final nanogptImagePresetId = nanogptImagePresets.first.config.id;
 
-      // Enter Cass chat.
-      await tester.tap(findCharacterTile(kCassName));
+      // Enter the seed character's chat.
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final chatContext = tester.element(find.byType(ChatView));
@@ -227,10 +228,10 @@ void main() {
       // lines emitted during the upcoming re-entry.
       final logsBefore = LoggingService().logsNotifier.value.length;
 
-      // Re-enter Cass chat. New ChatController constructs →
+      // Re-enter the seed character's chat. New ChatController constructs →
       // validateConfigMediaSession + validateConfigMediaCharacter run
       // → stale NanoGPT id is nulled in memory.
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Re-read controller / session — the new ChatController may hold

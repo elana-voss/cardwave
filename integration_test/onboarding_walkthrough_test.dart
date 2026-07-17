@@ -7,10 +7,12 @@ import 'package:integration_test/integration_test.dart';
 
 import 'app_test_helpers.dart';
 
-/// Onboarding walkthrough test. Skips the seed so the fresh-install
-/// flow is exercised: type Grok key, finish, verify the app lands on
-/// the character grid with onboardingComplete flipped true. Proves the
-/// onboarding → settings → first-launch pipeline works end-to-end.
+/// Onboarding walkthrough test. Skips the recovery seed so the
+/// fresh-install flow is exercised: type Grok key, finish, verify the app
+/// lands on the character grid with onboardingComplete flipped true.
+/// Proves the onboarding → settings → first-launch pipeline works
+/// end-to-end. A character card IS seeded — the library is empty on a
+/// fresh install, and the landing assertion needs a tile to find.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -24,6 +26,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       // Intentionally NO seedGrokRecovery — we want to drive onboarding.
 
       app.main();

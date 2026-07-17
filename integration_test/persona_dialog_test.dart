@@ -28,6 +28,7 @@ void main() {
     timeout: const Timeout(Duration(minutes: 1)),
     (tester) async {
       await wipeAppData();
+      await seedTestCharacter();
       await seedOnboardingComplete();
 
       app.main();
@@ -36,7 +37,7 @@ void main() {
 
       // Enter the chat workspace — the persona button lives on the chat
       // drawer's title row.
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final settings = tester

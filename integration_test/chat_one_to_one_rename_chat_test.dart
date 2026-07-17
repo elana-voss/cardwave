@@ -28,13 +28,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // ─── Drawer → All Chats ─────────────────────────────────────────
@@ -47,7 +48,7 @@ void main() {
       // First entry's trailing PopupMenuButton (Icons.more_vert) — scope
       // to the AllChatsDrawerList so we don't hit a chat-bubble more_vert
       // sitting in the underlying chat view (still mounted under the
-      // drawer overlay). Two entries appear in the list because Cass
+      // drawer overlay). Two entries appear in the list because the seed character
       // boots both a regular chat AND the editor's assistant chat;
       // either is a valid target for the rename.
       final drawerMoreVerts = find.descendant(

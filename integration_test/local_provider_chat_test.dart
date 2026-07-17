@@ -14,7 +14,7 @@ import 'helpers/local_llm_test_backend.dart';
 /// End-to-end: add a Local OpenAI-compatible provider, create a preset
 /// for its model (which auto-assigns to chat domain via
 /// TileProviderProfile._openPresetEditor's putIfAbsent loop), enter a
-/// chat with Cass, send a message, verify the reply lands.
+/// chat with the seed character, send a message, verify the reply lands.
 ///
 /// Backend selectable via LOCAL_LLM_BASE_URL — defaults to in-process
 /// mock server. The mock streams a canned 'hello world' reply in OpenAI
@@ -38,10 +38,10 @@ void main() {
 
       await wipeAppData();
       await seedOnboardingComplete();
-      // Seed Test Character (lighter personality than Cass) so the chat
-      // prompt is small enough that real local backends finish generating
-      // within the test timeout. Cass's card alone balloons the prompt to
-      // ~3300 tokens; Test Character's is closer to ~100.
+      // Test Character has a light personality (~100 prompt tokens), so
+      // the chat prompt stays small enough that real local backends finish
+      // generating within the test timeout. A content-heavy card would
+      // balloon the prompt into the thousands of tokens.
       await seedTestCharacter();
 
       app.main();
@@ -167,19 +167,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // ─────────────────────────────────────────────────────────────
-      // STEP 4: enter Test Character's chat and send a message. Pick the
-      // non-Cass card via CharacterService — Cass's heavy personality
-      // would blow the prompt past what a 13B GGUF can chew through in
+      // STEP 4: enter Test Character's chat and send a message. Its light
+      // card keeps the prompt inside what a 13B GGUF can chew through in
       // a reasonable time on consumer hardware.
       // ─────────────────────────────────────────────────────────────
       final cs = tester
           .element(find.byType(MaterialApp))
           .read<CharacterService>();
-      final testCharFile = (await cs.loadAll()).firstWhere(
-        (f) => f.card.displayName != kCassName,
-        orElse: () =>
-            throw StateError('seedTestCharacter should have placed a 2nd card'),
-      );
+      final testCharFile = (await cs.loadByName(kSeedCharacterName))!;
       await tester.tap(findCharacterTile(testCharFile.card.displayName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 

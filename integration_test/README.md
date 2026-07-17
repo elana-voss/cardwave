@@ -54,7 +54,7 @@ media_kit: Enforcing S/W rendering.
 To verify the file is actually a playable video, pull it off the emulator and open in VLC:
 
 ```
-adb pull /data/data/com.example.cardwave/files/.cache_cardwave_dev/characters/Cass_Assistant/chats/<chat-id>/video/vid_*.mp4
+adb pull /data/data/com.example.cardwave/files/.cache_cardwave_dev/characters/Test_Character/chats/<chat-id>/video/vid_*.mp4
 ```
 
 Or run the test on a real device — `flutter test integration_test/video_generation_test.dart -d <device-id>`.
@@ -66,10 +66,10 @@ Or run the test on a real device — `flutter test integration_test/video_genera
 | `settings_round_trip_test.dart` | JSON persistence end-to-end, app boots | 0 |
 | `onboarding_walkthrough_test.dart` | Type key in onboarding, land on grid | 1 chat |
 | `chat_one_to_one_test.dart` | Tap card, send, receive reply | 1 chat |
-| `chat_group_test.dart` | Create group, add Cass, send, receive | 1 chat |
+| `chat_group_test.dart` | Create group, add the seed character, send, receive | 1 chat |
 | `tts_test.dart` | Chat reply + TTS play button | 1 chat + 1 TTS |
 | `image_generation_test.dart` | Magic wand → free prompt image | 1 image |
-| `auto_tag_test.dart` | Grid card popupmenu → Auto-Tag → Cass's `appCardTags` populated with valid taxonomy IDs (structured-output round-trip) | 1 system-domain LLM call |
+| `auto_tag_test.dart` | Grid card popupmenu → Auto-Tag → the seed card's `appCardTags` populated with valid taxonomy IDs (structured-output round-trip) | 1 system-domain LLM call |
 | `video_generation_test.dart` | Magic wand → free prompt video (opt-in) | 1 video |
 | `media_config_fallback_test.dart` | Stale-preset fallback: pick NanoGPT image preset on session, delete NanoGPT, re-enter chat, image still generates against Grok app default | 1 chat + 1 image (needs NANOGPT_API_KEY) |
 | `character_media_config_fallback_test.dart` | Same fallback at the character layer: pick NanoGPT image preset in the editor's Media tab, delete NanoGPT, reopen editor, validator nulls the stale id | 0 (needs NANOGPT_API_KEY) |

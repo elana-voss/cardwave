@@ -189,11 +189,11 @@ Future<bool> seedGrokAndNanogptRecovery() async {
 
 /// Writes a minimal `cardwave_settings.json` that marks onboarding
 /// complete and points `character_path` at the documents directory. App
-/// boots straight to the grid (Cass is auto-copied by
-/// `CharacterService.loadCharacters` regardless of recovery state). Use
-/// when the test doesn't need any LLM provider pre-configured — the
-/// local-provider tests in particular drive the add-provider UI flow
-/// themselves rather than seeding via recovery.
+/// boots straight to the grid — nothing is copied into the library
+/// automatically, so seed a card separately. Use when the test doesn't
+/// need any LLM provider pre-configured — the local-provider tests in
+/// particular drive the add-provider UI flow themselves rather than
+/// seeding via recovery.
 ///
 /// Construct via the typed [AppSettings] model + `toJson()` so the
 /// serialized shape always matches the current schema. A hand-rolled
@@ -224,16 +224,13 @@ Future<void> seedOnboardingComplete() async {
   await settingsFile.writeAsString(jsonEncode(settings.toJson()));
 }
 
-/// Copies the bundled Test_Character.png from `assets/test_cards/` into
-/// the documents directory so the grid boots with TWO characters
-/// (Cass + Test Character). Cass is auto-copied by `_copyDefaultAssistant`
-/// on first launch; Test Character is NOT — it's only present when the
-/// test explicitly seeds it. Call AFTER `wipeAppData` and BEFORE
-/// `app.main()` so CharacterService picks it up on the initial scan.
-Future<void> seedTestCharacter() async {
-  final byteData = await rootBundle.load(
-    'assets/test_cards/Test_Character.png',
-  );
+/// Copies one bundled card out of `assets/test_cards/` into the documents
+/// directory under its own filename. Nothing is auto-copied into the
+/// library, so the grid boots empty unless a test seeds it. Call AFTER
+/// `wipeAppData` and BEFORE `app.main()` so CharacterService picks the
+/// card up on its initial scan.
+Future<void> seedBundledCard(String filename) async {
+  final byteData = await rootBundle.load('assets/test_cards/$filename');
   final bytes = byteData.buffer.asUint8List(
     byteData.offsetInBytes,
     byteData.lengthInBytes,
@@ -242,17 +239,24 @@ Future<void> seedTestCharacter() async {
     await AppStorage.instance.init((_) => '');
     await AppStorage.instance.writeBytes(
       StorageDomainEnum.cards,
-      'Test_Character.png',
+      filename,
       bytes,
     );
     return;
   }
   final dir = await getApplicationDocumentsDirectory();
-  final cardFile = File(
-    '${dir.path}${Platform.pathSeparator}Test_Character.png',
-  );
+  final cardFile = File('${dir.path}${Platform.pathSeparator}$filename');
   await cardFile.writeAsBytes(bytes);
 }
+
+/// Seeds the universal seed character ([kSeedCharacterName]). Most tests
+/// need exactly one card on the grid and this is it.
+Future<void> seedTestCharacter() => seedBundledCard('Test_Character.png');
+
+/// Seeds a second, content-rich card for tests that need two characters
+/// on the grid (group rosters, character switching). Its display name is
+/// [kSecondCharacterName].
+Future<void> seedSecondCharacter() => seedBundledCard('Ada_Lovelace.png');
 
 /// Copies the bundled Vietnamese_Desc_Character.png — a card whose
 /// `description` mentions "Vietnamese" but whose `name`, `tags`,
@@ -263,31 +267,10 @@ Future<void> seedTestCharacter() async {
 /// Authoring contract for the bundled PNG:
 ///   - description: must contain the literal word "Vietnamese"
 ///   - name, tags, personality, scenario: must NOT contain "Vietnamese"
-///   - name should be visibly distinct from "Cass | Assistant" so the
-///     test can assert the first grid tile is not Cass.
-Future<void> seedVietnameseDescriptionCharacter() async {
-  final byteData = await rootBundle.load(
-    'assets/test_cards/Vietnamese_Desc_Character.png',
-  );
-  final bytes = byteData.buffer.asUint8List(
-    byteData.offsetInBytes,
-    byteData.lengthInBytes,
-  );
-  if (kIsWeb) {
-    await AppStorage.instance.init((_) => '');
-    await AppStorage.instance.writeBytes(
-      StorageDomainEnum.cards,
-      'Vietnamese_Desc_Character.png',
-      bytes,
-    );
-    return;
-  }
-  final dir = await getApplicationDocumentsDirectory();
-  final cardFile = File(
-    '${dir.path}${Platform.pathSeparator}Vietnamese_Desc_Character.png',
-  );
-  await cardFile.writeAsBytes(bytes);
-}
+///   - name should be visibly distinct from the other seeded card so the
+///     test can assert which grid tile survived the query.
+Future<void> seedVietnameseDescriptionCharacter() =>
+    seedBundledCard('Vietnamese_Desc_Character.png');
 
 /// Filenames of the diverse example cards bundled under
 /// `assets/test_cards/` for search calibration. Distinct personas spanning
@@ -308,44 +291,23 @@ const List<String> kExampleCardFilenames = [
 
 /// Copies all nine example cards into the documents directory so a single
 /// test can exercise queries against a diverse pool. Opt-in only — no
-/// other helper or auto-seed pulls this in. Combined with the
-/// auto-copied Cass, a test that calls this ends up with ten cards on
-/// the grid. Call AFTER `wipeAppData` and BEFORE `app.main()`.
+/// other helper pulls this in. Nothing else is seeded automatically, so a
+/// test that calls this alone ends up with exactly nine cards on the
+/// grid. Call AFTER `wipeAppData` and BEFORE `app.main()`.
 Future<void> seedExampleCards() async {
-  if (kIsWeb) {
-    await AppStorage.instance.init((_) => '');
-    for (final filename in kExampleCardFilenames) {
-      final byteData = await rootBundle.load('assets/test_cards/$filename');
-      await AppStorage.instance.writeBytes(
-        StorageDomainEnum.cards,
-        filename,
-        byteData.buffer.asUint8List(
-          byteData.offsetInBytes,
-          byteData.lengthInBytes,
-        ),
-      );
-    }
-    return;
-  }
-  final dir = await getApplicationDocumentsDirectory();
   for (final filename in kExampleCardFilenames) {
-    final byteData = await rootBundle.load('assets/test_cards/$filename');
-    final cardFile = File(
-      '${dir.path}${Platform.pathSeparator}$filename',
-    );
-    await cardFile.writeAsBytes(
-      byteData.buffer.asUint8List(
-        byteData.offsetInBytes,
-        byteData.lengthInBytes,
-      ),
-    );
+    await seedBundledCard(filename);
   }
 }
 
-/// The bundled assistant card's display name. Promoted to a constant so
-/// an asset rename is a one-line change instead of a sweep across every
-/// test that targets Cass.
-const String kCassName = 'Cass | Assistant';
+/// The bundled seed card's display name. Promoted to a constant so an
+/// asset rename is a one-line change instead of a sweep across every
+/// test that targets the seed character.
+const String kSeedCharacterName = 'Unit 734 (Glitch)';
+
+/// Display name of the card [seedSecondCharacter] puts on the grid, for
+/// tests that need a second, distinct character.
+const String kSecondCharacterName = 'Ada Lovelace';
 
 /// Scopes a finder to one CharacterGridItem identified by its display
 /// name. The grid wraps each tile in a `KeyedSubtree` keyed
@@ -480,8 +442,8 @@ Future<void> awaitAppReady(
 
 /// Waits until the character grid has loaded at least one card. Guards against
 /// taps firing before `CharacterService` finishes its initial scan of the
-/// cards path — without this, `findCharacterTile(kCassName)` would
-/// throw on an empty grid.
+/// cards path — without this, `findCharacterTile(kSeedCharacterName)`
+/// would throw on an empty grid.
 Future<void> awaitGridReady(
   WidgetTester tester, {
   Duration timeout = const Duration(seconds: 30),
@@ -504,17 +466,19 @@ Future<void> awaitGridReady(
   );
 }
 
-/// Boots the app into the Cass chat. Wipes app data, seeds the Grok
-/// recovery file, launches `app.main()`, waits for the provider tree
-/// and grid, taps the Cass tile, and waits for the chat to settle.
+/// Boots the app into the seed character's chat. Wipes app data, seeds
+/// the character card and the Grok recovery file, launches `app.main()`,
+/// waits for the provider tree and grid, taps the seed tile, and waits
+/// for the chat to settle.
 /// Caller is responsible for the `markTestSkipped` gate before invoking.
-Future<void> bootCassChat(WidgetTester tester) async {
+Future<void> bootSeedChat(WidgetTester tester) async {
   await wipeAppData();
+  await seedTestCharacter();
   await seedGrokRecovery();
   app.main();
   await awaitAppReady(tester);
   await awaitGridReady(tester);
-  await tester.tap(findCharacterTile(kCassName));
+  await tester.tap(findCharacterTile(kSeedCharacterName));
   await tester.pumpAndSettle(const Duration(seconds: 2));
 }
 

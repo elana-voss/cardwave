@@ -5,10 +5,10 @@ import 'package:integration_test/integration_test.dart';
 
 import 'app_test_helpers.dart';
 
-/// Group roster edit: after adding Cass, open her tile in the character
-/// panel (ExpansionTile) and tap "Remove from chat". The group is now
-/// empty again — the page should rebuild back into the empty state with
-/// the "Add a character" action.
+/// Group roster edit: after adding the seed character, open its tile in
+/// the character panel (ExpansionTile) and tap "Remove from chat". The
+/// group is now empty again — the page should rebuild back into the empty
+/// state with the "Add a character" action.
 ///
 /// No API call. Covers the remove-last-character → revert-to-empty-state
 /// path, which is the state-management edge most likely to regress when
@@ -26,6 +26,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -53,7 +54,7 @@ void main() {
       await tester.tap(find.byKey(const Key('group-create-confirm')));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      // Empty state → drawer → picker → add Cass.
+      // Empty state → drawer → picker → add the seed character.
       await tester.tap(find.byKey(const Key('group-add-character')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('group-add-character-drawer')));
@@ -63,7 +64,7 @@ void main() {
       await tester.tap(find.textContaining('Add 1'));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      // Picker has popped; drawer still shows the roster panel with Cass's
+      // Picker has popped; drawer still shows the roster panel with the seed character's
       // ExpansionTile. Tap to expand the tile, then "Remove from chat".
       await tester.tap(find.byType(ExpansionTile));
       await tester.pumpAndSettle();

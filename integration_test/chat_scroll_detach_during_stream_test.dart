@@ -37,6 +37,7 @@ void main() {
       addTearDown(() => debugRunnerFactory = null);
 
       await wipeAppData();
+      await seedTestCharacter();
 
       // Web has no real filesystem; seed settings through AppStorage
       // (IndexedDB) instead of a dart:io file, same as app_test_helpers.
@@ -99,7 +100,7 @@ void main() {
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final controller = tester

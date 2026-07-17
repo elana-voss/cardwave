@@ -17,7 +17,7 @@ import 'app_test_helpers.dart';
 /// `validateConfigMediaCharacter` running in `EditorPageController`'s
 /// constructor.
 ///
-/// Flow: seed Grok + NanoGPT → force Grok app defaults → set Cass's
+/// Flow: seed Grok + NanoGPT → force Grok app defaults → set the seed character's
 /// `configMedia.imagePresetId` to a NanoGPT preset and flush to disk
 /// (imperatively — the editor's media UI now lives in
 /// `MediaSettingsGridPage`; this test is about the validator, not the
@@ -50,6 +50,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokAndNanogptRecovery();
 
       app.main();
@@ -107,14 +108,14 @@ void main() {
       );
       final nanogptImagePresetId = nanogptImagePresets.first.config.id;
 
-      // Look up Cass via CharacterService so we can mutate her on-disk
+      // Look up the seed card via CharacterService so we can mutate its on-disk
       // state without touching the editor UI. The validator path under
       // test runs when the editor opens — it doesn't care which UI
       // wrote the state.
-      final cassFile = (await characterService.loadByName(kCassName))!;
-      final appCardId = cassFile.appCardId;
+      final seedFile = (await characterService.loadByName(kSeedCharacterName))!;
+      final appCardId = seedFile.appCardId;
 
-      // Imperatively pin Cass's image preset to NanoGPT and flush so
+      // Imperatively pin the seed character's image preset to NanoGPT and flush so
       // the next disk reload picks it up.
       final nanogptResolved = pureHelpers.resolvePresetOrNull(
         configId: nanogptImagePresetId,
@@ -125,8 +126,8 @@ void main() {
         isNotNull,
         reason: 'picked NanoGPT image preset must resolve against NanoGPT',
       );
-      cassFile.configMedia ??= ConfigMediaCharacter();
-      cassFile.configMedia!.setImagePreset(
+      seedFile.configMedia ??= ConfigMediaCharacter();
+      seedFile.configMedia!.setImagePreset(
         nanogptImagePresetId,
         firstImageAspectRatioId(nanogptResolved!.model),
       );
@@ -134,9 +135,9 @@ void main() {
       // `flushJsonInCacheAndPngIfDirtyOrPending` would no-op. Use the
       // unconditional save so the change actually reaches disk before
       // the loadCharacters() reload below.
-      await characterService.saveJsonInCacheAndPngNow(cassFile);
+      await characterService.saveJsonInCacheAndPngNow(seedFile);
       expect(
-        cassFile.configMedia!.imagePresetId,
+        seedFile.configMedia!.imagePresetId,
         nanogptImagePresetId,
         reason: 'character override should be the imperatively-set id',
       );
@@ -171,19 +172,19 @@ void main() {
       // Reopen editor. New EditorPageController builds against the
       // fresh CharacterFile → validateConfigMediaCharacter fires →
       // stale NanoGPT id nulled in memory.
-      await tapEditOnCharacterTile(tester, kCassName);
+      await tapEditOnCharacterTile(tester, kSeedCharacterName);
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      final freshCass = (await characterService.loadByName(kCassName))!;
+      final freshSeed = (await characterService.loadByName(kSeedCharacterName))!;
       expect(
-        freshCass.appCardId,
+        freshSeed.appCardId,
         appCardId,
-        reason: 'loadCharacters should re-read the same Cass by appCardId',
+        reason: 'loadCharacters should re-read the same card by appCardId',
       );
 
-      expect(freshCass.configMedia, isNotNull);
+      expect(freshSeed.configMedia, isNotNull);
       expect(
-        freshCass.configMedia!.imagePresetId,
+        freshSeed.configMedia!.imagePresetId,
         isNull,
         reason:
             'on-entry validator should null the deleted NanoGPT preset on '

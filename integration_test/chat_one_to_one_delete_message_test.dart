@@ -29,13 +29,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final controller = tester
@@ -45,7 +46,7 @@ void main() {
       expect(
         initialCount,
         greaterThanOrEqualTo(1),
-        reason: 'Cass greeting should be present at boot',
+        reason: 'seed card greeting should be present at boot',
       );
 
       // Send a user message → 1:1 auto-replies. End state: greeting + user

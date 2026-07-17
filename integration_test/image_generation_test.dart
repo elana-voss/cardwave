@@ -23,13 +23,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Tap the magic wand. Top-level popup menu appears.

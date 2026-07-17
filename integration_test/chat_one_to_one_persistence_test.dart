@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// Chat persistence: send a message + receive a reply, navigate back to
-/// the grid, re-enter Cass, and assert the same chat session reloads
+/// the grid, re-enter the seed character, and assert the same chat session reloads
 /// with the same content.
 ///
 /// Underlying use case: nothing the user just typed disappears when
@@ -33,13 +33,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final firstController = tester
@@ -81,9 +82,9 @@ void main() {
         reason: 'should be back on the character grid',
       );
 
-      // Re-enter Cass. _loadLatestChatOrNew should reload the most recent
+      // Re-enter the seed character. _loadLatestChatOrNew should reload the most recent
       // chat (the one we just created), NOT create a fresh one.
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final secondController = tester

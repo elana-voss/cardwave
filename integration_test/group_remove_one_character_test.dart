@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// Group roster shrink: with 2 characters in the group, expand Cass's
+/// Group roster shrink: with 2 characters in the group, expand the seed character's
 /// GroupCharacterTile and tap "Remove from chat". Assert the
 /// controller's characters list now holds only the OTHER character —
 /// proves removeCharacter targets the picked id and leaves the rest
@@ -37,6 +37,7 @@ void main() {
       await wipeAppData();
       await seedGrokRecovery();
       await seedTestCharacter();
+      await seedSecondCharacter();
 
       app.main();
       await awaitAppReady(tester);
@@ -82,22 +83,22 @@ void main() {
         reason: 'group should have both characters before removal',
       );
       final survivor = controller.characters
-          .firstWhere((c) => c.card.name != 'Cass | Assistant')
+          .firstWhere((c) => c.card.displayName != kSeedCharacterName)
           .card
-          .name;
+          .displayName;
 
-      // Expand Cass's tile, then tap "Remove from chat".
-      const targetName = 'Cass | Assistant';
-      final cassTile = find.ancestor(
+      // Expand the seed character's tile, then tap "Remove from chat".
+      const targetName = kSeedCharacterName;
+      final targetTile = find.ancestor(
         of: find.text(targetName),
         matching: find.byType(GroupCharacterTile),
       );
       expect(
-        cassTile,
+        targetTile,
         findsOneWidget,
-        reason: 'Cass tile should be in the drawer',
+        reason: 'seed character tile should be in the drawer',
       );
-      await tester.tap(cassTile);
+      await tester.tap(targetTile);
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('group-character-remove')));
       await tester.pumpAndSettle(const Duration(seconds: 1));
@@ -109,12 +110,13 @@ void main() {
       expect(
         controller.characters.length,
         1,
-        reason: 'after removing Cass exactly one character should remain',
+        reason:
+            'after removing the seed character exactly one should remain',
       );
       expect(
-        controller.characters.first.card.name,
+        controller.characters.first.card.displayName,
         survivor,
-        reason: 'the OTHER character (not Cass) must be the survivor',
+        reason: 'the OTHER character must be the survivor',
       );
     },
   );

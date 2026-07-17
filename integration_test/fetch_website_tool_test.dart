@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// fetch_website round-trip. Seeds Grok, opens the Cass chat, enables
+/// fetch_website round-trip. Seeds Grok, opens the seed character's chat, enables
 /// "Allow Web Fetch" in the chat drawer, sends a prompt that names the
 /// tool and a stable URL (example.com — IANA reserves it for examples
 /// and the body is tiny). Asserts:
@@ -36,7 +36,7 @@ void main() {
         return;
       }
 
-      await bootCassChat(tester);
+      await bootSeedChat(tester);
       await enableToolViaDrawer(tester, toggleLabel: 'Allow Web Fetch');
 
       final controller = tester

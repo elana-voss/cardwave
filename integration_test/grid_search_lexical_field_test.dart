@@ -32,16 +32,17 @@ void main() {
       await wipeAppData();
       await seedOnboardingComplete();
       await seedVietnameseDescriptionCharacter();
+      await seedSecondCharacter();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      // Pre-state: 2 cards visible (Cass auto-copied + Vietnamese seeded).
+      // Pre-state: 2 cards visible (Vietnamese + the Ada example card).
       expect(
         find.byType(CharacterGridItem),
         findsNWidgets(2),
-        reason: 'seed should put Cass + Vietnamese card on the grid',
+        reason: 'seed should put the Vietnamese + Ada cards on the grid',
       );
 
       // Wait for the meaning-search engine to finish unpacking its
@@ -100,21 +101,24 @@ void main() {
       await tester.enterText(searchField, 'Vietnamese');
       await tester.pumpAndSettle(const Duration(milliseconds: 700));
 
-      // Cass has no "vietnamese" anywhere indexed and isn't semantically
-      // close; cutoff drops it.
+      // The Ada card has no "vietnamese" anywhere indexed and isn't
+      // semantically close; cutoff drops it.
       expect(
         find.byType(CharacterGridItem),
         findsOneWidget,
         reason:
-            'relevance cutoff should drop Cass (no literal hit, low '
+            'relevance cutoff should drop the Ada card (no literal hit, low '
             'meaning-side cosine) — only the Vietnamese-description card '
             'should remain',
       );
       final onlyItem = find.byType(CharacterGridItem).first;
       expect(
-        find.descendant(of: onlyItem, matching: find.text(kCassName)),
+        find.descendant(
+          of: onlyItem,
+          matching: find.text(kSecondCharacterName),
+        ),
         findsNothing,
-        reason: 'remaining tile must be the Vietnamese card, not Cass',
+        reason: 'remaining tile must be the Vietnamese card, not the Ada card',
       );
     },
   );

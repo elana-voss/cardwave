@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// Favorite toggle persistence: tap the heart overlay on Cass's grid
+/// Favorite toggle persistence: tap the heart overlay on the seed character's grid
 /// tile, assert the in-memory `card.cardwaveData.isFavorite` flipped,
 /// then force a fresh disk reload (`CharacterService.loadCharacters`)
 /// and assert the toggled value survived.
@@ -39,6 +39,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -46,21 +47,21 @@ void main() {
       await awaitGridReady(tester);
 
       final service = tester
-          .element(findCharacterTile(kCassName))
+          .element(findCharacterTile(kSeedCharacterName))
           .read<CharacterService>();
 
       // Capture initial favorite state from memory so we can assert on the
       // OPPOSITE value after the toggle. Don't hardcode "default = false"
       // — it's a card-asset detail that could drift.
-      final cassBefore = (await service.loadByName(kCassName))!;
-      final initialFav = cassBefore.card.cardwaveData.isFavorite;
+      final seedBefore = (await service.loadByName(kSeedCharacterName))!;
+      final initialFav = seedBefore.card.cardwaveData.isFavorite;
       final targetFav = !initialFav;
 
       // The favorite overlay icon swaps between `Icons.favorite` (on, red)
       // and `Icons.favorite_border` (off, white) — pick whichever the
       // current state demands.
       final favIcon = find.descendant(
-        of: findCharacterTile(kCassName),
+        of: findCharacterTile(kSeedCharacterName),
         matching: find.byIcon(
           initialFav ? Icons.favorite : Icons.favorite_border,
         ),
@@ -69,7 +70,7 @@ void main() {
         favIcon,
         findsOneWidget,
         reason:
-            'Cass tile should expose the heart overlay matching the initial '
+            'seed character tile should expose the heart overlay matching the initial '
             'favorite state ($initialFav)',
       );
 
@@ -78,9 +79,9 @@ void main() {
       // GestureDetector); pumpAndSettle drains the microtask queue.
       await tester.pumpAndSettle();
 
-      final cassAfterTap = (await service.loadByName(kCassName))!;
+      final seedAfterTap = (await service.loadByName(kSeedCharacterName))!;
       expect(
-        cassAfterTap.card.cardwaveData.isFavorite,
+        seedAfterTap.card.cardwaveData.isFavorite,
         targetFav,
         reason: 'tap should flip in-memory isFavorite to $targetFav',
       );
@@ -91,9 +92,9 @@ void main() {
       await service.loadCharacters();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      final cassAfterReload = (await service.loadByName(kCassName))!;
+      final seedAfterReload = (await service.loadByName(kSeedCharacterName))!;
       expect(
-        cassAfterReload.card.cardwaveData.isFavorite,
+        seedAfterReload.card.cardwaveData.isFavorite,
         targetFav,
         reason:
             'favorite must equal $targetFav after the disk reload — proves '
@@ -105,7 +106,7 @@ void main() {
       // not the same one we mutated. (If it WERE the same object, the
       // assertion above would pass trivially via in-memory mutation.)
       expect(
-        identical(cassBefore, cassAfterReload),
+        identical(seedBefore, seedAfterReload),
         isFalse,
         reason:
             'loadByName re-reads the card from disk each call, returning a '

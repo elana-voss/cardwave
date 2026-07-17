@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// Switch the active character mid-chat via the appbar's
-/// AppBarSwitcherTitle. Setup seeds a second card (Test Character)
-/// alongside Cass so the picker has something to pick. After tap, the
+/// AppBarSwitcherTitle. Setup seeds two cards so the picker has
+/// something to pick. After tap, the
 /// workspace replaces its route with a new WorkspacePage bound to the
 /// chosen character — the appbar title must reflect the new character.
 ///
@@ -35,6 +35,7 @@ void main() {
       await wipeAppData();
       await seedGrokRecovery();
       await seedTestCharacter();
+      await seedSecondCharacter();
 
       app.main();
       await awaitAppReady(tester);
@@ -44,12 +45,12 @@ void main() {
       expect(
         find.byType(CharacterGridItem),
         findsNWidgets(2),
-        reason: 'grid should show Cass + Test Character',
+        reason: 'grid should show both seeded characters',
       );
 
       // Enter the first character (whichever the grid sorts to top —
       // could be either; we don't care which one is the source).
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Capture the source character name via the AppBarSwitcherTitle —

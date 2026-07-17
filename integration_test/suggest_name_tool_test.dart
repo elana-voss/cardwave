@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// suggest_name round-trip. Seeds Grok, opens the Cass chat, enables
+/// suggest_name round-trip. Seeds Grok, opens the seed character's chat, enables
 /// "Suggest NPC Names" in the chat drawer, sends a prompt naming the
 /// tool and asking the AI to introduce one NPC. Asserts:
 ///
@@ -35,7 +35,7 @@ void main() {
         return;
       }
 
-      await bootCassChat(tester);
+      await bootSeedChat(tester);
       await enableToolViaDrawer(tester, toggleLabel: 'Suggest NPC Names');
 
       final controller = tester

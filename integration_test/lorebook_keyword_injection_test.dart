@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// Lorebook keyword injection: add a lorebook entry to Cass's card with
+/// Lorebook keyword injection: add a lorebook entry to the seed character's card with
 /// a unique keyword and a content directive instructing the model to
 /// echo a unique sentinel phrase when that keyword appears. Then send
 /// a chat message containing the keyword and assert the assistant's
@@ -44,6 +44,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -57,7 +58,7 @@ void main() {
       const triggerKeyword = 'ZARQUON';
       const echoSentinel = 'GLORG_BLERFTH_42';
 
-      await tapEditOnCharacterTile(tester, kCassName);
+      await tapEditOnCharacterTile(tester, kSeedCharacterName);
 
       // Switch to the Lorebook tab.
       // GOTCHA: on a tablet-sized viewport the editor renders BOTH a Tab
@@ -116,8 +117,8 @@ void main() {
         reason: 'should be back on the grid after popping the editor',
       );
 
-      // Open Cass's chat (default tap, NOT the edit button).
-      await tester.tap(findCharacterTile(kCassName));
+      // Open the seed character's chat (default tap, NOT the edit button).
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // ─── Send a message containing the trigger keyword ───────────────

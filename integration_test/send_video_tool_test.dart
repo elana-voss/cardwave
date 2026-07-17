@@ -39,7 +39,7 @@ void main() {
         return;
       }
 
-      await bootCassChat(tester);
+      await bootSeedChat(tester);
       await enableToolViaDrawer(
         tester,
         toggleLabel: 'Character Can Send Videos',

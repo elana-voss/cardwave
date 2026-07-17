@@ -16,7 +16,7 @@ import 'app_test_helpers.dart';
 /// and early-returns when empty (with a special branch for "regen the
 /// last user turn" that doesn't apply here — the only pre-existing
 /// message is the assistant greeting). So the message count must remain
-/// at exactly 1 (Cass's "Hello!" greeting).
+/// at exactly 1 (the seed character's "Hello!" greeting).
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -30,13 +30,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final controller = tester
@@ -47,7 +48,7 @@ void main() {
         initialCount,
         greaterThanOrEqualTo(1),
         reason:
-            'Cass card has a first_mes greeting — chat should boot '
+            'the seed card has a first_mes greeting — chat should boot '
             'with at least one message',
       );
 

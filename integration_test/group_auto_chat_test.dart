@@ -38,6 +38,7 @@ void main() {
       await wipeAppData();
       await seedGrokRecovery();
       await seedTestCharacter();
+      await seedSecondCharacter();
 
       app.main();
       await awaitAppReady(tester);

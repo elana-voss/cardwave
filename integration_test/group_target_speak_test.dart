@@ -35,6 +35,7 @@ void main() {
       await wipeAppData();
       await seedGrokRecovery();
       await seedTestCharacter();
+      await seedSecondCharacter();
 
       app.main();
       await awaitAppReady(tester);
@@ -89,27 +90,28 @@ void main() {
       await tester.pump();
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
-      // ─── Reopen drawer + tap "Make this character speak" on Cass ───
+      // ─── Reopen drawer + tap "Make this character speak" ───
       // The character drawer is opened from the appbar's Icons.group
       // tooltip 'Characters' (group_chat_page.dart:243-247).
       await tester.tap(find.byKey(const Key('group-characters-drawer')));
       await tester.pumpAndSettle();
 
-      // Pick Cass as the target — scope to her GroupCharacterTile so we
-      // tap the right play button (there's one per tile = two total).
-      const targetName = 'Cass | Assistant';
-      final cassTile = find.ancestor(
+      // Pick the second character as the target — scope to its
+      // GroupCharacterTile so we tap the right play button (there's one
+      // per tile = two total).
+      const targetName = kSecondCharacterName;
+      final targetTile = find.ancestor(
         of: find.text(targetName),
         matching: find.byType(GroupCharacterTile),
       );
       expect(
-        cassTile,
+        targetTile,
         findsOneWidget,
-        reason: 'Cass tile should be in the drawer',
+        reason: 'target character tile should be in the drawer',
       );
 
       final speakButton = find.descendant(
-        of: cassTile,
+        of: targetTile,
         matching: find.byKey(const Key('group-character-speak')),
       );
       await tester.tap(speakButton);
@@ -117,12 +119,11 @@ void main() {
 
       await awaitChatIdle(tester, timeout: const Duration(seconds: 60));
 
-      // Underlying use case: the LAST message is from Cass, not the
-      // other group member. Asserting on characterId would be ideal but
-      // requires resolving Cass's appCardId — content + role check is a
-      // close proxy: the last message must be a character/assistant turn
-      // (not user) and must NOT match Test Character's content (which
-      // hasn't spoken yet, so its absence is meaningful).
+      // Underlying use case: the LAST message is from the picked
+      // character, not the other group member. Asserting on characterId
+      // would be ideal but requires resolving its appCardId — content +
+      // role check is a close proxy: the last message must be a
+      // character/assistant turn (not user).
       final controller = tester
           .element(find.byType(ChatView))
           .read<BaseChatViewController>();

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// 1:1 chat smoke test. Seeds a Grok provider via recovery file, boots the
-/// app, taps the default Cass card, types a short message, taps send,
+/// app, taps the seed card, types a short message, taps send,
 /// waits for a reply. Asserts: reply arrived, persisted in the controller's
 /// message list.
 void main() {
@@ -24,6 +24,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -31,11 +32,11 @@ void main() {
 
       await awaitGridReady(tester);
 
-      final cardFinder = findCharacterTile(kCassName);
+      final cardFinder = findCharacterTile(kSeedCharacterName);
       expect(
         cardFinder,
         findsOneWidget,
-        reason: 'grid should show at least the bundled Cass card',
+        reason: 'grid should show at least the seed card',
       );
       await tester.tap(cardFinder);
       await tester.pumpAndSettle(const Duration(seconds: 2));

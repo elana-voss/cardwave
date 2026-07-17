@@ -42,16 +42,16 @@ void main() {
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      // Pre-state: Cass + Test Character on the grid.
+      // Pre-state: the seeded Test Character on the grid.
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(2),
-        reason: 'seed should put 2 cards on the grid',
+        findsOneWidget,
+        reason: 'seed should put 1 card on the grid',
       );
 
       // Look up service + repo via any mounted grid item (both are
       // root-level Providers).
-      final gridContext = tester.element(findCharacterTile(kCassName));
+      final gridContext = tester.element(findCharacterTile(kSeedCharacterName));
       final repo = gridContext.read<CharacterRepository>();
       final service = gridContext.read<CharacterService>();
 
@@ -80,8 +80,8 @@ void main() {
 
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(3),
-        reason: 'after import the grid should show 3 cards',
+        findsNWidgets(2),
+        reason: 'after import the grid should show 2 cards',
       );
 
       // Confirm the suffixed file landed in the library index — proves

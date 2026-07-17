@@ -50,11 +50,11 @@ void main() {
 
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(2),
-        reason: 'seed should put 2 cards on the grid',
+        findsOneWidget,
+        reason: 'seed should put 1 card on the grid',
       );
 
-      final gridContext = tester.element(findCharacterTile(kCassName));
+      final gridContext = tester.element(findCharacterTile(kSeedCharacterName));
       final service = gridContext.read<CharacterService>();
       final storage = gridContext.read<AppStorage>();
 
@@ -94,8 +94,8 @@ void main() {
       // Underlying use case: present on grid, in memory, and on disk.
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(3),
-        reason: 'grid should grow to 3 cards after creating a new one',
+        findsNWidgets(2),
+        reason: 'grid should grow to 2 cards after creating a new one',
       );
 
       final created = (await service.loadAll())

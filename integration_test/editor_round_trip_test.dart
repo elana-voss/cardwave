@@ -34,6 +34,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -47,7 +48,7 @@ void main() {
 
       // RouteEditCharacter pushes the workspace with WorkspaceBaseEnum.editor,
       // so the editor is on screen immediately — no toggle needed.
-      await tapEditOnCharacterTile(tester, kCassName);
+      await tapEditOnCharacterTile(tester, kSeedCharacterName);
 
       // EditorBasic wraps Description in TextFieldCard.multiLine with
       // showTokenCount:true, which renders the label as 'Description - N
@@ -86,12 +87,12 @@ void main() {
         reason: 'should be back on the grid after popping the editor',
       );
 
-      // Force a fresh disk read. After this call the in-memory Cass is a
+      // Force a fresh disk read. After this call the in-memory card is a
       // fresh object whose card.description equals whatever's on disk.
       await characterService.loadCharacters();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      await tapEditOnCharacterTile(tester, kCassName);
+      await tapEditOnCharacterTile(tester, kSeedCharacterName);
 
       // Read back: pull the live TextFormField's controller text and
       // compare to the sentinel.

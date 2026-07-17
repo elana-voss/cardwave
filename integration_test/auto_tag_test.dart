@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 import 'app_test_helpers.dart';
 
 /// Auto-tag end-to-end via the grid card's popupmenu. Drives the same
-/// path a user takes: open Cass's `more_vert` menu, tap Auto-Tag, wait
-/// for the structured-output Grok call to round-trip, verify Cass's
+/// path a user takes: open the seed character's `more_vert` menu, tap Auto-Tag, wait
+/// for the structured-output Grok call to round-trip, verify the seed character's
 /// `appCardTags` got populated with valid taxonomy IDs and the legacy
 /// `card.tags` list is in sync.
 ///
@@ -24,7 +24,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'Grid — Auto-Tag from Cass card popupmenu populates tags',
+    'Grid — Auto-Tag from seed card popupmenu populates tags',
     timeout: const Timeout(Duration(minutes: 3)),
     (tester) async {
       if (!hasGrokKey) {
@@ -33,6 +33,7 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
@@ -46,8 +47,8 @@ void main() {
       final pureHelpers = appCtx.read<LlmPureHelpers>();
       final settingsService = appCtx.read<SettingsService>();
 
-      final cassFile = (await characterService.loadByName(kCassName))!;
-      final cassPath = cassFile.appCardImagePath;
+      final seedFile = (await characterService.loadByName(kSeedCharacterName))!;
+      final seedPath = seedFile.appCardImagePath;
 
       // Pre-flight: the system preset must be assigned to a structured-output
       // model. If `_resolveModelForDomain` finds no qualifying Grok model,
@@ -78,14 +79,14 @@ void main() {
             'stopped tagging this model.',
       );
 
-      // Open Cass's popupmenu and tap Auto-Tag. Same descendant pattern as
-      // character_delete_test.dart — only Cass on the grid by default, so
+      // Open the seed character's popupmenu and tap Auto-Tag. Same descendant pattern as
+      // character_delete_test.dart — only the seed character on the grid, so
       // neither the more_vert finder nor the 'Auto-Tag' label is ambiguous.
-      final cassMore = find.descendant(
-        of: findCharacterTile(kCassName),
+      final seedMore = find.descendant(
+        of: findCharacterTile(kSeedCharacterName),
         matching: find.byIcon(Icons.more_vert),
       );
-      await tester.tap(cassMore);
+      await tester.tap(seedMore);
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('drawer-ai-action-autoTag')));
       await tester.pumpAndSettle();
@@ -95,34 +96,34 @@ void main() {
       final deadline = DateTime.now().add(const Duration(seconds: 90));
       while (DateTime.now().isBefore(deadline)) {
         await tester.pump(const Duration(milliseconds: 500));
-        if (!characterAiService.isProcessingAiTask(cassPath)) {
+        if (!characterAiService.isProcessingAiTask(seedPath)) {
           await tester.pumpAndSettle(const Duration(milliseconds: 200));
           break;
         }
       }
       expect(
-        characterAiService.isProcessingAiTask(cassPath),
+        characterAiService.isProcessingAiTask(seedPath),
         isFalse,
         reason:
-            'auto-tag did not finish for $cassPath within 90s — '
+            'auto-tag did not finish for $seedPath within 90s — '
             'check Grok reachability and the structured-output schema.',
       );
 
       expect(
-        cassFile.appCardTags,
+        seedFile.appCardTags,
         isNotEmpty,
         reason:
-            'auto-tagger returned no tag IDs for Cass; the structured '
+            'auto-tagger returned no tag IDs for the seed card; the structured '
             'response was empty or _flattenAutoTagResponse dropped values.',
       );
       expect(
-        cassFile.appCardTags.length,
+        seedFile.appCardTags.length,
         lessThanOrEqualTo(10),
         reason:
             'auto-tagger returned >10 tag IDs (prompt caps at 10) — '
             'either the model ignored the cap or the flatten leaked dupes.',
       );
-      for (final tagId in cassFile.appCardTags) {
+      for (final tagId in seedFile.appCardTags) {
         expect(
           taxonomyRepository.getTag(tagId),
           isNotNull,
@@ -132,16 +133,16 @@ void main() {
         );
       }
       expect(
-        cassFile.card.tags,
+        seedFile.card.tags,
         isNotEmpty,
         reason:
             'card.tags (legacy SillyTavern display list) should hold '
             'the resolved names for every newly-assigned appCardTag.',
       );
-      for (final tagId in cassFile.appCardTags) {
+      for (final tagId in seedFile.appCardTags) {
         final tagName = taxonomyRepository.getTag(tagId)!.tagName;
         expect(
-          cassFile.card.tags.any(
+          seedFile.card.tags.any(
             (existing) => existing.toLowerCase() == tagName.toLowerCase(),
           ),
           isTrue,

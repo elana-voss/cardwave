@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'app_test_helpers.dart';
 
-/// Character delete: open Cass's popup menu, tap "Delete", confirm in
+/// Character delete: open the seed character's popup menu, tap "Delete", confirm in
 /// the AlertDialog, and assert the card is gone from BOTH the grid +
 /// in-memory list AND the on-disk PNG. The disk-state assertion via
 /// AppStorage.fileExists is what catches a silent regression in
@@ -23,7 +23,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'Grid — delete Cass removes her from grid, memory, and disk',
+    'Grid — delete the seed card removes it from grid, memory, and disk',
     timeout: const Timeout(Duration(minutes: 1)),
     (tester) async {
       if (!hasGrokKey) {
@@ -39,37 +39,37 @@ void main() {
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      // ─── Pre-state: 2 cards visible, both on disk ──────────────────────
+      // ─── Pre-state: the seeded card is visible and on disk ─────────────
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(2),
-        reason: 'seed should put Cass + Test Character on the grid',
+        findsOneWidget,
+        reason: 'seed should put exactly the seed character on the grid',
       );
 
-      final gridContext = tester.element(findCharacterTile(kCassName));
+      final gridContext = tester.element(findCharacterTile(kSeedCharacterName));
       final service = gridContext.read<CharacterService>();
       final storage = gridContext.read<AppStorage>();
 
-      // Capture Cass's on-disk filename BEFORE deletion so we can verify
+      // Capture the card's on-disk filename BEFORE deletion so we can verify
       // it's gone afterward. Reading via loadByName keeps the test honest
       // if the seed/asset filename ever changes.
-      final cassFile = (await service.loadByName(kCassName))!;
-      final cassImagePath = cassFile.appCardImagePath;
+      final seedFile = (await service.loadByName(kSeedCharacterName))!;
+      final seedImagePath = seedFile.appCardImagePath;
       expect(
-        await storage.fileExists(StorageDomainEnum.cards, cassImagePath),
+        await storage.fileExists(StorageDomainEnum.cards, seedImagePath),
         isTrue,
-        reason: 'Cass PNG must exist on disk before the delete',
+        reason: 'seed PNG must exist on disk before the delete',
       );
 
-      // Open Cass's popup, tap Delete, confirm. The popup closes on the
+      // Open the card's popup, tap Delete, confirm. The popup closes on the
       // first 'Delete' tap and the AlertDialog opens — so the dialog's own
       // 'Delete' button only enters the tree after the popup item dismisses,
       // and the two same-text taps don't collide.
-      final cassMore = find.descendant(
-        of: findCharacterTile(kCassName),
+      final seedMore = find.descendant(
+        of: findCharacterTile(kSeedCharacterName),
         matching: find.byIcon(Icons.more_vert),
       );
-      await tester.tap(cassMore);
+      await tester.tap(seedMore);
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('grid-item-delete')));
       await tester.pumpAndSettle();
@@ -83,31 +83,32 @@ void main() {
       // Delete is async (chats → PNG → cache folder); drain before asserting.
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      // Underlying use case: gone from grid, memory, AND disk.
+      // Underlying use case: gone from grid, memory, AND disk. The seed was
+      // the only card, so the grid empties out entirely.
       expect(
         find.byType(CharacterGridItem),
-        findsNWidgets(1),
-        reason: 'grid should shrink to 1 card after deleting Cass',
+        findsNothing,
+        reason: 'grid should be empty after deleting the only card',
       );
       expect(
-        (await service.allCardPaths()).length,
-        1,
-        reason: 'the library index should hold exactly one card',
+        await service.allCardPaths(),
+        isEmpty,
+        reason: 'the library index should hold no cards',
       );
       expect(
-        await service.loadByName(kCassName),
+        await service.loadByName(kSeedCharacterName),
         isNull,
-        reason: 'Cass must no longer be in the library index',
+        reason: 'the seed card must no longer be in the library index',
       );
 
-      // The load-bearing assertion: Cass's PNG is actually gone from disk.
+      // The load-bearing assertion: the PNG is actually gone from disk.
       // A regression in IoCharacter.deleteCharacter (e.g. silent catch,
       // wrong path resolution) would leave the file behind even though
       // the in-memory checks above would still pass.
       expect(
-        await storage.fileExists(StorageDomainEnum.cards, cassImagePath),
+        await storage.fileExists(StorageDomainEnum.cards, seedImagePath),
         isFalse,
-        reason: 'Cass PNG must be removed from disk after the delete',
+        reason: 'seed PNG must be removed from disk after the delete',
       );
     },
   );

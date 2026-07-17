@@ -32,13 +32,14 @@ void main() {
       }
 
       await wipeAppData();
+      await seedTestCharacter();
       await seedGrokRecovery();
 
       app.main();
       await awaitAppReady(tester);
       await awaitGridReady(tester);
 
-      await tester.tap(findCharacterTile(kCassName));
+      await tester.tap(findCharacterTile(kSeedCharacterName));
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       final initialController = tester
@@ -47,7 +48,7 @@ void main() {
       expect(
         initialController.messages,
         isNotEmpty,
-        reason: 'Cass card should boot with a greeting',
+        reason: 'the seed card should boot with a greeting',
       );
       // Capture the OLD chat id as a string so a later comparison can
       // prove a fresh session was created (not just "keep current with
@@ -92,7 +93,7 @@ void main() {
       // Underlying use case: a NEW chat session was created. Without this,
       // the test could pass even if "Keep Current" silently no-op'd and
       // the same old chat stayed active. ChatSession.id is generated per
-      // chat (cass-assistant-XXXXX), so a different id proves the swap.
+      // chat, so a different id proves the swap.
       expect(
         controller.chatSession!.id,
         isNot(oldChatId),
