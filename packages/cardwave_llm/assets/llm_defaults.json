@@ -1,25 +1,25 @@
 {
   "anthropic": {
-    "chat": "claude-3-5-haiku-20241022",
-    "system": "claude-3-5-haiku-20241022"
+    "chat": "claude-sonnet-5",
+    "system": "claude-sonnet-5"
   },
   "openai": {
-    "chat": "gpt-4o-mini",
-    "system": "gpt-4o-mini",
+    "chat": "gpt-5.1",
+    "system": "gpt-5.1",
     "image": "dall-e-3",
     "audioTts": "gpt-4o-mini-tts",
     "video": "sora-2"
   },
   "google": {
-    "chat": "gemini-2.5-flash",
-    "system": "gemini-2.5-flash-lite",
+    "chat": "gemini-2.5-pro",
+    "system": "gemini-2.5-pro",
     "image": "gemini-3.1-flash-image-preview",
     "audioTts": "gemini-2.5-flash-preview-tts",
     "video": "veo-3.1-lite-generate-preview"
   },
   "grok": {
     "chat": "grok-4.3",
-    "system": "grok-4-1-fast-non-reasoning",
+    "system": "grok-4.3",
     "image": "grok-imagine-image",
     "audioTts": "xai-tts",
     "video": "grok-imagine-video"
@@ -32,8 +32,8 @@
     "video": "bytedance-seedance-v1.5-pro"
   },
   "openrouter": {
-    "chat": "meta-llama/llama-3.3-70b-instruct",
-    "system": "google/gemini-2.5-flash",
+    "chat": "anthropic/claude-sonnet-4.5",
+    "system": "anthropic/claude-sonnet-4.5",
     "image": "google/gemini-3.1-flash-image-preview",
     "audioTts": "openai/gpt-audio"
   }
