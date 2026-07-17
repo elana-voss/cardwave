@@ -26,9 +26,7 @@
   "workspaceEndDrawerChatTheme": {
     "resetImagesTitle": "Đặt lại hình ảnh"
   },
-  "workspaceEndDrawerChat": {
-    "assistantCardEditsSectionHeader": "Chỉnh sửa thẻ bởi trợ lý"
-  },
+  "workspaceEndDrawerChat": {},
   "workspaceEndDrawer": {
     "favoriteLabel": "Yêu thích",
     "characterSubtitle": "Nhân vật"
@@ -39,7 +37,6 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "Đang xây dựng lại chỉ mục trò chuyện...",
     "selectChatToStartMessagingMessage": "Chọn một cuộc trò chuyện để bắt đầu nhắn tin",
-    "failedToLoadAssistantMessage": "Không thể tải trợ lý.",
     "connectProviderToChatMessage": "Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.",
     "setUpProviderButton": "Thiết lập nhà cung cấp AI",
     "startNewChatButton": "Cuộc trò chuyện mới"

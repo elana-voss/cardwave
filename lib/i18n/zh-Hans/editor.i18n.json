@@ -8,10 +8,7 @@
     "creator": "创作者",
     "appData": "应用数据"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "隐藏助手面板",
-    "showChatAssistantTooltip": "并排显示对话助手"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "确认全部替换",
     "confirmReplaceAllMessage": "确定要继续吗？\n此操作不可逆，并会影响所有字段。",

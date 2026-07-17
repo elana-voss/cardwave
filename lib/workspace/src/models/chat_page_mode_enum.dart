@@ -1,1 +1,1 @@
-enum ChatPageModeEnum { chat, splitChatEditor, editor, splitEditorAssistant }
+enum ChatPageModeEnum { chat, splitChatEditor, editor }

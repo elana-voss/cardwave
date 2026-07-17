@@ -162,7 +162,6 @@ flutter:
     - assets/images/default_character.png
     - assets/tags/taxonomy.json
     - branding/logo_icon.png
-    - assets/cards/Cass_Assistant.png
     - assets/test_cards/Test_Character.png
     - assets/test_cards/Vietnamese_Desc_Character.png
     - assets/test_cards/Ada_Lovelace.png

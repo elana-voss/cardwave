@@ -8,10 +8,7 @@
     "creator": "Tác giả",
     "appData": "Dữ liệu ứng dụng"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "Ẩn bảng trợ lý",
-    "showChatAssistantTooltip": "Hiện trợ lý trò chuyện song song"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Xác nhận thay thế tất cả",
     "confirmReplaceAllMessage": "Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.",

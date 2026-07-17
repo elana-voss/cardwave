@@ -32,14 +32,8 @@
     "beforeTitle": "पहले",
     "afterTitle": "बाद में"
   },
-  "requireApprovalTile": {
-    "edits": "अनुमोदन आवश्यक: एडिट",
-    "additions": "अनुमोदन आवश्यक: जोड़",
-    "deletions": "अनुमोदन आवश्यक: हटाव"
-  },
   "loadingStatus": {
     "initial": "लोड हो रहा है...",
-    "copyingAssistant": "असिस्टेंट कॉपी हो रहा है...",
     "scanningForCharacters": "कैरेक्टर स्कैन हो रहे हैं...",
     "scanningForCharactersProgress": "कैरेक्टर स्कैन हो रहे हैं...\n$current / $total",
     "loadingCharactersProgress": "कैरेक्टर लोड हो रहे हैं...\n$current / $total"

@@ -8,10 +8,7 @@
     "creator": "제작자",
     "appData": "앱 데이터"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "어시스턴트 패널 숨기기",
-    "showChatAssistantTooltip": "채팅 어시스턴트 나란히 보기"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "모두 바꾸기 확인",
     "confirmReplaceAllMessage": "계속할까요?\n이 작업은 되돌릴 수 없으며 모든 필드에 영향을 줘요.",

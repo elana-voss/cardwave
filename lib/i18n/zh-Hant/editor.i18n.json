@@ -8,10 +8,7 @@
     "creator": "作者",
     "appData": "App 資料"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "隱藏助理面板",
-    "showChatAssistantTooltip": "並排顯示對話助理"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "確認全部取代",
     "confirmReplaceAllMessage": "確定要繼續嗎？\n此動作無法復原，且會影響所有欄位。",

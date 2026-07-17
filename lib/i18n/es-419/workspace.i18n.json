@@ -26,9 +26,7 @@
   "workspaceEndDrawerChatTheme": {
     "resetImagesTitle": "Restablecer imágenes"
   },
-  "workspaceEndDrawerChat": {
-    "assistantCardEditsSectionHeader": "Ediciones de tarjeta por el asistente"
-  },
+  "workspaceEndDrawerChat": {},
   "workspaceEndDrawer": {
     "favoriteLabel": "Favorito",
     "characterSubtitle": "Personaje"
@@ -39,7 +37,6 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "Reconstruyendo el índice de chats...",
     "selectChatToStartMessagingMessage": "Selecciona un chat para empezar a chatear",
-    "failedToLoadAssistantMessage": "Error al cargar el asistente.",
     "connectProviderToChatMessage": "Conecta un proveedor de IA para empezar a chatear.",
     "setUpProviderButton": "Configurar proveedor de IA",
     "startNewChatButton": "Nuevo chat"

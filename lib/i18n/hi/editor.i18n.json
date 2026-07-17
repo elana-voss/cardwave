@@ -8,10 +8,7 @@
     "creator": "निर्माता",
     "appData": "ऐप डेटा"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "असिस्टेंट पैनल छिपाएं",
-    "showChatAssistantTooltip": "चैट असिस्टेंट साथ-साथ दिखाएं"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "सभी बदलने की पुष्टि करें",
     "confirmReplaceAllMessage": "क्या आप वाकई आगे बढ़ना चाहते हैं?\nयह क्रिया अपरिवर्तनीय है और सभी फ़ील्ड को प्रभावित करती है।",

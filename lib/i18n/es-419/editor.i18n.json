@@ -8,10 +8,7 @@
     "creator": "Creador",
     "appData": "Datos de la app"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "Ocultar panel del asistente",
-    "showChatAssistantTooltip": "Mostrar asistente de chat lado a lado"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Confirmar Reemplazar todo",
     "confirmReplaceAllMessage": "¿Seguro que quieres continuar?\nEsta acción es irreversible y afecta a todos los campos.",

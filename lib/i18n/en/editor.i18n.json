@@ -8,10 +8,7 @@
     "creator": "Creator",
     "appData": "App Data"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "Hide assistant panel",
-    "showChatAssistantTooltip": "Show chat assistant side-by-side"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Confirm Replace All",
     "confirmReplaceAllMessage": "Are you sure you want to proceed?\nThis action is irreversible and affects all fields.",

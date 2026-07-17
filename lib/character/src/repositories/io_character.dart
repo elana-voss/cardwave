@@ -531,21 +531,6 @@ class IOCharacter {
     return clonedFile;
   }
 
-  /// Copies existing PNG into current user selected character dir.
-  /// Returns TRUE if copied.
-  Future<bool> ensureDefaultAssistantExists(
-    Uint8List bytes,
-    String filename,
-  ) async {
-    var didCopyAssistant = false;
-
-    if (!await appStorage.fileExists(StorageDomainEnum.cards, filename)) {
-      await appStorage.writeBytes(StorageDomainEnum.cards, filename, bytes);
-      didCopyAssistant = true;
-    }
-    return didCopyAssistant;
-  }
-
   // =========================================================================
   // THUMBNAIL GENERATION
   // =========================================================================

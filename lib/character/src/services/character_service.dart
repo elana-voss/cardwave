@@ -620,11 +620,8 @@ class CharacterService extends ChangeNotifier {
     if (_isLoading) return;
 
     _isLoading = true;
-    _loadingStatus = t.character.loadingStatus.copyingAssistant;
     _loadingProgress = null;
     notifyListeners();
-
-    await _copyDefaultAssistant();
 
     _loadingStatus = t.character.loadingStatus.scanningForCharacters;
     notifyListeners();
@@ -825,20 +822,4 @@ class CharacterService extends ChangeNotifier {
     }
   }
 
-  /// `characterRepository.copyDefaultAssistant` calls `rootBundle.load`, which
-  /// throws `FlutterError` (an Error subclass) if the bundled asset is missing.
-  /// That signals a build/pubspec misconfiguration — a programmer bug, not a
-  /// runtime condition to handle, so no try/catch here. `loadCharacters` wraps
-  /// this call in `on Exception catch`, which intentionally won't catch the
-  /// FlutterError; it'll propagate to the global zone error handler.
-  Future<void> _copyDefaultAssistant() async {
-    final didCopyAssistant = await characterRepository.copyDefaultAssistant();
-    if (didCopyAssistant) {
-      loggingService.info('[COPY ASSISTANT] Copied assistant.');
-    } else {
-      loggingService.info(
-        '[COPY ASSISTANT] Not copied assistant, file already present.',
-      );
-    }
-  }
 }

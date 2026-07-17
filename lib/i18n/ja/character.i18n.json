@@ -32,14 +32,8 @@
     "beforeTitle": "変更前",
     "afterTitle": "変更後"
   },
-  "requireApprovalTile": {
-    "edits": "承認を必須にする：編集",
-    "additions": "承認を必須にする：追加",
-    "deletions": "承認を必須にする：削除"
-  },
   "loadingStatus": {
     "initial": "読み込み中...",
-    "copyingAssistant": "アシスタントをコピー中...",
     "scanningForCharacters": "キャラクターをスキャン中...",
     "scanningForCharactersProgress": "キャラクターをスキャン中...\n$current / $total",
     "loadingCharactersProgress": "キャラクターを読み込み中...\n$current / $total"

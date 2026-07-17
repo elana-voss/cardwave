@@ -32,14 +32,8 @@
     "beforeTitle": "Before",
     "afterTitle": "After"
   },
-  "requireApprovalTile": {
-    "edits": "Require approval: edits",
-    "additions": "Require approval: additions",
-    "deletions": "Require approval: deletions"
-  },
   "loadingStatus": {
     "initial": "Loading...",
-    "copyingAssistant": "Copying assistant...",
     "scanningForCharacters": "Scanning for characters...",
     "scanningForCharactersProgress": "Scanning for characters...\n$current / $total",
     "loadingCharactersProgress": "Loading characters...\n$current / $total"

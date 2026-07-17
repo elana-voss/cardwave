@@ -8,7 +8,6 @@ class _WorkspaceBody extends StatelessWidget {
     required this.characterFile,
     required this.primaryChat,
     required this.editor,
-    required this.assistantChat,
   });
   final ChatPageModeEnum mode;
   final bool isWideScreen;
@@ -16,7 +15,6 @@ class _WorkspaceBody extends StatelessWidget {
   final CharacterFile characterFile;
   final Widget primaryChat;
   final Widget editor;
-  final Widget assistantChat;
 
   @override
   Widget build(BuildContext context) {
@@ -91,14 +89,6 @@ class _WorkspaceBody extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: editor,
         ),
-      ),
-
-      ///
-      /// Editor-Assistant
-      ///
-      ChatPageModeEnum.splitEditorAssistant => WorkspaceSplitPane(
-        leftChild: editor,
-        rightChild: assistantChat,
       ),
     };
 

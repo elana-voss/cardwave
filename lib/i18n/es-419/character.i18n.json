@@ -32,14 +32,8 @@
     "beforeTitle": "Antes",
     "afterTitle": "Después"
   },
-  "requireApprovalTile": {
-    "edits": "Requerir aprobación: ediciones",
-    "additions": "Requerir aprobación: adiciones",
-    "deletions": "Requerir aprobación: eliminaciones"
-  },
   "loadingStatus": {
     "initial": "Cargando...",
-    "copyingAssistant": "Copiando asistente...",
     "scanningForCharacters": "Buscando personajes...",
     "scanningForCharactersProgress": "Buscando personajes...\n$current / $total",
     "loadingCharactersProgress": "Cargando personajes...\n$current / $total"

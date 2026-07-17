@@ -32,14 +32,8 @@
     "beforeTitle": "變更前",
     "afterTitle": "變更後"
   },
-  "requireApprovalTile": {
-    "edits": "需要核准：編輯",
-    "additions": "需要核准：新增",
-    "deletions": "需要核准：刪除"
-  },
   "loadingStatus": {
     "initial": "載入中…",
-    "copyingAssistant": "正在複製助理…",
     "scanningForCharacters": "正在掃描角色…",
     "scanningForCharactersProgress": "正在掃描角色…\n$current / $total",
     "loadingCharactersProgress": "正在載入角色…\n$current / $total"

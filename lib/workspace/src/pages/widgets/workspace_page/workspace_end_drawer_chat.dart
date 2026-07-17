@@ -18,20 +18,6 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (visibleChatController.isAssistant) ...[
-          DrawerSectionHeader(
-            t.workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader,
-          ),
-          const TileAssistantCardEditRequireApproval(
-            modality: CardEditModality.edit,
-          ),
-          const TileAssistantCardEditRequireApproval(
-            modality: CardEditModality.addition,
-          ),
-          const TileAssistantCardEditRequireApproval(
-            modality: CardEditModality.deletion,
-          ),
-        ],
         DrawerSectionHeader(t.group.groupChatPageEndDrawer.chatSectionHeader),
         TileNsfw(
           chatSession: visibleChatController.selectedChat,
@@ -48,7 +34,7 @@ class _WorkspaceEndDrawerChat extends StatelessWidget {
           characterFile: activeCharacterFile,
           onChanged: visibleChatController.refresh,
         ),
-        if (!visibleChatController.isAssistant) const TileRecalledMemory(),
+        const TileRecalledMemory(),
         if (isAdvanced) ...[
           TileTrailingParagraph(
             chatSession: visibleChatController.selectedChat,

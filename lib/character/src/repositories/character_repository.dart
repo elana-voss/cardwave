@@ -285,17 +285,4 @@ class CharacterRepository {
     );
   }
 
-  Future<bool> copyDefaultAssistant() async {
-    final byteData = await rootBundle.load('assets/cards/Cass_Assistant.png');
-
-    final bytesToUse = byteData.buffer.asUint8List(
-      byteData.offsetInBytes,
-      byteData.lengthInBytes,
-    );
-
-    return _ioCharacter.ensureDefaultAssistantExists(
-      bytesToUse,
-      'Cass_Assistant.png',
-    );
-  }
 }

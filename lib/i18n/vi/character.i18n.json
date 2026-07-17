@@ -32,14 +32,8 @@
     "beforeTitle": "Trước",
     "afterTitle": "Sau"
   },
-  "requireApprovalTile": {
-    "edits": "Yêu cầu duyệt: chỉnh sửa",
-    "additions": "Yêu cầu duyệt: bổ sung",
-    "deletions": "Yêu cầu duyệt: xóa bỏ"
-  },
   "loadingStatus": {
     "initial": "Đang tải...",
-    "copyingAssistant": "Đang sao chép trợ lý...",
     "scanningForCharacters": "Đang quét nhân vật...",
     "scanningForCharactersProgress": "Đang quét nhân vật...\n$current / $total",
     "loadingCharactersProgress": "Đang tải nhân vật...\n$current / $total"

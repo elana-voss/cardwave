@@ -32,14 +32,8 @@
     "beforeTitle": "이전",
     "afterTitle": "이후"
   },
-  "requireApprovalTile": {
-    "edits": "승인 필요: 편집",
-    "additions": "승인 필요: 추가",
-    "deletions": "승인 필요: 삭제"
-  },
   "loadingStatus": {
     "initial": "불러오는 중...",
-    "copyingAssistant": "어시스턴트 복사 중...",
     "scanningForCharacters": "캐릭터 검색 중...",
     "scanningForCharactersProgress": "캐릭터 검색 중...\n$current / $total",
     "loadingCharactersProgress": "캐릭터 불러오는 중...\n$current / $total"

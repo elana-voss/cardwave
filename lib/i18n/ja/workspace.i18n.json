@@ -26,9 +26,7 @@
   "workspaceEndDrawerChatTheme": {
     "resetImagesTitle": "画像をリセット"
   },
-  "workspaceEndDrawerChat": {
-    "assistantCardEditsSectionHeader": "アシスタントによるカード編集"
-  },
+  "workspaceEndDrawerChat": {},
   "workspaceEndDrawer": {
     "favoriteLabel": "お気に入り",
     "characterSubtitle": "キャラクター"
@@ -39,7 +37,6 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "チャットインデックスを再構築中...",
     "selectChatToStartMessagingMessage": "メッセージを始めるにはチャットを選択してください",
-    "failedToLoadAssistantMessage": "アシスタントの読み込みに失敗しました。",
     "connectProviderToChatMessage": "チャットを開始するには AI プロバイダーを接続してください。",
     "setUpProviderButton": "AI プロバイダーを設定",
     "startNewChatButton": "新しいチャット"

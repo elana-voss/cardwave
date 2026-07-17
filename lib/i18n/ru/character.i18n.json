@@ -32,14 +32,8 @@
     "beforeTitle": "До",
     "afterTitle": "После"
   },
-  "requireApprovalTile": {
-    "edits": "Требовать одобрения: правки",
-    "additions": "Требовать одобрения: добавления",
-    "deletions": "Требовать одобрения: удаления"
-  },
   "loadingStatus": {
     "initial": "Загрузка...",
-    "copyingAssistant": "Копирование ассистента...",
     "scanningForCharacters": "Поиск персонажей...",
     "scanningForCharactersProgress": "Поиск персонажей...\n$current / $total",
     "loadingCharactersProgress": "Загрузка персонажей...\n$current / $total"

@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 10
-/// Strings: 8446 (844 per locale)
+/// Strings: 8366 (836 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -189,7 +189,6 @@ class _TranslationsCharacterEn {
 	// Translations
 	late final _TranslationsCharacterPromptPrefixDialogEn promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogEn._(_root);
 	late final _TranslationsCharacterCardEditApprovalEn cardEditApproval = _TranslationsCharacterCardEditApprovalEn._(_root);
-	late final _TranslationsCharacterRequireApprovalTileEn requireApprovalTile = _TranslationsCharacterRequireApprovalTileEn._(_root);
 	late final _TranslationsCharacterLoadingStatusEn loadingStatus = _TranslationsCharacterLoadingStatusEn._(_root);
 	late final _TranslationsCharacterSavePathValidationEn savePathValidation = _TranslationsCharacterSavePathValidationEn._(_root);
 	String get characterFilesTypeGroupLabel => 'Character Files';
@@ -524,18 +523,6 @@ class _TranslationsCharacterCardEditApprovalEn {
 	String get afterTitle => 'After';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileEn._(this._root);
-
-	final Translations _root; // ignore: unused_field
-
-	// Translations
-	String get edits => 'Require approval: edits';
-	String get additions => 'Require approval: additions';
-	String get deletions => 'Require approval: deletions';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusEn._(this._root);
@@ -544,7 +531,6 @@ class _TranslationsCharacterLoadingStatusEn {
 
 	// Translations
 	String get initial => 'Loading...';
-	String get copyingAssistant => 'Copying assistant...';
 	String get scanningForCharacters => 'Scanning for characters...';
 	String scanningForCharactersProgress({required Object current, required Object total}) => 'Scanning for characters...\n${current} / ${total}';
 	String loadingCharactersProgress({required Object current, required Object total}) => 'Loading characters...\n${current} / ${total}';
@@ -1424,8 +1410,6 @@ class _TranslationsEditorAppBarEditorEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String get hideAssistantPanelTooltip => 'Hide assistant panel';
-	String get showChatAssistantTooltip => 'Show chat assistant side-by-side';
 }
 
 // Path: editor.findReplaceDialog
@@ -2766,7 +2750,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String get assistantCardEditsSectionHeader => 'Assistant Card Edits';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -2799,7 +2782,6 @@ class _TranslationsWorkspaceWorkspacePageEn {
 	// Translations
 	String get rebuildingChatIndexMessage => 'Rebuilding chat index...';
 	String get selectChatToStartMessagingMessage => 'Select a chat to start messaging';
-	String get failedToLoadAssistantMessage => 'Failed to load assistant.';
 	String get connectProviderToChatMessage => 'Connect an AI provider to start chatting.';
 	String get setUpProviderButton => 'Set up AI provider';
 	String get startNewChatButton => 'New chat';
@@ -2890,7 +2872,6 @@ class _TranslationsCharacterEs419 extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogEs419 promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogEs419._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalEs419 cardEditApproval = _TranslationsCharacterCardEditApprovalEs419._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileEs419 requireApprovalTile = _TranslationsCharacterRequireApprovalTileEs419._(_root);
 	@override late final _TranslationsCharacterLoadingStatusEs419 loadingStatus = _TranslationsCharacterLoadingStatusEs419._(_root);
 	@override late final _TranslationsCharacterSavePathValidationEs419 savePathValidation = _TranslationsCharacterSavePathValidationEs419._(_root);
 	@override String get characterFilesTypeGroupLabel => 'Archivos de personaje';
@@ -3225,18 +3206,6 @@ class _TranslationsCharacterCardEditApprovalEs419 extends _TranslationsCharacter
 	@override String get afterTitle => 'Después';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileEs419 extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
-
-	@override final _TranslationsEs419 _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => 'Requerir aprobación: ediciones';
-	@override String get additions => 'Requerir aprobación: adiciones';
-	@override String get deletions => 'Requerir aprobación: eliminaciones';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusEs419 extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusEs419._(_TranslationsEs419 root) : this._root = root, super._(root);
@@ -3245,7 +3214,6 @@ class _TranslationsCharacterLoadingStatusEs419 extends _TranslationsCharacterLoa
 
 	// Translations
 	@override String get initial => 'Cargando...';
-	@override String get copyingAssistant => 'Copiando asistente...';
 	@override String get scanningForCharacters => 'Buscando personajes...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'Buscando personajes...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'Cargando personajes...\n${current} / ${total}';
@@ -4125,8 +4093,6 @@ class _TranslationsEditorAppBarEditorEs419 extends _TranslationsEditorAppBarEdit
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'Ocultar panel del asistente';
-	@override String get showChatAssistantTooltip => 'Mostrar asistente de chat lado a lado';
 }
 
 // Path: editor.findReplaceDialog
@@ -5467,7 +5433,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatEs419 extends _TranslationsWor
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'Ediciones de tarjeta por el asistente';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -5500,7 +5465,6 @@ class _TranslationsWorkspaceWorkspacePageEs419 extends _TranslationsWorkspaceWor
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'Reconstruyendo el índice de chats...';
 	@override String get selectChatToStartMessagingMessage => 'Selecciona un chat para empezar a chatear';
-	@override String get failedToLoadAssistantMessage => 'Error al cargar el asistente.';
 	@override String get connectProviderToChatMessage => 'Conecta un proveedor de IA para empezar a chatear.';
 	@override String get setUpProviderButton => 'Configurar proveedor de IA';
 	@override String get startNewChatButton => 'Nuevo chat';
@@ -5591,7 +5555,6 @@ class _TranslationsCharacterHi extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogHi promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogHi._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalHi cardEditApproval = _TranslationsCharacterCardEditApprovalHi._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileHi requireApprovalTile = _TranslationsCharacterRequireApprovalTileHi._(_root);
 	@override late final _TranslationsCharacterLoadingStatusHi loadingStatus = _TranslationsCharacterLoadingStatusHi._(_root);
 	@override late final _TranslationsCharacterSavePathValidationHi savePathValidation = _TranslationsCharacterSavePathValidationHi._(_root);
 	@override String get characterFilesTypeGroupLabel => 'कैरेक्टर फ़ाइलें';
@@ -5926,18 +5889,6 @@ class _TranslationsCharacterCardEditApprovalHi extends _TranslationsCharacterCar
 	@override String get afterTitle => 'बाद में';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileHi extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileHi._(_TranslationsHi root) : this._root = root, super._(root);
-
-	@override final _TranslationsHi _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => 'अनुमोदन आवश्यक: एडिट';
-	@override String get additions => 'अनुमोदन आवश्यक: जोड़';
-	@override String get deletions => 'अनुमोदन आवश्यक: हटाव';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusHi extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusHi._(_TranslationsHi root) : this._root = root, super._(root);
@@ -5946,7 +5897,6 @@ class _TranslationsCharacterLoadingStatusHi extends _TranslationsCharacterLoadin
 
 	// Translations
 	@override String get initial => 'लोड हो रहा है...';
-	@override String get copyingAssistant => 'असिस्टेंट कॉपी हो रहा है...';
 	@override String get scanningForCharacters => 'कैरेक्टर स्कैन हो रहे हैं...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'कैरेक्टर स्कैन हो रहे हैं...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'कैरेक्टर लोड हो रहे हैं...\n${current} / ${total}';
@@ -6826,8 +6776,6 @@ class _TranslationsEditorAppBarEditorHi extends _TranslationsEditorAppBarEditorE
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'असिस्टेंट पैनल छिपाएं';
-	@override String get showChatAssistantTooltip => 'चैट असिस्टेंट साथ-साथ दिखाएं';
 }
 
 // Path: editor.findReplaceDialog
@@ -8168,7 +8116,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatHi extends _TranslationsWorksp
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'असिस्टेंट कार्ड एडिट';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -8201,7 +8148,6 @@ class _TranslationsWorkspaceWorkspacePageHi extends _TranslationsWorkspaceWorksp
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'चैट इंडेक्स फिर से बन रहा है...';
 	@override String get selectChatToStartMessagingMessage => 'मैसेजिंग शुरू करने के लिए एक चैट चुनें';
-	@override String get failedToLoadAssistantMessage => 'असिस्टेंट लोड करने में विफल।';
 	@override String get connectProviderToChatMessage => 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
 	@override String get setUpProviderButton => 'AI प्रोवाइडर सेट अप करें';
 	@override String get startNewChatButton => 'नई चैट';
@@ -8292,7 +8238,6 @@ class _TranslationsCharacterJa extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogJa promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogJa._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalJa cardEditApproval = _TranslationsCharacterCardEditApprovalJa._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileJa requireApprovalTile = _TranslationsCharacterRequireApprovalTileJa._(_root);
 	@override late final _TranslationsCharacterLoadingStatusJa loadingStatus = _TranslationsCharacterLoadingStatusJa._(_root);
 	@override late final _TranslationsCharacterSavePathValidationJa savePathValidation = _TranslationsCharacterSavePathValidationJa._(_root);
 	@override String get characterFilesTypeGroupLabel => 'キャラクターファイル';
@@ -8627,18 +8572,6 @@ class _TranslationsCharacterCardEditApprovalJa extends _TranslationsCharacterCar
 	@override String get afterTitle => '変更後';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileJa extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileJa._(_TranslationsJa root) : this._root = root, super._(root);
-
-	@override final _TranslationsJa _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => '承認を必須にする：編集';
-	@override String get additions => '承認を必須にする：追加';
-	@override String get deletions => '承認を必須にする：削除';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusJa extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusJa._(_TranslationsJa root) : this._root = root, super._(root);
@@ -8647,7 +8580,6 @@ class _TranslationsCharacterLoadingStatusJa extends _TranslationsCharacterLoadin
 
 	// Translations
 	@override String get initial => '読み込み中...';
-	@override String get copyingAssistant => 'アシスタントをコピー中...';
 	@override String get scanningForCharacters => 'キャラクターをスキャン中...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'キャラクターをスキャン中...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'キャラクターを読み込み中...\n${current} / ${total}';
@@ -9522,8 +9454,6 @@ class _TranslationsEditorAppBarEditorJa extends _TranslationsEditorAppBarEditorE
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'アシスタントパネルを非表示';
-	@override String get showChatAssistantTooltip => 'チャットアシスタントを並べて表示';
 }
 
 // Path: editor.findReplaceDialog
@@ -10861,7 +10791,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatJa extends _TranslationsWorksp
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'アシスタントによるカード編集';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -10894,7 +10823,6 @@ class _TranslationsWorkspaceWorkspacePageJa extends _TranslationsWorkspaceWorksp
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'チャットインデックスを再構築中...';
 	@override String get selectChatToStartMessagingMessage => 'メッセージを始めるにはチャットを選択してください';
-	@override String get failedToLoadAssistantMessage => 'アシスタントの読み込みに失敗しました。';
 	@override String get connectProviderToChatMessage => 'チャットを開始するには AI プロバイダーを接続してください。';
 	@override String get setUpProviderButton => 'AI プロバイダーを設定';
 	@override String get startNewChatButton => '新しいチャット';
@@ -10985,7 +10913,6 @@ class _TranslationsCharacterKo extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogKo promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogKo._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalKo cardEditApproval = _TranslationsCharacterCardEditApprovalKo._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileKo requireApprovalTile = _TranslationsCharacterRequireApprovalTileKo._(_root);
 	@override late final _TranslationsCharacterLoadingStatusKo loadingStatus = _TranslationsCharacterLoadingStatusKo._(_root);
 	@override late final _TranslationsCharacterSavePathValidationKo savePathValidation = _TranslationsCharacterSavePathValidationKo._(_root);
 	@override String get characterFilesTypeGroupLabel => '캐릭터 파일';
@@ -11320,18 +11247,6 @@ class _TranslationsCharacterCardEditApprovalKo extends _TranslationsCharacterCar
 	@override String get afterTitle => '이후';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileKo extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileKo._(_TranslationsKo root) : this._root = root, super._(root);
-
-	@override final _TranslationsKo _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => '승인 필요: 편집';
-	@override String get additions => '승인 필요: 추가';
-	@override String get deletions => '승인 필요: 삭제';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusKo extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusKo._(_TranslationsKo root) : this._root = root, super._(root);
@@ -11340,7 +11255,6 @@ class _TranslationsCharacterLoadingStatusKo extends _TranslationsCharacterLoadin
 
 	// Translations
 	@override String get initial => '불러오는 중...';
-	@override String get copyingAssistant => '어시스턴트 복사 중...';
 	@override String get scanningForCharacters => '캐릭터 검색 중...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => '캐릭터 검색 중...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => '캐릭터 불러오는 중...\n${current} / ${total}';
@@ -12215,8 +12129,6 @@ class _TranslationsEditorAppBarEditorKo extends _TranslationsEditorAppBarEditorE
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => '어시스턴트 패널 숨기기';
-	@override String get showChatAssistantTooltip => '채팅 어시스턴트 나란히 보기';
 }
 
 // Path: editor.findReplaceDialog
@@ -13554,7 +13466,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatKo extends _TranslationsWorksp
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => '어시스턴트 카드 편집';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -13587,7 +13498,6 @@ class _TranslationsWorkspaceWorkspacePageKo extends _TranslationsWorkspaceWorksp
 	// Translations
 	@override String get rebuildingChatIndexMessage => '채팅 색인 다시 만드는 중...';
 	@override String get selectChatToStartMessagingMessage => '메시지를 시작하려면 채팅을 선택하세요';
-	@override String get failedToLoadAssistantMessage => '어시스턴트를 불러오지 못했어요.';
 	@override String get connectProviderToChatMessage => '채팅을 시작하려면 AI 제공자를 연결하세요.';
 	@override String get setUpProviderButton => 'AI 제공자 설정';
 	@override String get startNewChatButton => '새 채팅';
@@ -13678,7 +13588,6 @@ class _TranslationsCharacterPtBr extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogPtBr promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogPtBr._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalPtBr cardEditApproval = _TranslationsCharacterCardEditApprovalPtBr._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTilePtBr requireApprovalTile = _TranslationsCharacterRequireApprovalTilePtBr._(_root);
 	@override late final _TranslationsCharacterLoadingStatusPtBr loadingStatus = _TranslationsCharacterLoadingStatusPtBr._(_root);
 	@override late final _TranslationsCharacterSavePathValidationPtBr savePathValidation = _TranslationsCharacterSavePathValidationPtBr._(_root);
 	@override String get characterFilesTypeGroupLabel => 'Arquivos de personagem';
@@ -14013,18 +13922,6 @@ class _TranslationsCharacterCardEditApprovalPtBr extends _TranslationsCharacterC
 	@override String get afterTitle => 'Depois';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTilePtBr extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTilePtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
-
-	@override final _TranslationsPtBr _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => 'Exigir aprovação: edições';
-	@override String get additions => 'Exigir aprovação: adições';
-	@override String get deletions => 'Exigir aprovação: exclusões';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusPtBr extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusPtBr._(_TranslationsPtBr root) : this._root = root, super._(root);
@@ -14033,7 +13930,6 @@ class _TranslationsCharacterLoadingStatusPtBr extends _TranslationsCharacterLoad
 
 	// Translations
 	@override String get initial => 'Carregando...';
-	@override String get copyingAssistant => 'Copiando assistente...';
 	@override String get scanningForCharacters => 'Procurando personagens...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'Procurando personagens...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'Carregando personagens...\n${current} / ${total}';
@@ -14913,8 +14809,6 @@ class _TranslationsEditorAppBarEditorPtBr extends _TranslationsEditorAppBarEdito
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'Ocultar painel do assistente';
-	@override String get showChatAssistantTooltip => 'Mostrar assistente de conversa lado a lado';
 }
 
 // Path: editor.findReplaceDialog
@@ -16255,7 +16149,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatPtBr extends _TranslationsWork
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'Edições de cartão pelo assistente';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -16288,7 +16181,6 @@ class _TranslationsWorkspaceWorkspacePagePtBr extends _TranslationsWorkspaceWork
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'Reconstruindo índice de conversas...';
 	@override String get selectChatToStartMessagingMessage => 'Selecione uma conversa para começar';
-	@override String get failedToLoadAssistantMessage => 'Falha ao carregar o assistente.';
 	@override String get connectProviderToChatMessage => 'Conecte um provedor de IA para começar a conversar.';
 	@override String get setUpProviderButton => 'Configurar provedor de IA';
 	@override String get startNewChatButton => 'Novo chat';
@@ -16379,7 +16271,6 @@ class _TranslationsCharacterRu extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogRu promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogRu._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalRu cardEditApproval = _TranslationsCharacterCardEditApprovalRu._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileRu requireApprovalTile = _TranslationsCharacterRequireApprovalTileRu._(_root);
 	@override late final _TranslationsCharacterLoadingStatusRu loadingStatus = _TranslationsCharacterLoadingStatusRu._(_root);
 	@override late final _TranslationsCharacterSavePathValidationRu savePathValidation = _TranslationsCharacterSavePathValidationRu._(_root);
 	@override String get characterFilesTypeGroupLabel => 'Файлы персонажей';
@@ -16714,18 +16605,6 @@ class _TranslationsCharacterCardEditApprovalRu extends _TranslationsCharacterCar
 	@override String get afterTitle => 'После';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileRu extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileRu._(_TranslationsRu root) : this._root = root, super._(root);
-
-	@override final _TranslationsRu _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => 'Требовать одобрения: правки';
-	@override String get additions => 'Требовать одобрения: добавления';
-	@override String get deletions => 'Требовать одобрения: удаления';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusRu extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusRu._(_TranslationsRu root) : this._root = root, super._(root);
@@ -16734,7 +16613,6 @@ class _TranslationsCharacterLoadingStatusRu extends _TranslationsCharacterLoadin
 
 	// Translations
 	@override String get initial => 'Загрузка...';
-	@override String get copyingAssistant => 'Копирование ассистента...';
 	@override String get scanningForCharacters => 'Поиск персонажей...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'Поиск персонажей...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'Загрузка персонажей...\n${current} / ${total}';
@@ -17624,8 +17502,6 @@ class _TranslationsEditorAppBarEditorRu extends _TranslationsEditorAppBarEditorE
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'Скрыть панель ассистента';
-	@override String get showChatAssistantTooltip => 'Показать чат-ассистент рядом';
 }
 
 // Path: editor.findReplaceDialog
@@ -18972,7 +18848,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatRu extends _TranslationsWorksp
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'Правки карточки ассистентом';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -19005,7 +18880,6 @@ class _TranslationsWorkspaceWorkspacePageRu extends _TranslationsWorkspaceWorksp
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'Перестроение индекса чата...';
 	@override String get selectChatToStartMessagingMessage => 'Выберите чат, чтобы начать переписку';
-	@override String get failedToLoadAssistantMessage => 'Не удалось загрузить ассистента.';
 	@override String get connectProviderToChatMessage => 'Подключите провайдер ИИ, чтобы начать общение.';
 	@override String get setUpProviderButton => 'Настроить провайдер ИИ';
 	@override String get startNewChatButton => 'Новый чат';
@@ -19096,7 +18970,6 @@ class _TranslationsCharacterVi extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogVi promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogVi._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalVi cardEditApproval = _TranslationsCharacterCardEditApprovalVi._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileVi requireApprovalTile = _TranslationsCharacterRequireApprovalTileVi._(_root);
 	@override late final _TranslationsCharacterLoadingStatusVi loadingStatus = _TranslationsCharacterLoadingStatusVi._(_root);
 	@override late final _TranslationsCharacterSavePathValidationVi savePathValidation = _TranslationsCharacterSavePathValidationVi._(_root);
 	@override String get characterFilesTypeGroupLabel => 'Tệp nhân vật';
@@ -19431,18 +19304,6 @@ class _TranslationsCharacterCardEditApprovalVi extends _TranslationsCharacterCar
 	@override String get afterTitle => 'Sau';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileVi extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileVi._(_TranslationsVi root) : this._root = root, super._(root);
-
-	@override final _TranslationsVi _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => 'Yêu cầu duyệt: chỉnh sửa';
-	@override String get additions => 'Yêu cầu duyệt: bổ sung';
-	@override String get deletions => 'Yêu cầu duyệt: xóa bỏ';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusVi extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusVi._(_TranslationsVi root) : this._root = root, super._(root);
@@ -19451,7 +19312,6 @@ class _TranslationsCharacterLoadingStatusVi extends _TranslationsCharacterLoadin
 
 	// Translations
 	@override String get initial => 'Đang tải...';
-	@override String get copyingAssistant => 'Đang sao chép trợ lý...';
 	@override String get scanningForCharacters => 'Đang quét nhân vật...';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => 'Đang quét nhân vật...\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => 'Đang tải nhân vật...\n${current} / ${total}';
@@ -20326,8 +20186,6 @@ class _TranslationsEditorAppBarEditorVi extends _TranslationsEditorAppBarEditorE
 	@override final _TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => 'Ẩn bảng trợ lý';
-	@override String get showChatAssistantTooltip => 'Hiện trợ lý trò chuyện song song';
 }
 
 // Path: editor.findReplaceDialog
@@ -21665,7 +21523,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatVi extends _TranslationsWorksp
 	@override final _TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => 'Chỉnh sửa thẻ bởi trợ lý';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -21698,7 +21555,6 @@ class _TranslationsWorkspaceWorkspacePageVi extends _TranslationsWorkspaceWorksp
 	// Translations
 	@override String get rebuildingChatIndexMessage => 'Đang xây dựng lại chỉ mục trò chuyện...';
 	@override String get selectChatToStartMessagingMessage => 'Chọn một cuộc trò chuyện để bắt đầu nhắn tin';
-	@override String get failedToLoadAssistantMessage => 'Không thể tải trợ lý.';
 	@override String get connectProviderToChatMessage => 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
 	@override String get setUpProviderButton => 'Thiết lập nhà cung cấp AI';
 	@override String get startNewChatButton => 'Cuộc trò chuyện mới';
@@ -21789,7 +21645,6 @@ class _TranslationsCharacterZhHans extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogZhHans promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogZhHans._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalZhHans cardEditApproval = _TranslationsCharacterCardEditApprovalZhHans._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileZhHans requireApprovalTile = _TranslationsCharacterRequireApprovalTileZhHans._(_root);
 	@override late final _TranslationsCharacterLoadingStatusZhHans loadingStatus = _TranslationsCharacterLoadingStatusZhHans._(_root);
 	@override late final _TranslationsCharacterSavePathValidationZhHans savePathValidation = _TranslationsCharacterSavePathValidationZhHans._(_root);
 	@override String get characterFilesTypeGroupLabel => '角色文件';
@@ -22124,18 +21979,6 @@ class _TranslationsCharacterCardEditApprovalZhHans extends _TranslationsCharacte
 	@override String get afterTitle => '更改后';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileZhHans extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHans _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => '需要批准：编辑';
-	@override String get additions => '需要批准：新增';
-	@override String get deletions => '需要批准：删除';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusZhHans extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusZhHans._(_TranslationsZhHans root) : this._root = root, super._(root);
@@ -22144,7 +21987,6 @@ class _TranslationsCharacterLoadingStatusZhHans extends _TranslationsCharacterLo
 
 	// Translations
 	@override String get initial => '加载中…';
-	@override String get copyingAssistant => '正在复制助手…';
 	@override String get scanningForCharacters => '正在扫描角色…';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => '正在扫描角色…\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => '正在加载角色…\n${current} / ${total}';
@@ -23019,8 +22861,6 @@ class _TranslationsEditorAppBarEditorZhHans extends _TranslationsEditorAppBarEdi
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => '隐藏助手面板';
-	@override String get showChatAssistantTooltip => '并排显示对话助手';
 }
 
 // Path: editor.findReplaceDialog
@@ -24358,7 +24198,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatZhHans extends _TranslationsWo
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => '助手卡片编辑';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -24391,7 +24230,6 @@ class _TranslationsWorkspaceWorkspacePageZhHans extends _TranslationsWorkspaceWo
 	// Translations
 	@override String get rebuildingChatIndexMessage => '正在重建对话索引…';
 	@override String get selectChatToStartMessagingMessage => '选择一段对话开始聊天';
-	@override String get failedToLoadAssistantMessage => '加载助手失败。';
 	@override String get connectProviderToChatMessage => '连接一个 AI 服务商即可开始聊天。';
 	@override String get setUpProviderButton => '设置 AI 服务商';
 	@override String get startNewChatButton => '新聊天';
@@ -24482,7 +24320,6 @@ class _TranslationsCharacterZhHant extends _TranslationsCharacterEn {
 	// Translations
 	@override late final _TranslationsCharacterPromptPrefixDialogZhHant promptPrefixDialog = _TranslationsCharacterPromptPrefixDialogZhHant._(_root);
 	@override late final _TranslationsCharacterCardEditApprovalZhHant cardEditApproval = _TranslationsCharacterCardEditApprovalZhHant._(_root);
-	@override late final _TranslationsCharacterRequireApprovalTileZhHant requireApprovalTile = _TranslationsCharacterRequireApprovalTileZhHant._(_root);
 	@override late final _TranslationsCharacterLoadingStatusZhHant loadingStatus = _TranslationsCharacterLoadingStatusZhHant._(_root);
 	@override late final _TranslationsCharacterSavePathValidationZhHant savePathValidation = _TranslationsCharacterSavePathValidationZhHant._(_root);
 	@override String get characterFilesTypeGroupLabel => '角色檔案';
@@ -24817,18 +24654,6 @@ class _TranslationsCharacterCardEditApprovalZhHant extends _TranslationsCharacte
 	@override String get afterTitle => '變更後';
 }
 
-// Path: character.requireApprovalTile
-class _TranslationsCharacterRequireApprovalTileZhHant extends _TranslationsCharacterRequireApprovalTileEn {
-	_TranslationsCharacterRequireApprovalTileZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
-
-	@override final _TranslationsZhHant _root; // ignore: unused_field
-
-	// Translations
-	@override String get edits => '需要核准：編輯';
-	@override String get additions => '需要核准：新增';
-	@override String get deletions => '需要核准：刪除';
-}
-
 // Path: character.loadingStatus
 class _TranslationsCharacterLoadingStatusZhHant extends _TranslationsCharacterLoadingStatusEn {
 	_TranslationsCharacterLoadingStatusZhHant._(_TranslationsZhHant root) : this._root = root, super._(root);
@@ -24837,7 +24662,6 @@ class _TranslationsCharacterLoadingStatusZhHant extends _TranslationsCharacterLo
 
 	// Translations
 	@override String get initial => '載入中…';
-	@override String get copyingAssistant => '正在複製助理…';
 	@override String get scanningForCharacters => '正在掃描角色…';
 	@override String scanningForCharactersProgress({required Object current, required Object total}) => '正在掃描角色…\n${current} / ${total}';
 	@override String loadingCharactersProgress({required Object current, required Object total}) => '正在載入角色…\n${current} / ${total}';
@@ -25712,8 +25536,6 @@ class _TranslationsEditorAppBarEditorZhHant extends _TranslationsEditorAppBarEdi
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get hideAssistantPanelTooltip => '隱藏助理面板';
-	@override String get showChatAssistantTooltip => '並排顯示對話助理';
 }
 
 // Path: editor.findReplaceDialog
@@ -27051,7 +26873,6 @@ class _TranslationsWorkspaceWorkspaceEndDrawerChatZhHant extends _TranslationsWo
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String get assistantCardEditsSectionHeader => '助理卡片編輯';
 }
 
 // Path: workspace.workspaceEndDrawer
@@ -27084,7 +26905,6 @@ class _TranslationsWorkspaceWorkspacePageZhHant extends _TranslationsWorkspaceWo
 	// Translations
 	@override String get rebuildingChatIndexMessage => '正在重建對話索引…';
 	@override String get selectChatToStartMessagingMessage => '選擇一段對話開始傳訊';
-	@override String get failedToLoadAssistantMessage => '載入助理失敗。';
 	@override String get connectProviderToChatMessage => '連線 AI 服務商即可開始聊天。';
 	@override String get setUpProviderButton => '設定 AI 服務商';
 	@override String get startNewChatButton => '新聊天';
@@ -27146,11 +26966,7 @@ extension on Translations {
 			case 'character.cardEditApproval.removingTitle': return 'Removing';
 			case 'character.cardEditApproval.beforeTitle': return 'Before';
 			case 'character.cardEditApproval.afterTitle': return 'After';
-			case 'character.requireApprovalTile.edits': return 'Require approval: edits';
-			case 'character.requireApprovalTile.additions': return 'Require approval: additions';
-			case 'character.requireApprovalTile.deletions': return 'Require approval: deletions';
 			case 'character.loadingStatus.initial': return 'Loading...';
-			case 'character.loadingStatus.copyingAssistant': return 'Copying assistant...';
 			case 'character.loadingStatus.scanningForCharacters': return 'Scanning for characters...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Scanning for characters...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Loading characters...\n${current} / ${total}';
@@ -27423,8 +27239,6 @@ extension on Translations {
 			case 'editor.panelLabels.group': return 'Group';
 			case 'editor.panelLabels.creator': return 'Creator';
 			case 'editor.panelLabels.appData': return 'App Data';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Hide assistant panel';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Show chat assistant side-by-side';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirm Replace All';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Are you sure you want to proceed?\nThis action is irreversible and affects all fields.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Proceed';
@@ -27973,13 +27787,11 @@ extension on Translations {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Export as JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Export as JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Reset Images';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Assistant Card Edits';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorite';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Character';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'No style selected';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Rebuilding chat index...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Select a chat to start messaging';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Failed to load assistant.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Connect an AI provider to start chatting.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Set up AI provider';
 			case 'workspace.workspacePage.startNewChatButton': return 'New chat';
@@ -28017,11 +27829,7 @@ extension on _TranslationsEs419 {
 			case 'character.cardEditApproval.removingTitle': return 'Quitando';
 			case 'character.cardEditApproval.beforeTitle': return 'Antes';
 			case 'character.cardEditApproval.afterTitle': return 'Después';
-			case 'character.requireApprovalTile.edits': return 'Requerir aprobación: ediciones';
-			case 'character.requireApprovalTile.additions': return 'Requerir aprobación: adiciones';
-			case 'character.requireApprovalTile.deletions': return 'Requerir aprobación: eliminaciones';
 			case 'character.loadingStatus.initial': return 'Cargando...';
-			case 'character.loadingStatus.copyingAssistant': return 'Copiando asistente...';
 			case 'character.loadingStatus.scanningForCharacters': return 'Buscando personajes...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Buscando personajes...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Cargando personajes...\n${current} / ${total}';
@@ -28294,8 +28102,6 @@ extension on _TranslationsEs419 {
 			case 'editor.panelLabels.group': return 'Grupo';
 			case 'editor.panelLabels.creator': return 'Creador';
 			case 'editor.panelLabels.appData': return 'Datos de la app';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ocultar panel del asistente';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Mostrar asistente de chat lado a lado';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirmar Reemplazar todo';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '¿Seguro que quieres continuar?\nEsta acción es irreversible y afecta a todos los campos.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Continuar';
@@ -28844,13 +28650,11 @@ extension on _TranslationsEs419 {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Exportar como JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Exportar como JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Restablecer imágenes';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Ediciones de tarjeta por el asistente';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorito';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Personaje';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Ningún estilo seleccionado';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruyendo el índice de chats...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Selecciona un chat para empezar a chatear';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Error al cargar el asistente.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Conecta un proveedor de IA para empezar a chatear.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Configurar proveedor de IA';
 			case 'workspace.workspacePage.startNewChatButton': return 'Nuevo chat';
@@ -28888,11 +28692,7 @@ extension on _TranslationsHi {
 			case 'character.cardEditApproval.removingTitle': return 'हटाया जा रहा है';
 			case 'character.cardEditApproval.beforeTitle': return 'पहले';
 			case 'character.cardEditApproval.afterTitle': return 'बाद में';
-			case 'character.requireApprovalTile.edits': return 'अनुमोदन आवश्यक: एडिट';
-			case 'character.requireApprovalTile.additions': return 'अनुमोदन आवश्यक: जोड़';
-			case 'character.requireApprovalTile.deletions': return 'अनुमोदन आवश्यक: हटाव';
 			case 'character.loadingStatus.initial': return 'लोड हो रहा है...';
-			case 'character.loadingStatus.copyingAssistant': return 'असिस्टेंट कॉपी हो रहा है...';
 			case 'character.loadingStatus.scanningForCharacters': return 'कैरेक्टर स्कैन हो रहे हैं...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'कैरेक्टर स्कैन हो रहे हैं...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'कैरेक्टर लोड हो रहे हैं...\n${current} / ${total}';
@@ -29165,8 +28965,6 @@ extension on _TranslationsHi {
 			case 'editor.panelLabels.group': return 'ग्रुप';
 			case 'editor.panelLabels.creator': return 'निर्माता';
 			case 'editor.panelLabels.appData': return 'ऐप डेटा';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'असिस्टेंट पैनल छिपाएं';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'चैट असिस्टेंट साथ-साथ दिखाएं';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'सभी बदलने की पुष्टि करें';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'क्या आप वाकई आगे बढ़ना चाहते हैं?\nयह क्रिया अपरिवर्तनीय है और सभी फ़ील्ड को प्रभावित करती है।';
 			case 'editor.findReplaceDialog.proceedButton': return 'आगे बढ़ें';
@@ -29715,13 +29513,11 @@ extension on _TranslationsHi {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'JSON (V3) के रूप में एक्सपोर्ट करें';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'JSON (V2) के रूप में एक्सपोर्ट करें';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'इमेज रीसेट करें';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'असिस्टेंट कार्ड एडिट';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'पसंदीदा';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'कैरेक्टर';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'कोई स्टाइल चयनित नहीं';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'चैट इंडेक्स फिर से बन रहा है...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'मैसेजिंग शुरू करने के लिए एक चैट चुनें';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'असिस्टेंट लोड करने में विफल।';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'चैट शुरू करने के लिए एक AI प्रोवाइडर कनेक्ट करें।';
 			case 'workspace.workspacePage.setUpProviderButton': return 'AI प्रोवाइडर सेट अप करें';
 			case 'workspace.workspacePage.startNewChatButton': return 'नई चैट';
@@ -29759,11 +29555,7 @@ extension on _TranslationsJa {
 			case 'character.cardEditApproval.removingTitle': return '削除中';
 			case 'character.cardEditApproval.beforeTitle': return '変更前';
 			case 'character.cardEditApproval.afterTitle': return '変更後';
-			case 'character.requireApprovalTile.edits': return '承認を必須にする：編集';
-			case 'character.requireApprovalTile.additions': return '承認を必須にする：追加';
-			case 'character.requireApprovalTile.deletions': return '承認を必須にする：削除';
 			case 'character.loadingStatus.initial': return '読み込み中...';
-			case 'character.loadingStatus.copyingAssistant': return 'アシスタントをコピー中...';
 			case 'character.loadingStatus.scanningForCharacters': return 'キャラクターをスキャン中...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'キャラクターをスキャン中...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'キャラクターを読み込み中...\n${current} / ${total}';
@@ -30031,8 +29823,6 @@ extension on _TranslationsJa {
 			case 'editor.panelLabels.group': return 'グループ';
 			case 'editor.panelLabels.creator': return '作成者';
 			case 'editor.panelLabels.appData': return 'アプリデータ';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'アシスタントパネルを非表示';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'チャットアシスタントを並べて表示';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'すべて置換の確認';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '続行してもよろしいですか？\nこの操作は取り消せず、すべてのフィールドに影響します。';
 			case 'editor.findReplaceDialog.proceedButton': return '続行';
@@ -30578,13 +30368,11 @@ extension on _TranslationsJa {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'JSONとしてエクスポート（V3）';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'JSONとしてエクスポート（V2）';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '画像をリセット';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'アシスタントによるカード編集';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'お気に入り';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'キャラクター';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'スタイルが選択されていません';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'チャットインデックスを再構築中...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'メッセージを始めるにはチャットを選択してください';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'アシスタントの読み込みに失敗しました。';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'チャットを開始するには AI プロバイダーを接続してください。';
 			case 'workspace.workspacePage.setUpProviderButton': return 'AI プロバイダーを設定';
 			case 'workspace.workspacePage.startNewChatButton': return '新しいチャット';
@@ -30622,11 +30410,7 @@ extension on _TranslationsKo {
 			case 'character.cardEditApproval.removingTitle': return '제거 중';
 			case 'character.cardEditApproval.beforeTitle': return '이전';
 			case 'character.cardEditApproval.afterTitle': return '이후';
-			case 'character.requireApprovalTile.edits': return '승인 필요: 편집';
-			case 'character.requireApprovalTile.additions': return '승인 필요: 추가';
-			case 'character.requireApprovalTile.deletions': return '승인 필요: 삭제';
 			case 'character.loadingStatus.initial': return '불러오는 중...';
-			case 'character.loadingStatus.copyingAssistant': return '어시스턴트 복사 중...';
 			case 'character.loadingStatus.scanningForCharacters': return '캐릭터 검색 중...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => '캐릭터 검색 중...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => '캐릭터 불러오는 중...\n${current} / ${total}';
@@ -30894,8 +30678,6 @@ extension on _TranslationsKo {
 			case 'editor.panelLabels.group': return '그룹';
 			case 'editor.panelLabels.creator': return '제작자';
 			case 'editor.panelLabels.appData': return '앱 데이터';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '어시스턴트 패널 숨기기';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return '채팅 어시스턴트 나란히 보기';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '모두 바꾸기 확인';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '계속할까요?\n이 작업은 되돌릴 수 없으며 모든 필드에 영향을 줘요.';
 			case 'editor.findReplaceDialog.proceedButton': return '계속';
@@ -31441,13 +31223,11 @@ extension on _TranslationsKo {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'JSON으로 내보내기 (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'JSON으로 내보내기 (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '이미지 초기화';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '어시스턴트 카드 편집';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '즐겨찾기';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '캐릭터';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '선택된 스타일이 없어요';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '채팅 색인 다시 만드는 중...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '메시지를 시작하려면 채팅을 선택하세요';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '어시스턴트를 불러오지 못했어요.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return '채팅을 시작하려면 AI 제공자를 연결하세요.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'AI 제공자 설정';
 			case 'workspace.workspacePage.startNewChatButton': return '새 채팅';
@@ -31485,11 +31265,7 @@ extension on _TranslationsPtBr {
 			case 'character.cardEditApproval.removingTitle': return 'Removendo';
 			case 'character.cardEditApproval.beforeTitle': return 'Antes';
 			case 'character.cardEditApproval.afterTitle': return 'Depois';
-			case 'character.requireApprovalTile.edits': return 'Exigir aprovação: edições';
-			case 'character.requireApprovalTile.additions': return 'Exigir aprovação: adições';
-			case 'character.requireApprovalTile.deletions': return 'Exigir aprovação: exclusões';
 			case 'character.loadingStatus.initial': return 'Carregando...';
-			case 'character.loadingStatus.copyingAssistant': return 'Copiando assistente...';
 			case 'character.loadingStatus.scanningForCharacters': return 'Procurando personagens...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Procurando personagens...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Carregando personagens...\n${current} / ${total}';
@@ -31762,8 +31538,6 @@ extension on _TranslationsPtBr {
 			case 'editor.panelLabels.group': return 'Grupo';
 			case 'editor.panelLabels.creator': return 'Criador';
 			case 'editor.panelLabels.appData': return 'Dados do app';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ocultar painel do assistente';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Mostrar assistente de conversa lado a lado';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Confirmar Substituir tudo';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Tem certeza de que deseja continuar?\nEsta ação é irreversível e afeta todos os campos.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Prosseguir';
@@ -32312,13 +32086,11 @@ extension on _TranslationsPtBr {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Exportar como JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Exportar como JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Redefinir imagens';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Edições de cartão pelo assistente';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Favorito';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Personagem';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Nenhum estilo selecionado';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Reconstruindo índice de conversas...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Selecione uma conversa para começar';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Falha ao carregar o assistente.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Conecte um provedor de IA para começar a conversar.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Configurar provedor de IA';
 			case 'workspace.workspacePage.startNewChatButton': return 'Novo chat';
@@ -32356,11 +32128,7 @@ extension on _TranslationsRu {
 			case 'character.cardEditApproval.removingTitle': return 'Удаление';
 			case 'character.cardEditApproval.beforeTitle': return 'До';
 			case 'character.cardEditApproval.afterTitle': return 'После';
-			case 'character.requireApprovalTile.edits': return 'Требовать одобрения: правки';
-			case 'character.requireApprovalTile.additions': return 'Требовать одобрения: добавления';
-			case 'character.requireApprovalTile.deletions': return 'Требовать одобрения: удаления';
 			case 'character.loadingStatus.initial': return 'Загрузка...';
-			case 'character.loadingStatus.copyingAssistant': return 'Копирование ассистента...';
 			case 'character.loadingStatus.scanningForCharacters': return 'Поиск персонажей...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Поиск персонажей...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Загрузка персонажей...\n${current} / ${total}';
@@ -32643,8 +32411,6 @@ extension on _TranslationsRu {
 			case 'editor.panelLabels.group': return 'Группа';
 			case 'editor.panelLabels.creator': return 'Автор';
 			case 'editor.panelLabels.appData': return 'Данные приложения';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Скрыть панель ассистента';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Показать чат-ассистент рядом';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Подтвердите «Заменить всё»';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Вы уверены, что хотите продолжить?\nЭто действие необратимо и затрагивает все поля.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Продолжить';
@@ -33199,13 +32965,11 @@ extension on _TranslationsRu {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Экспорт как JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Экспорт как JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Сбросить изображения';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Правки карточки ассистентом';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Избранное';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Персонаж';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Стиль не выбран';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Перестроение индекса чата...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Выберите чат, чтобы начать переписку';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Не удалось загрузить ассистента.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Подключите провайдер ИИ, чтобы начать общение.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Настроить провайдер ИИ';
 			case 'workspace.workspacePage.startNewChatButton': return 'Новый чат';
@@ -33243,11 +33007,7 @@ extension on _TranslationsVi {
 			case 'character.cardEditApproval.removingTitle': return 'Đang xóa';
 			case 'character.cardEditApproval.beforeTitle': return 'Trước';
 			case 'character.cardEditApproval.afterTitle': return 'Sau';
-			case 'character.requireApprovalTile.edits': return 'Yêu cầu duyệt: chỉnh sửa';
-			case 'character.requireApprovalTile.additions': return 'Yêu cầu duyệt: bổ sung';
-			case 'character.requireApprovalTile.deletions': return 'Yêu cầu duyệt: xóa bỏ';
 			case 'character.loadingStatus.initial': return 'Đang tải...';
-			case 'character.loadingStatus.copyingAssistant': return 'Đang sao chép trợ lý...';
 			case 'character.loadingStatus.scanningForCharacters': return 'Đang quét nhân vật...';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => 'Đang quét nhân vật...\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => 'Đang tải nhân vật...\n${current} / ${total}';
@@ -33515,8 +33275,6 @@ extension on _TranslationsVi {
 			case 'editor.panelLabels.group': return 'Nhóm';
 			case 'editor.panelLabels.creator': return 'Tác giả';
 			case 'editor.panelLabels.appData': return 'Dữ liệu ứng dụng';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return 'Ẩn bảng trợ lý';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return 'Hiện trợ lý trò chuyện song song';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return 'Xác nhận thay thế tất cả';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return 'Bạn có chắc muốn tiếp tục không?\nHành động này không thể hoàn tác và ảnh hưởng tới mọi trường.';
 			case 'editor.findReplaceDialog.proceedButton': return 'Tiếp tục';
@@ -34062,13 +33820,11 @@ extension on _TranslationsVi {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return 'Xuất ra JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return 'Xuất ra JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return 'Đặt lại hình ảnh';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return 'Chỉnh sửa thẻ bởi trợ lý';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return 'Yêu thích';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return 'Nhân vật';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return 'Chưa chọn phong cách nào';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return 'Đang xây dựng lại chỉ mục trò chuyện...';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return 'Chọn một cuộc trò chuyện để bắt đầu nhắn tin';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return 'Không thể tải trợ lý.';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return 'Kết nối một nhà cung cấp AI để bắt đầu trò chuyện.';
 			case 'workspace.workspacePage.setUpProviderButton': return 'Thiết lập nhà cung cấp AI';
 			case 'workspace.workspacePage.startNewChatButton': return 'Cuộc trò chuyện mới';
@@ -34106,11 +33862,7 @@ extension on _TranslationsZhHans {
 			case 'character.cardEditApproval.removingTitle': return '正在移除';
 			case 'character.cardEditApproval.beforeTitle': return '更改前';
 			case 'character.cardEditApproval.afterTitle': return '更改后';
-			case 'character.requireApprovalTile.edits': return '需要批准：编辑';
-			case 'character.requireApprovalTile.additions': return '需要批准：新增';
-			case 'character.requireApprovalTile.deletions': return '需要批准：删除';
 			case 'character.loadingStatus.initial': return '加载中…';
-			case 'character.loadingStatus.copyingAssistant': return '正在复制助手…';
 			case 'character.loadingStatus.scanningForCharacters': return '正在扫描角色…';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => '正在扫描角色…\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => '正在加载角色…\n${current} / ${total}';
@@ -34378,8 +34130,6 @@ extension on _TranslationsZhHans {
 			case 'editor.panelLabels.group': return '群组';
 			case 'editor.panelLabels.creator': return '创作者';
 			case 'editor.panelLabels.appData': return '应用数据';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '隐藏助手面板';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return '并排显示对话助手';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '确认全部替换';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '确定要继续吗？\n此操作不可逆，并会影响所有字段。';
 			case 'editor.findReplaceDialog.proceedButton': return '继续';
@@ -34925,13 +34675,11 @@ extension on _TranslationsZhHans {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return '导出为 JSON（V3）';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return '导出为 JSON（V2）';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '重置图像';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '助手卡片编辑';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '收藏';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '角色';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '未选择风格';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建对话索引…';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '选择一段对话开始聊天';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '加载助手失败。';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return '连接一个 AI 服务商即可开始聊天。';
 			case 'workspace.workspacePage.setUpProviderButton': return '设置 AI 服务商';
 			case 'workspace.workspacePage.startNewChatButton': return '新聊天';
@@ -34969,11 +34717,7 @@ extension on _TranslationsZhHant {
 			case 'character.cardEditApproval.removingTitle': return '正在移除';
 			case 'character.cardEditApproval.beforeTitle': return '變更前';
 			case 'character.cardEditApproval.afterTitle': return '變更後';
-			case 'character.requireApprovalTile.edits': return '需要核准：編輯';
-			case 'character.requireApprovalTile.additions': return '需要核准：新增';
-			case 'character.requireApprovalTile.deletions': return '需要核准：刪除';
 			case 'character.loadingStatus.initial': return '載入中…';
-			case 'character.loadingStatus.copyingAssistant': return '正在複製助理…';
 			case 'character.loadingStatus.scanningForCharacters': return '正在掃描角色…';
 			case 'character.loadingStatus.scanningForCharactersProgress': return ({required Object current, required Object total}) => '正在掃描角色…\n${current} / ${total}';
 			case 'character.loadingStatus.loadingCharactersProgress': return ({required Object current, required Object total}) => '正在載入角色…\n${current} / ${total}';
@@ -35241,8 +34985,6 @@ extension on _TranslationsZhHant {
 			case 'editor.panelLabels.group': return '群組';
 			case 'editor.panelLabels.creator': return '作者';
 			case 'editor.panelLabels.appData': return 'App 資料';
-			case 'editor.appBarEditor.hideAssistantPanelTooltip': return '隱藏助理面板';
-			case 'editor.appBarEditor.showChatAssistantTooltip': return '並排顯示對話助理';
 			case 'editor.findReplaceDialog.confirmReplaceAllTitle': return '確認全部取代';
 			case 'editor.findReplaceDialog.confirmReplaceAllMessage': return '確定要繼續嗎？\n此動作無法復原，且會影響所有欄位。';
 			case 'editor.findReplaceDialog.proceedButton': return '繼續';
@@ -35788,13 +35530,11 @@ extension on _TranslationsZhHant {
 			case 'workspace.workspaceEndDrawerExport.exportJsonV3Title': return '匯出為 JSON (V3)';
 			case 'workspace.workspaceEndDrawerExport.exportJsonV2Title': return '匯出為 JSON (V2)';
 			case 'workspace.workspaceEndDrawerChatTheme.resetImagesTitle': return '重設圖片';
-			case 'workspace.workspaceEndDrawerChat.assistantCardEditsSectionHeader': return '助理卡片編輯';
 			case 'workspace.workspaceEndDrawer.favoriteLabel': return '最愛';
 			case 'workspace.workspaceEndDrawer.characterSubtitle': return '角色';
 			case 'workspace.stylePresetsDialog.noStyleSelectedMessage': return '未選擇任何風格';
 			case 'workspace.workspacePage.rebuildingChatIndexMessage': return '正在重建對話索引…';
 			case 'workspace.workspacePage.selectChatToStartMessagingMessage': return '選擇一段對話開始傳訊';
-			case 'workspace.workspacePage.failedToLoadAssistantMessage': return '載入助理失敗。';
 			case 'workspace.workspacePage.connectProviderToChatMessage': return '連線 AI 服務商即可開始聊天。';
 			case 'workspace.workspacePage.setUpProviderButton': return '設定 AI 服務商';
 			case 'workspace.workspacePage.startNewChatButton': return '新聊天';

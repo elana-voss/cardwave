@@ -56,7 +56,6 @@ class _WorkspacePageState extends State<WorkspacePage> {
 
   WorkspaceController? _workspaceController;
   ChatPageController? _primaryChatController;
-  ChatPageController? _assistantChatController;
   EditorPageController? _editorController;
 
   @override
@@ -67,14 +66,6 @@ class _WorkspacePageState extends State<WorkspacePage> {
 
     _primaryChatController = ChatPageController(
       characterFile: widget.characterFile,
-      chatService: context.read<ChatService>(),
-      characterService: context.read<CharacterService>(),
-      settingsService: context.read<SettingsService>(),
-    );
-
-    _assistantChatController = ChatPageController(
-      characterFile: widget.characterFile,
-      isAssistant: true,
       chatService: context.read<ChatService>(),
       characterService: context.read<CharacterService>(),
       settingsService: context.read<SettingsService>(),
@@ -96,7 +87,6 @@ class _WorkspacePageState extends State<WorkspacePage> {
     _workspaceController?.removeListener(_onWorkspaceModeChanged);
     _workspaceController?.dispose();
     _primaryChatController?.dispose();
-    _assistantChatController?.dispose();
     _editorController?.dispose();
     super.dispose();
   }
@@ -141,14 +131,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
                         child,
                       ) {
                         final mode = workspace.effectiveMode(isWideScreen);
-                        final visibleChatController =
-                            mode == ChatPageModeEnum.splitEditorAssistant
-                            ? _assistantChatController!
-                            : primaryChatController;
-                        final activeCharacterFile =
-                            mode == ChatPageModeEnum.splitEditorAssistant
-                            ? _assistantChatController!.characterFile
-                            : widget.characterFile;
+                        final visibleChatController = primaryChatController;
+                        final activeCharacterFile = widget.characterFile;
 
                         final settingsService = context
                             .watch<SettingsService>();
@@ -207,11 +191,6 @@ class _WorkspacePageState extends State<WorkspacePage> {
                               characterFile: widget.characterFile,
                               // isSmallScreen: isSmallScreen,
                               editorKey: _editorKey,
-                            ),
-                            assistantChat: _AssistantChat(
-                              assistantChatController:
-                                  _assistantChatController!,
-                              editorController: editorController,
                             ),
                           ),
                         );
@@ -392,65 +371,3 @@ class _CharacterEditor extends StatelessWidget {
   }
 }
 
-class _AssistantChat extends StatelessWidget {
-  const _AssistantChat({
-    required this.assistantChatController,
-    required this.editorController,
-  });
-  final ChatPageController assistantChatController;
-  final EditorPageController editorController;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Translations.of(context);
-    final chatTheme = context.select<SettingsService, ChatTheme>(
-      (s) => s.settings.chatTheme,
-    );
-
-    return ListenableBuilder(
-      listenable: assistantChatController,
-      builder: (context, _) {
-        LoggingService().info(
-          '_AssistantChat.build: isLoading=${assistantChatController.isLoading} '
-          'selectedChatId=${assistantChatController.selectedChat?.id ?? '(none)'} '
-          'selectedChatMsgs=${assistantChatController.selectedChat?.messages.length ?? 0} '
-          'file="${assistantChatController.characterFile.card.name}"',
-        );
-        if (assistantChatController.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (assistantChatController.selectedChat == null) {
-          return Center(
-            child: Text(t.workspace.workspacePage.failedToLoadAssistantMessage),
-          );
-        }
-        return ChangeNotifierProvider<BaseChatViewController>(
-          key: ValueKey(assistantChatController.selectedChat!.id),
-          create: (ctx) => ChatController(
-            chatSession: assistantChatController.selectedChat!,
-            characterFile: assistantChatController.characterFile,
-            chatService: ctx.read<ChatService>(),
-            characterService: ctx.read<CharacterService>(),
-            settingsService: ctx.read<SettingsService>(),
-            pureHelpers: ctx.read<LlmPureHelpers>(),
-            promptRepository: ctx.read<PromptRepository>(),
-            chatExecutionService: ctx.read<ChatExecutionService>(),
-            textToSpeechService: ctx.read<TextToSpeechController>(),
-            imageGenerationService: ctx.read<ImageGenerationService>(),
-            videoGenerationService: ctx.read<VideoGenerationController>(),
-            videoPromptBuilder: ctx.read<VideoPromptBuilder>(),
-            toolDispatcher: ctx.read<ToolDispatcher>(),
-            chatRepository: ctx.read<ChatRepository>(),
-            memoryService: ctx.read<CardwaveMemoryModule>().memoryService,
-            dataContextProvider: editorController.getCharacterDataJson,
-          ),
-          child: ChatView(
-            characterFile: assistantChatController.characterFile,
-            theme: chatTheme,
-            onNewChat: () => assistantChatController.promptNewChat(context),
-          ),
-        );
-      },
-    );
-  }
-}

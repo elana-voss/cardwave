@@ -20,7 +20,6 @@ export 'src/models/taxonomy_tag.dart';
 export 'src/pages/widgets/dialog_card_edit_approval.dart';
 export 'src/pages/widgets/dialog_character_prompt_prefix.dart';
 export 'src/pages/widgets/prompt_prefix_domain.dart';
-export 'src/pages/widgets/tile_assistant_card_edit_require_approval.dart';
 export 'src/repositories/character_repository.dart';
 export 'src/repositories/io_character.dart';
 export 'src/repositories/taxonomy_repository.dart';

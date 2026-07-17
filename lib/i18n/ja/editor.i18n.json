@@ -8,10 +8,7 @@
     "creator": "作成者",
     "appData": "アプリデータ"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "アシスタントパネルを非表示",
-    "showChatAssistantTooltip": "チャットアシスタントを並べて表示"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "すべて置換の確認",
     "confirmReplaceAllMessage": "続行してもよろしいですか？\nこの操作は取り消せず、すべてのフィールドに影響します。",

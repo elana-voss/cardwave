@@ -26,9 +26,7 @@
   "workspaceEndDrawerChatTheme": {
     "resetImagesTitle": "Reset Images"
   },
-  "workspaceEndDrawerChat": {
-    "assistantCardEditsSectionHeader": "Assistant Card Edits"
-  },
+  "workspaceEndDrawerChat": {},
   "workspaceEndDrawer": {
     "favoriteLabel": "Favorite",
     "characterSubtitle": "Character"
@@ -39,7 +37,6 @@
   "workspacePage": {
     "rebuildingChatIndexMessage": "Rebuilding chat index...",
     "selectChatToStartMessagingMessage": "Select a chat to start messaging",
-    "failedToLoadAssistantMessage": "Failed to load assistant.",
     "connectProviderToChatMessage": "Connect an AI provider to start chatting.",
     "setUpProviderButton": "Set up AI provider",
     "startNewChatButton": "New chat"

@@ -32,14 +32,8 @@
     "beforeTitle": "更改前",
     "afterTitle": "更改后"
   },
-  "requireApprovalTile": {
-    "edits": "需要批准：编辑",
-    "additions": "需要批准：新增",
-    "deletions": "需要批准：删除"
-  },
   "loadingStatus": {
     "initial": "加载中…",
-    "copyingAssistant": "正在复制助手…",
     "scanningForCharacters": "正在扫描角色…",
     "scanningForCharactersProgress": "正在扫描角色…\n$current / $total",
     "loadingCharactersProgress": "正在加载角色…\n$current / $total"

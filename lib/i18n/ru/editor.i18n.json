@@ -8,10 +8,7 @@
     "creator": "Автор",
     "appData": "Данные приложения"
   },
-  "appBarEditor": {
-    "hideAssistantPanelTooltip": "Скрыть панель ассистента",
-    "showChatAssistantTooltip": "Показать чат-ассистент рядом"
-  },
+  "appBarEditor": {},
   "findReplaceDialog": {
     "confirmReplaceAllTitle": "Подтвердите «Заменить всё»",
     "confirmReplaceAllMessage": "Вы уверены, что хотите продолжить?\nЭто действие необратимо и затрагивает все поля.",

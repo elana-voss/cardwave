@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cardwave/character/character.dart';
 import 'package:cardwave/common/common.dart';
 import 'package:cardwave/editor/src/controllers/editor_page_controller.dart';
-import 'package:cardwave/i18n/gen/translations.g.dart';
 import 'package:cardwave/settings/settings.dart';
 import 'package:cardwave/workspace/workspace.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +21,7 @@ class AppBarEditor extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Translations.of(context);
     final workspace = context.watch<WorkspaceController>();
-    final isSidePanelOn = workspace.editorSidePanel && !isSmallScreen;
 
     return AppBar(
       leading: IconButton(
@@ -44,19 +41,6 @@ class AppBarEditor extends StatelessWidget implements PreferredSizeWidget {
             workspace.setBase(newBase);
           },
         ),
-        if (!isSmallScreen)
-          IconButton(
-            icon: RotatedBox(
-              quarterTurns: 1,
-              child: Icon(
-                isSidePanelOn ? Icons.crop_square : Icons.splitscreen,
-              ),
-            ),
-            tooltip: isSidePanelOn
-                ? t.editor.appBarEditor.hideAssistantPanelTooltip
-                : t.editor.appBarEditor.showChatAssistantTooltip,
-            onPressed: workspace.toggleEditorSidePanel,
-          ),
         const SizedBox(width: 16),
         SettingsGearMenu(character: characterFile),
         Builder(
