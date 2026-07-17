@@ -15,6 +15,8 @@ class PromptBreakdownBar extends StatelessWidget {
 
   static const double _barHeight = 8;
 
+  // Public because the detail dialog paints its swatches the same colours.
+  // ignore: qcheck/prefer_widget_private_members
   /// Stable per-part colour: the active theme's primary hue rotated around the
   /// wheel by the part's position, so neon and default themes both look right.
   static Color segmentColor(BuildContext context, PromptSegmentKindEnum kind) {
@@ -27,6 +29,8 @@ class PromptBreakdownBar extends StatelessWidget {
     return HSLColor.fromAHSL(1, hue, 0.66, lightness).toColor();
   }
 
+  // Public because the detail dialog paints its free slice the same colour.
+  // ignore: qcheck/prefer_widget_private_members
   static Color freeColor(BuildContext context) =>
       Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.22);
 

@@ -19,10 +19,19 @@ class DialogPromptBreakdown extends StatefulWidget {
 
 class _DialogPromptBreakdownState extends State<DialogPromptBreakdown>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabs = TabController(length: 2, vsync: this);
+  late final TabController _tabs;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = TabController(length: 2, vsync: this);
+  }
 
   @override
   void dispose() {
+    // Assigned in initState, which always runs before dispose — the field can
+    // never be read uninitialised here.
+    // ignore: qcheck/avoid_disposing_late_fields
     _tabs.dispose();
     super.dispose();
   }
@@ -225,8 +234,8 @@ class _ContentTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Translations.of(context);
     if (rows.isEmpty) {
+      final t = Translations.of(context);
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Text(
@@ -248,6 +257,10 @@ class _ContentTab extends StatelessWidget {
             data: theme.copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+              // `spacing: 8` is not equivalent here: it would also insert a gap
+              // between the label and the token count, where there is none
+              // today. Keeping the single SizedBox preserves the current layout.
+              // ignore: qcheck/prefer_spacing
               title: Row(
                 children: [
                   Container(
@@ -271,7 +284,11 @@ class _ContentTab extends StatelessWidget {
                   ),
                 ],
               ),
-              childrenPadding: const EdgeInsets.fromLTRB(20, 0, 4, 12),
+              childrenPadding: const EdgeInsets.only(
+                left: 20,
+                right: 4,
+                bottom: 12,
+              ),
               expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SelectableText(

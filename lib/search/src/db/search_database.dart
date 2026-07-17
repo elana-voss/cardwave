@@ -146,6 +146,8 @@ class SearchDatabase extends _$SearchDatabase {
     final countRows = await customSelect(
       'SELECT count(*) AS c FROM vec_cards',
     ).get();
+    // COUNT without GROUP BY yields exactly one row — 0 on an empty table.
+    // ignore: qcheck/avoid_unsafe_collection_methods
     if (countRows.first.read<int>('c') == 0) {
       await customStatement(
         'INSERT INTO vec_cards(rowid, embedding) '
@@ -200,6 +202,9 @@ class SearchDatabase extends _$SearchDatabase {
             ..where((v) => v.cardId.equals(cardId) & v.field.equals(field)))
           .go();
       for (var i = 0; i < blobs.length; i++) {
+        // The insert runs whether or not the add-on is ready; only the mirror
+        // row below is conditional, so this cannot move inside the guard.
+        // ignore: qcheck/move_variable_closer_to_its_usage
         final rowId = await into(cardVectors).insert(
           CardVectorsCompanion.insert(
             cardId: cardId,

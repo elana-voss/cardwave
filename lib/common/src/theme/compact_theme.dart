@@ -290,6 +290,8 @@ ThemeData _buildTheme({required ColorScheme colorScheme, required bool neon}) {
             // the bar and the content below share one continuous gradient.
             backgroundColor: colorScheme.brightness == Brightness.dark
                 ? colorScheme.surface.withValues(alpha: 0.84)
+                // kCardwaveBackdropLight declares three const colours.
+                // ignore: qcheck/avoid_unsafe_collection_methods
                 : kCardwaveBackdropLight.colors.first.withValues(alpha: 0.55),
             foregroundColor: colorScheme.onSurface,
             elevation: 0,

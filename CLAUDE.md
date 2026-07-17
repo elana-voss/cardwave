@@ -9,7 +9,7 @@ Project-specific guidance for Claude Code working in this Flutter/Dart repo (`el
 - `flutter test` (or `flutter test <file>`) — catches compile errors and runs the suite.
 - `& "C:\Users\theco\ai\software\qcheck\build\qcheck.exe" analyze <paths>` from the repo root — the project's CLI lint.
 
-**qcheck is not silent at baseline.** The repo carries ~27 pre-existing warnings and **exits 1**. Judge a change by `errors: 0` and no *new* findings against that baseline — never by "no output, exit 0", and don't chase the 27.
+**qcheck baseline is zero.** `qcheck.exe analyze lib/ packages/` must report no findings and exit 0. Warnings are never an acceptable baseline (except TODOs). A change that introduces a finding either fixes it or suppresses it with `// ignore: qcheck/<rule>` plus a one-line reason, placed on the exact line qcheck anchors to (the parameter or expression it names — not the declaration or doc comment above it). The root `pubspec.yaml` is outside that command's scope and still carries findings.
 
 IDE diagnostics from the analysis server can be **commits stale** (reporting symbols that a prior commit deleted). Read the file before acting on a diagnostic that looks surprising.
 
@@ -96,6 +96,7 @@ When lifting `NavigationService` calls out of a service:
 
 - Confine edits to the requested task. No opportunistic fixes.
 - Spot an out-of-scope smell? One-line note, no fix.
+- **A lint fix must not change rendered UI or runtime behavior.** When a rule's mechanical remedy would (e.g. `Row(spacing:)` adds gaps a lone `SizedBox` didn't have), keep the code as-is and suppress with a reasoned ignore.
 - **Don't invent features the user didn't ask for** — including supporting mechanisms. Flag the gap; let the user decide.
 - After your change, delete orphaned code (unused methods, vars, imports) **inside the block you touched only**. Don't sweep the rest.
 
@@ -199,6 +200,7 @@ When user flags a violation OR you self-diagnose one in a summary or post-mortem
 - Numbers, durations, counts, percentages, frequency words ("rare", "always", "never"), "this could happen" framing — verify or hedge ("I haven't measured this"). Walking back means the claim shouldn't have been made.
 - Never assert a guess as fact. Don't state unverified claims ("X is a dodge", "won't work", "that's a false positive") in the register of verified ones — verify (read the rule/code, run it) or hedge explicitly.
 - No "I think X works like Y" theories about infra / project state when a tool call can resolve it.
+- A tool you dispute is "potentially wrong", not "buggy", until you've reproduced the failure and captured its output. Distinguish a defective rule from two valid rules enabled in a contradictory configuration; documents and filenames must not assert "defect" ahead of the evidence.
 - Don't generalize from a sample. Checked 32 of 112? Either check the rest (or sample across folders/file types) or say "I checked N of M; rest unverified".
 
 **Decisions.**
@@ -213,6 +215,7 @@ When user flags a violation OR you self-diagnose one in a summary or post-mortem
 **Questions vs tasks.**
 - Interrogatives are questions, not task assignments: "Can you X?", "Could you Y?", "What about W?", "Would you be able to Z?" → answer (yes/no + what's possible) + stop. No tools, no edits, no "starting now". Applies even to read-only actions.
 - CATASTROPHIC variant: avoiding the answer by jumping straight into edits. Answering IS the deliverable. If about to act on an interrogative, stop and write the answer first.
+- Criticism of past work is not a task assignment. Respond with the correction or assessment; do not launch new experiments or edits to defend the disputed claim unless asked.
 - "Why X?" / "Why not Y?" → write the one-paragraph reasoning first, even when agreeing with the pushback.
 - When user flags a problem, fix it in the same response — don't offer to fix. ("Want me to rewrite?" after they've flagged the violation is bouncing the work back. Exception: real architectural decisions still get the question.)
 - Self-audit findings (`/errors`, code reviews) are reports — list findings and stop. Don't apply fixes without explicit approval. User frustration or "what is this code doing?" is a request for explanation, not consent to fix.

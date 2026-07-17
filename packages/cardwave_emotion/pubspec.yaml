@@ -1,22 +1,25 @@
 name: cardwave_emotion
+
 description: "On-device emotion classifier via embedding similarity over GoEmotions labels."
-publish_to: 'none'
+
 version: 0.1.0
-resolution: workspace
+
+publish_to: 'none'
 
 environment:
   sdk: ^3.10.8
 
-dependencies:
-  flutter:
-    sdk: flutter
+resolution: workspace
 
+dependencies:
   cardwave_embeddings:
     path: ../cardwave_embeddings
   cardwave_retrieval:
     path: ../cardwave_retrieval
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  import_lint: ^0.1.6
+  import_lint: 0.1.6

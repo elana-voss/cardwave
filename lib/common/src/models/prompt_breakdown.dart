@@ -5,7 +5,11 @@ import 'package:cardwave/i18n/gen/translations.g.dart';
 /// estimate, and the exact text it contributed. Runtime-only — held for the
 /// live turn so the breakdown bar and inspect view can read it; never persisted.
 class PromptSegmentEntry {
-  PromptSegmentEntry({required this.kind, required this.tokens, this.text = ''});
+  const PromptSegmentEntry({
+    required this.kind,
+    required this.tokens,
+    this.text = '',
+  });
   final PromptSegmentKindEnum kind;
   final int tokens;
   final String text;
@@ -17,7 +21,7 @@ class PromptSegmentEntry {
 /// Runtime-only — held on the live reply's swipe so the bar can show under the
 /// last reply; never written to or read from disk, so it vanishes on reload.
 class PromptContextBreakdown {
-  PromptContextBreakdown({
+  const PromptContextBreakdown({
     required this.contextSize,
     required this.reservedReply,
     required this.segments,

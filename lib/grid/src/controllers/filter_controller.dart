@@ -614,6 +614,9 @@ class FilterController extends ChangeNotifier {
         final cardScore = _rankScores[card.appCardImagePath] ?? 0;
         if (cardScore > score) score = cardScore;
       }
+      // Every byRoot list is created by `(byRoot[..] ??= []).add(row)`, so none
+      // is ever empty.
+      // ignore: qcheck/avoid_unsafe_collection_methods
       groups.add((repr: cards.first, count: cards.length, score: score));
     }
     groups.sort((a, b) => b.score.compareTo(a.score));

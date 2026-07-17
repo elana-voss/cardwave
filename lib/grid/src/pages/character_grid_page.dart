@@ -175,6 +175,31 @@ class _GridDrawerMenu extends StatelessWidget {
   // ignore: qcheck/avoid_buildcontext_in_state_field
   final BuildContext outerContext;
 
+  Future<void> _runBatchAiAction(AiActionEnum action) async {
+    final ai = outerContext.read<CharacterAiService>();
+    switch (action) {
+      case AiActionEnum.generatePreview:
+        await AiActionController.runCharacterBatchAndShow(
+          title: t.grid.drawer.batchGeneratePreviewsTitle,
+          emptyMessage: t.grid.drawer.batchGeneratePreviewsEmpty,
+          targets: await ai.charactersMissingPreview,
+          operation: ai.generateDescriptionPreview,
+          onCancel: ai.cancelAllActiveAiTasks,
+          batchLogTag: 'Bulk',
+        );
+      case AiActionEnum.autoTag:
+        await AiActionController.runCharacterBatchAndShow(
+          title: t.grid.drawer.batchAutoTagTitle,
+          emptyMessage: t.grid.drawer.batchAutoTagEmpty,
+          targets: await ai.charactersMissingTags,
+          operation: ai.autoTagCharacter,
+          onCancel: ai.cancelAllActiveAiTasks,
+        );
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop =
@@ -211,30 +236,9 @@ class _GridDrawerMenu extends StatelessWidget {
                 key: Key('drawer-ai-action-${action.name}'),
                 leading: Icon(action.icon),
                 title: Text(action.label),
-                onTap: () async {
+                onTap: () {
                   Navigator.of(navContext, rootNavigator: true).pop();
-                  final ai = outerContext.read<CharacterAiService>();
-                  switch (action) {
-                    case AiActionEnum.generatePreview:
-                      await AiActionController.runCharacterBatchAndShow(
-                        title: t.grid.drawer.batchGeneratePreviewsTitle,
-                        emptyMessage: t.grid.drawer.batchGeneratePreviewsEmpty,
-                        targets: await ai.charactersMissingPreview,
-                        operation: ai.generateDescriptionPreview,
-                        onCancel: ai.cancelAllActiveAiTasks,
-                        batchLogTag: 'Bulk',
-                      );
-                    case AiActionEnum.autoTag:
-                      await AiActionController.runCharacterBatchAndShow(
-                        title: t.grid.drawer.batchAutoTagTitle,
-                        emptyMessage: t.grid.drawer.batchAutoTagEmpty,
-                        targets: await ai.charactersMissingTags,
-                        operation: ai.autoTagCharacter,
-                        onCancel: ai.cancelAllActiveAiTasks,
-                      );
-                    default:
-                      break;
-                  }
+                  unawaited(_runBatchAiAction(action));
                 },
               ),
             if (isDesktop) ...[

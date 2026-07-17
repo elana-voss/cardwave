@@ -42,6 +42,13 @@ qcheck:
     - "**/integration_test/**" # UI-driven integration tests inside member packages
 
   disabled-rules:
+    # The `pub` preset enables prefer-caret-version-syntax and
+    # prefer-pinned-version-syntax together, though qcheck's own rule doc calls
+    # them mutually exclusive — every dependency line trips one or the other, so
+    # exactly one of the pair has to be off. This project pins exact versions,
+    # so the caret rule is the one we drop.
+    - prefer-caret-version-syntax
+
     # Architecture conflicts — these rules contradict project-wide conventions.
     - prefer-nullable-provider-types # Providers are always present at scope; nullable T? defeats the contract
 

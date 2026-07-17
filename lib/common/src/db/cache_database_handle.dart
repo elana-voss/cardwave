@@ -1,5 +1,6 @@
 import 'package:cardwave_storage/cardwave_storage.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 /// Opens (and reopens on a library switch) a drift database that lives inside
 /// the current card library's disposable cache folder. The native path is
@@ -31,7 +32,7 @@ class CacheDatabaseHandle<D extends GeneratedDatabase> {
 
   /// Runs right after a new database opens — e.g. to clear a per-card id cache
   /// the previous database populated.
-  final void Function()? onOpened;
+  final VoidCallback? onOpened;
 
   D? _db;
   Future<D>? _opening;

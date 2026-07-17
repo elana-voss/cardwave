@@ -11,6 +11,9 @@ import 'package:sqlite3/sqlite3.dart' show sqlite3, SqliteExtension;
 /// database with them. [webName] is ignored here.
 Future<QueryExecutor> openDriftConnection({
   required String nativePath,
+  // Required by the signature connection_web.dart shares via conditional
+  // import; a named parameter cannot be renamed to `_` on one side only.
+  // ignore: qcheck/avoid_unused_parameters
   required String webName,
 }) async {
   final file = File(nativePath);

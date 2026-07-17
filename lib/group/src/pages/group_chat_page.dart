@@ -122,8 +122,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final t = Translations.of(context);
     if (_loadError != null) {
+      final t = Translations.of(context);
       return Scaffold(
         appBar: AppBar(title: Text(t.group.groupChatPage.defaultGroupName)),
         body: Center(
@@ -255,9 +255,9 @@ class _NarrowChatBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Translations.of(context);
     final controller = context.watch<GroupChatController>();
     if (controller.characters.isEmpty) {
+      final t = Translations.of(context);
       return _GroupEmptyState(
         icon: Icons.group_add,
         text: t.group.groupChatPage.noCharactersYetMessage,

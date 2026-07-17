@@ -341,9 +341,11 @@ class _DialogProviderConfigState extends State<DialogProviderConfig> {
 
 }
 
-/// "Chat", "Chat and System", "Chat, System and Image".
+/// "Chat", "Chat and System", "Chat, System and Image". The only caller guards
+/// with `isNotEmpty`, so the list always has at least one entry.
 String _joinRoles(List<String> roles) => roles.length == 1
     ? roles.first
+    // ignore: qcheck/avoid_unsafe_collection_methods
     : '${roles.sublist(0, roles.length - 1).join(', ')} and ${roles.last}';
 
 class _ProviderStatusLine extends StatelessWidget {

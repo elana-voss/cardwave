@@ -167,6 +167,8 @@ class LibraryDatabase extends _$LibraryDatabase {
       variables: vars,
       readsFrom: {libraryCards},
     ).get();
+    // COUNT without GROUP BY yields exactly one row — 0 on an empty table.
+    // ignore: qcheck/avoid_unsafe_collection_methods
     return rows.first.read<int>('c');
   }
 
@@ -179,6 +181,8 @@ class LibraryDatabase extends _$LibraryDatabase {
       variables: vars,
       readsFrom: {libraryCards},
     ).get();
+    // COUNT without GROUP BY yields exactly one row — 0 on an empty table.
+    // ignore: qcheck/avoid_unsafe_collection_methods
     return rows.first.read<int>('c');
   }
 
@@ -350,7 +354,7 @@ class LibraryDatabase extends _$LibraryDatabase {
   /// the creator one. Keyed by the lower-cased creator; the empty creator is
   /// reported under `unknown`.
   Future<Map<String, int>> creatorCounts(LibraryCardFilter filter) async {
-    final (where, vars) = _whereFor(filter.without(creators: true));
+    final (where, vars) = _whereFor(filter.without(clearCreators: true));
     final rows = await customSelect(
       'SELECT creator_lower AS k, COUNT(*) AS c FROM library_cards '
       'WHERE $where GROUP BY creator_lower',
@@ -382,7 +386,7 @@ class LibraryDatabase extends _$LibraryDatabase {
   /// Per-folder leaf card counts over the pool that passes every filter except
   /// the folder one. The controller rolls these up into the folder tree.
   Future<Map<String, int>> folderLeafCounts(LibraryCardFilter filter) async {
-    final (where, vars) = _whereFor(filter.without(folder: true));
+    final (where, vars) = _whereFor(filter.without(clearFolder: true));
     final rows = await customSelect(
       'SELECT folder AS f, COUNT(*) AS c FROM library_cards '
       'WHERE $where GROUP BY folder',

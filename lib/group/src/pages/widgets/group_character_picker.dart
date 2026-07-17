@@ -44,6 +44,10 @@ class _GroupCharacterPickerState extends State<GroupCharacterPicker> {
   }
 
   Future<void> _load() async {
+    // The load must finish before the mounted re-check; moving the declaration
+    // inside the guard would put the await there and let setState run after a
+    // later async gap.
+    // ignore: qcheck/move_variable_closer_to_its_usage
     final all = await context.read<CharacterService>().loadAll();
     if (mounted) setState(() => _allCharacters = all);
   }

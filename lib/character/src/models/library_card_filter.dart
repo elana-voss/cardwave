@@ -61,13 +61,13 @@ class LibraryCardFilter {
   /// dialog's counts from the pool that passes the *other* filters. The search
   /// restriction is kept so dialog counts stay scoped to the search.
   LibraryCardFilter without({
-    bool tags = false,
-    bool creators = false,
-    bool folder = false,
+    bool clearTags = false,
+    bool clearCreators = false,
+    bool clearFolder = false,
   }) => LibraryCardFilter(
-    tags: tags ? const {} : this.tags,
-    creators: creators ? const {} : this.creators,
-    folder: folder ? null : this.folder,
+    tags: clearTags ? const {} : tags,
+    creators: clearCreators ? const {} : creators,
+    folder: clearFolder ? null : folder,
     favoritesOnly: favoritesOnly,
     variantsOnly: variantsOnly,
     recentOnly: recentOnly,

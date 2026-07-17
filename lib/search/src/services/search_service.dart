@@ -52,7 +52,9 @@ class SearchService extends ChangeNotifier {
   final Embedder _embedder;
 
   // CharacterService and this service take each other; the loop is broken
-  // by deferring the back-pointer to init() (see main.dart).
+  // by deferring the back-pointer to init() (see main.dart). Not owned here —
+  // main.dart constructs and disposes it, so dispose() must leave it alone.
+  // ignore: qcheck/dispose_class_fields
   late final CharacterService _characterService;
 
   // Field texts for cards queued via an in-app edit (save / create / clone /

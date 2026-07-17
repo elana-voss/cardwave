@@ -214,6 +214,8 @@ class _AppBootstrapperState extends State<AppBootstrapper> {
 
       // Apply the persisted UI language (null tag follows the device locale)
       // before the first MaterialApp with a `locale:` builds.
+      // LocaleController is a singleton that lives for the whole app run.
+      // ignore: qcheck/avoid_undisposed_instances
       LocaleController().applyPersisted();
 
       _characterService = CharacterService(
