@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI Connection",
-    "optionalHint": "Optional — skip and add a key later in Settings (local providers can be added there too).",
+    "optionalHint": "Optional — skip and add a key later in Settings.",
     "apiKeyLabel": "API Key",
     "apiKeyHint": "Paste your key (or skip for now)",
-    "supportedProviders": "Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.",
+    "supportedProviders": "Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — plus any other OpenAI-compatible provider, local or remote, via Settings.",
     "unknownModel": "(unknown model)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

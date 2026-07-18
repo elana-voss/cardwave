@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "Подключение ИИ",
-    "optionalHint": "Необязательно — можно пропустить и добавить ключ позже в настройках (локальные провайдеры тоже добавляются там).",
+    "optionalHint": "Необязательно — можно пропустить и добавить ключ позже в настройках.",
     "apiKeyLabel": "Ключ API",
     "apiKeyHint": "Вставьте ключ (или пропустите пока)",
-    "supportedProviders": "Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Больше — в настройках.",
+    "supportedProviders": "Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — а также любого другого OpenAI-совместимого провайдера, локального или удалённого, через настройки.",
     "unknownModel": "(неизвестная модель)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

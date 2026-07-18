@@ -51,7 +51,7 @@
     "refreshSummary": "Đã làm mới $updated mô hình, $unavailable không khả dụng, $errors lỗi.",
     "newProviderButton": "Nhà cung cấp mới",
     "cloudProviderMenuItem": "Nhà cung cấp đám mây",
-    "localProviderMenuItem": "Nhà cung cấp cục bộ",
+    "localProviderMenuItem": "Nhà cung cấp tùy chỉnh (tương thích OpenAI)",
     "localGgufMenuItem": "GGUF cục bộ",
     "noProvidersConfigured": "Chưa cấu hình nhà cung cấp API nào.",
     "addingProviderOverlay": "Đang thêm nhà cung cấp…",
@@ -129,15 +129,15 @@
     "unrecognizedKeyStatus": "Định dạng khóa không nhận diện được."
   },
   "localProviderConfig": {
-    "serverUnreachableMessage": "Không thể kết nối tới $url. Hãy chắc chắn máy chủ cục bộ của bạn (KoboldCpp / Ollama / LM Studio / llama.cpp) đang chạy.",
-    "noModelsError": "Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trong máy chủ cục bộ trước.",
-    "deleteProviderMessage": "Xóa vĩnh viễn nhà cung cấp cục bộ này và toàn bộ preset của nó? Không thể hoàn tác.",
-    "editHeader": "Chỉnh sửa nhà cung cấp cục bộ",
-    "addHeader": "Thêm nhà cung cấp cục bộ",
+    "serverUnreachableMessage": "Không thể kết nối tới $url. Hãy kiểm tra URL và chắc chắn máy chủ đang chạy.",
+    "noModelsError": "Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trên máy chủ trước.",
+    "deleteProviderMessage": "Xóa vĩnh viễn nhà cung cấp này và toàn bộ preset của nó? Không thể hoàn tác.",
+    "editHeader": "Chỉnh sửa nhà cung cấp tùy chỉnh",
+    "addHeader": "Thêm nhà cung cấp tùy chỉnh",
     "serverUrlLabel": "URL máy chủ",
     "serverUrlLockedHelper": "Đã khóa. Xóa nhà cung cấp này và thêm mới để trỏ tới máy chủ khác.",
     "apiKeyOptionalLabel": "Khóa API (không bắt buộc)",
-    "apiKeyOptionalHint": "Để trống — hầu hết máy chủ cục bộ không cần",
+    "apiKeyOptionalHint": "Hầu hết dịch vụ đám mây yêu cầu; máy chủ cục bộ thường không cần",
     "connectFetchButton": "Kết nối & tải mô hình",
     "connectedFoundModels(plural)": {
       "other": "Đã kết nối. Tìm thấy $n mô hình."

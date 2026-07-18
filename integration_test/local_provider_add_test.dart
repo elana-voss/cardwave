@@ -53,16 +53,22 @@ void main() {
       await tester.pumpAndSettle();
 
       // AI Settings → open the "New Provider" dropdown then tap
-      // "Local Provider" inside it. The three add-provider variants
-      // were consolidated into one FilledButton + MenuAnchor; opening
-      // the menu and clicking the menu item is the new flow.
+      // "Custom Provider (OpenAI-compatible)" inside it. The three
+      // add-provider variants were consolidated into one FilledButton +
+      // MenuAnchor; opening the menu and clicking the menu item is the
+      // new flow.
       await tester.tap(find.widgetWithText(FilledButton, 'New Provider'));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(MenuItemButton, 'Local Provider'));
+      await tester.tap(
+        find.widgetWithText(
+          MenuItemButton,
+          'Custom Provider (OpenAI-compatible)',
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Add Local Provider'),
+        find.text('Add Custom Provider'),
         findsOneWidget,
         reason: 'local provider dialog title should be present',
       );
@@ -106,7 +112,7 @@ void main() {
       // Verify the new provider landed in the list. The TileProviderProfile
       // renders the provider's label as a Text widget.
       expect(
-        find.text('Local (OpenAI-compatible)'),
+        find.text('Custom (OpenAI-compatible)'),
         findsWidgets,
         reason: 'new local provider should appear in the AI Settings list',
       );

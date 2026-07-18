@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI 连接",
-    "optionalHint": "可选——可以跳过，之后在设置中添加密钥（本地服务商也可以在那里添加）。",
+    "optionalHint": "可选——可以跳过，之后在设置中添加密钥。",
     "apiKeyLabel": "API 密钥",
     "apiKeyHint": "粘贴你的密钥（或暂时跳过）",
-    "supportedProviders": "支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多请在设置中查看。",
+    "supportedProviders": "支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 兼容服务商（本地或远程），可在设置中添加。",
     "unknownModel": "（未知模型）",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

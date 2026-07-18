@@ -10,9 +10,9 @@ import 'package:cardwave_llm/cardwave_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Add / edit dialog for the "Local (OpenAI-compatible)" provider —
-/// KoboldCpp, Ollama, LM Studio, llama.cpp server, or any other backend
-/// that speaks the OpenAI chat-completions shape.
+/// Add / edit dialog for the "Custom (OpenAI-compatible)" provider —
+/// KoboldCpp, Ollama, LM Studio, llama.cpp server, or any other local or
+/// remote backend that speaks the OpenAI chat-completions shape.
 ///
 /// Kept separate from [DialogProviderConfig] (the cloud dialog) because
 /// the flows are fundamentally different: cloud auto-detects the provider
@@ -44,7 +44,8 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
 
   static const _defaultBaseUrl = 'http://localhost:5001/v1';
   static const _supportedServersHint =
-      'KoboldCpp 5001, Ollama 11434, LM Studio 1234, llama.cpp 8080';
+      'KoboldCpp 5001, Ollama 11434, LM Studio 1234, llama.cpp 8080, '
+      'or any remote OpenAI-compatible URL';
 
   String _serverUnreachableMessage(String url) =>
       t.settings.localProviderConfig.serverUnreachableMessage(url: url);
@@ -81,11 +82,24 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
   }
 
   /// Normalizes a user-typed URL: trims whitespace, strips a trailing slash,
-  /// and appends `/v1` if missing. The OpenAI-compat endpoints all live
-  /// under `/v1`, but users frequently paste just `http://localhost:5001`.
+  /// drops a pasted endpoint path (`/models`, `/chat/completions`,
+  /// `/completions`), and appends `/v1` if missing. The OpenAI-compat
+  /// endpoints all live under `/v1`, but users frequently paste just
+  /// `http://localhost:5001` — or a full endpoint URL copied from provider
+  /// docs, like `https://api.example.com/v1/chat/completions`.
   String _normalizeUrl(String raw) {
     var url = raw.trim();
     if (url.endsWith('/')) url = url.substring(0, url.length - 1);
+    for (final endpointPath in [
+      '/chat/completions',
+      '/completions',
+      '/models',
+    ]) {
+      if (url.endsWith(endpointPath)) {
+        url = url.substring(0, url.length - endpointPath.length);
+        break;
+      }
+    }
     if (!url.endsWith('/v1')) url = '$url/v1';
     return url;
   }
@@ -144,9 +158,7 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
         .read<SettingsService>()
         .settings
         .activeAppDomainPresetIds;
-    return _profile.allPresets.any(
-      (p) => activePresetIds.contains(p.id),
-    );
+    return _profile.allPresets.any((p) => activePresetIds.contains(p.id));
   }
 
   bool get _canSave {
@@ -296,10 +308,14 @@ class _DialogLocalProviderConfigState extends State<DialogLocalProviderConfig> {
                       controller: _baseUrlController,
                       enabled: !_isEdit,
                       decoration: InputDecoration(
-                        labelText: t.settings.localProviderConfig.serverUrlLabel,
+                        labelText:
+                            t.settings.localProviderConfig.serverUrlLabel,
                         hintText: 'http://localhost:5001/v1',
                         helperText: _isEdit
-                            ? t.settings.localProviderConfig.serverUrlLockedHelper
+                            ? t
+                                  .settings
+                                  .localProviderConfig
+                                  .serverUrlLockedHelper
                             : _supportedServersHint,
                       ),
                       validator: (v) => (v == null || v.trim().isEmpty)

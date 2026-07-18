@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI 연결",
-    "optionalHint": "선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요 (로컬 제공자도 거기서 추가할 수 있어요).",
+    "optionalHint": "선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요.",
     "apiKeyLabel": "API 키",
     "apiKeyHint": "키를 붙여넣으세요 (또는 지금은 건너뛰기)",
-    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 더 많은 항목은 설정에 있어요.",
+    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 그 외 모든 OpenAI 호환 제공자(로컬 또는 원격)도 설정에서 추가할 수 있어요.",
     "unknownModel": "(알 수 없는 모델)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

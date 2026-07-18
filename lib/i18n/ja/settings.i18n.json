@@ -51,7 +51,7 @@
     "refreshSummary": "$updated 個のモデルを更新、$unavailable 個が利用不可、$errors 件のエラー。",
     "newProviderButton": "新しいプロバイダー",
     "cloudProviderMenuItem": "クラウドプロバイダー",
-    "localProviderMenuItem": "ローカルプロバイダー",
+    "localProviderMenuItem": "カスタムプロバイダー（OpenAI互換）",
     "localGgufMenuItem": "ローカルGGUF",
     "noProvidersConfigured": "APIプロバイダーが設定されていません。",
     "addingProviderOverlay": "プロバイダーを追加中…",
@@ -129,15 +129,15 @@
     "unrecognizedKeyStatus": "認識できないキー形式です。"
   },
   "localProviderConfig": {
-    "serverUnreachableMessage": "$url に接続できませんでした。ローカルサーバー（KoboldCpp / Ollama / LM Studio / llama.cpp）が起動していることを確認してください。",
-    "noModelsError": "サーバーには接続できましたが、モデルが返されませんでした。まずローカルサーバーでモデルを読み込んでください。",
-    "deleteProviderMessage": "このローカルプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。",
-    "editHeader": "ローカルプロバイダーを編集",
-    "addHeader": "ローカルプロバイダーを追加",
+    "serverUnreachableMessage": "$url に接続できませんでした。URLを確認し、サーバーが起動していることを確認してください。",
+    "noModelsError": "サーバーには接続できましたが、モデルが返されませんでした。まずサーバーでモデルを読み込んでください。",
+    "deleteProviderMessage": "このプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。",
+    "editHeader": "カスタムプロバイダーを編集",
+    "addHeader": "カスタムプロバイダーを追加",
     "serverUrlLabel": "サーバーURL",
     "serverUrlLockedHelper": "ロックされています。別のサーバーを指定するには、このプロバイダーを削除して新しいものを追加してください。",
     "apiKeyOptionalLabel": "APIキー（任意）",
-    "apiKeyOptionalHint": "空欄のままで構いません — ほとんどのローカルサーバーでは不要です",
+    "apiKeyOptionalHint": "ほとんどのクラウドサービスでは必須です。ローカルサーバーでは通常不要です",
     "connectFetchButton": "接続してモデルを取得",
     "connectedFoundModels(plural)": {
       "other": "接続しました。$n 個のモデルが見つかりました。"

@@ -58,14 +58,19 @@ void main() {
 
       // The three add-provider variants now live behind one
       // FilledButton + MenuAnchor dropdown; open the menu first, then
-      // pick "Local Provider".
+      // pick "Custom Provider (OpenAI-compatible)".
       await tester.tap(find.widgetWithText(FilledButton, 'New Provider'));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(MenuItemButton, 'Local Provider'));
+      await tester.tap(
+        find.widgetWithText(
+          MenuItemButton,
+          'Custom Provider (OpenAI-compatible)',
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Add Local Provider'),
+        find.text('Add Custom Provider'),
         findsOneWidget,
         reason: 'local provider dialog should be open',
       );

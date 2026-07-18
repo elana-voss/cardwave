@@ -1,9 +1,9 @@
 part of '../llm_provider.dart';
 
-/// Generic OpenAI-compatible HTTP backend, intended for self-hosted local
-/// servers. Default URL points at KoboldCpp's `:5001`, but the user edits
-/// it per-profile to reach Ollama (`:11434`), LM Studio (`:1234`), or any
-/// other backend that speaks the OpenAI chat-completions shape.
+/// Generic OpenAI-compatible HTTP backend. Default URL points at KoboldCpp's
+/// `:5001`, but the user edits it per-profile to reach Ollama (`:11434`),
+/// LM Studio (`:1234`), or any local or remote endpoint that speaks the
+/// OpenAI chat-completions shape.
 ///
 /// Chat domain only — local backends don't expose OpenAI's image, TTS, or
 /// video endpoints. No default model ids ship for this provider (the defaults
@@ -22,7 +22,7 @@ class LocalOpenAiProvider extends LlmProvider {
   LLMProviderEnum get enumValue => LLMProviderEnum.localOpenAi;
 
   @override
-  String get label => 'Local (OpenAI-compatible)';
+  String get label => 'Custom (OpenAI-compatible)';
 
   @override
   String get defaultBaseUrl => 'http://localhost:5001/v1';

@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI接続",
-    "optionalHint": "任意です — スキップして後で設定からキーを追加できます（ローカルプロバイダーもそこで追加できます）。",
+    "optionalHint": "任意です — スキップして後で設定からキーを追加できます。",
     "apiKeyLabel": "APIキー",
     "apiKeyHint": "キーを貼り付けてください（今はスキップも可）",
-    "supportedProviders": "OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。詳細は設定で。",
+    "supportedProviders": "OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。その他の OpenAI 互換プロバイダー（ローカル・リモート問わず）も設定から追加できます。",
     "unknownModel": "（不明なモデル）",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

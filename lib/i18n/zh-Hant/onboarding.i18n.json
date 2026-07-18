@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI 連線",
-    "optionalHint": "選填——可先略過，之後在「設定」中新增金鑰（本機服務商也可在那裡新增）。",
+    "optionalHint": "選填——可先略過，之後在「設定」中新增金鑰。",
     "apiKeyLabel": "API 金鑰",
     "apiKeyHint": "貼上你的金鑰（或先略過）",
-    "supportedProviders": "支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多請見「設定」。",
+    "supportedProviders": "支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 相容服務商（本機或遠端），可在「設定」中新增。",
     "unknownModel": "（未知模型）",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

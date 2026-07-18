@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "Kết nối AI",
-    "optionalHint": "Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).",
+    "optionalHint": "Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt.",
     "apiKeyLabel": "Khóa API",
     "apiKeyHint": "Dán khóa của bạn (hoặc bỏ qua)",
-    "supportedProviders": "Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.",
+    "supportedProviders": "Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — và mọi nhà cung cấp tương thích OpenAI khác, cục bộ hoặc từ xa, qua Cài đặt.",
     "unknownModel": "(mô hình không xác định)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

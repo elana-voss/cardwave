@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "AI कनेक्शन",
-    "optionalHint": "वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें (लोकल प्रोवाइडर भी वहाँ जोड़े जा सकते हैं)।",
+    "optionalHint": "वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें।",
     "apiKeyLabel": "API कुंजी",
     "apiKeyHint": "अपनी कुंजी पेस्ट करें (या अभी के लिए छोड़ें)",
-    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है। और सेटिंग्स में।",
+    "supportedProviders": "OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है — साथ ही कोई भी अन्य OpenAI-संगत प्रोवाइडर (लोकल या रिमोट) सेटिंग्स से जोड़ा जा सकता है।",
     "unknownModel": "(अज्ञात मॉडल)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

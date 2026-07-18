@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "Conexión de IA",
-    "optionalHint": "Opcional — omítelo y agrega una clave más tarde en Configuración (los proveedores locales también se agregan ahí).",
+    "optionalHint": "Opcional — omítelo y agrega una clave más tarde en Configuración.",
     "apiKeyLabel": "API key",
     "apiKeyHint": "Pega tu clave (o omítelo por ahora)",
-    "supportedProviders": "Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Más en Configuración.",
+    "supportedProviders": "Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — y con cualquier otro proveedor compatible con OpenAI, local o remoto, desde Configuración.",
     "unknownModel": "(modelo desconocido)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",

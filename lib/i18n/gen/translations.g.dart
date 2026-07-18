@@ -2294,10 +2294,10 @@ class _TranslationsOnboardingAiSectionEn {
 
 	// Translations
 	String get heading => 'AI Connection';
-	String get optionalHint => 'Optional — skip and add a key later in Settings (local providers can be added there too).';
+	String get optionalHint => 'Optional — skip and add a key later in Settings.';
 	String get apiKeyLabel => 'API Key';
 	String get apiKeyHint => 'Paste your key (or skip for now)';
-	String get supportedProviders => 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.';
+	String get supportedProviders => 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — plus any other OpenAI-compatible provider, local or remote, via Settings.';
 	String get unknownModel => '(unknown model)';
 	String get ctxUnknown => 'ctx —';
 	String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -2480,7 +2480,7 @@ class _TranslationsSettingsAiTabEn {
 	String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
 	String get newProviderButton => 'New Provider';
 	String get cloudProviderMenuItem => 'Cloud Provider';
-	String get localProviderMenuItem => 'Local Provider';
+	String get localProviderMenuItem => 'Custom Provider (OpenAI-compatible)';
 	String get localGgufMenuItem => 'Local GGUF';
 	String get noProvidersConfigured => 'No API providers configured.';
 	String get addingProviderOverlay => 'Adding provider…';
@@ -2579,15 +2579,15 @@ class _TranslationsSettingsLocalProviderConfigEn {
 	final Translations _root; // ignore: unused_field
 
 	// Translations
-	String serverUnreachableMessage({required Object url}) => 'Could not reach ${url}. Make sure your local server (KoboldCpp / Ollama / LM Studio / llama.cpp) is running.';
-	String get noModelsError => 'Server reachable but returned no models. Load a model in your local server first.';
-	String get deleteProviderMessage => 'Permanently delete this Local provider and all its presets? This cannot be undone.';
-	String get editHeader => 'Edit Local Provider';
-	String get addHeader => 'Add Local Provider';
+	String serverUnreachableMessage({required Object url}) => 'Could not reach ${url}. Check the URL and make sure the server is running.';
+	String get noModelsError => 'Server reachable but returned no models. Load a model on the server first.';
+	String get deleteProviderMessage => 'Permanently delete this provider and all its presets? This cannot be undone.';
+	String get editHeader => 'Edit Custom Provider';
+	String get addHeader => 'Add Custom Provider';
 	String get serverUrlLabel => 'Server URL';
 	String get serverUrlLockedHelper => 'Locked. Delete this provider and add a new one to point at a different server.';
 	String get apiKeyOptionalLabel => 'API Key (optional)';
-	String get apiKeyOptionalHint => 'Leave blank — most local servers don\'t need one';
+	String get apiKeyOptionalHint => 'Required by most cloud services; local servers usually don\'t need one';
 	String get connectFetchButton => 'Connect & Fetch Models';
 	String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 		one: 'Connected. Found ${n} model.',
@@ -4977,10 +4977,10 @@ class _TranslationsOnboardingAiSectionEs419 extends _TranslationsOnboardingAiSec
 
 	// Translations
 	@override String get heading => 'Conexión de IA';
-	@override String get optionalHint => 'Opcional — omítelo y agrega una clave más tarde en Configuración (los proveedores locales también se agregan ahí).';
+	@override String get optionalHint => 'Opcional — omítelo y agrega una clave más tarde en Configuración.';
 	@override String get apiKeyLabel => 'API key';
 	@override String get apiKeyHint => 'Pega tu clave (o omítelo por ahora)';
-	@override String get supportedProviders => 'Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Más en Configuración.';
+	@override String get supportedProviders => 'Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — y con cualquier otro proveedor compatible con OpenAI, local o remoto, desde Configuración.';
 	@override String get unknownModel => '(modelo desconocido)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -5163,7 +5163,7 @@ class _TranslationsSettingsAiTabEs419 extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Se actualizaron ${updated} modelos, ${unavailable} no disponibles, ${errors} errores.';
 	@override String get newProviderButton => 'Nuevo proveedor';
 	@override String get cloudProviderMenuItem => 'Proveedor en la nube';
-	@override String get localProviderMenuItem => 'Proveedor local';
+	@override String get localProviderMenuItem => 'Proveedor personalizado (compatible con OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF local';
 	@override String get noProvidersConfigured => 'No hay proveedores de API configurados.';
 	@override String get addingProviderOverlay => 'Agregando proveedor…';
@@ -5262,15 +5262,15 @@ class _TranslationsSettingsLocalProviderConfigEs419 extends _TranslationsSetting
 	@override final _TranslationsEs419 _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => 'No se pudo acceder a ${url}. Asegúrate de que tu servidor local (KoboldCpp / Ollama / LM Studio / llama.cpp) esté en ejecución.';
-	@override String get noModelsError => 'El servidor es accesible pero no devolvió modelos. Carga un modelo en tu servidor local primero.';
-	@override String get deleteProviderMessage => '¿Eliminar permanentemente este proveedor local y todos sus preajustes? Esto no se puede deshacer.';
-	@override String get editHeader => 'Editar proveedor local';
-	@override String get addHeader => 'Agregar proveedor local';
+	@override String serverUnreachableMessage({required Object url}) => 'No se pudo acceder a ${url}. Verifica la URL y asegúrate de que el servidor esté en ejecución.';
+	@override String get noModelsError => 'El servidor es accesible pero no devolvió modelos. Carga un modelo en el servidor primero.';
+	@override String get deleteProviderMessage => '¿Eliminar permanentemente este proveedor y todos sus preajustes? Esto no se puede deshacer.';
+	@override String get editHeader => 'Editar proveedor personalizado';
+	@override String get addHeader => 'Agregar proveedor personalizado';
 	@override String get serverUrlLabel => 'URL del servidor';
 	@override String get serverUrlLockedHelper => 'Bloqueado. Elimina este proveedor y agrega uno nuevo para apuntar a otro servidor.';
 	@override String get apiKeyOptionalLabel => 'API key (opcional)';
-	@override String get apiKeyOptionalHint => 'Déjalo en blanco — la mayoría de los servidores locales no necesitan una';
+	@override String get apiKeyOptionalHint => 'La mayoría de los servicios en la nube la requieren; los servidores locales normalmente no';
 	@override String get connectFetchButton => 'Conectar y obtener modelos';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
 		one: 'Conectado. Se encontró ${n} modelo.',
@@ -7660,10 +7660,10 @@ class _TranslationsOnboardingAiSectionHi extends _TranslationsOnboardingAiSectio
 
 	// Translations
 	@override String get heading => 'AI कनेक्शन';
-	@override String get optionalHint => 'वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें (लोकल प्रोवाइडर भी वहाँ जोड़े जा सकते हैं)।';
+	@override String get optionalHint => 'वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें।';
 	@override String get apiKeyLabel => 'API कुंजी';
 	@override String get apiKeyHint => 'अपनी कुंजी पेस्ट करें (या अभी के लिए छोड़ें)';
-	@override String get supportedProviders => 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है। और सेटिंग्स में।';
+	@override String get supportedProviders => 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है — साथ ही कोई भी अन्य OpenAI-संगत प्रोवाइडर (लोकल या रिमोट) सेटिंग्स से जोड़ा जा सकता है।';
 	@override String get unknownModel => '(अज्ञात मॉडल)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -7846,7 +7846,7 @@ class _TranslationsSettingsAiTabHi extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} मॉडल रीफ़्रेश किए, ${unavailable} अनुपलब्ध, ${errors} त्रुटियां।';
 	@override String get newProviderButton => 'नया प्रोवाइडर';
 	@override String get cloudProviderMenuItem => 'क्लाउड प्रोवाइडर';
-	@override String get localProviderMenuItem => 'लोकल प्रोवाइडर';
+	@override String get localProviderMenuItem => 'कस्टम प्रोवाइडर (OpenAI-संगत)';
 	@override String get localGgufMenuItem => 'लोकल GGUF';
 	@override String get noProvidersConfigured => 'कोई API प्रोवाइडर कॉन्फ़िगर नहीं किया गया।';
 	@override String get addingProviderOverlay => 'प्रोवाइडर जोड़ा जा रहा है…';
@@ -7945,15 +7945,15 @@ class _TranslationsSettingsLocalProviderConfigHi extends _TranslationsSettingsLo
 	@override final _TranslationsHi _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => '${url} तक नहीं पहुंचा जा सका। सुनिश्चित करें कि आपका लोकल सर्वर (KoboldCpp / Ollama / LM Studio / llama.cpp) चल रहा है।';
-	@override String get noModelsError => 'सर्वर तक पहुंच है लेकिन कोई मॉडल नहीं लौटाया। पहले अपने लोकल सर्वर में एक मॉडल लोड करें।';
-	@override String get deleteProviderMessage => 'इस लोकल प्रोवाइडर और इसके सभी प्रीसेट को स्थायी रूप से हटाएं? यह पूर्ववत नहीं किया जा सकता।';
-	@override String get editHeader => 'लोकल प्रोवाइडर एडिट करें';
-	@override String get addHeader => 'लोकल प्रोवाइडर जोड़ें';
+	@override String serverUnreachableMessage({required Object url}) => '${url} तक नहीं पहुंचा जा सका। URL जांचें और सुनिश्चित करें कि सर्वर चल रहा है।';
+	@override String get noModelsError => 'सर्वर तक पहुंच है लेकिन कोई मॉडल नहीं लौटाया। पहले सर्वर में एक मॉडल लोड करें।';
+	@override String get deleteProviderMessage => 'इस प्रोवाइडर और इसके सभी प्रीसेट को स्थायी रूप से हटाएं? यह पूर्ववत नहीं किया जा सकता।';
+	@override String get editHeader => 'कस्टम प्रोवाइडर एडिट करें';
+	@override String get addHeader => 'कस्टम प्रोवाइडर जोड़ें';
 	@override String get serverUrlLabel => 'सर्वर URL';
 	@override String get serverUrlLockedHelper => 'लॉक किया गया। किसी भिन्न सर्वर की ओर इंगित करने के लिए इस प्रोवाइडर को हटाएं और एक नया जोड़ें।';
 	@override String get apiKeyOptionalLabel => 'API कुंजी (वैकल्पिक)';
-	@override String get apiKeyOptionalHint => 'खाली छोड़ें — अधिकांश लोकल सर्वर को इसकी आवश्यकता नहीं होती';
+	@override String get apiKeyOptionalHint => 'अधिकांश क्लाउड सेवाओं के लिए आवश्यक; लोकल सर्वर को आमतौर पर इसकी आवश्यकता नहीं होती';
 	@override String get connectFetchButton => 'कनेक्ट करें और मॉडल प्राप्त करें';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
 		one: 'कनेक्ट हो गया। ${n} मॉडल मिला।',
@@ -10336,10 +10336,10 @@ class _TranslationsOnboardingAiSectionJa extends _TranslationsOnboardingAiSectio
 
 	// Translations
 	@override String get heading => 'AI接続';
-	@override String get optionalHint => '任意です — スキップして後で設定からキーを追加できます（ローカルプロバイダーもそこで追加できます）。';
+	@override String get optionalHint => '任意です — スキップして後で設定からキーを追加できます。';
 	@override String get apiKeyLabel => 'APIキー';
 	@override String get apiKeyHint => 'キーを貼り付けてください（今はスキップも可）';
-	@override String get supportedProviders => 'OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。詳細は設定で。';
+	@override String get supportedProviders => 'OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。その他の OpenAI 互換プロバイダー（ローカル・リモート問わず）も設定から追加できます。';
 	@override String get unknownModel => '（不明なモデル）';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -10522,7 +10522,7 @@ class _TranslationsSettingsAiTabJa extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} 個のモデルを更新、${unavailable} 個が利用不可、${errors} 件のエラー。';
 	@override String get newProviderButton => '新しいプロバイダー';
 	@override String get cloudProviderMenuItem => 'クラウドプロバイダー';
-	@override String get localProviderMenuItem => 'ローカルプロバイダー';
+	@override String get localProviderMenuItem => 'カスタムプロバイダー（OpenAI互換）';
 	@override String get localGgufMenuItem => 'ローカルGGUF';
 	@override String get noProvidersConfigured => 'APIプロバイダーが設定されていません。';
 	@override String get addingProviderOverlay => 'プロバイダーを追加中…';
@@ -10621,15 +10621,15 @@ class _TranslationsSettingsLocalProviderConfigJa extends _TranslationsSettingsLo
 	@override final _TranslationsJa _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => '${url} に接続できませんでした。ローカルサーバー（KoboldCpp / Ollama / LM Studio / llama.cpp）が起動していることを確認してください。';
-	@override String get noModelsError => 'サーバーには接続できましたが、モデルが返されませんでした。まずローカルサーバーでモデルを読み込んでください。';
-	@override String get deleteProviderMessage => 'このローカルプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。';
-	@override String get editHeader => 'ローカルプロバイダーを編集';
-	@override String get addHeader => 'ローカルプロバイダーを追加';
+	@override String serverUnreachableMessage({required Object url}) => '${url} に接続できませんでした。URLを確認し、サーバーが起動していることを確認してください。';
+	@override String get noModelsError => 'サーバーには接続できましたが、モデルが返されませんでした。まずサーバーでモデルを読み込んでください。';
+	@override String get deleteProviderMessage => 'このプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。';
+	@override String get editHeader => 'カスタムプロバイダーを編集';
+	@override String get addHeader => 'カスタムプロバイダーを追加';
 	@override String get serverUrlLabel => 'サーバーURL';
 	@override String get serverUrlLockedHelper => 'ロックされています。別のサーバーを指定するには、このプロバイダーを削除して新しいものを追加してください。';
 	@override String get apiKeyOptionalLabel => 'APIキー（任意）';
-	@override String get apiKeyOptionalHint => '空欄のままで構いません — ほとんどのローカルサーバーでは不要です';
+	@override String get apiKeyOptionalHint => 'ほとんどのクラウドサービスでは必須です。ローカルサーバーでは通常不要です';
 	@override String get connectFetchButton => '接続してモデルを取得';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
 		other: '接続しました。${n} 個のモデルが見つかりました。',
@@ -13011,10 +13011,10 @@ class _TranslationsOnboardingAiSectionKo extends _TranslationsOnboardingAiSectio
 
 	// Translations
 	@override String get heading => 'AI 연결';
-	@override String get optionalHint => '선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요 (로컬 제공자도 거기서 추가할 수 있어요).';
+	@override String get optionalHint => '선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요.';
 	@override String get apiKeyLabel => 'API 키';
 	@override String get apiKeyHint => '키를 붙여넣으세요 (또는 지금은 건너뛰기)';
-	@override String get supportedProviders => 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 더 많은 항목은 설정에 있어요.';
+	@override String get supportedProviders => 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 그 외 모든 OpenAI 호환 제공자(로컬 또는 원격)도 설정에서 추가할 수 있어요.';
 	@override String get unknownModel => '(알 수 없는 모델)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -13197,7 +13197,7 @@ class _TranslationsSettingsAiTabKo extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated}개 모델을 새로고침했어요. 사용 불가 ${unavailable}개, 오류 ${errors}개.';
 	@override String get newProviderButton => '새 제공자';
 	@override String get cloudProviderMenuItem => '클라우드 제공자';
-	@override String get localProviderMenuItem => '로컬 제공자';
+	@override String get localProviderMenuItem => '커스텀 제공자 (OpenAI 호환)';
 	@override String get localGgufMenuItem => '로컬 GGUF';
 	@override String get noProvidersConfigured => '설정된 API 제공자가 없어요.';
 	@override String get addingProviderOverlay => '제공자 추가 중…';
@@ -13296,15 +13296,15 @@ class _TranslationsSettingsLocalProviderConfigKo extends _TranslationsSettingsLo
 	@override final _TranslationsKo _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => '${url}에 연결하지 못했어요. 로컬 서버(KoboldCpp / Ollama / LM Studio / llama.cpp)가 실행 중인지 확인하세요.';
-	@override String get noModelsError => '서버에 연결되었지만 반환된 모델이 없어요. 먼저 로컬 서버에서 모델을 불러오세요.';
-	@override String get deleteProviderMessage => '이 로컬 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.';
-	@override String get editHeader => '로컬 제공자 편집';
-	@override String get addHeader => '로컬 제공자 추가';
+	@override String serverUnreachableMessage({required Object url}) => '${url}에 연결하지 못했어요. URL을 확인하고 서버가 실행 중인지 확인하세요.';
+	@override String get noModelsError => '서버에 연결되었지만 반환된 모델이 없어요. 먼저 서버에서 모델을 불러오세요.';
+	@override String get deleteProviderMessage => '이 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.';
+	@override String get editHeader => '커스텀 제공자 편집';
+	@override String get addHeader => '커스텀 제공자 추가';
 	@override String get serverUrlLabel => '서버 URL';
 	@override String get serverUrlLockedHelper => '잠겨 있어요. 다른 서버를 지정하려면 이 제공자를 삭제하고 새로 추가하세요.';
 	@override String get apiKeyOptionalLabel => 'API 키 (선택 사항)';
-	@override String get apiKeyOptionalHint => '비워 두세요 — 대부분의 로컬 서버는 필요하지 않아요';
+	@override String get apiKeyOptionalHint => '대부분의 클라우드 서비스에는 필요해요. 로컬 서버는 보통 필요하지 않아요';
 	@override String get connectFetchButton => '연결 및 모델 가져오기';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
 		other: '연결되었어요. ${n}개의 모델을 찾았어요.',
@@ -15693,10 +15693,10 @@ class _TranslationsOnboardingAiSectionPtBr extends _TranslationsOnboardingAiSect
 
 	// Translations
 	@override String get heading => 'Conexão de IA';
-	@override String get optionalHint => 'Opcional — pule e adicione uma chave depois nas Configurações (provedores locais também podem ser adicionados lá).';
+	@override String get optionalHint => 'Opcional — pule e adicione uma chave depois nas Configurações.';
 	@override String get apiKeyLabel => 'API key';
 	@override String get apiKeyHint => 'Cole sua chave (ou pule por enquanto)';
-	@override String get supportedProviders => 'Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Mais nas Configurações.';
+	@override String get supportedProviders => 'Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — além de qualquer outro provedor compatível com OpenAI, local ou remoto, pelas Configurações.';
 	@override String get unknownModel => '(modelo desconhecido)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -15879,7 +15879,7 @@ class _TranslationsSettingsAiTabPtBr extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} modelos atualizados, ${unavailable} indisponíveis, ${errors} erros.';
 	@override String get newProviderButton => 'Novo provedor';
 	@override String get cloudProviderMenuItem => 'Provedor na nuvem';
-	@override String get localProviderMenuItem => 'Provedor local';
+	@override String get localProviderMenuItem => 'Provedor personalizado (compatível com OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF local';
 	@override String get noProvidersConfigured => 'Nenhum provedor de API configurado.';
 	@override String get addingProviderOverlay => 'Adicionando provedor…';
@@ -15978,15 +15978,15 @@ class _TranslationsSettingsLocalProviderConfigPtBr extends _TranslationsSettings
 	@override final _TranslationsPtBr _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => 'Não foi possível acessar ${url}. Verifique se o seu servidor local (KoboldCpp / Ollama / LM Studio / llama.cpp) está em execução.';
-	@override String get noModelsError => 'Servidor acessível, mas não retornou modelos. Carregue um modelo no seu servidor local primeiro.';
-	@override String get deleteProviderMessage => 'Excluir permanentemente este provedor local e todas as suas predefinições? Isso não pode ser desfeito.';
-	@override String get editHeader => 'Editar provedor local';
-	@override String get addHeader => 'Adicionar provedor local';
+	@override String serverUnreachableMessage({required Object url}) => 'Não foi possível acessar ${url}. Verifique a URL e se o servidor está em execução.';
+	@override String get noModelsError => 'Servidor acessível, mas não retornou modelos. Carregue um modelo no servidor primeiro.';
+	@override String get deleteProviderMessage => 'Excluir permanentemente este provedor e todas as suas predefinições? Isso não pode ser desfeito.';
+	@override String get editHeader => 'Editar provedor personalizado';
+	@override String get addHeader => 'Adicionar provedor personalizado';
 	@override String get serverUrlLabel => 'URL do servidor';
 	@override String get serverUrlLockedHelper => 'Bloqueado. Exclua este provedor e adicione um novo para apontar para outro servidor.';
 	@override String get apiKeyOptionalLabel => 'API key (opcional)';
-	@override String get apiKeyOptionalHint => 'Deixe em branco — a maioria dos servidores locais não precisa de uma';
+	@override String get apiKeyOptionalHint => 'Exigida pela maioria dos serviços em nuvem; servidores locais geralmente não precisam';
 	@override String get connectFetchButton => 'Conectar e buscar modelos';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
 		one: 'Conectado. ${n} modelo encontrado.',
@@ -18390,10 +18390,10 @@ class _TranslationsOnboardingAiSectionRu extends _TranslationsOnboardingAiSectio
 
 	// Translations
 	@override String get heading => 'Подключение ИИ';
-	@override String get optionalHint => 'Необязательно — можно пропустить и добавить ключ позже в настройках (локальные провайдеры тоже добавляются там).';
+	@override String get optionalHint => 'Необязательно — можно пропустить и добавить ключ позже в настройках.';
 	@override String get apiKeyLabel => 'Ключ API';
 	@override String get apiKeyHint => 'Вставьте ключ (или пропустите пока)';
-	@override String get supportedProviders => 'Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Больше — в настройках.';
+	@override String get supportedProviders => 'Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — а также любого другого OpenAI-совместимого провайдера, локального или удалённого, через настройки.';
 	@override String get unknownModel => '(неизвестная модель)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -18576,7 +18576,7 @@ class _TranslationsSettingsAiTabRu extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Обновлено моделей: ${updated}, недоступно: ${unavailable}, ошибок: ${errors}.';
 	@override String get newProviderButton => 'Новый провайдер';
 	@override String get cloudProviderMenuItem => 'Облачный провайдер';
-	@override String get localProviderMenuItem => 'Локальный провайдер';
+	@override String get localProviderMenuItem => 'Пользовательский провайдер (OpenAI-совместимый)';
 	@override String get localGgufMenuItem => 'Локальный GGUF';
 	@override String get noProvidersConfigured => 'Провайдеры API не настроены.';
 	@override String get addingProviderOverlay => 'Добавление провайдера…';
@@ -18675,15 +18675,15 @@ class _TranslationsSettingsLocalProviderConfigRu extends _TranslationsSettingsLo
 	@override final _TranslationsRu _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => 'Не удалось связаться с ${url}. Убедитесь, что ваш локальный сервер (KoboldCpp / Ollama / LM Studio / llama.cpp) запущен.';
-	@override String get noModelsError => 'Сервер доступен, но не вернул моделей. Сначала загрузите модель на локальном сервере.';
-	@override String get deleteProviderMessage => 'Безвозвратно удалить этого локального провайдера и все его пресеты? Это нельзя отменить.';
-	@override String get editHeader => 'Редактировать локального провайдера';
-	@override String get addHeader => 'Добавить локального провайдера';
+	@override String serverUnreachableMessage({required Object url}) => 'Не удалось связаться с ${url}. Проверьте URL и убедитесь, что сервер запущен.';
+	@override String get noModelsError => 'Сервер доступен, но не вернул моделей. Сначала загрузите модель на сервере.';
+	@override String get deleteProviderMessage => 'Безвозвратно удалить этого провайдера и все его пресеты? Это нельзя отменить.';
+	@override String get editHeader => 'Редактировать пользовательского провайдера';
+	@override String get addHeader => 'Добавить пользовательского провайдера';
 	@override String get serverUrlLabel => 'URL сервера';
 	@override String get serverUrlLockedHelper => 'Заблокировано. Удалите этого провайдера и добавьте нового, чтобы указать другой сервер.';
 	@override String get apiKeyOptionalLabel => 'Ключ API (необязательно)';
-	@override String get apiKeyOptionalHint => 'Оставьте пустым — большинству локальных серверов ключ не нужен';
+	@override String get apiKeyOptionalHint => 'Нужен большинству облачных сервисов; локальным серверам обычно не нужен';
 	@override String get connectFetchButton => 'Подключиться и загрузить модели';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
 		one: 'Подключено. Найдена ${n} модель.',
@@ -21068,10 +21068,10 @@ class _TranslationsOnboardingAiSectionVi extends _TranslationsOnboardingAiSectio
 
 	// Translations
 	@override String get heading => 'Kết nối AI';
-	@override String get optionalHint => 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).';
+	@override String get optionalHint => 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt.';
 	@override String get apiKeyLabel => 'Khóa API';
 	@override String get apiKeyHint => 'Dán khóa của bạn (hoặc bỏ qua)';
-	@override String get supportedProviders => 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.';
+	@override String get supportedProviders => 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — và mọi nhà cung cấp tương thích OpenAI khác, cục bộ hoặc từ xa, qua Cài đặt.';
 	@override String get unknownModel => '(mô hình không xác định)';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -21254,7 +21254,7 @@ class _TranslationsSettingsAiTabVi extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
 	@override String get newProviderButton => 'Nhà cung cấp mới';
 	@override String get cloudProviderMenuItem => 'Nhà cung cấp đám mây';
-	@override String get localProviderMenuItem => 'Nhà cung cấp cục bộ';
+	@override String get localProviderMenuItem => 'Nhà cung cấp tùy chỉnh (tương thích OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF cục bộ';
 	@override String get noProvidersConfigured => 'Chưa cấu hình nhà cung cấp API nào.';
 	@override String get addingProviderOverlay => 'Đang thêm nhà cung cấp…';
@@ -21353,15 +21353,15 @@ class _TranslationsSettingsLocalProviderConfigVi extends _TranslationsSettingsLo
 	@override final _TranslationsVi _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => 'Không thể kết nối tới ${url}. Hãy chắc chắn máy chủ cục bộ của bạn (KoboldCpp / Ollama / LM Studio / llama.cpp) đang chạy.';
-	@override String get noModelsError => 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trong máy chủ cục bộ trước.';
-	@override String get deleteProviderMessage => 'Xóa vĩnh viễn nhà cung cấp cục bộ này và toàn bộ preset của nó? Không thể hoàn tác.';
-	@override String get editHeader => 'Chỉnh sửa nhà cung cấp cục bộ';
-	@override String get addHeader => 'Thêm nhà cung cấp cục bộ';
+	@override String serverUnreachableMessage({required Object url}) => 'Không thể kết nối tới ${url}. Hãy kiểm tra URL và chắc chắn máy chủ đang chạy.';
+	@override String get noModelsError => 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trên máy chủ trước.';
+	@override String get deleteProviderMessage => 'Xóa vĩnh viễn nhà cung cấp này và toàn bộ preset của nó? Không thể hoàn tác.';
+	@override String get editHeader => 'Chỉnh sửa nhà cung cấp tùy chỉnh';
+	@override String get addHeader => 'Thêm nhà cung cấp tùy chỉnh';
 	@override String get serverUrlLabel => 'URL máy chủ';
 	@override String get serverUrlLockedHelper => 'Đã khóa. Xóa nhà cung cấp này và thêm mới để trỏ tới máy chủ khác.';
 	@override String get apiKeyOptionalLabel => 'Khóa API (không bắt buộc)';
-	@override String get apiKeyOptionalHint => 'Để trống — hầu hết máy chủ cục bộ không cần';
+	@override String get apiKeyOptionalHint => 'Hầu hết dịch vụ đám mây yêu cầu; máy chủ cục bộ thường không cần';
 	@override String get connectFetchButton => 'Kết nối & tải mô hình';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
 		other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
@@ -23743,10 +23743,10 @@ class _TranslationsOnboardingAiSectionZhHans extends _TranslationsOnboardingAiSe
 
 	// Translations
 	@override String get heading => 'AI 连接';
-	@override String get optionalHint => '可选——可以跳过，之后在设置中添加密钥（本地服务商也可以在那里添加）。';
+	@override String get optionalHint => '可选——可以跳过，之后在设置中添加密钥。';
 	@override String get apiKeyLabel => 'API 密钥';
 	@override String get apiKeyHint => '粘贴你的密钥（或暂时跳过）';
-	@override String get supportedProviders => '支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多请在设置中查看。';
+	@override String get supportedProviders => '支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 兼容服务商（本地或远程），可在设置中添加。';
 	@override String get unknownModel => '（未知模型）';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -23929,7 +23929,7 @@ class _TranslationsSettingsAiTabZhHans extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '已刷新 ${updated} 个模型，${unavailable} 个不可用，${errors} 个错误。';
 	@override String get newProviderButton => '新建服务商';
 	@override String get cloudProviderMenuItem => '云端服务商';
-	@override String get localProviderMenuItem => '本地服务商';
+	@override String get localProviderMenuItem => '自定义服务商（OpenAI 兼容）';
 	@override String get localGgufMenuItem => '本地 GGUF';
 	@override String get noProvidersConfigured => '尚未配置 API 服务商。';
 	@override String get addingProviderOverlay => '正在添加服务商…';
@@ -24028,15 +24028,15 @@ class _TranslationsSettingsLocalProviderConfigZhHans extends _TranslationsSettin
 	@override final _TranslationsZhHans _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => '无法连接 ${url}。请确认你的本地服务器（KoboldCpp / Ollama / LM Studio / llama.cpp）正在运行。';
-	@override String get noModelsError => '服务器可连接，但未返回任何模型。请先在本地服务器中加载一个模型。';
-	@override String get deleteProviderMessage => '永久删除此本地服务商及其所有预设？此操作无法撤销。';
-	@override String get editHeader => '编辑本地服务商';
-	@override String get addHeader => '添加本地服务商';
+	@override String serverUnreachableMessage({required Object url}) => '无法连接 ${url}。请检查 URL 并确认服务器正在运行。';
+	@override String get noModelsError => '服务器可连接，但未返回任何模型。请先在服务器上加载一个模型。';
+	@override String get deleteProviderMessage => '永久删除此服务商及其所有预设？此操作无法撤销。';
+	@override String get editHeader => '编辑自定义服务商';
+	@override String get addHeader => '添加自定义服务商';
 	@override String get serverUrlLabel => '服务器 URL';
 	@override String get serverUrlLockedHelper => '已锁定。请删除此服务商并新建一个以指向不同的服务器。';
 	@override String get apiKeyOptionalLabel => 'API 密钥（可选）';
-	@override String get apiKeyOptionalHint => '留空即可——大多数本地服务器不需要密钥';
+	@override String get apiKeyOptionalHint => '大多数云服务需要密钥；本地服务器通常不需要';
 	@override String get connectFetchButton => '连接并获取模型';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 		other: '已连接。找到 ${n} 个模型。',
@@ -26418,10 +26418,10 @@ class _TranslationsOnboardingAiSectionZhHant extends _TranslationsOnboardingAiSe
 
 	// Translations
 	@override String get heading => 'AI 連線';
-	@override String get optionalHint => '選填——可先略過，之後在「設定」中新增金鑰（本機服務商也可在那裡新增）。';
+	@override String get optionalHint => '選填——可先略過，之後在「設定」中新增金鑰。';
 	@override String get apiKeyLabel => 'API 金鑰';
 	@override String get apiKeyHint => '貼上你的金鑰（或先略過）';
-	@override String get supportedProviders => '支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多請見「設定」。';
+	@override String get supportedProviders => '支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 相容服務商（本機或遠端），可在「設定」中新增。';
 	@override String get unknownModel => '（未知模型）';
 	@override String get ctxUnknown => 'ctx —';
 	@override String ctxValue({required Object ctx}) => 'ctx ${ctx}';
@@ -26604,7 +26604,7 @@ class _TranslationsSettingsAiTabZhHant extends _TranslationsSettingsAiTabEn {
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '已重新整理 ${updated} 個模型，${unavailable} 個無法使用，${errors} 個錯誤。';
 	@override String get newProviderButton => '新服務商';
 	@override String get cloudProviderMenuItem => '雲端服務商';
-	@override String get localProviderMenuItem => '本機服務商';
+	@override String get localProviderMenuItem => '自訂服務商（OpenAI 相容）';
 	@override String get localGgufMenuItem => '本機 GGUF';
 	@override String get noProvidersConfigured => '尚未設定任何 API 服務商。';
 	@override String get addingProviderOverlay => '正在新增服務商…';
@@ -26703,15 +26703,15 @@ class _TranslationsSettingsLocalProviderConfigZhHant extends _TranslationsSettin
 	@override final _TranslationsZhHant _root; // ignore: unused_field
 
 	// Translations
-	@override String serverUnreachableMessage({required Object url}) => '無法連線到 ${url}。請確認你的本機伺服器（KoboldCpp / Ollama / LM Studio / llama.cpp）正在執行。';
-	@override String get noModelsError => '伺服器可連線，但沒有回傳任何模型。請先在你的本機伺服器載入模型。';
-	@override String get deleteProviderMessage => '永久刪除這個本機服務商及其所有預設？此動作無法復原。';
-	@override String get editHeader => '編輯本機服務商';
-	@override String get addHeader => '新增本機服務商';
+	@override String serverUnreachableMessage({required Object url}) => '無法連線到 ${url}。請檢查 URL 並確認伺服器正在執行。';
+	@override String get noModelsError => '伺服器可連線，但沒有回傳任何模型。請先在伺服器上載入模型。';
+	@override String get deleteProviderMessage => '永久刪除這個服務商及其所有預設？此動作無法復原。';
+	@override String get editHeader => '編輯自訂服務商';
+	@override String get addHeader => '新增自訂服務商';
 	@override String get serverUrlLabel => '伺服器網址';
 	@override String get serverUrlLockedHelper => '已鎖定。請刪除此服務商並新增一個，以指向不同的伺服器。';
 	@override String get apiKeyOptionalLabel => 'API 金鑰（選填）';
-	@override String get apiKeyOptionalHint => '留空即可——大多數本機伺服器不需要';
+	@override String get apiKeyOptionalHint => '大多數雲端服務需要金鑰；本機伺服器通常不需要';
 	@override String get connectFetchButton => '連線並擷取模型';
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 		other: '已連線。找到 ${n} 個模型。',
@@ -27590,10 +27590,10 @@ extension on Translations {
 			case 'onboarding.storageStep.noFolderSelected': return 'No folder selected yet.';
 			case 'onboarding.setupStep.title': return 'AI & Persona';
 			case 'onboarding.aiSection.heading': return 'AI Connection';
-			case 'onboarding.aiSection.optionalHint': return 'Optional — skip and add a key later in Settings (local providers can be added there too).';
+			case 'onboarding.aiSection.optionalHint': return 'Optional — skip and add a key later in Settings.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API Key';
 			case 'onboarding.aiSection.apiKeyHint': return 'Paste your key (or skip for now)';
-			case 'onboarding.aiSection.supportedProviders': return 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. More in Settings.';
+			case 'onboarding.aiSection.supportedProviders': return 'Supports OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — plus any other OpenAI-compatible provider, local or remote, via Settings.';
 			case 'onboarding.aiSection.unknownModel': return '(unknown model)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -27652,7 +27652,7 @@ extension on Translations {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
 			case 'settings.aiTab.newProviderButton': return 'New Provider';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'Cloud Provider';
-			case 'settings.aiTab.localProviderMenuItem': return 'Local Provider';
+			case 'settings.aiTab.localProviderMenuItem': return 'Custom Provider (OpenAI-compatible)';
 			case 'settings.aiTab.localGgufMenuItem': return 'Local GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'No API providers configured.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Adding provider…';
@@ -27724,15 +27724,15 @@ extension on Translations {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Connected to ${provider}. Default presets will be created.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Detected: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Unrecognized key format.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Could not reach ${url}. Make sure your local server (KoboldCpp / Ollama / LM Studio / llama.cpp) is running.';
-			case 'settings.localProviderConfig.noModelsError': return 'Server reachable but returned no models. Load a model in your local server first.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'Permanently delete this Local provider and all its presets? This cannot be undone.';
-			case 'settings.localProviderConfig.editHeader': return 'Edit Local Provider';
-			case 'settings.localProviderConfig.addHeader': return 'Add Local Provider';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Could not reach ${url}. Check the URL and make sure the server is running.';
+			case 'settings.localProviderConfig.noModelsError': return 'Server reachable but returned no models. Load a model on the server first.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Permanently delete this provider and all its presets? This cannot be undone.';
+			case 'settings.localProviderConfig.editHeader': return 'Edit Custom Provider';
+			case 'settings.localProviderConfig.addHeader': return 'Add Custom Provider';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'Server URL';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Locked. Delete this provider and add a new one to point at a different server.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API Key (optional)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Leave blank — most local servers don\'t need one';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Required by most cloud services; local servers usually don\'t need one';
 			case 'settings.localProviderConfig.connectFetchButton': return 'Connect & Fetch Models';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
 				one: 'Connected. Found ${n} model.',
@@ -28453,10 +28453,10 @@ extension on _TranslationsEs419 {
 			case 'onboarding.storageStep.noFolderSelected': return 'Aún no se seleccionó ninguna carpeta.';
 			case 'onboarding.setupStep.title': return 'IA y persona';
 			case 'onboarding.aiSection.heading': return 'Conexión de IA';
-			case 'onboarding.aiSection.optionalHint': return 'Opcional — omítelo y agrega una clave más tarde en Configuración (los proveedores locales también se agregan ahí).';
+			case 'onboarding.aiSection.optionalHint': return 'Opcional — omítelo y agrega una clave más tarde en Configuración.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API key';
 			case 'onboarding.aiSection.apiKeyHint': return 'Pega tu clave (o omítelo por ahora)';
-			case 'onboarding.aiSection.supportedProviders': return 'Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Más en Configuración.';
+			case 'onboarding.aiSection.supportedProviders': return 'Compatible con OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — y con cualquier otro proveedor compatible con OpenAI, local o remoto, desde Configuración.';
 			case 'onboarding.aiSection.unknownModel': return '(modelo desconocido)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -28515,7 +28515,7 @@ extension on _TranslationsEs419 {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Se actualizaron ${updated} modelos, ${unavailable} no disponibles, ${errors} errores.';
 			case 'settings.aiTab.newProviderButton': return 'Nuevo proveedor';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'Proveedor en la nube';
-			case 'settings.aiTab.localProviderMenuItem': return 'Proveedor local';
+			case 'settings.aiTab.localProviderMenuItem': return 'Proveedor personalizado (compatible con OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF local';
 			case 'settings.aiTab.noProvidersConfigured': return 'No hay proveedores de API configurados.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Agregando proveedor…';
@@ -28587,15 +28587,15 @@ extension on _TranslationsEs419 {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Conectado a ${provider}. Se crearán preajustes predeterminados.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Detectado: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Formato de clave no reconocido.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'No se pudo acceder a ${url}. Asegúrate de que tu servidor local (KoboldCpp / Ollama / LM Studio / llama.cpp) esté en ejecución.';
-			case 'settings.localProviderConfig.noModelsError': return 'El servidor es accesible pero no devolvió modelos. Carga un modelo en tu servidor local primero.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return '¿Eliminar permanentemente este proveedor local y todos sus preajustes? Esto no se puede deshacer.';
-			case 'settings.localProviderConfig.editHeader': return 'Editar proveedor local';
-			case 'settings.localProviderConfig.addHeader': return 'Agregar proveedor local';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'No se pudo acceder a ${url}. Verifica la URL y asegúrate de que el servidor esté en ejecución.';
+			case 'settings.localProviderConfig.noModelsError': return 'El servidor es accesible pero no devolvió modelos. Carga un modelo en el servidor primero.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return '¿Eliminar permanentemente este proveedor y todos sus preajustes? Esto no se puede deshacer.';
+			case 'settings.localProviderConfig.editHeader': return 'Editar proveedor personalizado';
+			case 'settings.localProviderConfig.addHeader': return 'Agregar proveedor personalizado';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'URL del servidor';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Bloqueado. Elimina este proveedor y agrega uno nuevo para apuntar a otro servidor.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API key (opcional)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Déjalo en blanco — la mayoría de los servidores locales no necesitan una';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'La mayoría de los servicios en la nube la requieren; los servidores locales normalmente no';
 			case 'settings.localProviderConfig.connectFetchButton': return 'Conectar y obtener modelos';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('es'))(n,
 				one: 'Conectado. Se encontró ${n} modelo.',
@@ -29316,10 +29316,10 @@ extension on _TranslationsHi {
 			case 'onboarding.storageStep.noFolderSelected': return 'अभी तक कोई फ़ोल्डर चयनित नहीं।';
 			case 'onboarding.setupStep.title': return 'AI और पर्सोना';
 			case 'onboarding.aiSection.heading': return 'AI कनेक्शन';
-			case 'onboarding.aiSection.optionalHint': return 'वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें (लोकल प्रोवाइडर भी वहाँ जोड़े जा सकते हैं)।';
+			case 'onboarding.aiSection.optionalHint': return 'वैकल्पिक — छोड़ें और बाद में सेटिंग्स में एक कुंजी जोड़ें।';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API कुंजी';
 			case 'onboarding.aiSection.apiKeyHint': return 'अपनी कुंजी पेस्ट करें (या अभी के लिए छोड़ें)';
-			case 'onboarding.aiSection.supportedProviders': return 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है। और सेटिंग्स में।';
+			case 'onboarding.aiSection.supportedProviders': return 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT का समर्थन करता है — साथ ही कोई भी अन्य OpenAI-संगत प्रोवाइडर (लोकल या रिमोट) सेटिंग्स से जोड़ा जा सकता है।';
 			case 'onboarding.aiSection.unknownModel': return '(अज्ञात मॉडल)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -29378,7 +29378,7 @@ extension on _TranslationsHi {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} मॉडल रीफ़्रेश किए, ${unavailable} अनुपलब्ध, ${errors} त्रुटियां।';
 			case 'settings.aiTab.newProviderButton': return 'नया प्रोवाइडर';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'क्लाउड प्रोवाइडर';
-			case 'settings.aiTab.localProviderMenuItem': return 'लोकल प्रोवाइडर';
+			case 'settings.aiTab.localProviderMenuItem': return 'कस्टम प्रोवाइडर (OpenAI-संगत)';
 			case 'settings.aiTab.localGgufMenuItem': return 'लोकल GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'कोई API प्रोवाइडर कॉन्फ़िगर नहीं किया गया।';
 			case 'settings.aiTab.addingProviderOverlay': return 'प्रोवाइडर जोड़ा जा रहा है…';
@@ -29450,15 +29450,15 @@ extension on _TranslationsHi {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => '${provider} से कनेक्ट हुआ। डिफ़ॉल्ट प्रीसेट बनाए जाएंगे।';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'पहचाना गया: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'अपरिचित कुंजी प्रारूप।';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url} तक नहीं पहुंचा जा सका। सुनिश्चित करें कि आपका लोकल सर्वर (KoboldCpp / Ollama / LM Studio / llama.cpp) चल रहा है।';
-			case 'settings.localProviderConfig.noModelsError': return 'सर्वर तक पहुंच है लेकिन कोई मॉडल नहीं लौटाया। पहले अपने लोकल सर्वर में एक मॉडल लोड करें।';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'इस लोकल प्रोवाइडर और इसके सभी प्रीसेट को स्थायी रूप से हटाएं? यह पूर्ववत नहीं किया जा सकता।';
-			case 'settings.localProviderConfig.editHeader': return 'लोकल प्रोवाइडर एडिट करें';
-			case 'settings.localProviderConfig.addHeader': return 'लोकल प्रोवाइडर जोड़ें';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url} तक नहीं पहुंचा जा सका। URL जांचें और सुनिश्चित करें कि सर्वर चल रहा है।';
+			case 'settings.localProviderConfig.noModelsError': return 'सर्वर तक पहुंच है लेकिन कोई मॉडल नहीं लौटाया। पहले सर्वर में एक मॉडल लोड करें।';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'इस प्रोवाइडर और इसके सभी प्रीसेट को स्थायी रूप से हटाएं? यह पूर्ववत नहीं किया जा सकता।';
+			case 'settings.localProviderConfig.editHeader': return 'कस्टम प्रोवाइडर एडिट करें';
+			case 'settings.localProviderConfig.addHeader': return 'कस्टम प्रोवाइडर जोड़ें';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'सर्वर URL';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'लॉक किया गया। किसी भिन्न सर्वर की ओर इंगित करने के लिए इस प्रोवाइडर को हटाएं और एक नया जोड़ें।';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API कुंजी (वैकल्पिक)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'खाली छोड़ें — अधिकांश लोकल सर्वर को इसकी आवश्यकता नहीं होती';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'अधिकांश क्लाउड सेवाओं के लिए आवश्यक; लोकल सर्वर को आमतौर पर इसकी आवश्यकता नहीं होती';
 			case 'settings.localProviderConfig.connectFetchButton': return 'कनेक्ट करें और मॉडल प्राप्त करें';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('hi'))(n,
 				one: 'कनेक्ट हो गया। ${n} मॉडल मिला।',
@@ -30172,10 +30172,10 @@ extension on _TranslationsJa {
 			case 'onboarding.storageStep.noFolderSelected': return 'まだフォルダが選択されていません。';
 			case 'onboarding.setupStep.title': return 'AIとペルソナ';
 			case 'onboarding.aiSection.heading': return 'AI接続';
-			case 'onboarding.aiSection.optionalHint': return '任意です — スキップして後で設定からキーを追加できます（ローカルプロバイダーもそこで追加できます）。';
+			case 'onboarding.aiSection.optionalHint': return '任意です — スキップして後で設定からキーを追加できます。';
 			case 'onboarding.aiSection.apiKeyLabel': return 'APIキー';
 			case 'onboarding.aiSection.apiKeyHint': return 'キーを貼り付けてください（今はスキップも可）';
-			case 'onboarding.aiSection.supportedProviders': return 'OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。詳細は設定で。';
+			case 'onboarding.aiSection.supportedProviders': return 'OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT に対応。その他の OpenAI 互換プロバイダー（ローカル・リモート問わず）も設定から追加できます。';
 			case 'onboarding.aiSection.unknownModel': return '（不明なモデル）';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -30234,7 +30234,7 @@ extension on _TranslationsJa {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} 個のモデルを更新、${unavailable} 個が利用不可、${errors} 件のエラー。';
 			case 'settings.aiTab.newProviderButton': return '新しいプロバイダー';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'クラウドプロバイダー';
-			case 'settings.aiTab.localProviderMenuItem': return 'ローカルプロバイダー';
+			case 'settings.aiTab.localProviderMenuItem': return 'カスタムプロバイダー（OpenAI互換）';
 			case 'settings.aiTab.localGgufMenuItem': return 'ローカルGGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'APIプロバイダーが設定されていません。';
 			case 'settings.aiTab.addingProviderOverlay': return 'プロバイダーを追加中…';
@@ -30306,15 +30306,15 @@ extension on _TranslationsJa {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => '${provider} に接続しました。既定のプリセットが作成されます。';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => '検出: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return '認識できないキー形式です。';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url} に接続できませんでした。ローカルサーバー（KoboldCpp / Ollama / LM Studio / llama.cpp）が起動していることを確認してください。';
-			case 'settings.localProviderConfig.noModelsError': return 'サーバーには接続できましたが、モデルが返されませんでした。まずローカルサーバーでモデルを読み込んでください。';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'このローカルプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。';
-			case 'settings.localProviderConfig.editHeader': return 'ローカルプロバイダーを編集';
-			case 'settings.localProviderConfig.addHeader': return 'ローカルプロバイダーを追加';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url} に接続できませんでした。URLを確認し、サーバーが起動していることを確認してください。';
+			case 'settings.localProviderConfig.noModelsError': return 'サーバーには接続できましたが、モデルが返されませんでした。まずサーバーでモデルを読み込んでください。';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'このプロバイダーとそのすべてのプリセットを完全に削除しますか？この操作は取り消せません。';
+			case 'settings.localProviderConfig.editHeader': return 'カスタムプロバイダーを編集';
+			case 'settings.localProviderConfig.addHeader': return 'カスタムプロバイダーを追加';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'サーバーURL';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'ロックされています。別のサーバーを指定するには、このプロバイダーを削除して新しいものを追加してください。';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'APIキー（任意）';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return '空欄のままで構いません — ほとんどのローカルサーバーでは不要です';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'ほとんどのクラウドサービスでは必須です。ローカルサーバーでは通常不要です';
 			case 'settings.localProviderConfig.connectFetchButton': return '接続してモデルを取得';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
 				other: '接続しました。${n} 個のモデルが見つかりました。',
@@ -31027,10 +31027,10 @@ extension on _TranslationsKo {
 			case 'onboarding.storageStep.noFolderSelected': return '아직 선택된 폴더가 없어요.';
 			case 'onboarding.setupStep.title': return 'AI 및 페르소나';
 			case 'onboarding.aiSection.heading': return 'AI 연결';
-			case 'onboarding.aiSection.optionalHint': return '선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요 (로컬 제공자도 거기서 추가할 수 있어요).';
+			case 'onboarding.aiSection.optionalHint': return '선택 사항 — 건너뛰고 나중에 설정에서 키를 추가할 수 있어요.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API 키';
 			case 'onboarding.aiSection.apiKeyHint': return '키를 붙여넣으세요 (또는 지금은 건너뛰기)';
-			case 'onboarding.aiSection.supportedProviders': return 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 더 많은 항목은 설정에 있어요.';
+			case 'onboarding.aiSection.supportedProviders': return 'OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT를 지원해요. 그 외 모든 OpenAI 호환 제공자(로컬 또는 원격)도 설정에서 추가할 수 있어요.';
 			case 'onboarding.aiSection.unknownModel': return '(알 수 없는 모델)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -31089,7 +31089,7 @@ extension on _TranslationsKo {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated}개 모델을 새로고침했어요. 사용 불가 ${unavailable}개, 오류 ${errors}개.';
 			case 'settings.aiTab.newProviderButton': return '새 제공자';
 			case 'settings.aiTab.cloudProviderMenuItem': return '클라우드 제공자';
-			case 'settings.aiTab.localProviderMenuItem': return '로컬 제공자';
+			case 'settings.aiTab.localProviderMenuItem': return '커스텀 제공자 (OpenAI 호환)';
 			case 'settings.aiTab.localGgufMenuItem': return '로컬 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '설정된 API 제공자가 없어요.';
 			case 'settings.aiTab.addingProviderOverlay': return '제공자 추가 중…';
@@ -31161,15 +31161,15 @@ extension on _TranslationsKo {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => '${provider}에 연결되었어요. 기본 프리셋이 생성돼요.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => '감지됨: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return '인식할 수 없는 키 형식이에요.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url}에 연결하지 못했어요. 로컬 서버(KoboldCpp / Ollama / LM Studio / llama.cpp)가 실행 중인지 확인하세요.';
-			case 'settings.localProviderConfig.noModelsError': return '서버에 연결되었지만 반환된 모델이 없어요. 먼저 로컬 서버에서 모델을 불러오세요.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return '이 로컬 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.';
-			case 'settings.localProviderConfig.editHeader': return '로컬 제공자 편집';
-			case 'settings.localProviderConfig.addHeader': return '로컬 제공자 추가';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '${url}에 연결하지 못했어요. URL을 확인하고 서버가 실행 중인지 확인하세요.';
+			case 'settings.localProviderConfig.noModelsError': return '서버에 연결되었지만 반환된 모델이 없어요. 먼저 서버에서 모델을 불러오세요.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return '이 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.';
+			case 'settings.localProviderConfig.editHeader': return '커스텀 제공자 편집';
+			case 'settings.localProviderConfig.addHeader': return '커스텀 제공자 추가';
 			case 'settings.localProviderConfig.serverUrlLabel': return '서버 URL';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return '잠겨 있어요. 다른 서버를 지정하려면 이 제공자를 삭제하고 새로 추가하세요.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API 키 (선택 사항)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return '비워 두세요 — 대부분의 로컬 서버는 필요하지 않아요';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return '대부분의 클라우드 서비스에는 필요해요. 로컬 서버는 보통 필요하지 않아요';
 			case 'settings.localProviderConfig.connectFetchButton': return '연결 및 모델 가져오기';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
 				other: '연결되었어요. ${n}개의 모델을 찾았어요.',
@@ -31889,10 +31889,10 @@ extension on _TranslationsPtBr {
 			case 'onboarding.storageStep.noFolderSelected': return 'Nenhuma pasta selecionada ainda.';
 			case 'onboarding.setupStep.title': return 'IA e persona';
 			case 'onboarding.aiSection.heading': return 'Conexão de IA';
-			case 'onboarding.aiSection.optionalHint': return 'Opcional — pule e adicione uma chave depois nas Configurações (provedores locais também podem ser adicionados lá).';
+			case 'onboarding.aiSection.optionalHint': return 'Opcional — pule e adicione uma chave depois nas Configurações.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API key';
 			case 'onboarding.aiSection.apiKeyHint': return 'Cole sua chave (ou pule por enquanto)';
-			case 'onboarding.aiSection.supportedProviders': return 'Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Mais nas Configurações.';
+			case 'onboarding.aiSection.supportedProviders': return 'Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — além de qualquer outro provedor compatível com OpenAI, local ou remoto, pelas Configurações.';
 			case 'onboarding.aiSection.unknownModel': return '(modelo desconhecido)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -31951,7 +31951,7 @@ extension on _TranslationsPtBr {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} modelos atualizados, ${unavailable} indisponíveis, ${errors} erros.';
 			case 'settings.aiTab.newProviderButton': return 'Novo provedor';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'Provedor na nuvem';
-			case 'settings.aiTab.localProviderMenuItem': return 'Provedor local';
+			case 'settings.aiTab.localProviderMenuItem': return 'Provedor personalizado (compatível com OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF local';
 			case 'settings.aiTab.noProvidersConfigured': return 'Nenhum provedor de API configurado.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Adicionando provedor…';
@@ -32023,15 +32023,15 @@ extension on _TranslationsPtBr {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Conectado a ${provider}. Predefinições padrão serão criadas.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Detectado: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Formato de chave não reconhecido.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Não foi possível acessar ${url}. Verifique se o seu servidor local (KoboldCpp / Ollama / LM Studio / llama.cpp) está em execução.';
-			case 'settings.localProviderConfig.noModelsError': return 'Servidor acessível, mas não retornou modelos. Carregue um modelo no seu servidor local primeiro.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'Excluir permanentemente este provedor local e todas as suas predefinições? Isso não pode ser desfeito.';
-			case 'settings.localProviderConfig.editHeader': return 'Editar provedor local';
-			case 'settings.localProviderConfig.addHeader': return 'Adicionar provedor local';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Não foi possível acessar ${url}. Verifique a URL e se o servidor está em execução.';
+			case 'settings.localProviderConfig.noModelsError': return 'Servidor acessível, mas não retornou modelos. Carregue um modelo no servidor primeiro.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Excluir permanentemente este provedor e todas as suas predefinições? Isso não pode ser desfeito.';
+			case 'settings.localProviderConfig.editHeader': return 'Editar provedor personalizado';
+			case 'settings.localProviderConfig.addHeader': return 'Adicionar provedor personalizado';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'URL do servidor';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Bloqueado. Exclua este provedor e adicione um novo para apontar para outro servidor.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API key (opcional)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Deixe em branco — a maioria dos servidores locais não precisa de uma';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Exigida pela maioria dos serviços em nuvem; servidores locais geralmente não precisam';
 			case 'settings.localProviderConfig.connectFetchButton': return 'Conectar e buscar modelos';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
 				one: 'Conectado. ${n} modelo encontrado.',
@@ -32766,10 +32766,10 @@ extension on _TranslationsRu {
 			case 'onboarding.storageStep.noFolderSelected': return 'Папка ещё не выбрана.';
 			case 'onboarding.setupStep.title': return 'ИИ и персона';
 			case 'onboarding.aiSection.heading': return 'Подключение ИИ';
-			case 'onboarding.aiSection.optionalHint': return 'Необязательно — можно пропустить и добавить ключ позже в настройках (локальные провайдеры тоже добавляются там).';
+			case 'onboarding.aiSection.optionalHint': return 'Необязательно — можно пропустить и добавить ключ позже в настройках.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'Ключ API';
 			case 'onboarding.aiSection.apiKeyHint': return 'Вставьте ключ (или пропустите пока)';
-			case 'onboarding.aiSection.supportedProviders': return 'Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Больше — в настройках.';
+			case 'onboarding.aiSection.supportedProviders': return 'Поддерживает OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — а также любого другого OpenAI-совместимого провайдера, локального или удалённого, через настройки.';
 			case 'onboarding.aiSection.unknownModel': return '(неизвестная модель)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -32828,7 +32828,7 @@ extension on _TranslationsRu {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Обновлено моделей: ${updated}, недоступно: ${unavailable}, ошибок: ${errors}.';
 			case 'settings.aiTab.newProviderButton': return 'Новый провайдер';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'Облачный провайдер';
-			case 'settings.aiTab.localProviderMenuItem': return 'Локальный провайдер';
+			case 'settings.aiTab.localProviderMenuItem': return 'Пользовательский провайдер (OpenAI-совместимый)';
 			case 'settings.aiTab.localGgufMenuItem': return 'Локальный GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'Провайдеры API не настроены.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Добавление провайдера…';
@@ -32900,15 +32900,15 @@ extension on _TranslationsRu {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Подключено к ${provider}. Будут созданы пресеты по умолчанию.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Обнаружено: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Нераспознанный формат ключа.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Не удалось связаться с ${url}. Убедитесь, что ваш локальный сервер (KoboldCpp / Ollama / LM Studio / llama.cpp) запущен.';
-			case 'settings.localProviderConfig.noModelsError': return 'Сервер доступен, но не вернул моделей. Сначала загрузите модель на локальном сервере.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'Безвозвратно удалить этого локального провайдера и все его пресеты? Это нельзя отменить.';
-			case 'settings.localProviderConfig.editHeader': return 'Редактировать локального провайдера';
-			case 'settings.localProviderConfig.addHeader': return 'Добавить локального провайдера';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Не удалось связаться с ${url}. Проверьте URL и убедитесь, что сервер запущен.';
+			case 'settings.localProviderConfig.noModelsError': return 'Сервер доступен, но не вернул моделей. Сначала загрузите модель на сервере.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Безвозвратно удалить этого провайдера и все его пресеты? Это нельзя отменить.';
+			case 'settings.localProviderConfig.editHeader': return 'Редактировать пользовательского провайдера';
+			case 'settings.localProviderConfig.addHeader': return 'Добавить пользовательского провайдера';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'URL сервера';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Заблокировано. Удалите этого провайдера и добавьте нового, чтобы указать другой сервер.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'Ключ API (необязательно)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Оставьте пустым — большинству локальных серверов ключ не нужен';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Нужен большинству облачных сервисов; локальным серверам обычно не нужен';
 			case 'settings.localProviderConfig.connectFetchButton': return 'Подключиться и загрузить модели';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ru'))(n,
 				one: 'Подключено. Найдена ${n} модель.',
@@ -33624,10 +33624,10 @@ extension on _TranslationsVi {
 			case 'onboarding.storageStep.noFolderSelected': return 'Chưa chọn thư mục nào.';
 			case 'onboarding.setupStep.title': return 'AI & Persona';
 			case 'onboarding.aiSection.heading': return 'Kết nối AI';
-			case 'onboarding.aiSection.optionalHint': return 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt (nhà cung cấp cục bộ cũng thêm được ở đó).';
+			case 'onboarding.aiSection.optionalHint': return 'Không bắt buộc — bỏ qua và thêm khóa sau trong Cài đặt.';
 			case 'onboarding.aiSection.apiKeyLabel': return 'Khóa API';
 			case 'onboarding.aiSection.apiKeyHint': return 'Dán khóa của bạn (hoặc bỏ qua)';
-			case 'onboarding.aiSection.supportedProviders': return 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Thêm nữa trong Cài đặt.';
+			case 'onboarding.aiSection.supportedProviders': return 'Hỗ trợ OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — và mọi nhà cung cấp tương thích OpenAI khác, cục bộ hoặc từ xa, qua Cài đặt.';
 			case 'onboarding.aiSection.unknownModel': return '(mô hình không xác định)';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -33686,7 +33686,7 @@ extension on _TranslationsVi {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
 			case 'settings.aiTab.newProviderButton': return 'Nhà cung cấp mới';
 			case 'settings.aiTab.cloudProviderMenuItem': return 'Nhà cung cấp đám mây';
-			case 'settings.aiTab.localProviderMenuItem': return 'Nhà cung cấp cục bộ';
+			case 'settings.aiTab.localProviderMenuItem': return 'Nhà cung cấp tùy chỉnh (tương thích OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF cục bộ';
 			case 'settings.aiTab.noProvidersConfigured': return 'Chưa cấu hình nhà cung cấp API nào.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Đang thêm nhà cung cấp…';
@@ -33758,15 +33758,15 @@ extension on _TranslationsVi {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => 'Đã kết nối với ${provider}. Các preset mặc định sẽ được tạo.';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => 'Đã nhận diện: ${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return 'Định dạng khóa không nhận diện được.';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Không thể kết nối tới ${url}. Hãy chắc chắn máy chủ cục bộ của bạn (KoboldCpp / Ollama / LM Studio / llama.cpp) đang chạy.';
-			case 'settings.localProviderConfig.noModelsError': return 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trong máy chủ cục bộ trước.';
-			case 'settings.localProviderConfig.deleteProviderMessage': return 'Xóa vĩnh viễn nhà cung cấp cục bộ này và toàn bộ preset của nó? Không thể hoàn tác.';
-			case 'settings.localProviderConfig.editHeader': return 'Chỉnh sửa nhà cung cấp cục bộ';
-			case 'settings.localProviderConfig.addHeader': return 'Thêm nhà cung cấp cục bộ';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => 'Không thể kết nối tới ${url}. Hãy kiểm tra URL và chắc chắn máy chủ đang chạy.';
+			case 'settings.localProviderConfig.noModelsError': return 'Kết nối được máy chủ nhưng không nhận được mô hình nào. Hãy nạp một mô hình trên máy chủ trước.';
+			case 'settings.localProviderConfig.deleteProviderMessage': return 'Xóa vĩnh viễn nhà cung cấp này và toàn bộ preset của nó? Không thể hoàn tác.';
+			case 'settings.localProviderConfig.editHeader': return 'Chỉnh sửa nhà cung cấp tùy chỉnh';
+			case 'settings.localProviderConfig.addHeader': return 'Thêm nhà cung cấp tùy chỉnh';
 			case 'settings.localProviderConfig.serverUrlLabel': return 'URL máy chủ';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return 'Đã khóa. Xóa nhà cung cấp này và thêm mới để trỏ tới máy chủ khác.';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'Khóa API (không bắt buộc)';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Để trống — hầu hết máy chủ cục bộ không cần';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return 'Hầu hết dịch vụ đám mây yêu cầu; máy chủ cục bộ thường không cần';
 			case 'settings.localProviderConfig.connectFetchButton': return 'Kết nối & tải mô hình';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
 				other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
@@ -34479,10 +34479,10 @@ extension on _TranslationsZhHans {
 			case 'onboarding.storageStep.noFolderSelected': return '尚未选择文件夹。';
 			case 'onboarding.setupStep.title': return 'AI 与人设';
 			case 'onboarding.aiSection.heading': return 'AI 连接';
-			case 'onboarding.aiSection.optionalHint': return '可选——可以跳过，之后在设置中添加密钥（本地服务商也可以在那里添加）。';
+			case 'onboarding.aiSection.optionalHint': return '可选——可以跳过，之后在设置中添加密钥。';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API 密钥';
 			case 'onboarding.aiSection.apiKeyHint': return '粘贴你的密钥（或暂时跳过）';
-			case 'onboarding.aiSection.supportedProviders': return '支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多请在设置中查看。';
+			case 'onboarding.aiSection.supportedProviders': return '支持 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 兼容服务商（本地或远程），可在设置中添加。';
 			case 'onboarding.aiSection.unknownModel': return '（未知模型）';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -34541,7 +34541,7 @@ extension on _TranslationsZhHans {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '已刷新 ${updated} 个模型，${unavailable} 个不可用，${errors} 个错误。';
 			case 'settings.aiTab.newProviderButton': return '新建服务商';
 			case 'settings.aiTab.cloudProviderMenuItem': return '云端服务商';
-			case 'settings.aiTab.localProviderMenuItem': return '本地服务商';
+			case 'settings.aiTab.localProviderMenuItem': return '自定义服务商（OpenAI 兼容）';
 			case 'settings.aiTab.localGgufMenuItem': return '本地 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '尚未配置 API 服务商。';
 			case 'settings.aiTab.addingProviderOverlay': return '正在添加服务商…';
@@ -34613,15 +34613,15 @@ extension on _TranslationsZhHans {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => '已连接到 ${provider}。将创建默认预设。';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => '检测到：${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return '无法识别的密钥格式。';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '无法连接 ${url}。请确认你的本地服务器（KoboldCpp / Ollama / LM Studio / llama.cpp）正在运行。';
-			case 'settings.localProviderConfig.noModelsError': return '服务器可连接，但未返回任何模型。请先在本地服务器中加载一个模型。';
-			case 'settings.localProviderConfig.deleteProviderMessage': return '永久删除此本地服务商及其所有预设？此操作无法撤销。';
-			case 'settings.localProviderConfig.editHeader': return '编辑本地服务商';
-			case 'settings.localProviderConfig.addHeader': return '添加本地服务商';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '无法连接 ${url}。请检查 URL 并确认服务器正在运行。';
+			case 'settings.localProviderConfig.noModelsError': return '服务器可连接，但未返回任何模型。请先在服务器上加载一个模型。';
+			case 'settings.localProviderConfig.deleteProviderMessage': return '永久删除此服务商及其所有预设？此操作无法撤销。';
+			case 'settings.localProviderConfig.editHeader': return '编辑自定义服务商';
+			case 'settings.localProviderConfig.addHeader': return '添加自定义服务商';
 			case 'settings.localProviderConfig.serverUrlLabel': return '服务器 URL';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return '已锁定。请删除此服务商并新建一个以指向不同的服务器。';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API 密钥（可选）';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return '留空即可——大多数本地服务器不需要密钥';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return '大多数云服务需要密钥；本地服务器通常不需要';
 			case 'settings.localProviderConfig.connectFetchButton': return '连接并获取模型';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 				other: '已连接。找到 ${n} 个模型。',
@@ -35334,10 +35334,10 @@ extension on _TranslationsZhHant {
 			case 'onboarding.storageStep.noFolderSelected': return '尚未選擇資料夾。';
 			case 'onboarding.setupStep.title': return 'AI 與人設';
 			case 'onboarding.aiSection.heading': return 'AI 連線';
-			case 'onboarding.aiSection.optionalHint': return '選填——可先略過，之後在「設定」中新增金鑰（本機服務商也可在那裡新增）。';
+			case 'onboarding.aiSection.optionalHint': return '選填——可先略過，之後在「設定」中新增金鑰。';
 			case 'onboarding.aiSection.apiKeyLabel': return 'API 金鑰';
 			case 'onboarding.aiSection.apiKeyHint': return '貼上你的金鑰（或先略過）';
-			case 'onboarding.aiSection.supportedProviders': return '支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT。更多請見「設定」。';
+			case 'onboarding.aiSection.supportedProviders': return '支援 OpenAI、Anthropic、Google、Grok、OpenRouter、NanoGPT——以及任何其他 OpenAI 相容服務商（本機或遠端），可在「設定」中新增。';
 			case 'onboarding.aiSection.unknownModel': return '（未知模型）';
 			case 'onboarding.aiSection.ctxUnknown': return 'ctx —';
 			case 'onboarding.aiSection.ctxValue': return ({required Object ctx}) => 'ctx ${ctx}';
@@ -35396,7 +35396,7 @@ extension on _TranslationsZhHant {
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '已重新整理 ${updated} 個模型，${unavailable} 個無法使用，${errors} 個錯誤。';
 			case 'settings.aiTab.newProviderButton': return '新服務商';
 			case 'settings.aiTab.cloudProviderMenuItem': return '雲端服務商';
-			case 'settings.aiTab.localProviderMenuItem': return '本機服務商';
+			case 'settings.aiTab.localProviderMenuItem': return '自訂服務商（OpenAI 相容）';
 			case 'settings.aiTab.localGgufMenuItem': return '本機 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '尚未設定任何 API 服務商。';
 			case 'settings.aiTab.addingProviderOverlay': return '正在新增服務商…';
@@ -35468,15 +35468,15 @@ extension on _TranslationsZhHant {
 			case 'settings.providerConfig.connectedStatus': return ({required Object provider}) => '已連線至 ${provider}。將會建立預設的預設。';
 			case 'settings.providerConfig.detectedStatus': return ({required Object provider}) => '偵測到：${provider}';
 			case 'settings.providerConfig.unrecognizedKeyStatus': return '無法辨識的金鑰格式。';
-			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '無法連線到 ${url}。請確認你的本機伺服器（KoboldCpp / Ollama / LM Studio / llama.cpp）正在執行。';
-			case 'settings.localProviderConfig.noModelsError': return '伺服器可連線，但沒有回傳任何模型。請先在你的本機伺服器載入模型。';
-			case 'settings.localProviderConfig.deleteProviderMessage': return '永久刪除這個本機服務商及其所有預設？此動作無法復原。';
-			case 'settings.localProviderConfig.editHeader': return '編輯本機服務商';
-			case 'settings.localProviderConfig.addHeader': return '新增本機服務商';
+			case 'settings.localProviderConfig.serverUnreachableMessage': return ({required Object url}) => '無法連線到 ${url}。請檢查 URL 並確認伺服器正在執行。';
+			case 'settings.localProviderConfig.noModelsError': return '伺服器可連線，但沒有回傳任何模型。請先在伺服器上載入模型。';
+			case 'settings.localProviderConfig.deleteProviderMessage': return '永久刪除這個服務商及其所有預設？此動作無法復原。';
+			case 'settings.localProviderConfig.editHeader': return '編輯自訂服務商';
+			case 'settings.localProviderConfig.addHeader': return '新增自訂服務商';
 			case 'settings.localProviderConfig.serverUrlLabel': return '伺服器網址';
 			case 'settings.localProviderConfig.serverUrlLockedHelper': return '已鎖定。請刪除此服務商並新增一個，以指向不同的伺服器。';
 			case 'settings.localProviderConfig.apiKeyOptionalLabel': return 'API 金鑰（選填）';
-			case 'settings.localProviderConfig.apiKeyOptionalHint': return '留空即可——大多數本機伺服器不需要';
+			case 'settings.localProviderConfig.apiKeyOptionalHint': return '大多數雲端服務需要金鑰；本機伺服器通常不需要';
 			case 'settings.localProviderConfig.connectFetchButton': return '連線並擷取模型';
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 				other: '已連線。找到 ${n} 個模型。',

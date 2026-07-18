@@ -51,7 +51,7 @@
     "refreshSummary": "已重新整理 $updated 個模型，$unavailable 個無法使用，$errors 個錯誤。",
     "newProviderButton": "新服務商",
     "cloudProviderMenuItem": "雲端服務商",
-    "localProviderMenuItem": "本機服務商",
+    "localProviderMenuItem": "自訂服務商（OpenAI 相容）",
     "localGgufMenuItem": "本機 GGUF",
     "noProvidersConfigured": "尚未設定任何 API 服務商。",
     "addingProviderOverlay": "正在新增服務商…",
@@ -129,15 +129,15 @@
     "unrecognizedKeyStatus": "無法辨識的金鑰格式。"
   },
   "localProviderConfig": {
-    "serverUnreachableMessage": "無法連線到 $url。請確認你的本機伺服器（KoboldCpp / Ollama / LM Studio / llama.cpp）正在執行。",
-    "noModelsError": "伺服器可連線，但沒有回傳任何模型。請先在你的本機伺服器載入模型。",
-    "deleteProviderMessage": "永久刪除這個本機服務商及其所有預設？此動作無法復原。",
-    "editHeader": "編輯本機服務商",
-    "addHeader": "新增本機服務商",
+    "serverUnreachableMessage": "無法連線到 $url。請檢查 URL 並確認伺服器正在執行。",
+    "noModelsError": "伺服器可連線，但沒有回傳任何模型。請先在伺服器上載入模型。",
+    "deleteProviderMessage": "永久刪除這個服務商及其所有預設？此動作無法復原。",
+    "editHeader": "編輯自訂服務商",
+    "addHeader": "新增自訂服務商",
     "serverUrlLabel": "伺服器網址",
     "serverUrlLockedHelper": "已鎖定。請刪除此服務商並新增一個，以指向不同的伺服器。",
     "apiKeyOptionalLabel": "API 金鑰（選填）",
-    "apiKeyOptionalHint": "留空即可——大多數本機伺服器不需要",
+    "apiKeyOptionalHint": "大多數雲端服務需要金鑰；本機伺服器通常不需要",
     "connectFetchButton": "連線並擷取模型",
     "connectedFoundModels(plural)": {
       "other": "已連線。找到 $n 個模型。"

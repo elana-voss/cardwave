@@ -51,7 +51,7 @@
     "refreshSummary": "$updated개 모델을 새로고침했어요. 사용 불가 $unavailable개, 오류 $errors개.",
     "newProviderButton": "새 제공자",
     "cloudProviderMenuItem": "클라우드 제공자",
-    "localProviderMenuItem": "로컬 제공자",
+    "localProviderMenuItem": "커스텀 제공자 (OpenAI 호환)",
     "localGgufMenuItem": "로컬 GGUF",
     "noProvidersConfigured": "설정된 API 제공자가 없어요.",
     "addingProviderOverlay": "제공자 추가 중…",
@@ -129,15 +129,15 @@
     "unrecognizedKeyStatus": "인식할 수 없는 키 형식이에요."
   },
   "localProviderConfig": {
-    "serverUnreachableMessage": "$url에 연결하지 못했어요. 로컬 서버(KoboldCpp / Ollama / LM Studio / llama.cpp)가 실행 중인지 확인하세요.",
-    "noModelsError": "서버에 연결되었지만 반환된 모델이 없어요. 먼저 로컬 서버에서 모델을 불러오세요.",
-    "deleteProviderMessage": "이 로컬 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.",
-    "editHeader": "로컬 제공자 편집",
-    "addHeader": "로컬 제공자 추가",
+    "serverUnreachableMessage": "$url에 연결하지 못했어요. URL을 확인하고 서버가 실행 중인지 확인하세요.",
+    "noModelsError": "서버에 연결되었지만 반환된 모델이 없어요. 먼저 서버에서 모델을 불러오세요.",
+    "deleteProviderMessage": "이 제공자와 모든 프리셋을 영구히 삭제할까요? 되돌릴 수 없어요.",
+    "editHeader": "커스텀 제공자 편집",
+    "addHeader": "커스텀 제공자 추가",
     "serverUrlLabel": "서버 URL",
     "serverUrlLockedHelper": "잠겨 있어요. 다른 서버를 지정하려면 이 제공자를 삭제하고 새로 추가하세요.",
     "apiKeyOptionalLabel": "API 키 (선택 사항)",
-    "apiKeyOptionalHint": "비워 두세요 — 대부분의 로컬 서버는 필요하지 않아요",
+    "apiKeyOptionalHint": "대부분의 클라우드 서비스에는 필요해요. 로컬 서버는 보통 필요하지 않아요",
     "connectFetchButton": "연결 및 모델 가져오기",
     "connectedFoundModels(plural)": {
       "other": "연결되었어요. $n개의 모델을 찾았어요."

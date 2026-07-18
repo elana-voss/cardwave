@@ -22,10 +22,10 @@
   },
   "aiSection": {
     "heading": "Conexão de IA",
-    "optionalHint": "Opcional — pule e adicione uma chave depois nas Configurações (provedores locais também podem ser adicionados lá).",
+    "optionalHint": "Opcional — pule e adicione uma chave depois nas Configurações.",
     "apiKeyLabel": "API key",
     "apiKeyHint": "Cole sua chave (ou pule por enquanto)",
-    "supportedProviders": "Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT. Mais nas Configurações.",
+    "supportedProviders": "Suporta OpenAI, Anthropic, Google, Grok, OpenRouter, NanoGPT — além de qualquer outro provedor compatível com OpenAI, local ou remoto, pelas Configurações.",
     "unknownModel": "(modelo desconhecido)",
     "ctxUnknown": "ctx —",
     "ctxValue": "ctx $ctx",
