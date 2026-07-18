@@ -53,12 +53,9 @@ class LlmManagementService {
     final providerLabel = providerInfo.label;
 
     for (final domain in LlmProviderDomainEnum.values) {
-      final resolvedId = _pureHelpers.resolveModelForDomain(
+      final resolvedId = _pureHelpers.resolveDefaultModelForDomain(
+        profile.providerEnum,
         domain,
-        _pureHelpers.getDefaultModelPreferencesForDomain(
-          profile.providerEnum,
-          domain,
-        ),
         profile.models,
       );
       if (resolvedId.isEmpty) {
@@ -264,12 +261,9 @@ class LlmManagementService {
     final domainConfigIds = <LlmProviderDomainEnum, String>{};
 
     for (final domain in LlmProviderDomainEnum.values) {
-      final resolvedId = _pureHelpers.resolveModelForDomain(
+      final resolvedId = _pureHelpers.resolveDefaultModelForDomain(
+        profile.providerEnum,
         domain,
-        _pureHelpers.getDefaultModelPreferencesForDomain(
-          profile.providerEnum,
-          domain,
-        ),
         profile.models,
       );
       if (resolvedId.isEmpty) continue;

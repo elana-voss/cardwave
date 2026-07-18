@@ -153,14 +153,21 @@ class LlmPureHelpers {
     }
   }
 
-  /// Ordered default-model preferences for a (provider, domain) pair — a
-  /// concrete current id first, then version-free family words ("sonnet",
-  /// "flash"). Empty for providers with no defaults entry (the two local
-  /// ones).
-  List<String> getDefaultModelPreferencesForDomain(
+  /// Picks the model that should serve [domain] for [providerEnum] out of
+  /// [models], using the provider's default-model preferences from the
+  /// bundled asset (a concrete current id first, then version-free family
+  /// words like "sonnet" / "pro"). Thin wrapper over [resolveModelForDomain];
+  /// see it for the matching rules. Returns '' when no adopted model can
+  /// serve the domain.
+  String resolveDefaultModelForDomain(
     LLMProviderEnum providerEnum,
     LlmProviderDomainEnum domain,
-  ) => _defaultsRepository.forProvider(providerEnum)[domain] ?? const [];
+    List<LlmModel> models,
+  ) => resolveModelForDomain(
+    domain,
+    _defaultsRepository.forProvider(providerEnum)[domain] ?? const [],
+    models,
+  );
 
   LlmModelCapabilitiesEnum getRequiredOutputModality(
     LlmProviderDomainEnum domain,

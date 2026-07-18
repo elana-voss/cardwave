@@ -182,12 +182,9 @@ class OnboardingController extends ChangeNotifier {
       models = fetched;
 
       if (models.isNotEmpty) {
-        final resolvedId = _llmService.resolveModelForDomain(
+        final resolvedId = _llmService.resolveDefaultModelForDomain(
+          selectedProvider!,
           LlmProviderDomainEnum.chat,
-          _llmService.getDefaultModelPreferencesForDomain(
-            selectedProvider!,
-            LlmProviderDomainEnum.chat,
-          ),
           models,
         );
         selectedModelId = resolvedId.isEmpty ? models.first.id : resolvedId;
