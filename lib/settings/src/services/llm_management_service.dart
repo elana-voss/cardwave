@@ -51,18 +51,14 @@ class LlmManagementService {
   }) {
     final providerInfo = LlmProvider.of(profile.providerEnum);
     final providerLabel = providerInfo.label;
-    final fallbackModelId = profile.models.firstOrNull?.id ?? '';
 
     for (final domain in LlmProviderDomainEnum.values) {
-      final targetId =
-          _pureHelpers.getDefaultModelIdForDomain(
-            profile.providerEnum,
-            domain,
-          ) ??
-          fallbackModelId;
       final resolvedId = _pureHelpers.resolveModelForDomain(
         domain,
-        targetId,
+        _pureHelpers.getDefaultModelPreferencesForDomain(
+          profile.providerEnum,
+          domain,
+        ),
         profile.models,
       );
       if (resolvedId.isEmpty) {
@@ -265,19 +261,15 @@ class LlmManagementService {
     if (profile.allPresets.isNotEmpty) return;
     final providerInfo = LlmProvider.of(profile.providerEnum);
     final providerLabel = providerInfo.label;
-    final fallbackId = profile.models.firstOrNull?.id ?? '';
     final domainConfigIds = <LlmProviderDomainEnum, String>{};
 
     for (final domain in LlmProviderDomainEnum.values) {
-      final targetId =
-          _pureHelpers.getDefaultModelIdForDomain(
-            profile.providerEnum,
-            domain,
-          ) ??
-          fallbackId;
       final resolvedId = _pureHelpers.resolveModelForDomain(
         domain,
-        targetId,
+        _pureHelpers.getDefaultModelPreferencesForDomain(
+          profile.providerEnum,
+          domain,
+        ),
         profile.models,
       );
       if (resolvedId.isEmpty) continue;

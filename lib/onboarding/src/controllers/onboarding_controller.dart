@@ -182,18 +182,15 @@ class OnboardingController extends ChangeNotifier {
       models = fetched;
 
       if (models.isNotEmpty) {
-        final defaultChatModel = _llmService.getDefaultModelIdForDomain(
-          selectedProvider!,
+        final resolvedId = _llmService.resolveModelForDomain(
           LlmProviderDomainEnum.chat,
+          _llmService.getDefaultModelPreferencesForDomain(
+            selectedProvider!,
+            LlmProviderDomainEnum.chat,
+          ),
+          models,
         );
-
-        final matchedModel = models
-            .where(
-              (m) =>
-                  defaultChatModel != null && m.id.contains(defaultChatModel),
-            )
-            .firstOrNull;
-        selectedModelId = matchedModel?.id ?? models.first.id;
+        selectedModelId = resolvedId.isEmpty ? models.first.id : resolvedId;
       } else {
         fetchError = t.onboarding.fetchError.noModels;
       }

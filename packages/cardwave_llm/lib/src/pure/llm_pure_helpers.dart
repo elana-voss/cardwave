@@ -153,10 +153,14 @@ class LlmPureHelpers {
     }
   }
 
-  String? getDefaultModelIdForDomain(
+  /// Ordered default-model preferences for a (provider, domain) pair — a
+  /// concrete current id first, then version-free family words ("sonnet",
+  /// "flash"). Empty for providers with no defaults entry (the two local
+  /// ones).
+  List<String> getDefaultModelPreferencesForDomain(
     LLMProviderEnum providerEnum,
     LlmProviderDomainEnum domain,
-  ) => _defaultsRepository.forProvider(providerEnum)[domain];
+  ) => _defaultsRepository.forProvider(providerEnum)[domain] ?? const [];
 
   LlmModelCapabilitiesEnum getRequiredOutputModality(
     LlmProviderDomainEnum domain,
@@ -291,32 +295,44 @@ class LlmPureHelpers {
     Set<String> validIds,
   ) => models.where((m) => validIds.contains(m.id)).toList();
 
+  /// Picks the model that should serve [domain] out of [models], trying each
+  /// entry of [preferredModelIds] in order: exact id/name match first, then
+  /// the newest model (by release date) whose id contains the entry —
+  /// case-insensitive so a family word like "deepseek" matches
+  /// "DeepSeek-V3.1-Terminus". When no preference matches, falls back to the
+  /// first model that can serve the domain at all; '' when none can.
   String resolveModelForDomain(
     LlmProviderDomainEnum domain,
-    String preferredModelId,
+    List<String> preferredModelIds,
     List<LlmModel> models,
   ) {
-    final exactModel = models
-        .where((m) => m.id == preferredModelId || m.name == preferredModelId)
-        .firstOrNull;
-    if (exactModel != null && _meetsDomainRequirements(exactModel, domain)) {
-      return exactModel.id;
-    }
+    for (final preferred in preferredModelIds) {
+      final exactModel = models
+          .where((m) => m.id == preferred || m.name == preferred)
+          .firstOrNull;
+      if (exactModel != null && _meetsDomainRequirements(exactModel, domain)) {
+        return exactModel.id;
+      }
 
-    final preferredModel = models
-        .where((m) => m.id.contains(preferredModelId))
-        .firstOrNull;
-    if (preferredModel != null &&
-        _meetsDomainRequirements(preferredModel, domain)) {
-      return preferredModel.id;
+      final needle = preferred.toLowerCase();
+      LlmModel? newestMatch;
+      for (final model in models) {
+        if (!model.id.toLowerCase().contains(needle)) continue;
+        if (!_meetsDomainRequirements(model, domain)) continue;
+        // Strictly-greater keeps the earlier catalog entry on ties and on
+        // missing release dates (providers list newest first).
+        if (newestMatch == null ||
+            (model.created ?? 0) > (newestMatch.created ?? 0)) {
+          newestMatch = model;
+        }
+      }
+      if (newestMatch != null) return newestMatch.id;
     }
 
     final fallbackModel = models
         .where((m) => _meetsDomainRequirements(m, domain))
         .firstOrNull;
-    if (fallbackModel != null) return fallbackModel.id;
-
-    return '';
+    return fallbackModel?.id ?? '';
   }
 
   List<({LlmProviderConfig profile, LlmModel model, LlmPresetConfig config})>
