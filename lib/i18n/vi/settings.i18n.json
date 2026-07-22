@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "Đã làm mới $updated mô hình, $unavailable không khả dụng, $errors lỗi.",
     "newProviderButton": "Nhà cung cấp mới",
-    "cloudProviderMenuItem": "Nhà cung cấp đám mây",
-    "localProviderMenuItem": "Nhà cung cấp tùy chỉnh (tương thích OpenAI)",
+    "cloudProviderMenuItem": "Dịch vụ đám mây (dán khóa)",
+    "localProviderMenuItem": "Máy chủ của riêng bạn (tương thích OpenAI)",
     "localGgufMenuItem": "GGUF cục bộ",
     "noProvidersConfigured": "Chưa cấu hình nhà cung cấp API nào.",
     "addingProviderOverlay": "Đang thêm nhà cung cấp…",
@@ -141,7 +141,17 @@
     "connectFetchButton": "Kết nối & tải mô hình",
     "connectedFoundModels(plural)": {
       "other": "Đã kết nối. Tìm thấy $n mô hình."
-    }
+    },
+    "addModelByHandButton": "Thêm mô hình thủ công",
+    "noModelsYet": "Chưa có mô hình. Kết nối đến máy chủ hoặc thêm thủ công.",
+    "removeModelTooltip": "Xóa mô hình",
+    "addModelHeader": "Thêm mô hình",
+    "editModelHeader": "Chỉnh sửa mô hình",
+    "modelNameLabel": "Tên hiển thị",
+    "modelIdLabel": "ID mô hình",
+    "modelContextSizeLabel": "Kích thước ngữ cảnh (token)",
+    "modelMaxResponseLabel": "Độ dài phản hồi tối đa (token)",
+    "sendableParamsHeader": "Tham số cần gửi"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "Tôi có tệp GGUF cục bộ",

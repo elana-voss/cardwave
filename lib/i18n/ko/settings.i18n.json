@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "$updated개 모델을 새로고침했어요. 사용 불가 $unavailable개, 오류 $errors개.",
     "newProviderButton": "새 제공자",
-    "cloudProviderMenuItem": "클라우드 제공자",
-    "localProviderMenuItem": "커스텀 제공자 (OpenAI 호환)",
+    "cloudProviderMenuItem": "클라우드 서비스 (키 붙여넣기)",
+    "localProviderMenuItem": "직접 운영하는 서버 (OpenAI 호환)",
     "localGgufMenuItem": "로컬 GGUF",
     "noProvidersConfigured": "설정된 API 제공자가 없어요.",
     "addingProviderOverlay": "제공자 추가 중…",
@@ -141,7 +141,17 @@
     "connectFetchButton": "연결 및 모델 가져오기",
     "connectedFoundModels(plural)": {
       "other": "연결되었어요. $n개의 모델을 찾았어요."
-    }
+    },
+    "addModelByHandButton": "모델 직접 추가",
+    "noModelsYet": "아직 모델이 없습니다. 서버에 연결하거나 직접 추가하세요.",
+    "removeModelTooltip": "모델 제거",
+    "addModelHeader": "모델 추가",
+    "editModelHeader": "모델 편집",
+    "modelNameLabel": "표시 이름",
+    "modelIdLabel": "모델 ID",
+    "modelContextSizeLabel": "컨텍스트 크기 (토큰)",
+    "modelMaxResponseLabel": "최대 응답 길이 (토큰)",
+    "sendableParamsHeader": "전송할 매개변수"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "로컬 GGUF 파일이 있어요",

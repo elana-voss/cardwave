@@ -41,6 +41,10 @@ void main() {
 
       await wipeAppData();
       await seedOnboardingComplete();
+      // A card must be on the grid for awaitGridReady to settle; this test
+      // never taps it, it just needs the grid past its initial scan before
+      // opening the settings menu.
+      await seedTestCharacter();
 
       app.main();
       await awaitAppReady(tester);
@@ -53,7 +57,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // AI Settings → open the "New Provider" dropdown then tap
-      // "Custom Provider (OpenAI-compatible)" inside it. The three
+      // "Your own server (OpenAI-compatible)" inside it. The three
       // add-provider variants were consolidated into one FilledButton +
       // MenuAnchor; opening the menu and clicking the menu item is the
       // new flow.
@@ -62,7 +66,7 @@ void main() {
       await tester.tap(
         find.widgetWithText(
           MenuItemButton,
-          'Custom Provider (OpenAI-compatible)',
+          'Your own server (OpenAI-compatible)',
         ),
       );
       await tester.pumpAndSettle();

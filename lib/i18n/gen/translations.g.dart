@@ -4,7 +4,7 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 10
-/// Strings: 8366 (836 per locale)
+/// Strings: 8466 (846 per locale)
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -2479,8 +2479,8 @@ class _TranslationsSettingsAiTabEn {
 	// Translations
 	String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
 	String get newProviderButton => 'New Provider';
-	String get cloudProviderMenuItem => 'Cloud Provider';
-	String get localProviderMenuItem => 'Custom Provider (OpenAI-compatible)';
+	String get cloudProviderMenuItem => 'Cloud service (paste a key)';
+	String get localProviderMenuItem => 'Your own server (OpenAI-compatible)';
 	String get localGgufMenuItem => 'Local GGUF';
 	String get noProvidersConfigured => 'No API providers configured.';
 	String get addingProviderOverlay => 'Adding provider…';
@@ -2593,6 +2593,16 @@ class _TranslationsSettingsLocalProviderConfigEn {
 		one: 'Connected. Found ${n} model.',
 		other: 'Connected. Found ${n} models.',
 	);
+	String get addModelByHandButton => 'Add model by hand';
+	String get noModelsYet => 'No models yet. Connect to a server or add one by hand.';
+	String get removeModelTooltip => 'Remove model';
+	String get addModelHeader => 'Add Model';
+	String get editModelHeader => 'Edit Model';
+	String get modelNameLabel => 'Display name';
+	String get modelIdLabel => 'Model ID';
+	String get modelContextSizeLabel => 'Context size (tokens)';
+	String get modelMaxResponseLabel => 'Max response length (tokens)';
+	String get sendableParamsHeader => 'Parameters to send';
 }
 
 // Path: settings.localGguf
@@ -5162,8 +5172,8 @@ class _TranslationsSettingsAiTabEs419 extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Se actualizaron ${updated} modelos, ${unavailable} no disponibles, ${errors} errores.';
 	@override String get newProviderButton => 'Nuevo proveedor';
-	@override String get cloudProviderMenuItem => 'Proveedor en la nube';
-	@override String get localProviderMenuItem => 'Proveedor personalizado (compatible con OpenAI)';
+	@override String get cloudProviderMenuItem => 'Servicio en la nube (pega una clave)';
+	@override String get localProviderMenuItem => 'Tu propio servidor (compatible con OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF local';
 	@override String get noProvidersConfigured => 'No hay proveedores de API configurados.';
 	@override String get addingProviderOverlay => 'Agregando proveedor…';
@@ -5276,6 +5286,16 @@ class _TranslationsSettingsLocalProviderConfigEs419 extends _TranslationsSetting
 		one: 'Conectado. Se encontró ${n} modelo.',
 		other: 'Conectado. Se encontraron ${n} modelos.',
 	);
+	@override String get addModelByHandButton => 'Agregar modelo manualmente';
+	@override String get noModelsYet => 'Aún no hay modelos. Conéctate a un servidor o agrega uno manualmente.';
+	@override String get removeModelTooltip => 'Quitar modelo';
+	@override String get addModelHeader => 'Agregar modelo';
+	@override String get editModelHeader => 'Editar modelo';
+	@override String get modelNameLabel => 'Nombre visible';
+	@override String get modelIdLabel => 'ID del modelo';
+	@override String get modelContextSizeLabel => 'Tamaño de contexto (tokens)';
+	@override String get modelMaxResponseLabel => 'Longitud máx. de respuesta (tokens)';
+	@override String get sendableParamsHeader => 'Parámetros a enviar';
 }
 
 // Path: settings.localGguf
@@ -7845,8 +7865,8 @@ class _TranslationsSettingsAiTabHi extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} मॉडल रीफ़्रेश किए, ${unavailable} अनुपलब्ध, ${errors} त्रुटियां।';
 	@override String get newProviderButton => 'नया प्रोवाइडर';
-	@override String get cloudProviderMenuItem => 'क्लाउड प्रोवाइडर';
-	@override String get localProviderMenuItem => 'कस्टम प्रोवाइडर (OpenAI-संगत)';
+	@override String get cloudProviderMenuItem => 'क्लाउड सेवा (कुंजी पेस्ट करें)';
+	@override String get localProviderMenuItem => 'आपका अपना सर्वर (OpenAI-संगत)';
 	@override String get localGgufMenuItem => 'लोकल GGUF';
 	@override String get noProvidersConfigured => 'कोई API प्रोवाइडर कॉन्फ़िगर नहीं किया गया।';
 	@override String get addingProviderOverlay => 'प्रोवाइडर जोड़ा जा रहा है…';
@@ -7959,6 +7979,16 @@ class _TranslationsSettingsLocalProviderConfigHi extends _TranslationsSettingsLo
 		one: 'कनेक्ट हो गया। ${n} मॉडल मिला।',
 		other: 'कनेक्ट हो गया। ${n} मॉडल मिले।',
 	);
+	@override String get addModelByHandButton => 'मॉडल मैन्युअल रूप से जोड़ें';
+	@override String get noModelsYet => 'अभी कोई मॉडल नहीं। किसी सर्वर से कनेक्ट करें या मैन्युअल रूप से जोड़ें।';
+	@override String get removeModelTooltip => 'मॉडल हटाएँ';
+	@override String get addModelHeader => 'मॉडल जोड़ें';
+	@override String get editModelHeader => 'मॉडल संपादित करें';
+	@override String get modelNameLabel => 'प्रदर्शित नाम';
+	@override String get modelIdLabel => 'मॉडल ID';
+	@override String get modelContextSizeLabel => 'संदर्भ आकार (टोकन)';
+	@override String get modelMaxResponseLabel => 'अधिकतम प्रतिक्रिया लंबाई (टोकन)';
+	@override String get sendableParamsHeader => 'भेजे जाने वाले पैरामीटर';
 }
 
 // Path: settings.localGguf
@@ -10521,8 +10551,8 @@ class _TranslationsSettingsAiTabJa extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} 個のモデルを更新、${unavailable} 個が利用不可、${errors} 件のエラー。';
 	@override String get newProviderButton => '新しいプロバイダー';
-	@override String get cloudProviderMenuItem => 'クラウドプロバイダー';
-	@override String get localProviderMenuItem => 'カスタムプロバイダー（OpenAI互換）';
+	@override String get cloudProviderMenuItem => 'クラウドサービス（キーを貼り付け）';
+	@override String get localProviderMenuItem => '自分のサーバー（OpenAI互換）';
 	@override String get localGgufMenuItem => 'ローカルGGUF';
 	@override String get noProvidersConfigured => 'APIプロバイダーが設定されていません。';
 	@override String get addingProviderOverlay => 'プロバイダーを追加中…';
@@ -10634,6 +10664,16 @@ class _TranslationsSettingsLocalProviderConfigJa extends _TranslationsSettingsLo
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
 		other: '接続しました。${n} 個のモデルが見つかりました。',
 	);
+	@override String get addModelByHandButton => '手動でモデルを追加';
+	@override String get noModelsYet => 'モデルがまだありません。サーバーに接続するか、手動で追加してください。';
+	@override String get removeModelTooltip => 'モデルを削除';
+	@override String get addModelHeader => 'モデルを追加';
+	@override String get editModelHeader => 'モデルを編集';
+	@override String get modelNameLabel => '表示名';
+	@override String get modelIdLabel => 'モデルID';
+	@override String get modelContextSizeLabel => 'コンテキストサイズ（トークン）';
+	@override String get modelMaxResponseLabel => '最大応答長（トークン）';
+	@override String get sendableParamsHeader => '送信するパラメーター';
 }
 
 // Path: settings.localGguf
@@ -13196,8 +13236,8 @@ class _TranslationsSettingsAiTabKo extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated}개 모델을 새로고침했어요. 사용 불가 ${unavailable}개, 오류 ${errors}개.';
 	@override String get newProviderButton => '새 제공자';
-	@override String get cloudProviderMenuItem => '클라우드 제공자';
-	@override String get localProviderMenuItem => '커스텀 제공자 (OpenAI 호환)';
+	@override String get cloudProviderMenuItem => '클라우드 서비스 (키 붙여넣기)';
+	@override String get localProviderMenuItem => '직접 운영하는 서버 (OpenAI 호환)';
 	@override String get localGgufMenuItem => '로컬 GGUF';
 	@override String get noProvidersConfigured => '설정된 API 제공자가 없어요.';
 	@override String get addingProviderOverlay => '제공자 추가 중…';
@@ -13309,6 +13349,16 @@ class _TranslationsSettingsLocalProviderConfigKo extends _TranslationsSettingsLo
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
 		other: '연결되었어요. ${n}개의 모델을 찾았어요.',
 	);
+	@override String get addModelByHandButton => '모델 직접 추가';
+	@override String get noModelsYet => '아직 모델이 없습니다. 서버에 연결하거나 직접 추가하세요.';
+	@override String get removeModelTooltip => '모델 제거';
+	@override String get addModelHeader => '모델 추가';
+	@override String get editModelHeader => '모델 편집';
+	@override String get modelNameLabel => '표시 이름';
+	@override String get modelIdLabel => '모델 ID';
+	@override String get modelContextSizeLabel => '컨텍스트 크기 (토큰)';
+	@override String get modelMaxResponseLabel => '최대 응답 길이 (토큰)';
+	@override String get sendableParamsHeader => '전송할 매개변수';
 }
 
 // Path: settings.localGguf
@@ -15878,8 +15928,8 @@ class _TranslationsSettingsAiTabPtBr extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '${updated} modelos atualizados, ${unavailable} indisponíveis, ${errors} erros.';
 	@override String get newProviderButton => 'Novo provedor';
-	@override String get cloudProviderMenuItem => 'Provedor na nuvem';
-	@override String get localProviderMenuItem => 'Provedor personalizado (compatível com OpenAI)';
+	@override String get cloudProviderMenuItem => 'Serviço na nuvem (cole uma chave)';
+	@override String get localProviderMenuItem => 'Seu próprio servidor (compatível com OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF local';
 	@override String get noProvidersConfigured => 'Nenhum provedor de API configurado.';
 	@override String get addingProviderOverlay => 'Adicionando provedor…';
@@ -15992,6 +16042,16 @@ class _TranslationsSettingsLocalProviderConfigPtBr extends _TranslationsSettings
 		one: 'Conectado. ${n} modelo encontrado.',
 		other: 'Conectado. ${n} modelos encontrados.',
 	);
+	@override String get addModelByHandButton => 'Adicionar modelo manualmente';
+	@override String get noModelsYet => 'Ainda não há modelos. Conecte-se a um servidor ou adicione um manualmente.';
+	@override String get removeModelTooltip => 'Remover modelo';
+	@override String get addModelHeader => 'Adicionar modelo';
+	@override String get editModelHeader => 'Editar modelo';
+	@override String get modelNameLabel => 'Nome de exibição';
+	@override String get modelIdLabel => 'ID do modelo';
+	@override String get modelContextSizeLabel => 'Tamanho do contexto (tokens)';
+	@override String get modelMaxResponseLabel => 'Comprimento máx. da resposta (tokens)';
+	@override String get sendableParamsHeader => 'Parâmetros a enviar';
 }
 
 // Path: settings.localGguf
@@ -18575,8 +18635,8 @@ class _TranslationsSettingsAiTabRu extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Обновлено моделей: ${updated}, недоступно: ${unavailable}, ошибок: ${errors}.';
 	@override String get newProviderButton => 'Новый провайдер';
-	@override String get cloudProviderMenuItem => 'Облачный провайдер';
-	@override String get localProviderMenuItem => 'Пользовательский провайдер (OpenAI-совместимый)';
+	@override String get cloudProviderMenuItem => 'Облачный сервис (вставьте ключ)';
+	@override String get localProviderMenuItem => 'Ваш собственный сервер (OpenAI-совместимый)';
 	@override String get localGgufMenuItem => 'Локальный GGUF';
 	@override String get noProvidersConfigured => 'Провайдеры API не настроены.';
 	@override String get addingProviderOverlay => 'Добавление провайдера…';
@@ -18691,6 +18751,16 @@ class _TranslationsSettingsLocalProviderConfigRu extends _TranslationsSettingsLo
 		many: 'Подключено. Найдено ${n} моделей.',
 		other: 'Подключено. Найдено ${n} модели.',
 	);
+	@override String get addModelByHandButton => 'Добавить модель вручную';
+	@override String get noModelsYet => 'Моделей пока нет. Подключитесь к серверу или добавьте вручную.';
+	@override String get removeModelTooltip => 'Удалить модель';
+	@override String get addModelHeader => 'Добавить модель';
+	@override String get editModelHeader => 'Редактировать модель';
+	@override String get modelNameLabel => 'Отображаемое имя';
+	@override String get modelIdLabel => 'ID модели';
+	@override String get modelContextSizeLabel => 'Размер контекста (токены)';
+	@override String get modelMaxResponseLabel => 'Макс. длина ответа (токены)';
+	@override String get sendableParamsHeader => 'Параметры для отправки';
 }
 
 // Path: settings.localGguf
@@ -21253,8 +21323,8 @@ class _TranslationsSettingsAiTabVi extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
 	@override String get newProviderButton => 'Nhà cung cấp mới';
-	@override String get cloudProviderMenuItem => 'Nhà cung cấp đám mây';
-	@override String get localProviderMenuItem => 'Nhà cung cấp tùy chỉnh (tương thích OpenAI)';
+	@override String get cloudProviderMenuItem => 'Dịch vụ đám mây (dán khóa)';
+	@override String get localProviderMenuItem => 'Máy chủ của riêng bạn (tương thích OpenAI)';
 	@override String get localGgufMenuItem => 'GGUF cục bộ';
 	@override String get noProvidersConfigured => 'Chưa cấu hình nhà cung cấp API nào.';
 	@override String get addingProviderOverlay => 'Đang thêm nhà cung cấp…';
@@ -21366,6 +21436,16 @@ class _TranslationsSettingsLocalProviderConfigVi extends _TranslationsSettingsLo
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
 		other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
 	);
+	@override String get addModelByHandButton => 'Thêm mô hình thủ công';
+	@override String get noModelsYet => 'Chưa có mô hình. Kết nối đến máy chủ hoặc thêm thủ công.';
+	@override String get removeModelTooltip => 'Xóa mô hình';
+	@override String get addModelHeader => 'Thêm mô hình';
+	@override String get editModelHeader => 'Chỉnh sửa mô hình';
+	@override String get modelNameLabel => 'Tên hiển thị';
+	@override String get modelIdLabel => 'ID mô hình';
+	@override String get modelContextSizeLabel => 'Kích thước ngữ cảnh (token)';
+	@override String get modelMaxResponseLabel => 'Độ dài phản hồi tối đa (token)';
+	@override String get sendableParamsHeader => 'Tham số cần gửi';
 }
 
 // Path: settings.localGguf
@@ -23928,8 +24008,8 @@ class _TranslationsSettingsAiTabZhHans extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '已刷新 ${updated} 个模型，${unavailable} 个不可用，${errors} 个错误。';
 	@override String get newProviderButton => '新建服务商';
-	@override String get cloudProviderMenuItem => '云端服务商';
-	@override String get localProviderMenuItem => '自定义服务商（OpenAI 兼容）';
+	@override String get cloudProviderMenuItem => '云端服务（粘贴密钥）';
+	@override String get localProviderMenuItem => '你自己的服务器（OpenAI 兼容）';
 	@override String get localGgufMenuItem => '本地 GGUF';
 	@override String get noProvidersConfigured => '尚未配置 API 服务商。';
 	@override String get addingProviderOverlay => '正在添加服务商…';
@@ -24041,6 +24121,16 @@ class _TranslationsSettingsLocalProviderConfigZhHans extends _TranslationsSettin
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 		other: '已连接。找到 ${n} 个模型。',
 	);
+	@override String get addModelByHandButton => '手动添加模型';
+	@override String get noModelsYet => '还没有模型。请连接到服务器或手动添加。';
+	@override String get removeModelTooltip => '移除模型';
+	@override String get addModelHeader => '添加模型';
+	@override String get editModelHeader => '编辑模型';
+	@override String get modelNameLabel => '显示名称';
+	@override String get modelIdLabel => '模型 ID';
+	@override String get modelContextSizeLabel => '上下文大小（token）';
+	@override String get modelMaxResponseLabel => '最大回复长度（token）';
+	@override String get sendableParamsHeader => '要发送的参数';
 }
 
 // Path: settings.localGguf
@@ -26603,8 +26693,8 @@ class _TranslationsSettingsAiTabZhHant extends _TranslationsSettingsAiTabEn {
 	// Translations
 	@override String refreshSummary({required Object updated, required Object unavailable, required Object errors}) => '已重新整理 ${updated} 個模型，${unavailable} 個無法使用，${errors} 個錯誤。';
 	@override String get newProviderButton => '新服務商';
-	@override String get cloudProviderMenuItem => '雲端服務商';
-	@override String get localProviderMenuItem => '自訂服務商（OpenAI 相容）';
+	@override String get cloudProviderMenuItem => '雲端服務（貼上金鑰）';
+	@override String get localProviderMenuItem => '你自己的伺服器（OpenAI 相容）';
 	@override String get localGgufMenuItem => '本機 GGUF';
 	@override String get noProvidersConfigured => '尚未設定任何 API 服務商。';
 	@override String get addingProviderOverlay => '正在新增服務商…';
@@ -26716,6 +26806,16 @@ class _TranslationsSettingsLocalProviderConfigZhHant extends _TranslationsSettin
 	@override String connectedFoundModels({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 		other: '已連線。找到 ${n} 個模型。',
 	);
+	@override String get addModelByHandButton => '手動新增模型';
+	@override String get noModelsYet => '尚無模型。請連線到伺服器或手動新增。';
+	@override String get removeModelTooltip => '移除模型';
+	@override String get addModelHeader => '新增模型';
+	@override String get editModelHeader => '編輯模型';
+	@override String get modelNameLabel => '顯示名稱';
+	@override String get modelIdLabel => '模型 ID';
+	@override String get modelContextSizeLabel => '上下文大小（token）';
+	@override String get modelMaxResponseLabel => '最大回覆長度（token）';
+	@override String get sendableParamsHeader => '要傳送的參數';
 }
 
 // Path: settings.localGguf
@@ -27651,8 +27751,8 @@ extension on Translations {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'Media Defaults';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Refreshed ${updated} models, ${unavailable} unavailable, ${errors} errors.';
 			case 'settings.aiTab.newProviderButton': return 'New Provider';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'Cloud Provider';
-			case 'settings.aiTab.localProviderMenuItem': return 'Custom Provider (OpenAI-compatible)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Cloud service (paste a key)';
+			case 'settings.aiTab.localProviderMenuItem': return 'Your own server (OpenAI-compatible)';
 			case 'settings.aiTab.localGgufMenuItem': return 'Local GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'No API providers configured.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Adding provider…';
@@ -27738,6 +27838,16 @@ extension on Translations {
 				one: 'Connected. Found ${n} model.',
 				other: 'Connected. Found ${n} models.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'Add model by hand';
+			case 'settings.localProviderConfig.noModelsYet': return 'No models yet. Connect to a server or add one by hand.';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'Remove model';
+			case 'settings.localProviderConfig.addModelHeader': return 'Add Model';
+			case 'settings.localProviderConfig.editModelHeader': return 'Edit Model';
+			case 'settings.localProviderConfig.modelNameLabel': return 'Display name';
+			case 'settings.localProviderConfig.modelIdLabel': return 'Model ID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'Context size (tokens)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'Max response length (tokens)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'Parameters to send';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'I have a local GGUF file';
 			case 'settings.localGguf.pickFileLabel': return 'Pick GGUF file...';
 			case 'settings.localGguf.loadModelLabel': return 'Load model';
@@ -28514,8 +28624,8 @@ extension on _TranslationsEs419 {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'Predeterminados de contenido';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Se actualizaron ${updated} modelos, ${unavailable} no disponibles, ${errors} errores.';
 			case 'settings.aiTab.newProviderButton': return 'Nuevo proveedor';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'Proveedor en la nube';
-			case 'settings.aiTab.localProviderMenuItem': return 'Proveedor personalizado (compatible con OpenAI)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Servicio en la nube (pega una clave)';
+			case 'settings.aiTab.localProviderMenuItem': return 'Tu propio servidor (compatible con OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF local';
 			case 'settings.aiTab.noProvidersConfigured': return 'No hay proveedores de API configurados.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Agregando proveedor…';
@@ -28601,6 +28711,16 @@ extension on _TranslationsEs419 {
 				one: 'Conectado. Se encontró ${n} modelo.',
 				other: 'Conectado. Se encontraron ${n} modelos.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'Agregar modelo manualmente';
+			case 'settings.localProviderConfig.noModelsYet': return 'Aún no hay modelos. Conéctate a un servidor o agrega uno manualmente.';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'Quitar modelo';
+			case 'settings.localProviderConfig.addModelHeader': return 'Agregar modelo';
+			case 'settings.localProviderConfig.editModelHeader': return 'Editar modelo';
+			case 'settings.localProviderConfig.modelNameLabel': return 'Nombre visible';
+			case 'settings.localProviderConfig.modelIdLabel': return 'ID del modelo';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'Tamaño de contexto (tokens)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'Longitud máx. de respuesta (tokens)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'Parámetros a enviar';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'Tengo un archivo GGUF local';
 			case 'settings.localGguf.pickFileLabel': return 'Elegir archivo GGUF...';
 			case 'settings.localGguf.loadModelLabel': return 'Cargar modelo';
@@ -29377,8 +29497,8 @@ extension on _TranslationsHi {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'मीडिया डिफ़ॉल्ट';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} मॉडल रीफ़्रेश किए, ${unavailable} अनुपलब्ध, ${errors} त्रुटियां।';
 			case 'settings.aiTab.newProviderButton': return 'नया प्रोवाइडर';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'क्लाउड प्रोवाइडर';
-			case 'settings.aiTab.localProviderMenuItem': return 'कस्टम प्रोवाइडर (OpenAI-संगत)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'क्लाउड सेवा (कुंजी पेस्ट करें)';
+			case 'settings.aiTab.localProviderMenuItem': return 'आपका अपना सर्वर (OpenAI-संगत)';
 			case 'settings.aiTab.localGgufMenuItem': return 'लोकल GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'कोई API प्रोवाइडर कॉन्फ़िगर नहीं किया गया।';
 			case 'settings.aiTab.addingProviderOverlay': return 'प्रोवाइडर जोड़ा जा रहा है…';
@@ -29464,6 +29584,16 @@ extension on _TranslationsHi {
 				one: 'कनेक्ट हो गया। ${n} मॉडल मिला।',
 				other: 'कनेक्ट हो गया। ${n} मॉडल मिले।',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'मॉडल मैन्युअल रूप से जोड़ें';
+			case 'settings.localProviderConfig.noModelsYet': return 'अभी कोई मॉडल नहीं। किसी सर्वर से कनेक्ट करें या मैन्युअल रूप से जोड़ें।';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'मॉडल हटाएँ';
+			case 'settings.localProviderConfig.addModelHeader': return 'मॉडल जोड़ें';
+			case 'settings.localProviderConfig.editModelHeader': return 'मॉडल संपादित करें';
+			case 'settings.localProviderConfig.modelNameLabel': return 'प्रदर्शित नाम';
+			case 'settings.localProviderConfig.modelIdLabel': return 'मॉडल ID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'संदर्भ आकार (टोकन)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'अधिकतम प्रतिक्रिया लंबाई (टोकन)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'भेजे जाने वाले पैरामीटर';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'मेरे पास एक लोकल GGUF फ़ाइल है';
 			case 'settings.localGguf.pickFileLabel': return 'GGUF फ़ाइल चुनें...';
 			case 'settings.localGguf.loadModelLabel': return 'मॉडल लोड करें';
@@ -30233,8 +30363,8 @@ extension on _TranslationsJa {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'メディアの既定';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} 個のモデルを更新、${unavailable} 個が利用不可、${errors} 件のエラー。';
 			case 'settings.aiTab.newProviderButton': return '新しいプロバイダー';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'クラウドプロバイダー';
-			case 'settings.aiTab.localProviderMenuItem': return 'カスタムプロバイダー（OpenAI互換）';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'クラウドサービス（キーを貼り付け）';
+			case 'settings.aiTab.localProviderMenuItem': return '自分のサーバー（OpenAI互換）';
 			case 'settings.aiTab.localGgufMenuItem': return 'ローカルGGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'APIプロバイダーが設定されていません。';
 			case 'settings.aiTab.addingProviderOverlay': return 'プロバイダーを追加中…';
@@ -30319,6 +30449,16 @@ extension on _TranslationsJa {
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ja'))(n,
 				other: '接続しました。${n} 個のモデルが見つかりました。',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return '手動でモデルを追加';
+			case 'settings.localProviderConfig.noModelsYet': return 'モデルがまだありません。サーバーに接続するか、手動で追加してください。';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'モデルを削除';
+			case 'settings.localProviderConfig.addModelHeader': return 'モデルを追加';
+			case 'settings.localProviderConfig.editModelHeader': return 'モデルを編集';
+			case 'settings.localProviderConfig.modelNameLabel': return '表示名';
+			case 'settings.localProviderConfig.modelIdLabel': return 'モデルID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'コンテキストサイズ（トークン）';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return '最大応答長（トークン）';
+			case 'settings.localProviderConfig.sendableParamsHeader': return '送信するパラメーター';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'ローカルにGGUFファイルがあります';
 			case 'settings.localGguf.pickFileLabel': return 'GGUFファイルを選択...';
 			case 'settings.localGguf.loadModelLabel': return 'モデルを読み込む';
@@ -31088,8 +31228,8 @@ extension on _TranslationsKo {
 			case 'settings.aiSettingsTab.mediaDefaults': return '미디어 기본값';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated}개 모델을 새로고침했어요. 사용 불가 ${unavailable}개, 오류 ${errors}개.';
 			case 'settings.aiTab.newProviderButton': return '새 제공자';
-			case 'settings.aiTab.cloudProviderMenuItem': return '클라우드 제공자';
-			case 'settings.aiTab.localProviderMenuItem': return '커스텀 제공자 (OpenAI 호환)';
+			case 'settings.aiTab.cloudProviderMenuItem': return '클라우드 서비스 (키 붙여넣기)';
+			case 'settings.aiTab.localProviderMenuItem': return '직접 운영하는 서버 (OpenAI 호환)';
 			case 'settings.aiTab.localGgufMenuItem': return '로컬 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '설정된 API 제공자가 없어요.';
 			case 'settings.aiTab.addingProviderOverlay': return '제공자 추가 중…';
@@ -31174,6 +31314,16 @@ extension on _TranslationsKo {
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ko'))(n,
 				other: '연결되었어요. ${n}개의 모델을 찾았어요.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return '모델 직접 추가';
+			case 'settings.localProviderConfig.noModelsYet': return '아직 모델이 없습니다. 서버에 연결하거나 직접 추가하세요.';
+			case 'settings.localProviderConfig.removeModelTooltip': return '모델 제거';
+			case 'settings.localProviderConfig.addModelHeader': return '모델 추가';
+			case 'settings.localProviderConfig.editModelHeader': return '모델 편집';
+			case 'settings.localProviderConfig.modelNameLabel': return '표시 이름';
+			case 'settings.localProviderConfig.modelIdLabel': return '모델 ID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return '컨텍스트 크기 (토큰)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return '최대 응답 길이 (토큰)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return '전송할 매개변수';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return '로컬 GGUF 파일이 있어요';
 			case 'settings.localGguf.pickFileLabel': return 'GGUF 파일 선택...';
 			case 'settings.localGguf.loadModelLabel': return '모델 불러오기';
@@ -31950,8 +32100,8 @@ extension on _TranslationsPtBr {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'Padrões de mídia';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '${updated} modelos atualizados, ${unavailable} indisponíveis, ${errors} erros.';
 			case 'settings.aiTab.newProviderButton': return 'Novo provedor';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'Provedor na nuvem';
-			case 'settings.aiTab.localProviderMenuItem': return 'Provedor personalizado (compatível com OpenAI)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Serviço na nuvem (cole uma chave)';
+			case 'settings.aiTab.localProviderMenuItem': return 'Seu próprio servidor (compatível com OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF local';
 			case 'settings.aiTab.noProvidersConfigured': return 'Nenhum provedor de API configurado.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Adicionando provedor…';
@@ -32037,6 +32187,16 @@ extension on _TranslationsPtBr {
 				one: 'Conectado. ${n} modelo encontrado.',
 				other: 'Conectado. ${n} modelos encontrados.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'Adicionar modelo manualmente';
+			case 'settings.localProviderConfig.noModelsYet': return 'Ainda não há modelos. Conecte-se a um servidor ou adicione um manualmente.';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'Remover modelo';
+			case 'settings.localProviderConfig.addModelHeader': return 'Adicionar modelo';
+			case 'settings.localProviderConfig.editModelHeader': return 'Editar modelo';
+			case 'settings.localProviderConfig.modelNameLabel': return 'Nome de exibição';
+			case 'settings.localProviderConfig.modelIdLabel': return 'ID do modelo';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'Tamanho do contexto (tokens)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'Comprimento máx. da resposta (tokens)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'Parâmetros a enviar';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'Tenho um arquivo GGUF local';
 			case 'settings.localGguf.pickFileLabel': return 'Escolher arquivo GGUF...';
 			case 'settings.localGguf.loadModelLabel': return 'Carregar modelo';
@@ -32827,8 +32987,8 @@ extension on _TranslationsRu {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'Медиа по умолчанию';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Обновлено моделей: ${updated}, недоступно: ${unavailable}, ошибок: ${errors}.';
 			case 'settings.aiTab.newProviderButton': return 'Новый провайдер';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'Облачный провайдер';
-			case 'settings.aiTab.localProviderMenuItem': return 'Пользовательский провайдер (OpenAI-совместимый)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Облачный сервис (вставьте ключ)';
+			case 'settings.aiTab.localProviderMenuItem': return 'Ваш собственный сервер (OpenAI-совместимый)';
 			case 'settings.aiTab.localGgufMenuItem': return 'Локальный GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return 'Провайдеры API не настроены.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Добавление провайдера…';
@@ -32916,6 +33076,16 @@ extension on _TranslationsRu {
 				many: 'Подключено. Найдено ${n} моделей.',
 				other: 'Подключено. Найдено ${n} модели.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'Добавить модель вручную';
+			case 'settings.localProviderConfig.noModelsYet': return 'Моделей пока нет. Подключитесь к серверу или добавьте вручную.';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'Удалить модель';
+			case 'settings.localProviderConfig.addModelHeader': return 'Добавить модель';
+			case 'settings.localProviderConfig.editModelHeader': return 'Редактировать модель';
+			case 'settings.localProviderConfig.modelNameLabel': return 'Отображаемое имя';
+			case 'settings.localProviderConfig.modelIdLabel': return 'ID модели';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'Размер контекста (токены)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'Макс. длина ответа (токены)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'Параметры для отправки';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'У меня есть локальный файл GGUF';
 			case 'settings.localGguf.pickFileLabel': return 'Выбрать файл GGUF...';
 			case 'settings.localGguf.loadModelLabel': return 'Загрузить модель';
@@ -33685,8 +33855,8 @@ extension on _TranslationsVi {
 			case 'settings.aiSettingsTab.mediaDefaults': return 'Mặc định media';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => 'Đã làm mới ${updated} mô hình, ${unavailable} không khả dụng, ${errors} lỗi.';
 			case 'settings.aiTab.newProviderButton': return 'Nhà cung cấp mới';
-			case 'settings.aiTab.cloudProviderMenuItem': return 'Nhà cung cấp đám mây';
-			case 'settings.aiTab.localProviderMenuItem': return 'Nhà cung cấp tùy chỉnh (tương thích OpenAI)';
+			case 'settings.aiTab.cloudProviderMenuItem': return 'Dịch vụ đám mây (dán khóa)';
+			case 'settings.aiTab.localProviderMenuItem': return 'Máy chủ của riêng bạn (tương thích OpenAI)';
 			case 'settings.aiTab.localGgufMenuItem': return 'GGUF cục bộ';
 			case 'settings.aiTab.noProvidersConfigured': return 'Chưa cấu hình nhà cung cấp API nào.';
 			case 'settings.aiTab.addingProviderOverlay': return 'Đang thêm nhà cung cấp…';
@@ -33771,6 +33941,16 @@ extension on _TranslationsVi {
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('vi'))(n,
 				other: 'Đã kết nối. Tìm thấy ${n} mô hình.',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return 'Thêm mô hình thủ công';
+			case 'settings.localProviderConfig.noModelsYet': return 'Chưa có mô hình. Kết nối đến máy chủ hoặc thêm thủ công.';
+			case 'settings.localProviderConfig.removeModelTooltip': return 'Xóa mô hình';
+			case 'settings.localProviderConfig.addModelHeader': return 'Thêm mô hình';
+			case 'settings.localProviderConfig.editModelHeader': return 'Chỉnh sửa mô hình';
+			case 'settings.localProviderConfig.modelNameLabel': return 'Tên hiển thị';
+			case 'settings.localProviderConfig.modelIdLabel': return 'ID mô hình';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return 'Kích thước ngữ cảnh (token)';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return 'Độ dài phản hồi tối đa (token)';
+			case 'settings.localProviderConfig.sendableParamsHeader': return 'Tham số cần gửi';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return 'Tôi có tệp GGUF cục bộ';
 			case 'settings.localGguf.pickFileLabel': return 'Chọn tệp GGUF...';
 			case 'settings.localGguf.loadModelLabel': return 'Nạp mô hình';
@@ -34540,8 +34720,8 @@ extension on _TranslationsZhHans {
 			case 'settings.aiSettingsTab.mediaDefaults': return '媒体默认值';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '已刷新 ${updated} 个模型，${unavailable} 个不可用，${errors} 个错误。';
 			case 'settings.aiTab.newProviderButton': return '新建服务商';
-			case 'settings.aiTab.cloudProviderMenuItem': return '云端服务商';
-			case 'settings.aiTab.localProviderMenuItem': return '自定义服务商（OpenAI 兼容）';
+			case 'settings.aiTab.cloudProviderMenuItem': return '云端服务（粘贴密钥）';
+			case 'settings.aiTab.localProviderMenuItem': return '你自己的服务器（OpenAI 兼容）';
 			case 'settings.aiTab.localGgufMenuItem': return '本地 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '尚未配置 API 服务商。';
 			case 'settings.aiTab.addingProviderOverlay': return '正在添加服务商…';
@@ -34626,6 +34806,16 @@ extension on _TranslationsZhHans {
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 				other: '已连接。找到 ${n} 个模型。',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return '手动添加模型';
+			case 'settings.localProviderConfig.noModelsYet': return '还没有模型。请连接到服务器或手动添加。';
+			case 'settings.localProviderConfig.removeModelTooltip': return '移除模型';
+			case 'settings.localProviderConfig.addModelHeader': return '添加模型';
+			case 'settings.localProviderConfig.editModelHeader': return '编辑模型';
+			case 'settings.localProviderConfig.modelNameLabel': return '显示名称';
+			case 'settings.localProviderConfig.modelIdLabel': return '模型 ID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return '上下文大小（token）';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return '最大回复长度（token）';
+			case 'settings.localProviderConfig.sendableParamsHeader': return '要发送的参数';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return '我有一个本地 GGUF 文件';
 			case 'settings.localGguf.pickFileLabel': return '选择 GGUF 文件…';
 			case 'settings.localGguf.loadModelLabel': return '加载模型';
@@ -35395,8 +35585,8 @@ extension on _TranslationsZhHant {
 			case 'settings.aiSettingsTab.mediaDefaults': return '媒體預設';
 			case 'settings.aiTab.refreshSummary': return ({required Object updated, required Object unavailable, required Object errors}) => '已重新整理 ${updated} 個模型，${unavailable} 個無法使用，${errors} 個錯誤。';
 			case 'settings.aiTab.newProviderButton': return '新服務商';
-			case 'settings.aiTab.cloudProviderMenuItem': return '雲端服務商';
-			case 'settings.aiTab.localProviderMenuItem': return '自訂服務商（OpenAI 相容）';
+			case 'settings.aiTab.cloudProviderMenuItem': return '雲端服務（貼上金鑰）';
+			case 'settings.aiTab.localProviderMenuItem': return '你自己的伺服器（OpenAI 相容）';
 			case 'settings.aiTab.localGgufMenuItem': return '本機 GGUF';
 			case 'settings.aiTab.noProvidersConfigured': return '尚未設定任何 API 服務商。';
 			case 'settings.aiTab.addingProviderOverlay': return '正在新增服務商…';
@@ -35481,6 +35671,16 @@ extension on _TranslationsZhHant {
 			case 'settings.localProviderConfig.connectedFoundModels': return ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('zh'))(n,
 				other: '已連線。找到 ${n} 個模型。',
 			);
+			case 'settings.localProviderConfig.addModelByHandButton': return '手動新增模型';
+			case 'settings.localProviderConfig.noModelsYet': return '尚無模型。請連線到伺服器或手動新增。';
+			case 'settings.localProviderConfig.removeModelTooltip': return '移除模型';
+			case 'settings.localProviderConfig.addModelHeader': return '新增模型';
+			case 'settings.localProviderConfig.editModelHeader': return '編輯模型';
+			case 'settings.localProviderConfig.modelNameLabel': return '顯示名稱';
+			case 'settings.localProviderConfig.modelIdLabel': return '模型 ID';
+			case 'settings.localProviderConfig.modelContextSizeLabel': return '上下文大小（token）';
+			case 'settings.localProviderConfig.modelMaxResponseLabel': return '最大回覆長度（token）';
+			case 'settings.localProviderConfig.sendableParamsHeader': return '要傳送的參數';
 			case 'settings.localGguf.haveLocalGgufExpanderTitle': return '我有本機 GGUF 檔案';
 			case 'settings.localGguf.pickFileLabel': return '挑選 GGUF 檔案…';
 			case 'settings.localGguf.loadModelLabel': return '載入模型';

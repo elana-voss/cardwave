@@ -45,19 +45,17 @@ class LocalOpenAiProvider extends LlmProvider {
         'Local provider model entry missing or invalid id: $json',
       );
     }
-    final id = rawId;
+    // The fetch is only a source of model ids — we can't know a local
+    // model's real context size or which sampling parameters its server
+    // accepts. So a fetched entry is a blank template (id + name, plus
+    // LlmModel's default context/response fallbacks and its default
+    // temperature+response-length set). The user fills in the real values
+    // via the per-model editor in the custom-provider dialog.
     return LlmModel(
-      id: id,
-      name: id,
+      id: rawId,
+      name: rawId,
       created: json['created'] as int?,
       ownedBy: json['owned_by'] as String?,
-      supportedParameters: const [
-        LlmParameterDefinitionIdEnum.temperature,
-        LlmParameterDefinitionIdEnum.topP,
-        LlmParameterDefinitionIdEnum.maxResponseLength,
-        LlmParameterDefinitionIdEnum.frequencyPenalty,
-        LlmParameterDefinitionIdEnum.presencePenalty,
-      ],
     );
   }
 
@@ -83,6 +81,7 @@ class LocalOpenAiProvider extends LlmProvider {
         LlmParameterDefinitionIdEnum.frequencyPenalty,
       ),
       presencePenalty: r.resolve(LlmParameterDefinitionIdEnum.presencePenalty),
+      seed: r.resolveInt(LlmParameterDefinitionIdEnum.seed),
     );
     return LlmRunner(model: genkitModel, genkit: _genkit, config: opts);
   }
