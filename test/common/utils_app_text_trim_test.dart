@@ -124,6 +124,35 @@ void main() {
       );
     });
 
+    test('drops a lone trailing opening action asterisk', () {
+      // Cut right after the model opened an action — the trailing `*` is an
+      // opener, not a clean close, even though it sits after a period.
+      const text = 'That was really thoughtful and genuinely kind of you. *';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'That was really thoughtful and genuinely kind of you.',
+      );
+    });
+
+    test('closes an unterminated action at its last inner sentence end', () {
+      const text = 'She looks up at him and smiles. *She reaches for the cup. '
+          'Then she starts to wal';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'She looks up at him and smiles. *She reaches for the cup.*',
+      );
+    });
+
+    test('leaves balanced action asterisks untouched', () {
+      const text = 'She looks up at him. *She smiles warmly and waves hello.*';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
+    test('leaves a reply ending on a closing action asterisk', () {
+      const text = 'That is a wonderful idea and I would love to. *she grins*';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
     test('an emoji glued to the next word is not a boundary', () {
       // `😊and` is mid-sentence decoration; the real boundary is the period.
       const text = 'We had a truly wonderful time together this afternoon. '
@@ -132,6 +161,80 @@ void main() {
         UtilsAppTextTrim.trim(text),
         'We had a truly wonderful time together this afternoon.',
       );
+    });
+
+    test('closes an unterminated parenthetical aside at its inner boundary', () {
+      const text = 'She looks over at him and grins. (He had no idea what was '
+          'about to happen. Then she reached for the';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'She looks over at him and grins. (He had no idea what was '
+            'about to happen.)',
+      );
+    });
+
+    test('drops a lone trailing opening parenthesis after a sentence', () {
+      const text = 'That is genuinely one of the kindest things anyone has '
+          'ever said to me, and I mean that. (';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'That is genuinely one of the kindest things anyone has '
+            'ever said to me, and I mean that.',
+      );
+    });
+
+    test('leaves balanced parentheses untouched', () {
+      const text = 'I think we should go now (before it gets too late).';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
+    test('a sad-face emoticon does not read as an unclosed aside', () {
+      // The `(` in `:(` is glued to the eyes, not preceded by whitespace, so
+      // it must not draw a stray closing paren onto a complete reply.
+      const text = 'I really wish you could have been there with me today :(';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
+    test('a mid-reply sad-face emoticon is left alone', () {
+      const text = 'I was feeling really down about it earlier :( but talking '
+          'to you has honestly made the whole day better.';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
+    test('drops a bare trailing bullet marker', () {
+      const text = 'Here is what I think we should try first, in order.\n'
+          '- Start by taking a slow deep breath and settling in.\n- ';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'Here is what I think we should try first, in order.\n'
+            '- Start by taking a slow deep breath and settling in.',
+      );
+    });
+
+    test('drops a bare trailing numbered marker', () {
+      const text = 'Here is what I think we should try first, in order.\n'
+          '1. Start by taking a slow deep breath and settling in.\n2. ';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'Here is what I think we should try first, in order.\n'
+            '1. Start by taking a slow deep breath and settling in.',
+      );
+    });
+
+    test('closes an unterminated code fence', () {
+      const text = 'Sure, here is a small example of how you would do that:\n'
+          '```dart\nvoid main() {\n  print("hello");';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'Sure, here is a small example of how you would do that:\n'
+            '```dart\nvoid main() {\n  print("hello");\n```',
+      );
+    });
+
+    test('leaves a balanced code fence untouched', () {
+      const text = 'Here is the snippet you asked for:\n'
+          '```dart\nvoid main() {}\n```';
+      expect(UtilsAppTextTrim.trim(text), text);
     });
 
     test('drops a lone trailing opening quote', () {

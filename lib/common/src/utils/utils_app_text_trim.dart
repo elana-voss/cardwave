@@ -1,9 +1,11 @@
 /// Trims incomplete trailing content from LLM replies that got cut off
 /// mid-sentence or mid-paragraph.
 ///
-/// Strategy: sentence-level trim first, paragraph-level fallback, with a
-/// "don't nuke short messages" safety net — if either strategy would remove
-/// too much of the original, the original is returned unchanged.
+/// Strategy: block-level repairs first (close an unterminated code fence, drop
+/// a bare trailing list marker), then a sentence-level trim, then a
+/// paragraph-level fallback, with a "don't nuke short messages" safety net — if
+/// a sentence/paragraph trim would remove too much of the original, the
+/// original is returned unchanged.
 ///
 /// Kept in lockstep with circe's `trimIncompleteTrailing`
 /// (`companion_helper`, `text_trim.dart`).
@@ -36,6 +38,18 @@ class UtilsAppTextTrim {
 
   static final RegExp _newlineRE = RegExp(r'\r\n|\n|\r');
 
+  /// A trailing line that is only a list marker (bullet `-`/`*`/`+` or an
+  /// ordered `N.`/`N)`) and whitespace — the model opened a new list item and
+  /// got cut before writing it. The leading newline is part of the match so
+  /// the empty line is removed whole.
+  static final RegExp _trailingEmptyListMarkerRE =
+      RegExp(r'\n[ \t]*(?:[-*+]|\d+[.)])[ \t]*$');
+
+  /// A code-fence line: three or more backticks at the start of a line (after
+  /// up to three leading spaces, per CommonMark). Counted to tell whether the
+  /// reply ended inside an open code block.
+  static final RegExp _codeFenceRE = RegExp(r'^ {0,3}`{3,}', multiLine: true);
+
   /// Known short abbreviations whose trailing `.` must NOT be treated as a
   /// sentence boundary. Matched case-insensitively on the token preceding the
   /// dot.
@@ -57,47 +71,91 @@ class UtilsAppTextTrim {
   };
 
   /// Whether [text] closes on something legitimate — sentence punctuation, a
-  /// roleplay closer, or an emoji — with no double quote left dangling open.
-  /// A reply cut right after an opening `"` ends on a quote char and would
-  /// pass the char-class check alone; the balance check is what catches it.
-  /// The single definition of "ends cleanly": the fast path and the paragraph
-  /// loop must agree on it, or one of them trims a close the other accepts.
+  /// roleplay closer, or an emoji — with no quote, action asterisk, or
+  /// bracketing pair left dangling open. A reply cut right after an opening `"`
+  /// or `*` ends on a closer char and would pass the char-class check alone;
+  /// the balance check is what catches it. The single definition of "ends
+  /// cleanly": the fast path and the paragraph loop must agree on it, or one of
+  /// them trims a close the other accepts.
   static bool _endsCleanly(String text) =>
-      _danglingQuoteStart(text) == -1 &&
+      _danglingDelimiterStart(text) == -1 &&
       (_trailingTerminalRE.hasMatch(text) || _trailingEmojiRE.hasMatch(text));
 
-  /// Index of the earliest unmatched opening double quote — where an
-  /// unterminated quotation begins — or -1 when all double quotes are
-  /// balanced. Straight quotes alternate open/close; curly quotes are matched
-  /// by kind. Single quotes are ignored: apostrophes make their parity
-  /// meaningless.
-  static int _danglingQuoteStart(String text) {
-    var straightOpen = -1;
-    final curlyOpens = <int>[];
+  /// Symmetric delimiters — opener and closer are the same character, so
+  /// occurrences simply alternate open/close and an odd count leaves the last
+  /// one open. Straight quote and roleplay action asterisk. Single quotes and
+  /// tildes are left out on purpose: apostrophes make `'` parity meaningless,
+  /// and a lone trailing `~` is a common flourish, not an opener.
+  static const List<String> _symmetricDelimiters = ['"', '*'];
+
+  /// Directional delimiter pairs — opener maps to a distinct closer, so they
+  /// nest and are tracked with a per-pair stack. Curly quote plus the
+  /// bracketing pairs that wrap an aside.
+  static const Map<String, String> _directionalDelimiters = {
+    '“': '”',
+    '(': ')',
+    '[': ']',
+    '{': '}',
+  };
+
+  /// [_directionalDelimiters] inverted — closer back to its opener — so the
+  /// scan can pop the matching stack in one lookup.
+  static final Map<String, String> _closerToOpener = {
+    for (final e in _directionalDelimiters.entries) e.value: e.key,
+  };
+
+  /// The closing counterpart of an opening delimiter (directional pairs flip; a
+  /// symmetric delimiter is its own closer).
+  static String _closerFor(String opener) =>
+      _directionalDelimiters[opener] ?? opener;
+
+  /// Index of the earliest unmatched opening delimiter — a quote, an action
+  /// asterisk, or a bracketing pair left open — or -1 when every delimiter is
+  /// balanced. A directional opener counts only when preceded by whitespace or
+  /// the start of the text: that is how an aside opens (`... (she thinks`), and
+  /// it keeps emoticons (`:(`) and call syntax (`f(x`) from reading as an
+  /// unclosed aside and drawing a stray closer.
+  static int _danglingDelimiterStart(String text) {
+    final symmetricOpen = {for (final d in _symmetricDelimiters) d: -1};
+    final directionalOpens = {
+      for (final opener in _directionalDelimiters.keys) opener: <int>[],
+    };
     for (var i = 0; i < text.length; i++) {
       final ch = text[i];
-      if (ch == '"') {
-        straightOpen = straightOpen == -1 ? i : -1;
-      } else if (ch == '“') {
-        curlyOpens.add(i);
-      } else if (ch == '”' && curlyOpens.isNotEmpty) {
-        curlyOpens.removeLast();
+      if (symmetricOpen.containsKey(ch)) {
+        symmetricOpen[ch] = symmetricOpen[ch] == -1 ? i : -1;
+      } else if (directionalOpens.containsKey(ch)) {
+        if (i == 0 || _isSpaceChar(text[i - 1])) directionalOpens[ch]!.add(i);
+      } else if (_closerToOpener.containsKey(ch)) {
+        final opens = directionalOpens[_closerToOpener[ch]]!;
+        if (opens.isNotEmpty) opens.removeLast();
       }
     }
-    final curlyOpen = curlyOpens.isEmpty ? -1 : curlyOpens.first;
-    if (straightOpen == -1) return curlyOpen;
-    if (curlyOpen == -1) return straightOpen;
-    return straightOpen < curlyOpen ? straightOpen : curlyOpen;
-  }
+    var earliest = -1;
+    void consider(int index) {
+      if (index != -1 && (earliest == -1 || index < earliest)) earliest = index;
+    }
 
-  /// The closing counterpart of an opening double quote.
-  static String _closerFor(String opener) => opener == '“' ? '”' : opener;
+    symmetricOpen.values.forEach(consider);
+    for (final opens in directionalOpens.values) {
+      if (opens.isNotEmpty) consider(opens.first);
+    }
+    return earliest;
+  }
 
   /// Returns [text] with any incomplete trailing sentence/paragraph removed.
   /// Never returns an empty string; if the result would be empty or fall
   /// below the safety threshold, returns [text] unchanged.
   static String trim(String text) {
     if (text.isEmpty) return text;
+
+    // Block-level repairs first — a bare trailing list marker or an
+    // unterminated code fence is structural, not a sentence to trim. Each only
+    // removes a marker line or appends a closing fence, so neither can nuke
+    // content; when one fires the reply is repaired and we are done.
+    final blockRepaired =
+        _closeUnterminatedCodeFence(_dropTrailingEmptyListMarker(text));
+    if (blockRepaired != text) return blockRepaired;
 
     // Fast path — already ends cleanly, nothing to do.
     if (_endsCleanly(text)) return text;
@@ -115,13 +173,31 @@ class UtilsAppTextTrim {
     return text;
   }
 
+  /// Drops a bare trailing list marker (`...\n- `) the model opened but never
+  /// filled. Returns [text] unchanged when the marker is the whole reply
+  /// (nothing would be left) or there is no such marker.
+  static String _dropTrailingEmptyListMarker(String text) {
+    final match = _trailingEmptyListMarkerRE.firstMatch(text);
+    if (match == null || match.start == 0) return text;
+    return text.substring(0, match.start).trimRight();
+  }
+
+  /// Closes an unterminated markdown code fence. An odd number of fence lines
+  /// means the reply was cut inside a code block; append a closing fence on its
+  /// own line so the block is valid instead of swallowing the rest of the chat.
+  static String _closeUnterminatedCodeFence(String text) {
+    final fences = _codeFenceRE.allMatches(text).length;
+    if (fences == 0 || fences.isEven) return text;
+    return text.endsWith('\n') ? '$text```' : '$text\n```';
+  }
+
   /// Scans backwards for the last valid sentence end — punctuation, or an
   /// emoji that closes a sentence — and returns the substring up to and
-  /// including it. A boundary inside an unterminated quotation gets the
-  /// closing quote appended, so a cut-off dialogue line ends properly instead
-  /// of dangling open. Returns null if no valid boundary is found.
+  /// including it. A boundary inside an unterminated quotation or action gets
+  /// the closing delimiter appended, so a cut-off dialogue line ends properly
+  /// instead of dangling open. Returns null if no valid boundary is found.
   static String? _trimToLastSentenceEnd(String text) {
-    final dangling = _danglingQuoteStart(text);
+    final dangling = _danglingDelimiterStart(text);
     final closerLimit = dangling == -1 ? text.length : dangling;
     final emojiEnds = _sentenceFinalEmojiEnds(text);
     for (var i = text.length - 1; i >= 0; i--) {
@@ -219,9 +295,9 @@ class UtilsAppTextTrim {
   }
 
   /// After a terminal at [index], extend forward over trailing closers
-  /// (quotes, asterisks) so `she said."` cuts after the quote, not the dot.
-  /// Never extends to or past [limit] — the start of a dangling open quote,
-  /// which is an opener, not a close to keep.
+  /// (quotes, asterisks, brackets) so `she said."` cuts after the quote, not
+  /// the dot. Never extends to or past [limit] — the start of a dangling open
+  /// delimiter, which is an opener, not a close to keep.
   static int _extendOverClosers(String text, int index, int limit) {
     var i = index;
     while (i + 1 < limit && _isCloserChar(text[i + 1])) {
@@ -236,7 +312,10 @@ class UtilsAppTextTrim {
       ch == '’' ||
       ch == "'" ||
       ch == '*' ||
-      ch == '~';
+      ch == '~' ||
+      ch == ')' ||
+      ch == ']' ||
+      ch == '}';
 
   /// Iteratively strips trailing paragraphs until the tail ends cleanly or
   /// there are no more newlines.
