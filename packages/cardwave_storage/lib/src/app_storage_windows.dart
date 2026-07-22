@@ -27,6 +27,9 @@ class AppStorageWindows extends AppStorage {
   late final String? Function(StorageDomainEnum) _pathResolver;
   // Initialize the native IO file system from fs_shim
   final FileSystem _fs = fileSystemIo;
+  // Distinguishes the temp file of each concurrent write to the same target
+  // so two overlapping writes never share one `.tmp` and race its rename.
+  int _tmpWriteSeq = 0;
 
   @override
   Future<void> init(String? Function(StorageDomainEnum) pathResolver) async {
@@ -88,17 +91,20 @@ class AppStorageWindows extends AppStorage {
     await _atomicWrite(file, (tmp) => tmp.writeAsBytes(bytes, flush: true));
   });
 
-  /// Writes through a sibling `<path>.tmp` (flushed to disk) and then renames
-  /// it over [target]. The rename is atomic on the same volume (Windows and
-  /// Android use MOVEFILE_REPLACE_EXISTING semantics), so a crash, power loss,
-  /// or OS kill mid-write can never leave a truncated destination — readers
-  /// see either the old file or the fully-written new one. A stale `.tmp` left
-  /// by a failed prior rename is cleaned up before we rethrow.
+  /// Writes through a sibling `<path>.<n>.tmp` (flushed to disk) and then
+  /// renames it over [target]. The rename is atomic on the same volume (Windows
+  /// and Android use MOVEFILE_REPLACE_EXISTING semantics), so a crash, power
+  /// loss, or OS kill mid-write can never leave a truncated destination —
+  /// readers see either the old file or the fully-written new one. The `<n>`
+  /// is unique per write so two overlapping writes to the same target never
+  /// share one temp file — otherwise the first rename consumes the temp and
+  /// the second fails with "Cannot rename file" (its source is gone). A stale
+  /// temp left by a failed rename is cleaned up before we rethrow.
   Future<void> _atomicWrite(
     File target,
     Future<void> Function(File tmp) write,
   ) async {
-    final tmp = _fs.file('${target.path}.tmp');
+    final tmp = _fs.file('${target.path}.${_tmpWriteSeq++}.tmp');
     await write(tmp);
     try {
       await tmp.rename(target.path);

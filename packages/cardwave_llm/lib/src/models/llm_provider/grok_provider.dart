@@ -378,6 +378,17 @@ class GrokProvider extends LlmProvider {
       r'(^|[-_])non[-_]?reasoning([-_]|$)',
     ).hasMatch(lowerId);
     final isReasoning = hasReasoningWord && !hasNonReasoningWord;
+    // Grok 4 and newer reject presence_penalty and frequency_penalty (they
+    // 400 with "Model grok-X does not support parameter presencePenalty").
+    // Only grok-3 and grok-2 accept them. Ids that don't start with a
+    // numeric major (e.g. grok-code-fast-1) are grok-4-generation too, so
+    // treat an unknown major as "no penalties" — the safe direction, since
+    // the default penalty value is 0 and dropping it changes nothing.
+    final grokMajorMatch = RegExp(r'^grok-(\d+)').firstMatch(lowerId);
+    final grokMajor = grokMajorMatch == null
+        ? null
+        : int.tryParse(grokMajorMatch.group(1)!);
+    final supportsPenalties = grokMajor != null && grokMajor < 4;
     // Every modern xAI Grok language model accepts response_format
     // json_schema via the OpenAI-compatible /chat/completions endpoint.
     // Gating purely on `kind == 'language'` is forward-compat for grok-5+
@@ -413,12 +424,14 @@ class GrokProvider extends LlmProvider {
         toolCalling: kind == 'language',
         structuredOutput: supportsStructured,
       ),
-      supportedParameters: const [
+      supportedParameters: [
         LlmParameterDefinitionIdEnum.temperature,
         LlmParameterDefinitionIdEnum.topP,
         LlmParameterDefinitionIdEnum.maxResponseLength,
-        LlmParameterDefinitionIdEnum.presencePenalty,
-        LlmParameterDefinitionIdEnum.frequencyPenalty,
+        if (supportsPenalties) ...[
+          LlmParameterDefinitionIdEnum.presencePenalty,
+          LlmParameterDefinitionIdEnum.frequencyPenalty,
+        ],
       ],
       pricing: modelPricing,
     );

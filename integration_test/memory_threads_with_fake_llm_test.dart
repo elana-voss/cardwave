@@ -53,6 +53,8 @@ void main() {
       final settings = AppSettings(
         characterPath: dir.path,
         onboardingComplete: true,
+        // Story memory defaults off; extraction only runs when it's enabled.
+        memoryEnabled: true,
         connectionProfiles: [
           LlmProviderConfig(
             id: providerId,

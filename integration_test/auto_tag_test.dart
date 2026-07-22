@@ -109,21 +109,26 @@ void main() {
             'check Grok reachability and the structured-output schema.',
       );
 
+      // Auto-tag saves the card and the search indexer reloads it, so the
+      // service now holds a fresh instance. The seedFile captured before the
+      // tap is stale; re-read to see the assigned tags.
+      final tagged = (await characterService.loadByName(kSeedCharacterName))!;
+
       expect(
-        seedFile.appCardTags,
+        tagged.appCardTags,
         isNotEmpty,
         reason:
             'auto-tagger returned no tag IDs for the seed card; the structured '
             'response was empty or _flattenAutoTagResponse dropped values.',
       );
       expect(
-        seedFile.appCardTags.length,
+        tagged.appCardTags.length,
         lessThanOrEqualTo(10),
         reason:
             'auto-tagger returned >10 tag IDs (prompt caps at 10) — '
             'either the model ignored the cap or the flatten leaked dupes.',
       );
-      for (final tagId in seedFile.appCardTags) {
+      for (final tagId in tagged.appCardTags) {
         expect(
           taxonomyRepository.getTag(tagId),
           isNotNull,
@@ -133,16 +138,16 @@ void main() {
         );
       }
       expect(
-        seedFile.card.tags,
+        tagged.card.tags,
         isNotEmpty,
         reason:
             'card.tags (legacy SillyTavern display list) should hold '
             'the resolved names for every newly-assigned appCardTag.',
       );
-      for (final tagId in seedFile.appCardTags) {
+      for (final tagId in tagged.appCardTags) {
         final tagName = taxonomyRepository.getTag(tagId)!.tagName;
         expect(
-          seedFile.card.tags.any(
+          tagged.card.tags.any(
             (existing) => existing.toLowerCase() == tagName.toLowerCase(),
           ),
           isTrue,

@@ -77,11 +77,16 @@ void main() {
 
       // Find Server URL by Key — type-based finders flake here because
       // the API Key field's TextFieldAutotrim wraps a TextFormField too.
+      // Tap to focus before typing. A bare enterText on a freshly opened
+      // dialog intermittently drops on a real device, leaving the field's
+      // default localhost:5001 untouched.
+      await tester.tap(find.byKey(const Key('testServerUrlField')));
+      await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const Key('testServerUrlField')),
         backend.baseUrl,
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
       await dismissKeyboard(tester);
 
       await tester.tap(

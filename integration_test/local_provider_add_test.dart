@@ -80,11 +80,16 @@ void main() {
       // Find Server URL by Key — the dialog has two TextFormFields
       // (TextFieldAutotrim wraps one for the API Key field), and
       // tree-order finders have flaked between mock and real-backend runs.
+      // Tap to focus before typing. A bare enterText on a freshly opened
+      // dialog intermittently drops on a real device, leaving the field's
+      // default localhost:5001 untouched — which then fails the round-trip.
+      await tester.tap(find.byKey(const Key('testServerUrlField')));
+      await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const Key('testServerUrlField')),
         backend.baseUrl,
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
       await dismissKeyboard(tester);
 
       await tester.tap(

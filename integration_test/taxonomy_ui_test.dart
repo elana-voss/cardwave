@@ -36,6 +36,10 @@ void main() {
     (tester) async {
       await wipeAppData();
       await seedOnboardingComplete();
+      // The grid is empty on a fresh install, but awaitGridReady waits for a
+      // card to render; seed one so the home grid is ready before we open the
+      // gear menu.
+      await seedTestCharacter();
 
       app.main();
       await awaitAppReady(tester);
