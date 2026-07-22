@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "$updated 個のモデルを更新、$unavailable 個が利用不可、$errors 件のエラー。",
     "newProviderButton": "新しいプロバイダー",
-    "cloudProviderMenuItem": "クラウドプロバイダー",
-    "localProviderMenuItem": "カスタムプロバイダー（OpenAI互換）",
+    "cloudProviderMenuItem": "クラウドサービス（キーを貼り付け）",
+    "localProviderMenuItem": "自分のサーバー（OpenAI互換）",
     "localGgufMenuItem": "ローカルGGUF",
     "noProvidersConfigured": "APIプロバイダーが設定されていません。",
     "addingProviderOverlay": "プロバイダーを追加中…",
@@ -141,7 +141,17 @@
     "connectFetchButton": "接続してモデルを取得",
     "connectedFoundModels(plural)": {
       "other": "接続しました。$n 個のモデルが見つかりました。"
-    }
+    },
+    "addModelByHandButton": "手動でモデルを追加",
+    "noModelsYet": "モデルがまだありません。サーバーに接続するか、手動で追加してください。",
+    "removeModelTooltip": "モデルを削除",
+    "addModelHeader": "モデルを追加",
+    "editModelHeader": "モデルを編集",
+    "modelNameLabel": "表示名",
+    "modelIdLabel": "モデルID",
+    "modelContextSizeLabel": "コンテキストサイズ（トークン）",
+    "modelMaxResponseLabel": "最大応答長（トークン）",
+    "sendableParamsHeader": "送信するパラメーター"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "ローカルにGGUFファイルがあります",

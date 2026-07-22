@@ -164,39 +164,62 @@ class LlmManagementService {
             baseUrl: profile.baseUrl,
             requireZdr: profile.requireZdr,
           );
-      final freshById = {for (final m in fresh) m.id: m};
-      final adoptedById = {for (final m in profile.models) m.id: m};
+      if (profile.providerEnum == LLMProviderEnum.localOpenAi) {
+        // Custom providers are add-only: the user hand-enters each model's
+        // context size, sampling set, and name, and nothing here is allowed
+        // to overwrite that. Every model already in profile.models is kept
+        // exactly as-is — no rebuild, no field overwrite, no drop, no
+        // unavailable flag. There is no field that tells a hand-added model
+        // apart from a fetched-then-adopted one, so the only safe rule is to
+        // spare all of them; that also means never marking a "vanished" one
+        // unavailable, which would grey out the exact ids the user typed.
+        //
+        // A fetched id not already present joins verbatim — do NOT rebuild it
+        // into a fresh template. On a plain Connect fetch that object is
+        // already a blank template (parseModel); on the add/edit flow it is
+        // the fully hand-edited model handed in via preFetchedModels.
+        final existingIds = {for (final m in profile.models) m.id};
+        final additions = [
+          for (final m in fresh)
+            if (!existingIds.contains(m.id)) m,
+        ];
+        added = additions.length;
+        profile.models = [...profile.models, ...additions];
+      } else {
+        final freshById = {for (final m in fresh) m.id: m};
+        final adoptedById = {for (final m in profile.models) m.id: m};
 
-      final rebuilt = <LlmModel>[];
-      for (final m in fresh) {
-        final replacement = LlmModel.clone(m);
-        final adopted = adoptedById[m.id];
-        if (adopted != null) {
-          replacement.presets = adopted.presets;
-          final wasUnavailable = adopted.isUnavailable;
-          replacement.isUnavailable = false;
-          if (wasUnavailable) {
-            rematched++;
+        final rebuilt = <LlmModel>[];
+        for (final m in fresh) {
+          final replacement = LlmModel.clone(m);
+          final adopted = adoptedById[m.id];
+          if (adopted != null) {
+            replacement.presets = adopted.presets;
+            final wasUnavailable = adopted.isUnavailable;
+            replacement.isUnavailable = false;
+            if (wasUnavailable) {
+              rematched++;
+            } else {
+              updated++;
+            }
           } else {
-            updated++;
+            added++;
           }
-        } else {
-          added++;
+          rebuilt.add(replacement);
         }
-        rebuilt.add(replacement);
+        // Models in the old list that disappeared from the fresh catalog.
+        // Keep those with presets (flagged unavailable so UI greys them out,
+        // presets stay pointable); drop catalog-only ghosts.
+        for (final adopted in profile.models) {
+          if (freshById.containsKey(adopted.id)) continue;
+          if (adopted.presets.isEmpty) continue;
+          final wasAlreadyUnavailable = adopted.isUnavailable;
+          adopted.isUnavailable = true;
+          if (!wasAlreadyUnavailable) markedUnavailable++;
+          rebuilt.add(adopted);
+        }
+        profile.models = rebuilt;
       }
-      // Models in the old list that disappeared from the fresh catalog.
-      // Keep those with presets (flagged unavailable so UI greys them out,
-      // presets stay pointable); drop catalog-only ghosts.
-      for (final adopted in profile.models) {
-        if (freshById.containsKey(adopted.id)) continue;
-        if (adopted.presets.isEmpty) continue;
-        final wasAlreadyUnavailable = adopted.isUnavailable;
-        adopted.isUnavailable = true;
-        if (!wasAlreadyUnavailable) markedUnavailable++;
-        rebuilt.add(adopted);
-      }
-      profile.models = rebuilt;
 
       await _pureHelpers.populateTtsVoices(profile);
       _pureHelpers.populateVideoOptions(profile);

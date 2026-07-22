@@ -58,13 +58,13 @@ void main() {
 
       // The three add-provider variants now live behind one
       // FilledButton + MenuAnchor dropdown; open the menu first, then
-      // pick "Custom Provider (OpenAI-compatible)".
+      // pick "Your own server (OpenAI-compatible)".
       await tester.tap(find.widgetWithText(FilledButton, 'New Provider'));
       await tester.pumpAndSettle();
       await tester.tap(
         find.widgetWithText(
           MenuItemButton,
-          'Custom Provider (OpenAI-compatible)',
+          'Your own server (OpenAI-compatible)',
         ),
       );
       await tester.pumpAndSettle();

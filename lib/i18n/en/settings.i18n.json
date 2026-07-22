@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "Refreshed $updated models, $unavailable unavailable, $errors errors.",
     "newProviderButton": "New Provider",
-    "cloudProviderMenuItem": "Cloud Provider",
-    "localProviderMenuItem": "Custom Provider (OpenAI-compatible)",
+    "cloudProviderMenuItem": "Cloud service (paste a key)",
+    "localProviderMenuItem": "Your own server (OpenAI-compatible)",
     "localGgufMenuItem": "Local GGUF",
     "noProvidersConfigured": "No API providers configured.",
     "addingProviderOverlay": "Adding provider…",
@@ -142,7 +142,17 @@
     "connectedFoundModels(plural)": {
       "one": "Connected. Found $n model.",
       "other": "Connected. Found $n models."
-    }
+    },
+    "addModelByHandButton": "Add model by hand",
+    "noModelsYet": "No models yet. Connect to a server or add one by hand.",
+    "removeModelTooltip": "Remove model",
+    "addModelHeader": "Add Model",
+    "editModelHeader": "Edit Model",
+    "modelNameLabel": "Display name",
+    "modelIdLabel": "Model ID",
+    "modelContextSizeLabel": "Context size (tokens)",
+    "modelMaxResponseLabel": "Max response length (tokens)",
+    "sendableParamsHeader": "Parameters to send"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "I have a local GGUF file",

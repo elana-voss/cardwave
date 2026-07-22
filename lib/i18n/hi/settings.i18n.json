@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "$updated मॉडल रीफ़्रेश किए, $unavailable अनुपलब्ध, $errors त्रुटियां।",
     "newProviderButton": "नया प्रोवाइडर",
-    "cloudProviderMenuItem": "क्लाउड प्रोवाइडर",
-    "localProviderMenuItem": "कस्टम प्रोवाइडर (OpenAI-संगत)",
+    "cloudProviderMenuItem": "क्लाउड सेवा (कुंजी पेस्ट करें)",
+    "localProviderMenuItem": "आपका अपना सर्वर (OpenAI-संगत)",
     "localGgufMenuItem": "लोकल GGUF",
     "noProvidersConfigured": "कोई API प्रोवाइडर कॉन्फ़िगर नहीं किया गया।",
     "addingProviderOverlay": "प्रोवाइडर जोड़ा जा रहा है…",
@@ -142,7 +142,17 @@
     "connectedFoundModels(plural)": {
       "one": "कनेक्ट हो गया। $n मॉडल मिला।",
       "other": "कनेक्ट हो गया। $n मॉडल मिले।"
-    }
+    },
+    "addModelByHandButton": "मॉडल मैन्युअल रूप से जोड़ें",
+    "noModelsYet": "अभी कोई मॉडल नहीं। किसी सर्वर से कनेक्ट करें या मैन्युअल रूप से जोड़ें।",
+    "removeModelTooltip": "मॉडल हटाएँ",
+    "addModelHeader": "मॉडल जोड़ें",
+    "editModelHeader": "मॉडल संपादित करें",
+    "modelNameLabel": "प्रदर्शित नाम",
+    "modelIdLabel": "मॉडल ID",
+    "modelContextSizeLabel": "संदर्भ आकार (टोकन)",
+    "modelMaxResponseLabel": "अधिकतम प्रतिक्रिया लंबाई (टोकन)",
+    "sendableParamsHeader": "भेजे जाने वाले पैरामीटर"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "मेरे पास एक लोकल GGUF फ़ाइल है",

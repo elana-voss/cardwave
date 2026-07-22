@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "Обновлено моделей: $updated, недоступно: $unavailable, ошибок: $errors.",
     "newProviderButton": "Новый провайдер",
-    "cloudProviderMenuItem": "Облачный провайдер",
-    "localProviderMenuItem": "Пользовательский провайдер (OpenAI-совместимый)",
+    "cloudProviderMenuItem": "Облачный сервис (вставьте ключ)",
+    "localProviderMenuItem": "Ваш собственный сервер (OpenAI-совместимый)",
     "localGgufMenuItem": "Локальный GGUF",
     "noProvidersConfigured": "Провайдеры API не настроены.",
     "addingProviderOverlay": "Добавление провайдера…",
@@ -144,7 +144,17 @@
       "few": "Подключено. Найдено $n модели.",
       "many": "Подключено. Найдено $n моделей.",
       "other": "Подключено. Найдено $n модели."
-    }
+    },
+    "addModelByHandButton": "Добавить модель вручную",
+    "noModelsYet": "Моделей пока нет. Подключитесь к серверу или добавьте вручную.",
+    "removeModelTooltip": "Удалить модель",
+    "addModelHeader": "Добавить модель",
+    "editModelHeader": "Редактировать модель",
+    "modelNameLabel": "Отображаемое имя",
+    "modelIdLabel": "ID модели",
+    "modelContextSizeLabel": "Размер контекста (токены)",
+    "modelMaxResponseLabel": "Макс. длина ответа (токены)",
+    "sendableParamsHeader": "Параметры для отправки"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "У меня есть локальный файл GGUF",

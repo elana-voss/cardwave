@@ -50,8 +50,8 @@
   "aiTab": {
     "refreshSummary": "已刷新 $updated 个模型，$unavailable 个不可用，$errors 个错误。",
     "newProviderButton": "新建服务商",
-    "cloudProviderMenuItem": "云端服务商",
-    "localProviderMenuItem": "自定义服务商（OpenAI 兼容）",
+    "cloudProviderMenuItem": "云端服务（粘贴密钥）",
+    "localProviderMenuItem": "你自己的服务器（OpenAI 兼容）",
     "localGgufMenuItem": "本地 GGUF",
     "noProvidersConfigured": "尚未配置 API 服务商。",
     "addingProviderOverlay": "正在添加服务商…",
@@ -141,7 +141,17 @@
     "connectFetchButton": "连接并获取模型",
     "connectedFoundModels(plural)": {
       "other": "已连接。找到 $n 个模型。"
-    }
+    },
+    "addModelByHandButton": "手动添加模型",
+    "noModelsYet": "还没有模型。请连接到服务器或手动添加。",
+    "removeModelTooltip": "移除模型",
+    "addModelHeader": "添加模型",
+    "editModelHeader": "编辑模型",
+    "modelNameLabel": "显示名称",
+    "modelIdLabel": "模型 ID",
+    "modelContextSizeLabel": "上下文大小（token）",
+    "modelMaxResponseLabel": "最大回复长度（token）",
+    "sendableParamsHeader": "要发送的参数"
   },
   "localGguf": {
     "haveLocalGgufExpanderTitle": "我有一个本地 GGUF 文件",
