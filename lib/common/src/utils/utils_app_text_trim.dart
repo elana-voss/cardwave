@@ -70,6 +70,97 @@ class UtilsAppTextTrim {
     'no',
   };
 
+  /// Symmetric delimiters — the same character opens and closes, so each
+  /// occurrence is classified open/close by position, never by raw count (an
+  /// even count of `"` hides two unclosed openers or a stray literal quote).
+  /// Straight quote and roleplay action asterisk. Single quotes and tildes are
+  /// left out on purpose: apostrophes make `'` ambiguous, and a lone trailing
+  /// `~` is a common flourish, not an opener.
+  static const List<String> _symmetricDelimiters = ['"', '*'];
+
+  /// Directional delimiter pairs — opener maps to a distinct closer, so they
+  /// nest on a stack. Curly quote plus the bracketing pairs that wrap an aside.
+  static const Map<String, String> _directionalDelimiters = {
+    '“': '”',
+    '(': ')',
+    '[': ']',
+    '{': '}',
+  };
+
+  /// [_directionalDelimiters] inverted — closer back to its opener.
+  static final Map<String, String> _closerToOpener = {
+    for (final e in _directionalDelimiters.entries) e.value: e.key,
+  };
+
+  /// Whether a delimiter at [i] sits in an opening position: the start of the
+  /// text or just after whitespace. That is how an aside or a line of dialogue
+  /// opens (`... (she thinks`, `... "hello`), and it keeps emoticons (`:(`) and
+  /// call syntax (`f(x`) from reading as an unclosed opener.
+  static bool _isOpeningContext(String text, int i) =>
+      i == 0 || _isSpaceChar(text[i - 1]);
+
+  /// The list index of the most recent still-open delimiter whose closer is
+  /// [closer], or -1 when none is open. Symmetric and directional closers never
+  /// collide (`"`/`*` vs `”`/`)`/`]`/`}`), so a match by closer char is exact.
+  static int _lastOpenMatching(List<_OpenDelim> open, String closer) {
+    for (var i = open.length - 1; i >= 0; i--) {
+      if (open[i].closer == closer) return i;
+    }
+    return -1;
+  }
+
+  /// Every delimiter left open at the end of [text], in the order it opened.
+  ///
+  /// A straight quote and an action asterisk are the SAME character open and
+  /// closed, so counting occurrences cannot tell balance from imbalance — an
+  /// even count hides two unclosed openers (`"one. "two`) or a stray literal
+  /// quote (`the 6" pipe. "hi`). Each occurrence is classified by position
+  /// instead: one in an opening context opens a run; otherwise it closes the
+  /// matching open run, or — with nothing open to close — is itself an opener
+  /// (a lone `."` gluing new dialogue onto a period). Directional pairs nest on
+  /// the same list, their opener counted only in an opening context.
+  static List<_OpenDelim> _openDelimiters(String text) {
+    final open = <_OpenDelim>[];
+    for (var i = 0; i < text.length; i++) {
+      final ch = text[i];
+      if (_symmetricDelimiters.contains(ch)) {
+        if (_isOpeningContext(text, i)) {
+          open.add(_OpenDelim(i, ch, symmetric: true));
+        } else {
+          final match = _lastOpenMatching(open, ch);
+          if (match != -1) {
+            open.removeAt(match);
+          } else {
+            open.add(_OpenDelim(i, ch, symmetric: true));
+          }
+        }
+      } else if (_directionalDelimiters.containsKey(ch)) {
+        if (_isOpeningContext(text, i)) {
+          open.add(
+            _OpenDelim(i, _directionalDelimiters[ch]!, symmetric: false),
+          );
+        }
+      } else if (_closerToOpener.containsKey(ch)) {
+        final match = _lastOpenMatching(open, ch);
+        if (match != -1) open.removeAt(match);
+      }
+    }
+    return open;
+  }
+
+  /// Index of the earliest unmatched opening delimiter — a quote, an action
+  /// asterisk, or a bracketing pair left open — or -1 when every delimiter is
+  /// balanced.
+  static int _danglingDelimiterStart(String text) {
+    final open = _openDelimiters(text);
+    if (open.isEmpty) return -1;
+    var earliest = open.first.index;
+    for (final d in open) {
+      if (d.index < earliest) earliest = d.index;
+    }
+    return earliest;
+  }
+
   /// Whether [text] closes on something legitimate — sentence punctuation, a
   /// roleplay closer, or an emoji — with no quote, action asterisk, or
   /// bracketing pair left dangling open. A reply cut right after an opening `"`
@@ -78,69 +169,25 @@ class UtilsAppTextTrim {
   /// cleanly": the fast path and the paragraph loop must agree on it, or one of
   /// them trims a close the other accepts.
   static bool _endsCleanly(String text) =>
-      _danglingDelimiterStart(text) == -1 &&
+      _openDelimiters(text).isEmpty &&
       (_trailingTerminalRE.hasMatch(text) || _trailingEmojiRE.hasMatch(text));
 
-  /// Symmetric delimiters — opener and closer are the same character, so
-  /// occurrences simply alternate open/close and an odd count leaves the last
-  /// one open. Straight quote and roleplay action asterisk. Single quotes and
-  /// tildes are left out on purpose: apostrophes make `'` parity meaningless,
-  /// and a lone trailing `~` is a common flourish, not an opener.
-  static const List<String> _symmetricDelimiters = ['"', '*'];
-
-  /// Directional delimiter pairs — opener maps to a distinct closer, so they
-  /// nest and are tracked with a per-pair stack. Curly quote plus the
-  /// bracketing pairs that wrap an aside.
-  static const Map<String, String> _directionalDelimiters = {
-    '“': '”',
-    '(': ')',
-    '[': ']',
-    '{': '}',
-  };
-
-  /// [_directionalDelimiters] inverted — closer back to its opener — so the
-  /// scan can pop the matching stack in one lookup.
-  static final Map<String, String> _closerToOpener = {
-    for (final e in _directionalDelimiters.entries) e.value: e.key,
-  };
-
-  /// The closing counterpart of an opening delimiter (directional pairs flip; a
-  /// symmetric delimiter is its own closer).
-  static String _closerFor(String opener) =>
-      _directionalDelimiters[opener] ?? opener;
-
-  /// Index of the earliest unmatched opening delimiter — a quote, an action
-  /// asterisk, or a bracketing pair left open — or -1 when every delimiter is
-  /// balanced. A directional opener counts only when preceded by whitespace or
-  /// the start of the text: that is how an aside opens (`... (she thinks`), and
-  /// it keeps emoticons (`:(`) and call syntax (`f(x`) from reading as an
-  /// unclosed aside and drawing a stray closer.
-  static int _danglingDelimiterStart(String text) {
-    final symmetricOpen = {for (final d in _symmetricDelimiters) d: -1};
-    final directionalOpens = {
-      for (final opener in _directionalDelimiters.keys) opener: <int>[],
-    };
-    for (var i = 0; i < text.length; i++) {
-      final ch = text[i];
-      if (symmetricOpen.containsKey(ch)) {
-        symmetricOpen[ch] = symmetricOpen[ch] == -1 ? i : -1;
-      } else if (directionalOpens.containsKey(ch)) {
-        if (i == 0 || _isSpaceChar(text[i - 1])) directionalOpens[ch]!.add(i);
-      } else if (_closerToOpener.containsKey(ch)) {
-        final opens = directionalOpens[_closerToOpener[ch]]!;
-        if (opens.isNotEmpty) opens.removeLast();
+  /// The closer strings that balance [prefix], innermost-first (so they append
+  /// in nesting order), or null when a non-nesting delimiter — a straight quote
+  /// or an action asterisk — is left open more than once. Two of the same such
+  /// delimiter open means two separate unfinished runs; appending closers would
+  /// still leave the first one open, so the caller must cut back to an earlier
+  /// boundary instead of closing here.
+  static List<String>? _danglingClosers(String prefix) {
+    final open = _openDelimiters(prefix);
+    final symmetricOpenCounts = <String, int>{};
+    for (final d in open) {
+      if (d.symmetric) {
+        symmetricOpenCounts[d.closer] = (symmetricOpenCounts[d.closer] ?? 0) + 1;
       }
     }
-    var earliest = -1;
-    void consider(int index) {
-      if (index != -1 && (earliest == -1 || index < earliest)) earliest = index;
-    }
-
-    symmetricOpen.values.forEach(consider);
-    for (final opens in directionalOpens.values) {
-      if (opens.isNotEmpty) consider(opens.first);
-    }
-    return earliest;
+    if (symmetricOpenCounts.values.any((count) => count > 1)) return null;
+    return [for (final d in open.reversed) d.closer];
   }
 
   /// Returns [text] with any incomplete trailing sentence/paragraph removed.
@@ -210,11 +257,14 @@ class UtilsAppTextTrim {
         if (!_isValidBoundary(text, i)) continue;
         cut = _extendOverClosers(text, i, closerLimit);
       }
-      final result = text.substring(0, cut + 1).trimRight();
-      if (result.isEmpty) return null;
-      if (dangling != -1 && cut > dangling) {
-        return result + _closerFor(text[dangling]);
-      }
+      final prefix = text.substring(0, cut + 1);
+      // A cut that would leave a non-nesting delimiter open twice cannot be
+      // repaired by appending — the earlier run would stay open — so move to an
+      // earlier boundary, which drops the second unfinished run.
+      final closers = _danglingClosers(prefix);
+      if (closers == null) continue;
+      final result = prefix.trimRight() + closers.join();
+      if (result.isEmpty) continue;
       return result;
     }
     return null;
@@ -336,4 +386,15 @@ class UtilsAppTextTrim {
     if (trimmed.length >= _minKeepChars) return true;
     return trimmed.length >= (original.length * _minKeepRatio);
   }
+}
+
+/// One still-open delimiter found by `UtilsAppTextTrim._openDelimiters`: the
+/// index it opened at, the string that closes it, and whether it is symmetric
+/// (same character opens and closes, so it cannot nest — a straight quote or an
+/// action asterisk).
+class _OpenDelim {
+  const _OpenDelim(this.index, this.closer, {required this.symmetric});
+  final int index;
+  final String closer;
+  final bool symmetric;
 }

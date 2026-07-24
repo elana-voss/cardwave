@@ -319,4 +319,128 @@ void main() {
       expect(UtilsAppTextTrim.trim(text), text);
     });
   });
+
+  // A straight `"` opens and closes with the SAME character, so counting
+  // occurrences cannot tell an unclosed quote from a balanced one. An even
+  // number of `"` — two unclosed openers, or one stray literal quote plus a
+  // real opener — used to read as "balanced" and let the dangling quote
+  // through untouched.
+  group('UtilsAppTextTrim.trim — unbalanced straight quotes', () {
+    test('closes a lone opening quote that ends on an ellipsis', () {
+      expect(UtilsAppTextTrim.trim('"Mmmh...'), '"Mmmh..."');
+    });
+
+    test('closes an opener even with an EVEN quote count (two openers)', () {
+      const text = 'He said "hi there. "Mmmh...';
+      expect(UtilsAppTextTrim.trim(text), 'He said "hi there."');
+    });
+
+    test('cuts back past a THIRD unclosed opener to the first', () {
+      const text = '"That was honestly one of the nicest afternoons I have had '
+          'in a long while. "And then. "And...';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        '"That was honestly one of the nicest afternoons I have had '
+        'in a long while."',
+      );
+    });
+
+    test('keeps the original when closing the quote would nuke too much', () {
+      const text = '"One thing. "Two things. "Three thi...';
+      expect(UtilsAppTextTrim.trim(text), text);
+    });
+
+    test('closes a fresh opener that follows a balanced pair', () {
+      const text = 'She said "yes." "Mmmh...';
+      expect(UtilsAppTextTrim.trim(text), 'She said "yes." "Mmmh..."');
+    });
+
+    test('a stray literal quote does not hide a later unclosed opener', () {
+      const text = 'The 6" pipe rattled. "Mmmh...';
+      final out = UtilsAppTextTrim.trim(text);
+      expect(out, isNot(endsWith('...')));
+      expect(out, isNot(equals(text)));
+    });
+
+    test('closes an opener glued to the preceding period', () {
+      const text = 'She nods warmly."Mmmh...';
+      expect(UtilsAppTextTrim.trim(text), 'She nods warmly."Mmmh..."');
+    });
+
+    test('closes a dialogue opener that follows an action asterisk', () {
+      const text = '*She tilts her head.* "Mmmh...';
+      expect(UtilsAppTextTrim.trim(text), '*She tilts her head.* "Mmmh..."');
+    });
+  });
+
+  // Action asterisks are the other symmetric delimiter and share the exact
+  // same even-count blind spot.
+  group('UtilsAppTextTrim.trim — unbalanced action asterisks', () {
+    test('closes an opener even with an EVEN asterisk count', () {
+      const text = '*She smiles warmly. *She reaches for the cup...';
+      expect(UtilsAppTextTrim.trim(text), '*She smiles warmly.*');
+    });
+  });
+
+  // A cut can leave more than one delimiter of DIFFERENT kinds open; they must
+  // be closed innermost-first so the repair is well-formed.
+  group('UtilsAppTextTrim.trim — nested delimiters close in order', () {
+    test('closes an unclosed quote inside an unclosed parenthetical', () {
+      const text = 'She grins. ("come here now. Then she reached for the';
+      expect(UtilsAppTextTrim.trim(text), 'She grins. ("come here now.")');
+    });
+
+    test('closes an unclosed quote inside an unclosed action', () {
+      const text = 'She says *softly, "come here now. Then she paused and';
+      expect(
+        UtilsAppTextTrim.trim(text),
+        'She says *softly, "come here now."*',
+      );
+    });
+  });
+
+  // A repair must never itself be a broken/trailing sentence. Feeding the
+  // cleaner's own output back through it must be a fixpoint — if the first pass
+  // left a dangling delimiter or an unfinished tail, the second pass would
+  // change it.
+  group('UtilsAppTextTrim.trim — the repair is always well-formed', () {
+    void expectWellFormed(String input) {
+      final once = UtilsAppTextTrim.trim(input);
+      expect(once, isNotEmpty, reason: 'empty result for: $input');
+      final twice = UtilsAppTextTrim.trim(once);
+      expect(
+        twice,
+        once,
+        reason: 'not a fixpoint — first pass left work undone for: $input',
+      );
+    }
+
+    const samples = [
+      '"Mmmh...',
+      'He said "hi there. "Mmmh...',
+      '"One thing. "Two things. "Three thi...',
+      'The 6" pipe rattled. "Mmmh...',
+      'She nods warmly."Mmmh...',
+      '*She tilts her head.* "Mmmh...',
+      '*She smiles warmly. *She reaches for the cup...',
+      'She grins. ("come here now. Then she reached for the',
+      'She says *softly, "come here now. Then she paused and',
+      'She said." Then she walked away without another word.',
+      '"I was just thinking that we could maybe go',
+      'A plain sentence that simply got cut off mid-wo',
+    ];
+
+    for (final sample in samples) {
+      test('fixpoint: ${sample.length > 32 ? '${sample.substring(0, 32)}…' : sample}',
+          () => expectWellFormed(sample));
+    }
+
+    test('every prefix of a mixed roleplay reply repairs to a fixpoint', () {
+      const reply = '*She leans in close.* "I was wondering," she said very '
+          'softly. "Could we... maybe go out?" (He only smiled.) 😊';
+      for (var i = 1; i <= reply.length; i++) {
+        expectWellFormed(reply.substring(0, i));
+      }
+    });
+  });
 }
