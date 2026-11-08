@@ -32,7 +32,9 @@ const change = (page: Page, what = "chat") => button(page, `Change the ${what} m
 /** The model picker called `title`, its search field, and the lines of its list. */
 const picker = (page: Page, title = "Chat model") => page.getByRole("dialog", { name: title });
 const search = (page: Page, title?: string) => picker(page, title).getByLabel("Model", { exact: true });
-const offered = (page: Page, title?: string) => picker(page, title).getByRole("option").allTextContents();
+/** The picker's lines: a provider's model by its ID (grey under its readable name), this computer's by its words. */
+const offered = (page: Page, title?: string) =>
+  picker(page, title).getByRole("option").evaluateAll((lines) => lines.map((line) => line.querySelector(".opt-id")?.textContent ?? line.textContent));
 const use = (page: Page) => button(page, "Use this model");
 const rest = (page: Page) => page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
 const host = (at: FakeProvider) => new URL(at.url).host;
@@ -107,6 +109,24 @@ test("the settings begin with the chat model that is stored, and “Change” st
   // Opened anew, the settings show the stored model, and what its test came to is not kept.
   await open(page);
   await expect(says(page)).toHaveText(`Reef-1 · ${HERE}`);
+
+  // A reply the provider refused as it no longer offers the model: the line says so, kept by the server, so
+  // the page still asks nothing on open; the model picked anew ends it.
+  const made = await request.post("/api/chats", { data: { characters: [] } });
+  expect(made.status(), await made.text()).toBe(201);
+  const chat = (await made.json()).chat.id;
+  expect((await request.post(`/api/chats/${chat}/messages`, { data: { content: "Hello?" } })).status()).toBe(201);
+  api.fail(404, "The model `Reef-1` does not exist");
+  expect((await request.post(`/api/chats/${chat}/generate`, { data: {} })).status()).toBe(202);
+  const gone = async () => (await (await request.get("/api/provider-list")).json()).kinds.find((each: { kind: string }) => each.kind === "chat").gone;
+  await expect.poll(gone).toBe(true);
+  await open(page);
+  await expect(line(page).locator(".item-wrong")).toHaveText("Your provider no longer offers this model: choose another.");
+  await change(page).click();
+  await picker(page).getByRole("option", { name: "Reef-1" }).click();
+  await use(page).click();
+  await expect(says(page)).toHaveText(`Reef-1 · ${HERE} · test passed`);
+  await expect(line(page).locator(".item-wrong")).toHaveText("");
 });
 
 test("the background model's line says the chat model does that work until one is picked, and a model of another provider moves the kind there", async ({ page, request }) => {

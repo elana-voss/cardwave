@@ -66,6 +66,13 @@ pub struct Running {
     asking: Option<Asking>,
 }
 
+impl Running {
+    /// Whose task it is.
+    pub fn user(&self) -> i64 {
+        self.user
+    }
+}
+
 /// A tool's call that waits for the user.
 struct Asking {
     ask: ToolAsk,
@@ -260,7 +267,7 @@ impl Ctx {
                 ),
                 "run_command" => tool(
                     "run_command",
-                    "Runs a command with cmd.exe in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there, but git does not.",
+                    "Runs a command with cmd.exe in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there, but git does not. `dir` is refused there: list the files with `for %f in (*) do @echo %f`.",
                     json!({ "command": command }),
                 ),
                 "install_packages" => tool(

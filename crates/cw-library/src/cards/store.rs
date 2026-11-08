@@ -26,10 +26,10 @@ use crate::cards::pictures::{Source, as_png};
 use crate::cards::{CardIndex, Imported, MAX_LISTED, MAX_LISTED_CHARS, Storage, document_of};
 
 /// Imports a card file (CCV4, or SillyTavern V2/V3 as a PNG or a JSON file) as a new card of `user`; a
-/// JSON card has a picture of one pixel, as a card without art.
+/// JSON card has a picture of one pixel, as a card without art. A CHARX file is refused as not supported yet.
 /// Of a card with several characters only the first is kept, and the import says so;
 /// a card the library has already is refused ([`super::in_library`]), a file without a card is
-/// [`super::NotACard`].
+/// [`super::not_a_card`].
 pub fn import(db: &dyn Storage, user: i64, file: &[u8]) -> anyhow::Result<Imported> {
     let fingerprint = Sha256::digest(file);
     // Asked before the file is parsed, so a folder imported again costs only reading and hashing it; asked
@@ -37,13 +37,25 @@ pub fn import(db: &dyn Storage, user: i64, file: &[u8]) -> anyhow::Result<Import
     if db.knows_file(user, &fingerprint)? {
         return Err(crate::cards::in_library().into());
     }
+    // A CHARX card (V3's zip) is not taken yet: said so, not as a PNG that is none.
+    if file.starts_with(b"PK") {
+        return Err(
+            Fail::said(Code::NotReadable, "CHARX card files are not supported yet")
+                .with("what", "charx")
+                .into(),
+        );
+    }
     let (mut container, mut notes) = if is_json_object(file) {
         match sillytavern::convert_json(file)? {
             Some((mut container, notes)) => {
                 container.image = blank_picture()?;
                 (container, notes)
             }
-            None => return Err(crate::cards::NotACard("this file holds no character card").into()),
+            None => {
+                return Err(crate::cards::not_a_card(
+                    "this file holds no character card",
+                ));
+            }
         }
     } else {
         (png::read(file)?, Vec::new())
@@ -134,7 +146,7 @@ fn store(
     if container.toml.is_empty() {
         match sillytavern::convert(&container.image)? {
             Some((converted, notes)) => (container, warnings) = (converted, notes),
-            None => return Err(crate::cards::NotACard("this PNG holds no character card").into()),
+            None => return Err(crate::cards::not_a_card("this PNG holds no character card")),
         }
     }
     let document = Document::parse(&container.toml)?;

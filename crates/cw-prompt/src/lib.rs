@@ -39,7 +39,7 @@ pub fn stand_in_user(language: &str) -> &'static str {
         "hi" => "अतिथि",
         "ja" => "ゲスト",
         "ko" => "게스트",
-        _ => "User",
+        _ => "Guest",
     }
 }
 
@@ -327,7 +327,7 @@ mod tests {
         assert!(seen >= 4, "{seen} language files");
         // The computer's code, by its first part; a language without a file: English's.
         assert_eq!(stand_in_user("pt"), "Você");
-        assert_eq!(stand_in_user("fr"), "User");
+        assert_eq!(stand_in_user("fr"), "Guest");
         // Chinese by its script, as the page's appCode tells it: the region names it where the script is not given.
         for simplified in ["zh", "zh-CN", "zh_SG", "zh-Hans-HK"] {
             assert_eq!(

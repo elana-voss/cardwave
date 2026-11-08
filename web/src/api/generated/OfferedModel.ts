@@ -23,4 +23,14 @@ voice: boolean,
 /**
  * It thinks before it replies.
  */
-thinks: boolean, };
+thinks: boolean, 
+/**
+ * Whether its kinds are known: its provider says them or models.dev lists
+ * it; else they are guessed by its name, and it is offered for every kind.
+ */
+said: boolean, 
+/**
+ * Its name as the user reads it, where the app knows it: This computer's
+ * models by Cardwave's list, else their file's name without its ending.
+ */
+name: string | null, };

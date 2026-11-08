@@ -74,7 +74,7 @@ test("a preset is made in its editor, put in use with Undo, changed and deleted"
   await expect(line(page, "Noir (copy)").locator(".item-text > .meta")).toHaveText("System prompt");
   await line(page, "Noir (copy)").getByRole("button", { name: "More" }).click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
-  await line(page, "Noir (copy)").getByRole("button", { name: "Delete", exact: true }).click();
+  await group(page).locator(".preset + .confirm").getByRole("button", { name: "Delete", exact: true }).click();
   await expect(lines(page)).toHaveText(["Default", "Noir · in use"]);
 
   // Default's copy, named by the server.
@@ -83,7 +83,7 @@ test("a preset is made in its editor, put in use with Undo, changed and deleted"
   await expect(lines(page)).toHaveText(["Default", "Default (copy)", "Noir · in use"]);
   await line(page, "Default (copy)").getByRole("button", { name: "More" }).click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
-  await line(page, "Default (copy)").getByRole("button", { name: "Delete", exact: true }).click();
+  await group(page).locator(".preset + .confirm").getByRole("button", { name: "Delete", exact: true }).click();
   await expect(lines(page)).toHaveText(["Default", "Noir · in use"]);
 });
 

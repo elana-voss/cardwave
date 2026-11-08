@@ -230,7 +230,7 @@ backup-back-up = Simpan cadangan
 backup-no-file = Belum ada berkas yang dipilih
 backup-choose-file = Pilih berkas
 backup-its-password = Kata sandi cadangan
-backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan.
+backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan. Kata sandi di sini tetap seperti sekarang.
 backup-file = Berkas
 backup-restore-title = Pulihkan cadangan
 backup-choose-first = Pilih dulu berkas cadangannya.
@@ -318,7 +318,7 @@ password-repeat = Ulangi kata sandi
 password-asked-sign-in = Diminta saat kamu masuk
 password-is-on = Nyala · diminta saat aplikasi dibuka
 password-is-off = Mati · siapa pun di komputer ini dapat membuka Cardwave
-password-start-forgotten = Kata sandi yang terlupa tidak dapat dipulihkan. Pulihkan cadangan untuk memulai lagi.
+password-start-forgotten = Kata sandi yang terlupa tidak dapat dipulihkan.
 password-open = Buka
 password-back = Kembali
 
@@ -422,101 +422,6 @@ update-auto = Periksa secara otomatis
 update-auto-about = Cari versi baru saat mulai dan sekali sehari
 update-check = Periksa
 update-about = Periksa apakah ada versi aplikasi yang lebih baru.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Masukkan alamat penyedia di Pengaturan
-setup-manually-models = Atur sendiri
-setup-use-this = Pakai ini
-setup-choose-folder = Pilih folder
-setup-this-computer = Komputer ini
-setup-this-computer-about = File model AI (.gguf) yang sudah kamu unduh, dijalankan oleh Cardwave
-setup-models-example = C:\Users\kamu\Model
-setup-models-says = Setiap berkas model di dalamnya (.gguf) adalah model chat, yang dijalankan Cardwave di komputer ini. Belum punya berkas model? Pilih folder kosong: Pengaturan › Penyedia › Komputer ini lalu menawarkan model yang cocok untuk komputer ini dan mengunduhnya ke sana.
-setup-not-this = Bukan yang ini?
-setup-recognised = Dikenali:{ " " }
-setup-provider = Penyedia
-setup-none-of-these = Bukan salah satunya?
-setup-several = Kunci ini cocok untuk lebih dari satu penyedia. Yang mana?
-setup-unknown = Cardwave tidak bisa tahu kunci ini milik penyedia mana. Cari penyedianya lewat nama, atau masukkan alamatnya.
-setup-find = Cari
-setup-find-field = Nama atau situs web penyedia
-setup-find-example = Nama atau situs web, seperti example.com
-setup-find-hint = Cardwave mencari alamat penyedia. Kuncimu tidak dikirim.
-setup-name = Nama
-setup-name-hint = Nama di daftar penyedia Cardwave. Boleh dibiarkan kosong.
-setup-address = Alamat
-setup-address-hint = Salin dari situs web penyediamu, seperti https://api.example.com/v1
-setup-continue = Lanjut
-setup-local = Pakai program di komputer ini (seperti LM Studio atau Ollama)
-setup-no-key = Tidak punya kunci?{ " " }
-setup-api-key = Kunci API
-setup-key-placeholder = Tempel kuncimu di sini
-setup-found = Ditemukan
-setup-no-api = Cardwave tidak menemukan alamat AI di { $website }. Cari alamatnya di dokumentasi penyedia (sering disebut “base URL”) lalu masukkan.
-setup-find-by-name = Cari menurut nama
-setup-enter-address = Masukkan alamat
-setup-how = Cara menyiapkannya
-setup-not-listed = Tidak ada penyedia bernama “{ $name }” di daftar. Ketik situs webnya, atau masukkan alamatnya.
-setup-looking = Mencari…
-setup-looking-servers = Mencari program di komputer ini…
-setup-no-server = Tidak ada program AI yang menjawab di komputer ini (Cardwave mencari { $names }). Jalankan salah satunya, lalu cari lagi.
-setup-no-other-server = Tidak ada program AI lain yang menjawab di komputer ini (Cardwave mencari { $names }). Jalankan salah satunya, lalu cari lagi.
-setup-tested = { " " }· sudah diuji
-setup-picking = Memilih dari model penyediamu…
-setup-the-helper-model = model pembantu
-setup-want-voice = Unduh suaranya
-setup-want-search = Unduh model pencarian
-setup-confirm = Konfirmasi
-setup-back = Kembali
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · tanpa kunci
-setup-unlisted = Belum dipilih. Penyedia tidak mencantumkan model: ketik ID modelnya.
-setup-not-chosen = Belum dipilih
-setup-the-voice = Suara
-setup-the-search-model = Pencarian
-setup-nothing-now = Tidak ada yang diunduh sekarang. Pencarian dan Suara dapat disiapkan nanti di Pengaturan.
-setup-downloaded = Akan diunduh: { $what }.
-setup-and = { $first } dan { $second }
-setup-download-size = Unduh ({ $size })
-setup-where = Penyiapan · langkah { $step } dari { $steps }
-setup-title-1 = Penyedia
-setup-title-2 = Model
-setup-title-3 = Kartu
-setup-title-4 = Unduhan
-setup-about-1 = Tempel kunci API dari situs web penyedia AI-mu. Cardwave menemukan penyedianya.
-setup-about-2 = Cardwave memilih ini dari model penyediamu. Ubah yang mana saja sekarang atau nanti di Pengaturan.
-setup-about-3 = Jika kamu punya berkas kartu karakter (PNG atau JSON dari aplikasi lain), Cardwave bisa membawanya dari sebuah folder.
-setup-about-4 = Kamu bisa membuka Cardwave sekarang: unduhan tetap berjalan, dan sebuah pemberitahuan memberi tahu saat selesai.
-setup-no-list = Tidak ada daftar model: { $why } Tekan Pilih untuk mengetik ID model, atau Kembali untuk memeriksa kuncinya.
-setup-change = Ganti
-setup-choose = Pilih
-setup-worker-does = { " " }· menulis ringkasan, tag, dan memori
-setup-same-as-chat = Sama dengan model chat
-setup-no-picks = Tidak ada model yang dipilih: { $why }
-setup-helper-model = Model pembantu
-setup-set-up = Cardwave sudah siap.
-setup-folder-not-kept = Folder kartu tidak dapat dipakai: { $why }. Kamu bisa memilihnya lagi di Pengaturan › Data.
-
-setup-skip = Lewati
-setup-import-folder = Impor dari folder ini
-setup-cards-about = Hanya berkas kartu yang diambil; tidak ada isi folder yang dipindahkan atau diubah. Kartunya masuk setelah penyiapan selesai, dan kartu yang ditaruh di sana nanti masuk dengan sendirinya. Kamu juga dapat memilihnya nanti di Pengaturan › Data.
-setup-done = Selesai
-setup-done-mark = { " " }Selesai
-setup-percent = { $percent }%
-setup-waiting = Menunggu
-setup-try-again = Coba lagi
-setup-try-voice-again = Coba suaranya lagi
-setup-try-search-again = Coba pencariannya lagi
-setup-voice-failed = Suara tidak dapat diunduh: { $why }
-setup-search-failed = Model pencarian tidak dapat diunduh: { $why }
-setup-downloads-done = Unduhan selesai: Cardwave sudah siap sepenuhnya.
-setup-cards-later = Kartumu masuk dari folder begitu Cardwave terbuka.
-setup-voice = Suara
-setup-search = Pencarian
-setup-open = Buka Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Model suara
 
 ## The breadcrumbs of a page under Settings
 
@@ -629,6 +534,9 @@ advanced-not-described = { $count ->
    *[other] { $count } karakter
   } belum dideskripsikan
 advanced-describe-cards = Deskripsikan karakter
+advanced-describe-cost = Sekitar { $low } hingga { $high } token untuk { $count ->
+   *[other] { $count } karakter
+  }
 advanced-failed = { $count ->
    *[other] { $count } gagal
   }: { $failure }. Tekan Deskripsikan karakter untuk mencoba lagi.
@@ -637,6 +545,7 @@ advanced-describe-again-stop = Hentikan
 advanced-describe-again-about = Dengan model pembantu, menulis ulang deskripsi satu baris, ringkasan, dan tag setiap karakter, serta hal yang dipakai "Menurut kebutuhan" untuk menemukannya, sekitar 11.000 sampai 12.000 token per karakter. Yang Anda sunting sendiri tetap. Penyedia menagih per token.
 advanced-no-characters = Tidak ada karakter untuk dideskripsikan
 advanced-describe-again-far = { $done } dari { $all } sudah dideskripsikan lagi
+advanced-describe-again-stopped = Dihentikan pada { $done } dari { $all } yang dideskripsikan lagi
 advanced-describe-again-failed = { $count ->
    *[other] { $count } gagal dan tetap seperti semula
   }: { $failure }. Tekan Deskripsikan semua lagi untuk mencoba sekali lagi.
@@ -947,7 +856,7 @@ gen-hair-colour = Warna rambut
 gen-personality = Kepribadian
 gen-relates = Siapa karakter ini bagimu
 gen-make = Buat karakternya
-gen-what = Pilih beberapa sifat; AI menulis karakternya, kisahnya, dan pesan pertamanya.
+gen-what = Pilih beberapa sifat; AI menulis pesan pertama karakter dan cara bicaranya.
 interview-goes-to = Jawabanmu dikirim ke { $provider } untuk menulis karakternya.
 interview-stays = Jawabanmu tetap di komputer ini.
 interview-own-words = Atau tambahkan kata-katamu sendiri

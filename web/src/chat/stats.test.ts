@@ -6,7 +6,7 @@ import { useLanguage } from "../language/language";
 
 const reply = (more: Partial<MessageView>): MessageView => ({
   id: 1, parent_id: null, role: "assistant", speaker_id: null, content: "", complete: true, token_count: null, created_at: 0,
-  swipes: [1], lore: [], memories: [], picture: false, tokens: 0, task_id: null, context: null, model: null, provider: null, times: null, sent: null, reads: [], attachments: [],
+  swipes: [1], lore: [], memories: [], picture: false, tokens: 0, task_id: null, context: null, model: null, provider: null, times: null, sent: null, reads: [], attachments: [], broke_off: false,
   ...more,
 });
 

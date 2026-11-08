@@ -1,7 +1,8 @@
 //! What the user attaches to a message (`attachments`, `api/attachments.rs`):
 //! a picture, taken only where the chat model sees, and a document, kept for
 //! the chat in Knowledge › Documents too; both wait for the message, go with it
-//! when it is sent, and a picture goes to the model with its message. No test
+//! when it is sent, a picture to the model with its message, a document whole
+//! into the reply to its message. No test
 //! asks a provider: `Api` stand-ins answer in turn, the first the question
 //! whether the model sees.
 
@@ -184,4 +185,28 @@ async fn whether_a_model_sees_is_asked_once_for_all_its_pictures() {
         assert_eq!(status, 201, "{attached}");
     }
     assert_eq!(api.asked().len(), 1);
+}
+
+#[tokio::test]
+async fn a_document_attached_to_the_message_goes_whole_into_its_reply_without_a_search_model() {
+    let server = start().await;
+    let api = Api::start(says(200, "text/event-stream", REPLY)).await;
+    let chat = chat_at(&server, &api).await;
+    let (_, attached) = server
+        .upload(
+            &format!("{chat}/attachments?name=log.txt"),
+            b"The keeper's cats were Pitch, Tar and Rope.".to_vec(),
+        )
+        .await;
+    let send = json!({ "content": "What were the cats called?", "attachments": [attached["id"]] });
+    assert_eq!(server.post(&format!("{chat}/messages"), send).await.0, 201);
+    assert_eq!(
+        server.post(&format!("{chat}/generate"), json!({})).await.0,
+        202
+    );
+    let asked = until_asked(&api, 1).await;
+    assert!(
+        asked.contains("From \\\"log.txt\\\":\\nThe keeper's cats were Pitch, Tar and Rope."),
+        "{asked}"
+    );
 }

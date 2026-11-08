@@ -29,4 +29,20 @@ impl Storage for Db {
             .optional()
         })?)
     }
+
+    fn picture_chat(
+        &self,
+        user: i64,
+        message_id: i64,
+    ) -> anyhow::Result<Option<(i64, Option<i64>)>> {
+        Ok(self.with(|conn| {
+            conn.query_row(
+                "select m.chat_id, m.speaker_id from pictures p join messages m on m.id = p.message_id
+                 join chats c on c.id = m.chat_id where p.message_id = ?1 and c.user_id = ?2",
+                [message_id, user],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )
+            .optional()
+        })?)
+    }
 }

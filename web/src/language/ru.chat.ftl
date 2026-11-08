@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· неизвестно, умеет ли она эт
 kinds-address = { " " }· { $address }
 kinds-this-computer = Программа на этом компьютере
 kinds-asking-the-provider = Запрос к провайдеру…
-kinds-no-such-model = Такой модели нет
 kinds-own-on-this-computer = { $own } · на этом компьютере
+kinds-none-of-the-kind = Ни у одного из ваших провайдеров нет модели, которая это умеет.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = Совпадает с языком прилож�
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = Не настроено
+models-group-no-longer-offered = Ваш провайдер больше не предлагает эту модель: выберите другую.
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = поэтому { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · на видеокарте этого компьютера · загрузка { $bytes }
+dictation-setup-on-this-computers-graphics = { $name } · на видеокарте этого компьютера · { $bytes }
 dictation-setup-the-microphone-beside-the = Тогда микрофон рядом с полем сообщения будет записывать сказанное, на русском, английском и других языках. Сказанное остаётся на этом компьютере.
 
 ## make-voice (voice/make-voice.ts)

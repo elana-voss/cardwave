@@ -33,8 +33,8 @@ error-remote-sign-in-off = 这个账户不能从其他设备登录。请在“�
 error-no-password-on = 没有开启密码。
 error-no-password-set = 这个账户没有设置密码。
 error-password-kept = 这台电脑上有账户设置了密码：它用这个密码登录。
-error-account-busy = Cardwave 还在撰写回复或读取角色；请等它完成后再试。
-error-restore-busy = Cardwave 还在撰写回复或读取角色；请等它完成后再试。
+error-account-busy = Cardwave 还在为此账户工作：回复、图片、编程任务、新角色、读取角色或聊天的记忆；请等它完成后再试。
+error-restore-busy = Cardwave 还在工作：回复、图片、编程任务、新角色、读取角色或聊天的记忆；请等它完成后再试。
 error-backup-needs-password = 备份需要设置密码。
 
 ## What is asked of
@@ -76,8 +76,12 @@ error-chat-busy = 这个聊天正在撰写回复；请先停止它。
 error-no-provider = 还没有设置服务商。请在“设置 › 服务商”中添加一个。
 error-provider-refused = { $refusal ->
     [key] 服务商没有接受这个密钥：请在“设置 › 服务商”中检查。
+    [paid] 服务商要求为此付费：请充值，或选择你的套餐包含的模型。
     [busy] 服务商的额度用完了或正忙：请稍后再试。
     [down] 服务商没有响应：请稍后再试。
+    [fault] 服务商那边出了故障：{ $reason } 请稍后再试。
+    [no_model] 服务商已不再提供这个模型：请在 设置 › 模型 中另选一个。
+    [too_long] 这条消息对这个模型来说太长了：请缩短它，或在 设置 › 模型 中选一个能接收更多内容的模型。
    *[other] 服务商拒绝了：{ $reason }
 }
 error-model-declined = { $model } 拒绝写这个内容。请修改消息，或换一个模型。
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] 图片须为 PNG、JPEG 或 WebP 文件。
     [backup] 这个文件不是 Cardwave 备份。
     [backup_damaged] 这个备份已损坏。
+    [backup_newer] 这个备份由更新版本的 Cardwave 制作。请更新 Cardwave 后再恢复。
     [backup_key] 这个备份已损坏：无法读取它的密钥。
     [base64] 这不是 base64。
     [base64_file] { $name } 不是 base64。
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] 无法读取图片服务器的回答。
     [picture_unreadable] 无法读取这张图片。
     [png] 不是 PNG 文件。
+    [no_card] 此文件不含角色卡。
     [png_damaged] 这个 PNG 已损坏。
+    [charx] Cardwave 暂不能导入 CHARX 角色卡文件。请将角色卡导出为 PNG 或 JSON。
     [provider_address] 地址必须是普通的网址，比如 https://api.openai.com/v1。
     [provider_website] 请以域名的形式填写服务商的网站，比如 example.com。
     [recording_format] 无法读取录音的格式。

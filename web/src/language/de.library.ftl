@@ -60,6 +60,7 @@ card-modes-mode = Modus
 card-modes-the-texts-below-are = Die Texte unten sind die, die dieser Modus verwendet.
 card-modes-a-mode-needs-a = Ein Modus braucht einen Namen.
 card-modes-default = { " " }· Standard
+card-modes-first-default = Rollenspiel
 card-modes-make-default = Zum Standard machen
 card-modes-add-mode = Eine Art zu chatten hinzufügen
 card-modes-modes = Modi
@@ -73,11 +74,12 @@ card-page-card-info = Karteninfo
 
 card-picture-card-picture = Bild des Charakters
 card-picture-card-picture-click-to = Charakterbild: klicken, um ein Bild zu wählen, oder eines hierher ziehen
+card-picture-card-picture-tap-to = Charakterbild: tippen, um ein Bild zu wählen
 card-picture-make-a-picture = Bild erstellen
 card-picture-name-first = Gib der Figur zuerst einen Namen
 card-picture-earlier-pictures = Frühere Bilder
-card-picture-click-to-choose-a = Klicken, um ein Bild zu wählen, oder eines hierher ziehen
 card-picture-click-or-drop-a = Klicken, um ein Bild zu wählen, oder eines hierher ziehen
+card-picture-tap-to-choose = Tippen, um ein Bild zu wählen
 card-picture-drop-to-use-this = Ablegen, um dieses Bild zu nutzen
 card-picture-set-up-an-image = Richte zuerst ein Bildmodell ein, unter{ " " }
 card-picture-settings-models = Einstellungen › Modelle
@@ -235,7 +237,7 @@ character-saved = Gespeichert
 character-name-in-the-chat = Name im Chat
 character-name = die Titelfigur
 character-creator = Erstellt von
-character-creator-2 = erstellt von
+character-add-creator = Ersteller hinzufügen
 character-modes = Modi…
 character-add-mode = Eine Art zu chatten hinzufügen…
 character-add-mode-sub = Andere Texte für eine andere Art Chat, etwa eine Geschichte
@@ -616,7 +618,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = Noch keine Lorebooks. Erstelle eins oder importiere eine Lorebook-Datei (World Info aus SillyTavern, .json). Ein Chat nimmt eins in seiner Seitenleiste dazu.
+lorebooks-no-lorebooks-yet-make = Noch keine Lorebooks. Erstelle eins oder importiere eine Lorebook-Datei (World Info aus SillyTavern, .json). Ein Chat nimmt eins über Chat-Optionen › Lorebook hinzufügen dazu.
 lorebooks-entries = { $count ->
     [one] 1 Eintrag
    *[other] { $count } Einträge

@@ -135,7 +135,7 @@ async fn a_folder_chosen_makes_its_gguf_files_chat_models() {
         .collect();
     assert_eq!(ids, ["big-00001-of-00002.gguf", "Qwen3-4B.gguf"]);
     assert_eq!(catalog["models"][1]["text"], true);
-    assert_eq!(catalog["said"], true);
+    assert_eq!(catalog["models"][1]["said"], true);
 
     // Chosen again elsewhere, the entry moves with its kinds.
     let other = server.dir.join("other models");

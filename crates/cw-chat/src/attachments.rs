@@ -7,7 +7,8 @@
 //! again with its document (`remove`); sending the message takes those it
 //! names (`ensure_waiting`, `take`). Those a page left waiting go at the
 //! server's start (`purge_waiting`). A message's are its view's
-//! `attachments`; its pictures go into its prompt as data URLs (`pictures`).
+//! `attachments`; its pictures go into its prompt as data URLs (`pictures`),
+//! its documents into its reply's whole (`api/memory.rs`'s `recall`).
 //!
 //! Traps: whether the chat model sees is asked when a picture is attached
 //! (`provider::check::sees`), by the provider's refusal, as the models' facts
@@ -59,6 +60,13 @@ pub trait Storage {
     fn take_attachments(&self, chat_id: i64, message_id: i64, ids: &[i64]) -> anyhow::Result<()>;
     /// The pictures attached to the messages `ids`, each with its message, the first first.
     fn message_pictures(&self, ids: &[i64]) -> anyhow::Result<Vec<(i64, Vec<u8>)>>;
+    /// The documents attached to the user's message, out of the Trash: each
+    /// its ID, name and text, the first first.
+    fn message_documents(
+        &self,
+        user: i64,
+        message_id: i64,
+    ) -> anyhow::Result<Vec<(i64, String, String)>>;
     fn purge_waiting(&self) -> anyhow::Result<()>;
 }
 

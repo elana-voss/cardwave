@@ -11,7 +11,7 @@ use reqwest::Method;
 use serde_json::{Value, json};
 
 /// The sample card's first greeting, as a chat shows it.
-const GREETING: &str = "\"You picked a night for it, User.\"";
+const GREETING: &str = "\"You picked a night for it, Guest.\"";
 
 /// The texts of the branch in view, oldest first.
 fn texts(view: &Value) -> Vec<&str> {

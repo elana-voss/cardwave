@@ -11,7 +11,7 @@
 // view folds the rail while it shows, not as the choice kept (`foldFor`). Traps: the logo
 // is `logo.png`, scaled down to 112 by 102 pixels; a line hidden by styles.css is not the one marked (`shown`).
 // Its words are language.ts's, set anew when the language changes (`onLanguage`); its menus are made anew then.
-import { elsewhere, showRound, watchAccount } from "../account";
+import { elsewhere, showRound, watchAccount, watchElsewhere } from "../account";
 import { signOutItem, switchItems, watchAccounts } from "../settings/accounts";
 import { listChats, lockApp } from "../api/client";
 import type { Account } from "../api/generated/Account";
@@ -308,6 +308,7 @@ function accountButtons() {
     passwordOn = on;
     remake();
   });
+  watchElsewhere(remake);
   /** The button's name: with the account's where it is known. */
   const name = () => {
     account.title = barAccount.title = wording("rail-account");

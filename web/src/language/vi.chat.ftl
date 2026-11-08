@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· không rõ có làm được việc này không
 kinds-address = { " " }· { $address }
 kinds-this-computer = Một chương trình trên máy tính này
 kinds-asking-the-provider = Đang hỏi nhà cung cấp…
-kinds-no-such-model = Không có mô hình này
 kinds-own-on-this-computer = { $own } · trên máy tính này
+kinds-none-of-the-kind = Không nhà cung cấp nào của bạn có mô hình làm được việc này.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = Theo ngôn ngữ của ứng dụng cho đến k
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = Chưa thiết lập
+models-group-no-longer-offered = Nhà cung cấp của bạn không còn cung cấp mô hình này: hãy chọn mô hình khác.
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = nên { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · trên card đồ họa của máy tính này · tải { $bytes }
+dictation-setup-on-this-computers-graphics = { $name } · trên card đồ họa của máy tính này · { $bytes }
 dictation-setup-the-microphone-beside-the = Khi đó micrô cạnh ô tin nhắn sẽ viết lại những gì bạn nói, bằng tiếng Việt, tiếng Anh và các ngôn ngữ khác. Những gì bạn nói chỉ ở trên máy tính này.
 
 ## make-voice (voice/make-voice.ts)

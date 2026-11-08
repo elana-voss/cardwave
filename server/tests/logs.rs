@@ -1,5 +1,6 @@
 //! The logs: a request noted in the day's debug log without its query, a
-//! panic in the day's crash log with its place, and the files of days before
+//! provider's refusal with its words, a panic in the day's crash log with its
+//! place, and the files of days before
 //! the last seven deleted. `logs::start` sets the process's one subscriber
 //! and panic hook, so one test starts them.
 
@@ -20,6 +21,13 @@ async fn a_request_goes_to_the_debug_log_and_a_panic_to_the_crash_log() {
     let debug = std::fs::read_to_string(logs::file_of(&folder, "debug", today)).unwrap();
     assert!(debug.contains("GET /api/status 200 in"), "{debug}");
     assert!(!debug.contains("secret"), "{debug}");
+    // A provider's refusal is logged with its status and own words.
+    let _told = cw_provider::refused("the provider's images", 402, "not included".into());
+    let debug = std::fs::read_to_string(logs::file_of(&folder, "debug", today)).unwrap();
+    assert!(
+        debug.contains("the provider's images answered 402 Payment Required: not included"),
+        "{debug}"
+    );
 
     let crashed = std::thread::spawn(|| panic!("the test's own panic")).join();
     assert!(crashed.is_err());

@@ -84,7 +84,9 @@ export function modelsGroup(options: { title: string; kinds: [Kind, string][]; l
       const tested = check?.said() ?? "";
       // The background model says what it does (the owner, 2026-10-15).
       const does = kind === "background" && !tested ? wording("setup-worker-does") : "";
-      if (model) shown.show(model + (tested || does), check?.failed() ?? "", wording("password-change"));
+      // The server keeps whether the provider said it no longer offers the model; this page asks it nothing.
+      const gone = view.kinds.find((each) => each.kind === kind)?.gone ? wording("models-group-no-longer-offered") : "";
+      if (model) shown.show(model + (tested || does), gone || (check?.failed() ?? ""), wording("password-change"));
       else if (kind === "chat") shown.show(wording("models-group-not-configured"), "", wording("downloaded-set-up"));
       else if (kind === "background") shown.show(chat ? wording("setup-same-as-chat") : wording("models-group-not-configured"), "", wording("password-change"));
       else shown.show(wording("providers-not-set-up"), "", wording("downloaded-set-up"));

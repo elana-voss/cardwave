@@ -13,7 +13,8 @@
 //! model's maker ([`cheap_worker`]), else none (the chat model does that work).
 //! Where the provider offers a family `suggested` names, its newest model leads
 //! the background candidates and is the background pick whatever the answer
-//! ([`worker`]). Nothing is tested or stored here. Over HTTP it is `POST /api/provider/picks`.
+//! ([`worker`]). Under a NanoGPT subscription only the models it includes are
+//! candidates, kind by kind (`subscription`). Nothing is tested or stored here. Over HTTP it is `POST /api/provider/picks`.
 
 use std::cmp::Reverse;
 use std::time::Duration;
@@ -29,7 +30,7 @@ use crate::Http;
 use crate::catalog::{self, OfferedModel};
 use crate::facts::{self, has_word};
 use crate::models_dev::{Index, Known};
-use crate::{Provider, Sampling, suggested};
+use crate::{Provider, Sampling, subscription, suggested};
 
 /// The most candidates of a kind.
 pub(crate) const CANDIDATES: usize = 15;
@@ -306,12 +307,19 @@ async fn ask(
 
 /// The picks for the provider at `base_url`, asked with `key`.
 pub async fn pick(http: &Http, index: &Index, base_url: &str, key: &str) -> Picks {
-    let catalog = catalog::of(http, base_url, key).await;
+    let (mut catalog, included) = tokio::join!(
+        catalog::of(http, base_url, key),
+        subscription::included(http, base_url, key)
+    );
+    let listed = catalog.models.len();
+    if let Some(included) = &included {
+        subscription::keep_included(&mut catalog.models, included);
+    }
     let mut candidates = candidates(&catalog.models, index);
     let mut picks = Picks {
         chat: candidates.chat.first().cloned(),
         images: candidates.images.first().cloned(),
-        listed: catalog.models.len(),
+        listed,
         failed: catalog.failed,
         background: None,
     };
@@ -436,6 +444,8 @@ mod tests {
             search: false,
             voice: false,
             thinks: false,
+            said: true,
+            name: None,
         }
     }
 

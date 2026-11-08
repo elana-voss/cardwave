@@ -24,8 +24,9 @@
   font-weight: 400;
 }
 
-/* The messages scroll under the bar. */
+/* The messages scroll under the bar; a narrow window's side panel lies over them (app.css). */
 .chat-scroller {
+  anchor-name: --panel-over;
   min-height: 0;
   overflow: auto;
   padding: var(--s28) var(--s24);

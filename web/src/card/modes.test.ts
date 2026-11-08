@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 import type { CardEdit } from "../api/generated/CardEdit";
 import type { Chat } from "../api/generated/Chat";
 import type { EditText } from "../api/generated/EditText";
-import { firstMode, isPersonal, modeInUse, modeLabel, modeTag, pressMode, removeMode, renameMode, textName, usedIn } from "./modes";
+import { addedMode, firstMode, isPersonal, modeInUse, modeLabel, modeTag, pressMode, removeMode, renameMode, textName, usedIn } from "./modes";
 
 const MODES = ["Roleplay", "Assistant"];
 const chat = (mode: string | null, auto_mode: string | null) => ({ mode, auto_mode }) as Chat;
@@ -55,4 +55,17 @@ test("a text's tag says its modes, and a change of the card's modes is made in i
   expect(both.modes).toEqual([]);
   pressMode(both, null, modes);
   expect(both.modes).toEqual([]);
+});
+
+test("the first way to chat added keeps the card's texts as its default mode, the new one beside it with its own to write", () => {
+  const part = (): EditText => ({ reference: "x", text: "Hello" });
+  const greeting = part();
+  const scene = part();
+  const edit = {
+    characters: [{ greetings: [greeting], group_greetings: [], description: [], personality: [], scenario: [scene], example_dialogue: [], system_prompt: [], post_history: [], depth_prompts: [] }],
+  } as unknown as CardEdit;
+  addedMode(edit, "Assistant", "Roleplay");
+  expect([edit.modes, greeting.modes, scene.modes]).toEqual([["Roleplay", "Assistant"], ["Roleplay"], ["Roleplay"]]);
+  addedMode(edit, "Story", "Roleplay");
+  expect([edit.modes, greeting.modes]).toEqual([["Roleplay", "Assistant", "Story"], ["Roleplay"]]);
 });

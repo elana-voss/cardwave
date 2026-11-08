@@ -8,6 +8,7 @@
 
 mod common;
 
+use common::api::{Api, JSON, Says, says};
 use common::server::{Device, Server, WAIT, event, phone, start};
 use reqwest::Method;
 use serde_json::{Value, json};
@@ -360,4 +361,44 @@ async fn an_account_has_a_picture_of_its_own() {
         .await;
     assert_eq!((status, &removed["picture"]), (200, &Value::Null));
     assert_eq!(server.get("/api/account/picture").await.0, 404);
+}
+
+/// An account is not deleted while a piece of its work is under way: the character generator's card would
+/// go into an account that is gone. Its chat model takes seconds to answer.
+#[tokio::test]
+async fn an_account_is_not_deleted_while_its_work_is_under_way() {
+    let card =
+        r#"{"greeting": "*{{char}} smirks.*", "examples": [{"user": "Hi.", "char": "Hm."}]}"#;
+    let words = json!({ "choices": [{ "message": { "content": card } }] });
+    let slow = Says {
+        after: std::time::Duration::from_secs(3),
+        ..says(200, JSON, &words.to_string())
+    };
+    let api = Api::start(slow).await;
+    let server = start().await;
+    let ada = add(&server, "Ada", "tide pool").await;
+    let mut phone = phone(&server).await;
+    assert_eq!(phone.sign_in(ada, Some("tide pool")).await, 204);
+    let provider = json!({ "base_url": api.url, "model": "big-1", "worker_model": "small-1" });
+    let set = phone
+        .call(Method::PUT, "/api/provider", Some(provider))
+        .await;
+    assert_eq!(set.0, 200, "{}", set.1);
+    let picks = json!({
+        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
+        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
+        "relationship": "Rival", "name": "Mara", "creator": "local",
+    });
+    let making = tokio::spawn(async move { phone.post("/api/generator", picks).await.0 });
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+
+    let (status, said) = server
+        .call(Method::DELETE, &format!("/api/accounts/{ada}"), None)
+        .await;
+    assert_eq!(
+        (status, said["code"].as_str()),
+        (400, Some("account_busy")),
+        "{said}"
+    );
+    assert_eq!(making.await.unwrap(), 201);
 }

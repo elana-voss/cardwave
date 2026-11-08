@@ -74,7 +74,7 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
     assert_eq!(voices.len(), 29);
     assert_eq!(
         voices[0],
-        json!({ "id": "alba", "name": "Alba", "language": "English", "set": "Alba MacKenna", "license": "CC BY 4.0", "credit": "Voice-acted by Alba MacKenna", "own": false })
+        json!({ "id": "alba", "name": "Alba", "language": "en", "set": "Alba MacKenna", "license": "CC BY 4.0", "credit": "Voice-acted by Alba MacKenna", "own": false })
     );
     assert!(
         voices
@@ -92,7 +92,7 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
     );
     // The native speakers' voices, each with its language, after the English ones.
     let lena = voices.iter().find(|voice| voice["id"] == "lena").unwrap();
-    assert_eq!(lena["language"], "German", "{lena}");
+    assert_eq!(lena["language"], "de", "{lena}");
     assert!(
         lena["credit"]
             .as_str()
@@ -104,7 +104,7 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
         .iter()
         .map(|voice| voice["language"].as_str().unwrap())
         .collect();
-    for language in ["German", "Italian", "Portuguese", "Spanish", "French"] {
+    for language in ["de", "it", "pt", "es", "fr"] {
         assert_eq!(languages.iter().filter(|&&of| of == language).count(), 2);
     }
     for voice in voices {

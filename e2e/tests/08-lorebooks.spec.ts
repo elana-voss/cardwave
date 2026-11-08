@@ -249,6 +249,8 @@ test("New lorebook on the empty tab names a lorebook, which opens empty in its e
   await trash(true);
   await page.goto("/#/library/lorebooks");
   await expect(page.locator(".rows-plain .empty")).toContainText("No lorebooks yet.");
+  // It names where a chat takes one: the chat's menu, not its side panel.
+  await expect(page.locator(".rows-plain .empty")).toContainText("Chat options › Add a lorebook");
   await button(page, "New lorebook").click();
   const dialog = page.getByRole("dialog", { name: "New lorebook" });
   await dialog.getByLabel("Name").fill("Reedmere");

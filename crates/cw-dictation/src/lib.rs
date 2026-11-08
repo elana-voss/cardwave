@@ -29,11 +29,15 @@ const REVISION: &str = "5359861c739e955e79d9a303bcbc70fb988958b1";
 /// The rate of the sound Whisper hears, a second.
 const RATE: u32 = 16_000;
 
-/// What hears: Whisper, or the tests' stand-in, which says `says` after `slow`.
+/// What hears: Whisper, or the tests' stand-in, which loads in `loading` and says `says` after `slow`.
 #[derive(Clone, Debug)]
 pub(crate) enum Ears {
     Whisper,
-    StandIn { says: String, slow: Duration },
+    StandIn {
+        says: String,
+        slow: Duration,
+        loading: Duration,
+    },
 }
 
 /// Where the model comes from and what hears.
@@ -75,8 +79,17 @@ impl Setup {
             ears: Ears::StandIn {
                 says: says.into(),
                 slow,
+                loading: Duration::ZERO,
             },
         }
+    }
+
+    /// The stand-in taking `time` to load.
+    pub fn loading(mut self, time: Duration) -> Self {
+        if let Ears::StandIn { loading, .. } = &mut self.ears {
+            *loading = time;
+        }
+        self
     }
 }
 
@@ -96,10 +109,17 @@ impl Model {
     pub fn load(setup: &Setup, folder: &Path) -> anyhow::Result<Self> {
         Ok(match &setup.ears {
             Ears::Whisper => Self::Whisper(Whisper::load(&folder.join(WEIGHTS))?),
-            Ears::StandIn { says, slow } => Self::StandIn {
-                says: says.clone(),
-                slow: *slow,
-            },
+            Ears::StandIn {
+                says,
+                slow,
+                loading,
+            } => {
+                std::thread::sleep(*loading);
+                Self::StandIn {
+                    says: says.clone(),
+                    slow: *slow,
+                }
+            }
         })
     }
 

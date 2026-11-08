@@ -39,7 +39,7 @@ test("the image model is picked from the provider's image models, and a picture 
   await expect(line(page).locator(".meta")).toHaveText("Not set up");
   await page.getByRole("button", { name: "Set up the image model" }).click();
   const kind = picker(page, "Images model");
-  await expect(kind.getByRole("option")).toHaveText(["dall-e-3", "gpt-image-1", "tide-1"]);
+  await expect(kind.getByRole("option").locator(".opt-id")).toHaveText(["dall-e-3", "gpt-image-1", "tide-1"]);
   await kind.getByRole("option", { name: "gpt-image-1" }).click();
   await kind.getByRole("button", { name: "Use this model" }).click();
   await expect(line(page).locator(".meta")).toHaveText("gpt-image-1 · A program on this computer");
@@ -58,11 +58,13 @@ test("the image model is picked from the provider's image models, and a picture 
   await page.getByRole("button", { name: "Picture options" }).click();
   await page.getByRole("menuitem", { name: "Edit description", exact: true }).click();
   await expect(page.locator(".repicture img.dimmed")).toBeVisible();
+  // The words changed go through the worker model, so the character keeps their looks; the message keeps them as typed.
+  api.next(["lighthouse, dawn, 1 woman"]);
   await page.locator(".repicture").getByLabel("Description", { exact: true }).fill("lighthouse, dawn");
   await page.getByRole("button", { name: "Make again", exact: true }).click();
   await expect(page.locator("article.message").last().locator("img.picture")).toHaveAttribute("alt", "lighthouse, dawn");
   await expect(page.locator(".repicture")).toHaveCount(0);
-  expect(api.pictured.at(-1)).toEqual({ model: "gpt-image-1", prompt: "lighthouse, dawn", n: 1 });
+  expect(api.pictured.at(-1)).toEqual({ model: "gpt-image-1", prompt: "lighthouse, dawn, 1 woman", n: 1 });
 });
 
 test("a picture and a document attached wait as tiles over the field, and stand over the message sent", async ({ page, request }) => {
@@ -90,7 +92,7 @@ test("a picture and a document attached wait as tiles over the field, and stand 
   await expect(waiting).toBeHidden();
 });
 
-test("first run holds the image model taken until “Confirm” stores it", async ({ page, request }) => {
+test("first run holds the image model taken until “Continue” stores it", async ({ page, request }) => {
   const stored = await setProvider(request, { base_url: api.url, model: "tide-1" });
   expect(stored.status(), await stored.text()).toBe(200);
   await setImages(request, { model: "gpt-image-1" });
@@ -100,8 +102,9 @@ test("first run holds the image model taken until “Confirm” stores it", asyn
   await picker(page).getByLabel("Model").fill("dall-e-3");
   await picker(page).getByRole("button", { name: "Use this model" }).click();
   const images = page.locator(".setup .item", { has: page.locator(".item-label", { hasText: /^Images$/ }) });
-  await expect(images.locator(".meta")).toHaveText("dall-e-3");
+  // By its readable name, as the design of first run step 2 has it.
+  await expect(images.locator(".meta")).toHaveText("Dall E 3");
   expect((await (await request.get("/api/images")).json()).model).toBe("gpt-image-1");
-  await page.getByRole("button", { name: /^(Confirm|Download \(.+\))$/ }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect.poll(async () => (await (await request.get("/api/images")).json()).model).toBe("dall-e-3");
 });

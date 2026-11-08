@@ -21,6 +21,7 @@ import { addMode, askMode, modeBar, modesDialog } from "../card/card-modes";
 import { otherWays } from "../card/card-ways";
 import { after, load, modes, newCard, person, save, SHOWN, written, type Card } from "../card/card-page";
 import { begin, firstMessage, reading } from "../card/card-texts";
+import { tagWord } from "../card/content-level";
 import { wholeCard, type CardTools } from "../card/card-tools";
 import { announce, el, noticeBox, titled, type View } from "../dom";
 import { menu, type MenuItem } from "../dialogs";
@@ -149,27 +150,21 @@ function drawSide(c: Card, one: EditCharacter | undefined, texts: boolean, token
   const edited = c.detail?.edited_at;
   c.side.replaceChildren(
     el("div", null, el("h3", null, wording("sort-filter-tags")), tagsLine),
-    el("div", null, el("h3", null, wording("character-about")), el("p", null, ...(one ? [wording("character-as-2"), name, el("br")] : []), wording("character-by"), creator, edited != null && el("br"), edited != null && wording("character-edited", { day: day(edited) }))),
+    el("div", null, el("h3", null, wording("character-about")), el("p", null, ...(one ? [wording("character-as-2"), name, el("br")] : []), creator, edited != null && el("br"), edited != null && wording("character-edited", { day: day(edited) }))),
     ...(facts ? [el("div", { className: "facts" }, el("h3", null, wording("character-facts")), el("p", null, facts))] : []),
   );
 }
 
 /** The card's content level and content terms as chips, a level in words (the server's "sfw" and the like); none when it has none. */
 export function contentPills(content: string[]): HTMLElement | false {
-  const levels = new Map([
-    ["sfw", wording("character-rating-sfw")],
-    ["suggestive", wording("character-rating-suggestive")],
-    ["nsfw", wording("character-rating-nsfw")],
-    ["nsfw-extreme", wording("character-rating-nsfw-extreme")],
-  ]);
-  return content.length > 0 && el("div", { className: "pills", ariaLabel: wording("lorebook-entry-content") }, ...content.map((term) => el("span", { className: "pill pill-tag" }, levels.get(term) ?? term)));
+  return content.length > 0 && el("div", { className: "pills", ariaLabel: wording("lorebook-entry-content") }, ...content.map((term) => el("span", { className: "pill pill-tag" }, tagWord(term))));
 }
 
 /** Details' grey line "Plays [name] · by [creator] · edited [day] · [n] tokens", and the tags and content level as chips, each written where it stands. */
 function drawAbout(c: Card, one: EditCharacter | undefined, texts: boolean, tokens: number | undefined, tags: string[], about: HTMLElement): void {
   const { name, creator } = aboutFields(c, one);
   const edited = c.detail?.edited_at;
-  const parts: (string | HTMLElement)[][] = [...(one ? [[wording("character-as-2"), name]] : []), [wording("character-by"), creator], ...(edited != null ? [[wording("character-edited", { day: day(edited) })]] : []), ...(texts && tokens !== undefined ? [[tokensSaid(tokens)]] : [])];
+  const parts: (string | HTMLElement)[][] = [...(one ? [[wording("character-as-2"), name]] : []), [creator], ...(edited != null ? [[wording("character-edited", { day: day(edited) })]] : []), ...(texts && tokens !== undefined ? [[tokensSaid(tokens)]] : [])];
   const chips = tagsField(c, el("div", { className: "pills cdv-tags" }), tags, () => tags.map((tag) => el("span", { className: "pill pill-tag" }, tag)));
   const content = c.detail?.content ?? [];
   about.replaceChildren(
@@ -184,6 +179,7 @@ function tagsField<T extends HTMLElement>(c: Card, node: T, tags: string[], show
     label: wording("character-tags-separated-by-commas"),
     value: () => c.edit.tags.join(", "),
     show: () => (tags.length ? shown() : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-tags"))]),
+    button: () => !tags.length,
     // Typed, the tags are told apart by commas alone; nothing between two commas is no tag.
     commit: (text) => void save(c, (card) => (card.tags = text.split(",").map((tag) => tag.trim()).filter((tag) => tag !== ""))),
   });
@@ -207,7 +203,9 @@ function aboutFields(c: Card, one: EditCharacter | undefined): { name: HTMLEleme
   inPlace(creator, {
     label: wording("character-creator"),
     value: () => c.edit.creator,
-    show: () => [c.edit.creator || el("span", { className: "c-faint" }, wording("character-creator-2"))],
+    // "by" is the field's own: without a creator only "Add creator", as "Add tags".
+    show: () => (c.edit.creator ? [wording("character-by"), el("span", null, c.edit.creator)] : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-creator"))]),
+    button: () => !c.edit.creator,
     commit: (text) => void save(c, (card) => (card.creator = text.trim())),
   });
   return { name, creator };

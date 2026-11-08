@@ -33,8 +33,8 @@ error-remote-sign-in-off = このアカウントはほかのデバイスから�
 error-no-password-on = パスワードはオンになっていません。
 error-no-password-set = このアカウントにはパスワードが設定されていません。
 error-password-kept = このコンピューターのアカウントにはパスワードがあり、それでサインインします。
-error-account-busy = Cardwaveはまだ返信を書いているか、キャラクターを読み込んでいます。終わってからもう一度お試しください。
-error-restore-busy = Cardwaveはまだ返信を書いているか、キャラクターを読み込んでいます。終わってからもう一度お試しください。
+error-account-busy = Cardwaveはまだこのアカウントの作業中です（返信、画像、コーディングタスク、新しいキャラクター、キャラクターの読み込み、またはチャットの記憶）。終わってからもう一度お試しください。
+error-restore-busy = Cardwaveはまだ作業中です（返信、画像、コーディングタスク、新しいキャラクター、キャラクターの読み込み、またはチャットの記憶）。終わってからもう一度お試しください。
 error-backup-needs-password = バックアップにはパスワードが必要です。
 
 ## What is asked of
@@ -76,8 +76,12 @@ error-chat-busy = このチャットでは返信を作成中です。先に停�
 error-no-provider = プロバイダーがまだ設定されていません。設定 › プロバイダーで追加してください。
 error-provider-refused = { $refusal ->
     [key] プロバイダーがキーを受け付けませんでした。設定 › プロバイダーで確認してください。
+    [paid] プロバイダーがこの利用に支払いを求めています。クレジットを追加するか、プランに含まれるモデルを選んでください。
     [busy] プロバイダーのクレジットが残っていないか、混み合っています。あとでもう一度お試しください。
     [down] プロバイダーが応答していません。あとでもう一度お試しください。
+    [fault] プロバイダー側で障害が起きました：{ $reason } あとでもう一度お試しください。
+    [no_model] プロバイダーはこのモデルをもう提供していません。設定 › モデルで別のモデルを選んでください。
+    [too_long] このモデルにはメッセージが長すぎます。短くするか、設定 › モデルでもっと多く受け取れるモデルを選んでください。
    *[other] プロバイダーに断られました：{ $reason }
 }
 error-model-declined = { $model }はこれを書くことを断りました。メッセージを変えるか、別のモデルを選んでください。
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] 画像はPNG、JPEG、WebPのいずれかのファイルです。
     [backup] このファイルはCardwaveのバックアップではありません。
     [backup_damaged] このバックアップは壊れています。
+    [backup_newer] このバックアップは新しい Cardwave で作られています。復元するには Cardwave を更新してください。
     [backup_key] このバックアップは壊れています：キーを読み取れません。
     [base64] それはbase64ではありません。
     [base64_file] { $name }はbase64ではありません。
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] 画像サーバーの応答を読み取れません。
     [picture_unreadable] 画像を読み取れません。
     [png] PNGファイルではありません。
+    [no_card] このファイルにはキャラクターカードがありません。
     [png_damaged] PNGが壊れています。
+    [charx] Cardwave はまだ CHARX カードファイルを読み込めません。カードを PNG か JSON で書き出してください。
     [provider_address] アドレスは https://api.openai.com/v1 のような普通のウェブアドレスにしてください。
     [provider_website] プロバイダーのウェブサイトは example.com のような名前で入力してください。
     [recording_format] 録音の形式を読み取れません。

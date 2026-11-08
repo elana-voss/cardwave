@@ -2,7 +2,8 @@
 //! computer", milestone 74): Cardwave's list of chat models to download
 //! ([`offered`], one GGUF file each on Hugging Face, checked by its size and
 //! SHA-256), and the models of the chosen folder, each with whether it fits
-//! ([`Downloads::list`]): at most half of `sys::memory` ([`fits`]). A
+//! ([`Downloads::list`]): at most half of `sys::memory`, or the largest
+//! graphics card's free memory less the context's room ([`fits`]). A
 //! download goes into the folder (`fetching::download_file`, a `.part` until
 //! checked), so it is a GGUF file like any other, run by `local`. Only a
 //! model of the list is downloaded and removed here; others are only listed.
@@ -142,11 +143,17 @@ pub fn offered() -> Vec<Offered> {
         .collect()
 }
 
-/// Whether a model of `size` bytes fits a computer of `memory` bytes: where
-/// the memory cannot be told, every model does. The other half is Windows',
-/// the app's and the model's context.
-pub fn fits(size: u64, memory: Option<u64>) -> bool {
+/// Room a model's context takes beside its file on a graphics card.
+const CONTEXT_ROOM: u64 = 1 << 30;
+
+/// Whether a model of `size` bytes fits a computer of `memory` bytes whose
+/// largest graphics card has `graphics` bytes: `llama-server` puts it on
+/// its cards and the rest in memory, so it fits half the memory (the other
+/// half Windows', the app's and the context's) or the card with its context.
+/// Where the memory cannot be told, every model does.
+pub fn fits(size: u64, memory: Option<u64>, graphics: Option<u64>) -> bool {
     memory.is_none_or(|memory| size <= memory / 2)
+        || graphics.is_some_and(|free| size.saturating_add(CONTEXT_ROOM) <= free)
 }
 
 /// Where a model of the folder's list is.
@@ -220,6 +227,7 @@ impl Downloads {
     /// The list of the box for the models' `folder`.
     pub fn list(&self, folder: &Path) -> anyhow::Result<FitView> {
         let memory = cw_platform::sys::memory();
+        let graphics = local::graphics_memory();
         let there = local::models(folder)?;
         let mut models: Vec<FitModel> = self
             .offered
@@ -236,7 +244,7 @@ impl Downloads {
                     file: offered.file_name.clone(),
                     name: offered.name.clone(),
                     size: offered.file.size,
-                    fits: fits(offered.file.size, memory),
+                    fits: fits(offered.file.size, memory, graphics),
                     offered: true,
                     state,
                     done,
@@ -253,7 +261,7 @@ impl Downloads {
                 name: file.clone(),
                 file,
                 size,
-                fits: fits(size, memory),
+                fits: fits(size, memory, graphics),
                 offered: false,
                 state: FitState::Downloaded,
                 done: 0,
@@ -269,7 +277,11 @@ impl Downloads {
     pub fn begin(&self, file: &str, folder: &Path) -> anyhow::Result<Option<Arc<AtomicBool>>> {
         let offered = self.offer(file)?;
         ensure!(
-            fits(offered.file.size, cw_platform::sys::memory()),
+            fits(
+                offered.file.size,
+                cw_platform::sys::memory(),
+                local::graphics_memory()
+            ),
             Fail::said(
                 Code::TooBig,
                 format!("{} is too large for this computer", offered.name)
@@ -376,9 +388,16 @@ mod tests {
     #[test]
     fn a_model_fits_in_half_the_memory() {
         let gb = 1 << 30;
-        assert!(fits(4 * gb, Some(8 * gb)));
-        assert!(!fits(4 * gb + 1, Some(8 * gb)));
-        assert!(fits(u64::MAX, None));
+        assert!(fits(4 * gb, Some(8 * gb), None));
+        assert!(!fits(4 * gb + 1, Some(8 * gb), None));
+        assert!(fits(u64::MAX, None, None));
+    }
+
+    #[test]
+    fn a_model_fits_a_graphics_card_larger_than_half_the_memory() {
+        let gb = 1 << 30;
+        assert!(fits(10 * gb, Some(16 * gb), Some(12 * gb)));
+        assert!(!fits(12 * gb, Some(16 * gb), Some(12 * gb)));
     }
 
     #[test]

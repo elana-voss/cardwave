@@ -1,10 +1,10 @@
 // What dom.ts decides, without a browser: the rules of its helpers that are logic. What a screen
 // does with them, and how it looks, is the browser tests' (e2e/tests).
 //
-// Tested here: `announce` fading, `copyText` without a clipboard, `told` and `reason`, `oneAtATime`, `latest`, `suggest`,
+// Tested here: `announce` fading, `copyText` without a clipboard, `told` and `reason`, `oneAtATime`, `latest`, `coalesced`, `suggest`,
 // `selectField`, `savedChoice` and `atMost`.
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { announce, atMost, clearNotice, copyText, el, latest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
+import { announce, atMost, clearNotice, coalesced, copyText, el, latest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -118,6 +118,24 @@ describe("oneAtATime", () => {
     expect(notice.querySelector('[role="alert"]')).toBeNull();
     next.answer();
     expect(await running).toBe(true);
+  });
+});
+
+describe("coalesced", () => {
+  test("calls while one runs make one more run after it, not one each", async () => {
+    const runs = [held<void>(), held<void>()];
+    let started = 0;
+    const load = coalesced(() => runs[started++].promise);
+    const first = load();
+    const rest = Array.from({ length: 500 }, () => load());
+    expect(started).toBe(1);
+    runs[0].answer();
+    await first;
+    await Promise.resolve();
+    expect(started).toBe(2);
+    runs[1].answer();
+    await Promise.all(rest);
+    expect(started).toBe(2);
   });
 });
 
@@ -313,6 +331,17 @@ describe("suggest", () => {
     (list.firstElementChild as HTMLElement).click();
     expect(input.value).toBe("reef-1");
     expect(lines()).toEqual(MODELS);
+  });
+
+  test("the list opens scrolled to the value in use: it is brought into view once the list shows in the window", async () => {
+    const seen: [string | null, boolean, boolean][] = [];
+    const scroll = vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(function (this: HTMLElement) {
+      seen.push([this.textContent, this.closest<HTMLElement>("[role=listbox]")?.hidden ?? true, this.isConnected]);
+    });
+    field(MODELS, true, "tide-1");
+    await new Promise((done) => requestAnimationFrame(done));
+    scroll.mockRestore();
+    expect(seen).toContainEqual(["tide-1", false, true]);
   });
 
   test("the value in use is ticked and marked in the list, until the arrows mark another; taking it gives its value alone", () => {

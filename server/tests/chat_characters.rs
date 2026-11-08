@@ -1,6 +1,7 @@
 //! A chat that starts with several characters, a character that joins a chat
 //! that is there, and one that leaves it again; "New chat with these
-//! characters", Rename, a reply cut where it goes on in another's lines, and
+//! characters", Rename, a reply told to write only as its character and cut
+//! where it goes on in another's lines, and
 //! the pause and count of the characters' replying by themselves.
 //!
 //! Through `card_with` the sample card is here as `later` (Mira called
@@ -817,4 +818,33 @@ fn a_greeting_after_the_first_in_a_new_chat_keeps_what_its_macros_set() {
     assert_eq!(states[1].0, "All of you, inside.");
     let kept: Value = serde_json::from_str(states[1].1.as_deref().expect("no state kept")).unwrap();
     assert_eq!(kept["opening"]["mood"], "wry");
+}
+
+#[tokio::test]
+async fn a_reply_in_a_chat_of_several_is_told_to_write_only_as_its_character() {
+    let server = start().await;
+    let reply = "data: {\"choices\":[{\"delta\":{\"content\":\"Yes.\"}}]}\n\ndata: [DONE]\n\n";
+    let api = common::api::Api::start(common::api::says(200, "text/event-stream", reply)).await;
+    let chat = of_two(&server, Some(&api.url)).await;
+    let said = json!({ "content": "Bram, you're here too?" });
+    assert_eq!(server.post(&format!("{chat}/messages"), said).await.0, 201);
+    assert_eq!(
+        server.post(&format!("{chat}/generate"), json!({})).await.0,
+        202
+    );
+    for _ in 0..250 {
+        if !api.asked().is_empty() {
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+    let body: Value = serde_json::from_str(&api.asked()[0].body).unwrap();
+    let last = body["messages"].as_array().unwrap().last().unwrap().clone();
+    assert!(
+        last["content"]
+            .as_str()
+            .unwrap()
+            .contains("[Write the next reply only as Mira"),
+        "{last}"
+    );
 }

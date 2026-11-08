@@ -165,6 +165,9 @@ test("an entry's parts are saved as they are left, and its line follows", async 
   expect(back.url()).toContain("made=restored");
   await expect(content(page)).toHaveText(CAMLANN.entries[0].content);
 
+  // The hint under "Used when" is the one of the choice: "By meaning" alone has one.
+  const meaningHint = page.getByText("By meaning: used when");
+  await expect(meaningHint).toBeHidden();
   // "Always" needs no keywords: their field goes, and the line says "Always".
   await used(page).getByRole("button", { name: "Always" }).click();
   await expect(field(page, "Keywords")).toBeHidden();
@@ -181,9 +184,15 @@ test("an entry's parts are saved as they are left, and its line follows", async 
   await field(page, "Chance (%)").press("Tab");
   await page.waitForTimeout(200);
   expect(changes).toHaveLength(7);
+  // Without secondary keywords there is no choice of how they count, nor a hint that names it.
+  const secondHint = page.getByText("A keyword alone is then not enough");
+  await expect(secondHint).toBeHidden();
   // It stays open from one entry to the next.
   await show(page, "The Ford");
   await expect(field(page, "Order")).toHaveValue("30");
+  await expect(secondHint).toBeVisible();
+  await used(page).getByRole("button", { name: "By meaning" }).click();
+  await expect(meaningHint).toBeVisible();
 
   // The entry's "…": Rename writes the name, Delete entry takes it out with Undo.
   await page.getByRole("button", { name: "Entry menu" }).click();
@@ -438,4 +447,13 @@ test("the lorebook's AI tools on their way ask the model no more once its page i
   await page.getByRole("menuitem").first().click();
   await leftWhileAsking("/api/rewrite");
   answer();
+});
+
+test("in a narrow window the entry list is the page's width, not a sheet over the lorebook's bar", async ({ page, request }) => {
+  await page.setViewportSize({ width: 960, height: 700 });
+  await open(page, await make(request, "Narrow"));
+  const list = (await panel(page).boundingBox())!;
+  const whole = (await page.locator(".lorebook").boundingBox())!;
+  expect(Math.round(list.x)).toBe(Math.round(whole.x));
+  expect(Math.round(list.width)).toBe(Math.round(whole.width));
 });

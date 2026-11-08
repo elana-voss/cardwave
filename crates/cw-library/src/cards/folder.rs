@@ -1,7 +1,7 @@
 //! A folder of cards imported: its card files found ([`card_files`], every PNG and JSON file in it and in its
 //! subfolders, links not followed, each with its [`Stamp`]) and each imported as a file sent alone is
 //! ([`import_file`]), under its file's name. A file the library has already ([`super::in_library`]) is
-//! skipped, not failed; a file that holds no card ([`super::NotACard`]) is passed over silently and kept in
+//! skipped, not failed; a file that holds no card ([`super::not_a_card`]) is passed over silently and kept in
 //! the user's list of them ([`KeptFiles::NotCards`], by path, size and time written), so it is not read
 //! again while unchanged; a file the watched folder took is kept so too ([`KeptFiles::Watched`]) and
 //! skipped unread at every later start while unchanged, even where its card has since gone; a PNG is first checked by its chunks' headers alone (`png::holds_card_chunk`), and only one
@@ -16,7 +16,7 @@ use cw_core::{Code, ErrorBody, Fail};
 use serde::Serialize;
 use ts_rs::TS;
 
-use crate::cards::{Imported, KeptFiles, NotACard, Storage, import_named, is_in_library};
+use crate::cards::{Imported, KeptFiles, Storage, import_named, is_in_library, is_not_a_card};
 use crate::failures::{self, Failures};
 
 /// How far the import of a folder of cards has come.
@@ -208,7 +208,7 @@ pub fn import_file(
     let outcome = match import_named(db, user, &file, name.as_deref()) {
         Ok(imported) => Outcome::Imported(imported),
         Err(error) if is_in_library(&error) => Outcome::Skipped,
-        Err(error) if error.chain().any(|cause| cause.is::<NotACard>()) => return not_card(),
+        Err(error) if is_not_a_card(&error) => return not_card(),
         Err(error) => return failed(why(db, error)),
     };
     // Kept by the stamp read before the file was: one written anew meanwhile is read again.

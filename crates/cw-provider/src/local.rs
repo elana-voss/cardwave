@@ -15,7 +15,7 @@
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex as StdMutex, Weak};
+use std::sync::{Arc, Mutex as StdMutex, OnceLock, Weak};
 use std::time::Duration;
 
 use anyhow::{Context, ensure};
@@ -52,6 +52,58 @@ pub struct Setup {
 
 static SETUP: StdMutex<Option<Setup>> = StdMutex::new(None);
 static LOADED: Mutex<Option<Loaded>> = Mutex::const_new(None);
+
+/// The memory of the largest graphics card `llama-server` runs on, in bytes, as
+/// its `--list-devices` tells, asked once ([`largest_card`]); none without a
+/// card, before [`set_up`] or with a stand-in. Its whole memory, not what is
+/// free, which a model loaded at the time would lower for the session.
+pub(crate) fn graphics_memory() -> Option<u64> {
+    static TOLD: OnceLock<Option<u64>> = OnceLock::new();
+    let Runner::LlamaServer(folder) = lock(&SETUP).as_ref()?.runner.clone() else {
+        return None;
+    };
+    *TOLD.get_or_init(|| {
+        let mut command = std::process::Command::new(folder.join("llama-server"));
+        command
+            .arg("--list-devices")
+            .stdin(std::process::Stdio::null());
+        #[cfg(windows)]
+        std::os::windows::process::CommandExt::creation_flags(
+            &mut command,
+            cw_platform::sys::NO_WINDOW,
+        );
+        let output = command.output().ok()?;
+        let told = [output.stdout, output.stderr].concat();
+        largest_card(&String::from_utf8_lossy(&told))
+    })
+}
+
+/// The largest memory of the devices `llama-server --list-devices` lists
+/// (`  Vulkan1: NVIDIA … (8188 MiB, 7420 MiB free)`), in bytes, a built-in
+/// card's none: its memory is the computer's own, counted as such.
+fn largest_card(listed: &str) -> Option<u64> {
+    listed
+        .lines()
+        .filter_map(|line| {
+            let (name, sizes) = line.trim_end().rsplit_once(" (")?;
+            let (total, _) = sizes.split_once(" MiB, ")?;
+            (!built_in(name)).then_some(total.parse::<u64>().ok()?)
+        })
+        .max()
+        .map(|mib| mib << 20)
+}
+
+/// Whether a device's name is a card built into the processor: AMD's
+/// "Radeon(TM) 780M Graphics", Intel's "UHD", "Iris Xe" and "Arc(TM) Graphics"
+/// end in "Graphics"; a separate one does not, but Intel's "Arc(TM) A770 Graphics".
+fn built_in(name: &str) -> bool {
+    let separate_arc = name.split_once("Arc(TM) ").is_some_and(|(_, model)| {
+        let mut chars = model.chars();
+        chars.next().is_some_and(|c| c.is_ascii_uppercase())
+            && chars.next().is_some_and(|c| c.is_ascii_digit())
+    });
+    name.ends_with(" Graphics") && !separate_arc
+}
 
 /// Has the models run as `setup` says from now on.
 pub fn set_up(setup: Setup) {
@@ -202,13 +254,16 @@ pub async fn answer(http: &Client, mut request: Request) -> cw_platform::http::R
         Ok(file) => file,
         Err(error) => return Ok(failed(404, &error)),
     };
-    let (url, using) = match load(http, &file).await {
+    let (url, authorization, using) = match load(http, &file).await {
         Ok(loaded) => loaded,
         Err(error) => return Ok(failed(503, &error)),
     };
     // The address was made by `launch`, a plain one with a port.
     let url = Url::parse(&format!("{url}/v1/chat/completions")).expect("a URL");
     *request.url_mut() = url;
+    let authorization = authorization.parse().expect("a header value of hex");
+    let name = cw_platform::http::header::AUTHORIZATION;
+    request.headers_mut().insert(name, authorization);
     let response = http.execute(request).await?;
     Ok(held(response, using))
 }
@@ -229,13 +284,15 @@ fn model_file(folder: &Path, id: &str) -> anyhow::Result<PathBuf> {
 }
 
 /// The address of `llama-server` with the model's `file` loaded, loading it
-/// in place of another first, and a use of it.
-async fn load(http: &Client, file: &Path) -> anyhow::Result<(String, Use)> {
+/// in place of another first, its `Authorization` header and a use of it.
+async fn load(http: &Client, file: &Path) -> anyhow::Result<(String, String, Use)> {
     let mut loaded = LOADED.lock().await;
     if let Some(now) = loaded.as_ref().filter(|now| now.file == file) {
         // One that ended (out of memory, ended by hand) is started anew.
         if now.running.alive(http).await {
-            return Ok((now.running.url().to_string(), Use::of(&now.users)));
+            let running = &now.running;
+            let using = Use::of(&now.users);
+            return Ok((running.url().into(), running.authorization(), using));
         }
     }
     // Another model's answers are read to their end first; given up on
@@ -260,12 +317,13 @@ async fn load(http: &Client, file: &Path) -> anyhow::Result<(String, Use)> {
     tokio::spawn(let_go_when_idle(Arc::downgrade(&users)));
     let using = Use::of(&users);
     let url = running.url().to_string();
+    let authorization = running.authorization();
     *loaded = Some(Loaded {
         file: file.to_path_buf(),
         running,
         users,
     });
-    Ok((url, using))
+    Ok((url, authorization, using))
 }
 
 /// Lets the model of `users` go once it was not used for `IDLE`; ends when
@@ -357,6 +415,30 @@ fn refused(status: u16, message: String) -> Response {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_largest_cards_memory_is_read_from_the_device_list_without_a_built_in_one() {
+        let listed = "Available devices:
+  Vulkan0: AMD Radeon(TM) 780M Graphics (16444 MiB, 15622 MiB free)
+  Vulkan1: NVIDIA GeForce RTX 4060 Laptop GPU (8188 MiB, 7420 MiB free)
+";
+        assert_eq!(
+            largest_card(listed),
+            Some(8188 << 20),
+            "its whole memory, the built-in's none"
+        );
+        let intel = "  Vulkan0: Intel(R) Iris(R) Xe Graphics (8000 MiB, 7000 MiB free)
+  Vulkan1: Intel(R) Arc(TM) A770 Graphics (16032 MiB, 15000 MiB free)
+";
+        assert_eq!(largest_card(intel), Some(16032 << 20));
+        assert_eq!(
+            largest_card(
+                "Available devices:
+"
+            ),
+            None
+        );
+    }
 
     #[test]
     fn its_address_carries_the_folder() {

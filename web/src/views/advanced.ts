@@ -20,6 +20,7 @@ import { failureWords } from "../language/errors";
 import {
   changeSettings,
   describeCards,
+  stopDescribing,
   getDescribing,
   getDescribingAgain,
   getSampling,
@@ -35,7 +36,7 @@ import type { Sampling } from "../api/generated/Sampling";
 import type { ServerEvent } from "../api/generated/ServerEvent";
 import type { Style } from "../api/generated/Style";
 import { el, failure, group, item, newest, noticeBox, oneAtATime, reason, savedChoice, selectField, type View } from "../dom";
-import { clause } from "../format";
+import { clause, count } from "../format";
 import { modelsGroup } from "../models/models-group";
 import { ownCssGroup } from "../settings/own-css";
 import { lineFiller, settingSwitch } from "../settings/setting-lines";
@@ -163,11 +164,31 @@ const formats = (): [ExportFormat, string][] => ([
   ["ccv4", wording("advanced-ccv4")],
 ]);
 
+/** The tokens describing one character costs, low and high, as `advanced-describe-again-about` says. */
+const TOKENS_EACH = [11_000, 12_000];
+
+/** What describing the characters not yet described would cost, beside "Describe characters"; nothing while it runs. */
+export function describeCost({ waiting, left }: Describing): string {
+  if (waiting > 0 || left === 0) return "";
+  const [low, high] = TOKENS_EACH.map((tokens) => tokens * left);
+  return wording("advanced-describe-cost", { low: count(low), high: count(high), count: left });
+}
+
 /** What the line "Cards described" says of how far the describing has come. */
 function describedText({ waiting, left }: Describing): string {
   if (waiting > 0) return wording("advanced-describing", { count: String(waiting) });
   if (left === 0) return wording("advanced-all-described");
   return wording("advanced-not-described", { count: left });
+}
+
+/** What the line "Cards described" says: how far describing all again has come, or where it was stopped,
+ * else how far the describing has. */
+export function describingSays(describing: Describing | null, again: DescribingAgain | null): string {
+  if (again && again.waiting > 0) return wording("advanced-describe-again-far", { done: again.done, all: again.done + again.waiting });
+  if (again && again.characters === 0) return wording("advanced-no-characters");
+  if (describing && describing.waiting > 0) return describedText(describing);
+  if (again && again.stopped && again.done < again.characters) return wording("advanced-describe-again-stopped", { done: again.done, all: again.characters });
+  return describing ? describedText(describing) : "";
 }
 
 /** The temporary line "Interview style" (the owner's yes): which of the three ways the interview asks; Tree at the start. */
@@ -229,6 +250,7 @@ function describeLines(): { lines: HTMLElement[]; read(): void; readSwitch(): vo
   const label = LABELS.advanced.describe;
   const { toggle, show: showSwitch } = settingSwitch(attempt, label, "describe_imported");
   const says = el("span", { className: "meta" });
+  const cost = el("span", { className: "meta" });
   const why = el("div", { className: "item-wrong" });
   const whyAgain = el("div", { className: "item-wrong" });
   const button = el("button", { type: "button", className: "btn btn-secondary on-box", disabled: true }, wording("advanced-describe-cards"));
@@ -236,15 +258,16 @@ function describeLines(): { lines: HTMLElement[]; read(): void; readSwitch(): vo
   let describing: Describing | null = null;
   let again: DescribingAgain | null = null;
   const say = () => {
-    if (again && again.waiting > 0) says.textContent = wording("advanced-describe-again-far", { done: again.done, all: again.done + again.waiting });
-    else if (again && again.characters === 0) says.textContent = wording("advanced-no-characters");
-    else if (describing) says.textContent = describedText(describing);
+    if (describing || again) says.textContent = describingSays(describing, again);
   };
   const cards = freshest(
     getDescribing,
     (now) => {
       describing = now;
-      button.disabled = now.waiting > 0 || now.left === 0;
+      // While it runs the button is Stop, as "Describe all again"'s is.
+      button.textContent = now.waiting > 0 ? wording("advanced-describe-again-stop") : wording("advanced-describe-cards");
+      button.disabled = now.waiting === 0 && now.left === 0;
+      cost.textContent = describeCost(now);
       say();
       showFailed(why, now.waiting === 0 && now.failure ? wording("advanced-failed", { count: now.failed, failure: clause(failureWords(now.failure)) }) : "");
     },
@@ -264,7 +287,7 @@ function describeLines(): { lines: HTMLElement[]; read(): void; readSwitch(): vo
   );
   const refused = el("div", { className: "item-wrong" }); // its own place: the readings rewrite `why` and `whyAgain`
   const pressing = oneAtATime(refused);
-  button.onclick = () => pressing(() => cards.press(describeCards));
+  button.onclick = () => pressing(() => cards.press(describing && describing.waiting > 0 ? stopDescribing : describeCards));
   againButton.onclick = () => pressing(() => characters.press(again && again.waiting > 0 ? stopDescribingAgain : describeAllAgain));
   const read = () => {
     cards.read();
@@ -276,7 +299,7 @@ function describeLines(): { lines: HTMLElement[]; read(): void; readSwitch(): vo
   read();
   const switchLine = item(label, wording("advanced-describe-about"), toggle);
   const describedLine = item(LABELS.advanced.described, says, button);
-  says.after(el("span", { className: "meta" }, wording("advanced-describe-again-about")));
+  says.after(cost, el("span", { className: "meta" }, wording("advanced-describe-again-about")));
   switchLine.append(wrong);
   describedLine.append(againButton, refused, why, whyAgain);
   return {

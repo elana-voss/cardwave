@@ -155,9 +155,15 @@ impl Text {
             };
         };
         let mut said: Vec<Text> = entry.picks.iter().map(|pick| Text::of(pick)).collect();
-        if !entry.free.is_empty() {
+        // Its own full stop would stand beside the one after the quote.
+        let free = entry.free.trim_end();
+        let free = match free.strip_suffix(['.', '。']) {
+            Some(cut) if !cut.ends_with('.') => cut,
+            _ => free,
+        };
+        if !free.is_empty() {
             said.push(Text::Worded {
-                words: entry.free.clone(),
+                words: free.to_string(),
             });
         }
         let id = if probe { PROBE } else { WHY };
@@ -391,6 +397,17 @@ mod tests {
         let english = why_template().replacen("{}", &format!("{need}; my own"), 1);
         assert_eq!(text.english(), english);
         assert_eq!(Text::quoting(false, None).english(), texts::WHY_UNSAID);
+        // The answer's own full stop stays outside the quote, which ends one.
+        let entry = Entry {
+            picks: Vec::new(),
+            free: "A gruff old captain. ".to_string(),
+            ..entry
+        };
+        let quoted = Text::quoting(true, Some(&entry)).english();
+        assert!(
+            quoted.starts_with("You said \"A gruff old captain\". "),
+            "{quoted}"
+        );
     }
 
     #[test]

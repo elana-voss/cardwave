@@ -9,8 +9,8 @@
 // Traps: a tool's call that waits (`asking`) is tools.ts's card over the field. A reply that fails for want of a
 // provider leads to first run (`unset`). A chat without a character is the AI itself: its replies under the model's
 // name, no "Add a character", and its title, once it named itself, from `chat_title`. Leaving the chat ends what
-// is written on its page's behalf (`leave`). Escape lets a reply chosen go (`unchoose`), unless a tool's call waits,
-// whose Deny it is.
+// is written on its page's behalf (`leave`). Escape closes the panel where it lies over the chat, else lets a reply
+// chosen go (`unchoose`), unless a tool's call waits, whose Deny it is.
 import { showRound, watchAccount } from "../account";
 import {
   addLorebook,
@@ -37,7 +37,7 @@ import { chatPanel, sourceOf, type ChatPanel, type PanelActions } from "../chat/
 import { act, atBottom, failed, branch, find, load, newScreen, newest, tell, toBottom, took, toolsNow, type Screen } from "../chat/screen";
 import { splitView, type Split } from "../chat/split";
 import { canTalk, end, halt, onward } from "../chat/talk";
-import { el, escapeFree, failure, NARROW, WIDE, type View } from "../dom";
+import { el, escapeFree, failure, NARROW, TOUCH, WIDE, type View } from "../dom";
 import { daysLeft } from "../format";
 import { remember, remembered } from "../storage";
 import { modeInUse } from "../card/modes";
@@ -73,6 +73,13 @@ interface Parts {
   splitShown: boolean;
 }
 
+/**
+ * Whether a chat opens with its message field in focus: one the user has written nothing in yet, unless the focus
+ * went somewhere while it was read, and not on a touch screen, whose keyboard would rise each time (Claude).
+ */
+export const opensWriting = (view: ChatView | null | undefined, active: Element | null, touch = TOUCH.matches) =>
+  !touch && (active === null || active === document.body) && !view?.messages.some((m) => m.role === "user");
+
 export function chatView(chatId: number): View {
   const s = newScreen(chatId);
   const talkCount = el("span");
@@ -105,9 +112,9 @@ export function chatView(chatId: number): View {
     onEvent(s, event);
   };
   const main = el("div", { className: "chat-main" }, p.header.node, s.scroller, p.status, p.branching, p.talking, p.ask.node, el("div", { className: "chat-dock" }, p.composer.form, p.inTrash));
-  // Where the panel lies over the chat, a press on the chat closes it.
-  main.addEventListener("pointerdown", () => {
-    if (NARROW.matches && p.panelOpen) showPanel(s, p, false);
+  // Where the panel lies over the chat, a press on the chat closes it; its own button does that on its click.
+  main.addEventListener("pointerdown", (event) => {
+    if (NARROW.matches && p.panelOpen && !p.header.panelToggle.contains(event.target as Node)) showPanel(s, p, false);
   });
   s.node.append(main, p.panel.node, p.split.node);
   const toggle = p.header.panelToggle;
@@ -144,10 +151,21 @@ export function chatView(chatId: number): View {
     p.composer.codingLine.hidden = !codingOffered(s);
     for (const own of s.node.querySelectorAll<HTMLElement>(".avatar.own:not(.of-persona)")) showRound(own, now);
   });
-  void load(s).then(() => toBottom(s));
+  void load(s).then(() => {
+    toBottom(s);
+    if (s.node.isConnected && opensWriting(s.view, document.activeElement)) s.input.focus();
+  });
   const unchoose = (event: KeyboardEvent) => {
     // A chat in a tab out of view takes no key.
-    if (!s.node.isConnected || !escapeFree(event) || s.chosen === null || s.asking) return;
+    if (!s.node.isConnected || !escapeFree(event) || s.asking) return;
+    // Where the panel lies over the chat, Escape closes it first.
+    if (NARROW.matches && !p.panel.node.hidden) {
+      event.preventDefault();
+      showPanel(s, p, false);
+      p.header.panelToggle.focus();
+      return;
+    }
+    if (s.chosen === null) return;
     event.preventDefault();
     s.chosen = null;
     s.render();

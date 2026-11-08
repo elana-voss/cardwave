@@ -8,4 +8,8 @@ export type PickedView = { kind: Kind, provider_id: number, model: string,
 /**
  * "on", "off", or "cannot" where the provider took no form of turning it off.
  */
-thinking: string, };
+thinking: string, 
+/**
+ * Whether the provider said it no longer offers the model, since it was picked.
+ */
+gone: boolean, };

@@ -59,6 +59,7 @@ card-modes-mode = 모드
 card-modes-the-texts-below-are = 아래 텍스트가 이 모드가 쓰는 것이에요.
 card-modes-a-mode-needs-a = 모드에는 이름이 필요해요.
 card-modes-default = { " " }· 기본
+card-modes-first-default = 롤플레이
 card-modes-make-default = 기본으로 설정
 card-modes-add-mode = 채팅 방식 추가
 card-modes-modes = 모드
@@ -72,11 +73,12 @@ card-page-card-info = 카드 정보
 
 card-picture-card-picture = 캐릭터 이미지
 card-picture-card-picture-click-to = 캐릭터 이미지: 클릭해서 이미지를 고르거나 여기에 끌어다 놓기
+card-picture-card-picture-tap-to = 캐릭터 이미지: 탭해서 이미지 고르기
 card-picture-make-a-picture = 이미지 만들기
 card-picture-name-first = 먼저 캐릭터 이름을 정하세요
 card-picture-earlier-pictures = 이전 이미지
-card-picture-click-to-choose-a = 클릭해서 이미지를 고르거나 여기에 끌어다 놓기
 card-picture-click-or-drop-a = 클릭해서 이미지를 고르거나 여기에 끌어다 놓기
+card-picture-tap-to-choose = 탭해서 이미지 고르기
 card-picture-drop-to-use-this = 놓으면 이 이미지를 써요
 card-picture-set-up-an-image = 먼저 이미지 모델을 설정하세요:{ " " }
 card-picture-settings-models = 설정 › 모델
@@ -234,7 +236,7 @@ character-saved = 저장됨
 character-name-in-the-chat = 채팅에서의 이름
 character-name = 제목의 캐릭터
 character-creator = 제작자
-character-creator-2 = 제작자
+character-add-creator = 제작자 추가
 character-modes = 모드…
 character-add-mode = 채팅 방식 추가…
 character-add-mode-sub = 이야기 같은 다른 종류의 채팅을 위한 다른 텍스트
@@ -603,7 +605,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = 아직 로어북이 없어요. 새로 만들거나 로어북 파일(SillyTavern 월드 인포, .json)을 가져오세요. 채팅은 사이드 패널에서 로어북을 함께 써요.
+lorebooks-no-lorebooks-yet-make = 아직 로어북이 없어요. 새로 만들거나 로어북 파일(SillyTavern 월드 인포, .json)을 가져오세요. 채팅은 채팅 옵션 › 로어북 추가로 로어북을 함께 써요.
 lorebooks-entries = { $count ->
    *[other] 항목 { $count }개
 }

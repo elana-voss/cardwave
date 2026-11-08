@@ -361,9 +361,9 @@ test("New chat says who the user is in it, “as” a persona, which Change pick
   for (const name of ["Wanderer", "Ines"]) made.push((await (await request.post("/api/personas", { data: { name } })).json()).id);
   // Without a default the user is nobody in particular, and Change offers each persona.
   let window = await newChat();
-  await expect(as(window)).toContainText("as User");
+  await expect(as(window)).toContainText("as Guest");
   await as(window).getByRole("button", { name: "Change" }).click();
-  await expect(page.getByRole("menuitemradio")).toHaveText([/User/, /Ines/, /Wanderer/]);
+  await expect(page.getByRole("menuitemradio")).toHaveText([/Guest/, /Ines/, /Wanderer/]);
   await page.getByRole("menuitemradio", { name: "Wanderer" }).click();
   await expect(as(window)).toContainText("as Wanderer");
   const started = page.waitForRequest((sent) => sent.method() === "POST" && sent.url().endsWith("/api/chats"));

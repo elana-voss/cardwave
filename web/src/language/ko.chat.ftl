@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· 이 작업을 할 수 있는지 알 수 없음
 kinds-address = { " " }· { $address }
 kinds-this-computer = 이 컴퓨터의 프로그램
 kinds-asking-the-provider = 제공자에게 묻는 중…
-kinds-no-such-model = 없는 모델
 kinds-own-on-this-computer = { $own } · 이 컴퓨터에 있음
+kinds-none-of-the-kind = 이 일을 할 수 있는 모델을 가진 제공자가 없습니다.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = 바꾸기 전까지 앱의 언어를 따라요
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = 설정 안 됨
+models-group-no-longer-offered = 제공업체가 더 이상 이 모델을 제공하지 않아요. 다른 모델을 골라 주세요.
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = 결과: { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · 이 컴퓨터의 그래픽 카드에서 실행 · { $bytes } 다운로드
+dictation-setup-on-this-computers-graphics = { $name } · 이 컴퓨터의 그래픽 카드에서 실행 · { $bytes }
 dictation-setup-the-microphone-beside-the = 그러면 메시지 칸 옆의 마이크가 한국어, 영어 등 여러 언어로 말한 내용을 받아 적어요. 말한 내용은 이 컴퓨터에만 남아요.
 
 ## make-voice (voice/make-voice.ts)

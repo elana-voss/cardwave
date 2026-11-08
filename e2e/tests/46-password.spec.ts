@@ -122,3 +122,12 @@ test("a backup saved with the password asked for is restored with it in the plac
   await expect(line(page, "Backup")).toBeVisible();
   expect(await personas(request)).toEqual(["Wanderer"]);
 });
+
+test("a line's button grows with a longer language's words: German's restore button holds its label", async ({ page, request }) => {
+  expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+  await page.goto("/#/settings");
+  const restore = page.getByRole("button", { name: "Eine Sicherung wiederherstellen" });
+  await expect(restore).toBeVisible();
+  expect(await restore.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+});

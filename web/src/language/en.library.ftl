@@ -13,7 +13,7 @@ sort-filter-no-tags-to-choose = No tags to choose from.
 ## card-block (card/card-block.ts)
 
 card-untitled = Untitled
-card-user-stand-in = User
+card-user-stand-in = Guest
 card-block-keep = Keep
 card-block-undo = Undo
 card-block-show-all = Show all
@@ -57,6 +57,7 @@ card-modes-mode = Mode
 card-modes-the-texts-below-are = The texts below are the ones this mode uses.
 card-modes-a-mode-needs-a = A mode needs a name.
 card-modes-default = { " " }· default
+card-modes-first-default = Roleplay
 card-modes-make-default = Make default
 card-modes-add-mode = Add a way to chat
 card-modes-modes = Modes
@@ -70,11 +71,12 @@ card-page-card-info = Card info
 
 card-picture-card-picture = Character picture
 card-picture-card-picture-click-to = Character picture: click to choose a picture, or drop one here
+card-picture-card-picture-tap-to = Character picture: tap to choose a picture
 card-picture-make-a-picture = Make a picture
 card-picture-name-first = Name the character first
 card-picture-earlier-pictures = Earlier pictures
-card-picture-click-to-choose-a = Click to choose a picture, or drop one here
 card-picture-click-or-drop-a = Click to choose a picture, or drop one here
+card-picture-tap-to-choose = Tap to choose a picture
 card-picture-drop-to-use-this = Drop to use this picture
 card-picture-set-up-an-image = Set up an image model first, in{ " " }
 card-picture-settings-models = Settings › Models
@@ -232,7 +234,7 @@ character-saved = Saved
 character-name-in-the-chat = Name in the chat
 character-name = the title character
 character-creator = Creator
-character-creator-2 = creator
+character-add-creator = Add creator
 character-modes = Modes…
 character-add-mode = Add a way to chat…
 character-add-mode-sub = Other texts for another kind of chat, such as a story
@@ -613,7 +615,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = No lorebooks yet. Make one, or import a lorebook file (SillyTavern world info, .json). A chat takes one along in its side panel.
+lorebooks-no-lorebooks-yet-make = No lorebooks yet. Make one, or import a lorebook file (SillyTavern world info, .json). A chat takes one along by Chat options › Add a lorebook.
 lorebooks-entries = { $count ->
     [one] 1 entry
    *[other] { $count } entries

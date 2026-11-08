@@ -412,11 +412,12 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
     // Off at first: nothing is served.
     let (status, refused) = hello(&server, "Claude").await;
     assert_eq!(status, 403, "{refused}");
+    // It names the switch and its page as the app shows them.
+    let told = refused["error"]["message"].as_str().unwrap();
     assert!(
-        refused["error"]["message"]
-            .as_str()
-            .unwrap()
-            .contains("Let other programs use Cardwave")
+        told.contains("\"Let AI apps on this computer use Cardwave\"")
+            && told.contains("Account › Sharing"),
+        "{told}"
     );
 
     assert_eq!(
@@ -479,6 +480,12 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
     assert_eq!(set["programs"], json!(["Inspector", "test"]));
     let (status, refused) = hello(&server, "Claude").await;
     assert_eq!(status, 403, "{refused}");
+    let told = refused["error"]["message"].as_str().unwrap();
+    assert!(
+        told.contains("\"Let AI apps on this computer use Cardwave\"")
+            && told.contains("Account › Sharing"),
+        "{told}"
+    );
     assert_eq!(post(&server, &named, &list).await.0, 403);
     assert_eq!(
         server

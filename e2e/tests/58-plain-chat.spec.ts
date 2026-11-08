@@ -29,7 +29,11 @@ test("Chat without a character is the AI itself, and the chat names itself after
   await expect(page.getByLabel("Prompt preset", { exact: true })).toBeHidden();
   await expect(page.getByRole("heading", { name: "Lorebooks" })).toBeHidden();
   await page.getByRole("button", { name: "Attach, or let the AI write" }).click();
-  await expect(page.getByRole("menuitem", { name: "Write for me" })).toBeVisible();
+  // Write for me, Improve and Make a picture need a character: not there, rather than grey with no reason.
+  await expect(page.getByRole("menuitem", { name: "Attach picture or document" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Write for me" })).toBeHidden();
+  await expect(page.getByRole("menuitem", { name: "Improve my message" })).toBeHidden();
+  await expect(page.getByRole("menuitem", { name: "Make a picture" })).toBeHidden();
   await expect(page.getByRole("menuitem", { name: "Add a character" })).toBeHidden();
   await page.keyboard.press("Escape");
 

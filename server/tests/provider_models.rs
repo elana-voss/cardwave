@@ -445,3 +445,25 @@ async fn a_list_is_waited_for_a_while_and_what_came_by_then_is_the_answer() {
         );
     }
 }
+
+#[tokio::test]
+async fn the_list_and_the_picks_name_their_models_as_models_devs_list_does() {
+    // The shipped list knows gpt-4o by its most common name; tide-1 it does not know.
+    let api = Api::start(says(
+        200,
+        JSON,
+        r#"{"data":[{"id":"gpt-4o"},{"id":"tide-1"}]}"#,
+    ))
+    .await;
+    let server = start().await;
+    let (status, listed) = list(&server, json!({ "base_url": api.url })).await;
+    assert_eq!(status, 200, "{listed}");
+    assert_eq!(listed["names"], json!({ "gpt-4o": "GPT-4o" }));
+    let one = Api::start(says(200, JSON, r#"{"data":[{"id":"gpt-4o"}]}"#)).await;
+    let (status, picks) = server
+        .post("/api/provider/picks", json!({ "base_url": one.url }))
+        .await;
+    assert_eq!(status, 200, "{picks}");
+    assert_eq!(picks["chat"], "gpt-4o");
+    assert_eq!(picks["names"], json!({ "gpt-4o": "GPT-4o" }));
+}

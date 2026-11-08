@@ -8,7 +8,7 @@
 // place (another device of the home network over http) has no microphone, so the button is not shown there; the
 // microphone is let go when recording ends, also by the browser, and when the field leaves the page, as a chat left
 // would keep it; after each hearing the model's state is read again, as it was not while recording.
-import { getDictation, hear } from "../api/client";
+import { getDictation, hear, loadDictation } from "../api/client";
 import { announce, el, reason } from "../dom";
 import { icon } from "../icons";
 import { resampled, wav } from "../voice/wav";
@@ -53,6 +53,8 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
     field.focus();
   };
   const record = async () => {
+    // The model loads while the user speaks (a first load took 26 s); a failure shows at the hearing.
+    loadDictation().catch(() => {});
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });

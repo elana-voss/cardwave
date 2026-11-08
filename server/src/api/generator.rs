@@ -26,6 +26,7 @@ async fn generate(
     page: Page,
     Json(picks): Json<GeneratorPicks>,
 ) -> ApiResult<(StatusCode, Json<Imported>)> {
+    let _at_work = state.at_work(user)?;
     let provider = state
         .run(move |db| Ok(provider::get(db, user)?.ok_or(NOT_SET_UP)?))
         .await?;

@@ -66,7 +66,9 @@ async fn the_rules_first_chat_model_makes_the_final_picks_among_the_candidates()
     let answer = r#"Here: {"chat": "gpt-4o", "background": "gpt-5-mini", "images": "dall-e-3"}"#;
     let api = provider(&OPENAI, answer, None).await;
     let server = start().await;
-    let picked = picks(&server, &api).await;
+    let mut picked = picks(&server, &api).await;
+    // The models' names: provider_models.rs.
+    picked.as_object_mut().unwrap().remove("names");
     assert_eq!(
         picked,
         json!({ "chat": "gpt-4o", "background": "gpt-5-mini", "images": "dall-e-3", "listed": 5, "failed": null })
@@ -88,7 +90,9 @@ async fn the_rules_first_chat_model_makes_the_final_picks_among_the_candidates()
 async fn an_answer_that_names_no_candidate_leaves_the_rules_picks() {
     let api = provider(&OPENAI, "I like them all.", None).await;
     let server = start().await;
-    let picked = picks(&server, &api).await;
+    let mut picked = picks(&server, &api).await;
+    // The models' names: provider_models.rs.
+    picked.as_object_mut().unwrap().remove("names");
     // The newest of each kind, and as background the cheap model of the chat model's maker.
     assert_eq!(
         picked,

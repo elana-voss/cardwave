@@ -546,6 +546,12 @@ async fn write_reply(writer: Writer, mut job: Job) {
     };
     // A model not known to think that sent thinking is kept as one that does.
     let learned = (pushed.thought && !job.provider.thinks()).then(|| job.provider.model.clone());
+    // Whether the provider still offers the model, where the reply tells it (Settings says it).
+    let gone = match &failure {
+        None => Some(false),
+        Some(failure) => cw_provider::no_longer_offered(failure).then_some(true),
+    };
+    let model = job.provider.model.clone();
     let offered = job.toolbox.as_ref().and_then(Toolbox::task_offered);
     let reads = job.toolbox.as_ref().map(Toolbox::reads).unwrap_or_default();
     let ended = state
@@ -554,6 +560,13 @@ async fn write_reply(writer: Writer, mut job: Job) {
                 && let Err(failure) = kinds::saw_thinking(db, user, Kind::Chat, &model)
             {
                 tracing::error!("that the model thinks could not be kept: {failure:#}");
+            }
+            if let Some(gone) = gone
+                && let Err(failure) = kinds::set_gone(db, user, Kind::Chat, &model, gone)
+            {
+                tracing::error!(
+                    "whether the model is still offered could not be kept: {failure:#}"
+                );
             }
             // What was read is kept before the end, whose message tells it.
             if let Err(failure) = chats::save_reads(db, user, message_id, &reads) {
@@ -570,7 +583,7 @@ async fn write_reply(writer: Writer, mut job: Job) {
         (Ok(_), false) => {
             let keep = move |db: &Db| {
                 made.iter().try_for_each(|(words, picture)| {
-                    images::keep(db, user, chat_id, speaker_id, words, picture).map(drop)
+                    images::keep(db, user, chat_id, speaker_id, (words, words), picture).map(drop)
                 })
             };
             Some(state.work(keep).await)

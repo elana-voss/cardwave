@@ -58,6 +58,8 @@ pub struct Known {
     pub text: bool,
     pub image: bool,
     pub thinks: bool,
+    /// The name people read: the one most of its listings give, the shortest on a tie.
+    pub name: Option<String>,
 }
 
 /// models.dev's list, by name.
@@ -178,6 +180,7 @@ struct ProviderJson {
 #[serde(default)]
 struct ModelJson {
     id: Option<String>,
+    name: Option<String>,
     release_date: Option<String>,
     tool_call: bool,
     reasoning: bool,
@@ -243,6 +246,23 @@ fn voters(listed: &[(bool, ModelJson)]) -> Vec<&ModelJson> {
         .filter(|(tagged, _)| counts(tagged))
         .map(|(_, m)| m)
         .collect()
+}
+
+/// The name most of `models` give, the shortest of those on a tie.
+fn most_named(models: &[&ModelJson]) -> Option<String> {
+    let mut counts: HashMap<&str, usize> = HashMap::new();
+    for name in models.iter().filter_map(|m| m.name.as_deref()) {
+        *counts.entry(name.trim()).or_default() += 1;
+    }
+    counts
+        .into_iter()
+        .filter(|(name, _)| !name.is_empty())
+        .max_by(|a, b| {
+            a.1.cmp(&b.1)
+                .then(b.0.len().cmp(&a.0.len()))
+                .then(b.0.cmp(a.0))
+        })
+        .map(|(name, _)| name.to_string())
 }
 
 /// A model's name as the list is looked up by.
@@ -313,6 +333,7 @@ impl Index {
                     text: half(&voting, |m| m.outputs("text")),
                     image: half(&voting, |m| m.outputs("image")),
                     thinks: half(&voting, |m| m.reasoning),
+                    name: most_named(&voting),
                 };
                 (name, known)
             })
@@ -324,6 +345,12 @@ impl Index {
     pub fn get(&self, id: &str) -> Option<&Known> {
         let name = name_of(id);
         self.0.get(&name).or_else(|| self.0.get(undated(&name)))
+    }
+
+    /// The readable name of the model `id`: only of the same name, as a dated
+    /// model keeps its own.
+    pub fn name(&self, id: &str) -> Option<&str> {
+        self.0.get(&name_of(id))?.name.as_deref()
     }
 }
 

@@ -2,7 +2,7 @@
 
 /**
  * A voice to choose, with the set its recording is of, the set's license and
- * whom it credits (`Voice::credit`); one the account made has `own` set, no
- * language, set or license.
+ * whom it credits (`Voice::credit`); `language` is its code ("en"); one the
+ * account made has `own` set, no language, set or license.
  */
 export type VoiceChoice = { id: string, name: string, language: string, set: string, license: string, credit: string, own: boolean, };

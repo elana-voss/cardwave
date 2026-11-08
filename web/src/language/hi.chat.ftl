@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· पता नहीं कि यह ऐसा �
 kinds-address = { " " }· { $address }
 kinds-this-computer = इस कंप्यूटर पर एक प्रोग्राम
 kinds-asking-the-provider = प्रोवाइडर से पूछा जा रहा है…
-kinds-no-such-model = ऐसा कोई मॉडल नहीं
 kinds-own-on-this-computer = { $own } · इस कंप्यूटर पर
+kinds-none-of-the-kind = आपके किसी भी प्रोवाइडर के पास ऐसा मॉडल नहीं है जो यह कर सके।
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = जब तक आप न बदलें, ऐप
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = सेट नहीं है
+models-group-no-longer-offered = आपका प्रदाता अब यह मॉडल नहीं देता: कोई दूसरा चुनें।
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = इसलिए { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · इस कंप्यूटर के ग्राफ़िक्स कार्ड पर · { $bytes } डाउनलोड
+dictation-setup-on-this-computers-graphics = { $name } · इस कंप्यूटर के ग्राफ़िक्स कार्ड पर · { $bytes }
 dictation-setup-the-microphone-beside-the = फिर मैसेज फ़ील्ड के पास वाला माइक्रोफ़ोन आपकी कही बात लिखता है, हिंदी, अंग्रेज़ी और दूसरी भाषाओं में। आपकी कही बात इसी कंप्यूटर पर रहती है।
 
 ## make-voice (voice/make-voice.ts)

@@ -126,6 +126,30 @@ async fn a_recording_sent_while_the_model_is_removed_is_refused() {
 }
 
 #[tokio::test]
+async fn the_model_loaded_ahead_hears_the_first_recording_at_once() {
+    let files = Embedder::start().await;
+    let loading = Duration::from_millis(800);
+    let setup = Setup::stand_in(files.file(), "Hi.", Duration::ZERO).loading(loading);
+    let server = start_dictating(setup).await;
+    server.post("/api/dictation/download", json!({})).await;
+    until(&server, "ready").await;
+    // As the microphone is pressed: answered at once, the model loading meanwhile.
+    let start = Instant::now();
+    let (status, _) = server.post("/api/dictation/load", json!({})).await;
+    assert_eq!(status, 204);
+    assert!(start.elapsed() < loading, "{:?}", start.elapsed());
+    sleep(Duration::from_millis(1_200)).await;
+    let start = Instant::now();
+    let (status, _) = server.upload("/api/dictation/hear", wav()).await;
+    assert_eq!(status, 200);
+    assert!(
+        start.elapsed() < Duration::from_millis(400),
+        "{:?}",
+        start.elapsed()
+    );
+}
+
+#[tokio::test]
 async fn a_hearing_the_page_gave_up_keeps_the_model_for_the_next() {
     let (server, _files) = dictating_slowly("Hi.", Duration::from_millis(800)).await;
     server.post("/api/dictation/download", json!({})).await;

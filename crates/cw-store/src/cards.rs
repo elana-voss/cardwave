@@ -52,8 +52,11 @@ fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
         Ok(text.unwrap_or_default())
     };
     let (tags, excerpt) = if described {
+        // The terms, the user's own tags, then the file's (the owner: "keep
+        // them"), each once.
         let mut tags = list(13)?;
         tags.extend(list(15)?);
+        tags.extend(list(9)?);
         let tags = each_once(&tags)
             .into_iter()
             .map(|(_, tag)| tag.to_string())

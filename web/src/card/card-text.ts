@@ -3,20 +3,22 @@
 //
 // The Markdown is the little a card's texts use: paragraphs parted by an empty line, a line break kept, headings
 // (#, ##, ###), lists (-, * or 1.), quotes (>), **bold**, `code`, and narration in italics as a chat shows it
-// (narration.ts). It is made of elements, never of HTML read, so a card's words cannot put markup on the page.
+// (narration.ts); with `links` (a chat's assistant) also links and addresses. It is made of elements, never of
+// HTML read, so a card's words cannot put markup on the page.
 import type { AiTool } from "../api/generated/AiTool";
 import { el } from "../dom";
 import type { IconName } from "../icons";
-import { paragraphs, pieces } from "../narration";
+import { linked, paragraphs, pieces } from "../narration";
 import { wording } from "../language/language";
 
 /** Bold and code within a line; what is between them is read for narration. */
 const MARKED = /\*\*(.+?)\*\*|`([^`]+)`/g;
 
-/** A line as it shows: bold, code and narration. */
-function inline(line: string): (HTMLElement | string)[] {
+/** A line as it shows: bold, code and narration; with `links`, links and addresses as a message draws them. */
+function inline(line: string, links: boolean): (HTMLElement | string)[] {
   const shown: (HTMLElement | string)[] = [];
-  const plain = (text: string) => shown.push(...pieces(text).map(({ text, told }) => (told ? el("em", null, text) : text)));
+  const words = (text: string) => (links ? linked(text) : [text]);
+  const plain = (text: string) => shown.push(...pieces(text).flatMap(({ text, told }) => (told ? [el("em", null, ...words(text))] : words(text))));
   let at = 0;
   for (const match of line.matchAll(MARKED)) {
     plain(line.slice(at, match.index));
@@ -27,8 +29,10 @@ function inline(line: string): (HTMLElement | string)[] {
   return shown;
 }
 
+const inlineOf = inline;
+
 /** Lines as one paragraph's content, a `br` between two. */
-const lines = (parts: string[]) => parts.flatMap((line, at) => (at ? [el("br"), ...inline(line)] : inline(line)));
+const lines = (parts: string[], links: boolean) => parts.flatMap((line, at) => (at ? [el("br"), ...inline(line, links)] : inline(line, links)));
 
 /** A text as the elements its Markdown makes; a text of blank lines alone is nothing. */
 /** The names a card's texts read with in place of `{{char}}` and `{{user}}`. */
@@ -40,7 +44,8 @@ export interface Names {
 /** `text` with `{{char}}` and `{{user}}` (in any case) as `names`, for reading; the text itself keeps them. */
 export const named = (text: string, names: Names): string => text.replace(/\{\{(char|user)\}\}/gi, (_, which: string) => (which.toLowerCase() === "char" ? names.char : names.user));
 
-export function markdown(text: string): HTMLElement[] {
+export function markdown(text: string, links = false): HTMLElement[] {
+  const inline = (line: string) => inlineOf(line, links);
   return paragraphs(text.replace(/\r\n?/g, "\n")).flatMap((block): HTMLElement[] => {
     const rows = block.split("\n").filter((row) => row.trim());
     if (!rows.length) return [];
@@ -50,8 +55,8 @@ export function markdown(text: string): HTMLElement[] {
     const items = (pattern: RegExp) => rows.map((row) => el("li", null, ...inline(row.replace(pattern, ""))));
     if (every(/^\s*[-*]\s+/)) return [el("ul", null, ...items(/^\s*[-*]\s+/))];
     if (every(/^\s*\d+\.\s+/)) return [el("ol", null, ...items(/^\s*\d+\.\s+/))];
-    if (every(/^\s*>/)) return [el("blockquote", null, el("p", null, ...lines(rows.map((row) => row.replace(/^\s*>\s?/, "")))))];
-    return [el("p", null, ...lines(rows))];
+    if (every(/^\s*>/)) return [el("blockquote", null, el("p", null, ...lines(rows.map((row) => row.replace(/^\s*>\s?/, "")), links)))];
+    return [el("p", null, ...lines(rows, links))];
   });
 }
 

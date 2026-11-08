@@ -160,10 +160,13 @@ fn put_back(
         state.replies().is_empty()
             && state.describing().is_empty()
             && state.remembering().is_empty()
+            && state.coding().is_empty()
+            && !state.is_at_work()
             && !state.search.is_reading(),
         Fail::new(Code::RestoreBusy)
     );
     backup::restore(&inner.db, &inner.key, upload, password, &inner.data_dir)?;
+    inner.restores.fetch_add(1, Ordering::SeqCst);
     // At once, so a later failure leaves no switch of the data before.
     state.web_pictures().clear();
     // As at a start: a reply that was being written when the backup was made is ended, and so on.

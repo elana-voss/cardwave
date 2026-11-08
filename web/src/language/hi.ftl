@@ -238,7 +238,7 @@ backup-back-up = बैकअप सहेजें
 backup-no-file = कोई फ़ाइल नहीं चुनी गई
 backup-choose-file = फ़ाइल चुनें
 backup-its-password = बैकअप का पासवर्ड
-backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता।
+backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता। यहाँ का पासवर्ड जैसा है वैसा ही रहता है।
 backup-file = फ़ाइल
 backup-restore-title = बैकअप रीस्टोर करें
 backup-choose-first = पहले बैकअप की फ़ाइल चुनें।
@@ -327,7 +327,7 @@ password-repeat = पासवर्ड दोबारा लिखें
 password-asked-sign-in = साइन इन करते समय पूछा जाता है
 password-is-on = चालू · ऐप खुलते समय पूछा जाता है
 password-is-off = बंद · इस कंप्यूटर पर कोई भी Cardwave खोल सकता है
-password-start-forgotten = भूला हुआ पासवर्ड वापस नहीं मिल सकता। फिर से शुरू करने के लिए बैकअप रीस्टोर करें।
+password-start-forgotten = भूला हुआ पासवर्ड वापस नहीं मिल सकता।
 password-open = खोलें
 password-back = वापस
 
@@ -435,101 +435,6 @@ update-auto = अपने-आप देखें
 update-auto-about = शुरू होते समय और दिन में एक बार नया वर्ज़न देखें
 update-check = देखें
 update-about = देखें कि ऐप का नया वर्ज़न उपलब्ध है या नहीं।
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = प्रोवाइडर का पता सेटिंग्स में लिखें
-setup-manually-models = खुद सेट करें
-setup-use-this = यही इस्तेमाल करें
-setup-choose-folder = फ़ोल्डर चुनें
-setup-this-computer = यह कंप्यूटर
-setup-this-computer-about = आपकी डाउनलोड की हुई AI मॉडल फ़ाइलें (.gguf), जिन्हें Cardwave चलाता है
-setup-models-example = C:\Users\aap\Models
-setup-models-says = इसमें हर मॉडल फ़ाइल (.gguf) एक चैट मॉडल है, जिसे Cardwave इसी कंप्यूटर पर चलाता है। अभी कोई मॉडल फ़ाइल नहीं? एक खाली फ़ोल्डर चुनें: फिर सेटिंग्स › प्रोवाइडर › यह कंप्यूटर इस कंप्यूटर पर चलने वाले मॉडल दिखाता है और उन्हें उसी में डाउनलोड करता है।
-setup-not-this = यह नहीं?
-setup-recognised = पहचाना गया:{ " " }
-setup-provider = प्रोवाइडर
-setup-none-of-these = इनमें से कोई नहीं?
-setup-several = यह कुंजी एक से ज़्यादा प्रोवाइडर पर लागू होती है। यह किसकी है?
-setup-unknown = Cardwave नहीं बता सकता कि यह कुंजी किस प्रोवाइडर की है। प्रोवाइडर को नाम से ढूँढें, या उसका पता लिखें।
-setup-find = ढूँढें
-setup-find-field = प्रोवाइडर का नाम या वेबसाइट
-setup-find-example = नाम या वेबसाइट, जैसे example.com
-setup-find-hint = Cardwave प्रोवाइडर का पता ढूँढता है। आपकी कुंजी नहीं भेजी जाती।
-setup-name = नाम
-setup-name-hint = Cardwave की प्रोवाइडर सूची में दिखने वाला नाम। आप इसे खाली छोड़ सकते हैं।
-setup-address = पता
-setup-address-hint = इसे अपने प्रोवाइडर की वेबसाइट से कॉपी करें, जैसे https://api.example.com/v1
-setup-continue = आगे बढ़ें
-setup-local = इस कंप्यूटर का प्रोग्राम इस्तेमाल करें (जैसे LM Studio या Ollama)
-setup-no-key = कुंजी नहीं है?{ " " }
-setup-api-key = API कुंजी
-setup-key-placeholder = अपनी कुंजी यहाँ पेस्ट करें
-setup-found = मिला
-setup-no-api = Cardwave को { $website } पर AI का कोई पता नहीं मिला। प्रोवाइडर के दस्तावेज़ में उसका पता (अक्सर “base URL” कहा जाता है) देखें और लिखें।
-setup-find-by-name = नाम से ढूँढें
-setup-enter-address = पता लिखें
-setup-how = इसे सेट अप कैसे करें
-setup-not-listed = सूची में “{ $name }” नाम का कोई प्रोवाइडर नहीं है। इसकी जगह इसकी वेबसाइट लिखें, या इसका पता लिखें।
-setup-looking = ढूँढा जा रहा है…
-setup-looking-servers = इस कंप्यूटर पर प्रोग्राम ढूँढे जा रहे हैं…
-setup-no-server = इस कंप्यूटर पर कोई AI प्रोग्राम जवाब नहीं देता (Cardwave ने { $names } ढूँढे)। कोई एक शुरू करें, फिर दोबारा देखें।
-setup-no-other-server = इस कंप्यूटर पर कोई और AI प्रोग्राम जवाब नहीं देता (Cardwave ने { $names } ढूँढे)। कोई एक शुरू करें, फिर दोबारा देखें।
-setup-tested = { " " }· जाँचा गया
-setup-picking = आपके प्रोवाइडर के मॉडलों में से चुने जा रहे हैं…
-setup-the-helper-model = हेल्पर मॉडल
-setup-want-voice = आवाज़ डाउनलोड करें
-setup-want-search = सर्च मॉडल डाउनलोड करें
-setup-confirm = पक्का करें
-setup-back = वापस
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · कोई कुंजी नहीं
-setup-unlisted = अभी नहीं चुना गया। प्रोवाइडर कोई मॉडल नहीं बताता: मॉडल की ID लिखें।
-setup-not-chosen = अभी नहीं चुना गया
-setup-the-voice = आवाज़
-setup-the-search-model = सर्च
-setup-nothing-now = अभी कुछ डाउनलोड नहीं होता। खोज और आवाज़ बाद में सेटिंग्स में सेट की जा सकती हैं।
-setup-downloaded = डाउनलोड होगा: { $what }।
-setup-and = { $first } और { $second }
-setup-download-size = डाउनलोड करें ({ $size })
-setup-where = सेटअप · चरण { $step } / { $steps }
-setup-title-1 = प्रोवाइडर
-setup-title-2 = मॉडल
-setup-title-3 = कार्ड
-setup-title-4 = डाउनलोड
-setup-about-1 = अपने AI प्रोवाइडर की वेबसाइट से API कुंजी पेस्ट करें। Cardwave प्रोवाइडर ढूँढ लेता है।
-setup-about-2 = Cardwave ने इन्हें आपके प्रोवाइडर के मॉडलों में से चुना है। इनमें से कोई भी अभी या बाद में सेटिंग्स में बदलें।
-setup-about-3 = अगर आपके पास कैरेक्टर कार्ड फ़ाइलें हैं (दूसरे ऐप्स की PNG या JSON), तो Cardwave उन्हें किसी फ़ोल्डर से ला सकता है।
-setup-about-4 = आप अभी Cardwave खोल सकते हैं: डाउनलोड चलते रहेंगे, और पूरे होने पर एक सूचना आपको बताएगी।
-setup-no-list = मॉडलों की कोई सूची नहीं: { $why } किसी मॉडल की ID लिखने के लिए चुनें दबाएँ, या कुंजी जाँचने के लिए वापस जाएँ।
-setup-change = बदलें
-setup-choose = चुनें
-setup-worker-does = { " " }· सारांश, टैग और यादें लिखता है
-setup-same-as-chat = चैट मॉडल वाला ही
-setup-no-picks = कोई मॉडल नहीं चुना गया: { $why }
-setup-helper-model = हेल्पर मॉडल
-setup-set-up = Cardwave तैयार है।
-setup-folder-not-kept = कार्ड फ़ोल्डर इस्तेमाल नहीं हो सका: { $why }। आप इसे सेटिंग्स › डेटा में फिर से चुन सकते हैं।
-
-setup-skip = छोड़ें
-setup-import-folder = इस फ़ोल्डर से इंपोर्ट करें
-setup-cards-about = इससे केवल कार्ड फ़ाइलें ली जाती हैं; फ़ोल्डर में कुछ भी हटाया या बदला नहीं जाता। सेटअप पूरा होने पर इसके कार्ड आ जाते हैं, और बाद में इसमें रखे गए कार्ड अपने-आप आ जाते हैं। इसे बाद में सेटिंग्स › डेटा में भी चुना जा सकता है।
-setup-done = हो गया
-setup-done-mark = { " " }हो गया
-setup-percent = { $percent }%
-setup-waiting = इंतज़ार में
-setup-try-again = फिर कोशिश करें
-setup-try-voice-again = आवाज़ फिर से आज़माएँ
-setup-try-search-again = सर्च फिर से आज़माएँ
-setup-voice-failed = आवाज़ डाउनलोड नहीं हो सकी: { $why }
-setup-search-failed = खोज मॉडल डाउनलोड नहीं हो सका: { $why }
-setup-downloads-done = डाउनलोड पूरे हो गए: Cardwave पूरी तरह तैयार है।
-setup-cards-later = Cardwave खुलते ही आपके कार्ड फ़ोल्डर से आ जाएँगे।
-setup-voice = आवाज़
-setup-search = सर्च
-setup-open = Cardwave खोलें
-setup-voice-named = { $name } · { $language }
-setup-voice-model = आवाज़ मॉडल
 
 ## The breadcrumbs of a page under Settings
 
@@ -643,6 +548,10 @@ advanced-not-described = { $count ->
    *[other] { $count } किरदार
   } का विवरण अभी नहीं लिखा गया
 advanced-describe-cards = किरदारों का विवरण लिखें
+advanced-describe-cost = { $count ->
+    [one] { $count } कैरेक्टर
+   *[other] { $count } कैरेक्टर
+  } के लिए लगभग { $low } से { $high } टोकन
 advanced-failed = { $count ->
     [one] { $count } विफल
    *[other] { $count } विफल
@@ -652,6 +561,7 @@ advanced-describe-again-stop = रोकें
 advanced-describe-again-about = हेल्पर मॉडल से हर किरदार का एक-पंक्ति विवरण, सारांश, टैग और वह सब फिर से लिखता है जिससे "ज़रूरत के हिसाब से" उसे ढूँढता है, हर एक पर लगभग 11,000 से 12,000 टोकन। जो आपने खुद बदला, वह बना रहता है। प्रदाता टोकन के हिसाब से शुल्क लेते हैं।
 advanced-no-characters = विवरण लिखने के लिए कोई किरदार नहीं
 advanced-describe-again-far = { $all } में से { $done } का विवरण फिर से लिखा गया
+advanced-describe-again-stopped = { $all } में से { $done } का विवरण फिर से लिखने के बाद रोका गया
 advanced-describe-again-failed = { $count ->
     [one] { $count } विफल, पहले जैसा ही रहता है
    *[other] { $count } विफल, पहले जैसे ही रहते हैं
@@ -972,7 +882,7 @@ gen-hair-colour = बालों का रंग
 gen-personality = स्वभाव
 gen-relates = यह किरदार आपके लिए कौन है
 gen-make = किरदार बनाएँ
-gen-what = कुछ ख़ूबियाँ चुनें; AI किरदार, उसकी कहानी और उसका पहला मैसेज लिखता है।
+gen-what = कुछ ख़ूबियाँ चुनें; AI किरदार का पहला मैसेज और उसके बात करने का ढंग लिखता है।
 interview-goes-to = किरदार लिखने के लिए आपके जवाब { $provider } को जाते हैं।
 interview-stays = आपके जवाब इसी कंप्यूटर पर रहते हैं।
 interview-own-words = या अपने शब्द जोड़ें

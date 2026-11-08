@@ -118,3 +118,28 @@ fn key_hex_is_validated() {
     assert!(DbKey::from_hex(&"zz".repeat(32)).is_err());
     assert!(DbKey::from_hex(&"0F".repeat(32)).is_ok());
 }
+
+/// A backup whose database a newer Cardwave wrote is told as newer, not as damaged.
+#[test]
+fn a_backup_from_a_newer_cardwave_is_told_as_newer() {
+    let theirs = Scratch::new();
+    let key = DbKey::generate().unwrap();
+    let db = Db::open(&theirs.db(), &key).unwrap();
+    db.with(|c| c.pragma_update(None, "user_version", schema_version() as u32 + 1))
+        .unwrap();
+    drop(db);
+    let mut file = format!("Cardwave backup 1\n{{\"key\":\"{}\"}}\n", key.to_hex()).into_bytes();
+    file.extend(std::fs::read(theirs.db()).unwrap());
+    let backup = theirs.0.join("backup");
+    std::fs::write(&backup, file).unwrap();
+
+    let ours = Scratch::new();
+    let our_key = DbKey::generate().unwrap();
+    let db = Db::open(&ours.db(), &our_key).unwrap();
+    let refused = cw_store::backup::restore(&db, &our_key, &backup, None, &ours.0).unwrap_err();
+    let fail = refused.downcast_ref::<cw_core::Fail>().expect("a Fail");
+    assert_eq!(
+        fail.details.get("what").map(ToString::to_string).as_deref(),
+        Some("backup_newer")
+    );
+}

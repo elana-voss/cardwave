@@ -1,7 +1,7 @@
 // The card's picture at the head of its page (boards "Card's picture", "Make a picture", "Earlier pictures"):
 // `heroPicture` draws it. A click picks a file, and a file dropped anywhere on the page replaces it (the picture
 // says "Drop to use this picture" while one is dragged over the page); pointed at, the picture shows "Make a
-// picture" and "Earlier pictures". A card without art shows the empty picture, with "Make a picture". No picture
+// picture" and "Earlier pictures" (only where the card has had a picture). A card without art shows the empty picture, with "Make a picture". No picture
 // is ever thrown away: each change says "Picture changed." with Undo, which shows the one before.
 //
 // A new card not made yet keeps the file chosen (`Card.pending`) until it is made with it (card-page.ts); "Make a
@@ -12,7 +12,7 @@ import { cardImageUrl, cardPictures, cardPictureUrl, getImages, makeCardPicture,
 import type { CardPicture } from "../api/generated/CardPicture";
 import type { PictureChanged } from "../api/generated/PictureChanged";
 import { after, load, type Card } from "./card-page";
-import { announce, el, fileField, hasFiles, noticeBox, oneAtATime } from "../dom";
+import { announce, el, fileField, hasFiles, noticeBox, oneAtATime, TOUCH } from "../dom";
 import { isArt, PICTURES } from "../art";
 import { dialog } from "../dialogs";
 import { dayMonth } from "../format";
@@ -25,6 +25,12 @@ const DRAG_GONE_MS = 150;
 const MAX_WORDS = 1000;
 
 /** What each source is called in "Earlier pictures". */
+/** What the picture's place says it does: a touch screen taps and drops nothing (Claude). */
+export const choosing = (touch = TOUCH.matches) =>
+  touch
+    ? { label: wording("card-picture-card-picture-tap-to"), says: wording("card-picture-tap-to-choose") }
+    : { label: wording("card-picture-card-picture-click-to"), says: wording("card-picture-click-or-drop-a") };
+
 const cameFrom = (): Record<CardPicture["source"], string> => ({ imported: wording("importing-imported"), file: wording("card-picture-from-a-file"), made: wording("card-picture-made") });
 
 /** The card's picture, with what changes it. */
@@ -36,23 +42,31 @@ export function heroPicture(c: Card): HTMLElement {
     node.classList.remove("dropping");
     if (file) choose(c, file);
   });
-  const pick = el("button", { type: "button", className: "pic-choose", ariaLabel: wording("card-picture-card-picture-click-to"), onclick: () => field.click() });
+  const pick = el("button", { type: "button", className: "pic-choose", ariaLabel: choosing().label, onclick: () => field.click() });
   const made = c.id !== null;
   // Grey until the card is made, and why.
   const waits = made ? undefined : wording("card-picture-name-first");
   const make = el("button", { type: "button", className: "rbtn", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
-  // A card not made yet has had no other picture.
-  const earlier = made && el("button", { type: "button", className: "rbtn", onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
+  // A card not made yet has had no other picture; a made one offers them once it is known to have had one.
+  const earlier = made && el("button", { type: "button", className: "rbtn", hidden: true, onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
   const blankMake = el("button", { type: "button", className: "btn btn-secondary on-box", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
   // A card made that shows none may have had pictures: they are brought back as from a picture (Claude).
-  const blankEarlier = made && el("button", { type: "button", className: "btn btn-secondary on-box", onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
+  const blankEarlier = made && el("button", { type: "button", className: "btn btn-secondary on-box", hidden: true, onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
   node.append(
     field,
     pick,
-    el("div", { className: "pic-ov" }, el("p", null, wording("card-picture-click-to-choose-a")), el("div", { className: "rbtns" }, make, earlier)),
-    el("div", { className: "pic-empty pic-blank" }, icon("picture", 28), el("span", null, wording("card-picture-click-or-drop-a")), blankMake, blankEarlier),
+    el("div", { className: "pic-ov" }, el("p", null, choosing().says), el("div", { className: "rbtns" }, make, earlier)),
+    el("div", { className: "pic-empty pic-blank" }, icon("picture", 28), el("span", null, choosing().says), blankMake, blankEarlier),
     el("div", { className: "pic-drop" }, wording("card-picture-drop-to-use-this")),
   );
+  if (c.id !== null && earlier && blankEarlier) {
+    void cardPictures(c.id)
+      .then((pictures) => {
+        earlier.hidden = blankEarlier.hidden = !pictures.length;
+      })
+      // Not read, the buttons stay away: the picture itself works without them.
+      .catch(() => undefined);
+  }
   if (src) {
     const picture = el("img", { src, alt: "" });
     picture.onload = () => {

@@ -156,8 +156,8 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await open(page, chat);
   const shown = persona(page);
   const mine = messages(page).nth(1).locator(".speaker");
-  await expect(linesOf(persona(page))).toHaveText(["User", "New persona…"]);
-  await expect(shown).toHaveText("User");
+  await expect(linesOf(persona(page))).toHaveText(["Guest", "New persona…"]);
+  await expect(shown).toHaveText("Guest");
   // No prompt preset made yet: nothing to choose, so the part is not there.
   await expect(panel(page).getByLabel("Prompt preset", { exact: true })).toBeHidden();
   await say(page, "Hello");
@@ -169,7 +169,7 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await expect(form).toBeHidden();
   await pickFrom(persona(page), "New persona…");
   await expect(form).toBeVisible();
-  await expect(shown).toHaveText("User");
+  await expect(shown).toHaveText("Guest");
   await expect(form.getByLabel("Name")).toBeFocused();
   // Cancel makes none and empties the form.
   await form.getByLabel("Name").fill("Nobody");
@@ -191,7 +191,7 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await expect(form.getByLabel("Name")).toHaveValue("  Ines Fenn ");
   await form.getByRole("button", { name: "Save" }).click();
   await expect(form).toBeHidden();
-  await expect(linesOf(persona(page))).toHaveText(["User", "Ines Fenn", "New persona…"]);
+  await expect(linesOf(persona(page))).toHaveText(["Guest", "Ines Fenn", "New persona…"]);
   await expect(shown).toHaveText("Ines Fenn");
   // The user's messages go by that name, and the next reply is written for it.
   await expect(mine).toHaveText("Ines Fenn (you)");
@@ -203,16 +203,16 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
 
   // A choice the server does not take is not shown as made.
   await page.route("**/api/chats/*/persona", (route) => route.fulfill({ status: 500, json: { code: "internal", error: "no persona today", details: {} } }));
-  await pickFrom(persona(page), "User");
+  await pickFrom(persona(page), "Guest");
   await expect(page.getByRole("alert")).toHaveText("Something went wrong in Cardwave. Try again.");
   await expect(shown).toHaveText("Ines Fenn");
   await expect(mine).toHaveText("Ines Fenn (you)");
   await page.unroute("**/api/chats/*/persona");
 
   // Back to nobody in particular.
-  await pickFrom(persona(page), "User");
+  await pickFrom(persona(page), "Guest");
   await expect(mine).toHaveText("You");
-  await expect(shown).toHaveText("User");
+  await expect(shown).toHaveText("Guest");
   expect((await chatOf(request, chat)).chat.persona_id).toBeNull();
   // The persona is there for every chat, and the one chosen is shown after a new start.
   await pickFrom(persona(page), "Ines Fenn");
@@ -221,8 +221,8 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await expect(shown).toHaveText("Ines Fenn");
   await expect(mine).toHaveText("Ines Fenn (you)");
   await open(page, await start(request, "moss"));
-  await expect(linesOf(persona(page))).toHaveText(["User", "Ines Fenn", "New persona…"]);
-  await expect(shown).toHaveText("User");
+  await expect(linesOf(persona(page))).toHaveText(["Guest", "Ines Fenn", "New persona…"]);
+  await expect(shown).toHaveText("Guest");
 });
 
 test("a chat's lorebooks are switches, and one switched off stays out of the replies", async ({ page, request }) => {
@@ -309,6 +309,22 @@ test("a click chooses a reply, whose part of the side panel shows what it was gi
   await page.keyboard.press("Escape");
   await expect(page.locator(".message.chosen")).toHaveCount(0);
   await expect(used(page)).toHaveText(["Entry of The FenThe Grey Heron"]);
+});
+
+test("in a narrow window the side panel lies over the messages only: its Close, the bar and Send stay in reach; Escape closes it", async ({ page, request }) => {
+  await page.setViewportSize({ width: 800, height: 700 });
+  await open(page, await start(request, "wren"));
+  const toggle = button(page, "Show side panel");
+  await toggle.click();
+  await expect(panel(page)).toBeVisible();
+  for (const control of [panel(page).getByRole("button", { name: "Close", exact: true }), button(page, "Hide side panel"), button(page, "Send")]) {
+    const box = (await control.boundingBox())!;
+    const topmost = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest("button")?.ariaLabel ?? null, [box.x + box.width / 2, box.y + box.height / 2]);
+    expect(topmost).toBe(await control.getAttribute("aria-label"));
+  }
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).toBeHidden();
+  await expect(toggle).toBeFocused();
 });
 
 // The two layouts.

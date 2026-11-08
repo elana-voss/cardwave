@@ -9,11 +9,12 @@
 //! title first (`describe/sent.rs`): a compact card gets compact answers, whose JSON some
 //! models break (glm-5.3 on the needs: 10 of 49, the app's first ten 82 of 107,
 //! against 87 on this line; milestone 121). Answers are read field by field
-//! (`Facets::read`), "reject" refuses the card, unknown terms are dropped.
+//! (`Facets::read`), "reject" refuses the card, unknown terms are dropped; a
+//! logline that copies a greeting is asked once more, then left empty (`copies_a_greeting`).
 //!
 //! A description is a row of `card_descriptions`: queued, described, refused
 //! (never asked again) or failed. A title the user gave (`title_edited`) is never
-//! replaced, the user's tags (`own_tags`) stand after the terms, a summary the
+//! replaced, the user's tags (`own_tags`) and the file's stand after the terms, a summary the
 //! user wrote (`summary_edited`) stays, also when described again. The worker is
 //! `api/describe.rs`.
 
@@ -24,7 +25,7 @@ use cw_ccv4::{Document, mapping, tag_key};
 use cw_core::{Code, ErrorBody, Fail};
 use cw_prompt::{PromptMessage, Role, tokens};
 use cw_provider::Http;
-use cw_provider::{Provider, object};
+use cw_provider::{Provider, answer, object};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use ts_rs::TS;
@@ -560,6 +561,65 @@ pub enum Outcome {
     Refused(String),
 }
 
+/// What `{{user}}` may read as in a logline that copies a greeting.
+const USER_AS: [&str; 3] = ["you", "user", "the user"];
+
+/// `greeting` with `{{char}}` as `name` and `{{user}}` as `user`, whatever their case.
+fn named(greeting: &str, name: &str, user: &str) -> String {
+    let is = |rest: &str, mark: &str| {
+        rest.get(..mark.len())
+            .is_some_and(|it| it.eq_ignore_ascii_case(mark))
+    };
+    let mut out = String::new();
+    let mut at = 0;
+    while at < greeting.len() {
+        let rest = &greeting[at..];
+        if is(rest, "{{char}}") {
+            out.push_str(name);
+            at += "{{char}}".len();
+        } else if is(rest, "{{user}}") {
+            out.push_str(user);
+            at += "{{user}}".len();
+        } else {
+            let c = rest.chars().next().unwrap_or(' ');
+            out.push(c);
+            at += c.len_utf8();
+        }
+    }
+    out
+}
+
+/// Whether `logline` is a greeting of `card` (`card_text`), or its start where
+/// the logline was cut: by its words alone, whatever their case and marks, its
+/// `{{char}}` as the character's name and `{{user}}` as any of [`USER_AS`].
+fn copies_a_greeting(card: &str, logline: &str) -> bool {
+    let words = |text: &str| -> String {
+        text.split(|c: char| !c.is_alphanumeric())
+            .filter(|word| !word.is_empty())
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_lowercase()
+    };
+    let logline = words(logline);
+    let Ok(card) = serde_json::from_str::<Value>(card) else {
+        return false;
+    };
+    let characters = card["characters"].as_array().cloned().unwrap_or_default();
+    !logline.is_empty()
+        && characters.iter().any(|character| {
+            let others = character["alternate_greetings"].as_array().cloned();
+            let name = character["name"].as_str().unwrap_or_default();
+            std::iter::once(character["first_mes"].clone())
+                .chain(others.unwrap_or_default())
+                .filter_map(|greeting| greeting.as_str().map(str::to_string))
+                .any(|greeting| {
+                    USER_AS
+                        .iter()
+                        .any(|user| words(&named(&greeting, name, user)).starts_with(&logline))
+                })
+        })
+}
+
 /// Asks the provider's model to classify the card and, unless it refuses the
 /// card, to write its texts.
 pub async fn ask(http: &Http, provider: &Provider, card: &str) -> anyhow::Result<Outcome> {
@@ -615,7 +675,7 @@ pub async fn ask(http: &Http, provider: &Provider, card: &str) -> anyhow::Result
             .take(most)
             .collect()
     };
-    let (written, logline) = asked_and_read(http, provider, &write, |said| {
+    let read = |said: &str| {
         let written = object(said).context(
             Fail::said(Code::ModelAnswer, "the worker model's texts cannot be read")
                 .with("what", "worker_texts"),
@@ -627,8 +687,20 @@ pub async fn ask(http: &Http, provider: &Provider, card: &str) -> anyhow::Result
                 .with("what", "logline")
         );
         Ok((written, logline))
-    })
-    .await?;
+    };
+    let (mut written, mut logline) = asked_and_read(http, provider, &write, read).await?;
+    if copies_a_greeting(card, &logline) {
+        // Asked once more; a second copy, or a second answer that fails, keeps the first without its logline.
+        match answer(http, provider, &write)
+            .await
+            .and_then(|said| read(&said))
+        {
+            Ok((again, line)) if !copies_a_greeting(card, &line) => {
+                (written, logline) = (again, line)
+            }
+            _ => logline.clear(),
+        }
+    }
     Ok(Outcome::Described {
         facets: Box::new(facets),
         title: line(&text(&written, "title"), TITLE_LIMIT),
@@ -672,6 +744,9 @@ pub trait Storage: crate::failures::Failures {
     -> anyhow::Result<()>;
     fn fail_waiting_descriptions(&self, user: i64, reason: &str) -> anyhow::Result<()>;
     fn forget_queued_descriptions(&self) -> anyhow::Result<()>;
+    /// Drops the user's cards that wait to be described, and their needs that wait; `in_hand`, the card the
+    /// worker has, stays to finish.
+    fn stop_describing(&self, user: i64, in_hand: Option<i64>) -> anyhow::Result<()>;
     /// The summary and facets (JSON) of a card that is described.
     fn description(&self, card_id: i64) -> anyhow::Result<Option<(String, String)>>;
     /// How many cards it gave the summary: none where it is not described.
@@ -683,6 +758,11 @@ pub trait Storage: crate::failures::Failures {
 /// queued.
 pub fn queue(db: &dyn Storage, user: i64, only: Option<i64>) -> anyhow::Result<usize> {
     db.queue_descriptions(user, only)
+}
+
+/// Stops "Describe characters": what waits is dropped; `in_hand`, the card a worker has, finishes.
+pub fn stop(db: &dyn Storage, user: i64, in_hand: Option<i64>) -> anyhow::Result<()> {
+    db.stop_describing(user, in_hand)
 }
 
 /// How far the describing of the user's cards has come.
@@ -808,5 +888,28 @@ mod tests {
         assert_eq!(marks, VOCABULARY.len());
         assert!(known("frame", "self-insert-target") && known("flag", "spanking/impact"));
         assert!(known("age", "older") && !known("age", "unspecified") && !known("frame", "frame"));
+    }
+
+    #[test]
+    fn a_logline_that_copies_a_greeting_is_no_logline() {
+        let card = r#"{"characters": [{"first_mes": "*She looks up.* Course plotted. Coffee is in the galley, captain.", "alternate_greetings": ["Morning."]}]}"#;
+        assert!(copies_a_greeting(
+            card,
+            "She looks up. Course plotted. Coffee is in the galley, captain."
+        ));
+        assert!(copies_a_greeting(card, "Morning"));
+        assert!(!copies_a_greeting(
+            card,
+            "A ship's navigator who keeps the coffee hot."
+        ));
+    }
+
+    #[test]
+    fn a_greeting_is_compared_with_its_names_in_place() {
+        let card =
+            r#"{"characters": [{"name": "Mira", "first_mes": "{{char}} hands {{User}} a cup."}]}"#;
+        assert!(copies_a_greeting(card, "Mira hands you a cup."));
+        assert!(copies_a_greeting(card, "Mira hands the user a cup."));
+        assert!(!copies_a_greeting(card, "Mira hands nobody a cup."));
     }
 }

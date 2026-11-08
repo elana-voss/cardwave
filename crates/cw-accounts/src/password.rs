@@ -202,8 +202,9 @@ pub fn unseal(sealed: &Sealed, password: &str) -> anyhow::Result<DbKey> {
         bytes(&sealed.nonce)?,
         bytes(&sealed.key)?,
     );
+    // argon2id takes no salt under 8 bytes; `seal` writes 16.
     ensure!(
-        nonce.len() == 12,
+        nonce.len() == 12 && salt.len() >= argon2::MIN_SALT_LEN,
         Fail::said(Code::NotReadable, "the sealed key is damaged").with("what", "damaged_key")
     );
     ensure!(
@@ -334,5 +335,19 @@ impl Tries {
             }
         }
         outcome
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_sealed_key_with_a_salt_too_short_is_damaged() {
+        let mut sealed = seal(&DbKey::generate().unwrap(), "harbour").unwrap();
+        sealed.salt = STANDARD.encode([1u8; 4]);
+        let refused = unseal(&sealed, "harbour").unwrap_err();
+        let fail = refused.downcast_ref::<Fail>().expect("a Fail");
+        assert_eq!(fail.code, Code::NotReadable);
     }
 }

@@ -242,7 +242,7 @@ backup-back-up = 儲存備份
 backup-no-file = 未選擇檔案
 backup-choose-file = 選擇檔案
 backup-its-password = 備份的密碼
-backup-restoring = 還原會取代 Cardwave 中的一切：聊天、角色、使用者角色、世界書、記憶和設定。此操作無法復原。
+backup-restoring = 還原會取代 Cardwave 中的一切：聊天、角色、使用者角色、世界書、記憶和設定。此操作無法復原。這裡設定的密碼保持不變。
 backup-file = 檔案
 backup-restore-title = 還原備份
 backup-choose-first = 請先選擇備份檔案。
@@ -330,7 +330,7 @@ password-repeat = 再次輸入密碼
 password-asked-sign-in = 登入時詢問
 password-is-on = 開啟 · 應用程式開啟時詢問
 password-is-off = 關閉 · 這台電腦前的任何人都能開啟 Cardwave
-password-start-forgotten = 忘記的密碼無法找回。還原一份備份即可重新開始。
+password-start-forgotten = 忘記的密碼無法找回。
 password-open = 開啟
 password-back = 返回
 
@@ -434,101 +434,6 @@ update-auto = 自動檢查
 update-auto-about = 啟動時和每天一次檢查新版本
 update-check = 檢查
 update-about = 檢查是否有更新版本的應用程式。
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = 在「設定」中輸入供應商位址
-setup-manually-models = 手動設定
-setup-use-this = 使用這個
-setup-choose-folder = 選擇資料夾
-setup-this-computer = 這台電腦
-setup-this-computer-about = 你下載的 AI 模型檔案（.gguf），由 Cardwave 執行
-setup-models-example = C:\Users\you\Models
-setup-models-says = 其中每個模型檔案（.gguf）都是一個聊天模型，由 Cardwave 在這台電腦上執行。還沒有模型檔案？選一個空資料夾：設定 › 供應商 › 這台電腦 會列出適合這台電腦的模型，並下載到其中。
-setup-not-this = 不是這個？
-setup-recognised = 已識別：
-setup-provider = 供應商
-setup-none-of-these = 都不是？
-setup-several = 這個金鑰符合不只一個供應商。是哪一個？
-setup-unknown = Cardwave 無法判斷這個金鑰屬於哪個供應商。請依名稱尋找供應商，或輸入它的位址。
-setup-find = 尋找
-setup-find-field = 供應商名稱或網站
-setup-find-example = 名稱或網站，例如 example.com
-setup-find-hint = Cardwave 會查找供應商的位址。你的金鑰不會被傳送。
-setup-name = 名字
-setup-name-hint = 在 Cardwave 供應商清單中顯示的名稱。可以留空。
-setup-address = 位址
-setup-address-hint = 從供應商的網站上複製，例如 https://api.example.com/v1
-setup-continue = 繼續
-setup-local = 使用這台電腦上的程式（例如 LM Studio 或 Ollama）
-setup-no-key = 沒有金鑰？
-setup-api-key = API 金鑰
-setup-key-placeholder = 在此貼上你的金鑰
-setup-found = 已找到
-setup-no-api = Cardwave 沒有在 { $website } 上找到 AI 的位址。請在供應商的文件中查找它的位址（常稱為「base URL」）並輸入。
-setup-find-by-name = 依名稱尋找
-setup-enter-address = 輸入位址
-setup-how = 如何設定
-setup-not-listed = 清單上沒有名為「{ $name }」的供應商。請改為輸入它的網站，或輸入它的位址。
-setup-looking = 正在尋找……
-setup-looking-servers = 正在尋找這台電腦上的程式……
-setup-no-server = 這台電腦上沒有 AI 程式回應（Cardwave 尋找了 { $names }）。請啟動其中一個，然後再找一次。
-setup-no-other-server = 這台電腦上沒有其他 AI 程式回應（Cardwave 尋找了 { $names }）。請啟動其中一個，然後再找一次。
-setup-tested = { " " }· 已測試
-setup-picking = 正在從你的供應商的模型中挑選……
-setup-the-helper-model = 輔助模型
-setup-want-voice = 下載語音
-setup-want-search = 下載搜尋模型
-setup-confirm = 確認
-setup-back = 返回
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · 沒有金鑰
-setup-unlisted = 尚未選擇。供應商沒有列出模型：請輸入模型的 ID。
-setup-not-chosen = 尚未選擇
-setup-the-voice = 語音
-setup-the-search-model = 搜尋
-setup-nothing-now = 現在不下載任何東西。搜尋和語音可以稍後在「設定」中設定。
-setup-downloaded = 將下載：{ $what }。
-setup-and = { $first }和{ $second }
-setup-download-size = 下載（{ $size }）
-setup-where = 初始設定 · 第 { $step } 步，共 { $steps } 步
-setup-title-1 = 供應商
-setup-title-2 = 模型
-setup-title-3 = 角色卡
-setup-title-4 = 下載
-setup-about-1 = 貼上你從 AI 供應商網站取得的 API 金鑰。Cardwave 會找到供應商。
-setup-about-2 = Cardwave 從你的供應商的模型中選了這些。現在或之後都可以在設定中變更任何一項。
-setup-about-3 = 如果你有角色卡檔案（來自其他應用程式的 PNG 或 JSON），Cardwave 可以從資料夾匯入它們。
-setup-about-4 = 現在就可以開啟 Cardwave：下載會繼續進行，完成時會有通知告訴你。
-setup-no-list = 沒有模型清單：{ $why } 按「選擇」輸入模型的 ID，或「返回」檢查金鑰。
-setup-change = 變更
-setup-choose = 選擇
-setup-worker-does = { " " }· 撰寫摘要、標籤和記憶
-setup-same-as-chat = 與聊天模型相同
-setup-no-picks = 沒有挑選到模型：{ $why }
-setup-helper-model = 輔助模型
-setup-set-up = Cardwave 已準備就緒。
-setup-folder-not-kept = 無法使用角色卡資料夾：{ $why }。你可以在「設定 › 資料」中重新選擇。
-
-setup-skip = 略過
-setup-import-folder = 從此資料夾匯入
-setup-cards-about = 只讀取其中的角色卡檔案；資料夾中的內容不會被移動或更改。設定完成後會匯入其中的角色卡，之後放進去的角色卡也會自動進來。你也可以稍後在「設定 › 資料」中選擇它。
-setup-done = 完成
-setup-done-mark = { " " }完成
-setup-percent = { $percent }%
-setup-waiting = 等待中
-setup-try-again = 再試一次
-setup-try-voice-again = 再試一次語音
-setup-try-search-again = 再試一次搜尋
-setup-voice-failed = 無法下載語音：{ $why }
-setup-search-failed = 無法下載搜尋模型：{ $why }
-setup-downloads-done = 下載已完成：Cardwave 已全部設定好。
-setup-cards-later = Cardwave 開啟後，你的角色卡就會從資料夾匯入。
-setup-voice = 語音
-setup-search = 搜尋
-setup-open = 開啟 Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = 語音模型
 
 ## The breadcrumbs of a page under Settings
 
@@ -641,6 +546,9 @@ advanced-not-described = { $count ->
    *[other] { $count } 個角色
   }尚未描述
 advanced-describe-cards = 描述角色
+advanced-describe-cost = { $count ->
+   *[other] { $count } 個角色
+  }約需 { $low } 至 { $high } 個 token
 advanced-failed = { $count ->
    *[other] { $count } 張失敗
   }：{ $failure }。按「描述角色」再試一次。
@@ -649,6 +557,7 @@ advanced-describe-again-stop = 停止
 advanced-describe-again-about = 用輔助模型重寫每個角色的一句話描述、摘要、標籤，以及「依需求」用來找到它的內容，每個約 11,000 到 12,000 個 token。你自己編輯過的內容保留。 供應商按 token 計費。
 advanced-no-characters = 沒有要描述的角色
 advanced-describe-again-far = 已重新描述 { $done } / { $all }
+advanced-describe-again-stopped = 已停止：已重新描述 { $done } / { $all }
 advanced-describe-again-failed = { $count ->
    *[other] { $count } 張失敗，維持原樣
   }：{ $failure }。按「全部重新描述」再試一次。
@@ -957,7 +866,7 @@ gen-hair-colour = 髮色
 gen-personality = 性格
 gen-relates = 這個角色對你來說是誰
 gen-make = 建立角色
-gen-what = 選幾個特點，AI 會寫出角色、角色的故事和第一則訊息。
+gen-what = 選幾個特點，AI 會寫出角色的第一則訊息和說話方式。
 interview-goes-to = 你的回答會傳送到 { $provider } 來撰寫角色。
 interview-stays = 你的回答會留在這台電腦上。
 interview-own-words = 或補充你自己的話

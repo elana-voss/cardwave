@@ -33,8 +33,8 @@ error-remote-sign-in-off = Tài khoản này không thể đăng nhập từ thi
 error-no-password-on = Chưa bật mật khẩu.
 error-no-password-set = Tài khoản này chưa đặt mật khẩu.
 error-password-kept = Một tài khoản trên máy tính này giữ mật khẩu: tài khoản đó đăng nhập bằng mật khẩu ấy.
-error-account-busy = Cardwave vẫn đang viết câu trả lời hoặc đọc các nhân vật; hãy thử lại khi xong.
-error-restore-busy = Cardwave vẫn đang viết câu trả lời hoặc đọc các nhân vật; hãy thử lại khi xong.
+error-account-busy = Cardwave vẫn đang làm việc cho tài khoản này: một câu trả lời, một bức ảnh, một tác vụ lập trình, một nhân vật mới, việc đọc các nhân vật hoặc trí nhớ của một cuộc trò chuyện; hãy thử lại khi xong.
+error-restore-busy = Cardwave vẫn đang làm việc: một câu trả lời, một bức ảnh, một tác vụ lập trình, một nhân vật mới, việc đọc các nhân vật hoặc trí nhớ của một cuộc trò chuyện; hãy thử lại khi xong.
 error-backup-needs-password = Bản sao lưu cần có mật khẩu.
 
 ## Thứ được yêu cầu
@@ -76,8 +76,12 @@ error-chat-busy = Một câu trả lời đang được viết trong cuộc trò
 error-no-provider = Chưa thiết lập nhà cung cấp nào. Hãy thêm một nhà cung cấp trong Cài đặt › Nhà cung cấp.
 error-provider-refused = { $refusal ->
     [key] Nhà cung cấp không nhận khóa: hãy kiểm tra trong Cài đặt › Nhà cung cấp.
+    [paid] Nhà cung cấp yêu cầu thanh toán cho việc này: hãy nạp thêm tín dụng, hoặc chọn một mô hình có trong gói của bạn.
     [busy] Nhà cung cấp đã hết tín dụng hoặc đang bận: hãy thử lại sau.
     [down] Nhà cung cấp không trả lời: hãy thử lại sau.
+    [fault] Nhà cung cấp gặp lỗi ở phía họ: { $reason } Hãy thử lại sau.
+    [no_model] Nhà cung cấp không còn cung cấp mô hình này: hãy chọn mô hình khác trong Cài đặt › Mô hình.
+    [too_long] Tin nhắn quá dài cho mô hình này: hãy rút ngắn, hoặc chọn trong Cài đặt › Mô hình một mô hình nhận được nhiều hơn.
    *[other] Nhà cung cấp đã từ chối: { $reason }
 }
 error-model-declined = { $model } từ chối viết nội dung này. Hãy đổi tin nhắn, hoặc chọn mô hình khác.
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] Ảnh phải là tệp PNG, JPEG hoặc WebP.
     [backup] Tệp này không phải bản sao lưu của Cardwave.
     [backup_damaged] Bản sao lưu này bị hỏng.
+    [backup_newer] Bản sao lưu này được tạo bởi Cardwave mới hơn. Hãy cập nhật Cardwave để khôi phục nó.
     [backup_key] Bản sao lưu này bị hỏng: không đọc được khóa của nó.
     [base64] Đó không phải base64.
     [base64_file] { $name } không phải base64.
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] Không đọc được câu trả lời của máy chủ hình ảnh.
     [picture_unreadable] Không đọc được hình ảnh.
     [png] Không phải tệp PNG.
+    [no_card] Tệp này không chứa thẻ nhân vật nào.
     [png_damaged] Tệp PNG bị hỏng.
+    [charx] Cardwave chưa thể nhập tệp thẻ CHARX. Hãy xuất thẻ dưới dạng PNG hoặc JSON.
     [provider_address] Địa chỉ phải là địa chỉ web đơn giản, như https://api.openai.com/v1.
     [provider_website] Hãy nhập trang web của nhà cung cấp dưới dạng tên, như example.com.
     [recording_format] Không đọc được định dạng của bản ghi âm.

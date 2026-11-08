@@ -9,7 +9,7 @@
 // the two and is dropped. `reread` asks the server anew, which main.ts does when the page hears the server
 // again after a drop: a rename made meanwhile was not told, and an asking at the start may have failed.
 // `showRound` puts the account's picture, or its letter, into a round; `elsewhere` is whether the page is of
-// another device, which main.ts says at the start.
+// another device, which main.ts says at the start (after the rail is made, so `watchElsewhere` tells it).
 import { getAccount, renameAccount } from "./api/client";
 import type { Account } from "./api/generated/Account";
 import { el } from "./dom";
@@ -17,7 +17,13 @@ import { initialOf } from "./format";
 
 /** Whether the page is of another device, signed in by the home network. */
 export let elsewhere = false;
-export const setElsewhere = (now: boolean) => void (elsewhere = now);
+const elsewhereWatchers: (() => void)[] = [];
+export function setElsewhere(now: boolean): void {
+  elsewhere = now;
+  for (const watcher of elsewhereWatchers) watcher();
+}
+/** Calls `watcher` whenever `elsewhere` is set. */
+export const watchElsewhere = (watcher: () => void) => void elsewhereWatchers.push(watcher);
 
 /** Puts the account's picture into `round`, or the first letter of its name where it has none. */
 export function showRound(round: HTMLElement, { name, picture }: Pick<Account, "name" | "picture">): void {

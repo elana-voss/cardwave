@@ -20,6 +20,7 @@ use cw_chat::images::comfy;
 use cw_core::NotFound;
 use cw_core::{Events, PageEvent};
 use cw_provider::catalog::{self, Catalog};
+use cw_provider::check;
 use cw_provider::fit::FitView;
 use cw_provider::kinds::{self, ChangeEntry, EntryView, Kind, NewEntry, PickModel, ProvidersView};
 use cw_provider::{self as provider, NOT_SET_UP, Sampling};
@@ -91,6 +92,7 @@ async fn add(
     page: Page,
     Json(new): Json<NewEntry>,
 ) -> ApiResult<(StatusCode, Json<EntryView>)> {
+    key_taken(&state, &new.base_url, new.api_key.as_deref()).await?;
     let added = state.run(move |db| kinds::add(db, user, new)).await?;
     state.tell(user, &page, &PageEvent::Provider);
     Ok((StatusCode::CREATED, Json(added)))
@@ -103,12 +105,19 @@ async fn change(
     Path(id): Path<i64>,
     Json(new): Json<ChangeEntry>,
 ) -> ApiResult<Json<EntryView>> {
+    key_taken(&state, &new.base_url, new.api_key.as_deref()).await?;
     let entry = state
         .run(move |db| kinds::change(db, user, id, new))
         .await?;
     // The search at its old address is another model than at its new.
     changed(&state, user, &page, Kind::Search);
     Ok(Json(entry))
+}
+
+/// Refuses a key typed in the form that its provider refuses (`check::key`).
+async fn key_taken(state: &AppState, base_url: &str, typed: Option<&str>) -> ApiResult<()> {
+    let key = typed.unwrap_or_default().trim();
+    Ok(check::key(&state.http, base_url.trim(), key).await?)
 }
 
 /// Removes a provider, and the kinds of model at it with it.

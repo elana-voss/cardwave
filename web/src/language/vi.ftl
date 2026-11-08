@@ -232,7 +232,7 @@ backup-back-up = Lưu bản sao lưu
 backup-no-file = Chưa chọn tệp
 backup-choose-file = Chọn tệp
 backup-its-password = Mật khẩu của bản sao lưu
-backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác.
+backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác. Mật khẩu đặt ở đây vẫn giữ nguyên.
 backup-file = Tệp
 backup-restore-title = Khôi phục bản sao lưu
 backup-choose-first = Hãy chọn tệp sao lưu trước.
@@ -320,7 +320,7 @@ password-repeat = Nhập lại mật khẩu
 password-asked-sign-in = Được hỏi khi bạn đăng nhập
 password-is-on = Bật · được hỏi khi ứng dụng mở
 password-is-off = Tắt · ai dùng máy tính này cũng mở được Cardwave
-password-start-forgotten = Mật khẩu đã quên thì không lấy lại được. Hãy khôi phục một bản sao lưu để bắt đầu lại.
+password-start-forgotten = Mật khẩu đã quên thì không lấy lại được.
 password-open = Mở
 password-back = Quay lại
 
@@ -424,101 +424,6 @@ update-auto = Tự động kiểm tra
 update-auto-about = Tìm phiên bản mới khi khởi động và mỗi ngày một lần
 update-check = Kiểm tra
 update-about = Kiểm tra xem đã có phiên bản mới hơn của ứng dụng chưa.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Nhập địa chỉ nhà cung cấp trong Cài đặt
-setup-manually-models = Tự thiết lập
-setup-use-this = Dùng cái này
-setup-choose-folder = Chọn thư mục
-setup-this-computer = Máy tính này
-setup-this-computer-about = Các tệp mô hình AI (.gguf) bạn đã tải về, do Cardwave chạy
-setup-models-example = C:\Users\ban\Models
-setup-models-says = Mỗi tệp mô hình trong đó (.gguf) là một mô hình chat mà Cardwave chạy trên máy này. Chưa có tệp mô hình nào? Hãy chọn một thư mục trống: Cài đặt › Nhà cung cấp › Máy tính này sẽ gợi ý các mô hình hợp với máy này và tải chúng vào đó.
-setup-not-this = Không phải cái này?
-setup-recognised = Đã nhận ra:{ " " }
-setup-provider = Nhà cung cấp
-setup-none-of-these = Không phải những cái này?
-setup-several = Khóa này hợp với nhiều nhà cung cấp. Là nhà cung cấp nào?
-setup-unknown = Cardwave không biết khóa này của nhà cung cấp nào. Hãy tìm nhà cung cấp theo tên, hoặc nhập địa chỉ của nó.
-setup-find = Tìm
-setup-find-field = Tên hoặc trang web của nhà cung cấp
-setup-find-example = Tên hoặc trang web, như example.com
-setup-find-hint = Cardwave tra địa chỉ của nhà cung cấp. Khóa của bạn không được gửi đi.
-setup-name = Tên
-setup-name-hint = Tên trong danh sách nhà cung cấp của Cardwave. Bạn có thể để trống.
-setup-address = Địa chỉ
-setup-address-hint = Sao chép từ trang web của nhà cung cấp, như https://api.example.com/v1
-setup-continue = Tiếp tục
-setup-local = Dùng chương trình trên máy tính này (như LM Studio hoặc Ollama)
-setup-no-key = Không có khóa?{ " " }
-setup-api-key = Khóa API
-setup-key-placeholder = Dán khóa của bạn vào đây
-setup-found = Đã tìm thấy
-setup-no-api = Cardwave không tìm thấy địa chỉ của AI trên { $website }. Hãy tìm địa chỉ trong tài liệu của nhà cung cấp (thường gọi là “base URL”) rồi nhập vào.
-setup-find-by-name = Tìm theo tên
-setup-enter-address = Nhập địa chỉ
-setup-how = Cách thiết lập
-setup-not-listed = Không có nhà cung cấp nào tên “{ $name }” trong danh sách. Hãy gõ trang web của nhà cung cấp, hoặc nhập địa chỉ.
-setup-looking = Đang tìm…
-setup-looking-servers = Đang tìm chương trình trên máy tính này…
-setup-no-server = Không có chương trình AI nào trả lời trên máy tính này (Cardwave đã tìm { $names }). Hãy mở một chương trình rồi tìm lại.
-setup-no-other-server = Không có chương trình AI nào khác trả lời trên máy tính này (Cardwave đã tìm { $names }). Hãy mở một chương trình rồi tìm lại.
-setup-tested = { " " }· đã thử
-setup-picking = Đang chọn trong các mô hình của nhà cung cấp…
-setup-the-helper-model = mô hình phụ trợ
-setup-want-voice = Tải giọng nói
-setup-want-search = Tải mô hình tìm kiếm
-setup-confirm = Xác nhận
-setup-back = Quay lại
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · không có khóa
-setup-unlisted = Chưa chọn. Nhà cung cấp không liệt kê mô hình nào: hãy gõ ID của mô hình.
-setup-not-chosen = Chưa chọn
-setup-the-voice = Giọng nói
-setup-the-search-model = Tìm kiếm
-setup-nothing-now = Lúc này không tải gì. Tìm kiếm và Giọng nói có thể thiết lập sau trong Cài đặt.
-setup-downloaded = Sẽ tải: { $what }.
-setup-and = { $first } và { $second }
-setup-download-size = Tải xuống ({ $size })
-setup-where = Thiết lập · bước { $step } trên { $steps }
-setup-title-1 = Nhà cung cấp
-setup-title-2 = Mô hình
-setup-title-3 = Thẻ
-setup-title-4 = Tải xuống
-setup-about-1 = Dán khóa API từ trang web của nhà cung cấp AI. Cardwave sẽ tìm ra nhà cung cấp.
-setup-about-2 = Cardwave đã chọn những mô hình này từ nhà cung cấp của bạn. Bạn có thể đổi bất kỳ mục nào ngay hoặc sau này trong Cài đặt.
-setup-about-3 = Nếu bạn có tệp thẻ nhân vật (PNG hoặc JSON từ ứng dụng khác), Cardwave có thể đưa chúng vào từ một thư mục.
-setup-about-4 = Bạn có thể mở Cardwave ngay: các bản tải xuống vẫn tiếp tục, và một thông báo sẽ cho bạn biết khi xong.
-setup-no-list = Không có danh sách mô hình: { $why } Nhấn Chọn để nhập ID của một mô hình, hoặc Quay lại để kiểm tra khóa.
-setup-change = Đổi
-setup-choose = Chọn
-setup-worker-does = { " " }· viết tóm tắt, nhãn và ký ức
-setup-same-as-chat = Giống mô hình trò chuyện
-setup-no-picks = Chưa chọn được mô hình nào: { $why }
-setup-helper-model = Mô hình phụ trợ
-setup-set-up = Cardwave đã sẵn sàng.
-setup-folder-not-kept = Không dùng được thư mục thẻ: { $why }. Bạn có thể chọn lại trong Cài đặt › Dữ liệu.
-
-setup-skip = Bỏ qua
-setup-import-folder = Nhập từ thư mục này
-setup-cards-about = Chỉ các tệp thẻ được lấy; không có gì trong thư mục bị di chuyển hay thay đổi. Thẻ trong đó vào khi thiết lập xong, và thẻ đặt vào sau này sẽ tự vào. Bạn cũng có thể chọn thư mục sau trong Cài đặt › Dữ liệu.
-setup-done = Xong
-setup-done-mark = { " " }Xong
-setup-percent = { $percent }%
-setup-waiting = Đang chờ
-setup-try-again = Thử lại
-setup-try-voice-again = Thử lại giọng nói
-setup-try-search-again = Thử lại tìm kiếm
-setup-voice-failed = Không tải được giọng nói: { $why }
-setup-search-failed = Không tải được mô hình tìm kiếm: { $why }
-setup-downloads-done = Đã tải xong: Cardwave đã được thiết lập đầy đủ.
-setup-cards-later = Thẻ của bạn sẽ vào từ thư mục ngay khi Cardwave mở.
-setup-voice = Giọng nói
-setup-search = Tìm kiếm
-setup-open = Mở Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Mô hình giọng nói
 
 ## The breadcrumbs of a page under Settings
 
@@ -631,6 +536,9 @@ advanced-not-described = { $count ->
    *[other] { $count } nhân vật
   } chưa được mô tả
 advanced-describe-cards = Mô tả nhân vật
+advanced-describe-cost = Khoảng { $low } đến { $high } token cho { $count ->
+   *[other] { $count } nhân vật
+  }
 advanced-failed = { $count ->
    *[other] { $count } thẻ thất bại
   }: { $failure }. Nhấn Mô tả nhân vật để thử lại.
@@ -639,6 +547,7 @@ advanced-describe-again-stop = Dừng
 advanced-describe-again-about = Dùng mô hình trợ giúp viết lại mô tả một dòng, tóm tắt, thẻ của mọi nhân vật và những gì "Theo nhu cầu" dùng để tìm họ, khoảng 11.000 đến 12.000 token mỗi nhân vật. Những gì bạn tự sửa vẫn giữ nguyên. Nhà cung cấp tính phí theo token.
 advanced-no-characters = Không có nhân vật nào để mô tả
 advanced-describe-again-far = Đã mô tả lại { $done } trên { $all }
+advanced-describe-again-stopped = Đã dừng khi mô tả lại { $done } trên { $all }
 advanced-describe-again-failed = { $count ->
    *[other] { $count } nhân vật thất bại và được giữ như cũ
   }: { $failure }. Nhấn Mô tả lại tất cả để thử thêm lần nữa.
@@ -947,7 +856,7 @@ gen-hair-colour = Màu tóc
 gen-personality = Tính cách
 gen-relates = Nhân vật là ai đối với bạn
 gen-make = Tạo nhân vật
-gen-what = Chọn vài nét tính cách; AI viết nhân vật, câu chuyện và tin nhắn đầu tiên của nhân vật.
+gen-what = Chọn vài nét tính cách; AI viết tin nhắn đầu tiên của nhân vật và cách nhân vật nói chuyện.
 interview-goes-to = Câu trả lời của bạn được gửi đến { $provider } để viết nhân vật.
 interview-stays = Câu trả lời của bạn ở lại trên máy tính này.
 interview-own-words = Hoặc thêm lời của bạn

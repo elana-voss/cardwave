@@ -92,6 +92,14 @@ test("a card is translated beside its texts, undone, then kept as a language of 
   await expect(text(page, "Personality")).toContainText(PERSONALITY);
   await expect(languages(page)).toHaveCount(0);
 
+  // Escape closes the dialog a menu's line opened and gives the focus back to the menu's button.
+  const opener = page.locator(".hero-acts").getByRole("button", { name: "Character menu" });
+  await opener.click();
+  await page.getByRole("menuitem", { name: "Translate the character…" }).click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Translate the character" })).toBeHidden();
+  await expect(opener).toBeFocused();
+
   // Each text shows the original and the translation side by side; Undo all leaves the card as it was.
   await translate(page);
   const banner = page.locator(".reading .banner");

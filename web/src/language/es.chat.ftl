@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· no se sabe si puede hacerlo
 kinds-address = { " " }· { $address }
 kinds-this-computer = Un programa de este equipo
 kinds-asking-the-provider = Preguntando al proveedor…
-kinds-no-such-model = No existe ese modelo
 kinds-own-on-this-computer = { $own } · en este equipo
+kinds-none-of-the-kind = Ninguno de tus proveedores tiene un modelo que haga esto.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = Sigue el idioma de la app hasta que lo cambies
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = Sin configurar
+models-group-no-longer-offered = Tu proveedor ya no ofrece este modelo: elige otro.
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = así que { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · en la tarjeta gráfica de este equipo · descarga de { $bytes }
+dictation-setup-on-this-computers-graphics = { $name } · en la tarjeta gráfica de este equipo · { $bytes }
 dictation-setup-the-microphone-beside-the = El micrófono junto al campo del mensaje escribirá entonces lo que digas, en español, inglés y otros idiomas. Lo que dices se queda en este ordenador.
 
 ## make-voice (voice/make-voice.ts)

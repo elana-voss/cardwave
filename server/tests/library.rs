@@ -65,7 +65,7 @@ async fn a_list_row_carries_names_tags_the_first_greeting_and_the_last_chat() {
     assert_eq!(row["names"], json!(["Mira"]));
     assert_eq!(row["tags"], json!(["sea", "mystery"]));
     // The greeting as a chat without a persona would open, on one line.
-    assert_eq!(row["excerpt"], "\"You picked a night for it, User.\"");
+    assert_eq!(row["excerpt"], "\"You picked a night for it, Guest.\"");
     assert!(row["created_at"].as_i64().unwrap() > 0);
     assert_eq!(row["last_chat_at"], Value::Null);
     assert_eq!(row["last_chat_title"], Value::Null);
@@ -265,7 +265,7 @@ async fn a_card_gives_its_texts_as_a_reader_sees_them() {
     assert_eq!(
         mira["greetings"],
         json!([
-            "\"You picked a night for it, User.\"",
+            "\"You picked a night for it, Guest.\"",
             "Hold the lamp. Don't ask."
         ])
     );
@@ -277,11 +277,11 @@ async fn a_card_gives_its_texts_as_a_reader_sees_them() {
     assert_eq!(mira["personality"], "Wry, patient.");
     assert_eq!(
         mira["scenario"],
-        "A storm has cut the causeway. User is stranded."
+        "A storm has cut the causeway. Guest is stranded."
     );
     assert_eq!(
         mira["example_dialogue"],
-        "<START>\nUser: Tea?\nMira: \"Black.\""
+        "<START>\nGuest: Tea?\nMira: \"Black.\""
     );
     assert_eq!(mira["creator_notes"], "Never sent to the model.");
     // A card holds one character: the first of the file's two.

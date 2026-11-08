@@ -215,7 +215,7 @@ backup-back-up = Save backup
 backup-no-file = No file chosen
 backup-choose-file = Choose file
 backup-its-password = The backup’s password
-backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories and settings. This cannot be undone.
+backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories and settings. This cannot be undone. The password set here stays as it is.
 backup-file = File
 backup-restore-title = Restore a backup
 backup-choose-first = Choose the backup’s file first.
@@ -304,7 +304,7 @@ password-repeat = Repeat password
 password-asked-sign-in = Asked when you sign in
 password-is-on = On · asked when the app opens
 password-is-off = Off · anyone at this computer can open Cardwave
-password-start-forgotten = A forgotten password cannot be recovered. Restore a backup to start again.
+password-start-forgotten = A forgotten password cannot be recovered.
 password-open = Open
 password-back = Back
 
@@ -412,101 +412,6 @@ update-auto = Check automatically
 update-auto-about = Look for a new version at start and once a day
 update-check = Check
 update-about = Check if a newer version of the app is available.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Enter the provider's address in Settings
-setup-manually-models = Configure manually
-setup-use-this = Use this
-setup-choose-folder = Choose folder
-setup-this-computer = This computer
-setup-this-computer-about = AI model files (.gguf) you have downloaded, run by Cardwave
-setup-models-example = C:\Users\you\Models
-setup-models-says = Each model file in it (.gguf) is a chat model, which Cardwave runs on this computer. No model files yet? Choose an empty folder: Settings › Providers › This computer then offers the models that fit this computer, downloaded into it.
-setup-not-this = Not this one?
-setup-recognised = Recognised:{ " " }
-setup-provider = Provider
-setup-none-of-these = None of these?
-setup-several = This key fits more than one provider. Which one is it?
-setup-unknown = Cardwave can't tell which provider this key is for. Find the provider by name, or enter its address.
-setup-find = Find
-setup-find-field = Provider name or website
-setup-find-example = Name or website, such as example.com
-setup-find-hint = Cardwave looks up the provider's address. Your key is not sent.
-setup-name = Name
-setup-name-hint = The name in Cardwave's list of providers. You can leave it empty.
-setup-address = Address
-setup-address-hint = Copy it from your provider's website, such as https://api.example.com/v1
-setup-continue = Continue
-setup-local = Use a program on this computer (such as LM Studio or Ollama)
-setup-no-key = No key?{ " " }
-setup-api-key = API key
-setup-key-placeholder = Paste your key here
-setup-found = Found
-setup-no-api = Cardwave found no address for the AI on { $website }. Look in the provider's documentation for its address (often called “base URL”) and enter it.
-setup-find-by-name = Find by name
-setup-enter-address = Enter address
-setup-how = How to set it up
-setup-not-listed = No provider called “{ $name }” is on the list. Type its website instead, or enter its address.
-setup-looking = Looking…
-setup-looking-servers = Looking for programs on this computer…
-setup-no-server = No AI program answers on this computer (Cardwave looked for { $names }). Start one, then look again.
-setup-no-other-server = No other AI program answers on this computer (Cardwave looked for { $names }). Start one, then look again.
-setup-tested = { " " }· tested
-setup-picking = Picking from your provider's models…
-setup-the-helper-model = the helper model
-setup-want-voice = Download the voice
-setup-want-search = Download the search model
-setup-confirm = Confirm
-setup-back = Back
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · no key
-setup-unlisted = Not chosen yet. The provider lists no models: type the model's ID.
-setup-not-chosen = Not chosen yet
-setup-the-voice = Voice
-setup-the-search-model = Search
-setup-nothing-now = Nothing is downloaded now. Search and Voice can be set up later in Settings.
-setup-downloaded = To download: { $what }.
-setup-and = { $first } and { $second }
-setup-download-size = Download ({ $size })
-setup-where = Setup · step { $step } of { $steps }
-setup-title-1 = Provider
-setup-title-2 = Models
-setup-title-3 = Cards
-setup-title-4 = Downloads
-setup-about-1 = Paste the API key from your AI provider's website. Cardwave finds the provider.
-setup-about-2 = Cardwave picked these from your provider's models. Change any of them now or later in Settings.
-setup-about-3 = If you have character card files (PNG or JSON from other apps), Cardwave can bring them in from a folder.
-setup-about-4 = You can open Cardwave now: the downloads go on, and a notice tells you when they are done.
-setup-no-list = No list of models: { $why } Press Choose to type a model's ID, or go Back to check the key.
-setup-change = Change
-setup-choose = Choose
-setup-worker-does = { " " }· writes summaries, tags and memories
-setup-same-as-chat = Same as the chat model
-setup-no-picks = No models picked: { $why }
-setup-helper-model = Helper model
-setup-set-up = Cardwave is ready.
-setup-folder-not-kept = The cards folder couldn't be used: { $why }. You can choose it again in Settings › Data.
-
-setup-skip = Skip
-setup-import-folder = Import from this folder
-setup-cards-about = Only card files are taken from it; nothing in the folder is moved or changed. Its cards come in once setup is done, and cards put in it later come in by themselves. You can choose it later in Settings › Data too.
-setup-done = Done
-setup-done-mark = { " " }Done
-setup-percent = { $percent }%
-setup-waiting = Waiting
-setup-try-again = Try again
-setup-try-voice-again = Try the voice again
-setup-try-search-again = Try the search again
-setup-voice-failed = The voice couldn't be downloaded: { $why }
-setup-search-failed = The search model couldn't be downloaded: { $why }
-setup-downloads-done = The downloads are done: Cardwave is fully set up.
-setup-cards-later = Your cards come in from the folder once Cardwave opens.
-setup-voice = Voice
-setup-search = Search
-setup-open = Open Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Voice model
 
 ## The breadcrumbs of a page under Settings
 
@@ -620,6 +525,10 @@ advanced-not-described = { $count ->
    *[other] { $count } characters
   } not described yet
 advanced-describe-cards = Describe characters
+advanced-describe-cost = About { $low } to { $high } tokens for { $count ->
+    [one] 1 character
+   *[other] { $count } characters
+  }
 advanced-failed = { $count ->
     [one] 1 failed
    *[other] { $count } failed
@@ -629,6 +538,7 @@ advanced-describe-again-stop = Stop
 advanced-describe-again-about = With the helper model, rewrites every character's one-line description, summary, tags and what By need finds them by, about 11,000 to 12,000 tokens each. What you edited yourself stays. Tokens are what providers bill by.
 advanced-no-characters = No characters to describe
 advanced-describe-again-far = { $done } of { $all } described again
+advanced-describe-again-stopped = Stopped at { $done } of { $all } described again
 advanced-describe-again-failed = { $count ->
     [one] 1 failed and stays as it was
    *[other] { $count } failed and stay as they were
@@ -949,7 +859,7 @@ gen-hair-colour = Hair colour
 gen-personality = Personality
 gen-relates = Who the character is to you
 gen-make = Make the character
-gen-what = Pick a few traits; the AI writes the character, their story and their first message.
+gen-what = Pick a few traits; the AI writes the character's first message and how they talk.
 interview-goes-to = Your answers go to { $provider } to write the character.
 interview-stays = Your answers stay on this computer.
 interview-own-words = Or add your own words

@@ -57,6 +57,7 @@ card-modes-mode = Mode
 card-modes-the-texts-below-are = Teks di bawah adalah yang dipakai mode ini.
 card-modes-a-mode-needs-a = Mode memerlukan nama.
 card-modes-default = { " " }· bawaan
+card-modes-first-default = Roleplay
 card-modes-make-default = Jadikan bawaan
 card-modes-add-mode = Tambah cara ber-chat
 card-modes-modes = Mode
@@ -70,11 +71,12 @@ card-page-card-info = Info kartu
 
 card-picture-card-picture = Gambar karakter
 card-picture-card-picture-click-to = Gambar karakter: klik untuk memilih gambar, atau letakkan di sini
+card-picture-card-picture-tap-to = Gambar karakter: ketuk untuk memilih gambar
 card-picture-make-a-picture = Buat gambar
 card-picture-name-first = Beri nama karakter dulu
 card-picture-earlier-pictures = Gambar sebelumnya
-card-picture-click-to-choose-a = Klik untuk memilih gambar, atau letakkan di sini
 card-picture-click-or-drop-a = Klik untuk memilih gambar, atau letakkan di sini
+card-picture-tap-to-choose = Ketuk untuk memilih gambar
 card-picture-drop-to-use-this = Taruh di sini untuk memakai gambar ini
 card-picture-set-up-an-image = Siapkan model gambar dulu, di{ " " }
 card-picture-settings-models = Pengaturan › Model
@@ -232,7 +234,7 @@ character-saved = Tersimpan
 character-name-in-the-chat = Nama di chat
 character-name = karakter dalam judul
 character-creator = Pembuat
-character-creator-2 = pembuat
+character-add-creator = Tambah pembuat
 character-modes = Mode…
 character-add-mode = Tambah cara ber-chat…
 character-add-mode-sub = Teks lain untuk jenis chat lain, misalnya cerita
@@ -602,7 +604,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = Belum ada lorebook. Buat satu, atau impor berkas lorebook (world info SillyTavern, .json). Chat membawanya di panel samping.
+lorebooks-no-lorebooks-yet-make = Belum ada lorebook. Buat satu, atau impor berkas lorebook (world info SillyTavern, .json). Chat membawanya lewat Opsi chat › Tambah lorebook.
 lorebooks-entries = { $count ->
    *[other] { $count } entri
 }

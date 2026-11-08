@@ -71,15 +71,46 @@ impl Default for Limits {
 pub struct Said {
     /// What it makes (`architecture.output_modalities`: "text", "image").
     pub output: Option<Vec<String>>,
+    /// What it takes (`architecture.input_modalities`, or the left side of
+    /// NanoGPT's `architecture.modality`, "text->image").
+    pub input: Option<Vec<String>>,
     /// Whether it thinks first: OpenRouter's `supported_parameters` holding
     /// "reasoning", NanoGPT's `capabilities.reasoning`.
     pub thinks: Option<bool>,
+    /// What it is tagged with (NanoGPT's `tags`: "text-to-image", "image-edit").
+    pub tags: Option<Vec<String>>,
 }
 
 /// A list's models with what it says of each, in the order of `ListedModels`.
 pub struct Described {
     pub models: Vec<(String, Said)>,
     pub more: bool,
+}
+
+impl Said {
+    /// Whether the model `id` makes its work from words: not one that only
+    /// changes a picture (an upscaler, a background remover, an editor). Where
+    /// the list does not say, it does. One taking words and a picture is, as
+    /// NanoGPT lists most generators so, unless its tags lack "text-to-image"
+    /// or its ID names an editor (`seedream/edit`, `flux-2-image-to-image`).
+    pub fn from_words(&self, id: &str) -> bool {
+        let Some(input) = &self.input else {
+            return true;
+        };
+        if input == &["text"] {
+            return true;
+        }
+        let generator = self
+            .tags
+            .as_ref()
+            .is_none_or(|tags| tags.is_empty() || tags.iter().any(|tag| tag == "text-to-image"));
+        let id = id.to_lowercase();
+        input.iter().any(|kind| kind == "text")
+            && generator
+            && !["edit", "upscal", "image-to-image"]
+                .iter()
+                .any(|word| id.contains(word))
+    }
 }
 
 /// The models the API at `base_url` lists when asked with `key`.
@@ -200,16 +231,30 @@ impl Said {
         architecture: Option<Value>,
         parameters: Option<Value>,
         capabilities: Option<Value>,
+        tags: Option<Value>,
     ) -> Self {
-        let output = architecture.and_then(|architecture| {
-            let kinds = architecture.get("output_modalities")?.as_array()?;
+        let kinds = |name: &str, side: usize| {
+            let architecture = architecture.as_ref()?;
+            if let Some(kinds) = architecture.get(name).and_then(Value::as_array) {
+                return Some(
+                    kinds
+                        .iter()
+                        .filter_map(|kind| Some(kind.as_str()?.to_string()))
+                        .collect(),
+                );
+            }
+            let modality = architecture.get("modality")?.as_str()?;
+            let (taken, made) = modality.split_once("->")?;
+            let words = [taken, made][side];
             Some(
-                kinds
-                    .iter()
-                    .filter_map(|kind| Some(kind.as_str()?.to_string()))
+                words
+                    .split('+')
+                    .map(|kind| kind.trim().to_string())
                     .collect(),
             )
-        });
+        };
+        let output = kinds("output_modalities", 1);
+        let input = kinds("input_modalities", 0);
         let listed = parameters.and_then(|parameters| {
             let names = parameters.as_array()?;
             Some(names.iter().any(|name| name.as_str() == Some("reasoning")))
@@ -218,7 +263,16 @@ impl Said {
             capabilities.and_then(|capabilities| capabilities.get("reasoning")?.as_bool());
         Self {
             output,
+            input,
             thinks: capable.or(listed),
+            tags: tags.and_then(|tags| {
+                let tags = tags.as_array()?;
+                Some(
+                    tags.iter()
+                        .filter_map(|tag| Some(tag.as_str()?.to_string()))
+                        .collect(),
+                )
+            }),
         }
     }
 }
@@ -248,6 +302,7 @@ pub(super) fn read(said: &[u8]) -> Read {
             architecture: Option<Value>,
             supported_parameters: Option<Value>,
             capabilities: Option<Value>,
+            tags: Option<Value>,
         },
         Other(IgnoredAny),
     }
@@ -281,9 +336,10 @@ pub(super) fn read(said: &[u8]) -> Read {
                     architecture,
                     supported_parameters,
                     capabilities,
+                    tags,
                 } = entry
                 {
-                    let said = Said::of(architecture, supported_parameters, capabilities);
+                    let said = Said::of(architecture, supported_parameters, capabilities, tags);
                     self.read.ids.push((id, said));
                 }
             }
@@ -319,4 +375,45 @@ pub(super) fn read(said: &[u8]) -> Read {
     };
     let whole = top.deserialize(&mut json).is_ok();
     Read { whole, ..read }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_model_that_only_changes_a_picture_is_told_from_one_made_from_words() {
+        // NanoGPT marks most generators as taking a picture too, beside its editors and upscalers.
+        let listed = read(
+            br#"{"data":[{"id":"z-image","architecture":{"modality":"text->image"}},
+            {"id":"remover","architecture":{"modality":"image->image"}},
+            {"id":"editor","architecture":{"input_modalities":["text","image"],"output_modalities":["image"]}},
+            {"id":"nano-banana","architecture":{"modality":"text+image->image"},"tags":["text-to-image","image-edit"]},
+            {"id":"gpt-image-1","architecture":{"modality":"text+image->image"}},
+            {"id":"seedream/edit","architecture":{"modality":"text+image->image"},"tags":["text-to-image","image-edit"]},
+            {"id":"flux-2-image-to-image","architecture":{"modality":"text+image->image"},"tags":[]},
+            {"id":"layers","architecture":{"modality":"text+image->image"},"tags":["image-edit"]},
+            {"id":"plain"}]}"#,
+        );
+        let alone: Vec<(&str, bool)> = listed
+            .ids
+            .iter()
+            .map(|(id, said)| (id.as_str(), said.from_words(id)))
+            .collect();
+        assert_eq!(
+            alone,
+            [
+                ("z-image", true),
+                ("remover", false),
+                ("editor", false),
+                ("nano-banana", true),
+                ("gpt-image-1", true),
+                ("seedream/edit", false),
+                ("flux-2-image-to-image", false),
+                ("layers", false),
+                ("plain", true)
+            ]
+        );
+        assert_eq!(listed.ids[0].1.output, Some(vec!["image".to_string()]));
+    }
 }

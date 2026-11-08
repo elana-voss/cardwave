@@ -8,6 +8,7 @@
 //! The container is the folder's own (`CONTAINER` and a hash of its path),
 //! let in by an entry in the folder's access list that stays there (Windows
 //! shows it as an unknown account). A command ends when `stopped` is set.
+//! Trap: cmd's `dir` and `vol` read the drive's root and are refused; a refused one says `LISTING`.
 //! Elsewhere than on Windows the shell tool is not offered (`AVAILABLE`).
 //!
 //! The coding team's commands reach more (`Reach`): the folders of the
@@ -88,7 +89,12 @@ pub fn run(
     run_with(folder, command, time, stopped, Reach::default())
 }
 
-/// [`run`], reaching what `reach` says too.
+/// A command that lists the folder's files in the sandbox, where cmd's `dir`
+/// and `vol` are refused: they read the drive's own details first.
+pub const LISTING: &str = "for %f in (*) do @echo %f";
+
+/// [`run`], reaching what `reach` says too. A refused `dir` or `vol` says how
+/// to list the folder (`LISTING`), as the model will try them.
 #[cfg(windows)]
 pub fn run_with(
     folder: &Path,
@@ -97,7 +103,16 @@ pub fn run_with(
     stopped: &AtomicBool,
     reach: Reach,
 ) -> anyhow::Result<Ran> {
-    crate::tools::sandbox::windows::run(folder, command, time, stopped, reach)
+    let mut ran = crate::tools::sandbox::windows::run(folder, command, time, stopped, reach)?;
+    let reads_drive = command
+        .split(|c: char| !c.is_ascii_alphanumeric())
+        .any(|word| word.eq_ignore_ascii_case("dir") || word.eq_ignore_ascii_case("vol"));
+    if reads_drive && ran.code != Some(0) {
+        ran.output.push_str(&format!(
+            "\n(The sandbox lets no command read the drive, so dir and vol are refused. List the folder with `{LISTING}`, its folders with `for /d %f in (*) do @echo %f`, or a subfolder with `for /r sub %f in (*) do @echo %f`.)"
+        ));
+    }
+    Ok(ran)
 }
 
 #[cfg(not(windows))]

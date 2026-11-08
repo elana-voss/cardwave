@@ -164,10 +164,10 @@ async fn a_chat_is_written_as_the_file_sillytavern_keeps_a_chat_in() {
     assert_eq!(lines.len(), 4);
     assert_eq!(
         lines[0],
-        json!({ "chat_metadata": {}, "user_name": "User", "character_name": "Mira" })
+        json!({ "chat_metadata": {}, "user_name": "Guest", "character_name": "Mira" })
     );
     // A character's message carries its versions, oldest first, and which one it is.
-    let opening = "\"You picked a night for it, User.\"";
+    let opening = "\"You picked a night for it, Guest.\"";
     assert_eq!(
         lines[1],
         json!({
@@ -186,7 +186,7 @@ async fn a_chat_is_written_as_the_file_sillytavern_keeps_a_chat_in() {
     assert_eq!(
         lines[2],
         json!({
-            "name": "User",
+            "name": "Guest",
             "is_user": true,
             "is_system": false,
             "send_date": sent(asked),
@@ -333,7 +333,7 @@ async fn a_chat_of_several_is_one_file_with_each_message_under_its_speakers_name
     let lines = self::lines(&server, chat).await;
     assert_eq!(
         lines[0],
-        json!({ "chat_metadata": {}, "user_name": "User", "character_name": "Mira" })
+        json!({ "chat_metadata": {}, "user_name": "Guest", "character_name": "Mira" })
     );
     assert_eq!(said(&lines), ["All of you, inside.", "Speak up, Odo."]);
     // What another character wrote in the same place is no version of the message.
@@ -499,7 +499,7 @@ async fn a_chat_without_a_message_is_the_files_head_alone() {
     let (_, text, lines) = file(&server, view["chat"]["id"].as_i64().unwrap()).await;
     assert_eq!(
         lines,
-        [json!({ "chat_metadata": {}, "user_name": "User", "character_name": "bare" })]
+        [json!({ "chat_metadata": {}, "user_name": "Guest", "character_name": "bare" })]
     );
     assert!(!text.contains('\n'), "{text}");
 }

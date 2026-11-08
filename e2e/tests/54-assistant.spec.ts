@@ -48,37 +48,33 @@ test("the card's page shows a mode's texts, a text's tag sets its modes, and the
   const modes = page.getByRole("group", { name: "Mode" });
   const tag = (name: string) => page.locator("section.tb", { has: page.getByRole("heading", { name, exact: true }) }).locator(".mtag");
   await page.goto(`/#/library/${id}`);
-  // Without modes there is no bar and no tag; "Add a way to chat…" asks the first one's name.
+  // Without modes there is no bar and no tag; "Add a way to chat…" adds the first beside the card's own texts,
+  // which stay its default way to chat, "Roleplay".
   await expect(named("Personality")).toHaveText("How she speaks in a scene.");
   await expect(modes).toHaveCount(0);
   await expect(page.locator(".mtag")).toHaveCount(0);
   await menu();
   await page.getByRole("menuitem", { name: "Add a way to chat…" }).click();
-  await page.getByRole("textbox", { name: "Name" }).fill("Roleplay");
+  await page.getByRole("textbox", { name: "Name" }).fill("Assistant");
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(modes.locator('[aria-pressed="true"]')).toHaveText("Roleplay");
   await expect(page.locator(".mode-bar")).toContainText("The texts below are the ones this mode uses.");
-  await expect(tag("Personality")).toHaveText("All modes");
+  await expect(tag("Personality")).toHaveText("Roleplay only");
+  await expect(tag("Description")).toHaveText("Roleplay only");
 
-  // "Modes…" adds the second; a name the card has is refused.
+  // "Modes…" lists both; a name the card has is refused.
   await menu();
   await page.getByRole("menuitem", { name: "Modes…" }).click();
   const dialog = page.getByRole("dialog", { name: "Modes" });
-  await expect(dialog.locator(".modes-list li")).toHaveText([/^Roleplay · default/]);
+  await expect(dialog.locator(".modes-list .mode-name")).toHaveText(["Roleplay · default", "Assistant"]);
   await dialog.getByRole("button", { name: "Add a way to chat" }).click();
   await page.getByRole("textbox", { name: "Name" }).fill("roleplay");
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByRole("alert")).toHaveText("The character has a mode “roleplay” already.");
-  await page.getByRole("textbox", { name: "Name" }).fill("Assistant");
-  await page.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(dialog.locator(".modes-list .mode-name")).toHaveText(["Roleplay · default", "Assistant"]);
+  await page.getByRole("textbox", { name: "Name" }).press("Escape");
   await dialog.press("Escape");
 
-  // "A text for each mode" leaves the personality to Roleplay: in Assistant it is an empty one to write, which is Assistant's.
-  await tag("Personality").click();
-  await expect(page.getByRole("menuitem", { name: /^A text for each mode/ })).toContainText("Adds an empty Personality that only Assistant uses, beside this one");
-  await page.getByRole("menuitem", { name: /^A text for each mode/ }).click();
-  await expect(tag("Personality")).toHaveText("Roleplay only");
+  // In Assistant the personality is an empty one to write, which is Assistant's.
   await modes.getByRole("button", { name: "Assistant" }).click();
   await expect(named("Personality")).toHaveText("Empty · how the character thinks, talks and acts");
   await named("Personality").click();
@@ -90,15 +86,10 @@ test("the card's page shows a mode's texts, a text's tag sets its modes, and the
     ["How she answers at work.", ["Assistant"]],
   ]);
   // The tag's menu takes a mode in: a text in every mode is in all modes.
-  await tag("Description").click();
-  await page.getByRole("menuitemradio", { name: "Assistant only" }).click();
-  await expect(tag("Description")).toHaveText("Assistant only");
   await modes.getByRole("button", { name: "Roleplay" }).click();
   await expect(named("Personality")).toHaveText("How she speaks in a scene.");
-  await expect(named("Description")).toHaveText("Empty · who the character is: looks, past, situation");
-  await modes.getByRole("button", { name: "Assistant" }).click();
   await tag("Description").click();
-  await page.getByRole("menuitemradio", { name: "Roleplay only" }).click();
+  await page.getByRole("menuitemradio", { name: "Assistant only" }).click();
   await expect(tag("Description")).toHaveText("All modes");
 
   // Rename, Make default and Remove: a text left in no mode is in all modes.
@@ -134,6 +125,12 @@ test("a chat picks its mode, the user sets one, and the assistant has its tools 
   await expect(page.getByText("Echo: Help me with my project.")).toBeVisible();
   const tools = page.getByRole("button", { name: /^Tools/ });
   await expect(tools).toContainText("Coding tasks");
+  // A plain side line as wide as the panel, "Tools" on one line above what is on.
+  const label = await tools.getByText("Tools", { exact: true }).boundingBox();
+  const line = await tools.boundingBox();
+  expect(label!.height).toBeLessThan(30);
+  expect(await tools.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+  expect(line!.width).toBeGreaterThan(200);
   await tools.click();
   await page.getByRole("switch", { name: "Coding tasks" }).click();
   await expect(tools).toContainText("None");

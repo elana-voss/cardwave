@@ -89,3 +89,32 @@ test("a new card takes a picture before it is made, and is made with it", async 
   await page.reload();
   await shownWidth(page).toBe(200);
 });
+
+test("a card that never had a picture offers no earlier ones, and does once it has one", async ({ page }) => {
+  await page.goto("/#/library/new");
+  await page.getByRole("textbox", { name: "Title", exact: true }).fill("Pell Marsh");
+  await expect(page).toHaveURL(/#\/library\/\d+$/);
+  await page.reload();
+  const empty = page.locator(".hero-picture.empty");
+  await expect(empty.getByRole("button", { name: "Make a picture" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Earlier pictures" })).toHaveCount(0);
+  await pick(page, pictureFile([200, 300], 0x40));
+  await shownWidth(page).toBe(200);
+  await page.locator(".hero-picture").hover();
+  await expect(page.getByRole("button", { name: "Earlier pictures" })).toBeVisible();
+});
+
+test("in a narrow window a card without a picture shows its name on the first screen, under a short empty picture", async ({ page, request }) => {
+  const made = await request.post("/api/cards", { data: cardFile({ name: "Mira", first_mes: "The lamp is lit." }) });
+  expect(made.status(), await made.text()).toBe(201);
+  for (const [width, height] of [
+    [960, 700],
+    [800, 640],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.goto(`/#/library/${(await made.json()).card_id}`);
+    await expect(page.locator(".hero-picture.empty")).toBeVisible();
+    const name = await page.getByRole("heading", { level: 1, name: "Mira" }).boundingBox();
+    expect(name && name.y + name.height, `${width} px`).toBeLessThanOrEqual(height);
+  }
+});

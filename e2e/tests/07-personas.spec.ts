@@ -175,6 +175,6 @@ test("one persona is the default: its row says it is used for new chats, and a n
   await expect(toast(page)).toHaveText("New chats start without a persona.");
   await expect(page.getByText("Used for new chats", { exact: true })).toHaveCount(0);
   await page.goto(`/#/chats/${await chatAs(request)}`);
-  await expect(page.locator(".message .text")).toHaveText(["Pell greets User."]);
-  await expect(chosen(page)).toHaveText("User");
+  await expect(page.locator(".message .text")).toHaveText(["Pell greets Guest."]);
+  await expect(chosen(page)).toHaveText("Guest");
 });

@@ -261,7 +261,9 @@ fn lorebook(document: &Document, character: &Table) -> Option<Json> {
             continue;
         };
         for key in ["name", "description"] {
-            if let Some(text) = source.get(key).and_then(Value::as_str)
+            // A block without a name is named by its ID, which comes back as its name.
+            let own = (key == "name").then(|| id_of(reference)).flatten();
+            if let Some(text) = source.get(key).and_then(Value::as_str).or(own)
                 && !book.contains_key(key)
             {
                 book.insert(key.to_string(), text.into());
@@ -303,7 +305,13 @@ fn lorebook(document: &Document, character: &Table) -> Option<Json> {
     Some(Json::Object(book))
 }
 
+/// The ID of the block a reference (`lore.lamp`) names.
+fn id_of(reference: &str) -> Option<&str> {
+    reference.split_once('.').map(|(_, id)| id)
+}
+
 /// One `lore` block as a lorebook entry: the import's mapping read backwards.
+/// One without a name gets no comment, which would name it on the way back.
 /// What SillyTavern itself keeps in an entry's `extensions` goes there.
 fn lore_entry(index: usize, lore: &Table) -> Json {
     let flag = |key: &str| lore.get(key).and_then(Value::as_bool) == Some(true);

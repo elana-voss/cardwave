@@ -236,7 +236,7 @@ backup-back-up = Сохранить копию
 backup-no-file = Файл не выбран
 backup-choose-file = Выбрать файл
 backup-its-password = Пароль резервной копии
-backup-restoring = Восстановление заменяет всё в Cardwave: чаты, персонажей, персоны, лорбуки, воспоминания и настройки. Это нельзя отменить.
+backup-restoring = Восстановление заменяет всё в Cardwave: чаты, персонажей, персоны, лорбуки, воспоминания и настройки. Это нельзя отменить. Пароль, заданный здесь, остаётся прежним.
 backup-file = Файл
 backup-restore-title = Восстановить резервную копию
 backup-choose-first = Сначала выберите файл резервной копии.
@@ -327,7 +327,7 @@ password-repeat = Повторите пароль
 password-asked-sign-in = Запрашивается при входе
 password-is-on = Включён · запрашивается при открытии приложения
 password-is-off = Выключен · любой за этим компьютером может открыть Cardwave
-password-start-forgotten = Забытый пароль восстановить нельзя. Чтобы начать заново, восстановите резервную копию.
+password-start-forgotten = Забытый пароль восстановить нельзя.
 password-open = Открыть
 password-back = Назад
 
@@ -444,101 +444,6 @@ update-auto-about = Искать новую версию при запуске �
 update-check = Проверить
 update-about = Проверить, есть ли более новая версия приложения.
 
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Ввести адрес провайдера в настройках
-setup-manually-models = Настроить вручную
-setup-use-this = Использовать этот
-setup-choose-folder = Выбрать папку
-setup-this-computer = Этот компьютер
-setup-this-computer-about = Скачанные вами файлы моделей ИИ (.gguf), их запускает Cardwave
-setup-models-example = C:\Users\вы\Models
-setup-models-says = Каждый файл модели в ней (.gguf) — это чат-модель, которую Cardwave запускает на этом компьютере. Файлов моделей ещё нет? Выберите пустую папку: Настройки › Провайдеры › Этот компьютер тогда предложит модели, подходящие этому компьютеру, и скачает их в неё.
-setup-not-this = Не тот?
-setup-recognised = Распознан:{ " " }
-setup-provider = Провайдер
-setup-none-of-these = Ни один не подходит?
-setup-several = Этот ключ подходит к нескольким провайдерам. Какой из них ваш?
-setup-unknown = Cardwave не может понять, какому провайдеру принадлежит этот ключ. Найдите провайдера по названию или введите его адрес.
-setup-find = Найти
-setup-find-field = Название провайдера или сайт
-setup-find-example = Название или сайт, например example.com
-setup-find-hint = Cardwave ищет адрес провайдера. Ваш ключ никуда не отправляется.
-setup-name = Название
-setup-name-hint = Название в списке провайдеров Cardwave. Можно оставить пустым.
-setup-address = Адрес
-setup-address-hint = Скопируйте его с сайта вашего провайдера, например https://api.example.com/v1
-setup-continue = Продолжить
-setup-local = Использовать программу на этом компьютере (например, LM Studio или Ollama)
-setup-no-key = Нет ключа?{ " " }
-setup-api-key = Ключ API
-setup-key-placeholder = Вставьте ключ сюда
-setup-found = Найдено
-setup-no-api = Cardwave не нашёл адрес ИИ на { $website }. Найдите адрес в документации провайдера (его часто называют «base URL») и введите его.
-setup-find-by-name = Найти по названию
-setup-enter-address = Ввести адрес
-setup-how = Как настроить
-setup-not-listed = Провайдера «{ $name }» нет в списке. Введите вместо этого его сайт или его адрес.
-setup-looking = Поиск…
-setup-looking-servers = Поиск программ на этом компьютере…
-setup-no-server = На этом компьютере не отвечает ни одна программа ИИ (Cardwave искал { $names }). Запустите одну и поищите снова.
-setup-no-other-server = На этом компьютере не отвечает больше ни одна программа ИИ (Cardwave искал { $names }). Запустите одну и поищите снова.
-setup-tested = { " " }· проверено
-setup-picking = Выбор из моделей вашего провайдера…
-setup-the-helper-model = вспомогательная модель
-setup-want-voice = Скачать голос
-setup-want-search = Скачать модель поиска
-setup-confirm = Подтвердить
-setup-back = Назад
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · без ключа
-setup-unlisted = Пока не выбрана. Провайдер не перечисляет моделей: введите ID модели.
-setup-not-chosen = Пока не выбрана
-setup-the-voice = Голос
-setup-the-search-model = Поиск
-setup-nothing-now = Сейчас ничего не скачивается. Поиск и голос можно настроить позже в настройках.
-setup-downloaded = Будет скачано: { $what }.
-setup-and = { $first } и { $second }
-setup-download-size = Скачать ({ $size })
-setup-where = Настройка · шаг { $step } из { $steps }
-setup-title-1 = Провайдер
-setup-title-2 = Модели
-setup-title-3 = Карточки
-setup-title-4 = Загрузки
-setup-about-1 = Вставьте API-ключ с сайта вашего провайдера ИИ. Cardwave сам найдёт провайдера.
-setup-about-2 = Cardwave выбрал их из моделей вашего провайдера. Любую можно сменить сейчас или позже в настройках.
-setup-about-3 = Если у вас есть файлы карточек персонажей (PNG или JSON из других приложений), Cardwave может перенести их из папки.
-setup-about-4 = Cardwave можно открыть уже сейчас: загрузки продолжатся, а уведомление скажет, когда они завершатся.
-setup-no-list = Нет списка моделей: { $why } Нажмите «Выбрать», чтобы ввести ID модели, или «Назад», чтобы проверить ключ.
-setup-change = Сменить
-setup-choose = Выбрать
-setup-worker-does = { " " }· пишет сводки, теги и воспоминания
-setup-same-as-chat = Та же, что модель чата
-setup-no-picks = Модели не выбраны: { $why }
-setup-helper-model = Вспомогательная модель
-setup-set-up = Cardwave готов.
-setup-folder-not-kept = Не удалось использовать папку карточек: { $why }. Её можно выбрать снова в Настройки › Данные.
-
-setup-skip = Пропустить
-setup-import-folder = Импортировать из этой папки
-setup-cards-about = Берутся только файлы карточек; в папке ничего не перемещается и не меняется. Её карточки попадут в библиотеку по окончании настройки, а положенные в неё позже — сами. Выбрать её можно и позже в Настройки › Данные.
-setup-done = Готово
-setup-done-mark = { " " }Готово
-setup-percent = { $percent }%
-setup-waiting = Ожидание
-setup-try-again = Попробовать снова
-setup-try-voice-again = Попробовать голос снова
-setup-try-search-again = Попробовать поиск снова
-setup-voice-failed = Не удалось загрузить голос: { $why }
-setup-search-failed = Не удалось загрузить модель поиска: { $why }
-setup-downloads-done = Загрузки завершены: Cardwave полностью настроен.
-setup-cards-later = Ваши карточки попадут из папки в библиотеку, как только откроется Cardwave.
-setup-voice = Голос
-setup-search = Поиск
-setup-open = Открыть Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Модель голоса
-
 ## The breadcrumbs of a page under Settings
 
 crumbs = Где вы находитесь
@@ -653,6 +558,12 @@ advanced-not-described = Ещё не описано: { $count ->
    *[other] { $count } персонажа
   }
 advanced-describe-cards = Описать персонажей
+advanced-describe-cost = Около { $low }–{ $high } токенов на { $count ->
+    [one] { $count } персонажа
+    [few] { $count } персонажей
+    [many] { $count } персонажей
+   *[other] { $count } персонажа
+  }
 advanced-failed = { $count ->
     [one] { $count } сбой
     [few] { $count } сбоя
@@ -664,6 +575,7 @@ advanced-describe-again-stop = Остановить
 advanced-describe-again-about = Заново пишет вспомогательной моделью однострочное описание, сводку, теги каждого персонажа и то, по чему его находит «По потребности», примерно 11 000–12 000 токенов на каждого. То, что вы правили сами, остаётся. Провайдеры берут плату за токены.
 advanced-no-characters = Нет персонажей для описания
 advanced-describe-again-far = Заново описано { $done } из { $all }
+advanced-describe-again-stopped = Остановлено: заново описано { $done } из { $all }
 advanced-describe-again-failed = { $count ->
     [one] { $count } сбой, при нём персонаж остаётся прежним
     [few] { $count } сбоя, при них персонажи остаются прежними
@@ -1008,7 +920,7 @@ gen-hair-colour = Цвет волос
 gen-personality = Характер
 gen-relates = Кем персонаж вам приходится
 gen-make = Создать персонажа
-gen-what = Выберите несколько черт; ИИ напишет персонажа, его историю и первое сообщение.
+gen-what = Выберите несколько черт; ИИ напишет первое сообщение персонажа и то, как он говорит.
 interview-goes-to = Ваши ответы отправляются в { $provider }, чтобы написать персонажа.
 interview-stays = Ваши ответы остаются на этом компьютере.
 interview-own-words = Или добавьте своими словами

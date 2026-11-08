@@ -467,6 +467,9 @@ pub trait Storage: cw_voice::own::Storage {
     fn settings_text(&self, user: i64) -> anyhow::Result<Option<String>>;
     /// Merges `changes` (JSON) into them and returns them as they are then.
     fn patch_settings(&self, user: i64, changes: &str) -> anyhow::Result<Option<String>>;
+    /// The name of the persona a new chat of `user` starts with, where there is
+    /// one not in the Trash (`personas::default_of`).
+    fn default_persona_name(&self, user: i64) -> anyhow::Result<Option<String>>;
 }
 
 /// Settings as kept. A text this build cannot read (a newer one wrote it)
@@ -487,6 +490,16 @@ pub fn user_stand_in(db: &dyn Storage, user: i64) -> anyhow::Result<&'static str
         .app_language
         .unwrap_or_else(cw_core::languages::computer_locale);
     Ok(cw_prompt::stand_in_user(&language))
+}
+
+/// What `{{user}}` stands for in a card's text shown outside a chat (the
+/// library's excerpt, the card's page): the default persona's name, which a
+/// new chat starts with, else the stand-in name.
+pub fn user_outside_chat(db: &dyn Storage, user: i64) -> anyhow::Result<String> {
+    match db.default_persona_name(user)? {
+        Some(name) => Ok(name),
+        None => Ok(user_stand_in(db, user)?.to_string()),
+    }
 }
 
 /// Makes the changes and returns the settings as they are then. Only what is

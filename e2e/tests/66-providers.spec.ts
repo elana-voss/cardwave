@@ -82,11 +82,12 @@ test("a box says where the provider is and its key; Edit takes the key off, Remo
   await expect(head(page, 0)).toHaveText(`${api.url} · no key`);
   expect((await entries(request))[0]).toMatchObject({ base_url: api.url, has_key: false });
 
-  // Remove asks in the menu's place; Cancel keeps the provider, Remove takes it away.
+  // Remove asks on its own line under the provider's name, which stays whole; Cancel keeps the provider, Remove takes it away.
   const remove = async () => {
     await box(page, 1).getByRole("button", { name: "Provider menu: edit, remove" }).click();
     await page.getByRole("menuitem", { name: "Remove" }).click();
-    await expect(box(page, 1).locator(".confirm")).toContainText("Remove this provider?");
+    await expect(box(page, 1).locator(".provider-head + .confirm")).toContainText("Remove this provider?");
+    await expect(box(page, 1).locator(".provider-head .confirm")).toHaveCount(0);
   };
   await remove();
   await box(page, 1).getByRole("button", { name: "Cancel" }).click();
@@ -160,8 +161,8 @@ test("“This computer” runs the GGUF files of a folder chosen in the dialog �
     await expect(own.locator(".item:not(.fit-model):not(.provider-head) .item-text")).toHaveText("Chattest-model.gguf");
     await line("Test model").getByRole("button", { name: "Model menu: delete Test model" }).click();
     await page.getByRole("menuitem", { name: "Delete" }).click();
-    await expect(line("Test model").locator(".question")).toHaveText(/^Delete this model from this computer\? It frees \S+ \S+\.$/);
-    await line("Test model").getByRole("button", { name: "Delete" }).click();
+    await expect(line("Test model").locator("+ .confirm .question")).toHaveText(/^Delete this model from this computer\? It frees \S+ \S+\.$/);
+    await line("Test model").locator("+ .confirm").getByRole("button", { name: "Delete" }).click();
     await expect(line("Test model").getByRole("button", { name: "Download Test model" })).toBeVisible();
   } finally {
     await files.close();

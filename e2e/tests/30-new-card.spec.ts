@@ -46,6 +46,8 @@ test("a new card is the empty card page, made at the first letter of its title w
   let made = 0;
   page.on("request", (sent) => (made += Number(sent.url().endsWith("/api/cards/new"))));
   await shows(page, "Description").click();
+  // The field written in shows it has the focus, as every field does (the outline of `:focus-visible`).
+  await expect(field(page, "Description")).toHaveCSS("outline-style", "solid");
   await field(page, "Description").fill("{{char}} keeps the light on Tern Rock.");
   await leave(page, "Description");
   expect(made).toBe(0);
@@ -85,6 +87,8 @@ test("a new card is the empty card page, made at the first letter of its title w
 
   await button(page, "New chat").click();
   await expect(page.locator(".message .text")).toHaveText(["\"You are late,\" says Wren."]);
+  // A new chat opens with the message field in focus.
+  await expect(page.getByLabel("Message", { exact: true })).toBeFocused();
   expect(await titled(page, "Tern Rock: made")).toHaveLength(1);
 });
 

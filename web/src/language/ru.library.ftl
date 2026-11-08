@@ -57,6 +57,7 @@ card-modes-mode = Режим
 card-modes-the-texts-below-are = Ниже — тексты, которые использует этот режим.
 card-modes-a-mode-needs-a = Режиму нужно имя.
 card-modes-default = { " " }· по умолчанию
+card-modes-first-default = Ролевая игра
 card-modes-make-default = Сделать по умолчанию
 card-modes-add-mode = Добавить способ общения
 card-modes-modes = Режимы
@@ -70,11 +71,12 @@ card-page-card-info = О карточке
 
 card-picture-card-picture = Картинка персонажа
 card-picture-card-picture-click-to = Картинка персонажа: нажмите, чтобы выбрать картинку, или перетащите её сюда
+card-picture-card-picture-tap-to = Картинка персонажа: коснитесь, чтобы выбрать картинку
 card-picture-make-a-picture = Создать картинку
 card-picture-name-first = Сначала дайте персонажу имя
 card-picture-earlier-pictures = Прежние картинки
-card-picture-click-to-choose-a = Нажмите, чтобы выбрать картинку, или перетащите её сюда
 card-picture-click-or-drop-a = Нажмите, чтобы выбрать картинку, или перетащите её сюда
+card-picture-tap-to-choose = Коснитесь, чтобы выбрать картинку
 card-picture-drop-to-use-this = Отпустите, чтобы использовать эту картинку
 card-picture-set-up-an-image = Сначала настройте модель изображений в{ " " }
 card-picture-settings-models = Настройки › Модели
@@ -232,7 +234,7 @@ character-saved = Сохранено
 character-name-in-the-chat = Имя в чате
 character-name = персонаж из заголовка
 character-creator = Автор
-character-creator-2 = автор
+character-add-creator = Добавить автора
 character-modes = Режимы…
 character-add-mode = Добавить способ общения…
 character-add-mode-sub = Другие тексты для другого вида чата, например для истории
@@ -637,7 +639,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = Лорбуков пока нет. Создайте лорбук или импортируйте файл лорбука (world info из SillyTavern, .json). Чат берёт лорбук с собой в боковую панель.
+lorebooks-no-lorebooks-yet-make = Лорбуков пока нет. Создайте лорбук или импортируйте файл лорбука (world info из SillyTavern, .json). Чат берёт лорбук с собой через Параметры чата › Добавить лорбук.
 lorebooks-entries = { $count ->
     [one] { $count } запись
     [few] { $count } записи

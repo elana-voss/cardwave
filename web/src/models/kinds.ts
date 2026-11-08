@@ -3,9 +3,9 @@
 // them go), and the model picker of one kind (`pickKind`, board "Model picker · one kind"): a dialog named by
 // the kind ("Images model") with the search field "Model", the hint, and the list as part of it, the models of
 // that kind of every provider under the provider's name (`.kind-group`), the one in use ticked and light blue
-// (`.opt.on`), "Use this model" and Cancel. A provider that does not say what kind a model is has all its models
-// under it and what is not known of it after its name (`Catalog.said`); one whose list did not come, or of which
-// none of the kind came, says why, with "Retry". Taking a model of another provider moves the kind there
+// (`.opt.on`), "Use this model" and Cancel. A model whose kind neither its provider nor models.dev says is under
+// every kind, and its provider has "type unknown" after its name (`OfferedModel.said`); one whose list did not come, or of which
+// none of the kind came, says why, with "Retry"; where no provider has one, the list says so.Taking a model of another provider moves the kind there
 // (`pickModel` of api/client.ts). Search and Voice have first the group "This computer" with its downloaded
 // model (`ProvidersView.own`, as the server names it), which takes the kind back from its provider (`unpickKind`).
 import { pickModel, providerModels, unpickKind } from "../api/client";
@@ -17,7 +17,7 @@ import type { ProvidersView } from "../api/generated/ProvidersView";
 import { el, failure, reason, told } from "../dom";
 import { dialog } from "../dialogs";
 import { icon } from "../icons";
-import { field, modelCount } from "./provider-form";
+import { field, modelCount, modelName } from "./provider-form";
 import { LABELS } from "../setting-labels";
 import { wording } from "../language/language";
 import { failureWords } from "../language/errors";
@@ -37,8 +37,8 @@ export const kindOf = (kind: Kind) => modelKinds().find((each) => each.kind === 
 export const fits = (kind: Kind, model: OfferedModel) =>
   kind === "images" ? model.image : kind === "search" ? model.search : kind === "voice" ? model.voice : model.text;
 
-/** The models of `kind` a provider offers: all of them where it does not say their kinds. */
-export const offeredFor = (kind: Kind, catalog: Catalog) => (catalog.said ? catalog.models.filter((model) => fits(kind, model)) : catalog.models);
+/** The models of `kind` a provider offers, and every model whose kinds are not known (`OfferedModel.said`). */
+export const offeredFor = (kind: Kind, catalog: Catalog) => catalog.models.filter((model) => !model.said || fits(kind, model));
 
 /** A provider's list of models as the page knows it: on its way, come, or why not. */
 export type Listed = "asking" | Catalog | { error: string };
@@ -159,8 +159,10 @@ export function pickKind(home: HTMLElement, kind: Kind, view: ProvidersView, lis
 
   /** One provider's heading and its models of the kind that have what is typed. */
   function group(provider: EntryView): HTMLElement[] {
+    // This computer's folder holds chat models alone: no group, and no failed list, under another kind.
+    if (provider.folder !== null && kind !== "chat" && kind !== "background") return [];
     const listed = lists.of(provider.id);
-    const known = typeof listed === "object" && "models" in listed && !listed.said;
+    const known = typeof listed === "object" && "models" in listed && offeredFor(kind, listed).some((model) => !model.said);
     const address = addressOf(provider);
     const head = el(
       "div",
@@ -177,16 +179,20 @@ export function pickKind(home: HTMLElement, kind: Kind, view: ProvidersView, lis
     };
     if ("error" in listed) return failed(listed.error);
     const typed = search.value.trim().toLowerCase();
-    const models = offeredFor(kind, listed).filter((model) => model.id.toLowerCase().includes(typed));
+    const named = (model: OfferedModel) => model.name ?? modelName(model.id);
+    const models = offeredFor(kind, listed).filter((model) => [model.id, named(model)].some((said) => said.toLowerCase().includes(typed)));
     // A list that came in part (the picture models without the text models) says why where the kind has none.
     if (!models.length && listed.failed && !typed) return failed(failureWords(listed.failed));
-    if (!models.length) return typed ? [] : [head, el("p", { className: "meta kind-note" }, wording("kinds-no-such-model"))];
-    return [head, ...models.map((model) => option(provider.id, model.id, model.id))];
+    // A provider with none of the kind is left out: under its name "none" read as a search that failed.
+    if (!models.length) return [];
+    return [head, ...models.map((model) => option(provider.id, model.id, named(model), true))];
   }
   /** A model's line, ticked where it is the one chosen. */
-  function option(provider: number | null, id: string, label: string): HTMLElement {
+  function option(provider: number | null, id: string, label: string, withId = false): HTMLElement {
     const on = chosen?.provider === provider && chosen.model === id;
-    const line = el("button", { type: "button", role: "option", className: on ? "opt on" : "opt", ariaSelected: String(on) }, el("span", null, label), on && icon("check", 16));
+    // A provider's model by its readable name, its ID in grey under it, as first run's picker shows it.
+    const words = withId ? el("span", { className: "flex f-col g-2" }, label, el("span", { className: "opt-id" }, id)) : el("span", null, label);
+    const line = el("button", { type: "button", role: "option", className: `opt${withId ? " two" : ""}${on ? " on" : ""}`, ariaSelected: String(on) }, words, on && icon("check", 16));
     line.onclick = () => {
       chosen = { provider, model: id };
       draw();
@@ -201,7 +207,10 @@ export function pickKind(home: HTMLElement, kind: Kind, view: ProvidersView, lis
   }
   function draw(): void {
     const top = list.scrollTop;
-    list.replaceChildren(...ownGroup(), ...view.providers.flatMap(group));
+    const lines = [...ownGroup(), ...view.providers.flatMap(group)];
+    // Where no provider has a model of the kind, an empty list would read as one still coming (Claude).
+    const none = !lines.length && !search.value.trim();
+    list.replaceChildren(...(none ? [el("p", { className: "meta kind-note" }, wording("kinds-none-of-the-kind"))] : lines));
     list.scrollTop = top;
     use.disabled = !chosen;
   }

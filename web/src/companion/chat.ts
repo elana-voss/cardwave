@@ -67,10 +67,11 @@ function compactBox() {
   return { node, picture, name, full, loud, more, shut, list, status, input, form };
 }
 
-/** The newest chat with the card, else a new one with its first character. */
+/** The newest chat with the card alone (never a chat of several it is in), else a new one with its first character. */
 async function findChat(cardId: number): Promise<number> {
-  const [newest] = await cardChats(cardId);
-  if (newest) return newest.id;
+  for (const chat of await cardChats(cardId)) {
+    if ((await getChat(chat.id)).characters.length === 1) return chat.id;
+  }
   const { card, characters } = await getCard(cardId);
   const first = characters[0];
   if (!first) throw new Error(wording("chat-the-card-has-no"));

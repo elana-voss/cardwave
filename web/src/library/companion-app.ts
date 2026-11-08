@@ -6,7 +6,7 @@
 //
 // The switch says whether the companion is out, and starts with the app: on, it opens the window; off, it closes it.
 // "Make companion" makes the card's first character the companion and opens the window, or has an open one show it.
-// `figureLine`, "Companion figure" (Settings' Appearance and first run's step 2, Claude), picks the figure shown
+// `figureLine`, "Companion figure" (Settings' Appearance, Claude), picks the figure shown
 // where the card has none, stored at once; a refused change marks the figure stored before. `sizeLine`, "Companion
 // size" under it in Settings (Claude), sets the figure's height as a share of the screen's, stored as the slider
 // moves, one change at a time, the newest last, so the companion window resizes it live.

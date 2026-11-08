@@ -2,7 +2,8 @@
 //! last pressed, its `state` waiting, describing, needs, read or failed. `card_descriptions` and `card_needs`
 //! move only when a result has come, so the old stands until then. Each move of a row names the state it
 //! expects: a press while a call is out makes the row `waiting`, and that call's end then moves nothing.
-//! `stopped` is a character in hand when Stop came: it finishes, and no longer counts as waiting.
+//! `stopped` is a character in hand when Stop came: it finishes, and no longer counts as waiting; 2 on every row
+//! where Stop dropped characters that waited, so the run reads as stopped, not as done.
 
 use cw_core::now_ms;
 use cw_library::again::{DescribingAgain, Storage};
@@ -69,15 +70,16 @@ impl Storage for Db {
 
     fn stop_describing_again(&self, user: i64) -> anyhow::Result<()> {
         self.with(|conn| {
-            conn.execute(
+            let dropped = conn.execute(
                 "delete from card_redos where state = 'waiting'
                    and card_id in (select id from cards where user_id = ?1)",
                 [user],
             )?;
             conn.execute(
-                "update card_redos set stopped = 1 where state in ('describing', 'needs')
+                "update card_redos set stopped = case when ?2 then 2 else 1 end
+                 where (?2 or state in ('describing', 'needs'))
                    and card_id in (select id from cards where user_id = ?1)",
-                [user],
+                params![user, dropped > 0],
             )
         })?;
         Ok(())
@@ -90,14 +92,15 @@ impl Storage for Db {
                 [user],
                 |r| r.get(0),
             )?;
-            let (waiting, read, failed): (i64, i64, i64) = conn.query_row(
+            let (waiting, read, failed, stopped): (i64, i64, i64, bool) = conn.query_row(
                 "select count(*) filter (where r.state in ('waiting', 'describing', 'needs') and not r.stopped),
                         count(*) filter (where r.state = 'read'),
-                        count(*) filter (where r.state = 'failed')
+                        count(*) filter (where r.state = 'failed'),
+                        count(*) filter (where r.stopped = 2) > 0
                  from card_redos r join cards c on c.id = r.card_id
                  where c.user_id = ?1 and c.trashed_at is null",
                 [user],
-                |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
+                |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
             )?;
             let failure = conn
                 .query_row(
@@ -115,6 +118,7 @@ impl Storage for Db {
                 failed: failed as usize,
                 // Kept as JSON by `describe::kept_failure`.
                 failure: failure.and_then(|kept: String| serde_json::from_str(&kept).ok()),
+                stopped,
             })
         })?)
     }

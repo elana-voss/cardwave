@@ -48,7 +48,7 @@ export function privateSent(state: PrivateState): InterviewPrivate {
 /** The closed line. */
 export function closedLine(press: () => void): HTMLElement {
   const label = el("span", { className: "item-text" }, el("span", { className: "item-label" }, wording("interview-private-line")), el("span", { className: "meta" }, wording("interview-private-sub")));
-  const line = el("button", { type: "button", className: "item w100 bb ink-link private-line", ariaExpanded: "false", onclick: press }, label, el("span", { className: "c-grey flex" }, icon("down", 16)));
+  const line = el("button", { type: "button", className: "item w100 bb ink-link private-line plain-button", ariaExpanded: "false", onclick: press }, label, el("span", { className: "c-grey flex" }, icon("down", 16)));
   return el("div", { className: "group" }, line);
 }
 

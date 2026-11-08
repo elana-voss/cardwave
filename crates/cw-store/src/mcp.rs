@@ -87,14 +87,14 @@ impl Storage for Db {
         Ok(self.with(|conn| {
             let settings = served(conn, local)?;
             if !settings.on {
-                let off = "Cardwave serves no other programs until \"Let other programs use Cardwave (MCP)\" is switched on in its Account › Server.";
+                let off = "Cardwave serves no other programs until \"Let AI apps on this computer use Cardwave\" is switched on in its Account › Sharing.";
                 return Ok(Err(off.into()));
             }
             if let Some(name) = name {
                 let mut programs = programs(conn)?;
                 if programs.removed.iter().any(|one| one == name) {
                     return Ok(Err(format!(
-                        "\"{name}\" was removed in Cardwave's Account › Server. Switching \"Let other programs use Cardwave (MCP)\" off and on lets it in again."
+                        "\"{name}\" was removed in Cardwave's Account › Sharing. Switching \"Let AI apps on this computer use Cardwave\" off and on lets it in again."
                     )));
                 }
                 if !programs.connected.iter().any(|one| one == name) {

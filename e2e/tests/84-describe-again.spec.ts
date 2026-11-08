@@ -78,7 +78,7 @@ test("it says how far it has come, and Stop ends it after the character being re
   await expect(says(page)).toHaveText("0 of 2 described again");
   await line(page).getByRole("button", { name: "Stop" }).click();
   await expect(press(page)).toBeEnabled();
-  await expect(says(page)).not.toContainText("described again");
+  await expect(says(page)).toHaveText("Stopped at 0 of 2 described again"); // Stop dropped the character waiting
   reply.release();
 
   // The character in hand gets its new needs; the other was never asked.

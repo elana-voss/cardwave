@@ -21,7 +21,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use super::{Interview, Models, Move, clear_own_slots, drop_after, entry_of, gender, texts, tree};
-use crate::quotes::{plain, wordy};
+use crate::quotes::{self, plain, wordy};
 
 /// How many lines that are not gaps are shown.
 pub const SHOWN: usize = 8;
@@ -200,17 +200,68 @@ pub fn question_of(interview: &Interview, words: &str) -> Option<usize> {
     best.map(|(_, index)| index)
 }
 
+/// The fewest characters of a word that alone shows a line rests on an answer.
+const TELLING_WORD: usize = 5;
+
+/// Words of [`TELLING_WORD`] characters or more that any answer may hold: no sign alone.
+const FUNCTION_WORDS: &[&str] = &[
+    "about",
+    "after",
+    "again",
+    "always",
+    "anyone",
+    "anything",
+    "being",
+    "could",
+    "every",
+    "everyone",
+    "maybe",
+    "never",
+    "other",
+    "really",
+    "should",
+    "someone",
+    "something",
+    "their",
+    "there",
+    "these",
+    "thing",
+    "things",
+    "those",
+    "through",
+    "where",
+    "which",
+    "while",
+    "would",
+];
+
 /// Whether a line is the model's own guess: no piece of its `words` stands in any
-/// answer, a bare kind's included (it was said, though not asked again).
+/// answer, a bare kind's included (it was said, though not asked again), and none of
+/// their words of [`TELLING_WORD`] characters or more either, as the model joins an
+/// answer's words by commas or "…" as often as by its joints.
 pub fn guessed(interview: &Interview, words: &str) -> bool {
     let said: Vec<String> = interview
         .log
         .iter()
         .filter_map(|entry| entry.said().map(plain))
         .collect();
-    !pieces(words)
+    let said_words: Vec<String> = said
         .iter()
-        .any(|piece| said.iter().any(|said| said.contains(piece.as_str())))
+        .flat_map(|said| {
+            quotes::words(said)
+                .split(' ')
+                .map(str::to_string)
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    let piece_said = pieces(words)
+        .iter()
+        .any(|piece| said.iter().any(|said| said.contains(piece.as_str())));
+    let word_said = quotes::words(words)
+        .split(' ')
+        .filter(|word| word.chars().count() >= TELLING_WORD && !FUNCTION_WORDS.contains(word))
+        .any(|word| said_words.iter().any(|said| said == word));
+    !(piece_said || word_said)
 }
 
 /// The answer of the log's entry `index` replaced by `action`, in place: the log

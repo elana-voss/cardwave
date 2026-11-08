@@ -156,9 +156,10 @@ fn a_ccv4_character_becomes_a_sillytavern_card() {
     );
 
     let book = &data["character_book"];
+    // A block without a name of its own is named by its ID, so that it comes back as itself.
     assert_eq!(
-        (&book["scan_depth"], &book["token_budget"]),
-        (&json!(3), &json!(300))
+        (&book["name"], &book["scan_depth"], &book["token_budget"]),
+        (&json!("coast"), &json!(3), &json!(300))
     );
     let entries = book["entries"].as_array().unwrap();
     assert_eq!(entries.len(), 3);

@@ -165,6 +165,24 @@ export function latest<T>(
   };
 }
 
+/**
+ * `run`, at most one at a time: a call while one runs asks for one more run after it, however many calls come, and
+ * waits for that. So 500 cards imported, each an event, read the list a few times, not 500.
+ */
+export function coalesced(run: () => Promise<void>): () => Promise<void> {
+  let running: Promise<void> | null = null;
+  let next: Promise<void> | null = null;
+  const start = (): Promise<void> => (running = run().finally(() => (running = null)));
+  return () => {
+    if (!running) return start();
+    next ??= running.then(
+      () => ((next = null), start()),
+      () => ((next = null), start()),
+    );
+    return next;
+  };
+}
+
 /** The window in which the rail is a bar on top, and a screen's tools stand under its search; styles.css draws it so from the same width on. */
 export const SMALL = matchMedia("(max-width: 600px)");
 
@@ -365,9 +383,10 @@ export function selectField(
  * list part of the window, in the flow where its caller puts `list`, and
  * always open while it has lines: the model picker's (docs/design.md).
  * `chosen`, the value in use, is ticked and marked in the list until the arrows
- * mark another.
+ * mark another. With `label`, a line shows the value's label with the value in
+ * grey under it (`.opt.two`).
  */
-export function suggest(input: HTMLInputElement, from: (typed: string) => string[], inside = false, chosen?: string): { node: HTMLElement; list: HTMLElement; open(): void; typed(): string } {
+export function suggest(input: HTMLInputElement, from: (typed: string) => string[], inside = false, chosen?: string, label?: (value: string) => string): { node: HTMLElement; list: HTMLElement; open(): void; typed(): string } {
   const list = el("div", { id: `${input.name}-offered`, className: "kind-list", role: "listbox", hidden: true });
   input.role = "combobox";
   input.ariaAutoComplete = "list";
@@ -393,14 +412,17 @@ export function suggest(input: HTMLInputElement, from: (typed: string) => string
     const offered = now ? from(input.value === typed ? typed : "") : [];
     // The value in use is ticked and marked, so the arrows start from it (design.md, "A choice from a list").
     const lines = offered.map((value, n) => {
-      const line = el("div", { id: `${list.id}-${n}`, className: "opt", role: "option" }, value, value === chosen && icon("check", 16));
+      const words = label ? el("span", { className: "flex f-col g-2" }, label(value), el("span", { className: "opt-id" }, value)) : value;
+      const line = el("div", { id: `${list.id}-${n}`, className: label ? "opt two" : "opt", role: "option" }, words, value === chosen && icon("check", 16));
       line.dataset.value = value;
       return line;
     });
     list.replaceChildren(...lines);
-    mark(lines.find((line) => line.dataset.value === chosen) ?? null);
     list.hidden = !lines.length;
     input.ariaExpanded = String(!list.hidden);
+    // Marked once shown, so the list opens scrolled to it; a list not yet in its window, once it is.
+    mark(lines.find((line) => line.dataset.value === chosen) ?? null);
+    if (!list.isConnected) requestAnimationFrame(() => marked?.scrollIntoView({ block: "nearest" }));
     // All of it is in view, also under a field at the window's foot.
     if (lines.length && !inside) list.scrollIntoView({ block: "nearest" });
   }

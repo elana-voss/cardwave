@@ -133,7 +133,8 @@ import type { FoundProvider } from "./generated/FoundProvider";
 import type { KnownProvider } from "./generated/KnownProvider";
 import type { ListModels } from "./generated/ListModels";
 import type { ListedModels } from "./generated/ListedModels";
-import type { Picks } from "./generated/Picks";
+import type { NamedModels } from "./generated/NamedModels";
+import type { NamedPicks } from "./generated/NamedPicks";
 import type { LockState } from "./generated/LockState";
 import type { ProviderView } from "./generated/ProviderView";
 import type { RemovedEntry } from "./generated/RemovedEntry";
@@ -178,6 +179,8 @@ import { type Answered, errorWords } from "../language/errors";
 export class ApiError extends Error {
   /** The error's code, where the answer is the server's. */
   readonly code: Code | null;
+  /** What the server's answer gives with its code (the seconds of a wait, ...). */
+  readonly details: NonNullable<Answered>["details"];
   constructor(
     readonly status: number,
     body: Answered | Code,
@@ -185,6 +188,7 @@ export class ApiError extends Error {
     const answered = typeof body === "string" ? { code: body } : body;
     super(errorWords(status, answered));
     this.code = answered?.code ?? null;
+    this.details = answered?.details ?? {};
   }
 }
 
@@ -334,9 +338,9 @@ export const getProviders = () => request<KnownProvider[]>("GET", "/api/provider
 /** The address of the API of the provider whose website this is, for the user to take or not; `null` when none was found. */
 export const findProvider = (asked: FindProvider) => request<FoundProvider | null>("POST", "/api/provider/find", asked);
 /** The models the API at an address lists, asked with the key that would go there with a chat. Nothing is stored. */
-export const listModels = (asked: ListModels) => request<ListedModels>("POST", "/api/provider/models", asked);
+export const listModels = (asked: ListModels) => request<NamedModels>("POST", "/api/provider/models", asked);
 /** First run's picks of a model of each kind at the address, asked with the key (`crates/cw-provider/src/picks.rs`). */
-export const pickModels = (asked: ListModels) => request<Picks>("POST", "/api/provider/picks", asked);
+export const pickModels = (asked: ListModels) => request<NamedPicks>("POST", "/api/provider/picks", asked);
 /** Asks a model a small question, at an address and with the key that would go there with a chat: refused with the reason when it does not reply. Nothing is stored. */
 export const testModel = (asked: TestModel) => request<void>("POST", "/api/provider/test", asked);
 
@@ -619,6 +623,7 @@ export const getDescribing = () => request<Describing>("GET", "/api/describe");
 /** What the view By need shows over its cards: the needs any card has, and how many cards are read. */
 export const getNeeds = () => request<NeedsOverview>("GET", "/api/needs");
 export const describeCards = () => request<Describing>("POST", "/api/describe");
+export const stopDescribing = () => request<Describing>("DELETE", "/api/describe");
 /** How far "Describe all again" has come, and how many it describes. */
 export const getDescribingAgain = () => request<DescribingAgain>("GET", "/api/describe/again");
 /** Describes every character not in the Trash again; each keeps its old description and needs until the new have come. */
@@ -641,6 +646,8 @@ export const cancelDictationDownload = () => request<DictationModel>("DELETE", "
 export const removeDictation = () => request<DictationModel>("DELETE", "/api/dictation");
 /** The words said in `wav`, a WAV file, as dictation's model hears them on the server's computer. */
 export const hear = (wav: Blob, signal?: AbortSignal) => request<Heard>("POST", "/api/dictation/hear", wav, signal);
+/** Has the server load dictation's model ahead, so the first recording is heard as fast as the next; answers at once. */
+export const loadDictation = () => request<void>("POST", "/api/dictation/load");
 /** The voice's state: not downloaded, downloading or ready, with the voices to choose. */
 export const getVoice = () => request<VoiceModel>("GET", "/api/voice");
 /** The voices Cardwave ships, with their licences, wherever Voice is. */

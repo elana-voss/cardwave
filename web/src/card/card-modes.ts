@@ -7,7 +7,7 @@ import { after, inMode, modes, person, save, SHOWN, type Card, type Kind } from 
 import { el, segmented } from "../dom";
 import { dialog, formDialog, menuOn } from "../dialogs";
 import { icon } from "../icons";
-import { firstMode, modeTag, pressMode, removeMode, renameMode, sameMode } from "./modes";
+import { addedMode, firstMode, modeTag, pressMode, removeMode, renameMode, sameMode } from "./modes";
 import { wording } from "../language/language";
 import { comma } from "../format";
 
@@ -60,8 +60,11 @@ export function modeBar(c: Card): HTMLElement | null {
   );
 }
 
-/** Adds the mode `name` to the card, the first a chat begins in where it is the first. */
-export const addMode = (c: Card, name: string) => changeModes(c, (card) => (card.modes = [...(card.modes ?? []), name]));
+/** The default mode's name where the first way to chat is added: the card's own texts are it. */
+const firstName = () => wording("card-modes-first-default");
+
+/** Adds the mode `name` to the card; the first added comes beside the card's own texts as the default (`addedMode`). */
+export const addMode = (c: Card, name: string) => changeModes(c, (card) => addedMode(card, name, firstName()));
 
 /** Saves a change of the card's modes, made in all its texts, and draws the page and the modes' dialog anew. */
 const changeModes = (c: Card, change: (card: CardEdit) => void) =>
@@ -82,7 +85,8 @@ export function askMode(c: Card, title: string, name: string, done: (typed: stri
     async () => {
       const typed = field.value.trim();
       if (!typed) throw new Error(wording("card-modes-a-mode-needs-a"));
-      if (modes(c).some((one) => sameMode(one, typed) && !sameMode(one, name))) throw new Error(wording("card-modes-the-card-has-a", { typed }));
+      const taken = modes(c).length ? modes(c) : [firstName()];
+      if (taken.some((one) => sameMode(one, typed) && !sameMode(one, name))) throw new Error(wording("card-modes-the-card-has-a", { typed }));
       box.close();
       done(typed);
     },

@@ -182,11 +182,11 @@ test("a text, the title, the tags and the lines under About are written where th
   await field(page, "Title").press("Escape");
   await expect(page.locator(".hero h1")).toHaveText("Protector, written");
   // The page shows the card as saved, edited today.
-  await expect.poll(() => lines(page)).toEqual(["knight", "feast", "slow burn", "Plays Guin", "by creator", expect.stringMatching(/^edited /)]);
+  await expect.poll(() => lines(page)).toEqual(["knight", "feast", "slow burn", "Plays Guin", "Add creator", expect.stringMatching(/^edited /)]);
 
   // The old editor's address opens the page.
   await page.goto(`/#/library/${card}/edit/1`);
-  await expect(shows(page, "Scenario")).toHaveText(SCENARIO.replace("{{user}}", "User"));
+  await expect(shows(page, "Scenario")).toHaveText(SCENARIO.replace("{{user}}", "Guest"));
   // A text the character has no block for is empty, and asks for its words; it has nothing for the AI tools.
   await expect(shows(page, "Instructions for the AI")).toHaveText("Empty · instructions the AI follows in every chat");
   await expect(button(page, "AI tools for Instructions for the AI")).toBeDisabled();

@@ -33,8 +33,8 @@ error-remote-sign-in-off = Esta cuenta no puede iniciar sesión desde otro dispo
 error-no-password-on = No hay ninguna contraseña activada.
 error-no-password-set = Esta cuenta no tiene contraseña.
 error-password-kept = Una cuenta de este equipo tiene contraseña: inicia sesión con ella.
-error-account-busy = Cardwave aún está escribiendo una respuesta o leyendo personajes; inténtalo de nuevo cuando termine.
-error-restore-busy = Cardwave aún está escribiendo una respuesta o leyendo personajes; inténtalo de nuevo cuando termine.
+error-account-busy = Cardwave aún está trabajando para esta cuenta: una respuesta, una imagen, una tarea de programación, un personaje nuevo, la lectura de personajes o la memoria de un chat; inténtalo de nuevo cuando termine.
+error-restore-busy = Cardwave aún está trabajando: una respuesta, una imagen, una tarea de programación, un personaje nuevo, la lectura de personajes o la memoria de un chat; inténtalo de nuevo cuando termine.
 error-backup-needs-password = Una copia de seguridad necesita contraseña.
 
 ## What is asked of
@@ -76,8 +76,12 @@ error-chat-busy = Se está escribiendo una respuesta en este chat; detenla prime
 error-no-provider = Aún no hay ningún proveedor configurado. Añade uno en Ajustes › Proveedores.
 error-provider-refused = { $refusal ->
     [key] El proveedor no aceptó la clave: revísala en Ajustes › Proveedores.
+    [paid] El proveedor pide un pago por esto: añade saldo o elige un modelo que incluya tu plan.
     [busy] El proveedor no tiene saldo o está ocupado: inténtalo más tarde.
     [down] El proveedor no responde: inténtalo más tarde.
+    [fault] El proveedor tuvo un fallo por su parte: { $reason } Inténtalo más tarde.
+    [no_model] El proveedor ya no ofrece este modelo: elige otro en Ajustes › Modelos.
+    [too_long] El mensaje es demasiado largo para este modelo: acórtalo o elige en Ajustes › Modelos uno que admita más.
    *[other] El proveedor rechazó esto: { $reason }
 }
 error-model-declined = { $model } se negó a escribir esto. Cambia el mensaje o elige otro modelo.
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] Una imagen es un archivo PNG, JPEG o WebP.
     [backup] Este archivo no es una copia de seguridad de Cardwave.
     [backup_damaged] Esta copia de seguridad está dañada.
+    [backup_newer] Esta copia de seguridad se hizo con un Cardwave más nuevo. Actualiza Cardwave para restaurarla.
     [backup_key] Esta copia de seguridad está dañada: su clave no se puede leer.
     [base64] Eso no es base64.
     [base64_file] { $name } no es base64.
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] No se puede leer la respuesta del servidor de imágenes.
     [picture_unreadable] No se puede leer la imagen.
     [png] No es un archivo PNG.
+    [no_card] Este archivo no contiene ninguna tarjeta de personaje.
     [png_damaged] El PNG está dañado.
+    [charx] Cardwave aún no puede importar archivos de tarjeta CHARX. Exporta la tarjeta como PNG o JSON.
     [provider_address] La dirección debe ser una dirección web simple, como https://api.openai.com/v1.
     [provider_website] Indica el sitio web del proveedor como un nombre, por ejemplo example.com.
     [recording_format] No se puede leer el formato de la grabación.

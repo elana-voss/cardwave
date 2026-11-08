@@ -342,14 +342,18 @@ async fn delete(
     if id == owner {
         return Err(NotFound("account").into());
     }
-    let busy =
-        state.replies().keys().any(|(user, _)| *user == id) || state.describing().contains(&id);
-    if busy {
-        return Err(Fail::new(Code::AccountBusy).into());
-    }
     let held = state.clone();
     state
         .run(move |db| {
+            // Held to the delete, so no work the check would find begins in between.
+            let _held = cw_core::lock(&held.guarded);
+            // What would write into an account that is gone.
+            let busy = held.replies().keys().any(|(user, _)| *user == id)
+                || held.describing().contains_key(&id)
+                || held.remembering().values().any(|user| *user == id)
+                || held.coding().values().any(|task| task.user() == id)
+                || held.user_at_work(id);
+            anyhow::ensure!(!busy, Fail::new(Code::AccountBusy));
             users::delete(db, id)?;
             // After the account, so that no session begins between the two.
             held.sessions.end_all(db, id, None)

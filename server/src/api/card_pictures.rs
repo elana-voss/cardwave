@@ -167,6 +167,7 @@ async fn made(
     Path(id): Path<i64>,
     Json(asked): Json<MakeCardPicture>,
 ) -> ApiResult<(StatusCode, Json<CardPicture>)> {
+    let _at_work = state.at_work(user)?;
     let words = asked.words.trim().to_string();
     let count = words.chars().count();
     let whom = state

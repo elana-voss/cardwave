@@ -387,6 +387,20 @@ test("on another device the account's menu ends with Sign out, a lone account's 
   }
 });
 
+test("the rail made before the start knows the page is of another device has Sign out once it is told", () => {
+  make();
+  const lines = () => [...account(rail()).parentElement!.querySelectorAll<HTMLElement>('[role="menu"] button')].map((line) => line.textContent);
+  told({ name: "Mira", local: false, picture: null });
+  toldAccounts([{ id: 2, name: "Mira", local: false, current: true, password: true }]);
+  expect(lines()).toEqual(["Profile", "Settings"]);
+  try {
+    setElsewhere(true);
+    expect(lines()).toEqual(["Profile", "Settings", "Sign out"]);
+  } finally {
+    setElsewhere(false);
+  }
+});
+
 test("the rail's foot has the account, the Trash and the gear, the Trash leading to the Trash page and named in its tooltip", () => {
   make();
   const foot = rail().querySelector<HTMLElement>(".rail-foot")!;

@@ -2,7 +2,7 @@
 // (`modeInUse`) and how its header's pill says it (`modeLabel`); whether a character in it goes by its
 // personality (`isPersonal`); on the card's page a text's name (`textName`), whether it is used in a mode
 // (`usedIn`), its mode tag (`modeTag`) and what its menu does to it (`pressMode`), and a change of the card's
-// modes made in all its texts at once (`renameMode`, `removeMode`, `firstMode`). Modes are one whatever their
+// modes made in all its texts at once (`addedMode`, `renameMode`, `removeMode`, `firstMode`). Modes are one whatever their
 // case, as on the server.
 import type { CardEdit } from "../api/generated/CardEdit";
 import type { Chat } from "../api/generated/Chat";
@@ -88,6 +88,16 @@ export function renameMode(edit: CardEdit, mode: string, to: string): void {
 export function removeMode(edit: CardEdit, mode: string): void {
   edit.modes = (edit.modes ?? []).filter((one) => !sameMode(one, mode));
   for (const part of texts(edit)) if (part.modes) part.modes = part.modes.filter((one) => !sameMode(one, mode));
+}
+
+/**
+ * Adds the mode `name` to the card. The first one added makes two: the card's texts stay its own as the default
+ * mode `first`, and `name` beside it has its own texts to write.
+ */
+export function addedMode(edit: CardEdit, name: string, first: string): void {
+  const modes = edit.modes ?? [];
+  if (!modes.length) for (const part of texts(edit)) part.modes = [first];
+  edit.modes = modes.length ? [...modes, name] : [first, name];
 }
 
 /** Makes a mode the card's first, the one a chat begins in. */

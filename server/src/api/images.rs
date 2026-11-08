@@ -8,8 +8,9 @@
 //! is there: the worker model writes its words (424 without a provider), the
 //! image model makes it, which may take minutes on a ComfyUI, and nothing is
 //! kept of one that failed. `GET /api/messages/{id}/picture` is the picture;
-//! `POST` there makes it anew of the words given ("Make again"), as another
-//! version of the message.
+//! `POST` there makes it anew of the words given ("Make again"), which the
+//! worker model writes out as typed words are, as another version of the message.
+//! The message says the words typed, the image model gets the worker model's.
 
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -80,6 +81,7 @@ async fn make(
     Json(asked): Json<MakePicture>,
 ) -> ApiResult<(StatusCode, Json<MessageView>)> {
     let speaker = asked.speaker_id;
+    let _at_work = state.at_work(user)?;
     let (worker, whom, inputs) = state
         .run(move |db| {
             // A chat that cannot take the picture's message says so before
@@ -91,23 +93,30 @@ async fn make(
             Ok((worker, whom, chats::prompt_inputs(db, user, id, speaker)?))
         })
         .await?;
-    let asked_for = images::asked_of(&inputs, asked.words.as_deref());
+    let typed = asked
+        .words
+        .as_deref()
+        .map(str::trim)
+        .filter(|typed| !typed.is_empty());
+    let asked_for = images::asked_of(&inputs, typed);
     let words = images::words_of(&cw_provider::answer(&state.http, &worker, &asked_for).await?)?;
     let made = images::make(&state.http, &whom, &words).await?;
+    let shown = typed.unwrap_or(&words).to_string();
     let message = state
         .run(move |db| {
             chats::view(
                 db,
                 user,
-                images::keep(db, user, id, speaker, &words, &made)?,
+                images::keep(db, user, id, speaker, (&shown, &words), &made)?,
             )
         })
         .await?;
     Ok((StatusCode::CREATED, Json(message)))
 }
 
-/// Makes the picture of the message `id` anew of the words given, as another
-/// version of that message; answers with it, 201, once it is there.
+/// Makes the picture of the message `id` anew of the words given, which the
+/// worker model writes out with the character's looks, as another version of
+/// that message; answers with it, 201, once it is there.
 async fn remake(
     State(state): State<AppState>,
     User(user): User,
@@ -118,15 +127,23 @@ async fn remake(
     if words.is_empty() {
         return Err(Fail::new(Code::PictureNeedsWords).into());
     }
-    let whom = state
+    let _at_work = state.at_work(user)?;
+    let (worker, whom, inputs) = state
         .run(move |db| {
-            images::picture(db, user, id)?;
-            images::whom(db, user)
+            let (chat, speaker) = images::chat_of(db, user, id)?;
+            let worker = provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            let whom = images::whom(db, user)?;
+            Ok((worker, whom, chats::prompt_inputs(db, user, chat, speaker)?))
         })
         .await?;
-    let made = images::make(&state.http, &whom, &words).await?;
+    let asked_for = images::asked_of(&inputs, Some(&words));
+    let prompt = images::words_of(&cw_provider::answer(&state.http, &worker, &asked_for).await?)?;
+    let made = images::make(&state.http, &whom, &prompt).await?;
     let message = state
-        .run(move |db| chats::view(db, user, images::keep_again(db, user, id, &words, &made)?))
+        .run(move |db| {
+            let again = images::keep_again(db, user, id, (&words, &prompt), &made)?;
+            chats::view(db, user, again)
+        })
         .await?;
     Ok((StatusCode::CREATED, Json(message)))
 }

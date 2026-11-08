@@ -145,7 +145,11 @@ pub fn prompt_inputs_after(
     })?;
     prompt_presets::apply(db, user, chat, &mut character)?;
     if other_language {
-        written_in(&mut character, &language);
+        let line = format!("Write your replies in {}.", languages::name_of(&language));
+        after_chat(&mut character, &line);
+    }
+    if participants.len() > 1 {
+        after_chat(&mut character, ONLY_AS);
     }
 
     let (persona_name, persona_description) = match persona_of(db, user, chat)? {
@@ -226,9 +230,10 @@ fn chat_messages(
     let messages = path
         .into_iter()
         .map(|m| {
+            let said = crate::images::told(&m.content).unwrap_or(m.content);
             let content = match m.speaker_id.and_then(|id| names.get(&id)) {
-                Some(name) => format!("{name}: {}", m.content),
-                None => m.content,
+                Some(name) => format!("{name}: {said}"),
+                None => said,
             };
             ChatMessage {
                 id: m.id.to_string(),
@@ -293,10 +298,13 @@ pub trait Storage {
     ) -> anyhow::Result<()>;
 }
 
-/// Tells the AI, after the chat, to write in `language` (Settings, "Language
-/// the AI writes in"), as the character's card is in another.
-fn written_in(character: &mut Character, language: &str) {
-    let line = format!("Write your replies in {}.", languages::name_of(language));
+/// What a reply in a chat of several is told after the chat, as SillyTavern's
+/// group nudge has it: else a model may answer as someone the user named.
+const ONLY_AS: &str = "[Write the next reply only as {{char}}.]";
+
+/// Tells the AI `line` after the chat: to write in the language of Settings'
+/// "Language the AI writes in" where the card is in another, or [`ONLY_AS`].
+fn after_chat(character: &mut Character, line: &str) {
     let after = &mut character.post_history_instructions;
     if !after.trim().is_empty() {
         after.push_str(
@@ -305,7 +313,7 @@ fn written_in(character: &mut Character, language: &str) {
 ",
         );
     }
-    after.push_str(&line);
+    after.push_str(line);
 }
 
 /// What a message's own macros set, if it is a greeting that set any.

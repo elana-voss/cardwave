@@ -33,8 +33,8 @@ error-remote-sign-in-off = 這個帳號不能從其他裝置登入。請在「�
 error-no-password-on = 沒有設定密碼。
 error-no-password-set = 這個帳號沒有設定密碼。
 error-password-kept = 這台電腦上已有帳號設定了密碼：該帳號要用密碼登入。
-error-account-busy = Cardwave 還在撰寫回覆或讀取角色；請在完成後再試。
-error-restore-busy = Cardwave 還在撰寫回覆或讀取角色；請在完成後再試。
+error-account-busy = Cardwave 還在為此帳戶工作：回覆、圖片、程式設計任務、新角色、讀取角色或聊天的記憶；請在完成後再試。
+error-restore-busy = Cardwave 還在工作：回覆、圖片、程式設計任務、新角色、讀取角色或聊天的記憶；請在完成後再試。
 error-backup-needs-password = 備份需要密碼。
 
 ## What is asked of
@@ -76,8 +76,12 @@ error-chat-busy = 這個聊天正在撰寫回覆，請先停止。
 error-no-provider = 還沒有設定任何供應商。請在「設定 › 供應商」中新增一個。
 error-provider-refused = { $refusal ->
     [key] 供應商沒有接受這組金鑰：請到「設定 › 供應商」檢查。
+    [paid] 供應商要求為此付費：請儲值，或選擇你的方案包含的模型。
     [busy] 供應商的額度已用完或正忙碌：請稍後再試。
     [down] 供應商沒有回應：請稍後再試。
+    [fault] 供應商那邊出了故障：{ $reason } 請稍後再試。
+    [no_model] 供應商已不再提供這個模型：請在 設定 › 模型 中另選一個。
+    [too_long] 這則訊息對這個模型來說太長了：請縮短它，或在 設定 › 模型 中選一個能接收更多內容的模型。
    *[other] 供應商拒絕了：{ $reason }
 }
 error-model-declined = { $model } 拒絕撰寫這段內容。請修改訊息，或換一個模型。
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] 圖片必須是 PNG、JPEG 或 WebP 檔案。
     [backup] 這個檔案不是 Cardwave 的備份。
     [backup_damaged] 這個備份已損壞。
+    [backup_newer] 這個備份由較新版本的 Cardwave 製作。請更新 Cardwave 後再還原。
     [backup_key] 這個備份已損壞：無法讀取它的金鑰。
     [base64] 這不是 base64。
     [base64_file] { $name } 不是 base64。
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] 無法讀取圖片伺服器的回應。
     [picture_unreadable] 無法讀取這張圖片。
     [png] 不是 PNG 檔案。
+    [no_card] 此檔案不含角色卡。
     [png_damaged] 這個 PNG 已損壞。
+    [charx] Cardwave 暫不能匯入 CHARX 角色卡檔案。請將角色卡匯出為 PNG 或 JSON。
     [provider_address] 位址必須是單純的網址，例如 https://api.openai.com/v1。
     [provider_website] 請以名稱的形式填寫供應商的網站，例如 example.com。
     [recording_format] 無法讀取錄音的格式。

@@ -21,7 +21,7 @@ import type { PickedView } from "../api/generated/PickedView";
 import type { ProvidersView } from "../api/generated/ProvidersView";
 import type { ServerEvent } from "../api/generated/ServerEvent";
 import { announce, el, failure, item, latest, noticeBox, oneAtATime, reason, selectField, switchBox, type Choice, type View } from "../dom";
-import { askFirst, dialog, folderDialog, formDialog, menu } from "../dialogs";
+import { askUnder, dialog, folderDialog, formDialog, menu } from "../dialogs";
 import { fitLines, memoryLine, onlySteps, stepOn } from "../models/fit-models";
 import { icon } from "../icons";
 import { type Catalogs, catalogs, countOf, local, modelKinds, providerName, thinks } from "../models/kinds";
@@ -188,20 +188,15 @@ function box(page: Page, provider: EntryView): HTMLElement {
   const node = el("div", { className: "group provider" }, head, ...lines);
   node.dataset.provider = String(provider.id);
 
-  /** Asks in the menu's place whether the provider is to be removed, with the models of each kind at it. */
+  /** Asks on a line of its own under the name, the menu hidden, whether the provider is to be removed, with the models of each kind at it. */
   function ask(): void {
-    const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
-    tools.replaceWith(asking);
     const remove = () =>
       void page.attempt(async () => {
         await removeProvider(provider.id);
         await page.read();
         page.say(wording("providers-removed", { name: providerName(provider.name) }));
       });
-    askFirst(asking, picked.length ? wording("providers-remove-with-models") : wording("providers-remove-ask"), wording("providers-remove"), remove, () => {
-      asking.replaceWith(tools);
-      more.querySelector("button")!.focus();
-    });
+    askUnder(tools, more.querySelector("button")!, picked.length ? wording("providers-remove-with-models") : wording("providers-remove-ask"), wording("providers-remove"), remove);
   }
   return node;
 }

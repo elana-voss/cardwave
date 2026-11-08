@@ -32,8 +32,8 @@ error-remote-sign-in-off = 이 계정은 다른 기기에서 로그인할 수 �
 error-no-password-on = 켜져 있는 비밀번호가 없어요.
 error-no-password-set = 이 계정에는 비밀번호가 설정되어 있지 않아요.
 error-password-kept = 이 컴퓨터의 계정에 비밀번호가 있어요: 그 비밀번호로 로그인해요.
-error-account-busy = Cardwave가 아직 답장을 쓰거나 캐릭터를 읽고 있어요. 끝나면 다시 시도하세요.
-error-restore-busy = Cardwave가 아직 답장을 쓰거나 캐릭터를 읽고 있어요. 끝나면 다시 시도하세요.
+error-account-busy = Cardwave가 아직 이 계정의 작업 중이에요: 답장, 그림, 코딩 작업, 새 캐릭터, 캐릭터 읽기 또는 채팅의 기억. 끝나면 다시 시도하세요.
+error-restore-busy = Cardwave가 아직 작업 중이에요: 답장, 그림, 코딩 작업, 새 캐릭터, 캐릭터 읽기 또는 채팅의 기억. 끝나면 다시 시도하세요.
 error-backup-needs-password = 백업에는 비밀번호가 필요해요.
 
 ## What is asked of
@@ -75,8 +75,12 @@ error-chat-busy = 이 채팅에서 답장을 쓰는 중이에요. 먼저 멈추�
 error-no-provider = 아직 설정한 제공자가 없어요. 설정 › 제공자에서 추가하세요.
 error-provider-refused = { $refusal ->
     [key] 제공자가 키를 받지 않았어요. 설정 › 제공자에서 확인하세요.
+    [paid] 제공자가 이 요청에 결제를 요구해요. 크레딧을 충전하거나 요금제에 포함된 모델을 고르세요.
     [busy] 제공자의 크레딧이 없거나 바빠요. 나중에 다시 해 보세요.
     [down] 제공자가 응답하지 않아요. 나중에 다시 해 보세요.
+    [fault] 제공자 쪽에 문제가 생겼어요: { $reason } 나중에 다시 해 보세요.
+    [no_model] 제공자가 이 모델을 더 이상 제공하지 않아요. 설정 › 모델에서 다른 모델을 고르세요.
+    [too_long] 이 모델에는 메시지가 너무 길어요. 줄이거나, 설정 › 모델에서 더 많이 받는 모델을 고르세요.
    *[other] 제공자가 거절했어요: { $reason }
 }
 error-model-declined = { $model } 모델이 이 글을 쓰기를 거부했어요. 메시지를 바꾸거나 다른 모델을 고르세요.
@@ -206,6 +210,7 @@ error-not-readable = { $what ->
     [attachment_picture] 이미지는 PNG, JPEG, WebP 파일이에요.
     [backup] 이 파일은 Cardwave 백업이 아니에요.
     [backup_damaged] 이 백업이 손상되었어요.
+    [backup_newer] 이 백업은 더 새로운 Cardwave에서 만들어졌어요. 복원하려면 Cardwave를 업데이트하세요.
     [backup_key] 이 백업이 손상되었어요: 키를 읽을 수 없어요.
     [base64] base64가 아니에요.
     [base64_file] { $name } 파일이 base64가 아니에요.
@@ -243,7 +248,9 @@ error-not-readable = { $what ->
     [picture_server_answer] 이미지 서버의 응답을 읽을 수 없어요.
     [picture_unreadable] 이미지를 읽을 수 없어요.
     [png] PNG 파일이 아니에요.
+    [no_card] 이 파일에는 캐릭터 카드가 없습니다.
     [png_damaged] PNG가 손상되었어요.
+    [charx] Cardwave는 아직 CHARX 카드 파일을 가져올 수 없습니다. 카드를 PNG나 JSON으로 내보내세요.
     [provider_address] 주소는 https://api.openai.com/v1 같은 일반 웹 주소여야 해요.
     [provider_website] 제공자의 웹사이트를 example.com 같은 이름으로 적으세요.
     [recording_format] 녹음의 형식을 읽을 수 없어요.

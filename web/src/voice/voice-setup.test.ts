@@ -1,18 +1,19 @@
 // What the line "Voice" and its dialog say of the voice in each of its states; in first run, the download's size
 // on this computer's account alone (the account and the server stand-ins, `./account`, `./api/client`).
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, onTestFinished, test, vi } from "vitest";
 import { account } from "../account";
 import { getSettings, getVoice } from "../api/client";
 import type { Settings } from "../api/generated/Settings";
 import type { VoiceModel } from "../api/generated/VoiceModel";
+import { useLanguage } from "../language/language";
 import { dialogSays, lineSays, voiceLine } from "./voice-setup";
 
 vi.mock("../account", () => ({ account: vi.fn() }));
 vi.mock("../api/client", () => ({ getSettings: vi.fn(), getVoice: vi.fn() }));
 
 const voices = [
-  { id: "alba", name: "Alba", language: "English", set: "Alba MacKenna", license: "CC BY 4.0", credit: "Voice-acted by Alba MacKenna", own: false },
-  { id: "marius", name: "Marius", language: "English", set: "Voice donations", license: "CC0", credit: "", own: false },
+  { id: "alba", name: "Alba", language: "en", set: "Alba MacKenna", license: "CC BY 4.0", credit: "Voice-acted by Alba MacKenna", own: false },
+  { id: "marius", name: "Marius", language: "en", set: "Voice donations", license: "CC0", credit: "", own: false },
 ];
 const model = (state: VoiceModel["state"], more: Partial<VoiceModel> = {}): VoiceModel => ({
   size: 192_406_993,
@@ -46,6 +47,12 @@ describe("the voice", () => {
     expect(lineSays(model("ready"), "marius")).toEqual({ says: "Marius · English", action: "Change" });
     expect(lineSays(model("ready"), "gone")).toEqual({ says: "Alba · English", action: "Change" });
     expect(dialogSays(model("ready"))).toEqual({ state: "Ready", action: null });
+  });
+
+  test("the voice's language is named in the app's language", () => {
+    onTestFinished(() => useLanguage("en"));
+    useLanguage("de", "");
+    expect(lineSays(model("ready"), null).says).toBe("Alba · Englisch");
   });
 });
 

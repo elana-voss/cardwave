@@ -1,6 +1,6 @@
 // The parts of first run and the settings that set a model up: `field`, a control under its label (`.fld`:
 // the label, the control, with the button that acts on it beside it in `.find`, and the hint); `keyStored`, what
-// a key's field says of a key stored; `plain` and `listed`, by which the list of providers finds its provider at
+// a key's field says of a key stored; `modelName`, a model as the user reads it; `plain` and `listed`, by which the list of providers finds its provider at
 // an address (one with `localhost` is the list's `127.0.0.1`); `modelCount`, `listedCount` and `askingWords()`, words
 // the screens say of an address's models.
 // A model as the screens have it: `modelLine`, its line in a box of lines (`.item.model`: what it says, the
@@ -14,6 +14,7 @@ import { listModels, testModel } from "../api/client";
 import type { KnownProvider } from "../api/generated/KnownProvider";
 import type { ListedModels } from "../api/generated/ListedModels";
 import type { ListModels } from "../api/generated/ListModels";
+import type { NamedModels } from "../api/generated/NamedModels";
 import type { ProviderView } from "../api/generated/ProviderView";
 import type { TestModel } from "../api/generated/TestModel";
 import { el, failure, reason, suggest, told } from "../dom";
@@ -27,6 +28,18 @@ const OFFERED = 200;
 
 /** An address as the server keeps it: without space around it and a slash at its end. */
 export const plain = (address: string) => address.trim().replace(/\/+$/, "");
+
+/** A model as the user reads it: the name models.dev gives, else the last part of its ID in words, each with a capital. */
+export function modelName(id: string, names?: Record<string, string>): string {
+  const known = names?.[id];
+  if (known) return known;
+  const last = id.split("/").pop() || id;
+  return last
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 /** An address as the list would have it: this machine by its number, as the list has the servers on it. */
 const asListed = (address: string) => plain(address).replace(/^http:\/\/localhost/i, "http://127.0.0.1");
@@ -91,7 +104,7 @@ export interface ModelLine {
   /** Asks again for what failed; it shows while something has. */
   retry: HTMLButtonElement;
   /** What the line says under its name, with the blue tick after it where `ticked`, what failed, if anything, and what its button does: "Change", "Choose", "Set up". */
-  show(says: string, failed: string, action: string, ticked?: boolean): void;
+  show(says: string | Node, failed: string, action: string, ticked?: boolean): void;
 }
 
 /**
@@ -124,6 +137,11 @@ export interface ModelTest {
   said(): string;
   /** That the test failed and why, or nothing. */
   failed(): string;
+  /** Whether the test is on its way, and whether it passed. */
+  asking(): boolean;
+  passed(): boolean;
+  /** Ends a test on its way as failed, for `why`: it took too long. Its answer, when it comes, no longer counts. */
+  giveUp(why: string): void;
   /** Asks the model a small question. It costs a few tokens, so a screen asks when the model is set or "Retry" pressed, not by itself. */
   ask(whom: TestModel): void;
   /** Lets go what a test came to, and one on its way: it was of another model, address or key. */
@@ -138,6 +156,14 @@ export function modelTest(changed: () => void, passed = wording("provider-form-t
   return {
     said: () => (tested === "asking" ? wording("provider-form-testing") : tested === "passed" ? passed : ""),
     failed: () => (typeof tested === "object" ? wording("provider-form-test-failed", { failed: clause(tested.failed) }) : ""),
+    asking: () => tested === "asking",
+    passed: () => tested === "passed",
+    giveUp(why) {
+      if (tested !== "asking") return;
+      testing = null;
+      tested = { failed: why };
+      changed();
+    },
     ask(whom) {
       const mine = (testing = {});
       tested = "asking";
@@ -163,7 +189,7 @@ export function modelTest(changed: () => void, passed = wording("provider-form-t
 /** The models an address lists, as a screen asks for them and has one of them picked. */
 export interface Models {
   /** The list of models, if it came. */
-  got(): ListedModels | null;
+  got(): NamedModels | null;
   /** Why no list of models came, if none did. */
   failed(): string;
   /** Whether the address is being asked. */
@@ -187,10 +213,10 @@ export function models<A = ListModels>(
   whom: () => A,
   changed: () => void,
   choose: (id: string) => void = () => {},
-  lister: (asked: A) => Promise<ListedModels> = listModels as (asked: A) => Promise<ListedModels>,
+  lister: (asked: A) => Promise<NamedModels> = listModels as (asked: A) => Promise<NamedModels>,
 ): Models {
   /** The models the address listed, why none came, or that they are on their way; `null` while it was not asked. */
-  let listed: ListedModels | { failed: string } | "asking" | null = null;
+  let listed: NamedModels | { failed: string } | "asking" | null = null;
   /** The asking whose answer counts. */
   let asking: object | null = null;
   /** Tells the model picker, while it is open, that the list of models has changed. */
@@ -230,6 +256,8 @@ export function models<A = ListModels>(
         offering(() => got()?.models ?? []),
         true,
         model,
+        // Each line the model's readable name, its ID in grey under it (Fable's design of first run's step 2).
+        (id) => modelName(id, got()?.names),
       );
       const cancel = el("button", { type: "button", className: "btn btn-secondary" }, wording("common-cancel"));
       // The foot (`.dfoot`) stands outside the form, as the board ModelPicker draws it; Enter in the one field sends the form all the same.

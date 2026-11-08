@@ -104,9 +104,25 @@ pub fn restore(
         std::io::copy(&mut reader, &mut out)?;
         out.flush()?;
         drop(out);
-        let restored = Db::open(&copy, &theirs).context(
-            Fail::said(Code::NotReadable, "This backup is damaged.").with("what", "backup_damaged"),
-        )?;
+        let restored = Db::open(&copy, &theirs).map_err(|failure| {
+            let newer = failure.chain().any(|cause| {
+                cause.downcast_ref::<Fail>().is_some_and(|fail| {
+                    fail.details.get("what").map(ToString::to_string).as_deref()
+                        == Some(crate::schema::NEWER)
+                })
+            });
+            let told = if newer {
+                Fail::said(
+                    Code::NotReadable,
+                    "This backup was made by a newer Cardwave. Update Cardwave to restore it.",
+                )
+                .with("what", "backup_newer")
+            } else {
+                Fail::said(Code::NotReadable, "This backup is damaged.")
+                    .with("what", "backup_damaged")
+            };
+            failure.context(told)
+        })?;
         db.replace_with(&restored, key)
     })();
     for end in ["", "-wal", "-shm"] {

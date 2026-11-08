@@ -16,6 +16,7 @@
 //! first. When a pass runs is `api/memory.rs`. Knowledge › Memories: `list`;
 //! what Search Cardwave finds of a memory, its entries as they hold on the chat in
 //! view, is written anew after each block and change (`index`, `find.rs`).
+//! The user without a persona is kept as a mark, read as today's stand-in (`USER_MARK`).
 
 use std::collections::HashMap;
 
@@ -33,6 +34,9 @@ use crate::chats::{self, Chat, Message};
 
 pub mod hybrid;
 pub mod text;
+mod vectors;
+
+pub use vectors::{keep_vectors, kept_vectors, unembedded};
 
 /// The messages a block holds.
 pub const BLOCK: usize = 20;
@@ -188,6 +192,58 @@ pub trait Remembers: Send + Sync {
     fn change(&self, state: &str, id: u64, change: &Change) -> anyhow::Result<Option<String>>;
     /// The state without what was read from the chats `chats`.
     fn without(&self, state: &str, chats: &[i64]) -> anyhow::Result<String>;
+    /// The state with the name `from` called `to` wherever it names someone.
+    fn renamed(&self, state: &str, from: &str, to: &str) -> anyhow::Result<String>;
+}
+
+/// What a kept state calls the user without a persona, whose stand-in name
+/// follows the app's language (`cw_prompt::stand_in_user`): a state is kept
+/// with it (`kept_form`) and read with today's stand-in (`read_form`).
+const USER_MARK: &str = "{{user}}";
+
+/// The stand-in name of `user` without a persona.
+fn stand_in(db: &dyn crate::chats::Storage, user: i64) -> anyhow::Result<&'static str> {
+    cw_library::settings::user_stand_in(db, user)
+}
+
+/// `state` as it is kept: the stand-in `name` as the mark.
+fn kept_form(state: &str, name: &str) -> anyhow::Result<String> {
+    system().renamed(state, name, USER_MARK)
+}
+
+/// A kept `state` as it is read: the mark as the stand-in `name`.
+fn read_form(state: &str, name: &str) -> anyhow::Result<String> {
+    system().renamed(state, USER_MARK, name)
+}
+
+/// `text` with each whole word `from` written `to`. Writing without spaces
+/// between words (Chinese, Japanese, Korean's particles) has no word edge.
+pub(crate) fn word_renamed(text: &str, from: &str, to: &str) -> String {
+    fn spaced(c: char) -> bool {
+        !matches!(c, '\u{1100}'..='\u{11FF}' | '\u{3040}'..='\u{30FF}' | '\u{3400}'..='\u{9FFF}'
+            | '\u{AC00}'..='\u{D7AF}' | '\u{F900}'..='\u{FAFF}')
+    }
+    let edge = |near: Option<char>, end: Option<char>| match (near, end) {
+        (Some(near), Some(end)) => near.is_alphanumeric() && spaced(near) && spaced(end),
+        _ => false,
+    };
+    if from.is_empty() {
+        return text.to_string();
+    }
+    let mut out = String::with_capacity(text.len());
+    let mut rest = text;
+    while let Some(at) = rest.find(from) {
+        let before = rest[..at].chars().last().or_else(|| out.chars().last());
+        let after = rest[at + from.len()..].chars().next();
+        out.push_str(&rest[..at]);
+        match edge(before, from.chars().next()) || edge(after, from.chars().last()) {
+            true => out.push_str(from),
+            false => out.push_str(to),
+        }
+        rest = &rest[at + from.len()..];
+    }
+    out.push_str(rest);
+    out
 }
 
 /// The memory system in use.
@@ -457,7 +513,7 @@ pub fn next_block(
     };
     let after = blocks.last().map(|b| b.id);
     let state = match after {
-        Some(after) => db.memory_state(after)?,
+        Some(after) => read_form(&db.memory_state(after)?, stand_in(db, user)?)?,
         None => String::new(),
     };
     let taken = &read.said[k * BLOCK..(k + 1) * BLOCK];
@@ -501,7 +557,7 @@ pub fn keep(
     next: &mut Next,
     added: Added,
 ) -> anyhow::Result<bool> {
-    next.new.state = added.state;
+    next.new.state = kept_form(&added.state, stand_in(db, user)?)?;
     next.new.saved = added.saved;
     let kept = db.keep_memory_block(next.store, next.after, &next.new)?;
     // The block is kept all the same: what the search finds of it is written again at its next block or change.
@@ -555,6 +611,8 @@ pub fn index(db: &dyn crate::chats::Storage, user: i64, store: i64) -> anyhow::R
 pub struct ToRender {
     pub store: i64,
     pub state: String,
+    /// The user's stand-in name the state is read with (`read_form`).
+    pub stand_in: &'static str,
     pub ask: Ask,
 }
 
@@ -593,9 +651,11 @@ pub fn to_render(
     let mut trashed = db.memory_trashed_chats(store)?;
     trashed.retain(|chat| *chat != read.chat_id);
     let state = system().without(&db.memory_state(kept.id)?, &trashed)?;
+    let user_name = stand_in(db, user)?;
     Ok(Some(ToRender {
         store,
-        state,
+        state: read_form(&state, user_name)?,
+        stand_in: user_name,
         ask: Ask {
             query: newest.line(),
             prev,
@@ -660,7 +720,10 @@ fn current(
     };
     let blocks = db.memory_blocks(store)?;
     match holding_all(db, user, &blocks, read.as_ref())?.checked_sub(1) {
-        Some(at) => Ok(Some(db.memory_state(blocks[at].id)?)),
+        Some(at) => Ok(Some(read_form(
+            &db.memory_state(blocks[at].id)?,
+            stand_in(db, user)?,
+        )?)),
         None => Ok(None),
     }
 }
@@ -790,9 +853,10 @@ fn change_all(
 ) -> anyhow::Result<()> {
     let (store, entry, _) = ids(db, user, id)?;
     let mut any = false;
+    let name = stand_in(db, user)?;
     for (block, state) in db.memory_states(store)? {
-        if let Some(changed) = system().change(&state, entry, change)? {
-            db.set_memory_state(block, &changed)?;
+        if let Some(changed) = system().change(&read_form(&state, name)?, entry, change)? {
+            db.set_memory_state(block, &kept_form(&changed, name)?)?;
             any = true;
         }
     }
@@ -878,81 +942,6 @@ pub fn store_of(db: &dyn Storage, owner: &Owner) -> anyhow::Result<Option<i64>> 
     Ok(db.memory_store(owner, false)?.map(|(store, _)| store))
 }
 
-/// The stamp of `user`'s search model, and the texts of the memory `store`'s
-/// newest state without a vector kept of that model.
-pub fn unembedded(
-    db: &dyn Storage,
-    user: i64,
-    store: i64,
-) -> anyhow::Result<(String, Vec<String>)> {
-    let stamp = db.search_stamp(user)?;
-    let (_, missing) = texts_of(db, store, &stamp)?;
-    Ok((stamp, missing))
-}
-
-/// The texts of the memory `store`'s newest state, and those of them without
-/// a vector kept of the model of `stamp`.
-fn texts_of(
-    db: &dyn Storage,
-    store: i64,
-    stamp: &str,
-) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    let Some(last) = db.memory_blocks(store)?.last().map(|b| b.id) else {
-        return Ok((Vec::new(), Vec::new()));
-    };
-    let texts = system().texts(&db.memory_state(last)?)?;
-    let kept = db.memory_vectors(store)?;
-    let missing = texts
-        .iter()
-        .filter(|text| !kept.contains_key(&cw_search::text_hash(stamp, text)))
-        .cloned()
-        .collect();
-    Ok((texts, missing))
-}
-
-/// Keeps the vectors `new` of the memory `store`, by text hash, and lets go of
-/// those its newest state, read now, has no text of: a pass that read an older
-/// state never lets go of the vector of a text a later block set.
-pub fn keep_vectors(
-    db: &dyn Storage,
-    store: i64,
-    stamp: &str,
-    new: &[(Vec<u8>, Vec<u8>)],
-) -> anyhow::Result<()> {
-    let (texts, _) = texts_of(db, store, stamp)?;
-    let keep: Vec<Vec<u8>> = texts
-        .iter()
-        .map(|t| cw_search::text_hash(stamp, t))
-        .collect();
-    db.keep_memory_vectors(store, new, &keep)
-}
-
-/// The stamp of `user`'s search model, and the kept vectors of that model of
-/// the texts of what a reply renders, by text; none where one is missing.
-pub fn kept_vectors(
-    db: &dyn Storage,
-    user: i64,
-    to_render: &ToRender,
-) -> anyhow::Result<(String, Option<Vectors>)> {
-    let stamp = db.search_stamp(user)?;
-    let kept = db.memory_vectors(to_render.store)?;
-    let vectors: Option<Vectors> = system()
-        .texts(&to_render.state)?
-        .into_iter()
-        .map(|text| {
-            let bytes = kept.get(&cw_search::text_hash(&stamp, &text))?;
-            let vector = bytes
-                .as_chunks::<4>()
-                .0
-                .iter()
-                .map(|b| f32::from_le_bytes(*b))
-                .collect();
-            Some((text, vector))
-        })
-        .collect();
-    Ok((stamp, vectors))
-}
-
 /// Removes for good the memories the user deleted: nothing offers their Undo
 /// any more once the server starts again.
 pub fn purge_deleted(db: &dyn Storage) -> anyhow::Result<()> {
@@ -1002,6 +991,17 @@ pub fn of_chat(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn a_name_is_renamed_where_it_is_a_whole_word() {
+        let renamed = |text| crate::memory::word_renamed(text, "Guest", "{{user}}");
+        assert_eq!(
+            renamed("Guest's Guests, Guest."),
+            "{{user}}'s Guests, {{user}}."
+        );
+        let korean = crate::memory::word_renamed("게스트는 차를 좋아한다", "게스트", "Guest");
+        assert_eq!(korean, "Guest는 차를 좋아한다");
+    }
+
     #[test]
     fn who_know_a_memory_are_its_names_asked_each_once() {
         let may = ["Ann", "Bob", "ann"].map(String::from);

@@ -1,10 +1,10 @@
 // The microphone: words at each pause while it records, a recording the browser ends itself, and a model removed
 // while it records (stand-ins for the microphone, the page's sound, the server and the WAV), and where the words dictated go into the message field.
 import { beforeEach, expect, test, vi } from "vitest";
-import { getDictation, hear } from "../api/client";
+import { getDictation, hear, loadDictation } from "../api/client";
 import { dictateButton, inserted } from "./dictate";
 
-vi.mock("../api/client", () => ({ getDictation: vi.fn(), hear: vi.fn() }));
+vi.mock("../api/client", () => ({ getDictation: vi.fn(), hear: vi.fn(), loadDictation: vi.fn(async () => {}) }));
 vi.mock("../dom", async (original) => ({ ...(await original<typeof import("../dom")>()), announce: vi.fn() }));
 vi.mock("../voice/wav", () => ({ resampled: vi.fn(async (samples: Float32Array) => samples), wav: vi.fn(() => new Blob()) }));
 
@@ -61,6 +61,8 @@ test("the words said up to a pause go in while it records, and the rest when it 
   const { field, button } = await microphone();
   button.click();
   await settled();
+  // The model loads as the microphone is pressed, while the user speaks.
+  expect(loadDictation).toHaveBeenCalled();
   sounds[0].play(0.2, 1);
   sounds[0].play(0, 0.6);
   await settled();

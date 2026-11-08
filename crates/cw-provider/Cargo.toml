@@ -10,6 +10,7 @@ doctest = false
 
 [dependencies]
 flate2.workspace = true
+getrandom.workspace = true
 futures-util.workspace = true
 image.workspace = true
 percent-encoding.workspace = true

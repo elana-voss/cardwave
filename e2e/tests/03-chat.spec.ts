@@ -241,7 +241,7 @@ test("a message is deleted with what follows it and put back, and a reply is con
   held.release();
   await expect(newestText(page)).toHaveText(/^The tide\.\s*It turns at midnight\.$/);
   await expect(newest(page).locator(".count")).toHaveCount(0);
-  expect(provider.asked.at(-1)!.body.messages.at(-1).content).toContain("Continue your last message without repeating its original content. Follow this direction from User: she speaks of midnight]");
+  expect(provider.asked.at(-1)!.body.messages.at(-1).content).toContain("Continue your last message without repeating its original content. Follow this direction from Guest: she speaks of midnight]");
   // The words were no message: they leave the field, and no message of them is in the chat.
   await expect(composer(page)).toHaveValue("");
 

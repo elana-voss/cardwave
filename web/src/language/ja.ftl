@@ -237,7 +237,7 @@ backup-back-up = バックアップを保存
 backup-no-file = ファイルが選択されていません
 backup-choose-file = ファイルを選択
 backup-its-password = バックアップのパスワード
-backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。
+backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。ここで設定したパスワードはそのまま残ります。
 backup-file = ファイル
 backup-restore-title = バックアップを復元
 backup-choose-first = 先にバックアップのファイルを選択してください。
@@ -325,7 +325,7 @@ password-repeat = パスワードをもう一度入力
 password-asked-sign-in = サインイン時に入力
 password-is-on = オン・アプリを開くときに入力
 password-is-off = オフ・このコンピューターなら誰でも Cardwave を開けます
-password-start-forgotten = パスワードを忘れると取り戻せません。最初からやり直すには、バックアップを復元してください。
+password-start-forgotten = パスワードを忘れると取り戻せません。
 password-open = 開く
 password-back = 戻る
 
@@ -429,101 +429,6 @@ update-auto = 自動で確認
 update-auto-about = 起動時と1日1回、新しいバージョンを探します
 update-check = 確認
 update-about = アプリの新しいバージョンがあるか確認します。
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = 設定でプロバイダーのアドレスを入力
-setup-manually-models = 手動で設定
-setup-use-this = これを使う
-setup-choose-folder = フォルダーを選択
-setup-this-computer = このコンピューター
-setup-this-computer-about = ダウンロード済みのAIモデルファイル（.gguf）をCardwaveが実行します
-setup-models-example = C:\Users\you\Models
-setup-models-says = 中の各モデルファイル（.gguf）はチャットモデルで、Cardwave がこのコンピューターで動かします。モデルファイルがまだない？空のフォルダーを選んでください：設定 › プロバイダー › このコンピューター が、このコンピューターに合うモデルを示し、そこへダウンロードします。
-setup-not-this = これではありませんか？
-setup-recognised = 認識：
-setup-provider = プロバイダー
-setup-none-of-these = どれでもありませんか？
-setup-several = このキーは複数のプロバイダーに合います。どれですか？
-setup-unknown = このキーがどのプロバイダーのものか、Cardwaveには分かりません。プロバイダーを名前で探すか、アドレスを入力してください。
-setup-find = 探す
-setup-find-field = プロバイダー名またはウェブサイト
-setup-find-example = 名前またはウェブサイト（例：example.com）
-setup-find-hint = Cardwaveがプロバイダーのアドレスを調べます。キーは送信されません。
-setup-name = 名前
-setup-name-hint = Cardwaveのプロバイダー一覧に出る名前です。空のままでもかまいません。
-setup-address = アドレス
-setup-address-hint = プロバイダーのウェブサイトからコピーしてください（例：https://api.example.com/v1）
-setup-continue = 続ける
-setup-local = このコンピューターのプログラムを使う（LM StudioやOllamaなど）
-setup-no-key = キーがない場合：
-setup-api-key = APIキー
-setup-key-placeholder = ここにキーを貼り付け
-setup-found = 見つかりました
-setup-no-api = Cardwaveは{ $website }でAIのアドレスを見つけられませんでした。プロバイダーのドキュメントでアドレス（「base URL」と呼ばれることが多い）を探して入力してください。
-setup-find-by-name = 名前で探す
-setup-enter-address = アドレスを入力
-setup-how = 設定のしかた
-setup-not-listed = 「{ $name }」というプロバイダーはリストにありません。代わりにウェブサイトを入力するか、アドレスを入力してください。
-setup-looking = 探しています…
-setup-looking-servers = このコンピューターのプログラムを探しています…
-setup-no-server = このコンピューターで応答するAIプログラムはありません（Cardwaveは{ $names }を探しました）。どれかを起動してから、もう一度探してください。
-setup-no-other-server = このコンピューターで応答するほかのAIプログラムはありません（Cardwaveは{ $names }を探しました）。どれかを起動してから、もう一度探してください。
-setup-tested = ・テスト済み
-setup-picking = プロバイダーのモデルから選んでいます…
-setup-the-helper-model = ヘルパーモデル
-setup-want-voice = 音声をダウンロード
-setup-want-search = 検索モデルをダウンロード
-setup-confirm = 確定
-setup-back = 戻る
-setup-key-line = { $provider }・····{ $end }
-setup-key-line-none = { $provider }・キーなし
-setup-unlisted = まだ選ばれていません。プロバイダーがモデルを公開していないので、モデルのIDを入力してください。
-setup-not-chosen = まだ選ばれていません
-setup-the-voice = 音声
-setup-the-search-model = 検索
-setup-nothing-now = 今は何もダウンロードしません。検索と音声は、あとで設定から設定できます。
-setup-downloaded = ダウンロードするもの：{ $what }。
-setup-and = { $first }と{ $second }
-setup-download-size = ダウンロード（{ $size }）
-setup-where = セットアップ・ステップ{ $step }/{ $steps }
-setup-title-1 = プロバイダー
-setup-title-2 = モデル
-setup-title-3 = カード
-setup-title-4 = ダウンロード
-setup-about-1 = AIプロバイダーのウェブサイトで取得したAPIキーを貼り付けてください。Cardwaveがプロバイダーを見つけます。
-setup-about-2 = Cardwave がプロバイダーのモデルから選びました。どれも今でも、あとで設定からでも変更できます。
-setup-about-3 = キャラクターカードのファイル（ほかのアプリの PNG や JSON）があれば、Cardwave がフォルダーから取り込めます。
-setup-about-4 = 今すぐ Cardwave を開けます。ダウンロードは続き、終わったらお知らせします。
-setup-no-list = モデルのリストがありません：{ $why } 「選択」を押してモデルの ID を入力するか、「戻る」でキーを確認してください。
-setup-change = 変更
-setup-choose = 選択
-setup-worker-does = ・要約、タグ、記憶を書きます
-setup-same-as-chat = チャットモデルと同じ
-setup-no-picks = モデルを選べませんでした：{ $why }
-setup-helper-model = ヘルパーモデル
-setup-set-up = Cardwave の準備ができました。
-setup-folder-not-kept = カードのフォルダーを使えませんでした：{ $why }。設定 › データからもう一度選べます。
-
-setup-skip = スキップ
-setup-import-folder = このフォルダーからインポート
-setup-cards-about = 取り込むのはカードのファイルだけで、フォルダー内のものは移動も変更もしません。セットアップが終わるとカードが入り、あとで置いたカードも自動で入ります。あとで設定 › データから選ぶこともできます。
-setup-done = 完了
-setup-done-mark = { " " }完了
-setup-percent = { $percent }%
-setup-waiting = 待機中
-setup-try-again = もう一度試す
-setup-try-voice-again = 音声をもう一度試す
-setup-try-search-again = 検索をもう一度試す
-setup-voice-failed = 音声をダウンロードできませんでした: { $why }
-setup-search-failed = 検索モデルをダウンロードできませんでした: { $why }
-setup-downloads-done = ダウンロードが終わりました。Cardwave の準備はすべて整いました。
-setup-cards-later = カードは Cardwave が開いたらフォルダーから入ります。
-setup-voice = 音声
-setup-search = 検索
-setup-open = Cardwaveを開く
-setup-voice-named = { $name }・{ $language }
-setup-voice-model = 音声モデル
 
 ## The breadcrumbs of a page under Settings
 
@@ -636,6 +541,9 @@ advanced-not-described = { $count ->
    *[other] { $count }人のキャラクター
   }にまだ説明がありません
 advanced-describe-cards = キャラクターに説明をつける
+advanced-describe-cost = { $count ->
+   *[other] { $count } 人のキャラクター
+  }で約 { $low }〜{ $high } トークン
 advanced-failed = { $count ->
    *[other] { $count }件が失敗
   }：{ $failure }。もう一度試すには「キャラクターに説明をつける」を押してください。
@@ -644,6 +552,7 @@ advanced-describe-again-stop = 停止
 advanced-describe-again-about = ヘルパーモデルで各キャラクターの一行説明、要約、タグ、「ニーズ別」で見つけるための内容を書き直します。1 人あたり約 11,000〜12,000 トークン。自分で編集した部分はそのまま残ります。 トークンはプロバイダーの課金単位です。
 advanced-no-characters = 説明するキャラクターがありません
 advanced-describe-again-far = { $all }件中{ $done }件を説明し直しました
+advanced-describe-again-stopped = { $all }件中{ $done }件を説明し直したところで止めました
 advanced-describe-again-failed = { $count ->
    *[other] { $count }件が失敗し、元のままです
   }：{ $failure }。もう一度試すには「すべて説明し直す」を押してください。
@@ -952,7 +861,7 @@ gen-hair-colour = 髪の色
 gen-personality = 性格
 gen-relates = キャラクターはあなたにとって誰か
 gen-make = キャラクターを作る
-gen-what = いくつか特徴を選ぶと、AI がキャラクターとその物語、最初のメッセージを書きます。
+gen-what = いくつか特徴を選ぶと、AI がキャラクターの最初のメッセージと話し方を書きます。
 interview-goes-to = キャラクターを書くために、回答は{ $provider }に送られます。
 interview-stays = 回答はこのコンピューターから出ません。
 interview-own-words = または自分の言葉を足す

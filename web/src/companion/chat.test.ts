@@ -6,15 +6,19 @@ const companion = { muted: false };
 /** The voice's state, as the server tells it. */
 const voice = { state: "ready" };
 const saved: object[] = [];
+/** The card's chats, newest first, as the server lists them. */
+const chats: { id: number }[] = [];
+/** The chats shown. */
+const viewed: number[] = [];
 vi.mock("../api/client", () => ({
   avatarUrl: () => "",
-  cardChats: async () => [],
+  cardChats: async () => chats,
   getCard: async () => ({ card: { version_id: 7 }, characters: [{ id: "gwen" }] }),
   startChat: async () => {
     started.push(started.length + 1);
     return { chat: { id: started.length } };
   },
-  getChat: async (id: number) => ({ chat: { id }, characters: [{ id: 1, name: "Gwen" }], messages: [] }),
+  getChat: async (id: number) => (viewed.push(id), { chat: { id }, characters: [{ id: 1, name: "Gwen" }, ...(id === 9 ? [{ id: 2, name: "Bram" }] : [])], messages: [] }),
   generate: async () => ({}),
   sendMessage: async () => ({ id: 4 }),
   getVoice: async () => ({ state: voice.state, rate: 24_000, at_provider: false }),
@@ -38,6 +42,8 @@ vi.mock("../voice/voice", () => ({
 
 beforeEach(() => {
   started.length = 0;
+  chats.length = 0;
+  viewed.length = 0;
   read.length = 0;
   saved.length = 0;
   companion.muted = false;
@@ -49,6 +55,20 @@ describe("the compact chat", () => {
     const { compactChat } = await import("./chat");
     const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
     await Promise.all([chat.open(), chat.open()]);
+    expect(started).toEqual([1]);
+  });
+
+  it("opens the card's own chat, never a chat of several the card is in", async () => {
+    chats.push({ id: 9 }, { id: 8 });
+    const { compactChat } = await import("./chat");
+    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    await chat.open();
+    expect(started).toEqual([]);
+    expect(viewed.at(-1)).toBe(8);
+    // Only in a chat of several: a chat of its own is started.
+    chats.splice(1);
+    const other = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    await other.open();
     expect(started).toEqual([1]);
   });
 

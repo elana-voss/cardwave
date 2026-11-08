@@ -356,6 +356,15 @@ const fn native(
 }
 
 impl Voice {
+    /// The code of the language its speaker speaks ("en", "de"), which the
+    /// page names in its own language.
+    pub fn code(&self) -> &'static str {
+        LANGUAGES
+            .iter()
+            .find(|pack| pack.name == self.language)
+            .map_or("en", |pack| pack.code)
+    }
+
     /// Whom the page "About Cardwave" names for the recording, as CC BY asks;
     /// empty for CC0, which asks for nothing.
     pub fn credit(&self) -> String {

@@ -270,19 +270,18 @@ async fn a_providers_models_come_with_their_kinds() {
     .await;
     let (status, offered) = server.get(&format!("/api/provider-list/{id}/models")).await;
     assert_eq!(status, 200, "{offered}");
-    // The kinds are guessed, a voice's and a search model's by their names.
-    let no = |id: &str, text: bool, image: bool, thinks: bool| json!({ "id": id, "text": text, "image": image, "search": false, "voice": false, "thinks": thinks });
+    // The kinds are models.dev's where it lists the model, else guessed; a voice's and a search model's by their names.
+    let no = |id: &str, text: bool, image: bool, thinks: bool, said: bool| json!({ "id": id, "text": text, "image": image, "search": false, "voice": false, "thinks": thinks, "said": said, "name": null });
     assert_eq!(
         offered,
         json!({
             "models": [
-                no("gpt-image-1", false, true, false),
-                no("o3-mini", true, false, true),
-                { "id": "rig-tts-2", "text": false, "image": false, "search": false, "voice": true, "thinks": false },
-                { "id": "text-embedding-3-small", "text": false, "image": false, "search": true, "voice": false, "thinks": false },
-                no("tide-1", true, false, false),
+                no("gpt-image-1", false, true, false, true),
+                no("o3-mini", true, false, true, true),
+                { "id": "rig-tts-2", "text": false, "image": false, "search": false, "voice": true, "thinks": false, "said": false, "name": null },
+                { "id": "text-embedding-3-small", "text": false, "image": false, "search": true, "voice": false, "thinks": false, "said": true, "name": null },
+                no("tide-1", true, false, false, false),
             ],
-            "said": false,
             "more": false,
             "failed": null,
             "workflows": null,
@@ -441,4 +440,30 @@ async fn first_run_stores_all_of_it_or_nothing_and_leaves_the_values_where_none_
     let again = json!({ "base_url": RIG, "model": "tide-1" });
     assert_eq!(server.put("/api/provider", again).await.0, 200);
     assert_eq!(server.get("/api/sampling").await.1["temperature"], 0.5);
+}
+
+#[tokio::test]
+async fn a_key_the_providers_list_of_models_refuses_is_not_saved_at_add_or_change() {
+    // As xAI refuses a made-up key: 400 with words of the key.
+    let refusing = r#"{"code":"invalid-argument","error":"Incorrect API key provided."}"#;
+    let api = Api::start(says(400, JSON, refusing)).await;
+    let server = start().await;
+    let asked = json!({ "base_url": api.url, "api_key": "xai-0000000000000000" });
+    let (status, refused) = server.post("/api/provider-list", asked).await;
+    assert_eq!(
+        (status, &refused["details"]["what"]),
+        (400, &json!("key_refused")),
+        "{refused}"
+    );
+
+    let id = add(&server, json!({ "base_url": RIG })).await;
+    let changed = json!({ "base_url": api.url, "api_key": "xai-0000000000000000" });
+    let (status, refused) = server
+        .patch(&format!("/api/provider-list/{id}"), changed)
+        .await;
+    assert_eq!(
+        (status, &refused["details"]["what"]),
+        (400, &json!("key_refused")),
+        "{refused}"
+    );
 }

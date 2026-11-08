@@ -13,7 +13,7 @@ import { deleteAccount, getNetwork, resetPassword, setNetwork } from "../api/cli
 import type { AccountLine } from "../api/generated/AccountLine";
 import type { NetworkState } from "../api/generated/NetworkState";
 import { announce, copyText, el, failure, group, item, noticeBox, oneAtATime, reason, switchBox, type View } from "../dom";
-import { askFirst, formDialog, menu } from "../dialogs";
+import { askUnder, formDialog, menu } from "../dialogs";
 import { initialOf } from "../format";
 import { icon } from "../icons";
 import { mcpGroup } from "../settings/mcp";
@@ -97,7 +97,7 @@ function accountsGroup(home: () => HTMLElement): { node: HTMLElement; left(): vo
     const tools = el("div", { className: "flex" }, more);
     const node = el("div", { className: "item" }, round, el("div", { className: "item-text" }, el("span", { className: "item-label" }, account.name)), tools);
 
-    /** Asks in the menu's place whether the account is to be deleted, which cannot be taken back. */
+    /** Asks under the line whether the account is to be deleted, which cannot be taken back. */
     function ask(): void {
       const remove = () =>
         void attempt(async () => {
@@ -105,12 +105,7 @@ function accountsGroup(home: () => HTMLElement): { node: HTMLElement; left(): vo
           await rereadAccounts();
           announce(wording("server-deleted", { name: account.name }));
         });
-      const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
-      tools.replaceWith(asking);
-      askFirst(asking, wording("server-delete-ask"), wording("common-delete"), remove, () => {
-        asking.replaceWith(tools);
-        more.querySelector("button")!.focus();
-      });
+      askUnder(tools, more.querySelector("button")!, wording("server-delete-ask"), wording("common-delete"), remove);
     }
     return node;
   }

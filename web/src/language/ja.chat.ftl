@@ -268,8 +268,8 @@ kinds-type-unknown = ・これができるかどうかは不明
 kinds-address = ・{ $address }
 kinds-this-computer = このコンピューターのプログラム
 kinds-asking-the-provider = プロバイダーに問い合わせ中…
-kinds-no-such-model = そのモデルはありません
 kinds-own-on-this-computer = { $own }・このコンピューター上
+kinds-none-of-the-kind = これができるモデルを持つプロバイダーはありません。
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -279,6 +279,7 @@ language-line-follows-the-app = 変更するまでアプリの言語に従いま
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = 未設定
+models-group-no-longer-offered = プロバイダーはこのモデルの提供を終了しました。別のモデルを選んでください。
 
 ## provider-form (models/provider-form.ts)
 
@@ -384,7 +385,7 @@ memories-so = 結果：{ $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name }・このコンピューターのグラフィックカード上・ダウンロード{ $bytes }
+dictation-setup-on-this-computers-graphics = { $name }・このコンピューターのグラフィックカード上・{ $bytes }
 dictation-setup-the-microphone-beside-the = するとメッセージ欄の横のマイクが、日本語や英語などで話した言葉を書き取ります。話した内容はこのコンピューターから出ません。
 
 ## make-voice (voice/make-voice.ts)

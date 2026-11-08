@@ -116,7 +116,7 @@ async fn a_card_made_from_scratch_is_a_card_of_the_library() {
     assert_eq!(
         one["greetings"],
         json!([
-            "\"You are late, User,\" Wren Halloway says.",
+            "\"You are late, Guest,\" Wren Halloway says.",
             "The lamp is lit."
         ])
     );
@@ -128,7 +128,7 @@ async fn a_card_made_from_scratch_is_a_card_of_the_library() {
     assert_eq!(one["scenario"], "The supply boat is a week overdue.");
     assert_eq!(
         one["example_dialogue"],
-        "User: Is it far?\nWren Halloway: Far enough."
+        "Guest: Is it far?\nWren Halloway: Far enough."
     );
     assert_eq!(one["creator_notes"], "Best with a patient persona.");
 
@@ -138,7 +138,7 @@ async fn a_card_made_from_scratch_is_a_card_of_the_library() {
     assert_eq!(list[0]["names"], json!(["Wren Halloway"]));
     assert_eq!(
         list[0]["excerpt"],
-        "\"You are late, User,\" Wren Halloway says."
+        "\"You are late, Guest,\" Wren Halloway says."
     );
 
     // Without a picture it has one of a single pixel, which is a card without art.

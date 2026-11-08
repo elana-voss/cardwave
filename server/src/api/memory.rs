@@ -11,7 +11,8 @@
 //! missing vectors are made, without the reply's time limit, and other chats of
 //! a shared memory whose blocks were let go are read again. `recall`, before a
 //! reply, never fails it; a memory that does not read leaves the rest: the note
-//! (by words alone without vectors), lorebook entries by meaning, documents.
+//! (by words alone without vectors), lorebook entries by meaning, documents
+//! (those attached to the message answered whole, the rest by meaning).
 
 use std::collections::HashSet;
 
@@ -20,6 +21,7 @@ use axum::http::StatusCode;
 use axum::routing::{get, patch, post};
 use axum::{Json, Router};
 use cw_chat::assistant::{self, Remembering};
+use cw_chat::attachments;
 use cw_chat::chats::{self, Chat, PromptInputs};
 use cw_chat::documents;
 use cw_chat::memory::{self, ChangeMemory, Helper, MemoryView, Vectors};
@@ -118,7 +120,8 @@ impl Helper for Worker<'_> {
 
 /// Has a memory pass read the chat's new messages, unless one does already.
 pub(super) fn remember(state: &AppState, user: i64, chat_id: i64) {
-    if !state.remembering().insert(chat_id) {
+    if state.remembering().insert(chat_id, user).is_some() {
+        // A pass already reads the chat, which is the same user's.
         return;
     }
     let held = state.clone();
@@ -347,10 +350,20 @@ pub(super) async fn recall(
                     tracing::error!("chat {}'s documents cannot be read: {failure:#}", taken.id);
                     Vec::new()
                 });
-            Ok((newest.join("\n\n"), to_render, pieces))
+            let attached = last.map_or(Ok(Vec::new()), |last| {
+                attachments::Storage::message_documents(db, user, last)
+            });
+            let attached = attached.unwrap_or_else(|failure| {
+                tracing::error!(
+                    "chat {}'s attached documents cannot be read: {failure:#}",
+                    taken.id
+                );
+                Vec::new()
+            });
+            Ok((newest.join("\n\n"), to_render, (attached, pieces)))
         })
         .await;
-    let (newest, to_render, pieces) = match read {
+    let (newest, to_render, (attached, pieces)) = match read {
         Ok(read) => read,
         Err(failure) => {
             tracing::error!("chat {}'s memory cannot be read: {failure:#}", chat.id);
@@ -363,7 +376,7 @@ pub(super) async fn recall(
         user,
         inputs,
         &newest,
-        (pieces, budget),
+        (&attached, pieces, budget),
         &mut recalled,
     )
     .await;
@@ -408,15 +421,19 @@ async fn note(
     }
 }
 
+/// A document attached to the message answered: its ID, name and text.
+type Attached = (i64, String, String);
+
 /// Gives `recalled` the lorebook entries used by meaning that the `newest`
-/// messages are about and the pieces of the documents (`pieces`, of at most
-/// `budget` tokens) near them: all by one vector of them.
+/// messages are about and the documents (`documents::given`, of at most
+/// `budget` tokens): those `attached` to the message answered, whatever the
+/// search model, and the `pieces` near the newest: all by one vector of them.
 async fn by_meaning(
     state: &AppState,
     user: i64,
     inputs: &PromptInputs,
     newest: &str,
-    (pieces, budget): (Vec<cw_search::Piece>, usize),
+    (attached, pieces, budget): (&[Attached], Vec<cw_search::Piece>, usize),
     recalled: &mut Recalled,
 ) {
     let entries: Vec<(String, String)> = inputs
@@ -427,16 +444,14 @@ async fn by_meaning(
         .filter(|(_, entry)| entry.by_meaning && entry.enabled && !entry.content.trim().is_empty())
         .map(|(at, entry)| (uid(at, entry), entry.content.clone()))
         .collect();
-    if entries.is_empty() && pieces.is_empty() {
-        return;
-    }
-    let Some(query) = reader::newest_vector(state, user, newest).await else {
+    let query = match entries.is_empty() && pieces.is_empty() {
+        true => None,
+        false => reader::newest_vector(state, user, newest).await,
+    };
+    recalled.documents = documents::given(attached, query.as_deref(), pieces, budget);
+    let (Some(query), false) = (query, entries.is_empty()) else {
         return;
     };
-    recalled.documents = documents::excerpts(&query, pieces, budget);
-    if entries.is_empty() {
-        return;
-    }
     let texts: Vec<String> = entries.iter().map(|(_, content)| content.clone()).collect();
     let Some(vectors) = reader::vectors(state, user, texts).await else {
         return;

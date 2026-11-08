@@ -141,19 +141,18 @@ export function drawEntry(b: Book): void {
   const put = (change: EntryChange) => void saveEntry(b, reference, change).catch(() => undefined);
   const keywords = keys(wording("lorebook-entry-keywords"), wording("lorebook-entry-add-a-keyword"), entry.keywords, () => put({ keywords: [...entry.keywords] }));
   // Keywords are what an entry is used by, but for one that is always used.
+  // The hint is of "By meaning" alone: the other two say what they do by their names.
+  const meaningHint = el("p", { className: "meta", hidden: entry.trigger !== "vector" }, wording("lorebook-entry-by-meaning-used-when"));
   const used = segmented(wording("lorebook-entry-used-when"), triggers(), entry.trigger, (trigger) => {
     keywords.hidden = trigger === "always";
+    meaningHint.hidden = trigger !== "vector";
     put({ trigger });
   });
   keywords.hidden = entry.trigger === "always";
   const parts = [
     entryHead(b, given),
     proposalBox(b, given),
-    choice(
-      wording("lorebook-entry-used-when"),
-      used,
-      wording("lorebook-entry-by-meaning-used-when"),
-    ),
+    el("div", { className: "fld" }, el("span", { className: "label" }, wording("lorebook-entry-used-when")), used, meaningHint),
     keywords,
     contentBlock(b, reference),
     ...morePart(b, entry, put),
@@ -286,13 +285,14 @@ function morePart(b: Book, entry: EditEntry, put: (change: EntryChange) => void)
     wording("lorebook-entry-add-a-keyword"),
     entry.secondary,
     () => {
-      logic.hidden = entry.secondary.length === 0;
+      logic.hidden = secondHint.hidden = entry.secondary.length === 0;
       put({ secondary: [...entry.secondary] });
     },
     logic,
     secondHint,
   );
-  logic.hidden = entry.secondary.length === 0;
+  // The hint names the choice above it: both are there only with secondary keywords.
+  logic.hidden = secondHint.hidden = entry.secondary.length === 0;
   const rest = el(
     "div",
     { className: "flex f-col g-20", id: "entry-more", hidden: !b.more },

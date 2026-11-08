@@ -99,6 +99,11 @@ body:is([data-bare], [data-rail="narrow"]) #titlebar > .name {
   bottom: 64px;
   left: var(--s10);
 }
+/* Retrowave marks its line in a strong purple, under which the round's see-through tint leaves its letter unread:
+   there the round is the surface's colour. */
+:root[data-theme="retrowave"] :is(.nav, .rail-ic)[aria-current="page"] .initial {
+  background: var(--surface);
+}
 
 /* The narrow bar's account is a button of the rail's icon links (`.rail-ic`, drawn for links): without the
    browser's frame and ground, marked only as they are. */

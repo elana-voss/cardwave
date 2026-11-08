@@ -6,7 +6,7 @@
 //! Traps: whisper.cpp counts the graphics devices ggml sees, discrete and
 //! integrated alike, in the order Vulkan lists them, and runs on the CPU
 //! where it finds none; on a laptop the integrated one often comes first
-//! (the AMD 860M here). So the card is picked by its kind ([`pick`]) and
+//! (an AMD 780M). So the card is picked by its kind ([`pick`]) and
 //! nothing is loaded without one. Vulkan's loader is asked for first
 //! (`sys::has_vulkan`), as the programs load it at its first call. Silence
 //! is heard as a word ("you"), and whisper.cpp's likelihood of no speech is

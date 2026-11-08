@@ -83,7 +83,7 @@ async fn describing_again_redoes_all_and_the_old_stays_until_the_new_has_come() 
     let (_, before) = server.get("/api/describe/again").await;
     assert_eq!(
         before,
-        json!({ "characters": 1, "waiting": 0, "done": 0, "failed": 0, "failure": null })
+        json!({ "characters": 1, "waiting": 0, "done": 0, "failed": 0, "failure": null, "stopped": false })
     );
 
     let progress = describe_again(&server).await;
@@ -113,6 +113,13 @@ async fn describing_again_redoes_all_and_the_old_stays_until_the_new_has_come() 
     assert_eq!(summary_of(&server, id).await, "Another summary.");
     assert_eq!(needs_of(&server, id).await["needs"][0]["need"], "listen");
     assert_eq!(api.asked().len(), 6);
+    // A character that comes after a full run does not make it a stopped one.
+    import(&server).await;
+    let (_, after) = server.get("/api/describe/again").await;
+    assert_eq!(
+        (&after["characters"], &after["done"], &after["stopped"]),
+        (&json!(2), &json!(1), &json!(false))
+    );
 }
 
 #[tokio::test]
@@ -351,6 +358,7 @@ async fn stop_lets_the_character_in_hand_finish_both_calls_and_drops_only_what_w
         .await;
     assert_eq!(status, 200, "{stopped}");
     assert_eq!(stopped["waiting"], 0, "{stopped}");
+    assert_eq!(stopped["stopped"], true, "{stopped}");
 
     needs_become(&server, first, "found").await;
     needs_become(&server, imported, "found").await;

@@ -3,6 +3,7 @@
 //! Its tests are in schema/tests.rs.
 
 use anyhow::{Context, bail};
+use cw_core::{Code, Fail};
 use rusqlite::Connection;
 
 /// Schema steps, applied in order; `user_version` counts how many have run.
@@ -857,14 +858,27 @@ const MIGRATIONS: &[&str] = &[
     // A memory's search row tells the user apart from the characters who know it (131s): the older rows go,
     // written anew at the next start (`index_missing`).
     "delete from search_texts where store_id is not null;",
+    // A reply cut off by the app's close says so when its chat is opened again (`chat_messages::end_unwritten`).
+    "alter table messages add column broke_off integer not null default 0;",
+    // Whether the provider said it no longer offers the kind's model (`provider::kinds::set_gone`).
+    "alter table model_kinds add column gone integer not null default 0 check (gone in (0, 1));",
 ];
+
+/// The `what` of the refusal of a database a newer Cardwave wrote.
+pub(crate) const NEWER: &str = "newer_database";
 
 pub(super) fn migrate(conn: &mut Connection) -> anyhow::Result<()> {
     let done = conn.pragma_query_value(None, "user_version", |r| r.get::<_, u32>(0))? as usize;
     if done > MIGRATIONS.len() {
         bail!(
-            "the database was written by a newer Cardwave (schema {done}, this build knows {})",
-            MIGRATIONS.len()
+            Fail::said(
+                Code::NotReadable,
+                format!(
+                    "the database was written by a newer Cardwave (schema {done}, this build knows {})",
+                    MIGRATIONS.len()
+                )
+            )
+            .with("what", NEWER)
         );
     }
     for (i, step) in MIGRATIONS.iter().enumerate().skip(done) {

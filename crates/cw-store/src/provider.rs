@@ -124,7 +124,8 @@ fn pick(
             thinking = case when model_kinds.entry_id = excluded.entry_id and model_kinds.model = excluded.model
                 then model_kinds.thinking else '' end,
             seen_thinking = model_kinds.seen_thinking and model_kinds.entry_id = excluded.entry_id
-                and model_kinds.model = excluded.model",
+                and model_kinds.model = excluded.model,
+            gone = 0",
         params![user, kind.as_str(), entry, model],
     )?;
     Ok(true)
@@ -349,7 +350,7 @@ impl kinds::Storage for Db {
     fn picked(&self, user: i64) -> anyhow::Result<Vec<Picked>> {
         Ok(self.with(|conn| {
             conn.prepare(
-                "select kind, entry_id, model, thinking, seen_thinking from model_kinds where user_id = ?1
+                "select kind, entry_id, model, thinking, seen_thinking, gone from model_kinds where user_id = ?1
                  order by case kind when 'chat' then 0 when 'background' then 1 when 'images' then 2
                     when 'search' then 3 else 4 end",
             )?
@@ -363,6 +364,7 @@ impl kinds::Storage for Db {
                     model: r.get(2)?,
                     thinking: Thinking::read(&thinking),
                     seen_thinking: r.get(4)?,
+                    gone: r.get(5)?,
                 })
             })?
             .collect()
@@ -456,6 +458,16 @@ impl kinds::Storage for Db {
             conn.execute(
                 "update model_kinds set seen_thinking = 1 where user_id = ?1 and kind = ?2 and model = ?3",
                 params![user, kind.as_str(), model],
+            )
+        })?;
+        Ok(())
+    }
+
+    fn set_gone(&self, user: i64, kind: Kind, model: &str, gone: bool) -> anyhow::Result<()> {
+        self.with(|conn| {
+            conn.execute(
+                "update model_kinds set gone = ?4 where user_id = ?1 and kind = ?2 and model = ?3",
+                params![user, kind.as_str(), model, gone],
             )
         })?;
         Ok(())

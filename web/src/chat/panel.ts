@@ -226,9 +226,8 @@ function personalRows(actions: PanelActions, rows: HTMLElement, open: { tools: b
   const on = offered.filter((tool) => !off.includes(tool));
   const tools = el(
     "button",
-    { type: "button", className: "item item-side row line", ariaExpanded: String(open.tools), disabled: locked },
-    el("span", { className: "item-text" }, wording("tools-title")),
-    el("span", { className: "meta" }, on.map((tool) => toolNames()[tool]).join(comma()) || wording("css-none")),
+    { type: "button", className: "item item-side w100 plain-button", ariaExpanded: String(open.tools), disabled: locked },
+    el("span", { className: "item-text" }, el("span", { className: "item-label" }, wording("tools-title")), el("span", { className: "meta" }, on.map((tool) => toolNames()[tool]).join(comma()) || wording("css-none"))),
   );
   tools.dataset.key = "tools";
   tools.onclick = () => {

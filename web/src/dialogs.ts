@@ -1,6 +1,6 @@
 // The menus and the windows over the page: `menu`, `menuOn`, `opener`, `contextMenu` and `menuAt` (one at a point), a line of one a
 // `MenuItem`, with `step` and `within` for the arrow keys and the window's edge; `dialog`, `formDialog` with "Save"
-// or the word it is given, `folderDialog`, `sheet`, and `askFirst`, the question in a line's place.
+// or the word it is given, `folderDialog`, `sheet`, and `askFirst`, the question in a line's place (`askUnder`: under a list's line).
 //
 // Traps: a menu that would be cut off places itself in the window (`float`) and closes when the window changes
 // its size or what its button stands in scrolls; a dialog stands in its screen and goes with it.
@@ -57,8 +57,8 @@ export interface MenuItem {
  * The lines of a menu in their box, each with its name at the left and its
  * drawing at the right, and what the `keys` do while it is open: the arrows go
  * through the lines. A line that is picked, Tab and Escape `shut` the menu
- * first; Escape asks for the focus to go `back` to where the menu was opened
- * from, and is the menu's alone: what the menu stands in stays open. `first`
+ * first; Escape and a line picked ask for the focus to go `back` to where the
+ * menu was opened from, and Escape is the menu's alone: what the menu stands in stays open. `first`
  * reads anew which lines cannot be picked (`off`), as that may have changed
  * since the menu was made, and puts the focus on the first line that can.
  */
@@ -66,7 +66,9 @@ function menuItems(items: MenuItem[], shut: (back: boolean) => void): { list: HT
   const pick = (item: MenuItem) => {
     // A line that cannot be picked leaves the menu as it is.
     if (item.off) return;
-    shut(false);
+    // The focus goes back to where the menu was opened from: what the line opens (a dialog, a field written in
+    // place) gives it back there when it closes, and what moves it elsewhere does so after.
+    shut(true);
     item.action();
   };
   const lines = items.map((item) => {
@@ -85,18 +87,18 @@ function menuItems(items: MenuItem[], shut: (back: boolean) => void): { list: HT
     }
     return line;
   });
+  const rules = items.map((item, at) => ((item.group !== undefined || item.apart) && at > 0 ? el("hr") : null));
   // Said to who does not see it, and not by `disabled`: a press on a disabled button takes the focus out of the menu, which Escape would no longer close.
+  // A rule stands only under a line that is there: lines hidden above it would leave it at the menu's top.
   const offs = () =>
     lines.forEach((line, at) => {
       line.ariaDisabled = items[at].off ? "true" : null;
       line.hidden = items[at].hidden ?? false;
+      const rule = rules[at];
+      if (rule) rule.hidden = items.slice(0, at).every((item) => item.hidden);
     });
   offs();
-  const parted = items.flatMap((item, at) => [
-    (item.group !== undefined || item.apart) && at > 0 && el("hr"),
-    item.group !== undefined && el("div", { className: "menu-group sec", role: "presentation" }, item.group),
-    lines[at],
-  ]);
+  const parted = items.flatMap((item, at) => [rules[at], item.group !== undefined && el("div", { className: "menu-group sec", role: "presentation" }, item.group), lines[at]]);
   const list = el("div", { className: "pop", role: "menu" }, ...parted);
   /** The lines to pick from that the window shows: one of a narrow window alone is not there in a wide one. */
   const shown = () => lines.filter((line) => line.ariaDisabled !== "true" && line.getClientRects().length > 0);
@@ -270,6 +272,22 @@ export function askFirst(place: HTMLElement, question: string, yes: string, acti
     cancel,
   );
   cancel.focus();
+}
+
+/**
+ * Asks as `askFirst` does, on a line of its own under the row that holds `tools` (a list's line), so the row's
+ * name stays whole: the tools hide meanwhile, and Cancel takes the line away, shows them again and gives the
+ * focus back to `opener`, the button the ask was begun from.
+ */
+export function askUnder(tools: HTMLElement, opener: HTMLElement, question: string, yes: string, action: () => void): void {
+  const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
+  tools.hidden = true;
+  tools.parentElement!.after(asking);
+  askFirst(asking, question, yes, action, () => {
+    asking.remove();
+    tools.hidden = false;
+    opener.focus();
+  });
 }
 
 /**

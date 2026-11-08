@@ -266,3 +266,30 @@ async fn a_line_is_the_models_own_guess_only_where_no_piece_of_its_words_was_sai
     assert!(guessed(&done, "nothing like this"));
     assert!(guessed(&done, ""));
 }
+
+#[tokio::test]
+async fn a_line_whose_words_join_an_answers_own_words_otherwise_is_no_guess() {
+    let script = Script::default();
+    let said = "I want someone patient who pushes me a little, with dry humour.";
+    let interview = run(&script, Style::Tree, vec![free(said)]).await;
+    assert!(!guessed(
+        &interview,
+        "patient, pushes me a little, dry humour"
+    ));
+    assert!(!guessed(&interview, "someone patient … dry humour"));
+    assert!(
+        guessed(&interview, "a partner with wit"),
+        "short words alone are no sign"
+    );
+}
+
+#[tokio::test]
+async fn a_function_word_an_answer_shares_is_no_sign_it_was_said() {
+    let script = Script::default();
+    let said = "I want someone patient who pushes me a little, with dry humour.";
+    let interview = run(&script, Style::Tree, vec![free(said)]).await;
+    assert!(
+        guessed(&interview, "someone loud who never listens"),
+        "\"someone\" alone is no word of the answer's own"
+    );
+}

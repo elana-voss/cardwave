@@ -177,6 +177,21 @@ impl Storage for Db {
         Ok(())
     }
 
+    fn stop_describing(&self, user: i64, kept: Option<i64>) -> anyhow::Result<()> {
+        self.with(|conn| {
+            let mine = "card_id in (select id from cards where user_id = ?1) and card_id is not ?2";
+            conn.execute(
+                &format!("delete from card_descriptions where state = 'queued' and {mine}"),
+                params![user, kept],
+            )?;
+            conn.execute(
+                &format!("delete from card_needs where state = 'queued' and {mine}"),
+                params![user, kept],
+            )
+        })?;
+        Ok(())
+    }
+
     fn description(&self, card_id: i64) -> anyhow::Result<Option<(String, String)>> {
         Ok(self.with(|conn| {
             conn.query_row(

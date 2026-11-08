@@ -231,7 +231,7 @@ backup-back-up = Salvar backup
 backup-no-file = Nenhum arquivo escolhido
 backup-choose-file = Escolher arquivo
 backup-its-password = A senha do backup
-backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito.
+backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito. A senha definida aqui continua como está.
 backup-file = Arquivo
 backup-restore-title = Restaurar um backup
 backup-choose-first = Escolha primeiro o arquivo do backup.
@@ -321,7 +321,7 @@ password-repeat = Repetir a senha
 password-asked-sign-in = Pedida ao entrar
 password-is-on = Ativada · pedida quando o aplicativo abre
 password-is-off = Desativada · qualquer pessoa neste computador pode abrir o Cardwave
-password-start-forgotten = Uma senha esquecida não pode ser recuperada. Restaure um backup para começar de novo.
+password-start-forgotten = Uma senha esquecida não pode ser recuperada.
 password-open = Abrir
 password-back = Voltar
 
@@ -433,101 +433,6 @@ update-auto = Verificar automaticamente
 update-auto-about = Procurar uma nova versão ao iniciar e uma vez por dia
 update-check = Verificar
 update-about = Verifica se há uma versão mais nova do aplicativo.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Digitar o endereço do provedor em Configurações
-setup-manually-models = Configurar manualmente
-setup-use-this = Usar este
-setup-choose-folder = Escolher pasta
-setup-this-computer = Este computador
-setup-this-computer-about = Arquivos de modelos de IA (.gguf) que você baixou, executados pelo Cardwave
-setup-models-example = C:\Users\você\Modelos
-setup-models-says = Cada arquivo de modelo nela (.gguf) é um modelo de chat, que o Cardwave executa neste computador. Ainda sem arquivos de modelo? Escolha uma pasta vazia: Ajustes › Provedores › Este computador então oferece os modelos que cabem neste computador e os baixa nela.
-setup-not-this = Não é este?
-setup-recognised = Reconhecido:{ " " }
-setup-provider = Provedor
-setup-none-of-these = Nenhum destes?
-setup-several = Esta chave serve para mais de um provedor. Qual é?
-setup-unknown = O Cardwave não consegue saber de qual provedor é esta chave. Encontre o provedor pelo nome ou digite o endereço dele.
-setup-find = Encontrar
-setup-find-field = Nome ou site do provedor
-setup-find-example = Nome ou site, como example.com
-setup-find-hint = O Cardwave procura o endereço do provedor. Sua chave não é enviada.
-setup-name = Nome
-setup-name-hint = O nome na lista de provedores do Cardwave. Pode deixar em branco.
-setup-address = Endereço
-setup-address-hint = Copie do site do seu provedor, como https://api.example.com/v1
-setup-continue = Continuar
-setup-local = Usar um programa neste computador (como LM Studio ou Ollama)
-setup-no-key = Sem chave?{ " " }
-setup-api-key = Chave de API
-setup-key-placeholder = Cole sua chave aqui
-setup-found = Encontrado
-setup-no-api = O Cardwave não encontrou nenhum endereço para a IA em { $website }. Procure o endereço na documentação do provedor (muitas vezes chamado de “base URL”) e digite-o.
-setup-find-by-name = Encontrar pelo nome
-setup-enter-address = Digitar o endereço
-setup-how = Como configurar
-setup-not-listed = Nenhum provedor chamado “{ $name }” está na lista. Digite o site dele ou o endereço.
-setup-looking = Procurando…
-setup-looking-servers = Procurando programas neste computador…
-setup-no-server = Nenhum programa de IA responde neste computador (o Cardwave procurou { $names }). Abra um e procure de novo.
-setup-no-other-server = Nenhum outro programa de IA responde neste computador (o Cardwave procurou { $names }). Abra um e procure de novo.
-setup-tested = { " " }· testado
-setup-picking = Escolhendo entre os modelos do seu provedor…
-setup-the-helper-model = o modelo auxiliar
-setup-want-voice = Baixar a voz
-setup-want-search = Baixar o modelo de pesquisa
-setup-confirm = Confirmar
-setup-back = Voltar
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · sem chave
-setup-unlisted = Ainda não escolhido. O provedor não lista modelos: digite o ID do modelo.
-setup-not-chosen = Ainda não escolhido
-setup-the-voice = Voz
-setup-the-search-model = Busca
-setup-nothing-now = Nada é baixado agora. Pesquisa e Voz podem ser configuradas depois em Configurações.
-setup-downloaded = A baixar: { $what }.
-setup-and = { $first } e { $second }
-setup-download-size = Baixar ({ $size })
-setup-where = Configuração · passo { $step } de { $steps }
-setup-title-1 = Provedor
-setup-title-2 = Modelos
-setup-title-3 = Fichas
-setup-title-4 = Downloads
-setup-about-1 = Cole a chave de API do site do seu provedor de IA. O Cardwave encontra o provedor.
-setup-about-2 = O Cardwave escolheu estes entre os modelos do seu provedor. Mude qualquer um agora ou depois nos Ajustes.
-setup-about-3 = Se você tem arquivos de fichas de personagem (PNG ou JSON de outros apps), o Cardwave pode trazê-los de uma pasta.
-setup-about-4 = Você já pode abrir o Cardwave: os downloads continuam, e um aviso diz quando terminarem.
-setup-no-list = Nenhuma lista de modelos: { $why } Toque em Escolher para digitar o ID de um modelo, ou Voltar para conferir a chave.
-setup-change = Trocar
-setup-choose = Escolher
-setup-worker-does = { " " }· escreve resumos, tags e memórias
-setup-same-as-chat = Igual ao modelo de chat
-setup-no-picks = Nenhum modelo escolhido: { $why }
-setup-helper-model = Modelo auxiliar
-setup-set-up = O Cardwave está pronto.
-setup-folder-not-kept = Não foi possível usar a pasta de fichas: { $why }. Você pode escolhê-la de novo em Configurações › Dados.
-
-setup-skip = Pular
-setup-import-folder = Importar desta pasta
-setup-cards-about = Só os arquivos de fichas são lidos; nada na pasta é movido ou alterado. As fichas dela entram quando a configuração termina, e as colocadas nela depois entram sozinhas. Você também pode escolhê-la depois em Configurações › Dados.
-setup-done = Concluído
-setup-done-mark = { " " }Concluído
-setup-percent = { $percent }%
-setup-waiting = Aguardando
-setup-try-again = Tentar de novo
-setup-try-voice-again = Tentar a voz de novo
-setup-try-search-again = Tentar a busca de novo
-setup-voice-failed = Não foi possível baixar a voz: { $why }
-setup-search-failed = Não foi possível baixar o modelo de busca: { $why }
-setup-downloads-done = Os downloads terminaram: o Cardwave está todo configurado.
-setup-cards-later = Suas fichas entram da pasta assim que o Cardwave abrir.
-setup-voice = Voz
-setup-search = Pesquisa
-setup-open = Abrir o Cardwave
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Modelo de voz
 
 ## The breadcrumbs of a page under Settings
 
@@ -642,6 +547,11 @@ advanced-not-described = { $count ->
    *[other] { $count } personagens ainda não descritos
   }
 advanced-describe-cards = Descrever personagens
+advanced-describe-cost = Cerca de { $low } a { $high } tokens para { $count ->
+    [one] { $count } personagem
+    [many] { $count } personagens
+   *[other] { $count } personagens
+  }
 advanced-failed = { $count ->
     [one] { $count } falhou
     [many] { $count } falharam
@@ -652,6 +562,7 @@ advanced-describe-again-stop = Parar
 advanced-describe-again-about = Com o modelo auxiliar, reescreve a descrição de uma linha, o resumo e as tags de cada personagem e aquilo pelo que "Por necessidade" o encontra, cerca de 11.000 a 12.000 tokens cada. O que você editou continua. Os provedores cobram por tokens.
 advanced-no-characters = Nenhum personagem para descrever
 advanced-describe-again-far = { $done } de { $all } descritos de novo
+advanced-describe-again-stopped = Parado em { $done } de { $all } descritos de novo
 advanced-describe-again-failed = { $count ->
     [one] { $count } falhou e fica como estava
     [many] { $count } falharam e ficam como estavam
@@ -984,7 +895,7 @@ gen-hair-colour = Cor do cabelo
 gen-personality = Personalidade
 gen-relates = Quem o personagem é para você
 gen-make = Criar o personagem
-gen-what = Escolha alguns traços; a IA escreve o personagem, a história dele e a primeira mensagem.
+gen-what = Escolha alguns traços; a IA escreve a primeira mensagem do personagem e o jeito como ele fala.
 interview-goes-to = Suas respostas vão para { $provider } para escrever o personagem.
 interview-stays = Suas respostas ficam neste computador.
 interview-own-words = Ou acrescente suas próprias palavras

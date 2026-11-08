@@ -71,6 +71,9 @@ test("dictation's model is downloaded from the settings, and the microphone then
   await expect(dialog(page).locator(".item-text + .meta")).toHaveText("Not downloaded");
   await dialog(page).getByRole("button", { name: "Download" }).click();
   await expect(dialog(page).locator(".item-text + .meta")).toHaveText("Ready");
+  // On the computer, its size is no longer called a download.
+  await expect(dialog(page).locator(".item-text")).toContainText("KB");
+  await expect(dialog(page).locator(".item-text")).not.toContainText("download");
   await dialog(page).getByRole("button", { name: "Close" }).click();
   await expect(line(page).locator(".meta")).toHaveText("Whisper large-v3-turbo · This computer");
 

@@ -3,7 +3,7 @@
 // its name with "New preset" (`.group-head`), why something failed (`.note`), the lines (`.item.preset`),
 // and what a preset is. A line says the name, "· in use" while the chat model is what it holds, and `about`;
 // while pointed at or focused (`.reveal.preset-tools`), "Use" and "More" (Edit, Duplicate, Delete, which asks
-// in the tools' place by `askFirst`). "New preset" and Edit are form dialogs: the name, and for Edit the switch
+// under its line by `askUnder`). "New preset" and Edit are form dialogs: the name, and for Edit the switch
 // that has the preset take the chat model and sampling in use.
 //
 // The page is `PresetForm`: one store at a time (`alone`) and what it reads anew after a preset was put in use
@@ -16,7 +16,7 @@ import { providerName } from "../models/kinds";
 import { changePreset, createPreset, deletePreset, duplicatePreset, listPresets, usePreset } from "../api/client";
 import type { PresetView } from "../api/generated/PresetView";
 import { announce, atMost, el, item, latest, noticeBox, oneAtATime, switchBox } from "../dom";
-import { askFirst, formDialog, menu } from "../dialogs";
+import { askUnder, formDialog, menu } from "../dialogs";
 import { icon } from "../icons";
 
 /** How many signs a preset's name may have, as the server counts them (`NAME_LIMIT` in crates/cw-provider/src/lib.rs). */
@@ -112,7 +112,7 @@ export function presetsGroup(home: () => HTMLElement, form: PresetForm): { node:
     line.classList.add("preset", "row");
     line.dataset.preset = String(preset.id);
 
-    /** Asks in the tools' place whether the preset is to be deleted, which cannot be taken back. */
+    /** Asks under the line whether the preset is to be deleted, which cannot be taken back. */
     function ask(): void {
       const remove = () =>
         void attempt(async () => {
@@ -120,12 +120,7 @@ export function presetsGroup(home: () => HTMLElement, form: PresetForm): { node:
           await after(null);
           say(wording("preset-deleted", { name: preset.name }));
         });
-      const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
-      tools.replaceWith(asking);
-      askFirst(asking, wording("preset-delete-ask"), wording("common-delete"), remove, () => {
-        asking.replaceWith(tools);
-        more.querySelector("button")!.focus();
-      });
+      askUnder(tools, more.querySelector("button")!, wording("preset-delete-ask"), wording("common-delete"), remove);
     }
     return line;
   }

@@ -38,6 +38,12 @@ pub struct OfferedModel {
     pub voice: bool,
     /// It thinks before it replies.
     pub thinks: bool,
+    /// Whether its kinds are known: its provider says them or models.dev lists
+    /// it; else they are guessed by its name, and it is offered for every kind.
+    pub said: bool,
+    /// Its name as the user reads it, where the app knows it: This computer's
+    /// models by Cardwave's list, else their file's name without its ending.
+    pub name: Option<String>,
 }
 
 /// A provider's models.
@@ -46,8 +52,6 @@ pub struct OfferedModel {
 pub struct Catalog {
     /// In the order of their IDs, whatever their case.
     pub models: Vec<OfferedModel>,
-    /// Whether the provider says what kind each is; else the kinds are guessed.
-    pub said: bool,
     /// Whether its list did not come whole.
     pub more: bool,
     /// Why no list came, where none did.
@@ -112,15 +116,16 @@ fn own(listed: anyhow::Result<Described>) -> Catalog {
         models: models
             .into_iter()
             .map(|(id, _)| OfferedModel {
+                name: Some(own_name(&id)),
                 thinks: facts::guessed(&id).thinks,
                 text: true,
                 image: false,
                 search: false,
                 voice: false,
+                said: true,
                 id,
             })
             .collect(),
-        said: true,
         more,
         failed,
         workflows: None,
@@ -174,6 +179,8 @@ fn joined(
                         search: false,
                         voice: false,
                         thinks: false,
+                        said: true,
+                        name: None,
                     })
                     .image = true;
             }
@@ -186,11 +193,22 @@ fn joined(
             .into_values()
             .filter(|model| model.text || model.image || model.search || model.voice)
             .collect(),
-        said: openrouter || nanogpt || serves_pictures(api),
         more,
         failed,
         workflows: None,
     }
+}
+
+/// The name of This computer's model `file`: Cardwave's list's, else the file's
+/// name without its ending.
+fn own_name(file: &str) -> String {
+    let listed = crate::fit::offered()
+        .into_iter()
+        .find(|offered| offered.file_name == file);
+    listed.map_or_else(
+        || file.trim_end_matches(".gguf").to_string(),
+        |offered| offered.name,
+    )
 }
 
 /// A model of the text list, with what its provider `said` of it: OpenRouter
@@ -213,6 +231,8 @@ fn listed_model(id: String, said: &Said, openrouter: bool, nanogpt: bool) -> Off
         thinks: said.thinks.unwrap_or(guessed.thinks),
         search: facts::searches(&id),
         voice: facts::speaks(&id),
+        said: openrouter || nanogpt || facts::of_models_dev(&id).is_some(),
+        name: None,
         id,
     }
 }
@@ -225,7 +245,9 @@ mod tests {
     fn said(output: Option<&[&str]>, thinks: Option<bool>) -> Said {
         Said {
             output: output.map(|kinds| kinds.iter().map(|kind| kind.to_string()).collect()),
+            input: None,
             thinks,
+            tags: None,
         }
     }
 
@@ -273,6 +295,39 @@ mod tests {
             kinds("tide-1", elsewhere, false, false),
             (true, false, false)
         );
+    }
+
+    #[test]
+    fn a_models_kinds_are_said_where_its_provider_or_models_dev_says_them() {
+        let model =
+            |id: &str, openrouter| listed_model(id.into(), &said(None, None), openrouter, false);
+        // xAI's list says no kinds, but models.dev knows its picture and chat models.
+        let picture = model("grok-imagine-image-2.0", false);
+        assert_eq!(
+            (picture.said, picture.text, picture.image),
+            (true, false, true)
+        );
+        let chat = model("grok-4.3", false);
+        assert_eq!((chat.said, chat.text, chat.image), (true, true, false));
+        // A name models.dev does not know is guessed; OpenRouter says every model's.
+        assert!(!model("tide-1", false).said);
+        assert!(model("tide-1", true).said);
+    }
+
+    #[test]
+    fn this_computers_model_is_named_as_cardwaves_list_names_it() {
+        let file = |id: &str| (id.to_string(), said(None, None));
+        let models = vec![file("Qwen3-1.7B-Q4_K_M.gguf"), file("my-own.gguf")];
+        let catalog = own(Ok(Described {
+            models,
+            more: false,
+        }));
+        let names: Vec<_> = catalog
+            .models
+            .iter()
+            .map(|model| model.name.as_deref())
+            .collect();
+        assert_eq!(names, [Some("Qwen3 1.7B"), Some("my-own")]);
     }
 
     #[test]
@@ -336,7 +391,7 @@ mod tests {
         for api in [ImageApi::ComfyUi, ImageApi::Automatic1111] {
             let catalog = joined(api, false, failed(), pictures());
             assert_eq!(
-                (catalog.failed, catalog.models.len(), catalog.said),
+                (catalog.failed, catalog.models.len(), catalog.models[0].said),
                 (None, 1, true)
             );
         }

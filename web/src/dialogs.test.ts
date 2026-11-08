@@ -1,7 +1,7 @@
 // What dialogs.ts decides, without a browser: `step`, `within`, and of `menuOn` a menu's groups, its choices and
 // its lines that cannot be picked.
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { menuOn, step, within, type MenuItem } from "./dialogs";
+import { askUnder, menuOn, step, within, type MenuItem } from "./dialogs";
 import { el } from "./dom";
 
 afterEach(() => document.body.replaceChildren());
@@ -160,5 +160,25 @@ describe("menuOn", () => {
       { label: "On", action: none },
     ]);
     expect(document.activeElement).toBe(lines[1]);
+  });
+});
+
+describe("askUnder", () => {
+  test("asks on a line of its own under the row, the row whole and its tools hidden; Cancel brings the tools back and focuses the opener", () => {
+    const opener = el("button", null, "More");
+    const tools = el("div", null, el("button", null, "Use"), opener);
+    const row = el("div", { className: "item" }, el("span", null, "Ann"), tools);
+    document.body.append(el("div", null, row));
+    askUnder(tools, opener, "Delete?", "Delete", () => {});
+    const asking = row.nextElementSibling as HTMLElement;
+    expect(asking.className).toContain("confirm");
+    expect(asking.textContent).toContain("Delete?");
+    expect(row.textContent).toBe("AnnUseMore");
+    expect(tools.hidden).toBe(true);
+    expect(document.activeElement?.textContent).toBe("Cancel");
+    (document.activeElement as HTMLElement).click();
+    expect(row.nextElementSibling).toBeNull();
+    expect(tools.hidden).toBe(false);
+    expect(document.activeElement).toBe(opener);
   });
 });

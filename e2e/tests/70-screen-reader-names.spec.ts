@@ -54,7 +54,7 @@ test.beforeAll(async ({ request }) => {
   provider = await startFakeProvider();
   expect((await request.put("/api/provider", { data: { base_url: provider.url, model: "test-model", api_key: "sk-test", sampling: {} } })).status()).toBe(200);
   const book = { name: "Lighthouse", entries: [{ keys: ["lamp"], content: "The lamp burns oil.", enabled: true, insertion_order: 0, id: 0 }] };
-  const made = await request.post("/api/cards", { data: cardFile({ name: "Mira", description: "Keeper of the lighthouse.", first_mes: "The lamp is lit.", character_book: book }) });
+  const made = await request.post("/api/cards", { data: cardFile({ name: "Mira", description: "Keeper of the lighthouse.", first_mes: "The lamp is lit.", character_book: book }, [300, 450]) });
   expect(made.status(), await made.text()).toBe(201);
   const { card_id, version_id } = await made.json();
   card = card_id;
@@ -149,7 +149,7 @@ test("Sharing", async ({ page }) => {
 
 test("Settings", async ({ page }) => {
   await screen(page, "/#/settings", (p) => button(p, "Save a backup"));
-  await opens(page, button(page, "Language the AI writes in"), button(page, "Change the chat model"), button(page, "Set up search"), button(page, "Change folder"), button(page, "Save a backup"));
+  await opens(page, button(page, "Language the AI writes in"), button(page, "Change the chat model"), button(page, "Set up voice"), button(page, "Set up search"), button(page, "Change folder"), button(page, "Save a backup"));
 });
 
 test("Trash", async ({ page }) => {
@@ -220,8 +220,7 @@ test("Voices", async ({ page }) => {
 });
 
 test("First run", async ({ page }) => {
-  await screen(page, "/#/setup", (p) => p.getByRole("button", { name: /^(Confirm|Download \(.+\))$/ }).first());
-  await opens(page, button(page, "Change voice"));
+  await screen(page, "/#/setup", (p) => button(p, "Continue"));
 });
 
 test("The start screen, while the server waits for the password", async ({ page }) => {

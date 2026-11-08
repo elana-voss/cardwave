@@ -57,6 +57,7 @@ card-modes-mode = 模式
 card-modes-the-texts-below-are = 下面是這個模式使用的文字。
 card-modes-a-mode-needs-a = 模式需要一個名字。
 card-modes-default = { " " }· 預設
+card-modes-first-default = 角色扮演
 card-modes-make-default = 設為預設
 card-modes-add-mode = 新增一種聊天方式
 card-modes-modes = 模式
@@ -70,11 +71,12 @@ card-page-card-info = 角色卡資訊
 
 card-picture-card-picture = 角色圖片
 card-picture-card-picture-click-to = 角色圖片：點擊選擇圖片，或拖放到這裡
+card-picture-card-picture-tap-to = 角色圖片：輕點選擇圖片
 card-picture-make-a-picture = 產生圖片
 card-picture-name-first = 請先替角色取名
 card-picture-earlier-pictures = 較早的圖片
-card-picture-click-to-choose-a = 點擊選擇圖片，或拖放到這裡
 card-picture-click-or-drop-a = 點擊選擇圖片，或拖放到這裡
+card-picture-tap-to-choose = 輕點選擇圖片
 card-picture-drop-to-use-this = 放開以使用這張圖片
 card-picture-set-up-an-image = 請先設定圖像模型：
 card-picture-settings-models = 設定 › 模型
@@ -232,7 +234,7 @@ character-saved = 已儲存
 character-name-in-the-chat = 聊天中的名字
 character-name = 標題中的角色
 character-creator = 作者
-character-creator-2 = 作者
+character-add-creator = 新增作者
 character-modes = 模式……
 character-add-mode = 新增一種聊天方式……
 character-add-mode-sub = 為另一種聊天(如故事)準備的另一套文字
@@ -601,7 +603,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = 還沒有世界書。建立一本，或匯入世界書檔案（SillyTavern 的 world info，.json）。聊天會在側邊欄帶上一本。
+lorebooks-no-lorebooks-yet-make = 還沒有世界書。建立一本，或匯入世界書檔案（SillyTavern 的 world info，.json）。聊天可以透過「聊天選項 › 新增世界書」帶上一本。
 lorebooks-entries = { $count ->
    *[other] { $count } 個條目
 }

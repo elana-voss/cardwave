@@ -166,6 +166,8 @@ pub struct Picked {
     pub thinking: Thinking,
     /// Whether an answer of the model carried thinking ([`saw_thinking`]).
     pub seen_thinking: bool,
+    /// Whether the provider said it no longer offers the model ([`set_gone`]).
+    pub gone: bool,
 }
 
 /// A provider as the page shows it. The key never leaves the server.
@@ -197,6 +199,8 @@ pub struct PickedView {
     pub model: String,
     /// "on", "off", or "cannot" where the provider took no form of turning it off.
     pub thinking: String,
+    /// Whether the provider said it no longer offers the model, since it was picked.
+    pub gone: bool,
 }
 
 /// This computer's model of a kind that has one, downloaded in Settings › Models.
@@ -281,6 +285,8 @@ pub trait Storage {
     ) -> anyhow::Result<bool>;
     /// Marks the kind's model as one that thinks, while it is still `model`.
     fn saw_thinking(&self, user: i64, kind: Kind, model: &str) -> anyhow::Result<()>;
+    /// Marks whether the provider no longer offers the kind's model, while it is still `model`.
+    fn set_gone(&self, user: i64, kind: Kind, model: &str, gone: bool) -> anyhow::Result<()>;
     fn sampling(&self, user: i64) -> anyhow::Result<Sampling>;
     fn set_sampling(&self, user: i64, sampling: &Sampling) -> anyhow::Result<()>;
 }
@@ -332,6 +338,7 @@ fn shown(picked: Picked) -> PickedView {
             Thinking::Cannot => "cannot",
         }
         .to_string(),
+        gone: picked.gone,
     }
 }
 
@@ -357,6 +364,19 @@ pub fn all(db: &dyn Storage, user: i64) -> anyhow::Result<ProvidersView> {
 /// (`Provider::limited`). Another model picked begins unseen.
 pub fn saw_thinking(db: &dyn Storage, user: i64, kind: Kind, model: &str) -> anyhow::Result<()> {
     db.saw_thinking(user, kind, model)
+}
+
+/// Keeps whether the provider said it no longer offers the kind's model `model`
+/// ([`crate::no_longer_offered`]), for Settings to say; a reply that comes ends it, and
+/// so does a model picked, the same one too.
+pub fn set_gone(
+    db: &dyn Storage,
+    user: i64,
+    kind: Kind,
+    model: &str,
+    gone: bool,
+) -> anyhow::Result<()> {
+    db.set_gone(user, kind, model, gone)
 }
 
 /// The account's values for a reply.

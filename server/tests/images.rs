@@ -115,7 +115,7 @@ async fn a_picture_of_the_scene_comes_as_a_message_of_the_character() {
     // The worker model is given the character and the newest messages, and the scene's template.
     let asked = &worker.asked()[0].body;
     assert!(
-        asked.contains("Recent chat history:\\nMira: \\\"You picked a night for it, User.\\\""),
+        asked.contains("Recent chat history:\\nMira: \\\"You picked a night for it, Guest.\\\""),
         "{asked}"
     );
     assert!(
@@ -123,7 +123,9 @@ async fn a_picture_of_the_scene_comes_as_a_message_of_the_character() {
         "{asked}"
     );
     // The image model is asked at its own address, with its own key, for the worker's words.
-    let made = &image.asked()[2];
+    // Its key was checked as it was added (its list of models), and each picture asks what it is first.
+    let asked = image.asked();
+    let made = asked.last().unwrap();
     assert_eq!(made.path, "/v1/images/generations");
     assert_eq!(made.key.as_deref(), Some("Bearer sk-image-0123456789"));
     let body: Value = serde_json::from_str(&made.body).unwrap();
@@ -159,12 +161,14 @@ async fn a_picture_of_the_words_typed_is_asked_for_them() {
         .post(&format!("{chat}/picture"), json!({ "words": "a red kite" }))
         .await;
     assert_eq!(status, 201, "{message}");
-    assert_eq!(message["content"], "*(sends a picture: red kite, beach)*");
+    // The message holds the words as the user typed them, which "Edit
+    // description" shows; the image model gets the worker model's.
+    assert_eq!(message["content"], "*(sends a picture: a red kite)*");
+    let body: Value = serde_json::from_str(&image.asked().last().unwrap().body).unwrap();
+    assert_eq!(body["prompt"], "red kite, beach");
     let asked = &worker.asked()[0].body;
-    assert!(
-        asked.contains("describing the appearance of \\\"a red kite\\\""),
-        "{asked}"
-    );
+    assert!(asked.contains("a picture of \\\"a red kite\\\""), "{asked}");
+    assert!(asked.contains("Mira's appearance"), "{asked}");
     assert!(!asked.contains("Recent chat history"), "{asked}");
 }
 
@@ -363,10 +367,16 @@ async fn change_prompt_makes_the_picture_anew_of_the_words_as_another_version() 
         .post(&again, json!({ "words": " lighthouse, dawn " }))
         .await;
     assert_eq!(status, 201, "{made}");
-    // The words go to the image model as they are; the worker model is not asked again.
-    assert_eq!(worker.asked().len(), 1);
+    // The words changed go through the worker model, as typed words do, so the
+    // character keeps the looks of their description; the message holds them as typed.
+    let asked = &worker.asked()[1].body;
+    assert!(
+        asked.contains("a picture of \\\"lighthouse, dawn\\\""),
+        "{asked}"
+    );
+    assert!(asked.contains("Character description"), "{asked}");
     let body: Value = serde_json::from_str(&image.asked().last().unwrap().body).unwrap();
-    assert_eq!(body["prompt"], "lighthouse, dawn");
+    assert_eq!(body["prompt"], "lighthouse, storm");
     assert_eq!(made["content"], "*(sends a picture: lighthouse, dawn)*");
     assert_eq!(made["picture"], true);
     assert_eq!(made["parent_id"], first["parent_id"]);
@@ -413,5 +423,40 @@ async fn a_form_left_without_a_key_lists_with_the_image_models_key_where_it_is_a
     assert_eq!(
         api.last_key().as_deref(),
         Some("Bearer sk-images-0123456789")
+    );
+}
+
+#[test]
+fn the_chat_model_is_told_of_a_picture_sent_in_words_it_cannot_take_for_its_own() {
+    use cw_chat::chats::{self, NewChat};
+    let scratch = common::Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let card = cw_library::cards::import(db, me, &common::card_file()).unwrap();
+    let new = NewChat {
+        characters: &[(card.version, "mira")],
+        persona_id: None,
+        greeting: 0,
+    };
+    let chat = chats::create(db, me, &new).unwrap();
+    let picture = cw_provider::images::Picture {
+        data: common::picture(),
+        mime: "image/png",
+    };
+    images::keep(
+        db,
+        me,
+        chat,
+        None,
+        ("a lighthouse at night", "a lighthouse at night"),
+        &picture,
+    )
+    .unwrap();
+    let inputs = chats::prompt_inputs(db, me, chat, None).unwrap();
+    let told = &inputs.state.messages.last().unwrap().content;
+    // Not the character's own words, which the model went on to write instead of calling its tool.
+    assert!(!told.contains("sends a picture"), "{told}");
+    assert!(
+        told.starts_with('[') && told.contains("a lighthouse at night"),
+        "{told}"
     );
 }

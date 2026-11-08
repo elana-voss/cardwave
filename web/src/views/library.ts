@@ -15,7 +15,7 @@ import type { NeedsOverview } from "../api/generated/NeedsOverview";
 import type { CardSummary } from "../api/generated/CardSummary";
 import type { Show } from "../api/generated/Show";
 import type { Sort } from "../api/generated/Sort";
-import { el, SMALL, type View } from "../dom";
+import { coalesced, el, SMALL, type View } from "../dom";
 import { isArt } from "../art";
 import { contextMenu, menu } from "../dialogs";
 import { remember, remembered } from "../storage";
@@ -31,6 +31,7 @@ import { needWords } from "../language/interview";
 import { language, wording } from "../language/language";
 import { windowed } from "../windowed";
 import { cardTitle } from "../card-title";
+import { tagWord } from "../card/content-level";
 import { comma } from "../format";
 
 /** How the cards are laid out. */
@@ -134,6 +135,7 @@ export function libraryView(): View {
       back = null;
     },
   });
+  const reload = coalesced(load);
   // With the search model ready, the search also finds a card by what it is about, and says so.
   getSearchModel().then(
     (model) => {
@@ -144,7 +146,7 @@ export function libraryView(): View {
     () => undefined,
   );
   // A card is in the list soon after it has come.
-  const file = fileImport("card", ".png,image/png", node, addCard, () => void load());
+  const file = fileImport("card", ".png,image/png,.json,application/json", node, addCard, () => void load());
   // The order and the tags. They stand at the right of the bar; a narrow window has them under the search.
   const sorting = el(
     "div",
@@ -199,7 +201,8 @@ export function libraryView(): View {
     },
     // A card queued or described by the worker model shows "The AI is describing the character…", or its terms and logline; a card changed,
     // or one taken out of the Trash, in another window shows as it is now.
-    onEvent: (event) => void (["descriptions", "card", "card_folder", "trash"].includes(event.type) && load()),
+    // One read for a burst of events (a folder's 500 cards), not one each.
+    onEvent: (event) => void (["descriptions", "card", "card_folder", "trash"].includes(event.type) && reload()),
     onConnected: () => void load(),
     left: () => {
       scrolled = node.scrollTop;
@@ -261,7 +264,7 @@ const menuOf = (card: CardSummary, link: HTMLElement, { attempt, load }: Acts) =
 function row(card: CardSummary, acts: Acts): HTMLElement {
   const { chat, more, star } = controls(card, acts);
   const names = namesOf(card);
-  const tags = card.tags.join(" · ");
+  const tags = card.tags.map(tagWord).join(" · ");
   const both = [names, tags].filter(Boolean).join(" · ");
   const link = el("a", { className: "row-title ttl ink-link row-link", href: `#/library/${card.id}` }, cardTitle(card.title));
   menuOf(card, link, acts);
@@ -359,7 +362,7 @@ function entry(card: CardSummary, acts: Acts): HTMLElement {
     el(
       "span",
       { className: "etext" },
-      card.tags.length > 0 && el("span", { className: "meta" }, card.tags.join(" · ")),
+      card.tags.length > 0 && el("span", { className: "meta" }, card.tags.map(tagWord).join(" · ")),
       el("span", { className: "entry-title t-display" }, cardTitle(card.title)),
       el("span", { className: "short-rule" }),
       card.excerpt && el("span", { className: "logline m0" }, card.excerpt),

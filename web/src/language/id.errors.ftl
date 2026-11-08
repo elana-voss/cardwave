@@ -33,8 +33,8 @@ error-remote-sign-in-off = Akun ini tidak dapat masuk dari perangkat lain. Aktif
 error-no-password-on = Tidak ada kata sandi yang aktif.
 error-no-password-set = Belum ada kata sandi untuk akun ini.
 error-password-kept = Sebuah akun di komputer ini menyimpan kata sandi: akun itu masuk dengannya.
-error-account-busy = Cardwave masih menulis balasan atau membaca karakter; coba lagi setelah selesai.
-error-restore-busy = Cardwave masih menulis balasan atau membaca karakter; coba lagi setelah selesai.
+error-account-busy = Cardwave masih bekerja untuk akun ini: balasan, gambar, tugas pemrograman, karakter baru, membaca karakter, atau ingatan sebuah chat; coba lagi setelah selesai.
+error-restore-busy = Cardwave masih bekerja: balasan, gambar, tugas pemrograman, karakter baru, membaca karakter, atau ingatan sebuah chat; coba lagi setelah selesai.
 error-backup-needs-password = Cadangan memerlukan kata sandi.
 
 ## Yang diminta
@@ -76,8 +76,12 @@ error-chat-busy = Balasan sedang ditulis di chat ini; hentikan dulu.
 error-no-provider = Belum ada penyedia yang disiapkan. Tambahkan satu di Pengaturan › Penyedia.
 error-provider-refused = { $refusal ->
     [key] Penyedia tidak menerima kuncinya: periksa di Pengaturan › Penyedia.
+    [paid] Penyedia meminta pembayaran untuk ini: tambah kredit, atau pilih model yang termasuk dalam paketmu.
     [busy] Kredit penyedia habis atau sedang sibuk: coba lagi nanti.
     [down] Penyedia tidak menjawab: coba lagi nanti.
+    [fault] Penyedia mengalami gangguan di pihaknya: { $reason } Coba lagi nanti.
+    [no_model] Penyedia tidak lagi menawarkan model ini: pilih yang lain di Pengaturan › Model.
+    [too_long] Pesan ini terlalu panjang untuk model ini: persingkat, atau pilih model yang muat lebih banyak di Pengaturan › Model.
    *[other] Penyedia menolak ini: { $reason }
 }
 error-model-declined = { $model } menolak menulis ini. Ubah pesannya, atau pilih model lain.
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] Gambar berupa berkas PNG, JPEG, atau WebP.
     [backup] Berkas ini bukan cadangan Cardwave.
     [backup_damaged] Cadangan ini rusak.
+    [backup_newer] Cadangan ini dibuat oleh Cardwave yang lebih baru. Perbarui Cardwave untuk memulihkannya.
     [backup_key] Cadangan ini rusak: kuncinya tidak dapat dibaca.
     [base64] Itu bukan base64.
     [base64_file] { $name } bukan base64.
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] Jawaban server gambar tidak dapat dibaca.
     [picture_unreadable] Gambar tidak dapat dibaca.
     [png] Bukan berkas PNG.
+    [no_card] File ini tidak berisi kartu karakter.
     [png_damaged] PNG ini rusak.
+    [charx] Cardwave belum dapat mengimpor file kartu CHARX. Ekspor kartu sebagai PNG atau JSON.
     [provider_address] Alamat harus berupa alamat web biasa seperti https://api.openai.com/v1.
     [provider_website] Tuliskan situs web penyedia sebagai nama seperti example.com.
     [recording_format] Format rekaman tidak dapat dibaca.

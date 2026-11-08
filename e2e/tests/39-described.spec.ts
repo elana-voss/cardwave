@@ -67,7 +67,7 @@ test("Describe characters describes every character not described yet, for the l
   // The row: the title written, the classifier's terms as tags, the logline in place of the greeting.
   await page.goto("/#/library");
   const row = page.locator(".card-row", { hasText: "The Marsh Neighbor" });
-  await expect(row.locator(".tags")).toHaveText("neighbor · comfort · grump · sfw");
+  await expect(row.locator(".tags")).toHaveText("neighbor · comfort · grump · For everyone");
   await expect(row.locator(".excerpt")).toHaveText(LOGLINE);
 
   // The page: the summary, the content level as a chip, the tags without it, and the facts.

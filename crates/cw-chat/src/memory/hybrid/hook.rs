@@ -9,7 +9,9 @@ use cw_core::{Code, Fail};
 use futures_util::future::BoxFuture;
 
 use crate::memory::hybrid::{Event, Fact, KnownTo, State};
-use crate::memory::{Added, Ask, Block, Change, Entry, Helper, Kind, Remembers, Vectors};
+use crate::memory::{
+    Added, Ask, Block, Change, Entry, Helper, Kind, Remembers, Vectors, word_renamed,
+};
 
 /// The benchmark's winner: facts-and-events-hybrid-fixed.
 pub(crate) struct HybridFixed;
@@ -129,6 +131,36 @@ impl Remembers for HybridFixed {
         let gone = |chat: &Option<i64>| chat.is_some_and(|chat| chats.contains(&chat));
         state.facts.retain(|f| !gone(&f.chat));
         state.events.retain(|e| !gone(&e.chat));
+        Ok(serde_json::to_string(&state)?)
+    }
+
+    fn renamed(&self, state: &str, from: &str, to: &str) -> anyhow::Result<String> {
+        if state.is_empty() || from == to {
+            return Ok(state.to_string());
+        }
+        let mut state = parse(state)?;
+        let lower = (from.to_lowercase(), to.to_lowercase());
+        let names = |known: &mut KnownTo| {
+            if let KnownTo::Names(names) = known {
+                for name in names.iter_mut().filter(|name| **name == lower.0) {
+                    name.clone_from(&lower.1);
+                }
+            }
+        };
+        for f in &mut state.facts {
+            f.text = word_renamed(&f.text, from, to);
+            names(&mut f.known_to);
+        }
+        for e in &mut state.events {
+            e.text = word_renamed(&e.text, from, to);
+            names(&mut e.known_to);
+        }
+        for said in &mut state.prev {
+            if said.speaker == from {
+                to.clone_into(&mut said.speaker);
+            }
+            said.text = word_renamed(&said.text, from, to);
+        }
         Ok(serde_json::to_string(&state)?)
     }
 }

@@ -9,7 +9,7 @@
 //!
 //! The library's list is `find`, its tags `tag_counts`; tags are the same by `tag_key` and compared in
 //! Rust, as SQLite knows case from a to z only. A described card (`describe`) shows the classifier's terms
-//! and then the user's own (`cards.own_tags`) as its tags, and its logline; a title the user gave
+//! and then the user's own (`cards.own_tags`) and the file's as its tags, each once, and its logline; a title the user gave
 //! (`cards.title_edited`) is never replaced. Traps: the file's `user-state` flags are not taken over (the
 //! file may be a stranger's); `edit` asks for the card's version again inside its transaction; a stored
 //! excerpt names the user by `USER_MARK`, worded in the app's language when read (`worded`). Its parts:
@@ -71,18 +71,24 @@ pub enum KeptFiles {
     Watched,
 }
 
-/// A file that holds no card: a PNG without card data, a JSON that is no SillyTavern card. A folder of cards
-/// passes it over silently (`folder.rs`).
-#[derive(Debug)]
-pub(crate) struct NotACard(pub &'static str);
-
-impl std::fmt::Display for NotACard {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.0)
-    }
+/// A file that holds no card: a PNG without card data, a JSON that is no SillyTavern card, told as
+/// `NotReadable`, `no_card`. A folder of cards passes it over silently (`folder.rs`, [`is_not_a_card`]).
+pub(crate) fn not_a_card(said: &'static str) -> anyhow::Error {
+    Fail::said(Code::NotReadable, said)
+        .with("what", NOT_A_CARD)
+        .into()
 }
 
-impl std::error::Error for NotACard {}
+const NOT_A_CARD: &str = "no_card";
+
+/// Whether `error` is [`not_a_card`]'s.
+pub(crate) fn is_not_a_card(error: &anyhow::Error) -> bool {
+    cw_core::coded(error).is_some_and(|fail| {
+        fail.details
+            .get("what")
+            .is_some_and(|what| what.to_string() == NOT_A_CARD)
+    })
+}
 
 #[derive(Clone, Debug, Serialize, TS)]
 #[ts(export)]
@@ -120,8 +126,8 @@ pub struct CardSummary {
     pub last_chat_title: Option<String>,
     /// What its characters are called in a chat.
     pub names: Vec<String>,
-    /// The classifier's terms and the user's own tags once the card is
-    /// described, until then the file's.
+    /// The classifier's terms, the user's own tags and the file's once the
+    /// card is described, each once; until then the file's.
     pub tags: Vec<String>,
     /// The card's logline once it is described, until then the start of the
     /// first greeting, as plain text.
@@ -264,11 +270,11 @@ fn worded(
     mut cards: Vec<CardSummary>,
 ) -> anyhow::Result<Vec<CardSummary>> {
     if cards.iter().any(|card| card.excerpt.contains(USER_MARK)) {
-        let word = crate::settings::user_stand_in(db, user)?;
+        let word = crate::settings::user_outside_chat(db, user)?;
         for card in &mut cards {
             if card.excerpt.contains(USER_MARK) {
                 // Cut again: the word is longer than the mark it was measured as.
-                card.excerpt = display::excerpt(&card.excerpt.replace(USER_MARK, word));
+                card.excerpt = display::excerpt(&card.excerpt.replace(USER_MARK, &word));
             }
         }
     }

@@ -57,6 +57,7 @@ card-modes-mode = Modo
 card-modes-the-texts-below-are = Os textos abaixo são os que este modo usa.
 card-modes-a-mode-needs-a = Um modo precisa de um nome.
 card-modes-default = { " " }· padrão
+card-modes-first-default = Roleplay
 card-modes-make-default = Tornar padrão
 card-modes-add-mode = Adicionar um jeito de conversar
 card-modes-modes = Modos
@@ -70,11 +71,12 @@ card-page-card-info = Informações da ficha
 
 card-picture-card-picture = Imagem do personagem
 card-picture-card-picture-click-to = Imagem do personagem: clique para escolher uma imagem ou solte uma aqui
+card-picture-card-picture-tap-to = Imagem do personagem: toque para escolher uma imagem
 card-picture-make-a-picture = Criar uma imagem
 card-picture-name-first = Dê um nome ao personagem primeiro
 card-picture-earlier-pictures = Imagens anteriores
-card-picture-click-to-choose-a = Clique para escolher uma imagem ou solte uma aqui
 card-picture-click-or-drop-a = Clique para escolher uma imagem ou solte uma aqui
+card-picture-tap-to-choose = Toque para escolher uma imagem
 card-picture-drop-to-use-this = Solte para usar esta imagem
 card-picture-set-up-an-image = Configure primeiro um modelo de imagem, em{ " " }
 card-picture-settings-models = Configurações › Modelos
@@ -232,7 +234,7 @@ character-saved = Salvo
 character-name-in-the-chat = Nome no chat
 character-name = o personagem do título
 character-creator = Criador
-character-creator-2 = criador
+character-add-creator = Adicionar criador
 character-modes = Modos…
 character-add-mode = Adicionar um jeito de conversar…
 character-add-mode-sub = Outros textos para outro tipo de chat, como uma história
@@ -625,7 +627,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = Ainda não há lorebooks. Crie um ou importe um arquivo de lorebook (world info do SillyTavern, .json). Um chat leva um junto no painel lateral.
+lorebooks-no-lorebooks-yet-make = Ainda não há lorebooks. Crie um ou importe um arquivo de lorebook (world info do SillyTavern, .json). Um chat leva um junto por Opções do chat › Adicionar um lorebook.
 lorebooks-entries = { $count ->
     [one] { $count } entrada
     [many] { $count } entradas

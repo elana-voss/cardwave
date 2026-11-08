@@ -41,6 +41,16 @@ fn a_command_reaches_its_folder_and_no_other() {
             .trim(),
         "made"
     );
+    // `dir` reads the drive, which the sandbox refuses: the output says how to list the folder.
+    let ran = run(&inside, "dir /b");
+    assert!(ran.output.contains(sandbox::LISTING), "{}", ran.output);
+    let ran = run(&inside, sandbox::LISTING);
+    assert_eq!(
+        (ran.code, ran.output.trim()),
+        (Some(0), "made.txt"),
+        "{}",
+        ran.output
+    );
 
     let ran = run(&inside, &format!("type \"{}\"", secret.display()));
     assert!(!ran.output.contains("the secret"), "{}", ran.output);

@@ -72,7 +72,8 @@ async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
     assert!(facets.contains("<facets>") && facets.contains("keeps you inside the lighthouse"));
 
     // The library: the title written, the classifier's terms of the vocabulary
-    // (made-up ones left out) in place of the file's tags, and the logline.
+    // (made-up ones left out), then the file's tags not among them ("sea"),
+    // and the logline.
     let card = row(&server, id).await;
     assert_eq!(card["title"], "The Keeper of the Light");
     assert_eq!(
@@ -82,7 +83,8 @@ async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
             "mystery",
             "stoic",
             "suggestive",
-            "substance-use"
+            "substance-use",
+            "sea"
         ])
     );
     assert_eq!(
@@ -93,6 +95,9 @@ async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
     // Found by its terms, and by what they are called beside the tags shown.
     let (_, found) = server.get("/api/cards?q=female").await;
     assert_eq!(found.as_array().unwrap().len(), 1, "{found}");
+    // and by a tag of its file.
+    let (_, found) = server.get("/api/cards?tag=sea").await;
+    assert_eq!(found.as_array().unwrap().len(), 1, "{found}");
 
     // The page: the summary, the content level as chips, and the tags without it.
     let (_, detail) = server.get(&format!("/api/cards/{id}")).await;
@@ -101,7 +106,10 @@ async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
         "She keeps the north light. A storm has cut you off. It is quiet and wary."
     );
     assert_eq!(detail["content"], json!(["suggestive", "substance-use"]));
-    assert_eq!(detail["tags"], json!(["stranger", "mystery", "stoic"]));
+    assert_eq!(
+        detail["tags"],
+        json!(["stranger", "mystery", "stoic", "sea"])
+    );
 
     // The summary as the user writes it on the page.
     let path = format!("/api/cards/{id}/summary");
@@ -172,6 +180,7 @@ async fn a_title_and_tags_the_user_gave_stay_through_a_description() {
     assert_eq!(card["title"], "My Mira");
     let mut tags = json!(terms);
     tags.as_array_mut().unwrap().push(json!("mine"));
+    tags.as_array_mut().unwrap().push(json!("sea"));
     assert_eq!(card["tags"], tags);
     let card = row(&server, made).await;
     assert_eq!(card["title"], "Tern Rock");
@@ -211,7 +220,7 @@ async fn a_card_refused_or_failed_says_so_and_only_a_failed_one_is_described_aga
     for id in [first, second] {
         let card = row(&server, id).await;
         assert_eq!(card["tags"], json!(["sea", "mystery"]));
-        assert_eq!(card["excerpt"], "\"You picked a night for it, User.\"");
+        assert_eq!(card["excerpt"], "\"You picked a night for it, Guest.\"");
     }
 
     // Only the one that failed is asked again.
@@ -708,4 +717,134 @@ async fn changing_the_helper_model_reads_nothing_again() {
     sleep(Duration::from_millis(200)).await;
     assert_eq!(api.asked().len(), 3);
     assert_eq!(needs_of(&server, id).await["needs"][0]["need"], "sex");
+}
+
+#[tokio::test]
+async fn stop_drops_the_cards_that_wait_to_be_described_and_lets_the_one_in_hand_finish() {
+    let answers = vec![
+        slowly(reply(&classified())),
+        reply(&written("First")),
+        finds("listen"),
+    ];
+    let (server, api) = model(answers).await;
+    let first = import(&server).await;
+    import(&server).await;
+    import(&server).await;
+    let (_, progress) = server.post("/api/describe", json!({})).await;
+    assert_eq!(progress["waiting"], 3, "{progress}");
+
+    let (status, stopped) = server
+        .call(reqwest::Method::DELETE, "/api/describe", None)
+        .await;
+    assert_eq!(status, 200, "{stopped}");
+    // Only the card in hand is left to finish.
+    assert_eq!(stopped["waiting"], 1, "{stopped}");
+    let end = Instant::now() + WAIT;
+    while row(&server, first).await["title"] != "First" {
+        assert!(Instant::now() < end, "the card in hand finishes");
+        sleep(Duration::from_millis(20)).await;
+    }
+    let progress = done(&server).await;
+    assert_eq!(
+        (&progress["left"], &progress["waiting"]),
+        (&json!(2), &json!(0)),
+        "{progress}"
+    );
+    assert_eq!(api.asked().len(), 3);
+}
+
+#[tokio::test]
+async fn stop_keeps_the_card_in_hand_not_the_oldest_that_waits() {
+    let answers = vec![
+        reply(&classified()),
+        reply(&written("First")),
+        finds("listen"),
+        slowly(reply(&classified())),
+        reply(&written("Again")),
+        finds("listen"),
+        reply(&classified()),
+        reply(&written("Second")),
+        finds("listen"),
+    ];
+    let (server, api) = model(answers).await;
+    import(&server).await;
+    server.post("/api/describe", json!({})).await;
+    done(&server).await;
+    // The worker has a card described again in hand when another waits to be described.
+    server.post("/api/describe/again", json!({})).await;
+    let second = import(&server).await;
+    server.post("/api/describe", json!({})).await;
+    let (status, stopped) = server
+        .call(reqwest::Method::DELETE, "/api/describe", None)
+        .await;
+    assert_eq!(status, 200, "{stopped}");
+    let end = Instant::now() + WAIT;
+    while api.asked().len() < 6 {
+        assert!(Instant::now() < end, "the card in hand finishes");
+        sleep(Duration::from_millis(20)).await;
+    }
+    sleep(Duration::from_millis(500)).await;
+    assert_ne!(
+        row(&server, second).await["title"],
+        "Second",
+        "the card that waited was stopped"
+    );
+    assert_eq!(api.asked().len(), 6);
+}
+
+#[tokio::test]
+async fn stop_keeps_the_card_in_hand_after_more_cards_were_queued_during_its_run() {
+    let answers = vec![
+        slowly(reply(&classified())),
+        reply(&written("First")),
+        finds("listen"),
+    ];
+    let (server, api) = model(answers).await;
+    let first = import(&server).await;
+    server.post("/api/describe", json!({})).await;
+    let end = Instant::now() + WAIT;
+    while api.asked().is_empty() {
+        assert!(Instant::now() < end, "the worker takes the card");
+        sleep(Duration::from_millis(20)).await;
+    }
+    // Queued while the first is in hand: the worker is started again and must keep its card.
+    import(&server).await;
+    server.post("/api/describe", json!({})).await;
+    let (status, stopped) = server
+        .call(reqwest::Method::DELETE, "/api/describe", None)
+        .await;
+    assert_eq!(status, 200, "{stopped}");
+    assert_eq!(stopped["waiting"], 1, "{stopped}");
+    let end = Instant::now() + WAIT;
+    while row(&server, first).await["title"] != "First" {
+        assert!(Instant::now() < end, "the card in hand finishes");
+        sleep(Duration::from_millis(20)).await;
+    }
+}
+
+#[tokio::test]
+async fn a_logline_that_copies_the_greeting_twice_is_dropped_and_the_description_kept() {
+    let mut copied = written("Wren");
+    copied["logline"] = json!("The lamp is lit for you.");
+    let (server, api) = model(vec![reply(&classified()), reply(&copied), reply(&copied)]).await;
+    let (_, made) = server
+        .post(
+            "/api/cards/new",
+            new_card("Wren", "The lamp is lit for {{user}}."),
+        )
+        .await;
+    let id = made["card_id"].as_i64().unwrap();
+    server.post("/api/describe", json!({})).await;
+    assert_eq!(done(&server).await["failed"], 0);
+    let row = row(&server, id).await;
+    assert_eq!(row["excerpt"], "", "{row}");
+    assert!(
+        row["tags"].as_array().unwrap().contains(&json!("mystery")),
+        "{row}"
+    );
+    assert_eq!(
+        api.asked().len(),
+        4,
+        "the logline is asked once more, then the needs"
+    );
 }

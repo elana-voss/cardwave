@@ -313,6 +313,24 @@ async fn a_card_is_uploaded_listed_and_served() {
 }
 
 #[tokio::test]
+async fn a_charx_card_is_said_to_be_not_supported_yet() {
+    use std::io::Write;
+    let server = start().await;
+    let mut zip = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    zip.start_file("card.json", zip::write::SimpleFileOptions::default())
+        .unwrap();
+    zip.write_all(br#"{"spec": "chara_card_v3", "data": {"name": "Ada"}}"#)
+        .unwrap();
+    let file = zip.finish().unwrap().into_inner();
+
+    let (status, body) = server.upload("/api/cards", file).await;
+    assert_eq!(
+        (status, &body["code"], &body["details"]["what"]),
+        (400, &json!("not_readable"), &json!("charx"))
+    );
+}
+
+#[tokio::test]
 async fn a_large_card_with_an_oddly_named_avatar_is_served() {
     let server = start().await;
     let name = "card/images/mira & co #1 (ö).png";
@@ -344,6 +362,10 @@ async fn bad_uploads_and_missing_items_are_told_apart() {
     assert_eq!(
         (status, &body["error"]),
         (400, &json!("this PNG holds no character card"))
+    );
+    assert_eq!(
+        (&body["code"], &body["details"]["what"]),
+        (&json!("not_readable"), &json!("no_card"))
     );
     let (status, body) = server.upload("/api/cards", b"hello".to_vec()).await;
     assert_eq!((status, &body["error"]), (400, &json!("not a PNG file")));

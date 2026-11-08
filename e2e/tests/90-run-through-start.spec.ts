@@ -48,11 +48,13 @@ test("first run: the pretend key, its models, no folder of cards, the downloads,
   await expect(page.getByRole("status")).toContainText("Recognised: Pretend model");
   await button(page, "Continue").click();
   await expect(heading(page)).toHaveText("Models");
-  await expect(says(page, "Chat")).toHaveText("pretend-chat · tested");
-  await page.getByRole("button", { name: /^(Confirm|Download \(.+\))$/ }).click();
+  await expect(says(page, "Chat")).toHaveText("Pretend Chat · works");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(heading(page)).toHaveText("Cards");
   await button(page, "Skip").click();
   await expect(heading(page)).toHaveText("Downloads");
+  // Step 4 asks first, the search model on: its button downloads it.
+  await page.getByRole("button", { name: /^Download \(.+\)$/ }).click();
   await expect(button(page, "Open Cardwave")).toBeEnabled();
   await button(page, "Open Cardwave").click();
   await expect(page).toHaveURL(/#\/chats$/);

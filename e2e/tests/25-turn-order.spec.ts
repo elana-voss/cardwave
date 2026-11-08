@@ -272,6 +272,12 @@ test("the chat's menu renames it, and starts a new chat with these characters an
   await expect(title).toHaveCount(0);
   await expect(page.locator(".chat-bar h1 .meta")).toHaveText("with Odalys, Pike");
   await expect.poll(async () => (await (await request.get(`/api/chats/${chat}`)).json()).chat.title).toBe("The night watch");
+  // Escape takes the rename back and gives the focus back to the menu's button.
+  await button(page, "Chat options").click();
+  await page.getByRole("menuitem", { name: "Rename", exact: true }).click();
+  await title.press("Escape");
+  await expect(title).toHaveCount(0);
+  await expect(button(page, "Chat options")).toBeFocused();
 
   await button(page, "Chat options").click();
   await page.getByRole("menuitem", { name: "New chat with these characters", exact: true }).click();

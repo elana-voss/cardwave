@@ -6,8 +6,9 @@
 //! A picture in a chat (`asked_of`, `make`, `keep`): the worker model writes
 //! its words from the character and the newest messages, or the user's (the
 //! Flutter app's `scene.txt`, `words.txt`); it is kept with a message whose
-//! text tells the chat model what was sent (`SENT`); "Make again" makes a new
-//! version (`keep_again`). ComfyUI gets its default workflow with the chosen
+//! text tells the chat model what was sent (`SENT`) in the user's words where
+//! they typed some; "Make again" asks the worker model anew of the words
+//! changed, so the character keeps their looks, for a new version (`keep_again`). ComfyUI gets its default workflow with the chosen
 //! checkpoint, 1024 by 1024, or the user's saved one (`comfy`). A card's
 //! picture (`asked_of_card`, `make_shaped`) is asked upright (`Shape`) where
 //! the model takes that size.
@@ -50,6 +51,17 @@ const WORDS_LIMIT: usize = 1000;
 /// What the message of a picture says, with the words it was made from.
 const SENT: &str = "*(sends a picture: {})*";
 
+/// What the chat model is told of a picture message (`SENT`): the app's note
+/// in brackets, not the character's words, which a model copied as its own
+/// reply instead of calling `make_picture`. None for any other message.
+pub fn told(content: &str) -> Option<String> {
+    let (before, after) = SENT.split_once("{}")?;
+    let words = content.strip_prefix(before)?.strip_suffix(after)?;
+    Some(format!(
+        "[The app showed a picture here, made by its image model of: {words}]"
+    ))
+}
+
 /// The image model as the account's settings show it.
 #[derive(Debug, PartialEq, Serialize, TS)]
 #[ts(export)]
@@ -69,6 +81,12 @@ pub trait Storage {
     fn keep_picture(&self, message_id: i64, data: &[u8], prompt: &str) -> anyhow::Result<()>;
     /// The picture of a message of the user's.
     fn picture(&self, user: i64, message_id: i64) -> anyhow::Result<Option<Vec<u8>>>;
+    /// The chat and the speaker of a picture's message of the user's.
+    fn picture_chat(
+        &self,
+        user: i64,
+        message_id: i64,
+    ) -> anyhow::Result<Option<(i64, Option<i64>)>>;
 }
 
 /// The address and key a form's list of image models is asked with: the key
@@ -382,17 +400,19 @@ async fn read(answer: cw_platform::http::Response) -> anyhow::Result<Vec<u8>> {
     Ok(provider::body(&mut answer, PICTURE_LIMIT).await)
 }
 
-/// Keeps `picture` as a message of `speaker` (the chat's first character
-/// where none is named) at the end of the chat, and answers its ID.
+/// Keeps `picture`, made of `prompt`, as a message of `speaker` (the chat's
+/// first character where none is named) at the end of the chat, and answers
+/// its ID. The message says `shown`: the words the user typed for it, which
+/// "Edit description" shows, else `prompt`.
 pub fn keep(
     db: &dyn crate::chats::Storage,
     user: i64,
     chat_id: i64,
     speaker_id: Option<i64>,
-    prompt: &str,
+    (shown, prompt): (&str, &str),
     picture: &Picture,
 ) -> anyhow::Result<i64> {
-    let content = SENT.replace("{}", prompt);
+    let content = SENT.replace("{}", shown);
     let new = NewMessage {
         role: Role::Assistant,
         speaker_id,
@@ -405,16 +425,17 @@ pub fn keep(
 }
 
 /// Keeps `picture`, made anew of `prompt` ("Make again"), as another version
-/// of the picture message `message_id`, which the chat shows from then on;
-/// answers its ID. Not in a chat in the Trash or while a reply is written.
+/// of the picture message `message_id` saying `shown` (as `keep`), which the
+/// chat shows from then on; answers its ID. Not in a chat in the Trash or
+/// while a reply is written.
 pub fn keep_again(
     db: &dyn crate::chats::Storage,
     user: i64,
     message_id: i64,
-    prompt: &str,
+    (shown, prompt): (&str, &str),
     picture: &Picture,
 ) -> anyhow::Result<i64> {
-    let content = SENT.replace("{}", prompt);
+    let content = SENT.replace("{}", shown);
     let id = chats::add_swipe(db, user, message_id, &content, true)?;
     db.keep_picture(id, &picture.data, prompt)?;
     Ok(id)
@@ -427,6 +448,14 @@ pub fn picture(db: &dyn Storage, user: i64, message_id: i64) -> anyhow::Result<P
     // Only a picture is kept.
     let mime = mime_of(&data).unwrap_or("image/png");
     Ok(Picture { data, mime })
+}
+
+/// The chat and the speaker of the picture message `message_id`, which "Make
+/// again" asks its words of anew.
+pub fn chat_of(db: &dyn Storage, user: i64, message_id: i64) -> anyhow::Result<(i64, Option<i64>)> {
+    Ok(db
+        .picture_chat(user, message_id)?
+        .ok_or(NotFound("picture"))?)
 }
 
 #[cfg(test)]

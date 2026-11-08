@@ -109,25 +109,38 @@ impl Web {
         Ok(self.page(address).await?.text)
     }
 
-    /// The page at `address`: its title, where it is HTML that has one, and its text.
+    /// The page at `address`: its title, where it is HTML that has one, and
+    /// its text. A page that refreshes to another at once (`<meta
+    /// http-equiv="refresh">`) is read there, as a browser goes on.
     pub async fn page(&self, address: &str) -> anyhow::Result<Page> {
-        let url = Url::parse(address.trim()).context("that is no web address")?;
+        let mut url = Url::parse(address.trim()).context("that is no web address")?;
+        for _ in 0..REFRESHES {
+            match self.one_page(&url).await? {
+                Read::Moved(next) => url = next,
+                Read::Page(page) => return Ok(page),
+            }
+        }
+        bail!("the page refreshes to another again and again")
+    }
+
+    /// The page at `url`, or where it refreshes to.
+    async fn one_page(&self, url: &Url) -> anyhow::Result<Read> {
         ensure!(
             matches!(url.scheme(), "http" | "https"),
             "only http and https addresses are read"
         );
-        if self.stand_in.is_none() && !numbered_open(&url) {
+        if self.stand_in.is_none() && !numbered_open(url) {
             bail!(Closed);
         }
-        let response =
-            self.client
-                .get(self.at(&url))
-                .send()
-                .await
-                .map_err(|error| match closed(&error) {
-                    true => anyhow::anyhow!(Closed),
-                    false => anyhow::Error::new(error).context("the page cannot be reached"),
-                })?;
+        let response = self
+            .client
+            .get(self.at(url))
+            .send()
+            .await
+            .map_err(|error| match closed(&error) {
+                true => anyhow::anyhow!(Closed),
+                false => anyhow::Error::new(error).context("the page cannot be reached"),
+            })?;
         ensure!(
             response.status().is_success(),
             "the page answered {}",
@@ -142,6 +155,9 @@ impl Web {
         let page = read(response).await?;
         let page = String::from_utf8_lossy(&page);
         let html = kind.contains("html");
+        if let Some(next) = html.then(|| refreshed_to(&page, url)).flatten() {
+            return Ok(Read::Moved(next));
+        }
         let title = if html { title_of(&page) } else { String::new() };
         let text = if html {
             text_of(&page)
@@ -150,11 +166,46 @@ impl Web {
         } else {
             bail!("the page is no text ({kind})")
         };
-        Ok(Page {
+        Ok(Read::Page(Page {
             title,
             text: cut(&text, TEXT_LIMIT),
-        })
+        }))
     }
+}
+
+/// How many pages one read goes through by their refreshes, the first too.
+const REFRESHES: usize = 6;
+
+/// One address read: its page, or the address it refreshes to.
+enum Read {
+    Page(Page),
+    Moved(Url),
+}
+
+/// Where the page `html` at `url` refreshes to at once, by a `<meta
+/// http-equiv="refresh" content="0; url=…">`; none where it does not, waits
+/// first, or names its own address.
+fn refreshed_to(html: &str, url: &Url) -> Option<Url> {
+    // Fixed patterns, run by this file's tests: they compile.
+    static META: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r#"(?is)<meta\b[^>]*http-equiv\s*=\s*["']?refresh["']?[^>]*>"#).unwrap()
+    });
+    static CONTENT: LazyLock<Regex> =
+        LazyLock::new(|| Regex::new(r#"(?is)content\s*=\s*(?:"([^"]*)"|'([^']*)')"#).unwrap());
+    let meta = META.find(html)?.as_str();
+    let found = CONTENT.captures(meta)?;
+    let content = decoded(found.get(1).or(found.get(2))?.as_str());
+    let (wait, rest) = content.split_once(';').unwrap_or((&content, ""));
+    (wait.trim().parse::<f64>().ok()? <= 1.0).then_some(())?;
+    let rest = rest.trim();
+    let target = rest
+        .get(..4)
+        .filter(|start| start.eq_ignore_ascii_case("url="))
+        .map_or(rest, |_| &rest[4..])
+        .trim()
+        .trim_matches(|c| c == '\'' || c == '"');
+    let next = url.join(target).ok()?;
+    (!target.is_empty() && next != *url).then_some(next)
 }
 
 /// A page read: its title, empty where it has none, and its text.
@@ -344,5 +395,45 @@ pub fn cut(text: &str, limit: usize) -> String {
             text.chars().count()
         ),
         None => text.to_string(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::{Read, Write};
+
+    use super::*;
+
+    /// A stand-in that answers its requests in turn with `pages` (HTML).
+    fn serving(pages: Vec<&'static str>) -> String {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("a port");
+        let url = format!("http://{}", listener.local_addr().expect("its address"));
+        std::thread::spawn(move || {
+            for page in pages {
+                let (mut stream, _) = listener.accept().expect("a request");
+                let mut buffer = [0u8; 4096];
+                // The request is read only to be answered after it.
+                let _ = stream.read(&mut buffer);
+                let answer = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{page}",
+                    page.len()
+                );
+                stream.write_all(answer.as_bytes()).expect("the answer");
+            }
+        });
+        url
+    }
+
+    #[tokio::test]
+    async fn a_page_that_refreshes_to_another_is_read_there() {
+        let moved = r#"<html><head><meta http-equiv="Refresh" content="0; URL='/new/place'"></head><body>Moved.</body></html>"#;
+        let there =
+            "<html><head><title>New place</title></head><body>The lamp is lit.</body></html>";
+        let web = Web::new(Some(serving(vec![moved, there]))).expect("a client");
+        let page = web.page("https://example.com/old").await.expect("the page");
+        assert_eq!(
+            (page.title.as_str(), page.text.as_str()),
+            ("New place", "The lamp is lit.")
+        );
     }
 }

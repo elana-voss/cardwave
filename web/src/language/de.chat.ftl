@@ -268,8 +268,8 @@ kinds-type-unknown = { " " }· nicht bekannt, ob es das kann
 kinds-address = { " " }· { $address }
 kinds-this-computer = Ein Programm auf diesem Computer
 kinds-asking-the-provider = Der Anbieter wird gefragt…
-kinds-no-such-model = Kein solches Modell
 kinds-own-on-this-computer = { $own } · auf diesem Computer
+kinds-none-of-the-kind = Keiner deiner Anbieter hat ein Modell, das das kann.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -279,6 +279,7 @@ language-line-follows-the-app = Folgt der Sprache der App, bis du sie änderst
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = Nicht eingerichtet
+models-group-no-longer-offered = Dein Anbieter bietet dieses Modell nicht mehr an: Wähle ein anderes.
 
 ## provider-form (models/provider-form.ts)
 
@@ -384,7 +385,7 @@ memories-so = Folge: { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · auf der Grafikkarte dieses Computers · { $bytes } Download
+dictation-setup-on-this-computers-graphics = { $name } · auf der Grafikkarte dieses Computers · { $bytes }
 dictation-setup-the-microphone-beside-the = Das Mikrofon neben dem Nachrichtenfeld schreibt dann auf, was du sagst, auf Deutsch, Englisch und in anderen Sprachen. Was du sagst, bleibt auf diesem Computer.
 
 ## make-voice (voice/make-voice.ts)

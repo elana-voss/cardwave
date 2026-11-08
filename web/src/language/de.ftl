@@ -228,7 +228,7 @@ backup-back-up = Sicherung speichern
 backup-no-file = Keine Datei gewählt
 backup-choose-file = Datei wählen
 backup-its-password = Das Passwort der Sicherung
-backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen.
+backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen. Das hier gesetzte Passwort bleibt, wie es ist.
 backup-file = Datei
 backup-restore-title = Eine Sicherung wiederherstellen
 backup-choose-first = Wähle zuerst die Datei der Sicherung.
@@ -317,7 +317,7 @@ password-repeat = Passwort wiederholen
 password-asked-sign-in = Wird beim Anmelden abgefragt
 password-is-on = An · wird beim Öffnen der App abgefragt
 password-is-off = Aus · jeder an diesem Computer kann Cardwave öffnen
-password-start-forgotten = Ein vergessenes Passwort lässt sich nicht wiederherstellen. Stell eine Sicherung wieder her, um neu zu beginnen.
+password-start-forgotten = Ein vergessenes Passwort lässt sich nicht wiederherstellen.
 password-open = Öffnen
 password-back = Zurück
 
@@ -425,101 +425,6 @@ update-auto = Automatisch suchen
 update-auto-about = Beim Start und einmal am Tag nach einer neuen Version suchen
 update-check = Suchen
 update-about = Prüfen, ob eine neuere Version der App verfügbar ist.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = Adresse des Anbieters in den Einstellungen eingeben
-setup-manually-models = Selbst einrichten
-setup-use-this = Diesen verwenden
-setup-choose-folder = Ordner wählen
-setup-this-computer = Dieser Computer
-setup-this-computer-about = Heruntergeladene KI-Modelldateien (.gguf), von Cardwave ausgeführt
-setup-models-example = C:\Users\du\Modelle
-setup-models-says = Jede Modelldatei darin (.gguf) ist ein Chatmodell, das Cardwave auf diesem Computer ausführt. Noch keine Modelldateien? Wähle einen leeren Ordner: Einstellungen › Anbieter › Dieser Computer bietet dann die Modelle an, die zu diesem Computer passen, und lädt sie hinein.
-setup-not-this = Nicht dieser?
-setup-recognised = Erkannt:{ " " }
-setup-provider = Anbieter
-setup-none-of-these = Keiner davon?
-setup-several = Dieser Schlüssel passt zu mehr als einem Anbieter. Welcher ist es?
-setup-unknown = Cardwave erkennt nicht, zu welchem Anbieter dieser Schlüssel gehört. Finde den Anbieter über seinen Namen oder gib seine Adresse ein.
-setup-find = Finden
-setup-find-field = Name oder Website des Anbieters
-setup-find-example = Name oder Website, etwa example.com
-setup-find-hint = Cardwave sucht die Adresse des Anbieters. Dein Schlüssel wird nicht gesendet.
-setup-name = Name
-setup-name-hint = Der Name in Cardwaves Liste der Anbieter. Du kannst ihn leer lassen.
-setup-address = Adresse
-setup-address-hint = Kopiere sie von der Website deines Anbieters, etwa https://api.example.com/v1
-setup-continue = Weiter
-setup-local = Ein Programm auf diesem Computer verwenden (etwa LM Studio oder Ollama)
-setup-no-key = Kein Schlüssel?{ " " }
-setup-api-key = API-Schlüssel
-setup-key-placeholder = Füge deinen Schlüssel hier ein
-setup-found = Gefunden
-setup-no-api = Cardwave hat auf { $website } keine Adresse für die KI gefunden. Such die Adresse in der Dokumentation des Anbieters (oft „Base URL“ genannt) und gib sie ein.
-setup-find-by-name = Nach Namen finden
-setup-enter-address = Adresse eingeben
-setup-how = So richtest du es ein
-setup-not-listed = Kein Anbieter namens „{ $name }“ steht auf der Liste. Gib stattdessen seine Website ein oder seine Adresse.
-setup-looking = Wird gesucht…
-setup-looking-servers = Suche nach Programmen auf diesem Computer…
-setup-no-server = Auf diesem Computer antwortet kein KI-Programm (Cardwave hat nach { $names } gesucht). Starte eines und such dann noch einmal.
-setup-no-other-server = Auf diesem Computer antwortet kein anderes KI-Programm (Cardwave hat nach { $names } gesucht). Starte eines und such dann noch einmal.
-setup-tested = { " " }· getestet
-setup-picking = Wählt aus den Modellen deines Anbieters…
-setup-the-helper-model = das Hilfsmodell
-setup-want-voice = Die Stimme herunterladen
-setup-want-search = Das Suchmodell herunterladen
-setup-confirm = Bestätigen
-setup-back = Zurück
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · kein Schlüssel
-setup-unlisted = Noch nicht gewählt. Der Anbieter listet keine Modelle: Gib die ID des Modells ein.
-setup-not-chosen = Noch nicht gewählt
-setup-the-voice = Stimme
-setup-the-search-model = Suche
-setup-nothing-now = Jetzt wird nichts heruntergeladen. Suche und Stimme lassen sich später in den Einstellungen einrichten.
-setup-downloaded = Herunterzuladen: { $what }.
-setup-and = { $first } und { $second }
-setup-download-size = Herunterladen ({ $size })
-setup-where = Einrichtung · Schritt { $step } von { $steps }
-setup-title-1 = Anbieter
-setup-title-2 = Modelle
-setup-title-3 = Karten
-setup-title-4 = Downloads
-setup-about-1 = Füge den API-Schlüssel von der Website deines KI-Anbieters ein. Cardwave findet den Anbieter.
-setup-about-2 = Cardwave hat sie aus den Modellen deines Anbieters gewählt. Ändere sie jetzt oder später in den Einstellungen.
-setup-about-3 = Wenn du Charakterkarten-Dateien hast (PNG oder JSON aus anderen Apps), kann Cardwave sie aus einem Ordner hereinholen.
-setup-about-4 = Du kannst Cardwave jetzt öffnen: Die Downloads laufen weiter, und ein Hinweis sagt dir, wenn sie fertig sind.
-setup-no-list = Keine Liste der Modelle: { $why } Drücke Wählen, um die ID eines Modells einzugeben, oder geh Zurück und prüfe den Schlüssel.
-setup-change = Ändern
-setup-choose = Wählen
-setup-worker-does = { " " }· schreibt Zusammenfassungen, Tags und Erinnerungen
-setup-same-as-chat = Wie das Chatmodell
-setup-no-picks = Keine Modelle gewählt: { $why }
-setup-helper-model = Hilfsmodell
-setup-set-up = Cardwave ist bereit.
-setup-folder-not-kept = Der Kartenordner konnte nicht verwendet werden: { $why }. Du kannst ihn unter Einstellungen › Daten erneut wählen.
-
-setup-skip = Überspringen
-setup-import-folder = Aus diesem Ordner importieren
-setup-cards-about = Es werden nur Kartendateien übernommen; im Ordner wird nichts verschoben oder geändert. Seine Karten kommen herein, wenn die Einrichtung fertig ist, und Karten, die später hineinkommen, kommen von selbst. Du kannst ihn auch später unter Einstellungen › Daten wählen.
-setup-done = Fertig
-setup-done-mark = { " " }Fertig
-setup-percent = { $percent } %
-setup-waiting = Wartet
-setup-try-again = Erneut versuchen
-setup-try-voice-again = Stimme noch einmal versuchen
-setup-try-search-again = Suche noch einmal versuchen
-setup-voice-failed = Die Stimme konnte nicht heruntergeladen werden: { $why }
-setup-search-failed = Das Suchmodell konnte nicht heruntergeladen werden: { $why }
-setup-downloads-done = Die Downloads sind fertig: Cardwave ist vollständig eingerichtet.
-setup-cards-later = Deine Karten kommen aus dem Ordner herein, sobald Cardwave geöffnet ist.
-setup-voice = Stimme
-setup-search = Suche
-setup-open = Cardwave öffnen
-setup-voice-named = { $name } · { $language }
-setup-voice-model = Stimmmodell
 
 ## The breadcrumbs of a page under Settings
 
@@ -633,6 +538,10 @@ advanced-not-described = { $count ->
    *[other] { $count } Charaktere
   } noch nicht beschrieben
 advanced-describe-cards = Charaktere beschreiben
+advanced-describe-cost = Etwa { $low } bis { $high } Tokens für { $count ->
+    [one] 1 Charakter
+   *[other] { $count } Charaktere
+  }
 advanced-failed = { $count ->
     [one] 1 fehlgeschlagen
    *[other] { $count } fehlgeschlagen
@@ -642,6 +551,7 @@ advanced-describe-again-stop = Stoppen
 advanced-describe-again-about = Schreibt mit dem Hilfsmodell die Kurzbeschreibung, Zusammenfassung und Schlagwörter jeder Figur neu und das, wonach „Nach Bedürfnis“ sie findet, etwa 11.000 bis 12.000 Tokens je Figur. Was du selbst bearbeitet hast, bleibt. Nach Tokens rechnen Anbieter ab.
 advanced-no-characters = Keine Charaktere zu beschreiben
 advanced-describe-again-far = { $done } von { $all } neu beschrieben
+advanced-describe-again-stopped = Angehalten bei { $done } von { $all } neu beschrieben
 advanced-describe-again-failed = { $count ->
     [one] 1 fehlgeschlagen, bleibt wie er war
    *[other] { $count } fehlgeschlagen, bleiben wie sie waren
@@ -962,7 +872,7 @@ gen-hair-colour = Haarfarbe
 gen-personality = Persönlichkeit
 gen-relates = Wer der Charakter für dich ist
 gen-make = Den Charakter erstellen
-gen-what = Wähle ein paar Eigenschaften; die KI schreibt den Charakter, seine Geschichte und seine erste Nachricht.
+gen-what = Wähle ein paar Eigenschaften; die KI schreibt die erste Nachricht des Charakters und wie er spricht.
 interview-goes-to = Deine Antworten gehen an { $provider }, um den Charakter zu schreiben.
 interview-stays = Deine Antworten bleiben auf diesem Computer.
 interview-own-words = Oder füge eigene Worte hinzu

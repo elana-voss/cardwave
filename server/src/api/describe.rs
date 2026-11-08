@@ -2,7 +2,7 @@
 //!
 //! `GET /api/describe` is how far the describing of the user's cards has come;
 //! `POST /api/describe` ("Describe cards") queues every card not yet described
-//! and answers the same, or 424 while the user has no provider; `GET /api/needs` is
+//! and answers the same, or 424 while the user has no provider, `DELETE` stops it (`describe::stop`); `GET /api/needs` is
 //! what the view "By need" shows over its cards; `/api/describe/again` is "Describe all
 //! again" (`again::start`, `again::stop`, how far: `again::progress`), which the same worker takes after
 //! what is queued, each ending as `descriptions` too. An import
@@ -42,7 +42,10 @@ use crate::AppState;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/api/describe", get(show).post(describe_all))
+        .route(
+            "/api/describe",
+            get(show).post(describe_all).delete(stop_all),
+        )
         .route("/api/needs", get(needs_overview))
         .route(
             "/api/describe/again",
@@ -103,6 +106,20 @@ async fn stop_again(
     state.run(move |db| again::stop(db, user)).await?;
     state.push(user, &PageEvent::Descriptions { card_id: None });
     again_progress(State(state), User(user)).await
+}
+
+/// Stops describing the cards that wait; the card in hand finishes.
+async fn stop_all(State(state): State<AppState>, User(user): User) -> ApiResult<Json<Describing>> {
+    // Held through the stop, as the worker holds it while it takes its next card, so neither misses the other.
+    let held = state.clone();
+    state
+        .run(move |db| {
+            let describing = held.describing();
+            describe::stop(db, user, describing.get(&user).copied().flatten())
+        })
+        .await?;
+    state.push(user, &PageEvent::Descriptions { card_id: None });
+    show(State(state), User(user)).await
 }
 
 /// Queues every card of the user that is not described yet, and starts the worker.
@@ -194,9 +211,11 @@ pub(super) fn started(state: &AppState, user: i64) {
 
 /// Has the worker describe the user's queued cards, unless it does already.
 fn start(state: &AppState, user: i64) {
-    if !state.describing().insert(user) {
-        return;
-    }
+    // A worker running keeps the card it has in hand, which "Stop" spares.
+    match state.describing().entry(user) {
+        std::collections::hash_map::Entry::Occupied(_) => return,
+        std::collections::hash_map::Entry::Vacant(place) => place.insert(None),
+    };
     let held = state.clone();
     let place = Place::new(move || {
         held.describing().remove(&user);
@@ -248,9 +267,10 @@ async fn run(state: AppState, user: i64, place: Place) {
             .work(move |db| {
                 let mut describing = taken.describing();
                 let next = next_job(db, user);
-                if !matches!(next, Ok(Some(_))) {
-                    describing.remove(&user);
-                }
+                match &next {
+                    Ok(Some((_, card_id, _))) => describing.insert(user, Some(*card_id)),
+                    _ => describing.remove(&user),
+                };
                 Ok(next)
             })
             .await;

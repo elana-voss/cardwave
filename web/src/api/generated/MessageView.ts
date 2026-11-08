@@ -65,7 +65,11 @@ reads: Array<Read>,
 /**
  * What the user attached to it, the first first (`attachments`).
  */
-attachments: Array<Attachment>, id: number, parent_id: number | null, role: Role, 
+attachments: Array<Attachment>, 
+/**
+ * Whether it was cut off by the app's close, which the chat says when it is opened.
+ */
+broke_off: boolean, id: number, parent_id: number | null, role: Role, 
 /**
  * The participant who wrote it; unset for the user's messages.
  */

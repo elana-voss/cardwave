@@ -28,6 +28,8 @@ pub struct DescribingAgain {
     pub failed: usize,
     /// Why the last of those failed, as the UI words it.
     pub failure: Option<ErrorBody>,
+    /// Whether Stop cut the run short, dropping characters that waited.
+    pub stopped: bool,
 }
 
 /// What describing again asks of the database, which `cw_store::again` gives.

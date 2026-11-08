@@ -24,7 +24,7 @@ TEXTURE = 1024
 
 # The companion's name of each clip (web/src/companion/figure.ts, `CARRIED`) and its file in DATA/animation.
 CLIPS = {
-    "idle": "3c19c4bd6db0faa8e5bd3437ad44e838",
+    "idle": "2a468c494f0a8a54c69309f243addf52",
     "idle_shift": "21d68",
     "stretch": "2042b",
     "thinking": "13a81",

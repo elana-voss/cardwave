@@ -246,3 +246,18 @@ for (const [width, height] of SIZES) {
     });
   }
 }
+
+test("a picture opened whole is as wide as it is shown, the whole of it and Save in the window", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await open(page, painted, 2);
+  await page.getByRole("button", { name: "Open the picture" }).click();
+  const shown = page.locator("dialog .picture-whole img");
+  await expect.poll(() => shown.evaluate((one: HTMLImageElement) => one.complete && one.naturalWidth)).toBe(832);
+  const box = (await page.locator("dialog.picture-dialog").boundingBox())!;
+  const whole = (await shown.boundingBox())!;
+  const save = (await page.getByRole("dialog").getByRole("button", { name: "Save" }).boundingBox())!;
+  expect(box.width).toBeLessThanOrEqual(Math.max(whole.width, 420) + 1);
+  const foot = (await page.locator("dialog.picture-dialog .dfoot").boundingBox())!;
+  expect(whole.y + whole.height).toBeLessThanOrEqual(foot.y);
+  expect(save.y + save.height).toBeLessThanOrEqual(Math.min(box.y + box.height, 720));
+});

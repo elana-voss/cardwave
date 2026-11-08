@@ -24,7 +24,7 @@ use std::fs::{File, TryLockError};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::ops::RangeInclusive;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::atomic::{AtomicI64, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock, Weak};
 use std::time::Duration;
 
@@ -191,6 +191,12 @@ pub struct Inner {
     place: cw_key::Place,
     /// Held while the password is changed or a backup restored.
     guarded: Mutex<()>,
+    /// The pieces of work under way that write what a model made into the data by its ids (a picture, an
+    /// interview's or the generator's card), by user, which a restore and the account's delete wait for
+    /// ([`AppState::at_work`]).
+    at_work: Mutex<HashMap<i64, usize>>,
+    /// How many backups were restored since the start: work begun before one is refused ([`AppState::at_work`]).
+    restores: AtomicU64,
     local_user: AtomicI64,
     /// What this computer's account is called when a restored backup has none.
     account_name: String,
@@ -225,16 +231,16 @@ pub struct Inner {
     thumbnails: cw_library::thumbnails::Turns,
     /// The looking for faces on the cards' pictures (`faces.rs`).
     faces: faces::Faces,
-    /// The users whose cards the worker model is describing (`api/describe.rs`).
-    describing: Mutex<HashSet<i64>>,
+    /// The users whose cards the worker model is describing, with the card in hand (`api/describe.rs`).
+    describing: Mutex<HashMap<i64, Option<i64>>>,
     /// The chats whose title the worker model is asked for.
     titles: cw_chat::chats::title::Titles,
     /// The import of a folder of cards, the last one or the one going on (`api/card_folder.rs`).
     card_folder: Mutex<Option<cw_library::cards::folder::FolderImport>>,
     /// The folder first run offers as the folder of cards ([`Options::documents`]).
     documents: Option<PathBuf>,
-    /// The chats whose new messages a memory pass is reading (`api/memory.rs`).
-    remembering: Mutex<HashSet<i64>>,
+    /// The chats whose new messages a memory pass is reading (`api/memory.rs`), and whose they are.
+    remembering: Mutex<HashMap<i64, i64>>,
     /// The models, by address and name, that answered they see pictures
     /// (`api/attachments.rs`).
     seeing: Mutex<HashSet<(String, String)>>,
@@ -282,7 +288,7 @@ impl AppState {
         self.gate.upgrade()
     }
 
-    fn describing(&self) -> MutexGuard<'_, HashSet<i64>> {
+    fn describing(&self) -> MutexGuard<'_, HashMap<i64, Option<i64>>> {
         cw_core::lock(&self.describing)
     }
 
@@ -290,7 +296,7 @@ impl AppState {
         cw_core::lock(&self.card_folder)
     }
 
-    fn remembering(&self) -> MutexGuard<'_, HashSet<i64>> {
+    fn remembering(&self) -> MutexGuard<'_, HashMap<i64, i64>> {
         cw_core::lock(&self.remembering)
     }
 
@@ -316,6 +322,58 @@ impl AppState {
 
     fn web_pictures(&self) -> MutexGuard<'_, HashMap<i64, bool>> {
         cw_core::lock(&self.web_pictures)
+    }
+
+    /// Marks a piece of `user`'s work on the data as under way until the mark is dropped, so a restore and the
+    /// account's delete wait for it: it would write into the restored data by the old data's ids, or into an
+    /// account that is gone. Begun while a restore runs, it is refused once the restore has ended: its ids
+    /// are the old data's.
+    fn at_work(&self, user: i64) -> Result<AtWork, cw_core::Fail> {
+        let before = self.0.restores.load(Ordering::SeqCst);
+        unless_restored(&self.0.restores, &self.guarded, before, || {
+            *cw_core::lock(&self.0.at_work).entry(user).or_default() += 1;
+            AtWork(self.clone(), user)
+        })
+    }
+
+    /// Whether any piece of work marked by [`AppState::at_work`] is under way.
+    fn is_at_work(&self) -> bool {
+        !cw_core::lock(&self.0.at_work).is_empty()
+    }
+
+    /// Whether a piece of `user`'s work marked by [`AppState::at_work`] is under way.
+    fn user_at_work(&self, user: i64) -> bool {
+        cw_core::lock(&self.0.at_work).contains_key(&user)
+    }
+}
+
+/// A piece of a user's work on the data under way ([`AppState::at_work`]).
+/// Does `then` under `guarded` (held while a backup is restored), unless a restore ended since `restores` was
+/// `begun`: the work's ids would be the old data's.
+fn unless_restored<T>(
+    restores: &AtomicU64,
+    guarded: &Mutex<()>,
+    begun: u64,
+    then: impl FnOnce() -> T,
+) -> Result<T, cw_core::Fail> {
+    let _held = cw_core::lock(guarded);
+    if restores.load(Ordering::SeqCst) != begun {
+        return Err(cw_core::Fail::new(cw_core::Code::RestoreBusy));
+    }
+    Ok(then())
+}
+
+struct AtWork(AppState, i64);
+
+impl Drop for AtWork {
+    fn drop(&mut self) {
+        let mut at_work = cw_core::lock(&self.0.0.at_work);
+        if let Some(count) = at_work.get_mut(&self.1) {
+            *count -= 1;
+            if *count == 0 {
+                at_work.remove(&self.1);
+            }
+        }
     }
 }
 
@@ -588,6 +646,8 @@ fn open(
         key,
         place: opts.key,
         guarded: Mutex::default(),
+        at_work: Mutex::default(),
+        restores: AtomicU64::new(0),
         local_user: AtomicI64::new(local_user),
         sessions,
         tries,
@@ -806,7 +866,16 @@ pub async fn serve(
 
 #[cfg(test)]
 mod tests {
-    use super::account_name_from;
+    use super::{account_name_from, unless_restored};
+    use std::sync::{Mutex, atomic::AtomicU64};
+
+    #[test]
+    fn work_begun_before_a_restore_ended_is_refused() {
+        let (restores, guarded) = (AtomicU64::new(1), Mutex::default());
+        let refused = unless_restored(&restores, &guarded, 0, || ()).unwrap_err();
+        assert_eq!(refused.code, cw_core::Code::RestoreBusy);
+        assert!(unless_restored(&restores, &guarded, 1, || ()).is_ok());
+    }
 
     #[test]
     fn this_computers_account_is_first_called_by_the_systems_user_name() {

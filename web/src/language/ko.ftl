@@ -239,7 +239,7 @@ backup-back-up = 백업 저장
 backup-no-file = 선택한 파일 없음
 backup-choose-file = 파일 선택
 backup-its-password = 백업의 비밀번호
-backup-restoring = 복원하면 Cardwave의 모든 것이 바뀌어요: 채팅, 캐릭터, 페르소나, 로어북, 기억, 설정. 되돌릴 수 없어요.
+backup-restoring = 복원하면 Cardwave의 모든 것이 바뀌어요: 채팅, 캐릭터, 페르소나, 로어북, 기억, 설정. 되돌릴 수 없어요. 여기서 정한 비밀번호는 그대로 유지돼요.
 backup-file = 파일
 backup-restore-title = 백업 복원
 backup-choose-first = 먼저 백업 파일을 선택하세요.
@@ -327,7 +327,7 @@ password-repeat = 비밀번호 확인
 password-asked-sign-in = 로그인할 때 물어봐요
 password-is-on = 켜짐 · 앱을 열 때 물어봐요
 password-is-off = 꺼짐 · 이 컴퓨터에서는 누구나 Cardwave를 열 수 있음
-password-start-forgotten = 잊어버린 비밀번호는 되찾을 수 없어요. 처음부터 다시 시작하려면 백업을 복원하세요.
+password-start-forgotten = 잊어버린 비밀번호는 되찾을 수 없어요.
 password-open = 열기
 password-back = 뒤로
 
@@ -431,101 +431,6 @@ update-auto = 자동으로 확인
 update-auto-about = 시작할 때와 하루에 한 번 새 버전 찾기
 update-check = 확인
 update-about = 앱의 새 버전이 있는지 확인해요.
-
-## First run (views/setup.ts, setup/*.ts)
-
-setup-manually = 설정에서 제공자 주소 입력
-setup-manually-models = 직접 설정
-setup-use-this = 이것 사용
-setup-choose-folder = 폴더 선택
-setup-this-computer = 이 컴퓨터
-setup-this-computer-about = 내려받은 AI 모델 파일(.gguf)을 Cardwave가 실행해요
-setup-models-example = C:\Users\you\Models
-setup-models-says = 안의 모델 파일(.gguf)은 각각 채팅 모델이며, Cardwave가 이 컴퓨터에서 실행해요. 아직 모델 파일이 없나요? 빈 폴더를 고르세요: 설정 › 제공자 › 이 컴퓨터에서 이 컴퓨터에 맞는 모델을 보여 주고 그 폴더에 다운로드해요.
-setup-not-this = 이게 아닌가요?
-setup-recognised = 인식됨:{ " " }
-setup-provider = 제공자
-setup-none-of-these = 여기에 없나요?
-setup-several = 이 키는 여러 제공자에 맞아요. 어느 제공자인가요?
-setup-unknown = Cardwave가 이 키가 어느 제공자의 것인지 알 수 없어요. 제공자를 이름으로 찾거나 주소를 입력하세요.
-setup-find = 찾기
-setup-find-field = 제공자 이름 또는 웹사이트
-setup-find-example = 이름 또는 웹사이트(예: example.com)
-setup-find-hint = Cardwave가 제공자의 주소를 찾아요. 키는 보내지 않아요.
-setup-name = 이름
-setup-name-hint = Cardwave의 제공자 목록에 보이는 이름이에요. 비워 두어도 돼요.
-setup-address = 주소
-setup-address-hint = 제공자의 웹사이트에서 복사하세요(예: https://api.example.com/v1)
-setup-continue = 계속
-setup-local = 이 컴퓨터의 프로그램 사용(LM Studio나 Ollama 등)
-setup-no-key = 키가 없나요?{ " " }
-setup-api-key = API 키
-setup-key-placeholder = 여기에 키를 붙여 넣으세요
-setup-found = 찾음
-setup-no-api = Cardwave가 { $website }에서 AI 주소를 찾지 못했어요. 제공자의 문서에서 주소(흔히 “base URL”)를 찾아 입력하세요.
-setup-find-by-name = 이름으로 찾기
-setup-enter-address = 주소 입력
-setup-how = 설정 방법
-setup-not-listed = 목록에 “{ $name }” 제공자가 없어요. 대신 웹사이트를 입력하거나 주소를 입력하세요.
-setup-looking = 찾는 중…
-setup-looking-servers = 이 컴퓨터에서 프로그램을 찾는 중…
-setup-no-server = 이 컴퓨터에서 응답하는 AI 프로그램이 없어요(Cardwave가 { $names }을(를) 찾았어요). 하나를 실행한 뒤 다시 찾아보세요.
-setup-no-other-server = 이 컴퓨터에서 응답하는 다른 AI 프로그램이 없어요(Cardwave가 { $names }을(를) 찾았어요). 하나를 실행한 뒤 다시 찾아보세요.
-setup-tested = { " " }· 테스트됨
-setup-picking = 제공자의 모델 중에서 고르는 중…
-setup-the-helper-model = 보조 모델
-setup-want-voice = 음성 다운로드
-setup-want-search = 검색 모델 다운로드
-setup-confirm = 확인
-setup-back = 뒤로
-setup-key-line = { $provider } · ····{ $end }
-setup-key-line-none = { $provider } · 키 없음
-setup-unlisted = 아직 선택하지 않았어요. 제공자가 모델 목록을 주지 않아요: 모델 ID를 입력하세요.
-setup-not-chosen = 아직 선택 안 함
-setup-the-voice = 음성
-setup-the-search-model = 검색
-setup-nothing-now = 지금은 아무것도 다운로드하지 않아요. 검색과 음성은 나중에 설정에서 설정할 수 있어요.
-setup-downloaded = 다운로드할 항목: { $what }.
-setup-and = { $first } 및 { $second }
-setup-download-size = 다운로드 ({ $size })
-setup-where = 설정 · { $steps }단계 중 { $step }단계
-setup-title-1 = 제공자
-setup-title-2 = 모델
-setup-title-3 = 카드
-setup-title-4 = 다운로드
-setup-about-1 = AI 제공자의 웹사이트에서 받은 API 키를 붙여 넣으세요. Cardwave가 제공자를 찾아요.
-setup-about-2 = Cardwave가 제공자의 모델 중에서 골랐어요. 지금 바꾸거나 나중에 설정에서 바꿀 수 있어요.
-setup-about-3 = 캐릭터 카드 파일(다른 앱의 PNG 또는 JSON)이 있다면 Cardwave가 폴더에서 가져올 수 있어요.
-setup-about-4 = 지금 Cardwave를 열 수 있습니다. 다운로드는 계속되며, 끝나면 알림으로 알려 드립니다.
-setup-no-list = 모델 목록 없음: { $why } 선택을 눌러 모델 ID를 입력하거나, 뒤로 가서 키를 확인하세요.
-setup-change = 변경
-setup-choose = 선택
-setup-worker-does = { " " }· 요약, 태그, 기억 작성
-setup-same-as-chat = 채팅 모델과 같음
-setup-no-picks = 고른 모델 없음: { $why }
-setup-helper-model = 보조 모델
-setup-set-up = Cardwave가 준비되었습니다.
-setup-folder-not-kept = 카드 폴더를 사용할 수 없었어요: { $why }. 설정 › 데이터에서 다시 선택할 수 있어요.
-
-setup-skip = 건너뛰기
-setup-import-folder = 이 폴더에서 가져오기
-setup-cards-about = 카드 파일만 가져오며, 폴더 안의 어떤 것도 옮기거나 바꾸지 않아요. 설정이 끝나면 카드가 들어오고, 나중에 넣은 카드는 저절로 들어와요. 나중에 설정 › 데이터에서 선택할 수도 있어요.
-setup-done = 완료
-setup-done-mark = { " " }완료
-setup-percent = { $percent }%
-setup-waiting = 대기 중
-setup-try-again = 다시 시도
-setup-try-voice-again = 음성 다시 시도
-setup-try-search-again = 검색 다시 시도
-setup-voice-failed = 음성을 다운로드하지 못했습니다: { $why }
-setup-search-failed = 검색 모델을 다운로드하지 못했습니다: { $why }
-setup-downloads-done = 다운로드가 끝났습니다. Cardwave 설정이 모두 끝났습니다.
-setup-cards-later = Cardwave가 열리면 폴더에서 카드가 들어와요.
-setup-voice = 음성
-setup-search = 검색
-setup-open = Cardwave 열기
-setup-voice-named = { $name } · { $language }
-setup-voice-model = 음성 모델
 
 ## The breadcrumbs of a page under Settings
 
@@ -638,6 +543,9 @@ advanced-not-described = { $count ->
    *[other] 캐릭터 { $count }명
   } 아직 설명 안 됨
 advanced-describe-cards = 캐릭터 설명하기
+advanced-describe-cost = { $count ->
+   *[other] 캐릭터 { $count }명
+  }에 약 { $low }~{ $high } 토큰
 advanced-failed = { $count ->
    *[other] { $count }개 실패
   }: { $failure }. 다시 시도하려면 캐릭터 설명하기를 누르세요.
@@ -646,6 +554,7 @@ advanced-describe-again-stop = 중지
 advanced-describe-again-about = 도우미 모델로 모든 캐릭터의 한 줄 설명, 요약, 태그, '필요별'이 찾는 기준을 다시 씁니다. 캐릭터당 약 11,000~12,000 토큰. 직접 편집한 내용은 그대로 남습니다. 토큰은 제공자가 요금을 매기는 단위입니다.
 advanced-no-characters = 설명할 캐릭터가 없어요
 advanced-describe-again-far = { $all }개 중 { $done }개 다시 설명함
+advanced-describe-again-stopped = { $all }개 중 { $done }개 다시 설명하고 멈춤
 advanced-describe-again-failed = { $count ->
    *[other] { $count }개는 실패해서 그대로 남음
   }: { $failure }. 한 번 더 시도하려면 모두 다시 설명하기를 누르세요.
@@ -954,7 +863,7 @@ gen-hair-colour = 머리 색
 gen-personality = 성격
 gen-relates = 캐릭터가 당신에게 어떤 존재인지
 gen-make = 캐릭터 만들기
-gen-what = 특징 몇 가지를 고르면 AI가 캐릭터와 그 이야기, 첫 메시지를 씁니다.
+gen-what = 특징 몇 가지를 고르면 AI가 캐릭터의 첫 메시지와 말투를 씁니다.
 interview-goes-to = 캐릭터를 쓰기 위해 답변이 { $provider }에 전송돼요.
 interview-stays = 답변은 이 컴퓨터에만 남아요.
 interview-own-words = 또는 직접 말을 덧붙이기

@@ -16,6 +16,13 @@ test("a text's Markdown shows rendered: paragraphs, lines, headings, lists, quot
   expect(markdown("  \n\n ")).toEqual([]);
 });
 
+test("with links, an address in the Markdown opens in the browser; without, it stays text", () => {
+  const html = (nodes: HTMLElement[]) => nodes.map((node) => node.outerHTML).join("");
+  const text = "- **1.83** at https://example.org/notes";
+  expect(html(markdown(text, true))).toContain('<li><strong>1.83</strong> at <a href="https://example.org/notes"');
+  expect(html(markdown(text))).not.toContain("<a ");
+});
+
 test("an earlier draft is told against the text as it is: what would come back, and what would go", () => {
   expect(compare("A dry old keeper.", "A kind old keeper.")).toEqual([
     { text: "A ", kind: "same" },

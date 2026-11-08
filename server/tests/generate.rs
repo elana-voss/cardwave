@@ -485,6 +485,42 @@ async fn a_reply_is_written_again_as_a_swipe() {
 }
 
 #[tokio::test]
+async fn a_chat_model_the_provider_no_longer_offers_is_marked_until_a_reply_comes_or_it_is_picked_anew()
+ {
+    let server = start().await;
+    let chat = chat(&server).await;
+    let mut socket = server.listen().await;
+    let mut provider = Provider::start().await;
+    use_provider(&server, &provider.url).await;
+    let gone = || async { server.get("/api/provider-list").await.1["kinds"][0]["gone"].clone() };
+    assert_eq!(gone().await, json!(false));
+
+    let no = json!({ "error": { "message": "The model `test-model` does not exist" } });
+    *provider.refusal.lock().unwrap() = Some((404, no.to_string()));
+    generate(&server, &chat, json!({})).await;
+    follow(&mut socket, "").await;
+    assert_eq!(gone().await, json!(true));
+    // Picked anew, it is tried again.
+    use_provider(&server, &provider.url).await;
+    assert_eq!(gone().await, json!(false));
+
+    generate(&server, &chat, json!({})).await;
+    follow(&mut socket, "").await;
+    assert_eq!(gone().await, json!(true));
+    // A reply that comes says it is offered after all.
+    *provider.refusal.lock().unwrap() = None;
+    generate(&server, &chat, json!({})).await;
+    provider
+        .next()
+        .await
+        .answer
+        .send([&says("Hi")[..], DONE].concat())
+        .unwrap();
+    assert_eq!(follow(&mut socket, "").await.1["message"]["content"], "Hi");
+    assert_eq!(gone().await, json!(false));
+}
+
+#[tokio::test]
 async fn a_failed_reply_says_why() {
     let server = start().await;
     let chat = chat(&server).await;
@@ -580,6 +616,21 @@ async fn a_failed_reply_says_why() {
     assert_eq!(
         (&ended["message"]["content"], &ended["message"]["complete"]),
         (&json!("The tide turns"), &json!(true))
+    );
+
+    // The connection breaks after some words, the server never saying it is done: the words stay, and the reply says it broke off.
+    generate(&server, &chat, json!({})).await;
+    let asked = provider.next().await;
+    asked.answer.send(says("The tide")).unwrap();
+    assert_eq!(event(&mut socket).await["text"], "The tide");
+    drop(asked);
+    let (_, ended) = follow(&mut socket, "The tide").await;
+    assert_eq!(
+        (
+            &ended["error"]["details"]["what"],
+            &ended["message"]["content"]
+        ),
+        (&json!("reply_broke_off"), &json!("The tide"))
     );
 
     // A server that does not stream sends the reply whole.

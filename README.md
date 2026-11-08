@@ -44,6 +44,18 @@ Cardwave opens SillyTavern cards (PNG) and [CCV4](https://cardwave.cc/ccv4.html)
 
 ![The lorebook editor](docs/screenshots/lorebook.png)
 
+## Phones and other computers
+
+Early: this works, but has not been thoroughly tested yet.
+
+While Cardwave runs on your computer, phones and other computers in your home network can open it in a browser:
+
+1. On the computer, open Account › Sharing and switch on "Reachable in the home network" under "Other devices".
+2. Under "Accounts", press "Add account" and give each person a name and a password. Each account has chats and characters of its own.
+3. On the other device, open the address Sharing shows beside "Address" (such as `http://192.168.1.20:8477/`), choose your account and type its password.
+
+Only devices in the same network can reach it.
+
 ## Build from source
 
 Cardwave is a Rust server with a TypeScript UI in a [Tauri 2](https://tauri.app) window. You need:

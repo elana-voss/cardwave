@@ -1,7 +1,8 @@
 //! The user's model provider over HTTP. The key goes in and never comes out,
 //! but for the last characters of a long one. Beside it the providers the app
 //! knows by name, the search for the API of one it does not know, the models
-//! an address lists, first run's picks of them, and the test of a model. A store of the provider tells
+//! an address lists, first run's picks of them (both with models.dev's
+//! readable names), and the test of a model. A store of the provider tells
 //! the user's pages (`PageEvent::Provider`).
 
 use axum::extract::State;
@@ -12,10 +13,12 @@ use cw_core::PageEvent;
 use cw_provider::check::{self, TestModel};
 use cw_provider::list::{self, KnownProvider};
 use cw_provider::models::{self, Limits, ListModels, ListedModels};
+use cw_provider::models_dev::Index;
 use cw_provider::picks::{self, Picks};
 use cw_provider::places::{FindProvider, FoundProvider};
 use cw_provider::{self as provider, Provider, Sampling, SetProvider};
 use serde::Serialize;
+use std::collections::BTreeMap;
 use ts_rs::TS;
 
 use super::{ApiResult, Page, User};
@@ -52,12 +55,14 @@ async fn list_models(
     State(state): State<AppState>,
     User(user): User,
     Json(asked): Json<ListModels>,
-) -> ApiResult<Json<ListedModels>> {
+) -> ApiResult<Json<NamedModels>> {
     let (base_url, key) = state
         .run(move |db| provider::whom(db, user, &asked.base_url, asked.api_key))
         .await?;
     let listed = models::of(&state.http, &base_url, &key, Limits::default()).await?;
-    Ok(Json(listed))
+    let index = state.models_dev.index(&state.http).await;
+    let names = names(&index, listed.models.iter());
+    Ok(Json(NamedModels { listed, names }))
 }
 
 /// First run's picks of a model of each kind at the address in the form,
@@ -67,14 +72,50 @@ async fn picks(
     State(state): State<AppState>,
     User(user): User,
     Json(asked): Json<ListModels>,
-) -> ApiResult<Json<Picks>> {
+) -> ApiResult<Json<NamedPicks>> {
     let (base_url, key) = state
         .run(move |db| provider::whom(db, user, &asked.base_url, asked.api_key))
         .await?;
     let index = state.models_dev.index(&state.http).await;
-    Ok(Json(
-        picks::pick(&state.http, &index, &base_url, &key).await,
-    ))
+    let picks = picks::pick(&state.http, &index, &base_url, &key).await;
+    let chosen = [&picks.chat, &picks.background, &picks.images];
+    let names = names(&index, chosen.into_iter().flatten());
+    Ok(Json(NamedPicks { picks, names }))
+}
+
+/// The readable names models.dev gives of `ids`, by ID; None when it knows none.
+fn names<'a>(
+    index: &Index,
+    ids: impl Iterator<Item = &'a String>,
+) -> Option<BTreeMap<String, String>> {
+    let names: BTreeMap<String, String> = ids
+        .filter_map(|id| Some((id.clone(), index.name(id)?.to_string())))
+        .collect();
+    (!names.is_empty()).then_some(names)
+}
+
+/// A provider's list with the names of the models models.dev knows.
+#[derive(Serialize, TS)]
+#[ts(export)]
+pub struct NamedModels {
+    #[serde(flatten)]
+    #[ts(flatten)]
+    pub listed: ListedModels,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub names: Option<BTreeMap<String, String>>,
+}
+
+/// First run's picks with the names of the models models.dev knows.
+#[derive(Serialize, TS)]
+#[ts(export)]
+pub struct NamedPicks {
+    #[serde(flatten)]
+    #[ts(flatten)]
+    pub picks: Picks,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub names: Option<BTreeMap<String, String>>,
 }
 
 /// Asks the model in the form a small question, at the form's address and

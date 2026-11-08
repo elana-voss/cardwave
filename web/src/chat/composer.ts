@@ -149,12 +149,15 @@ export function typed(s: Screen): void {
 }
 
 /**
- * Sets whether the lines of "+" that write can be picked: not while something is written, and Improve not without
- * words; whether "Start a coding task" is there (`codingOffered`); and whether Send can be pressed.
+ * Sets whether the lines of "+" that write are there (not in a chat without a character, which has no one to write
+ * as) and can be picked (not while something is written, and Improve not without words); whether "Start a coding
+ * task" is there (`codingOffered`); and whether Send can be pressed.
  */
 function offer(s: Screen, c: Composer): void {
   c.codingLine.hidden = !codingOffered(s);
-  c.writeLine.off = !idle(s) || !s.view || s.view.characters.length === 0;
+  const alone = !s.view || s.view.characters.length === 0;
+  for (const line of [c.writeLine, c.improveLine, c.pictureLine]) line.hidden = alone;
+  c.writeLine.off = !idle(s);
   c.improveLine.off = c.writeLine.off || !s.input.value.trim();
   c.pictureLine.off = c.writeLine.off;
   // Send is grey while there is nothing to send; Stop never is.

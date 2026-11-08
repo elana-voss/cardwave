@@ -127,9 +127,9 @@ test("the chat is exported with its messages and the versions of the swiped repl
   expect(lines[0]).toMatchObject({ character_name: NAME });
   expect(lines.slice(1).map((line) => [line.name, line.mes])).toEqual([
     [NAME, GREETING],
-    ["User", QUESTION],
+    ["Guest", QUESTION],
     [NAME, FIRST],
-    ["User", "Thank you."],
+    ["Guest", "Thank you."],
     [NAME, "Mind the third step."],
   ]);
   expect(lines[3].swipes).toEqual([FIRST, SECOND]);

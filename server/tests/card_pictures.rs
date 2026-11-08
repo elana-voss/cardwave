@@ -221,7 +221,7 @@ async fn a_picture_is_made_of_what_the_worker_model_wrote_of_the_whole_card() {
     assert_eq!(picture["source"], "made");
     assert_eq!(picture["in_use"], false);
     // Asked upright, of the words as they stand.
-    let body: Value = serde_json::from_str(&image.asked()[2].body).unwrap();
+    let body: Value = serde_json::from_str(&image.asked().last().unwrap().body).unwrap();
     assert_eq!(body["size"], "1024x1536");
     assert_eq!(body["prompt"], "a keeper on a stormy cliff, oil painting");
     // It joins the card's pictures and is shown only when it is chosen.
@@ -293,5 +293,11 @@ async fn a_card_longer_than_the_worker_model_reads_is_not_sent_for_its_picture()
         said["error"].as_str().unwrap().contains("longer than"),
         "{said}"
     );
-    assert!(worker.asked().is_empty());
+    // Only the key check at add asked, never the worker model.
+    assert!(
+        worker
+            .asked()
+            .iter()
+            .all(|asked| !asked.path.contains("chat"))
+    );
 }

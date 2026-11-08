@@ -32,8 +32,8 @@ last_chat_title: string | null,
  */
 names: Array<string>, 
 /**
- * The classifier's terms and the user's own tags once the card is
- * described, until then the file's.
+ * The classifier's terms, the user's own tags and the file's once the
+ * card is described, each once; until then the file's.
  */
 tags: Array<string>, 
 /**

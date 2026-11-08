@@ -5,9 +5,10 @@
 //! /api/dictation` stops and removes it, these three this computer's account's
 //! alone; each step is pushed as `dictation` to every account. `POST
 //! /api/dictation/hear` takes a WAV of at most `LONGEST` bytes and answers its
-//! words, for every account.
+//! words, for every account; `POST /api/dictation/load` loads the model ahead,
+//! as the page's microphone is pressed (a first load took 26 s in the smoke test).
 //!
-//! The model loads at the first hearing (2 s measured), hears one recording at a
+//! The model loads then or at the first hearing (2 s measured), hears one recording at a
 //! time, and is let go `IDLE` after the last (it holds 0.9 GB of the graphics
 //! card); a failed load is tried again at the next hearing. Loading and hearing
 //! run on a blocking thread, the model taken out of its lock and put back by a
@@ -42,6 +43,7 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/api/dictation", get(show).delete(remove))
         .route("/api/dictation/download", post(download).delete(cancel))
+        .route("/api/dictation/load", post(load))
         .route(
             "/api/dictation/hear",
             post(hear).layer(DefaultBodyLimit::max(LONGEST)),
@@ -166,14 +168,40 @@ async fn hear(State(state): State<AppState>, User(_): User, wav: Bytes) -> ApiRe
     Ok(Json(Heard { text }))
 }
 
+/// Loads the model ahead, as the microphone is pressed, so the first
+/// recording is heard as fast as the next; answers at once. Nothing where
+/// it is not downloaded or is loaded already.
+async fn load(State(state): State<AppState>, User(_): User) -> axum::http::StatusCode {
+    tokio::spawn(async move {
+        if let Err(failure) = use_model(state, None).await {
+            tracing::warn!("dictation: the model cannot be loaded ahead: {failure:#}");
+        }
+    });
+    axum::http::StatusCode::NO_CONTENT
+}
+
 /// Hears `samples` by the model, loaded if it is not; the model is let go
 /// `IDLE` after the last hearing.
 async fn hear_in(state: AppState, samples: Vec<f32>) -> anyhow::Result<String> {
+    use_model(state, Some(samples))
+        .await?
+        .unwrap_or_else(|| Ok(String::new()))
+}
+
+/// The model loaded if it is not, and `samples` heard by it where given;
+/// the model is let go `IDLE` after this, unless it is used again meanwhile.
+async fn use_model(
+    state: AppState,
+    samples: Option<Vec<f32>>,
+) -> anyhow::Result<Option<anyhow::Result<String>>> {
     let dictation = &state.dictation;
     let mut running = dictation.running.lock().await;
     // Checked under the lock, as a removal may have taken it first.
     if !dictation.ready() {
-        return Err(Fail::new(Code::DictationNotSetUp).into());
+        return match samples {
+            Some(_) => Err(Fail::new(Code::DictationNotSetUp).into()),
+            None => Ok(None),
+        };
     }
     let (setup, folder) = (dictation.setup.clone(), dictation.folder.clone());
     let loaded = running.take();
@@ -183,7 +211,7 @@ async fn hear_in(state: AppState, samples: Vec<f32>) -> anyhow::Result<String> {
             Some(model) => model,
             None => Model::load(&setup, &folder)?,
         };
-        let text = model.hear(&samples);
+        let text = samples.map(|samples| model.hear(&samples));
         anyhow::Ok((model, text))
     })
     .await??;
@@ -199,7 +227,7 @@ async fn hear_in(state: AppState, samples: Vec<f32>) -> anyhow::Result<String> {
             drop(running.take());
         }
     });
-    text
+    Ok(text)
 }
 
 // This file's routes as tools (`tools::app`), which build.rs lists.

@@ -20,4 +20,8 @@ done: number, failed: number,
 /**
  * Why the last of those failed, as the UI words it.
  */
-failure: ErrorBody | null, };
+failure: ErrorBody | null, 
+/**
+ * Whether Stop cut the run short, dropping characters that waited.
+ */
+stopped: boolean, };

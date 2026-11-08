@@ -270,8 +270,8 @@ kinds-type-unknown = { " " }· 不確定能否做到
 kinds-address = { " " }· { $address }
 kinds-this-computer = 這台電腦上的程式
 kinds-asking-the-provider = 正在詢問供應商……
-kinds-no-such-model = 沒有這個模型
 kinds-own-on-this-computer = { $own } · 在這台電腦上
+kinds-none-of-the-kind = 你的供應商都沒有能做這件事的模型。
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -281,6 +281,7 @@ language-line-follows-the-app = 跟隨應用程式的語言，直到你更改為
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = 未設定
+models-group-no-longer-offered = 你的服務商已不再提供此模型：請另選一個。
 
 ## provider-form (models/provider-form.ts)
 
@@ -386,7 +387,7 @@ memories-so = 所以{ $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · 在這台電腦的顯示卡上 · 下載 { $bytes }
+dictation-setup-on-this-computers-graphics = { $name } · 在這台電腦的顯示卡上 · { $bytes }
 dictation-setup-the-microphone-beside-the = 之後，訊息框旁的麥克風會把你說的話寫下來，支援中文、英文等多種語言。你說的話只留在這台電腦上。
 
 ## make-voice (voice/make-voice.ts)

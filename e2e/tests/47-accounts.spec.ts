@@ -34,6 +34,13 @@ test("an account added in Server signs in on another device, which reaches the a
   // Of an account but this computer's nothing is said under its name.
   await expect(line(page, "Ada").locator(".item-text")).toHaveText("Ada");
   await expect(line(page, "local")).toContainText("This computer · can add and remove accounts");
+  // Delete account asks on its own line under the account's, whose name stays whole; Cancel gives the menu back.
+  await line(page, "Ada").getByRole("button", { name: /^More/ }).click();
+  await page.getByRole("menuitem", { name: "Delete account" }).click();
+  await expect(line(page, "Ada").locator("+ .confirm")).toContainText("Delete this account with its characters");
+  await expect(line(page, "Ada").locator(".confirm")).toHaveCount(0);
+  await button(page, "Cancel").click();
+  await expect(line(page, "Ada").getByRole("button", { name: /^More/ })).toBeFocused();
 
   const elsewhere = await browser.newContext();
   const phone = await elsewhere.newPage();

@@ -283,7 +283,7 @@ impl Toolbox {
         if self.tools.web {
             all.push(tool(
                 "web_search",
-                "Searches the web. Gives the first results, each with its title, address and a few words of it.",
+                "Searches the web. Gives the first results, each with its title, address and a few words of it. Call it whenever the user asks you to search or look something up, and for anything that may have changed since your training (versions, news, prices, dates): do not answer those from memory.",
                 json!({ "query": { "type": "string", "description": "What to search for" } }),
             ));
             all.push(tool(
@@ -312,7 +312,7 @@ impl Toolbox {
         if self.commands() {
             all.push(tool(
                 "run_command",
-                "Runs a command with cmd.exe on Windows in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. PowerShell's commands for files do not work there; cmd's do.",
+                "Runs a command with cmd.exe on Windows in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. PowerShell's commands for files do not work there; cmd's do. `dir` is refused there: list the files with `for %f in (*) do @echo %f`.",
                 json!({ "command": { "type": "string", "description": "The command line" } }),
             ));
         }
@@ -326,7 +326,7 @@ impl Toolbox {
         if self.pictures.is_some() {
             all.push(tool(
                 "make_picture",
-                "Makes a picture with the image model; it is shown in the chat after your message.",
+                "Makes a picture with the image model; it is shown in the chat after your message. The only way to send a picture: one told of in words is not sent.",
                 json!({ "description": { "type": "string", "description": "What the picture shows, in a few sentences" } }),
             ));
         }

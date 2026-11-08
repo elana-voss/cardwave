@@ -57,6 +57,7 @@ card-modes-mode = मोड
 card-modes-the-texts-below-are = नीचे के टेक्स्ट वही हैं जिन्हें यह मोड इस्तेमाल करता है।
 card-modes-a-mode-needs-a = मोड का नाम होना ज़रूरी है।
 card-modes-default = { " " }· डिफ़ॉल्ट
+card-modes-first-default = रोलप्ले
 card-modes-make-default = डिफ़ॉल्ट बनाएँ
 card-modes-add-mode = चैट का एक और तरीका जोड़ें
 card-modes-modes = मोड
@@ -70,11 +71,12 @@ card-page-card-info = कार्ड की जानकारी
 
 card-picture-card-picture = किरदार की तस्वीर
 card-picture-card-picture-click-to = किरदार की तस्वीर: तस्वीर चुनने के लिए क्लिक करें, या यहाँ छोड़ें
+card-picture-card-picture-tap-to = किरदार की तस्वीर: तस्वीर चुनने के लिए टैप करें
 card-picture-make-a-picture = तस्वीर बनाएँ
 card-picture-name-first = पहले किरदार का नाम लिखें
 card-picture-earlier-pictures = पुरानी तस्वीरें
-card-picture-click-to-choose-a = तस्वीर चुनने के लिए क्लिक करें, या यहाँ छोड़ें
 card-picture-click-or-drop-a = तस्वीर चुनने के लिए क्लिक करें, या यहाँ छोड़ें
+card-picture-tap-to-choose = तस्वीर चुनने के लिए टैप करें
 card-picture-drop-to-use-this = यह तस्वीर इस्तेमाल करने के लिए छोड़ें
 card-picture-set-up-an-image = पहले एक इमेज मॉडल सेट करें, यहाँ:{ " " }
 card-picture-settings-models = सेटिंग्स › मॉडल
@@ -232,7 +234,7 @@ character-saved = सेव हो गया
 character-name-in-the-chat = चैट में नाम
 character-name = शीर्षक वाला किरदार
 character-creator = बनाने वाले
-character-creator-2 = बनाने वाले
+character-add-creator = बनाने वाला जोड़ें
 character-modes = मोड…
 character-add-mode = चैट का एक और तरीका जोड़ें…
 character-add-mode-sub = किसी दूसरी तरह की चैट के लिए अलग टेक्स्ट, जैसे कोई कहानी
@@ -613,7 +615,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = अभी कोई लोरबुक नहीं। एक बनाएँ, या लोरबुक फ़ाइल इंपोर्ट करें (SillyTavern world info, .json)। चैट अपने साइड पैनल में एक लोरबुक साथ रखती है।
+lorebooks-no-lorebooks-yet-make = अभी कोई लोरबुक नहीं। एक बनाएँ, या लोरबुक फ़ाइल इंपोर्ट करें (SillyTavern world info, .json)। चैट के विकल्प › लोरबुक जोड़ें से चैट एक लोरबुक साथ रखती है।
 lorebooks-entries = { $count ->
     [one] { $count } एंट्री
    *[other] { $count } एंट्रियाँ

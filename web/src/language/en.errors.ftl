@@ -33,8 +33,8 @@ error-remote-sign-in-off = This account cannot sign in from another device. Turn
 error-no-password-on = No password is on.
 error-no-password-set = No password is set for this account.
 error-password-kept = An account on this computer keeps a password: it signs in with it.
-error-account-busy = Cardwave is still writing a reply or reading characters; try again when it is done.
-error-restore-busy = Cardwave is still writing a reply or reading characters; try again when it is done.
+error-account-busy = Cardwave is still at work for this account: a reply, a picture, a coding task, a new character, reading characters or a chat's memory; try again when it is done.
+error-restore-busy = Cardwave is still at work: a reply, a picture, a coding task, a new character, reading characters or a chat's memory; try again when it is done.
 error-backup-needs-password = A backup needs a password.
 
 ## What is asked of
@@ -76,8 +76,12 @@ error-chat-busy = A reply is being written in this chat; stop it first.
 error-no-provider = No provider is set up yet. Add one in Settings › Providers.
 error-provider-refused = { $refusal ->
     [key] The provider did not take the key: check it in Settings › Providers.
+    [paid] The provider wants payment for this: add credit, or pick a model your plan includes.
     [busy] The provider has no credit left or is busy: try again later.
     [down] The provider is not answering: try again later.
+    [fault] The provider had a fault on its side: { $reason } Try again later.
+    [no_model] The provider no longer offers this model: choose another in Settings › Models.
+    [too_long] The message is too long for this model: shorten it, or pick a model that takes more in Settings › Models.
    *[other] The provider refused this: { $reason }
 }
 error-model-declined = { $model } declined to write this. Change the message, or pick another model.
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] A picture is a PNG, JPEG or WebP file.
     [backup] This file is not a Cardwave backup.
     [backup_damaged] This backup is damaged.
+    [backup_newer] This backup was made by a newer Cardwave. Update Cardwave to restore it.
     [backup_key] This backup is damaged: its key cannot be read.
     [base64] That is not base64.
     [base64_file] { $name } is not base64.
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] The picture server's answer cannot be read.
     [picture_unreadable] The picture cannot be read.
     [png] Not a PNG file.
+    [no_card] This file holds no character card.
     [png_damaged] The PNG is damaged.
+    [charx] Cardwave cannot import CHARX card files yet. Export the card as PNG or JSON instead.
     [provider_address] The address must be a plain web address such as https://api.openai.com/v1.
     [provider_website] Give the provider's website as a name such as example.com.
     [recording_format] The recording's format cannot be read.

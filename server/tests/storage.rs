@@ -245,7 +245,7 @@ fn a_chat_opens_with_the_picked_greeting_and_keeps_the_others_as_swipes() {
     assert_eq!(
         texts(&swipes),
         [
-            "\"You picked a night for it, User.\"",
+            "\"You picked a night for it, Guest.\"",
             "Hold the lamp. Don't ask."
         ]
     );
@@ -254,7 +254,7 @@ fn a_chat_opens_with_the_picked_greeting_and_keeps_the_others_as_swipes() {
     let other = chat_with_mira(&scratch, None, 7);
     assert_eq!(
         texts(&chats::path(db, me, other).unwrap()),
-        ["\"You picked a night for it, User.\""]
+        ["\"You picked a night for it, Guest.\""]
     );
 }
 
@@ -573,14 +573,14 @@ fn a_stored_chat_builds_the_prompt() {
         ("Ines", "A surveyor.")
     );
 
-    // Without a persona the user is just "User".
+    // Without a persona the user is just "Guest".
     chats::set_persona(db, me, chat_id, None).unwrap();
     assert_eq!(
         chats::prompt_inputs(db, me, chat_id, None)
             .unwrap()
             .state
             .persona_name,
-        "User"
+        "Guest"
     );
 }
 
@@ -733,13 +733,15 @@ fn a_chat_takes_nothing_else_while_a_reply_is_generated() {
     chats::append(db, me, chat_id, &user("Hello?")).unwrap();
 
     // A reply that nothing writes any more is ended when asked for, like one
-    // cut off by a restart.
+    // cut off by a restart; the user stopped it, so it does not say it broke off.
     let lost = chats::append(db, me, chat_id, &writing("")).unwrap();
     chats::write_reply(db, me, lost, "Hel").unwrap();
     let sam = users::create(db, "sam").unwrap();
     assert!(chats::finish_abandoned(db, sam, chat_id).is_err());
     let ended = chats::finish_abandoned(db, me, chat_id).unwrap();
-    assert!(matches!(&ended[..], [(id, Some(kept))] if *id == lost && kept.message.complete));
+    assert!(
+        matches!(&ended[..], [(id, Some(kept))] if *id == lost && kept.message.complete && !kept.broke_off)
+    );
     assert!(chats::finish_abandoned(db, me, chat_id).unwrap().is_empty());
     chats::append(db, me, chat_id, &user("Hello again?")).unwrap();
 }
@@ -768,6 +770,8 @@ fn replies_cut_off_by_a_restart_are_ended() {
         (half, true)
     );
     assert_eq!(texts(&cut)[1..], ["Why tonight?", "The cause"]);
+    // It says it broke off, as a reply whose connection broke says so as it ends.
+    assert!(chats::view(db, me, half).unwrap().broke_off);
     let emptied = chats::path(db, me, other).unwrap();
     assert_eq!((emptied.len(), emptied.last().unwrap().id), (2, asked));
     assert_eq!(

@@ -59,6 +59,7 @@ card-modes-mode = モード
 card-modes-the-texts-below-are = 下のテキストは、このモードが使うものです。
 card-modes-a-mode-needs-a = モードには名前が必要です。
 card-modes-default = ・デフォルト
+card-modes-first-default = ロールプレイ
 card-modes-make-default = デフォルトにする
 card-modes-add-mode = チャットのしかたを追加
 card-modes-modes = モード
@@ -72,11 +73,12 @@ card-page-card-info = カード情報
 
 card-picture-card-picture = キャラクターの画像
 card-picture-card-picture-click-to = キャラクター画像：クリックして画像を選ぶか、ここにドロップ
+card-picture-card-picture-tap-to = キャラクター画像：タップして画像を選ぶ
 card-picture-make-a-picture = 画像を作る
 card-picture-name-first = 先にキャラクターに名前を付けてください
 card-picture-earlier-pictures = 以前の画像
-card-picture-click-to-choose-a = クリックして画像を選ぶか、ここにドロップ
 card-picture-click-or-drop-a = クリックして画像を選ぶか、ここにドロップ
+card-picture-tap-to-choose = タップして画像を選ぶ
 card-picture-drop-to-use-this = ドロップしてこの画像を使う
 card-picture-set-up-an-image = 先に画像モデルを設定してください：
 card-picture-settings-models = 設定 › モデル
@@ -234,7 +236,7 @@ character-saved = 保存しました
 character-name-in-the-chat = チャットでの名前
 character-name = タイトルのキャラクター
 character-creator = 作者
-character-creator-2 = 作者
+character-add-creator = 作者を追加
 character-modes = モード…
 character-add-mode = チャットのしかたを追加…
 character-add-mode-sub = 物語など、別の種類のチャットのための別のテキスト
@@ -603,7 +605,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = ロアブックはまだありません。作成するか、ロアブックのファイル（SillyTavernのWorld Info、.json）をインポートしてください。チャットではサイドパネルで使えます。
+lorebooks-no-lorebooks-yet-make = ロアブックはまだありません。作成するか、ロアブックのファイル（SillyTavernのWorld Info、.json）をインポートしてください。チャットでは「チャットのオプション › ロアブックを追加」で使えます。
 lorebooks-entries = { $count ->
    *[other] { $count }件のエントリー
 }

@@ -7,11 +7,12 @@
 // password, which signs it in, and has "Change" alone. `startScreen` is what main.ts shows in the app's place
 // while the server waits for the password, and accounts.ts where a page signs in: the logo, "Back" where one was
 // picked of several, the account's letter and name, the field and "Open" (or "Sign in"), which gives the password
-// to `take`, and under it what a forgotten password means; a wrong one is said under the field. `passwordIs`
+// to `take`, and under it what a forgotten password means; a wrong one is said under the field, and the wait after
+// too many counts down there and clears itself. `passwordIs`
 // says whether this computer's account has one on (main.ts at the start, the dialog at a change), and
 // `watchPassword` passes it on to the account's menu, whose "Lock" goes by it.
 import { wording } from "../language/language";
-import { setPassword } from "../api/client";
+import { ApiError, setPassword } from "../api/client";
 import type { ChangePassword } from "../api/generated/ChangePassword";
 import { announce, el, noticeBox, oneAtATime } from "../dom";
 import { formDialog } from "../dialogs";
@@ -135,10 +136,30 @@ export function startScreen(
   const wrong = noticeBox();
   const form = el("form", { className: "start-form flex f-col g-8" }, el("div", { className: "flex g-8" }, input, el("button", { type: "submit", className: "btn btn-primary" }, action)), wrong);
   const run = oneAtATime(wrong);
+  let wait = 0;
+  let ticking: ReturnType<typeof setInterval> | undefined;
+  const tick = () => {
+    wait -= 1;
+    const said = wrong.querySelector(".error");
+    if (wait > 0 && said) {
+      said.textContent = wording("error-too-many-tries", { seconds: wait });
+      return;
+    }
+    clearInterval(ticking);
+    if (wait <= 0) wrong.replaceChildren();
+  };
   form.onsubmit = (event) => {
     event.preventDefault();
-    void run(() => take(input.value)).then((done) => {
+    clearInterval(ticking);
+    wait = 0;
+    const tried = () =>
+      take(input.value).catch((error: unknown) => {
+        if (error instanceof ApiError && error.code === "too_many_tries") wait = Number(error.details?.seconds) || 0;
+        throw error;
+      });
+    void run(tried).then((done) => {
       if (!done) input.select();
+      if (wait > 0) ticking = setInterval(tick, 1000);
     });
   };
   const called = name ?? wording("app-name");

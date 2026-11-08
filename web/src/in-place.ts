@@ -24,6 +24,8 @@ export interface InPlace {
   editing?(on: boolean): void;
   /** Whether it cannot be written in now. */
   blocked?(): boolean;
+  /** Whether, not written in, it shows a button to begin (Add tags): then it is a button to who cannot see it. */
+  button?(): boolean;
   /** The name what is written and not saved yet is kept by (unsaved.ts), to come back when it is written in again. */
   keep?(): string | null;
 }
@@ -39,9 +41,14 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
     field = null;
     node.tabIndex = 0;
     node.replaceChildren(...place.show());
+    if (place.button?.()) node.role = "button";
+    else node.removeAttribute("role");
   };
   const begin = () => {
     if (field || place.blocked?.()) return;
+    // Begun from elsewhere (a menu's Rename), Escape and Enter give the focus back there.
+    const active = document.activeElement;
+    const from = active instanceof HTMLElement && active !== document.body && !node.contains(active) ? active : null;
     const now = place.multiline ? el("textarea", { className: "in-place", rows: 1 }) : el("input", { className: "in-place", autocomplete: "off" });
     field = now;
     now.value = place.value();
@@ -67,6 +74,7 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
       if (event.key === "Escape" || (event.key === "Enter" && !place.multiline)) {
         event.preventDefault();
         now.blur();
+        if (from?.isConnected) from.focus();
       }
     };
     now.onblur = () => {
@@ -80,6 +88,7 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
       read();
     };
     node.tabIndex = -1;
+    node.removeAttribute("role");
     node.replaceChildren(now);
     place.editing?.(true);
     grow();

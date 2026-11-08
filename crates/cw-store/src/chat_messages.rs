@@ -81,6 +81,7 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
         attachments: json_column(row, 18, "attachments")?.unwrap_or_default(),
         provider: row.get(19)?,
         times: json_column(row, 20, "times")?,
+        broke_off: row.get(21)?,
     })
 }
 
@@ -150,7 +151,7 @@ fn remove_empty(tx: &Connection, message_id: i64, head: Option<i64>) -> rusqlite
 }
 
 /// Ends the incomplete messages of one chat or of all. Returns their ids,
-/// each with whether the message is still there.
+/// each with whether the message is still there. Those of all say they broke off.
 fn end_unwritten(
     conn: &mut Connection,
     chat_id: Option<i64>,
@@ -171,9 +172,10 @@ fn end_unwritten(
     for (message_id, content, head) in unwritten {
         let kept = !content.trim().is_empty();
         if kept {
+            // Only a start's end of every chat is a cut-off; one chat's is the user's Stop.
             tx.execute(
-                "update messages set complete = 1 where id = ?1",
-                [message_id],
+                "update messages set complete = 1, broke_off = ?2 where id = ?1",
+                params![message_id, chat_id.is_none()],
             )?;
         } else {
             remove_empty(&tx, message_id, head)?;
@@ -193,7 +195,7 @@ pub(super) const MESSAGE_COLUMNS: &str =
 /// picture (`images`), the context its prompt took, the coding task whose
 /// card it is (`coding`), the model it was asked of, its prompt's parts'
 /// tokens, the pages and files it read, its attachments (JSON), whom its
-/// model was asked of and how long it took.
+/// model was asked of, how long it took and whether the app's close broke it off.
 const VIEW_COLUMNS: &str = "(select group_concat(s.id order by s.id) from messages s
      where s.chat_id = m.chat_id and s.parent_id is m.parent_id and s.deleted_from is null), m.lore,
      (select json_group_array(x.value) from (select j.value from memory_blocks b, json_each(b.saved) j
@@ -202,7 +204,7 @@ const VIEW_COLUMNS: &str = "(select group_concat(s.id order by s.id) from messag
      (select t.id from coding_tasks t where t.message_id = m.id), m.model, m.sent, m.reads,
      (select json_group_array(json_object('id', a.id, 'name', a.name, 'picture', json(a.picture)))
       from (select id, name, case when picture is null then 'false' else 'true' end picture
-            from attachments where message_id = m.id order by id) a), m.provider, m.times";
+            from attachments where message_id = m.id order by id) a), m.provider, m.times, m.broke_off";
 
 /// The messages from `?1` up to the first one of its chat, with their distance.
 pub(super) const ANCESTORS: &str = "with recursive path (id, distance) as (
@@ -565,7 +567,7 @@ impl Storage for Db {
                 return Ok(Err(anyhow!(Fail::said(Code::NotPossible, "the reply has no text to continue").with("what", "continue_no_text"))));
             }
             tx.execute(
-                "update messages set complete = 0 where id = ?1",
+                "update messages set complete = 0, broke_off = 0 where id = ?1",
                 [newest.id],
             )?;
             tx.commit()?;

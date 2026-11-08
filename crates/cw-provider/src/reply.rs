@@ -1,6 +1,8 @@
 //! A reply on its way from the model, read piece by piece: its words, its
 //! thinking, the tools it calls and how it ended ([`Ending`]), whether streamed
-//! or sent as one document.
+//! or sent as one document. A stream whose server hangs up without saying
+//! its end (`[DONE]` or a finish reason) broke off, which is an error after
+//! the words it brought.
 
 use anyhow::{Context, bail, ensure};
 use cw_core::{Code, Fail};
@@ -21,6 +23,12 @@ pub struct Reply {
     /// Bytes of text handed out so far.
     length: usize,
     done: bool,
+    /// Whether the stream said its end, by `[DONE]` or a finish reason; one
+    /// that hangs up without it broke off.
+    said_end: bool,
+    /// Whether the stream sent an event at all: a page that is no stream (a website's) sent no text, it did not
+    /// break off.
+    heard: bool,
     /// What went wrong after text that had yet to be handed out.
     failed: Option<anyhow::Error>,
     /// The tools the model calls, as far as they have come.
@@ -79,6 +87,8 @@ impl Reply {
             unread: Vec::new(),
             length: 0,
             done: false,
+            said_end: false,
+            heard: false,
             failed: None,
             calls: Vec::new(),
             splitter: thinking::Splitter::default(),
@@ -148,6 +158,11 @@ impl Reply {
                 return Ok(Some(piece));
             }
             if end {
+                ensure!(
+                    !self.streamed || self.said_end || !self.heard,
+                    Fail::said(Code::ModelAnswer, "the reply broke off")
+                        .with("what", "reply_broke_off")
+                );
                 return Ok(None);
             }
             match self.response.chunk().await.context(
@@ -201,7 +216,10 @@ impl Reply {
             };
             if data == "[DONE]" {
                 self.done = true;
-            } else if let Ok(event) = serde_json::from_str(data) {
+                self.said_end = true;
+            } else if let Ok(event) = serde_json::from_str::<Value>(data) {
+                self.heard = true;
+                self.said_end |= !event["choices"][0]["finish_reason"].is_null();
                 read_event(
                     &event,
                     (&mut *text, &mut *thinking),

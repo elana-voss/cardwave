@@ -125,7 +125,11 @@ async fn writing_makes_a_card_and_says_what_to_offer_for_the_persona() {
     assert_eq!(status, 201, "{written}");
     let id = written["card_id"].as_i64().unwrap();
     assert!(written["persona"].is_array());
-    assert_eq!(server.get(&format!("/api/cards/{id}")).await.0, 200);
+    let (status, card) = server.get(&format!("/api/cards/{id}")).await;
+    assert_eq!(status, 200);
+    // The card's creator is the account that answered the interview.
+    let (_, account) = server.get("/api/account").await;
+    assert_eq!(card["creator"], account["name"], "{card}");
 }
 
 #[tokio::test]

@@ -12,7 +12,7 @@ import type { FitModel } from "../api/generated/FitModel";
 import type { FitView } from "../api/generated/FitView";
 import type { PickedView } from "../api/generated/PickedView";
 import { el, failure } from "../dom";
-import { askFirst, menu } from "../dialogs";
+import { askUnder, menu } from "../dialogs";
 import { bytes } from "../format";
 import { percent } from "./downloaded";
 import { kindOf } from "./kinds";
@@ -95,17 +95,12 @@ function there(page: FitPage, model: FitModel): HTMLElement {
   const more = menu(wording("fit-models-model-menu-delete", { name: model.name }), [{ label: wording("common-delete"), shape: "trash", danger: true, action: () => ask() }]);
   const tools = el("div", { className: "provider-tools lv" }, more);
   function ask(): void {
-    const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
-    tools.replaceWith(asking);
     const remove = () =>
       void page.attempt(async () => {
         page.fitted(await removeFitModel(model.file));
         page.say(wording("fit-models-model-deleted", { name: model.name }));
       });
-    askFirst(asking, wording("fit-models-delete-this-model", { size: bytes(model.size) }), wording("common-delete"), remove, () => {
-      asking.replaceWith(tools);
-      more.querySelector("button")!.focus();
-    });
+    askUnder(tools, more.querySelector("button")!, wording("fit-models-delete-this-model", { size: bytes(model.size) }), wording("common-delete"), remove);
   }
   return tools;
 }

@@ -71,6 +71,8 @@ pub struct MessageView {
     pub reads: Vec<Read>,
     /// What the user attached to it, the first first (`attachments`).
     pub attachments: Vec<crate::attachments::Attachment>,
+    /// Whether it was cut off by the app's close, which the chat says when it is opened.
+    pub broke_off: bool,
 }
 
 /// The tokens of a reply's prompt, part by part ("Sent to the AI"): the
@@ -125,7 +127,7 @@ pub trait Storage {
     /// The newest of all messages below `message_id`, that one too.
     fn newest_below(&self, message_id: i64) -> anyhow::Result<i64>;
     /// Ends the incomplete messages of one chat or of all: their IDs, each
-    /// with whether the message is still there.
+    /// with whether the message is still there. Those of all say they broke off.
     fn end_unwritten(&self, chat_id: Option<i64>) -> anyhow::Result<Vec<(i64, bool)>>;
     /// Keeps on a reply the lorebook entries its prompt held (JSON), the
     /// context it took and its parts' tokens ([`Sent`], JSON).
@@ -339,7 +341,7 @@ pub fn finish_interrupted(db: &dyn Storage) -> anyhow::Result<()> {
 }
 
 /// Ends the reply in a chat that nothing writes any more, as
-/// [`finish_interrupted`] does. Returns each message ended, as it is now, or
+/// [`finish_interrupted`] does, but not as broken off: the user stopped it. Returns each message ended, as it is now, or
 /// without it when it was removed.
 pub fn finish_abandoned(
     db: &dyn crate::chats::Storage,

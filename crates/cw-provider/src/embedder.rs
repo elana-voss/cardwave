@@ -2,6 +2,8 @@
 //! same thing. Its file comes by cw-modelfiles; llama.cpp's `llama-server` runs
 //! it (`Running::start`) on a free local port, the graphics card first (Vulkan),
 //! else the processor.
+//! It is started with a key of its own (`--api-key`; only `/health` answers
+//! without it), so no web page in the user's browser can use it.
 //! The process ends with the server (on Windows a job object); its log is
 //! `llama-server.log` in the data folder, made anew at each start.
 //! `Running` counts a text's tokens (`tokens`), cuts it into pieces of at most
@@ -68,6 +70,13 @@ impl Setup {
     }
 }
 
+/// A key of 32 random bytes in hex, for one start of `llama-server`.
+fn new_key() -> anyhow::Result<String> {
+    let mut bytes = [0u8; 32];
+    getrandom::fill(&mut bytes).map_err(|e| anyhow::anyhow!("no random source: {e}"))?;
+    Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())
+}
+
 /// Where the model's file is kept in the data folder.
 pub fn model_path(data_dir: &Path) -> PathBuf {
     data_dir.join("models").join(format!("{MODEL}.gguf"))
@@ -77,6 +86,9 @@ pub fn model_path(data_dir: &Path) -> PathBuf {
 pub struct Running {
     /// Its address, up to the path.
     url: String,
+    /// The key it was started with, made anew at each start, which every
+    /// request to it sends: without it any web page could use the model.
+    key: String,
     /// Its process, until it is stopped; none for a stand-in.
     process: std::sync::Mutex<Option<Process>>,
 }
@@ -123,6 +135,7 @@ impl Running {
             Runner::At(url) => {
                 return Ok(Self {
                     url: url.trim_end_matches('/').to_string(),
+                    key: new_key()?,
                     process: std::sync::Mutex::default(),
                 });
             }
@@ -145,6 +158,11 @@ impl Running {
         &self.url
     }
 
+    /// The `Authorization` header's value every request to it sends.
+    pub(crate) fn authorization(&self) -> String {
+        format!("Bearer {}", self.key)
+    }
+
     /// Starts `llama-server` from `folder` on a free port, on the processor
     /// alone where `cpu` says so.
     async fn run(
@@ -158,6 +176,7 @@ impl Running {
         let port = std::net::TcpListener::bind("127.0.0.1:0")?
             .local_addr()?
             .port();
+        let key = new_key()?;
         let mut command = tokio::process::Command::new(folder.join("llama-server"));
         command
             .arg("--model")
@@ -165,6 +184,7 @@ impl Running {
             .args(args)
             .args(["--parallel", "1", "--host", "127.0.0.1"])
             .args(["--port", &port.to_string()])
+            .args(["--api-key", &key])
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(std::fs::File::create(log)?)
@@ -211,6 +231,7 @@ impl Running {
         }
         Ok(Self {
             url,
+            key,
             process: std::sync::Mutex::new(Some(Process {
                 child,
                 #[cfg(windows)]
@@ -279,6 +300,7 @@ impl Running {
     async fn ask(&self, http: &Client, path: &str, body: Value) -> anyhow::Result<Value> {
         let answer = http
             .post(format!("{}{path}", self.url))
+            .header("Authorization", self.authorization())
             .json(&body)
             .send()
             .await
@@ -463,4 +485,45 @@ struct Process {
     child: tokio::process::Child,
     #[cfg(windows)]
     _job: cw_platform::sys::Job,
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::{Read, Write};
+
+    use super::*;
+
+    /// A one-request server that answers `{"tokens":[1,2]}` and hands back
+    /// the request it was sent.
+    fn one_request() -> (String, std::thread::JoinHandle<String>) {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("a port");
+        let url = format!("http://{}", listener.local_addr().expect("its address"));
+        let served = std::thread::spawn(move || {
+            let (mut stream, _) = listener.accept().expect("a request");
+            let mut buffer = [0u8; 4096];
+            let read = stream.read(&mut buffer).expect("the request");
+            let body = r#"{"tokens":[1,2]}"#;
+            let answer = format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len()
+            );
+            stream.write_all(answer.as_bytes()).expect("the answer");
+            String::from_utf8_lossy(&buffer[..read]).to_lowercase()
+        });
+        (url, served)
+    }
+
+    #[tokio::test]
+    async fn every_request_sends_the_key_it_was_started_with() {
+        let (url, served) = one_request();
+        let http = Client::new();
+        let running = Running::launch(&http, &Runner::At(url), Path::new("m"), Path::new("l"), &[])
+            .await
+            .expect("the stand-in");
+        assert_eq!(running.tokens(&http, "hello").await.expect("tokens"), 2);
+        let request = served.join().expect("the server");
+        let header = format!("authorization: {}", running.authorization()).to_lowercase();
+        assert!(request.contains(&header), "{request}");
+        assert_eq!(running.key.len(), 64);
+    }
 }

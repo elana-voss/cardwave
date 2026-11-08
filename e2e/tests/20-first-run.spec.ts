@@ -8,7 +8,7 @@ import { startFakeSearch, type FakeSearch } from "../fake-search";
 
 // First run in its four steps: the key, the models the server picked from it (tested), the folder of cards (the
 // one offered, the server's stand-in for the user's Documents, `e2e/server.mjs`, given one card) and the downloads of the voice and the
-// search model (the voice switched on beside the search model), gone through to "Open Cardwave"; the provider is a stand-in (`api`), the downloads come from
+// search model (step 4 asks first; the voice switched on there beside the search model), gone through to "Open Cardwave"; the provider is a stand-in (`api`), the downloads come from
 // fake-search.ts (`search`); no test asks a provider. The first test downloads both, so the second's "Skip"
 // leads into the app at once.
 //
@@ -54,7 +54,7 @@ const state = (page: Page, name: string) => line(page, name).locator(".download-
 const wrong = (page: Page) => line(page, "Chat").getByRole("alert");
 const change = (page: Page) => button(page, "Change the chat model");
 const retry = (page: Page) => button(page, "Try again");
-const confirm = (page: Page) => button(page, "Confirm");
+const confirm = (page: Page) => button(page, "Continue");
 const openApp = (page: Page) => button(page, "Open Cardwave");
 const picker = (page: Page, title: string) => page.getByRole("dialog", { name: title });
 /** Picks `id` in the picker called `title`. */
@@ -131,28 +131,26 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   await expect(page.getByLabel("Address", { exact: true })).toBeFocused();
 
   await toModels(page);
-  // Step 2: a line for the key, with whose it is and how it ends, a line of each kind, and what the main button downloads.
+  // Step 2: a line for the key, with whose it is and how it ends, and a line of each kind; the downloads are step 4's.
   await expect(where(page)).toHaveText("Setup · step 2 of 4");
-  await expect(about(page)).toHaveText("Cardwave picked these from your provider's models. Change any of them now or later in Settings.");
+  await expect(about(page)).toHaveText("Your models are ready. Change any of them now or later in Settings.");
   await expect(page.locator(".setup form")).toBeHidden();
-  await expect(page.locator(".setup .item-label:visible")).toHaveText(["Provider", "Chat", "Helper model", "Images", "Voice", "Search", "Language the AI writes in"]);
+  await expect(page.locator(".setup .item-label:visible")).toHaveText(["Provider", "Chat", "Helper model", "Images", "Language the AI writes in"]);
   await expect(says(page, "Provider")).toHaveText(`${host(api)} · ····4f2a`);
-  // The list left no choice, so its model is the chat model, unasked, and it was asked the small question.
-  await expect(says(page, "Chat")).toHaveText("tide-1 · tested");
+  // The list left no choice, so its model is the chat model, unasked, and it answered the small question; by its
+  // readable name, which models.dev does not give for it.
+  await expect(says(page, "Chat")).toHaveText("Tide 1 · works");
   // The list has no cheap model beside it, so the chat model does the app's own work too.
   await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
-  await expect(says(page, "Search")).toHaveText("Finds characters by what they are about · 320 KB download · recommended");
-  await expect(says(page, "Voice")).toHaveText(/ · 320 KB download$/);
-  // The search model is chosen at first, the voice is an option.
-  await expect(page.getByRole("switch", { name: "Download the search model" })).toBeChecked();
-  await expect(page.getByRole("switch", { name: "Download the voice" })).not.toBeChecked();
-  await expect(page.locator(".setup-total")).toHaveText("To download: Search.");
-  await page.getByRole("switch", { name: "Download the search model" }).click();
-  await expect(page.locator(".setup-total")).toHaveText("Nothing is downloaded now. Search and Voice can be set up later in Settings.");
-  await page.getByRole("switch", { name: "Download the search model" }).click();
-  await page.getByRole("switch", { name: "Download the voice" }).click();
-  await expect(page.locator(".setup-total")).toHaveText("To download: Voice and Search.");
-  await expect(page.getByRole("button", { name: "Download (640 KB)" })).toBeVisible();
+  await expect(page.getByRole("switch")).toHaveCount(0);
+  await expect(confirm(page)).toBeEnabled();
+  // In a window 1440 x 720 the step fits without scrolling (the owner: Option B).
+  await page.setViewportSize({ width: 1440, height: 720 });
+  expect(await confirm(page).evaluate((node) => [...function* () { for (let at: Element | null = node; at; at = at.parentElement) yield at; }()].every((at) => at.scrollHeight <= at.clientHeight || getComputedStyle(at).overflowY === "visible"))).toBe(true);
+  expect(await page.evaluate(() => document.scrollingElement!.scrollHeight <= innerHeight)).toBe(true);
+  const end = await confirm(page).boundingBox();
+  expect(end!.y + end!.height).toBeLessThanOrEqual(720);
+  await page.setViewportSize({ width: 1280, height: 720 });
   await expect(change(page)).toBeVisible();
   await expect(retry(page)).toBeHidden();
   await expect(wrong(page)).toHaveCount(0);
@@ -165,13 +163,13 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   await expect(heading(page)).toHaveText("Provider");
   await expect(key(page)).toHaveValue(KEY);
   await button(page, "Continue").click();
-  await expect(says(page, "Chat")).toHaveText("tide-1 · tested");
+  await expect(says(page, "Chat")).toHaveText("Tide 1 · works");
   // Nothing is stored before the main button is pressed.
   expect(await (await request.get("/api/provider")).json()).toEqual(stored);
 
-  // The main button, "Download (640 KB)" here, leads to the folder of cards, which is only held until setup ends: nothing is imported yet.
+  // "Continue" leads to the folder of cards, which is only held until setup ends: nothing is imported yet.
   search.hold();
-  await button(page, "Download (640 KB)").click();
+  await confirm(page).click();
   await expect(heading(page)).toHaveText("Cards");
   await expect(where(page)).toHaveText("Setup · step 3 of 4");
   await expect(about(page)).toHaveText("If you have character card files (PNG or JSON from other apps), Cardwave can bring them in from a folder.");
@@ -187,14 +185,37 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   await expect(page.getByRole("dialog", { name: "Folder" })).toBeHidden();
   await expect(says(page, "Cards folder")).toHaveAttribute("title", cards);
   expect((await (await request.get("/api/settings")).json()).card_folder.folder).toBeNull();
-  // "Import from this folder" leads to the downloads, one after the other; the app may open at any time.
+  // "Import from this folder" leads to the downloads, which ask first: the search model is chosen at first, the
+  // voice is an option, each line without "Change" (the voice is changed in Settings).
   await button(page, "Import from this folder").click();
   await expect(heading(page)).toHaveText("Downloads");
   await expect(where(page)).toHaveText("Setup · step 4 of 4");
+  await expect(about(page)).toHaveText("Optional downloads, stored on this computer. Switch off what you don't want.");
+  await expect(page.locator(".setup .item-label:visible")).toHaveText(["Search", "Voice"]);
+  await expect(says(page, "Search")).toHaveText("Finds characters by what they are about · 320 KB download · recommended");
+  await expect(says(page, "Voice")).toHaveText(/ · 320 KB download$/);
+  await expect(page.locator(".setup .item:visible").getByRole("button")).toHaveCount(0);
+  await expect(page.getByRole("switch", { name: "Download the search model" })).toBeChecked();
+  await expect(page.getByRole("switch", { name: "Download the voice" })).not.toBeChecked();
+  await expect(button(page, "Download (320 KB)")).toBeEnabled();
+  // Both off, the one button opens the app.
+  await page.getByRole("switch", { name: "Download the search model" }).click();
+  await expect(openApp(page)).toBeVisible();
+  // "Back" returns to the folder of cards, and the switches stay as they were.
+  await button(page, "Back").click();
+  await expect(heading(page)).toHaveText("Cards");
+  await button(page, "Import from this folder").click();
+  await expect(openApp(page)).toBeVisible();
+  await page.getByRole("switch", { name: "Download the search model" }).click();
+  await page.getByRole("switch", { name: "Download the voice" }).click();
+  // The button's size follows what is on; it starts the downloads, one after the other, and the app may open at any time.
+  await button(page, "Download (640 KB)").click();
+  await expect(page.getByRole("switch")).toHaveCount(0);
+  await expect(button(page, "Back")).toHaveCount(0);
   await expect(about(page)).toHaveText("You can open Cardwave now: the downloads go on, and a notice tells you when they are done.");
   await expect(page.getByText("Your cards come in from the folder once Cardwave opens.")).toBeVisible();
-  await expect(state(page, "Voice")).toHaveText(/^\d+%$/);
-  await expect(state(page, "Search")).toHaveText("Waiting");
+  await expect(state(page, "Search")).toHaveText(/^\d+%$/);
+  await expect(state(page, "Voice")).toHaveText("Waiting");
   await expect(openApp(page)).toBeEnabled();
   // A start before they are through and before "Open Cardwave" comes back to them.
   await page.unroute("**/api/provider");
@@ -225,35 +246,118 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   expect(new URL(page.url()).hash).toBe("#/chats");
 });
 
-test("first run's picks are the chat model's answer among the candidates, each tested, and “Confirm” stores the ones chosen", async ({ page }) => {
+test("a chat model that didn't answer says so in the lead and its line, holds the main button, and goes on after “Try again”", async ({ page }) => {
+  api.models(["tide-1"]);
+  api.fail(402, "No credit on this key.");
+  await open(page);
+  await toModels(page);
+  await expect(about(page)).toHaveText("The chat model didn't answer. Pick another, or try again.");
+  await expect(says(page, "Chat")).toHaveText("Tide 1 · didn't answer");
+  // Why, in the app's words for a provider that wants payment.
+  await expect(wrong(page)).toContainText("The provider wants payment for this");
+  await expect(confirm(page)).toBeDisabled();
+  await retry(page).click();
+  await expect(says(page, "Chat")).toHaveText("Tide 1 · works");
+  await expect(about(page)).toHaveText("Your models are ready. Change any of them now or later in Settings.");
+  await expect(confirm(page)).toBeEnabled();
+});
+
+/** Holds the server's answer of the picks until the function returned is called. */
+async function holdPicks(page: Page): Promise<() => void> {
+  let release = () => {};
+  const held = new Promise<void>((done) => (release = done));
+  await page.route("**/api/provider/picks", async (route) => {
+    const response = await route.fetch();
+    await held;
+    await route.fulfill({ response });
+  });
+  return release;
+}
+
+test("the picks asked before “Back” still count after “Continue” with the same key", async ({ page }) => {
+  api.models(["tide-1"]);
+  const release = await holdPicks(page);
+  await open(page);
+  await toModels(page);
+  await button(page, "Back").click();
+  await button(page, "Continue").click();
+  await expect(heading(page)).toHaveText("Models");
+  release();
+  await expect(says(page, "Chat")).toHaveText("Tide 1 · works");
+});
+
+test("a chat model chosen while the picks are on their way stays, and is not also the helper", async ({ page }) => {
+  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
+  api.next([JSON.stringify({ chat: "reef/big-2", background: "kelp/small-1", images: null })]);
+  const release = await holdPicks(page);
+  await open(page);
+  await toModels(page);
+  await button(page, "Choose the chat model").click();
+  await pick(page, "Chat model", "kelp/small-1");
+  release();
+  await expect(says(page, "Chat")).toHaveText("Small 1 · works");
+  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
+});
+
+test("a helper taken as the chat model while the picks are on their way stays so", async ({ page }) => {
+  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
+  api.next([JSON.stringify({ chat: "reef/big-2", background: "reef/big-2-mini", images: null })]);
+  const release = await holdPicks(page);
+  await open(page);
+  await toModels(page);
+  await button(page, "Choose the chat model").click();
+  await pick(page, "Chat model", "kelp/small-1");
+  await button(page, "Change the helper model").click();
+  // The chat model is ticked and marked in the list, where Enter takes the line: the button takes it.
+  await picker(page, "Helper model").getByLabel("Model", { exact: true }).fill("kelp/small-1");
+  await picker(page, "Helper model").getByRole("button", { name: "Use this model" }).click();
+  release();
+  await expect(says(page, "Chat")).toHaveText("Small 1 · works");
+  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
+});
+
+test("a helper chosen while the picks are on their way that the picks make the chat model is none", async ({ page }) => {
+  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
+  api.next([JSON.stringify({ chat: "reef/big-2", background: "kelp/small-1", images: null })]);
+  const release = await holdPicks(page);
+  await open(page);
+  await toModels(page);
+  await button(page, "Change the helper model").click();
+  await pick(page, "Helper model", "reef/big-2");
+  release();
+  await expect(says(page, "Chat")).toHaveText("Big 2 · works");
+  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
+});
+
+test("first run's picks are the chat model's answer among the candidates, each tested, and “Continue” stores the ones chosen", async ({ page }) => {
   api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
   // The rules' one chat model picks the background model among the two cheap ones.
   api.next([JSON.stringify({ chat: "reef/big-2", background: "kelp/small-1", images: null })]);
   const asked = api.asked.length;
   await open(page);
   await toModels(page);
-  await expect(says(page, "Chat")).toHaveText("reef/big-2 · tested");
-  await expect(says(page, "Helper model")).toHaveText("kelp/small-1 · tested");
+  await expect(says(page, "Chat")).toHaveText("Big 2 · works");
+  await expect(says(page, "Helper model")).toHaveText("Small 1 · works");
   const models = api.asked.slice(asked).map((question) => question.body.model);
   expect(models[0]).toBe("reef/big-2");
   expect(models.slice(1).sort()).toEqual(["kelp/small-1", "reef/big-2"]);
-  // The voice and the search model are there: nothing to download, and no switch.
-  await expect(page.locator(".setup-total")).toHaveText("");
-  await expect(page.getByRole("switch", { name: /^Download/ })).toHaveCount(0);
+  await expect(confirm(page)).toBeEnabled();
 
   // One chosen in the picker stays, whatever chat model is taken after it.
   await button(page, "Change the helper model").click();
   // The picker opens empty, the model in use ticked in its list.
   await expect(picker(page, "Helper model").getByLabel("Model", { exact: true })).toHaveValue("");
-  await expect(picker(page, "Helper model").getByRole("option", { name: "kelp/small-1" })).toHaveAttribute("aria-selected", "true");
+  // A line names the model readably, with its ID under it.
+  await expect(picker(page, "Helper model").getByRole("option", { name: "Small 1 kelp/small-1" })).toHaveAttribute("aria-selected", "true");
   await pick(page, "Helper model", "reef/big-2-mini");
-  await expect(says(page, "Helper model")).toHaveText("reef/big-2-mini · tested");
+  await expect(says(page, "Helper model")).toHaveText("Big 2 Mini · works");
   await change(page).click();
   await pick(page, "Chat model", "kelp/small-1");
-  await expect(says(page, "Chat")).toHaveText("kelp/small-1 · tested");
-  await expect(says(page, "Helper model")).toHaveText("reef/big-2-mini · tested");
+  await expect(says(page, "Chat")).toHaveText("Small 1 · works");
+  await expect(says(page, "Helper model")).toHaveText("Big 2 Mini · works");
 
-  // With the folder of cards shown, "Skip" goes on without it; with nothing to download, into the app at once.
+  // With the folder of cards shown, "Skip" goes on without it; with nothing to download (the first test downloaded
+  // both), into the app at once.
   await confirm(page).click();
   await expect(heading(page)).toHaveText("Cards");
   await button(page, "Skip").click();
@@ -268,13 +372,13 @@ test("first run's picks are the chat model's answer among the candidates, each t
   await expect(stated("Helper model")).toHaveText(`reef/big-2-mini · A program on this computer · writes summaries, tags and memories`);
 });
 
-test("in the desktop app, step 2 has the companion's figure, stored at once", async ({ page, request }) => {
-  api.models(["reef/big-2"]);
-  await page.addInitScript(() => void (window.cardwaveDesktop = { downloads: "", logs: "" }));
+test("step 1's language is its field alone, at the top right of the form above the key", async ({ page }) => {
   await open(page);
-  await toModels(page);
-  const figure = line(page, "Companion figure");
-  await expect(figure.getByRole("button", { name: "Woman" })).toHaveAttribute("aria-pressed", "true");
-  await figure.getByRole("button", { name: "Man", exact: true }).click();
-  await expect.poll(async () => (await (await request.get("/api/settings")).json()).companion.figure).toBe("man");
+  const field = page.getByRole("button", { name: "Language of the app" });
+  await expect(field).toContainText("English");
+  await expect(page.getByText("Language of the app", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Taken from this computer at first")).toHaveCount(0);
+  const [language, key] = await Promise.all([field.boundingBox(), page.getByLabel("API key", { exact: true }).boundingBox()]);
+  expect(language!.y + language!.height).toBeLessThan(key!.y);
+  expect(Math.abs(language!.x + language!.width - (key!.x + key!.width))).toBeLessThan(2);
 });

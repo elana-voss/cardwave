@@ -268,8 +268,8 @@ kinds-type-unknown = { " " }· belum tentu bisa melakukannya
 kinds-address = { " " }· { $address }
 kinds-this-computer = Program di komputer ini
 kinds-asking-the-provider = Menanyai penyedia…
-kinds-no-such-model = Model itu tidak ada
 kinds-own-on-this-computer = { $own } · di komputer ini
+kinds-none-of-the-kind = Tidak ada penyediamu yang punya model untuk ini.
 
 ## language-line (models/language-line.ts, settings/app-language.ts)
 
@@ -279,6 +279,7 @@ language-line-follows-the-app = Mengikuti bahasa aplikasi sampai kamu mengubahny
 ## models-group (models/models-group.ts)
 
 models-group-not-configured = Belum disiapkan
+models-group-no-longer-offered = Penyedia kamu tidak lagi menawarkan model ini: pilih yang lain.
 
 ## provider-form (models/provider-form.ts)
 
@@ -384,7 +385,7 @@ memories-so = jadi { $end }
 
 ## dictation-setup (voice/dictation-setup.ts)
 
-dictation-setup-on-this-computers-graphics = { $name } · di kartu grafis komputer ini · unduhan { $bytes }
+dictation-setup-on-this-computers-graphics = { $name } · di kartu grafis komputer ini · { $bytes }
 dictation-setup-the-microphone-beside-the = Mikrofon di samping kolom pesan lalu menuliskan apa yang kamu ucapkan, dalam bahasa Indonesia, Inggris, dan bahasa lain. Ucapanmu tetap di komputer ini.
 
 ## make-voice (voice/make-voice.ts)

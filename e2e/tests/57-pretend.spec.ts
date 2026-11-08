@@ -20,9 +20,9 @@ test("a pretend key sets up the pretend model in first run, and a chat gets its 
   await button(page, "Continue").click();
   await expect(page.locator(".setup h1")).toHaveText("Models");
   // Picked from the pretend model's list, and tested.
-  await expect(says(page, "Chat")).toHaveText("pretend-chat · tested");
-  await expect(says(page, "Helper model")).toHaveText("pretend-chat-mini · tested");
-  await page.getByRole("button", { name: /^(Confirm|Download \(.+\))$/ }).click();
+  await expect(says(page, "Chat")).toHaveText("Pretend Chat · works");
+  await expect(says(page, "Helper model")).toHaveText("Pretend Chat Mini · works");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page.locator(".setup h1")).toHaveText("Cards");
   await button(page, "Skip").click();
   // The downloads of step 4 are not this spec's: the chat is opened by its address.

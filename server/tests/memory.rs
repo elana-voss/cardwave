@@ -213,7 +213,7 @@ async fn found(server: &Server, query: &str) -> Vec<(String, Value)> {
 }
 
 /// What the helper finds of the sister: a fact and an event, which Mira and the user know.
-const SISTER: &str = "PRESENT: Mira, User\nFACTS:\nuser | sister | The user's sister is called Ana | personal | Mira, User | current\nEVENTS:\nThe user said Ana comes tonight | Ana visits | Mira waits | Mira, User | personal";
+const SISTER: &str = "PRESENT: Mira, Guest\nFACTS:\nuser | sister | The user's sister is called Ana | personal | Mira, Guest | current\nEVENTS:\nThe user said Ana comes tonight | Ana visits | Mira waits | Mira, Guest | personal";
 
 #[tokio::test]
 async fn a_block_of_20_messages_is_read_by_the_worker_model_and_its_note_stands_before_the_newest_message()
@@ -237,7 +237,7 @@ async fn a_block_of_20_messages_is_read_by_the_worker_model_and_its_note_stands_
         "{asked}"
     );
     assert!(
-        asked.contains("[19] User: My sister Ana is coming tonight.\n[20] Mira: Hello."),
+        asked.contains("[19] Guest: My sister Ana is coming tonight.\n[20] Mira: Hello."),
         "{asked}"
     );
     // What it saved shows on the reply whose end had it read.
@@ -267,8 +267,8 @@ async fn a_block_of_20_messages_is_read_by_the_worker_model_and_its_note_stands_
             &json!("fact"),
             &json!(saved[0]),
             &json!("current"),
-            &json!(["mira", "user"]),
-            &json!(["Mira", "User"]),
+            &json!(["mira", "guest"]),
+            &json!(["Mira", "Guest"]),
             &view["chat"]["id"]
         )
     );
@@ -296,8 +296,8 @@ async fn a_block_of_20_messages_is_read_by_the_worker_model_and_its_note_stands_
     reply(&server, &fake, &mut socket, &chat, json!({})).await;
     passes(&fake, 2).await;
     let asked = fake.noted().passes[1].clone();
-    assert!(asked.contains("[21] User: Will you like her?"), "{asked}");
-    assert!(!asked.contains("[19] User: My sister"), "{asked}");
+    assert!(asked.contains("[21] Guest: Will you like her?"), "{asked}");
+    assert!(!asked.contains("[19] Guest: My sister"), "{asked}");
 }
 
 #[tokio::test]
@@ -456,13 +456,39 @@ async fn a_memory_names_when_what_it_was_read_from_was_said() {
         .unwrap()
         .as_millis() as i64;
     fill(&server, &chat, 19).await;
-    fake.finds("PRESENT: Mira, User\nFACTS:\nuser | fear | The user is afraid of the dark | personal | Mira, User | current\nEVENTS:");
+    fake.finds("PRESENT: Mira, Guest\nFACTS:\nuser | fear | The user is afraid of the dark | personal | Mira, Guest | current\nEVENTS:");
     reply(&server, &fake, &mut socket, &chat, json!({})).await;
     remembered(&mut socket).await;
     let said_at = memories(&server).await[0]["said_at"].as_i64().unwrap();
     assert!(
         before - 1000 <= said_at && said_at <= before + 60_000,
         "{said_at} {before}"
+    );
+}
+
+#[tokio::test]
+async fn a_memory_names_the_user_without_a_persona_in_the_apps_language_of_now() {
+    let server = start().await;
+    let fake = Fake::start().await;
+    setup(&server, &fake).await;
+    let chat = chat(&server).await;
+    let mut socket = server.listen().await;
+    fill(&server, &chat, 19).await;
+    fake.finds("PRESENT: Mira, Guest\nFACTS:\nuser | fear | Guest is afraid of the dark | personal | Mira, Guest | current\nEVENTS:");
+    reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    remembered(&mut socket).await;
+    let german = json!({ "app_language": "de" });
+    let (status, body) = server
+        .call(Method::PATCH, "/api/settings", Some(german))
+        .await;
+    assert_eq!(status, 200, "{body}");
+    let listed = &memories(&server).await[0];
+    assert_eq!(
+        (&listed["text"], &listed["known_to"]),
+        (
+            &json!("Gast is afraid of the dark"),
+            &json!(["mira", "gast"])
+        )
     );
 }
 
@@ -474,7 +500,7 @@ async fn a_memory_is_changed_deleted_and_put_back() {
     let chat = chat(&server).await;
     let mut socket = server.listen().await;
     fill(&server, &chat, 19).await;
-    fake.finds("PRESENT: Mira, User\nFACTS:\nuser | fear | The user is afraid of the dark | personal | Mira, User | current\nEVENTS:");
+    fake.finds("PRESENT: Mira, Guest\nFACTS:\nuser | fear | The user is afraid of the dark | personal | Mira, Guest | current\nEVENTS:");
     reply(&server, &fake, &mut socket, &chat, json!({})).await;
     remembered(&mut socket).await;
     let id = memories(&server).await[0]["id"]
@@ -499,7 +525,7 @@ async fn a_memory_is_changed_deleted_and_put_back() {
         (
             200,
             &json!("The user fears the dark."),
-            &json!(["mira", "user"])
+            &json!(["mira", "guest"])
         )
     );
     remembered(&mut socket).await;
@@ -508,9 +534,9 @@ async fn a_memory_is_changed_deleted_and_put_back() {
     assert_eq!(found(&server, "fears").await.len(), 1);
     // Only who may know it count.
     let (status, changed) = server
-        .patch(&path, json!({ "known_to": ["User", "Odo"] }))
+        .patch(&path, json!({ "known_to": ["Guest", "Odo"] }))
         .await;
-    assert_eq!((status, &changed["known_to"]), (200, &json!(["user"])));
+    assert_eq!((status, &changed["known_to"]), (200, &json!(["guest"])));
     assert_eq!(server.patch(&path, json!({ "text": " " })).await.0, 400);
     let missing = ["/api/memories/999.1", "/api/memories/x"];
     for missing in missing {
@@ -565,7 +591,7 @@ async fn memories_are_listed_newest_first_and_an_undo_after_a_later_block_puts_o
     remembered(&mut socket).await;
     // A later block, read while the fact is deleted, sets a fact after the event.
     fill(&server, &chat, 39).await;
-    fake.finds("PRESENT: Mira, User\nFACTS:\nuser | job | The user bakes bread | personal | Mira, User | current\nEVENTS:");
+    fake.finds("PRESENT: Mira, Guest\nFACTS:\nuser | job | The user bakes bread | personal | Mira, Guest | current\nEVENTS:");
     reply(&server, &fake, &mut socket, &chat, json!({})).await;
     remembered(&mut socket).await;
     assert_eq!(

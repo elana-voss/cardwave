@@ -60,7 +60,7 @@ fn the_picks_are_composed_into_the_cards_texts() {
     .unwrap();
     assert_eq!(
         generator::description(&not_human.looks(never)),
-        "{{char}} is not human, female (she/her), though {{char}} looks fifty or older, slim, with short white hair."
+        "{{char}} is not human, female (she/her), looking fifty or older, slim, with short white hair."
     );
     assert!(generator::personality(&not_human).starts_with("{{char}} keeps to the middle"));
 }
@@ -86,7 +86,7 @@ fn each_look_left_any_is_picked_and_the_others_kept() {
     );
     assert_eq!(
         generator::description(&looks),
-        "{{char}} is not human, non-binary (they/them), though {{char}} looks fifty or older, slim, with long white hair."
+        "{{char}} is not human, non-binary (they/them), looking fifty or older, slim, with long white hair."
     );
 }
 

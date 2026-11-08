@@ -5,7 +5,7 @@
 // `.item.preset` and their tools `.reveal.preset-tools`. The first line is "Default", the card's own prompt,
 // which no preset in use means; its menu has Duplicate alone, which makes an empty preset. A preset's line says
 // under its name what it changes (`about`); its menu has Edit, which opens its editor (views/prompt-preset.ts),
-// Duplicate and Delete, which asks in the tools' place and cannot be taken back. "New preset" opens the editor
+// Duplicate and Delete, which asks under its line and cannot be taken back. "New preset" opens the editor
 // empty. "Use" says so in the notice, with Undo back to the one in use before. The list is read anew after
 // every change, and the line acted on has the focus then (`after`, by `data-preset`, "default" for Default).
 import { wording } from "../language/language";
@@ -13,7 +13,7 @@ import { deletePromptPreset, duplicateDefaultPrompt, duplicatePromptPreset, list
 import type { PromptPreset } from "../api/generated/PromptPreset";
 import type { PromptTexts } from "../api/generated/PromptTexts";
 import { announce, el, item, latest, noticeBox, oneAtATime } from "../dom";
-import { askFirst, menu } from "../dialogs";
+import { askUnder, menu } from "../dialogs";
 import { icon } from "../icons";
 
 /** The address of a prompt preset's editor; `new` for one not made yet. */
@@ -104,7 +104,7 @@ export function promptPresetsGroup(): { node: HTMLElement; read(): Promise<void>
     ]);
     const { line: node, tools } = line(preset.name, preset.in_use, about(preset), String(preset.id), more, preset.id);
 
-    /** Asks in the tools' place whether the preset is to be deleted, which cannot be taken back. */
+    /** Asks under the line whether the preset is to be deleted, which cannot be taken back. */
     function ask(): void {
       const remove = () =>
         void attempt(async () => {
@@ -112,12 +112,7 @@ export function promptPresetsGroup(): { node: HTMLElement; read(): Promise<void>
           await after(null);
           say(wording("preset-deleted", { name: preset.name }));
         });
-      const asking = el("div", { className: "confirm flex ai-c jc-e g-8" });
-      tools.replaceWith(asking);
-      askFirst(asking, wording("preset-delete-ask"), wording("common-delete"), remove, () => {
-        asking.replaceWith(tools);
-        more.querySelector("button")!.focus();
-      });
+      askUnder(tools, more.querySelector("button")!, wording("preset-delete-ask"), wording("common-delete"), remove);
     }
     return node;
   }

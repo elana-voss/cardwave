@@ -11,7 +11,7 @@ describe("the page Providers", () => {
   });
 
   it("has a line Thinking under a model that thinks, or whose thinking was turned off", () => {
-    const picked = (thinking: string) => ({ kind: "chat" as const, provider_id: 1, model: "m", thinking });
+    const picked = (thinking: string) => ({ kind: "chat" as const, provider_id: 1, model: "m", thinking, gone: false });
     expect(thinkingSays(picked("on"), true, "OpenRouter")).toBe("The model thinks before it replies");
     expect(thinkingSays(picked("on"), false, "OpenRouter")).toBeNull();
     expect(thinkingSays(picked("off"), false, "OpenRouter")).toBe("The model replies without thinking first");

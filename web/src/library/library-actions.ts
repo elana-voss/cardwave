@@ -9,6 +9,7 @@
 // names on several lines, and scrolling from `--menu-long` on; `exportChatLine`, the menu line "Export" of a
 // chat, and `exported`, which hands a file over to be saved and words the notice, for a card and a chat;
 // `documentItem`, the menu line "Add a document" of a card; `documentKind`, what a document is by its file's ending.
+import { isArt } from "../art";
 import { addCardDocument, cardThumbnailUrl, changeCard, exportCard, exportChat, getSettings, startChat, type Download } from "../api/client";
 import type { CardSummary } from "../api/generated/CardSummary";
 import type { DocumentView } from "../api/generated/DocumentView";
@@ -61,9 +62,19 @@ export function documentKind(name: string): string {
   return ending === "md" || ending === "markdown" ? wording("library-actions-kind-markdown") : wording("library-actions-kind-text");
 }
 
-/** A card's picture as a line of a list draws it (`.cover`, or `size`, e.g. `cover-sm`), asked for in the size made for that. */
-export const cover = (versionId: number, size = ""): HTMLImageElement =>
-  el("img", { className: `cover ${size}`.trim(), src: cardThumbnailUrl(versionId, "row"), alt: "", loading: "lazy" });
+/**
+ * A card's picture as a line of a list draws it (`.cover`, or `size`, e.g. `cover-sm`), asked for in the size made
+ * for that; a card without art gets a plain grey box in its place (`.cover-blank`), as a line keeps its picture's room.
+ */
+export function cover(versionId: number, size = ""): HTMLImageElement {
+  const shown = el("img", { className: `cover ${size}`.trim(), src: cardThumbnailUrl(versionId, "row"), alt: "", loading: "lazy" });
+  const blank = () => shown.replaceWith(el("span", { className: ["cover", size, "cover-blank"].filter(Boolean).join(" ") }));
+  shown.onload = () => {
+    if (!isArt(shown)) blank();
+  };
+  shown.onerror = blank;
+  return shown;
+}
 
 /**
  * The star that makes an item a favorite or takes that back. `set` changes the

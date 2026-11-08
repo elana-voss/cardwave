@@ -87,6 +87,21 @@ impl Storage for Db {
         })?)
     }
 
+    fn message_documents(
+        &self,
+        user: i64,
+        message_id: i64,
+    ) -> anyhow::Result<Vec<(i64, String, String)>> {
+        Ok(self.with(|conn| {
+            conn.prepare(
+                "select d.id, d.name, d.text from attachments a join documents d on d.id = a.document_id
+                 where a.message_id = ?1 and a.user_id = ?2 and d.deleted = 0 order by a.id",
+            )?
+            .query_map(params![message_id, user], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
+            .collect()
+        })?)
+    }
+
     fn purge_waiting(&self) -> anyhow::Result<()> {
         self.with(|conn| conn.execute("delete from attachments where message_id is null", []))?;
         Ok(())

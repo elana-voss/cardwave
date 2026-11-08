@@ -73,11 +73,23 @@ pub fn is_openrouter(base_url: &str) -> bool {
     })
 }
 
+/// The API of a cloud provider known by its host, which is never a ComfyUI or a Forge: asked so at each
+/// picture, it would add two round trips (each up to `PROBE_LIMIT`) before the picture is asked for.
+fn by_host(base_url: &str) -> Option<ImageApi> {
+    if is_openrouter(base_url) {
+        Some(ImageApi::OpenRouter)
+    } else if is_nanogpt(base_url) {
+        Some(ImageApi::OpenAi)
+    } else {
+        None
+    }
+}
+
 /// Which API the address speaks, asked with `key`: a ComfyUI, an
 /// Automatic1111 or a Forge behind a server that asks for one.
 pub async fn api_of(http: &Client, base_url: &str, key: &str) -> ImageApi {
-    if is_openrouter(base_url) {
-        return ImageApi::OpenRouter;
+    if let Some(api) = by_host(base_url) {
+        return api;
     }
     let stats =
         send(keyed(http.get(format!("{base_url}/system_stats")), key).timeout(PROBE_LIMIT)).await;
@@ -157,8 +169,14 @@ pub(crate) async fn listed_at(
                 Limits::default(),
             )
             .await?;
+            // Its list holds also upscalers, editors and the like.
             Ok(ListedModels {
-                models: listed.models.into_iter().map(|(id, _)| id).collect(),
+                models: listed
+                    .models
+                    .into_iter()
+                    .filter(|(id, said)| said.from_words(id))
+                    .map(|(id, _)| id)
+                    .collect(),
                 more: listed.more,
             })
         }
@@ -271,4 +289,22 @@ pub(crate) async fn workflows(http: &Client, base: &str, key: &str) -> anyhow::R
         .collect();
     names.sort_by_cached_key(|name| name.to_lowercase());
     Ok(names)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_cloud_host_known_by_its_name_is_not_asked_whether_it_is_a_comfyui_or_a_forge() {
+        assert_eq!(
+            by_host("https://openrouter.ai/api/v1"),
+            Some(ImageApi::OpenRouter)
+        );
+        assert_eq!(
+            by_host("https://nano-gpt.com/api/v1"),
+            Some(ImageApi::OpenAi)
+        );
+        assert_eq!(by_host("http://127.0.0.1:8188"), None);
+    }
 }

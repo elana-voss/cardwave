@@ -3,7 +3,8 @@
 //! `pieces` that the search model reads in the background after the cards
 //! (`find/reader.rs`), and before a reply the pieces nearest its newest
 //! messages go into its prompt (`excerpts`, asked by `api/memory.rs`'s
-//! `recall` with the same vector as the memories). A chat's documents serve
+//! `recall` with the same vector as the memories), after those attached to the
+//! message the reply answers, which go from their start (`given`). A chat's documents serve
 //! its replies, a card's every reply its character writes (`for_reply`).
 //! Knowledge › Documents: `list`, `delete` (kept for its Undo, `restore`,
 //! until the server starts again, `purge_deleted`).
@@ -248,6 +249,46 @@ fn cut(line: &str) -> Vec<&str> {
         parts.push(rest);
     }
     parts
+}
+
+/// What a reply is given of the documents: those attached to the message it
+/// answers (`attached`: ID, name, text) from their start, as the user means
+/// them whatever the search model makes of the question; then of the other
+/// `read` pieces those near `query` ([`excerpts`]), where the search model
+/// made one; all in at most `budget` tokens. None where none is.
+pub fn given(
+    attached: &[(i64, String, String)],
+    query: Option<&[f32]>,
+    read: Vec<Piece>,
+    budget: usize,
+) -> Option<String> {
+    let mut given = Vec::new();
+    let mut used = 0;
+    for (_, name, text) in attached {
+        let head = format!("From \"{name}\":");
+        let mut parts = vec![head.clone()];
+        used += tokens::estimate(&head);
+        for part in pieces(text) {
+            let size = tokens::estimate(&part);
+            if used + size > budget {
+                break;
+            }
+            used += size;
+            parts.push(part);
+        }
+        if parts.len() > 1 {
+            given.push(parts.join("\n"));
+        }
+    }
+    let others: Vec<Piece> = read
+        .into_iter()
+        .filter(|piece| !attached.iter().any(|(id, ..)| *id == piece.document))
+        .collect();
+    if let Some(near) = query.and_then(|query| excerpts(query, others, budget.saturating_sub(used)))
+    {
+        given.push(near);
+    }
+    (!given.is_empty()).then(|| given.join("\n\n"))
 }
 
 /// What a reply is given of `pieces`: the `EXCERPTS` nearest the vector of

@@ -7,8 +7,19 @@
 .setup-actions > .btn-primary {
   padding: 0 var(--s22);
 }
-.setup-total {
-  margin-top: calc(-1 * var(--s12));
+/* Step 2's one spinner, before the lead's words and alone in a line still open (Fable's design of 2026-11-08). */
+.setup .spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+.setup-head .spinner {
+  margin-right: var(--s8);
+}
+/* At least the window's height, not held to it: a step taller than the window scrolls with its bottom gap below
+   the last buttons, instead of running over it (the owner: the window's foot sat flush with them). */
+.setup.fr-main {
+  align-self: flex-start;
+  min-height: 100%;
 }
 /* A download's state at its line's right, in a column as wide in each line, right after its bar's end. */
 .download-state {

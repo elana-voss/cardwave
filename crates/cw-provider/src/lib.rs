@@ -31,6 +31,7 @@ pub mod places;
 pub mod presets;
 pub mod pretend;
 pub mod reply;
+pub(crate) mod subscription;
 pub(crate) mod suggested;
 pub mod thinking;
 
@@ -80,26 +81,47 @@ pub const NAME_LIMIT: usize = 60;
 pub const NOT_SET_UP: Fail = Fail::new(Code::NoProvider);
 
 /// A provider refused a request, with its status and what it said; `whose`
-/// names what was asked ("the model's server"). Its `error` names the status
+/// names what was asked ("the model's server"), logged. Its `error` names the status
 /// with its reason ("429 Too Many Requests"); its details name `whose` and
-/// the `refusal` by the UI's words, which tell the user what to do.
+/// the `refusal` by the UI's words, which tell the user what to do: by the
+/// status, and for a model gone or a message too long by the provider's words.
 pub fn refused(whose: &'static str, status: u16, reason: String) -> Fail {
     let named = cw_platform::http::StatusCode::from_u16(status)
         .map_or(status.to_string(), |s| s.to_string());
+    let words = reason.to_lowercase();
+    let says = |any: &[&str]| any.iter().any(|said| words.contains(said));
     let refusal = match status {
         401 | 403 => "key",
-        402 | 429 => "busy",
-        500..=599 => "down",
+        402 => "paid",
+        429 => "busy",
+        502..=504 => "down",
+        500..=599 => "fault",
+        400 | 404 | 413 | 422
+            if says(&[
+                "context length",
+                "context_length",
+                "context window",
+                "too long",
+            ]) =>
+        {
+            "too_long"
+        }
+        400 | 404
+            if says(&["model_not_found", "no such model", "model not found"])
+                || (words.contains("model") && says(&["does not exist", "not found"])) =>
+        {
+            "no_model"
+        }
         _ => "other",
     };
-    Fail::said(
-        Code::ProviderRefused,
-        format!("{whose} answered {named}: {reason}"),
-    )
-    .with("whose", ui_name(whose))
-    .with("refusal", refusal)
-    .with("status", status)
-    .with("reason", reason)
+    // Logged, as the user is told only the UI's words for it.
+    let said = format!("{whose} answered {named}: {reason}");
+    tracing::warn!("{said}");
+    Fail::said(Code::ProviderRefused, said)
+        .with("whose", ui_name(whose))
+        .with("refusal", refusal)
+        .with("status", status)
+        .with("reason", reason)
 }
 
 /// `whose` (a failure's English words for what was asked) as the UI's words name it.
@@ -123,6 +145,13 @@ pub fn refusal_of(failure: &anyhow::Error) -> Option<(u16, Fail)> {
     outer
         .chain(chained)
         .find_map(|fail| Some((status(fail)?, fail.clone())))
+}
+
+/// Whether `failure` is the provider saying it no longer offers the model ([`refused`]'s "no_model").
+pub fn no_longer_offered(failure: &anyhow::Error) -> bool {
+    refusal_of(failure).is_some_and(|(_, fail)| {
+        matches!(fail.details.get("refusal"), Some(Detail::Text(said)) if said == "no_model")
+    })
 }
 
 /// What goes along with a prompt. A value left unset is not sent, so the
@@ -854,13 +883,33 @@ mod tests {
         for (status, why) in [
             (401, "key"),
             (403, "key"),
-            (402, "busy"),
+            (402, "paid"),
             (429, "busy"),
             (503, "down"),
+            (500, "fault"),
             (404, "other"),
         ] {
             let fail = crate::refused("the model's server", status, "no".into());
             assert_eq!(detail(&fail, "refusal"), text(why), "{status}");
+            assert_eq!(detail(&fail, "whose"), text("model_server"));
+        }
+        // A model gone and a message too long are told by the provider's words.
+        for (status, said, why) in [
+            (404, "The model `fake-1` does not exist", "no_model"),
+            (400, "model_not_found: no such model", "no_model"),
+            (
+                400,
+                "This model's maximum context length is 8192 tokens.",
+                "too_long",
+            ),
+            (
+                413,
+                "prompt is too long: 210000 tokens > 200000 maximum",
+                "too_long",
+            ),
+        ] {
+            let fail = crate::refused("the model's server", status, said.into());
+            assert_eq!(detail(&fail, "refusal"), text(why), "{said}");
             assert_eq!(detail(&fail, "whose"), text("model_server"));
         }
         let voice = crate::refused("the provider's voice", 401, "no".into());

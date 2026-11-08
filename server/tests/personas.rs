@@ -263,7 +263,7 @@ fn a_chat_keeps_its_persona_in_the_trash_until_that_is_deleted_for_good() {
             chat_persona(&scratch, other),
             user_name().as_str()
         ),
-        (None, None, "User")
+        (None, None, "Guest")
     );
     let left: Option<i64> = db
         .with(|conn| {
@@ -562,7 +562,7 @@ async fn a_new_chat_starts_with_the_default_persona_and_a_chat_shows_its_persona
     );
     assert_eq!(
         view["messages"][0]["content"],
-        "\"You picked a night for it, User.\""
+        "\"You picked a night for it, Guest.\""
     );
 
     let (_, default) = server

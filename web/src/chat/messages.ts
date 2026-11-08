@@ -24,6 +24,7 @@ import { menuOn, type MenuItem } from "../dialogs";
 import { icon, type IconName } from "../icons";
 import { deleteItem } from "../library/library-actions";
 import { narrated } from "../narration";
+import { markdown } from "../card/card-text";
 import { chatLayout } from "../theme";
 import { readAloud, spoken, stopReading } from "../voice/voice";
 import { speakerOf } from "./panel";
@@ -122,7 +123,7 @@ function messageNode(s: Screen, message: MessageView, isNewest: boolean): HTMLEl
   // A picture stands in its text's place, which says to the model what it shows.
   const inside = message.picture
     ? pictureOf(s, message, () => void deleteFrom(s, message))
-    : el("div", { className: "text" }, ...(message.complete || message.content ? narrated(message.content, !message.complete) : [typingSign()]));
+    : el("div", { className: "text" }, ...(message.complete || message.content ? written(s.view!, message) : [typingSign()]));
   const bubble = el("div", { className: `bubble${message.picture ? " painted" : ""} ${mine ? "msg-indent-end" : "msg-indent"}` }, inside);
   // What the user attached stands over the bubble; a message of nothing else has no bubble.
   const attached = attachedTo(message);
@@ -137,6 +138,13 @@ function messageNode(s: Screen, message: MessageView, isNewest: boolean): HTMLEl
 
 /** A reply is on its way and has no words yet. */
 const typingSign = () => typingDots(wording("messages-writing"));
+
+/**
+ * A message's words: an assistant's (a chat without a character) as Markdown, a character's narrated. Between the
+ * blocks an empty line, as `narrated` puts it, which a copied selection keeps.
+ */
+export const written = (view: ChatView, message: MessageView): (HTMLElement | string)[] =>
+  view.characters.length ? narrated(message.content, !message.complete) : markdown(message.content, true).flatMap((block, at) => (at ? ["\n\n", block] : [block]));
 
 /**
  * The reply asked for, until its message comes: the bubble with the typing sign under who replies, where that is

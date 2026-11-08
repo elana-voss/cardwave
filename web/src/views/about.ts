@@ -79,7 +79,7 @@ export function aboutView(): View {
 
   /** Opens the panel with the texts `of` names. */
   const show = (title: string, about: string, texts: string[]) =>
-    sheet(node, title, el("div", { className: "about-license flex f-col g-8" }, el("p", { className: "meta" }, about), ...texts.map((text) => el("pre", { className: "code mono" }, text))));
+    sheet(node, title, el("div", { className: "flex f-col g-8" }, el("p", { className: "meta" }, about), ...texts.map((text) => el("pre", { className: "code mono" }, text))));
 
   /** A group whose lines stand in one box. */
   const boxed = (name: string, lines: HTMLElement[], aside?: HTMLElement) =>

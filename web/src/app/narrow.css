@@ -58,14 +58,15 @@
   dialog.sheet {
     width: 100%;
   }
-  /* A line of a box keeps its button at its right, 112 px wide, and puts a switch group or a field under its
+  /* A line of a box keeps its button at its right, 112 px wide at least, and puts a switch group or a field under its
      words, as wide as the line. */
   .group > .item {
     flex-wrap: wrap;
     row-gap: var(--s10);
   }
-  .group > .item > .btn:not(.btn-icon) {
-    width: 112px;
+  .item > .btn:not(.btn-icon) {
+    width: auto;
+    min-width: 112px;
   }
   .group > .item:has(> .selectbtn, > .seg, > .field) > .item-text {
     flex-basis: 100%;

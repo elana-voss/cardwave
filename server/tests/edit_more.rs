@@ -521,7 +521,7 @@ async fn a_card_is_edited_over_http() {
     // The page reads the text as a chat would show it.
     assert_eq!(
         detail["characters"][0]["scenario"],
-        "The causeway is dry. User may leave."
+        "The causeway is dry. Guest may leave."
     );
     let (_, again) = server.get(&path).await;
     assert_eq!(

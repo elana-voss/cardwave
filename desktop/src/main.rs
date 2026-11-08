@@ -8,7 +8,8 @@
 //! about 60 times a second (`companionCursor`, `companion_over`). The pages
 //! call the commands here by a capability given to the server's address at
 //! start (`allow_pages`). Closing the app's window leaves the app running
-//! while the companion is out (`open_main` makes it anew). The page draws the
+//! while the companion is out (`open_main` makes it anew); the last window
+//! closed ends the process, a reply under way too (`end_with_last`). The page draws the
 //! title bar and asks for the window's buttons and move (`window_*`) and the
 //! folder picker (`pick_folder`); a link opened in a new window goes to the
 //! system's browser (`outside`), and a page of the app asked for in a window
@@ -69,6 +70,11 @@ fn main() -> tauri::Result<()> {
         .manage(update::Pending::default())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(commands!(generate_handler))
+        .on_window_event(|window, event| {
+            if matches!(event, tauri::WindowEvent::Destroyed) {
+                end_with_last(window.app_handle(), window.label());
+            }
+        })
         .setup(|app| {
             let scratch = std::env::var_os(DATA_DIR_ENV).map(PathBuf::from);
             let data_dir = match &scratch {
@@ -107,6 +113,23 @@ fn main() -> tauri::Result<()> {
             Ok(())
         })
         .run(tauri::generate_context!())
+}
+
+/// Ends the app once its last window is gone. Tauri should end it then by
+/// itself, but once a window closed while a reply was written left the process
+/// serving without a window, holding the data folder (smoke test of 0.1.0):
+/// so it is asked to, and the process ends after `LAST_GRACE` all the same.
+/// A reply cut so is ended at the next start.
+fn end_with_last(app: &AppHandle, gone: &str) {
+    const LAST_GRACE: Duration = Duration::from_secs(3);
+    if app.webview_windows().keys().any(|label| label != gone) {
+        return;
+    }
+    std::thread::spawn(|| {
+        std::thread::sleep(LAST_GRACE);
+        std::process::exit(0);
+    });
+    app.exit(0);
 }
 
 /// Lets the server's pages, in the app's window and the companion's, call the

@@ -127,8 +127,8 @@ pub(crate) struct VoiceModel {
 }
 
 /// A voice to choose, with the set its recording is of, the set's license and
-/// whom it credits (`Voice::credit`); one the account made has `own` set, no
-/// language, set or license.
+/// whom it credits (`Voice::credit`); `language` is its code ("en"); one the
+/// account made has `own` set, no language, set or license.
 #[derive(Default, Serialize, TS)]
 #[ts(export)]
 pub struct VoiceChoice {
@@ -238,7 +238,7 @@ fn shipped_voices() -> Vec<VoiceChoice> {
         .map(|voice| VoiceChoice {
             id: voice.id.into(),
             name: voice.name.into(),
-            language: voice.language.into(),
+            language: voice.code().into(),
             set: voice.set.into(),
             license: voice.license.into(),
             credit: voice.credit(),

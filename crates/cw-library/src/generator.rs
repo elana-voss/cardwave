@@ -249,7 +249,7 @@ pub fn description(looks: &Looks) -> String {
                 Gender::Man => "male",
                 Gender::NonBinary => "non-binary",
             };
-            format!("not human, {gender} ({pronouns}), though {{{{char}}}} looks {age}")
+            format!("not human, {gender} ({pronouns}), looking {age}")
         }
     };
     let build = match looks.build {

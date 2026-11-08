@@ -43,10 +43,10 @@ async function chatMenu(page: Page, chat: number): Promise<void> {
 
 /** That the lines are the file of the chat with the character `name` these tests start. */
 function isChatOf(lines: any[], name: string): void {
-  expect(lines[0]).toEqual({ chat_metadata: {}, user_name: "User", character_name: name });
+  expect(lines[0]).toEqual({ chat_metadata: {}, user_name: "Guest", character_name: name });
   expect(lines.slice(1).map((line) => [line.name, line.is_user, line.mes])).toEqual([
     [name, false, `${name} says hello.`],
-    ["User", true, "Is anyone there?"],
+    ["Guest", true, "Is anyone there?"],
   ]);
 }
 

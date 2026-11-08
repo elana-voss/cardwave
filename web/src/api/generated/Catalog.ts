@@ -11,10 +11,6 @@ export type Catalog = {
  */
 models: Array<OfferedModel>, 
 /**
- * Whether the provider says what kind each is; else the kinds are guessed.
- */
-said: boolean, 
-/**
  * Whether its list did not come whole.
  */
 more: boolean, 

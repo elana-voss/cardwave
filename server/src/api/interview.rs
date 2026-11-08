@@ -283,6 +283,7 @@ async fn write(
     page: Page,
     Json(asked): Json<InterviewWrite>,
 ) -> ApiResult<(StatusCode, Json<InterviewWritten>)> {
+    let _at_work = state.at_work(user)?;
     let provider = provider_of(&state, user, asked.other_model).await?;
     let models = Asker {
         http: &state.writer_http,
@@ -300,7 +301,12 @@ async fn write(
         private: &private,
         model: &provider.model,
     };
-    let written = writer::write_card(&models, &making).await?;
+    let mut written = writer::write_card(&models, &making).await?;
+    // The card is the account's own, as a new card and a generated one are.
+    let account = state
+        .run(move |db| cw_accounts::users::account(db, user))
+        .await?;
+    written.card.creator = account.name;
     let (status, Json(made)) = super::cards::made(&state, user, &page, written.card).await?;
     super::describe::made(&state, user, made.card_id).await;
     let written = InterviewWritten {

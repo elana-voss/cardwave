@@ -166,7 +166,7 @@ fn a_chat_uses_the_card_in_the_language_the_ai_writes_in() {
     let inputs = chats::prompt_inputs(db, me, chat, None).unwrap();
     assert_eq!(
         inputs.state.messages[0].content,
-        "„Du hast dir eine Nacht ausgesucht, User.“"
+        "„Du hast dir eine Nacht ausgesucht, Guest.“"
     );
     assert!(
         inputs
@@ -228,7 +228,7 @@ fn a_chat_uses_the_card_in_the_language_the_ai_writes_in() {
     let inputs = chats::prompt_inputs(db, me, chat, None).unwrap();
     assert_eq!(
         inputs.state.messages[0].content,
-        "\"You picked a night for it, User.\""
+        "\"You picked a night for it, Guest.\""
     );
 
     let refused = ChangeSettings {
@@ -437,6 +437,19 @@ fn the_librarys_excerpt_names_the_user_in_the_apps_language() {
     settings::change(db, me, &change).unwrap();
     let listed = cards::list(db, me).unwrap();
     assert_eq!(listed[0].excerpt, "\"You picked a night for it, Você.\"");
+    let one = cards::get(db, me, card.card_id).unwrap().unwrap();
+    assert_eq!(one.excerpt, listed[0].excerpt);
+}
+
+#[test]
+fn the_librarys_excerpt_names_the_user_by_the_default_persona_where_there_is_one() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let card = cards::import(db, me, &common::card_file()).unwrap();
+    let ines = cw_library::personas::create(db, me, "Ines", "A surveyor.").unwrap();
+    cw_library::personas::set_default(db, me, ines, true).unwrap();
+    let listed = cards::list(db, me).unwrap();
+    assert_eq!(listed[0].excerpt, "\"You picked a night for it, Ines.\"");
     let one = cards::get(db, me, card.card_id).unwrap().unwrap();
     assert_eq!(one.excerpt, listed[0].excerpt);
 }

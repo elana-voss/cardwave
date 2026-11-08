@@ -33,8 +33,8 @@ error-remote-sign-in-off = Dieses Konto kann sich nicht von einem anderen Gerät
 error-no-password-on = Es ist kein Passwort eingeschaltet.
 error-no-password-set = Für dieses Konto ist kein Passwort festgelegt.
 error-password-kept = Ein Konto auf diesem Computer hat ein Passwort: Es meldet sich damit an.
-error-account-busy = Cardwave schreibt noch eine Antwort oder liest Charaktere; versuch es noch einmal, wenn das fertig ist.
-error-restore-busy = Cardwave schreibt noch eine Antwort oder liest Charaktere; versuch es noch einmal, wenn das fertig ist.
+error-account-busy = Cardwave arbeitet noch für dieses Konto: eine Antwort, ein Bild, eine Programmieraufgabe, ein neuer Charakter, das Lesen von Charakteren oder das Gedächtnis eines Chats; versuch es noch einmal, wenn das fertig ist.
+error-restore-busy = Cardwave arbeitet noch: eine Antwort, ein Bild, eine Programmieraufgabe, ein neuer Charakter, das Lesen von Charakteren oder das Gedächtnis eines Chats; versuch es noch einmal, wenn das fertig ist.
 error-backup-needs-password = Eine Sicherung braucht ein Passwort.
 
 ## Was verlangt wird
@@ -76,8 +76,12 @@ error-chat-busy = In diesem Chat wird gerade eine Antwort geschrieben; halte sie
 error-no-provider = Es ist noch kein Anbieter eingerichtet. Füge einen unter Einstellungen › Anbieter hinzu.
 error-provider-refused = { $refusal ->
     [key] Der Anbieter hat den Schlüssel nicht angenommen: Prüfe ihn unter Einstellungen › Anbieter.
+    [paid] Der Anbieter verlangt dafür eine Zahlung: Lade Guthaben auf oder wähle ein Modell, das dein Abo enthält.
     [busy] Der Anbieter hat kein Guthaben mehr oder ist ausgelastet: Versuche es später noch einmal.
     [down] Der Anbieter antwortet nicht: Versuche es später noch einmal.
+    [fault] Beim Anbieter ist ein Fehler aufgetreten: { $reason } Versuche es später noch einmal.
+    [no_model] Der Anbieter bietet dieses Modell nicht mehr an: Wähle ein anderes unter Einstellungen › Modelle.
+    [too_long] Die Nachricht ist zu lang für dieses Modell: Kürze sie oder wähle unter Einstellungen › Modelle ein Modell, das mehr aufnimmt.
    *[other] Der Anbieter hat das abgelehnt: { $reason }
 }
 error-model-declined = { $model } hat es abgelehnt, das zu schreiben. Ändere die Nachricht oder wähle ein anderes Modell.
@@ -207,6 +211,7 @@ error-not-readable = { $what ->
     [attachment_picture] Ein Bild ist eine PNG-, JPEG- oder WebP-Datei.
     [backup] Diese Datei ist keine Sicherung von Cardwave.
     [backup_damaged] Diese Sicherung ist beschädigt.
+    [backup_newer] Diese Sicherung stammt aus einem neueren Cardwave. Aktualisiere Cardwave, um sie wiederherzustellen.
     [backup_key] Diese Sicherung ist beschädigt: Ihr Schlüssel lässt sich nicht lesen.
     [base64] Das ist kein Base64.
     [base64_file] { $name } ist kein Base64.
@@ -244,7 +249,9 @@ error-not-readable = { $what ->
     [picture_server_answer] Die Antwort des Bildservers lässt sich nicht lesen.
     [picture_unreadable] Das Bild lässt sich nicht lesen.
     [png] Keine PNG-Datei.
+    [no_card] Diese Datei enthält keine Charakterkarte.
     [png_damaged] Das PNG ist beschädigt.
+    [charx] Cardwave kann CHARX-Kartendateien noch nicht importieren. Exportiere die Karte stattdessen als PNG oder JSON.
     [provider_address] Die Adresse muss eine einfache Webadresse sein, etwa https://api.openai.com/v1.
     [provider_website] Gib die Website des Anbieters als Namen an, etwa example.com.
     [recording_format] Das Format der Aufnahme lässt sich nicht lesen.

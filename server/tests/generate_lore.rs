@@ -392,11 +392,18 @@ async fn the_model_writes_the_users_message_and_betters_it() {
         let asked = provider.next().await;
         let prompt = &asked.body["messages"];
         assert!(has(prompt, "Keeper of the north light") && has(prompt, "Why tonight?"));
-        let ask = json!({ "role": "user", "content": "[Write your next reply from the point of view of User, using the user persona and the chat history so far as a guideline for the writing style of User. Don't write as Mira or system. Don't describe actions of Mira. Limit your response to approximately 1 sentence.]" });
+        let ask = json!({ "role": "user", "content": "[Write your next reply from the point of view of Guest, using the user persona and the chat history so far as a guideline for the writing style of Guest. Don't write as Mira or system. Don't describe actions of Mira. Limit your response to approximately 1 sentence.]" });
         assert!(prompt.as_array().unwrap().contains(&ask), "{prompt}");
         asked
             .answer
-            .send([&says("User: I came")[..], &says(" for the tide.")[..], DONE].concat())
+            .send(
+                [
+                    &says("Guest: I came")[..],
+                    &says(" for the tide.")[..],
+                    DONE,
+                ]
+                .concat(),
+            )
             .unwrap();
     });
     assert_eq!(answer, (200, json!({ "content": "I came for the tide." })));
@@ -420,7 +427,7 @@ async fn the_model_writes_the_users_message_and_betters_it() {
             let ask = last(prompt);
             assert!(
                 ask.contains("easier for Mira to respond")
-                    && ask.ends_with("# Current message from User:\ni want see lamp]"),
+                    && ask.ends_with("# Current message from Guest:\ni want see lamp]"),
                 "{ask}"
             );
             asked
@@ -537,7 +544,7 @@ async fn the_words_in_the_field_steer_write_for_me_and_a_continued_reply() {
             assert!(
                 has(
                     prompt,
-                    "Limit your response to approximately 1 sentence. Follow this direction from User: she asks about the lamp]"
+                    "Limit your response to approximately 1 sentence. Follow this direction from Guest: she asks about the lamp]"
                 ) && !has(prompt, "  she asks"),
                 "{prompt}"
             );
@@ -574,7 +581,7 @@ async fn the_words_in_the_field_steer_write_for_me_and_a_continued_reply() {
     let asked = provider.next().await;
     assert!(has(
         &asked.body["messages"],
-        "[Continue your last message without repeating its original content. Follow this direction from User: it grows darker]"
+        "[Continue your last message without repeating its original content. Follow this direction from Guest: it grows darker]"
     ));
     asked
         .answer

@@ -26,14 +26,15 @@ import { bytes } from "../format";
 import { failedIn, modelBox, modelLine, percent, reading } from "../models/downloaded";
 import { icon } from "../icons";
 import { readAloud, stopReading } from "./voice";
-import { wording } from "../language/language";
+import { languageName, wording } from "../language/language";
 
 
 /** The voice of `id`, or the first, which is used until one is chosen. */
 export const voiceOf = (model: VoiceModel, id: string | null): VoiceChoice => model.voices.find((voice) => voice.id === id) ?? model.voices[0];
 
 /** What a voice is, under its name: its language, that it was made from the user's recording, or a provider's its model. */
-export const voiceAbout = (voice: VoiceChoice) => (voice.own ? wording("voice-setup-made-from-your-recording") : voice.language || voice.set);
+export const voiceAbout = (voice: VoiceChoice) =>
+  voice.own ? wording("voice-setup-made-from-your-recording") : voice.language ? languageName(voice.language, voice.language) : voice.set;
 
 /** What a voice says to be tried, in the language the account's messages are read in. */
 export function sample(language: string, name: string): string {
@@ -154,7 +155,7 @@ function voiceDialog(home: HTMLElement, line: VoiceLine, closed: () => void): (m
       "label",
       { className: "voice-row item item-voice" },
       pick,
-      el("span", { className: "item-text" }, el("span", { className: "voice-name item-label" }, voice.name), el("span", { className: "meta" }, voice.own ? voiceAbout(voice) : voice.language)),
+      el("span", { className: "item-text" }, el("span", { className: "voice-name item-label" }, voice.name), el("span", { className: "meta" }, voiceAbout(voice))),
       play,
     );
     pick.onchange = () => (ticked = voice.id);

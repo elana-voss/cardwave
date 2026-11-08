@@ -54,12 +54,9 @@ html.companion-page body {
   padding: 0 var(--s14);
 }
 .compact-chat > .composer {
+  --send-size: 34px;
   margin: var(--s10);
-  padding: var(--s4) var(--s4) var(--s4) var(--s12);
-}
-.compact-chat .send {
-  width: 34px;
-  height: 34px;
+  padding: var(--s6) var(--s6) var(--s6) var(--s12);
 }
 /* What the companion says (live.ts): a chat bubble over its head, which a click goes through. */
 .companion-say {

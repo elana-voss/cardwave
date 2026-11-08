@@ -58,6 +58,7 @@ card-modes-mode = Chế độ
 card-modes-the-texts-below-are = Các văn bản bên dưới là những gì chế độ này dùng.
 card-modes-a-mode-needs-a = Chế độ cần có tên.
 card-modes-default = { " " }· mặc định
+card-modes-first-default = Nhập vai
 card-modes-make-default = Đặt làm mặc định
 card-modes-add-mode = Thêm một cách trò chuyện
 card-modes-modes = Chế độ
@@ -71,11 +72,12 @@ card-page-card-info = Thông tin thẻ
 
 card-picture-card-picture = Ảnh nhân vật
 card-picture-card-picture-click-to = Ảnh nhân vật: bấm để chọn ảnh, hoặc thả ảnh vào đây
+card-picture-card-picture-tap-to = Ảnh nhân vật: chạm để chọn ảnh
 card-picture-make-a-picture = Tạo ảnh
 card-picture-name-first = Hãy đặt tên nhân vật trước
 card-picture-earlier-pictures = Ảnh trước đây
-card-picture-click-to-choose-a = Bấm để chọn ảnh, hoặc thả ảnh vào đây
 card-picture-click-or-drop-a = Bấm để chọn ảnh, hoặc thả ảnh vào đây
+card-picture-tap-to-choose = Chạm để chọn ảnh
 card-picture-drop-to-use-this = Thả để dùng ảnh này
 card-picture-set-up-an-image = Hãy thiết lập mô hình hình ảnh trước, trong{ " " }
 card-picture-settings-models = Cài đặt › Mô hình
@@ -233,7 +235,7 @@ character-saved = Đã lưu
 character-name-in-the-chat = Tên trong cuộc trò chuyện
 character-name = nhân vật trong tiêu đề
 character-creator = Tác giả
-character-creator-2 = tác giả
+character-add-creator = Thêm tác giả
 character-modes = Chế độ…
 character-add-mode = Thêm một cách trò chuyện…
 character-add-mode-sub = Các văn bản khác cho một kiểu trò chuyện khác, như một câu chuyện
@@ -602,7 +604,7 @@ modes-note = { $depth ->
 
 ## lorebooks (views/lorebooks.ts)
 
-lorebooks-no-lorebooks-yet-make = Chưa có sổ bối cảnh nào. Hãy tạo một sổ, hoặc nhập tệp sổ bối cảnh (world info của SillyTavern, .json). Cuộc trò chuyện mang sổ theo trong bảng bên.
+lorebooks-no-lorebooks-yet-make = Chưa có sổ bối cảnh nào. Hãy tạo một sổ, hoặc nhập tệp sổ bối cảnh (world info của SillyTavern, .json). Cuộc trò chuyện mang sổ theo qua Tùy chọn cuộc trò chuyện › Thêm sổ bối cảnh.
 lorebooks-entries = { $count ->
    *[other] { $count } mục
 }

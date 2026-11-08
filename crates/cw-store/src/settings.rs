@@ -30,4 +30,16 @@ impl Storage for Db {
             Ok(settings)
         })?)
     }
+
+    fn default_persona_name(&self, user: i64) -> anyhow::Result<Option<String>> {
+        Ok(self.with(|conn| {
+            conn.query_row(
+                "select p.name from users u join personas p on p.id = u.default_persona_id \
+                 where u.id = ?1 and p.trashed_at is null",
+                [user],
+                |r| r.get(0),
+            )
+            .optional()
+        })?)
+    }
 }
