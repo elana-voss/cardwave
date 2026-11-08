@@ -13,6 +13,23 @@ use crate::memory::{
     Added, Ask, Block, Change, Entry, Helper, Kind, Remembers, Vectors, word_renamed,
 };
 
+/// A fact's subject (lower-case, `+` between the names of a relationship, in
+/// order) with the name `from` called `to`. "user", the user, is never a name
+/// renamed: the stand-in's mark (`memory::kept_form`) is not one either.
+fn subject_renamed(subject: &str, from: &str, to: &str) -> String {
+    let mut parts: Vec<&str> = subject
+        .split('+')
+        .map(|part| match part == from && part != "user" {
+            true => to,
+            false => part,
+        })
+        .collect();
+    if parts.len() > 1 {
+        parts.sort_unstable();
+    }
+    parts.join("+")
+}
+
 /// The benchmark's winner: facts-and-events-hybrid-fixed.
 pub(crate) struct HybridFixed;
 
@@ -150,6 +167,7 @@ impl Remembers for HybridFixed {
         for f in &mut state.facts {
             f.text = word_renamed(&f.text, from, to);
             names(&mut f.known_to);
+            f.subject = subject_renamed(&f.subject, &lower.0, &lower.1);
         }
         for e in &mut state.events {
             e.text = word_renamed(&e.text, from, to);
@@ -160,6 +178,54 @@ impl Remembers for HybridFixed {
                 to.clone_into(&mut said.speaker);
             }
             said.text = word_renamed(&said.text, from, to);
+        }
+        Ok(serde_json::to_string(&state)?)
+    }
+
+    fn alone(&self, state: &str, id: u64) -> anyhow::Result<Option<(Entry, String)>> {
+        let state = parse(state)?;
+        let mut alone = State::default();
+        let entry = if let Some(f) = state.facts.into_iter().find(|f| f.id == id) {
+            alone.facts.push(f);
+            of_fact(&alone.facts[0])
+        } else if let Some(e) = state.events.into_iter().find(|e| e.id == id) {
+            alone.events.push(e);
+            of_event(&alone.events[0])
+        } else {
+            return Ok(None);
+        };
+        Ok(Some((entry, serde_json::to_string(&alone)?)))
+    }
+
+    fn put(&self, state: &str, alone: &str, replaces: &[String]) -> anyhow::Result<String> {
+        let mut state = parse(state)?;
+        let alone = parse(alone)?;
+        let id = state.next_id;
+        state.next_id += 1;
+        let again = |text: &String, deleted: bool| !deleted && replaces.contains(text);
+        if let Some(mut f) = alone.facts.into_iter().next() {
+            let same = |x: &Fact| {
+                again(&x.text, x.deleted)
+                    || (!x.deleted && x.subject == f.subject && x.key == f.key)
+            };
+            let at = state
+                .facts
+                .iter()
+                .position(same)
+                .unwrap_or(state.facts.len());
+            state.facts.retain(|x| !same(x));
+            (f.id, f.deleted) = (id, false);
+            state.facts.insert(at.min(state.facts.len()), f);
+        } else if let Some(mut e) = alone.events.into_iter().next() {
+            let same = |x: &Event| again(&x.text, x.deleted);
+            let at = state
+                .events
+                .iter()
+                .position(same)
+                .unwrap_or(state.events.len());
+            state.events.retain(|x| !same(x));
+            (e.id, e.deleted) = (id, false);
+            state.events.insert(at.min(state.events.len()), e);
         }
         Ok(serde_json::to_string(&state)?)
     }

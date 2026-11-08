@@ -267,6 +267,7 @@ pub fn create(db: &dyn Storage, user: i64, new: &NewChat<'_>) -> anyhow::Result<
     let mut greetings = Vec::new();
     // The greetings are the card's in the language the AI writes in, where it has it.
     let language = settings::get(db, user)?.language;
+    let shown_in = settings::app_language(db, user)?;
     let mut names = Vec::new();
     for (index, &(version_id, character)) in new.characters.iter().enumerate() {
         let document = cards::document(db, user, version_id)?;
@@ -284,7 +285,7 @@ pub fn create(db: &dyn Storage, user: i64, new: &NewChat<'_>) -> anyhow::Result<
             let shown = document.in_language(character, &language);
             let char_name = document.character_name(shown);
             for greeting in &document.greetings(shown, new.characters.len() > 1) {
-                let (text, variables) = greeted(greeting, &char_name, &user_name);
+                let (text, variables) = greeted(greeting, &char_name, &user_name, &shown_in);
                 let state = (!variables.is_empty())
                     .then(|| Snapshot {
                         opening: variables.clone(),
@@ -308,9 +309,14 @@ pub fn create(db: &dyn Storage, user: i64, new: &NewChat<'_>) -> anyhow::Result<
     )?
 }
 
-/// A greeting as the user reads it, its macros resolved once, with the
-/// variables they set.
-pub(crate) fn greeted(greeting: &str, char_name: &str, user_name: &str) -> (String, Variables) {
+/// A greeting as the user reads it, its macros resolved once (a date in the
+/// app's `language`), with the variables they set.
+pub(crate) fn greeted(
+    greeting: &str,
+    char_name: &str,
+    user_name: &str,
+    language: &str,
+) -> (String, Variables) {
     let mut variables = Variables::new();
     let mut context = MacroContext {
         char_name,
@@ -318,6 +324,7 @@ pub(crate) fn greeted(greeting: &str, char_name: &str, user_name: &str) -> (Stri
         local: Some(&mut variables),
         global: None,
         tracking_id: None,
+        language: Some(language),
     };
     let text = macros::render(greeting, &mut context);
     (text, variables)

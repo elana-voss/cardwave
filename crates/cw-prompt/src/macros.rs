@@ -13,6 +13,8 @@ use regex::{Captures, Regex};
 
 use crate::Variables;
 
+mod dates;
+
 /// Limits re-expansion of a macro's returned value (a variable whose stored value
 /// is itself `{{char}}`), so variables that refer to each other in a cycle end.
 const MAX_VALUE_EXPANSION_DEPTH: usize = 50;
@@ -57,6 +59,9 @@ pub struct MacroContext<'a> {
     /// Names the text being rendered. With it and `local`, each `{{pick}}` keeps
     /// its choice across renders.
     pub tracking_id: Option<&'a str>,
+    /// The app's language a text is shown in (a greeting), for `{{date}}` and
+    /// `{{time}}`; none: English's forms, as the prompt has them.
+    pub language: Option<&'a str>,
 }
 
 /// Replaces every macro in `text`. Unknown macros and unbalanced braces are left
@@ -231,8 +236,8 @@ impl Engine<'_, '_> {
         match command.to_lowercase().as_str() {
             "char" | "bot" => self.ctx.char_name.trim().to_string(),
             "user" => self.ctx.user_name.trim().to_string(),
-            "time" => format_time(Local::now()),
-            "date" => Local::now().format("%B %-d, %Y").to_string(),
+            "time" => dates::time_in(self.ctx.language, Local::now().time()),
+            "date" => dates::date_in(self.ctx.language, Local::now().date_naive()),
             "random" => options(arg, double_colon)
                 .map(random_of)
                 .unwrap_or_default(),

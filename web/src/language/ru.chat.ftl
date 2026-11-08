@@ -299,6 +299,7 @@ provider-form-testing = { " " }· проверка…
 provider-form-is-saved = ····{ $key_end } сохранён
 provider-form-or-type-the-models = { $listedCount }{ $have }. Или введите название модели точно так, как оно написано на сайте провайдера.
 provider-form-test-failed = Проверка не пройдена: { $failed }. Проверьте ключ и адрес.
+provider-form-test-failed-own = Проверка не пройдена: { $failed }. Выберите другую модель или скачайте эту заново.
 
 ## search-setup (models/search-setup.ts)
 

@@ -297,6 +297,7 @@ provider-form-testing = { " " }· menguji…
 provider-form-is-saved = ····{ $key_end } tersimpan
 provider-form-or-type-the-models = { $listedCount }{ $have }. Atau ketik nama model persis seperti yang tertulis di situs penyedia.
 provider-form-test-failed = Tes gagal: { $failed }. Periksa kunci dan alamatnya.
+provider-form-test-failed-own = Tes gagal: { $failed }. Pilih model lain, atau unduh model ini lagi.
 
 ## search-setup (models/search-setup.ts)
 

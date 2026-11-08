@@ -22,6 +22,7 @@ pub fn render(text: &str, char_name: &str, user_name: &str) -> String {
         local: Some(&mut variables),
         global: None,
         tracking_id: None,
+        language: None,
     };
     macros::render(text, &mut context).trim().to_string()
 }

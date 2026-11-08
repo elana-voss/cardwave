@@ -422,6 +422,7 @@ update-available = Cardwave { $version } 버전을 사용할 수 있어요
 update-you-have = 현재 버전: { $version }.
 update-up-to-date = Cardwave가 최신 버전이에요 ({ $version }).
 update-connection-error = 업데이트를 확인하지 못했어요. 인터넷 연결을 확인하세요.
+update-check-failed = 업데이트를 확인하지 못했어요: GitHub가 최신 버전 정보를 보내지 않았어요.
 update-whats-new = 새로운 기능
 update-close = 닫기
 update-ok = 확인
@@ -431,6 +432,7 @@ update-installing = Cardwave { $version } 다운로드 중…
 update-auto = 자동으로 확인
 update-auto-about = 시작할 때와 하루에 한 번 새 버전 찾기
 update-check = 확인
+update-checking = 확인 중…
 update-about = 앱의 새 버전이 있는지 확인해요.
 
 ## The breadcrumbs of a page under Settings

@@ -21,6 +21,7 @@ pub mod edit;
 pub mod embedder;
 pub mod lore;
 pub mod lorebook_edit;
+pub mod memory;
 pub mod model;
 pub mod server;
 pub mod streamed;

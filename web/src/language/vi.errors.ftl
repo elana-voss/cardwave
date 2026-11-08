@@ -451,6 +451,7 @@ error-unreachable = { $whose ->
 }
 error-answered = { $whose ->
     [comfyui] ComfyUI trả lời { $status }.
+    [model_download] Máy chủ của mô hình trả lời { $status }. Kết nối vẫn ổn; hãy thử lại sau.
     [model_server] Nhà cung cấp AI trả lời { $status }. Hãy thử lại sau.
     [picture_server] Máy chủ hình ảnh trả lời { $status }.
     [provider_voices] Giọng nói của nhà cung cấp trả lời { $status }.

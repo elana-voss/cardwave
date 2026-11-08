@@ -419,6 +419,7 @@ update-available = Cardwave { $version } 已发布
 update-you-have = 你的版本是 { $version }。
 update-up-to-date = Cardwave 已是最新版本（{ $version }）。
 update-connection-error = 无法检查更新。请检查你的网络连接。
+update-check-failed = 无法检查更新：GitHub 没有返回最新版本的信息。
 update-whats-new = 更新内容
 update-close = 关闭
 update-ok = 好
@@ -428,6 +429,7 @@ update-installing = 正在下载 Cardwave { $version }……
 update-auto = 自动检查
 update-auto-about = 启动时和每天一次查找新版本
 update-check = 检查
+update-checking = 检查中…
 update-about = 检查是否有更新版本的应用。
 
 ## The breadcrumbs of a page under Settings

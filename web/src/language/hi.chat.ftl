@@ -299,6 +299,7 @@ provider-form-testing = { " " }· टेस्ट हो रहा है…
 provider-form-is-saved = ····{ $key_end } सेव है
 provider-form-or-type-the-models = { $listedCount }{ $have }। या मॉडल का नाम ठीक वैसे ही टाइप करें जैसे प्रोवाइडर की साइट पर लिखा है।
 provider-form-test-failed = टेस्ट विफल रहा: { $failed }। कुंजी और पता जांचें।
+provider-form-test-failed-own = टेस्ट विफल रहा: { $failed }। कोई दूसरा मॉडल चुनें, या इसे दोबारा डाउनलोड करें।
 
 ## search-setup (models/search-setup.ts)
 

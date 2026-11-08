@@ -451,6 +451,7 @@ error-unreachable = { $whose ->
 }
 error-answered = { $whose ->
     [comfyui] O ComfyUI respondeu { $status }.
+    [model_download] O servidor do modelo respondeu { $status }. A conexão está boa; tente de novo mais tarde.
     [model_server] O provedor da IA respondeu { $status }. Tente de novo mais tarde.
     [picture_server] O servidor de imagens respondeu { $status }.
     [provider_voices] As vozes do provedor responderam { $status }.

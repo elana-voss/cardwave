@@ -192,9 +192,9 @@ export function show(s: Setup): void {
 }
 
 /** Asks the model its small question, at the address and with the key of step 1. */
-const test = (s: Setup) => s.check.ask({ base_url: s.asked!.base_url, model: s.model, ...s.asked!.key });
+const test = (s: Setup) => s.check.ask({ base_url: s.asked!.base_url, model: s.model, ...s.asked!.key }, s.asked!.own);
 /** Asks the worker model its small question, as the chat model is asked. */
-const testWorker = (s: Setup) => s.workerCheck.ask({ base_url: s.asked!.base_url, model: s.worker, ...s.asked!.key });
+const testWorker = (s: Setup) => s.workerCheck.ask({ base_url: s.asked!.base_url, model: s.worker, ...s.asked!.key }, s.asked!.own);
 
 export function choose(s: Setup, id: string): void {
   s.model = id;

@@ -1,3 +1,12 @@
+# 0.1.2
+
+More fixes, from a third round of testing.
+
+- Memories: what you changed or deleted stays when an earlier message is edited, and renaming a character or persona keeps what they remember.
+- Chats: words typed while a message is sent stay in the field, dictation keeps its last words when you switch tabs, and dates in greetings follow your language.
+- Clearer messages when a model on this computer fails its test, when a download's server fails, and when the update check cannot finish.
+- Tabs fit a narrow window, however it got narrow.
+
 # 0.1.1
 
 Fixes from a second round of testing.

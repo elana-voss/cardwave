@@ -32,10 +32,13 @@ use ts_rs::TS;
 
 use crate::chats::{self, Chat, Message};
 
+mod changes;
+mod held;
 pub mod hybrid;
 pub mod text;
 mod vectors;
 
+pub use held::{Casts, casts, follow_casts, rename_in, rename_persona};
 pub use vectors::{keep_vectors, kept_vectors, unembedded};
 
 /// The messages a block holds.
@@ -194,6 +197,11 @@ pub trait Remembers: Send + Sync {
     fn without(&self, state: &str, chats: &[i64]) -> anyhow::Result<String>;
     /// The state with the name `from` called `to` wherever it names someone.
     fn renamed(&self, state: &str, from: &str, to: &str) -> anyhow::Result<String>;
+    /// The entry `id`, deleted or not, and a state holding it alone; none where it has no such entry.
+    fn alone(&self, state: &str, id: u64) -> anyhow::Result<Option<(Entry, String)>>;
+    /// The state with the entry of `alone` (a state of `alone`'s) put in as a new one, in place
+    /// of the live entries it is again: a fact of its subject and key, an entry of a text in `replaces`.
+    fn put(&self, state: &str, alone: &str, replaces: &[String]) -> anyhow::Result<String>;
 }
 
 /// What a kept state calls the user without a persona, whose stand-in name
@@ -284,12 +292,17 @@ pub trait Storage: cw_search::Index + cw_search::kept::Storage {
     /// Every state of the memory, by block.
     fn memory_states(&self, store: i64) -> anyhow::Result<Vec<(i64, String)>>;
     fn set_memory_state(&self, block: i64, state: &str) -> anyhow::Result<()>;
+    /// What the user changed of the memory `store`'s entries (`changes`), empty before the first.
+    fn memory_changes(&self, store: i64) -> anyhow::Result<String>;
+    fn set_memory_changes(&self, store: i64, changes: &str) -> anyhow::Result<()>;
     /// The user's memories: each with its owner.
     fn memory_stores(&self, user: i64) -> anyhow::Result<Vec<(i64, Owner)>>;
     /// The owner of the user's memory `store`.
     fn memory_owner(&self, user: i64, store: i64) -> anyhow::Result<Option<Owner>>;
     /// The chats in the Trash the memory read blocks of.
     fn memory_trashed_chats(&self, store: i64) -> anyhow::Result<Vec<i64>>;
+    /// The user's chats with characters of the card `card`, archived and trashed ones too.
+    fn card_chats(&self, user: i64, card: i64) -> anyhow::Result<Vec<i64>>;
     /// The chat's characters, by ID and name, in the order they joined.
     fn chat_cast(&self, chat_id: i64) -> anyhow::Result<Vec<(i64, String)>>;
     /// The kept vectors of the memory's texts, by `search::text_hash`.
@@ -557,7 +570,9 @@ pub fn keep(
     next: &mut Next,
     added: Added,
 ) -> anyhow::Result<bool> {
-    next.new.state = kept_form(&added.state, stand_in(db, user)?)?;
+    let state = kept_form(&added.state, stand_in(db, user)?)?;
+    let first = next.block.messages.first().map_or(0, |said| said.n);
+    next.new.state = changes::held(db, next.store, (next.new.chat_id, first), &state)?;
     next.new.saved = added.saved;
     let kept = db.keep_memory_block(next.store, next.after, &next.new)?;
     // The block is kept all the same: what the search finds of it is written again at its next block or change.
@@ -852,15 +867,17 @@ fn change_all(
     change: &Change,
 ) -> anyhow::Result<()> {
     let (store, entry, _) = ids(db, user, id)?;
-    let mut any = false;
+    let mut last = None;
     let name = stand_in(db, user)?;
     for (block, state) in db.memory_states(store)? {
         if let Some(changed) = system().change(&read_form(&state, name)?, entry, change)? {
-            db.set_memory_state(block, &kept_form(&changed, name)?)?;
-            any = true;
+            let changed = kept_form(&changed, name)?;
+            db.set_memory_state(block, &changed)?;
+            last = Some((state, changed));
         }
     }
-    ensure!(any, NotFound("memory"));
+    let (before, after) = last.ok_or(NotFound("memory"))?;
+    changes::note(db, store, entry, (&before, &after), change)?;
     index(db, user, store)
 }
 
@@ -990,67 +1007,4 @@ pub fn of_chat(
 }
 
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn a_name_is_renamed_where_it_is_a_whole_word() {
-        let renamed = |text| crate::memory::word_renamed(text, "Guest", "{{user}}");
-        assert_eq!(
-            renamed("Guest's Guests, Guest."),
-            "{{user}}'s Guests, {{user}}."
-        );
-        let korean = crate::memory::word_renamed("게스트는 차를 좋아한다", "게스트", "Guest");
-        assert_eq!(korean, "Guest는 차를 좋아한다");
-    }
-
-    #[test]
-    fn who_know_a_memory_are_its_names_asked_each_once() {
-        let may = ["Ann", "Bob", "ann"].map(String::from);
-        let asked = ["ANN", "Odo", "bob"].map(String::from);
-        assert_eq!(crate::memory::known_of(&may, &asked), ["ann", "bob"]);
-    }
-
-    use super::*;
-
-    fn kept(id: i64, chat: Option<i64>, block: i64, chain: &str) -> Kept {
-        Kept {
-            id,
-            chat_id: chat,
-            block,
-            chain: chain.into(),
-        }
-    }
-
-    #[test]
-    fn a_block_holds_until_its_messages_change_or_its_chat_is_deleted() {
-        let read = ChatRead {
-            chat_id: 1,
-            user: "Sam".into(),
-            cast: Vec::new(),
-            said: Vec::new(),
-            chains: vec!["a".into(), "b2".into()],
-        };
-        let blocks = [
-            kept(1, Some(1), 0, "a"),
-            kept(2, Some(2), 0, "x"),
-            kept(3, Some(1), 1, "b"),
-        ];
-        assert_eq!(holding(&blocks, &[&read]), 2);
-        let blocks = [kept(1, Some(1), 0, "a"), kept(2, None, 0, "x")];
-        assert_eq!(holding(&blocks, &[&read]), 1);
-        assert_eq!(holding(&blocks[..1], &[]), 1);
-    }
-
-    #[test]
-    fn a_day_is_a_calendar_day_counted_from_the_memorys_first() {
-        use chrono::TimeZone;
-        let noon = chrono::Local
-            .with_ymd_and_hms(2026, 10, 1, 12, 0, 0)
-            .unwrap()
-            .timestamp_millis();
-        let (first, hour) = (date(noon), 3_600_000);
-        assert_eq!(day(Mode::Companion, Some(first), noon + 11 * hour), Some(1));
-        assert_eq!(day(Mode::Companion, Some(first), noon + 13 * hour), Some(2));
-        assert_eq!(day(Mode::Assistant, None, noon), Some(1));
-        assert_eq!(day(Mode::Roleplay, Some(first), noon), None);
-    }
-}
+mod tests;

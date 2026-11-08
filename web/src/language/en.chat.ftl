@@ -299,6 +299,7 @@ provider-form-testing = { " " }· testing…
 provider-form-is-saved = ····{ $key_end } is saved
 provider-form-or-type-the-models = { $listedCount }{ $have }. Or type the model’s name exactly as the provider’s site writes it.
 provider-form-test-failed = The test failed: { $failed }. Check the key and the address.
+provider-form-test-failed-own = The test failed: { $failed }. Choose another model, or download this one again.
 
 ## search-setup (models/search-setup.ts)
 

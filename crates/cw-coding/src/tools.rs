@@ -335,6 +335,10 @@ impl Toolbox {
 
     /// What the user is asked before `call` runs, where the settings say so.
     pub async fn asks(&self, call: &Call) -> Option<ToolAsk> {
+        // A call that cannot be read is not run, so nobody is asked about it.
+        if unreadable(call).is_some() {
+            return None;
+        }
         match call.name.as_str() {
             "write_file" if self.files() && self.tools.ask_writes => Some(ToolAsk {
                 kind: AskKind::Write,
@@ -395,6 +399,9 @@ impl Toolbox {
             text: result.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
             picture: None,
         };
+        if let Some(why) = unreadable(call) {
+            return text(Err(anyhow::anyhow!(why)));
+        }
         let folder = self.folder.clone().unwrap_or_default();
         match call.name.as_str() {
             crate::tools::dice::NAME if self.tools.dice => text(crate::tools::dice::roll(
@@ -545,6 +552,20 @@ impl Toolbox {
             let _ = request.answer.send(answer);
         }
         running.done.await?
+    }
+}
+
+/// Why `call`'s arguments cannot be read, where they are not a JSON object (cut
+/// short by the provider, a stray quote): the model is told so and may call
+/// again. None at all ("") is no fault: a tool without arguments.
+fn unreadable(call: &Call) -> Option<String> {
+    let arguments = call.arguments.trim();
+    let read = serde_json::from_str::<serde_json::Map<String, Value>>(arguments);
+    match read {
+        Err(failure) if !arguments.is_empty() => Some(format!(
+            "the arguments were not valid JSON ({failure}), so the tool did not run; call it again with its arguments as one JSON object"
+        )),
+        _ => None,
     }
 }
 

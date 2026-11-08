@@ -1,3 +1,12 @@
+# 0.1.2
+
+Más correcciones, de una tercera ronda de pruebas.
+
+- Recuerdos: lo que cambiaste o borraste se mantiene cuando se edita un mensaje anterior, y al renombrar un personaje o una persona se conserva lo que recuerdan.
+- Chats: las palabras escritas mientras se envía un mensaje siguen en el campo, el dictado conserva sus últimas palabras al cambiar de pestaña, y las fechas de los saludos siguen tu idioma.
+- Mensajes más claros cuando un modelo de este ordenador no pasa su prueba, cuando falla el servidor de una descarga y cuando no se puede terminar de buscar actualizaciones.
+- Las pestañas caben en una ventana estrecha, sea como sea que se haya estrechado.
+
 # 0.1.1
 
 Correcciones de una segunda ronda de pruebas.

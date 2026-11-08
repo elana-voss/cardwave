@@ -1,3 +1,12 @@
+# 0.1.2
+
+Perbaikan lagi, dari putaran pengujian ketiga.
+
+- Ingatan: yang kamu ubah atau hapus tetap seperti itu saat pesan sebelumnya disunting, dan mengganti nama karakter atau persona tetap menyimpan ingatan mereka.
+- Obrolan: kata yang diketik saat pesan dikirim tetap ada di kolom, dikte menyimpan kata terakhirnya saat kamu berpindah tab, dan tanggal dalam sapaan mengikuti bahasamu.
+- Pesan yang lebih jelas saat model di komputer ini gagal dalam ujinya, saat server unduhan gagal, dan saat pemeriksaan pembaruan tidak bisa selesai.
+- Tab muat di jendela yang sempit, bagaimanapun jendela itu menjadi sempit.
+
 # 0.1.1
 
 Perbaikan dari putaran pengujian kedua.

@@ -142,36 +142,46 @@ export interface ModelTest {
   passed(): boolean;
   /** Ends a test on its way as failed, for `why`: it took too long. Its answer, when it comes, no longer counts. */
   giveUp(why: string): void;
-  /** Asks the model a small question. It costs a few tokens, so a screen asks when the model is set or "Retry" pressed, not by itself. */
-  ask(whom: TestModel): void;
+  /**
+   * Asks the model a small question. It costs a few tokens, so a screen asks when the model is set or "Retry" pressed, not by itself.
+   * `own`: a model of This computer, which has no key or address to check, so its failure says what to do instead.
+   */
+  ask(whom: TestModel, own?: boolean): void;
   /** Lets go what a test came to, and one on its way: it was of another model, address or key. */
   forget(): void;
 }
 
 /** Makes the test of a screen's chat model. `changed` is told when a test begins and when its answer has come; `passed` is what stands behind the model's name then. */
 export function modelTest(changed: () => void, passed = wording("provider-form-test-passed")): ModelTest {
-  let tested: "no" | "asking" | "passed" | { failed: string } = "no";
+  let tested: "no" | "asking" | "passed" | { failed: string; own?: boolean } = "no";
   /** The test whose answer counts. */
   let testing: object | null = null;
+  /** Whether the last test asked is of This computer's model, for `giveUp`'s words too. */
+  let ownModel = false;
   return {
     said: () => (tested === "asking" ? wording("provider-form-testing") : tested === "passed" ? passed : ""),
-    failed: () => (typeof tested === "object" ? wording("provider-form-test-failed", { failed: clause(tested.failed) }) : ""),
+    failed() {
+      if (typeof tested !== "object") return "";
+      const failed = clause(tested.failed);
+      return tested.own ? wording("provider-form-test-failed-own", { failed }) : wording("provider-form-test-failed", { failed });
+    },
     asking: () => tested === "asking",
     passed: () => tested === "passed",
     giveUp(why) {
       if (tested !== "asking") return;
       testing = null;
-      tested = { failed: why };
+      tested = { failed: why, own: ownModel };
       changed();
     },
-    ask(whom) {
+    ask(whom, own = false) {
       const mine = (testing = {});
+      ownModel = own;
       tested = "asking";
       changed();
       testModel(whom)
         .then(
           () => "passed" as const,
-          (error) => ({ failed: told(error) }),
+          (error) => ({ failed: told(error), own }),
         )
         .then((outcome) => {
           if (mine !== testing) return;

@@ -1,3 +1,12 @@
+# 0.1.2
+
+Weitere Korrekturen aus einer dritten Testrunde.
+
+- Erinnerungen: Was du geändert oder gelöscht hast, bleibt, wenn eine frühere Nachricht bearbeitet wird, und ein umbenannter Charakter oder eine umbenannte Persona behält, woran sie sich erinnern.
+- Chats: Während des Sendens getippte Worte bleiben im Feld, das Diktat behält seine letzten Worte, wenn du den Tab wechselst, und Daten in Begrüßungen folgen deiner Sprache.
+- Klarere Meldungen, wenn ein Modell auf diesem Computer seinen Test nicht besteht, wenn der Server eines Downloads versagt und wenn die Suche nach Updates nicht abgeschlossen werden kann.
+- Tabs passen in ein schmales Fenster, wie auch immer es schmal wurde.
+
 # 0.1.1
 
 Korrekturen aus einer zweiten Testrunde.

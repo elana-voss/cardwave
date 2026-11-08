@@ -37,6 +37,8 @@ export interface Asked {
   base_url: string;
   key: { api_key?: string };
   name?: string;
+  /** This computer's: it has no key or address to check. */
+  own?: boolean;
 }
 
 /**
@@ -162,7 +164,7 @@ export function keyStep(go: (asked: Asked) => void, listed: () => void = () => {
   const k: Step = {
     ...made,
     go,
-    own: own && (() => own((base_url) => go({ base_url, key: { api_key: "" } })).catch(() => null)),
+    own: own && (() => own((base_url) => go({ base_url, key: { api_key: "" }, own: true })).catch(() => null)),
     elsewhere,
     providers: [],
     ready: false,

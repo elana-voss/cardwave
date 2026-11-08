@@ -23,6 +23,7 @@ use cw_ccv4::edit::CardEdit;
 use cw_ccv4::new::NewCard;
 use cw_ccv4::{Document, display, mapping};
 use cw_chat::chats::{self, Chat};
+use cw_chat::memory;
 use cw_core::NotFound;
 use cw_core::PageEvent;
 use cw_core::{Code, Fail};
@@ -371,7 +372,13 @@ async fn edit(
 ) -> ApiResult<Json<CardVersion>> {
     let made = by.made.unwrap_or_else(|| drafts::EDITED.to_string());
     let saved = state
-        .run(move |db| cards::edit_as(db, user, id, &edit, &made))
+        .run(move |db| {
+            // A character the edit renames keeps what its chats' memories know.
+            let before = memory::casts(db, user, id)?;
+            let saved = cards::edit_as(db, user, id, &edit, &made)?;
+            memory::follow_casts(db, user, &before)?;
+            Ok(saved)
+        })
         .await?;
     told(&state, user, &page, id);
     cw_find::reader::read_cards(&state);

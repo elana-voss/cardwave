@@ -40,7 +40,7 @@ export function modelsGroup(options: { title: string; kinds: [Kind, string][]; l
     const test = () => {
       const picked = view?.kinds.find((each) => each.kind === kind);
       const provider = view?.providers.find((each) => each.id === picked?.provider_id);
-      if (picked && provider && node.isConnected) check?.ask({ base_url: provider.base_url, model: picked.model });
+      if (picked && provider && node.isConnected) check?.ask({ base_url: provider.base_url, model: picked.model }, provider.folder !== null);
     };
     shown.change.onclick = () => (view?.kinds.some((each) => each.kind === "chat") || view?.providers.length ? pickKind(node, kind, view, lists, took(test)) : setup());
     shown.retry.onclick = () => {

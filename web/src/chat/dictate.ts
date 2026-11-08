@@ -6,8 +6,8 @@
 // space between them and words beside, as if typed (`input` is sent, so the field's unsaved text and "+"'s lines
 // follow); after the recording the button waits for the last. Traps: a page that is no secure
 // place (another device of the home network over http) has no microphone, so the button is not shown there; the
-// microphone is let go when recording ends, also by the browser, and when the field leaves the page, as a chat left
-// would keep it; after each hearing the model's state is read again, as it was not while recording.
+// microphone is let go when recording ends, also by the browser, and when the field leaves the page (another tab
+// shown, a chat left), whose last words still go into the field (G4); after each hearing the model's state is read again.
 import { getDictation, hear, loadDictation } from "../api/client";
 import { announce, el, reason } from "../dom";
 import { icon } from "../icons";
@@ -51,7 +51,7 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
     field.value = value;
     field.setSelectionRange(at, at);
     field.dispatchEvent(new Event("input", { bubbles: true }));
-    field.focus();
+    if (field.isConnected) field.focus();
   };
   const record = async () => {
     // The model loads while the user speaks (a first load took 26 s); a failure shows at the hearing.
@@ -72,7 +72,8 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
         .then(() => resampled(said, rate, RATE))
         .then((samples) => hear(wav(samples, RATE)))
         .then(({ text }) => {
-          if (!text || !button.isConnected) return;
+          // Also into a field out of the page: a tab out of view keeps it, and a chat left keeps it as its unsaved text.
+          if (!text) return;
           put(text);
           wrote = true;
         })
@@ -96,11 +97,10 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
       button.classList.remove("recording");
       const said = pauses.rest();
       if (said) send(said);
-      if (!button.isConnected) return reset();
       button.disabled = true;
       label(wording("dictate-writing-what-was-said"));
       void heard.then(() => {
-        if (!wrote) announce(wording("dictate-nothing-was-heard"));
+        if (!wrote && button.isConnected) announce(wording("dictate-nothing-was-heard"));
         reset();
         // The model may have been removed meanwhile.
         read();

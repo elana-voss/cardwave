@@ -426,6 +426,7 @@ update-available = Cardwave { $version } उपलब्ध है
 update-you-have = आपके पास { $version } है।
 update-up-to-date = Cardwave अप टू डेट है ({ $version })।
 update-connection-error = अपडेट नहीं देखे जा सके। अपना कनेक्शन जाँचें।
+update-check-failed = अपडेट नहीं देखे जा सके: GitHub ने सबसे नए संस्करण की जानकारी नहीं दी।
 update-whats-new = नया क्या है
 update-close = बंद करें
 update-ok = ठीक है
@@ -435,6 +436,7 @@ update-installing = Cardwave { $version } डाउनलोड हो रहा
 update-auto = अपने-आप देखें
 update-auto-about = शुरू होते समय और दिन में एक बार नया वर्ज़न देखें
 update-check = देखें
+update-checking = देखा जा रहा है…
 update-about = देखें कि ऐप का नया वर्ज़न उपलब्ध है या नहीं।
 
 ## The breadcrumbs of a page under Settings

@@ -1,9 +1,9 @@
 // The app's updates, in the desktop app alone (desktop/src/update.rs, Tauri's updater, which installs only an
 // update signed with the project's key). Settings' last box has "Check for updates", whose check opens a window
 // with what it found, as the Flutter app's did: a newer version with both versions, its notes (the release's on
-// GitHub, English in every language) and "Update and
-// restart"; else up to date or why the check failed, with "OK"; under it the switch "Check automatically" (the
-// setting `check_updates`, on at first). `watchUpdates`, from main.ts, checks at start and once a day while that
+// GitHub, English in every language) and "Update and restart"; else up to date or why the check failed (GitHub
+// not reached, or anything else), with "OK", the button saying "Checking…" meanwhile; under it the switch "Check
+// automatically" (the setting `check_updates`, on at first). `watchUpdates`, from main.ts, checks at start and once a day while that
 // is on, quietly: only a newer version is said, in the notice at the window's foot with "Update and restart",
 // never in a window. Installing says so in the notice; the app then ends and its installer starts it anew.
 import { wording } from "../language/language";
@@ -45,7 +45,15 @@ interface Said {
 /** The line's name, and the title of every window but a new version's. */
 const title = () => wording("update-title");
 
-const failed = (): Said => ({ title: title(), lines: [wording("update-connection-error")], notes: null, offers: null });
+/**
+ * The window of a failed check, told by what the updater's error allows: GitHub not reached (reqwest's "error sending
+ * request", which a lost connection, a name not found and a timeout all are) or anything else GitHub answered.
+ */
+function failed(error: unknown): Said {
+  const text = typeof error === "string" ? error : error instanceof Error ? error.message : "";
+  const unreached = /sending request|connect|timed out|dns/i.test(text);
+  return { title: title(), lines: [unreached ? wording("update-connection-error") : wording("update-check-failed")], notes: null, offers: null };
+}
 
 /** The window an answer of the check opens. */
 function said(found: Checked): Said {
@@ -87,8 +95,10 @@ export function updateLines(home: () => HTMLElement): { notice: HTMLElement; lin
   const button = el("button", { type: "button", className: "btn btn-secondary on-box" }, wording("update-check"));
   button.onclick = async () => {
     button.disabled = true;
+    button.textContent = wording("update-checking");
     const what = await checkUpdate().then(said, failed);
     button.disabled = false;
+    button.textContent = wording("update-check");
     showUpdate(home(), what);
   };
   const notice = noticeBox();

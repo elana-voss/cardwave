@@ -486,10 +486,14 @@ pub fn get(db: &dyn Storage, user: i64) -> anyhow::Result<Settings> {
 /// app's language, the computer's while none is chosen, as the page follows it
 /// (its whole locale, which tells Chinese's script by its region).
 pub fn user_stand_in(db: &dyn Storage, user: i64) -> anyhow::Result<&'static str> {
-    let language = get(db, user)?
+    Ok(cw_prompt::stand_in_user(&app_language(db, user)?))
+}
+
+/// The app's language the page shows: the one chosen, else the computer's locale.
+pub fn app_language(db: &dyn Storage, user: i64) -> anyhow::Result<String> {
+    Ok(get(db, user)?
         .app_language
-        .unwrap_or_else(cw_core::languages::computer_locale);
-    Ok(cw_prompt::stand_in_user(&language))
+        .unwrap_or_else(cw_core::languages::computer_locale))
 }
 
 /// What `{{user}}` stands for in a card's text shown outside a chat (the

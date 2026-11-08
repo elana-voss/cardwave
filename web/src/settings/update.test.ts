@@ -12,10 +12,10 @@ vi.mock("../desktop", () => ({ inDesktop: vi.fn(), desktop: vi.fn() }));
 
 const settled = () => new Promise((done) => setTimeout(done, 0));
 
-/** The desktop app answers the check with `checked` and installs without a word. */
+/** The desktop app answers the check with `checked` (an updater's error as its text, as Tauri hands it) and installs without a word. */
 function answers(checked: unknown): void {
   vi.mocked(inDesktop).mockReturnValue(true);
-  vi.mocked(desktop).mockImplementation((command) => (command === "update_check" ? (checked instanceof Error ? Promise.reject(checked) : Promise.resolve(checked)) : Promise.resolve()));
+  vi.mocked(desktop).mockImplementation((command) => (command === "update_check" ? (typeof checked === "string" || checked instanceof Error ? Promise.reject(checked) : Promise.resolve(checked)) : Promise.resolve()));
 }
 
 async function check(home: HTMLElement): Promise<HTMLDialogElement> {
@@ -54,9 +54,29 @@ describe("the check at once", () => {
     let box = await check(document.createElement("div"));
     expect([box.querySelector("h2")!.textContent, box.querySelector(".update-body")!.textContent]).toEqual(["Check for updates", "Cardwave is up to date (0.1.0)."]);
     expect(buttons(box)).toEqual(["OK"]);
-    answers(new Error("offline"));
+    answers("error sending request for url (https://github.com/elana-voss/cardwave-next/releases/latest/download/latest.json)");
     box = await check(document.createElement("div"));
     expect([box.querySelector("h2")!.textContent, box.querySelector(".update-body")!.textContent]).toEqual(["Check for updates", "Couldn't check for updates. Check your connection."]);
+    expect(buttons(box)).toEqual(["OK"]);
+  });
+
+  test("a failure with a working connection is not told as the connection's", async () => {
+    answers("Could not fetch a valid release JSON from the remote");
+    const box = await check(document.createElement("div"));
+    expect(box.querySelector(".update-body")!.textContent).not.toMatch(/connection/);
+    expect(box.querySelector(".update-body")!.textContent).toMatch(/^Couldn't check for updates: GitHub/);
+  });
+
+  test("while it checks, the button says so", async () => {
+    let answer: (found: unknown) => void = () => {};
+    vi.mocked(inDesktop).mockReturnValue(true);
+    vi.mocked(desktop).mockImplementation(() => new Promise((done) => (answer = done)));
+    const home = document.createElement("div");
+    const button = (await check(home), home.querySelector<HTMLButtonElement>(".item button")!);
+    expect([button.textContent, button.disabled]).toEqual(["Checking…", true]);
+    answer({ current: "0.1.0", latest: null, notes: null });
+    await settled();
+    expect([button.textContent, button.disabled]).toEqual(["Check", false]);
   });
 
   test("a browser has neither line", () => {

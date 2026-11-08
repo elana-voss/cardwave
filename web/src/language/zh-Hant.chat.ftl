@@ -299,6 +299,7 @@ provider-form-testing = { " " }· 正在測試……
 provider-form-is-saved = ····{ $key_end } 已儲存
 provider-form-or-type-the-models = { $listedCount }{ $have }。也可以依供應商網站上的寫法準確輸入模型的名稱。
 provider-form-test-failed = 測試失敗：{ $failed }。請檢查金鑰和位址。
+provider-form-test-failed-own = 測試失敗：{ $failed }。請選擇其他模型，或重新下載此模型。
 
 ## search-setup (models/search-setup.ts)
 

@@ -1,3 +1,12 @@
+# 0.1.2
+
+Thêm các sửa lỗi từ vòng kiểm thử thứ ba.
+
+- Ký ức: những gì bạn đã sửa hoặc xóa vẫn giữ nguyên khi một tin nhắn trước đó được chỉnh sửa, và đổi tên nhân vật hay persona vẫn giữ những gì họ nhớ.
+- Trò chuyện: chữ gõ trong lúc đang gửi tin nhắn vẫn ở trong ô, đọc chính tả giữ lại những chữ cuối khi bạn chuyển thẻ, và ngày trong lời chào theo ngôn ngữ của bạn.
+- Thông báo rõ ràng hơn khi một mô hình trên máy tính này không qua bài kiểm tra, khi máy chủ của một lượt tải xuống gặp lỗi, và khi việc kiểm tra cập nhật không thể hoàn tất.
+- Các thẻ vừa với cửa sổ hẹp, dù cửa sổ hẹp lại theo cách nào.
+
 # 0.1.1
 
 Các sửa lỗi từ vòng kiểm thử thứ hai.

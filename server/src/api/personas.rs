@@ -8,6 +8,7 @@ use axum::http::{StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, patch};
 use axum::{Json, Router};
+use cw_chat::memory;
 use cw_core::NotFound;
 use cw_core::PageEvent;
 use cw_library::personas::{self, Persona};
@@ -172,7 +173,17 @@ async fn change(
                 let now = personas::get(db, user, id)?.ok_or(NotFound("persona"))?;
                 personas::ensure_givable(db, user, Some(&now), lorebooks)?;
             }
+            let was = personas::get(db, user, id)?
+                .ok_or(NotFound("persona"))?
+                .name;
             personas::change(db, user, id, to.name.as_deref(), to.description.as_deref())?;
+            if to.name.is_some() {
+                // Its memories call the persona by its new name.
+                let now = personas::get(db, user, id)?
+                    .ok_or(NotFound("persona"))?
+                    .name;
+                memory::rename_persona(db, user, id, &was, &now)?;
+            }
             if let Some(lorebooks) = &to.lorebooks {
                 personas::set_lorebooks(db, user, id, lorebooks)?;
             }

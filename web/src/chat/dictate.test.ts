@@ -116,3 +116,22 @@ test("the words dictated go in at the cursor, a space between them and the words
   expect(inserted("Say  now", 4, 4, "it")).toEqual({ value: "Say it now", at: 6 });
   expect(inserted("Say it now", 4, 6, "this")).toEqual({ value: "Say this now", at: 8 });
 });
+
+test("a tab left while dictating ends it, and what was said still goes into the field the tab keeps", async () => {
+  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+  vi.mocked(hear).mockResolvedValue({ text: "Hello." });
+  const { field, button } = await microphone();
+  button.click();
+  await settled();
+  sounds[0].play(0.2, 0.5);
+  // The tab's screen leaves the page while another tab is shown.
+  field.remove();
+  button.remove();
+  vi.advanceTimersByTime(1000);
+  vi.useRealTimers();
+  await settled();
+  await settled();
+  expect(stopped).toHaveBeenCalled();
+  expect(field.value).toBe("Hello.");
+  expect(button.title).toBe("Dictate");
+});

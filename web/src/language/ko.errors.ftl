@@ -450,6 +450,7 @@ error-unreachable = { $whose ->
 }
 error-answered = { $whose ->
     [comfyui] ComfyUI의 응답: { $status }.
+    [model_download] 모델 서버가 { $status }(으)로 응답했어요. 연결은 괜찮아요. 나중에 다시 시도하세요.
     [model_server] AI 제공자가 { $status }(으)로 응답했어요. 나중에 다시 시도하세요.
     [picture_server] 이미지 서버의 응답: { $status }.
     [provider_voices] 제공자 음성의 응답: { $status }.

@@ -451,6 +451,7 @@ error-unreachable = { $whose ->
 }
 error-answered = { $whose ->
     [comfyui] ComfyUI ответил { $status }.
+    [model_download] Сервер модели ответил { $status }. Соединение в порядке; попробуйте позже.
     [model_server] Провайдер ИИ ответил { $status }. Попробуйте позже.
     [picture_server] Сервер картинок ответил { $status }.
     [provider_voices] Голоса провайдера ответили { $status }.

@@ -415,6 +415,7 @@ update-available = Đã có Cardwave { $version }
 update-you-have = Bạn đang dùng { $version }.
 update-up-to-date = Cardwave đã là bản mới nhất ({ $version }).
 update-connection-error = Không kiểm tra được cập nhật. Hãy kiểm tra kết nối mạng.
+update-check-failed = Không kiểm tra được cập nhật: GitHub không trả về phiên bản mới nhất.
 update-whats-new = Có gì mới
 update-close = Đóng
 update-ok = OK
@@ -424,6 +425,7 @@ update-installing = Đang tải Cardwave { $version }…
 update-auto = Tự động kiểm tra
 update-auto-about = Tìm phiên bản mới khi khởi động và mỗi ngày một lần
 update-check = Kiểm tra
+update-checking = Đang kiểm tra…
 update-about = Kiểm tra xem đã có phiên bản mới hơn của ứng dụng chưa.
 
 ## The breadcrumbs of a page under Settings

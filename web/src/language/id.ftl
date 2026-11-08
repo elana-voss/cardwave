@@ -413,6 +413,7 @@ update-available = Cardwave { $version } tersedia
 update-you-have = Kamu memakai { $version }.
 update-up-to-date = Cardwave sudah versi terbaru ({ $version }).
 update-connection-error = Tidak dapat memeriksa pembaruan. Periksa koneksimu.
+update-check-failed = Tidak dapat memeriksa pembaruan: GitHub tidak menjawab dengan versi terbaru.
 update-whats-new = Yang baru
 update-close = Tutup
 update-ok = OK
@@ -422,6 +423,7 @@ update-installing = Mengunduh Cardwave { $version }…
 update-auto = Periksa secara otomatis
 update-auto-about = Cari versi baru saat mulai dan sekali sehari
 update-check = Periksa
+update-checking = Memeriksa…
 update-about = Periksa apakah ada versi aplikasi yang lebih baru.
 
 ## The breadcrumbs of a page under Settings

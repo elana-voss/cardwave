@@ -150,6 +150,26 @@ impl Storage for Db {
         Ok(())
     }
 
+    fn memory_changes(&self, store: i64) -> anyhow::Result<String> {
+        Ok(self.with(|conn| {
+            conn.query_row(
+                "select changes from memory_stores where id = ?1",
+                [store],
+                |r| r.get(0),
+            )
+        })?)
+    }
+
+    fn set_memory_changes(&self, store: i64, changes: &str) -> anyhow::Result<()> {
+        self.with(|conn| {
+            conn.execute(
+                "update memory_stores set changes = ?2 where id = ?1",
+                params![store, changes],
+            )
+        })?;
+        Ok(())
+    }
+
     fn memory_stores(&self, user: i64) -> anyhow::Result<Vec<(i64, Owner)>> {
         let rows: Vec<(i64, Option<Owner>)> = self.with(|conn| {
             let mut query = conn.prepare_cached(
@@ -184,6 +204,16 @@ impl Storage for Db {
                  where b.store_id = ?1 and c.trashed_at is not null",
             )?;
             query.query_map([store], |r| r.get(0))?.collect()
+        })?)
+    }
+
+    fn card_chats(&self, user: i64, card: i64) -> anyhow::Result<Vec<i64>> {
+        Ok(self.with(|conn| {
+            let mut query = conn.prepare_cached(
+                "select distinct c.id from chats c join chat_characters p on p.chat_id = c.id
+                 join card_versions v on v.id = p.version_id where c.user_id = ?1 and v.card_id = ?2",
+            )?;
+            query.query_map([user, card], |r| r.get(0))?.collect()
         })?)
     }
 

@@ -451,6 +451,7 @@ error-unreachable = { $whose ->
 }
 error-answered = { $whose ->
     [comfyui] ComfyUI 返回了 { $status }。
+    [model_download] 模型的服务器返回了 { $status }。网络连接正常；请稍后再试。
     [model_server] AI 的服务商返回了 { $status }。请稍后再试。
     [picture_server] 图片服务器返回了 { $status }。
     [provider_voices] 服务商的语音列表返回了 { $status }。

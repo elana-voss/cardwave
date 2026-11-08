@@ -276,6 +276,34 @@ async fn a_reply_calls_a_tool_and_answers_with_what_it_gave() {
 }
 
 #[tokio::test]
+async fn a_call_whose_arguments_are_not_json_is_not_run_and_the_model_is_told() {
+    let server = start().await;
+    let folder = Folder::new("cut-arguments");
+    // Cut short by the provider: a write the user would otherwise be asked about.
+    let cut = json!({ "choices": [{ "delta": { "tool_calls": [{ "index": 0, "id": "call_1", "type": "function", "function": { "name": "write_file", "arguments": r#"{"path":"plan.txt","content":"Sail"# } }] } }] });
+    let model = Model::start(vec![
+        (200, stream(&[cut])),
+        (200, stream(&[text_piece("Trying again.")])),
+    ])
+    .await;
+    let chat = chat_at(&server, &model).await;
+    let tools = json!({ "tools": { "files": true, "folder": folder.path() } });
+    assert_eq!(server.patch("/api/settings", tools).await.0, 200);
+    let mut socket = server.listen().await;
+
+    assert_eq!(
+        server.post(&format!("{chat}/generate"), json!({})).await.0,
+        202
+    );
+    let ended = next_event(&mut socket).await;
+    assert_eq!(ended["type"], "reply_ended", "{ended}");
+    let asked = model.asked();
+    let told = &asked[1]["messages"].as_array().unwrap().last().unwrap()["content"];
+    assert!(told.as_str().unwrap().contains("not valid JSON"), "{told}");
+    assert_eq!(std::fs::read_dir(&folder.0).unwrap().count(), 0);
+}
+
+#[tokio::test]
 async fn a_file_is_written_only_once_the_user_allows_it() {
     let server = start().await;
     let folder = Folder::new("ask");

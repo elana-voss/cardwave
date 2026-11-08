@@ -1,3 +1,12 @@
+# 0.1.2
+
+Mais correções, de uma terceira rodada de testes.
+
+- Memórias: o que você alterou ou apagou continua assim quando uma mensagem anterior é editada, e renomear um personagem ou uma persona mantém o que eles lembram.
+- Chats: as palavras digitadas enquanto uma mensagem é enviada ficam no campo, o ditado mantém suas últimas palavras quando você troca de aba, e as datas nas saudações seguem o seu idioma.
+- Mensagens mais claras quando um modelo deste computador falha no teste, quando o servidor de um download falha e quando a verificação de atualizações não consegue terminar.
+- As abas cabem em uma janela estreita, seja como for que ela ficou estreita.
+
 # 0.1.1
 
 Correções de uma segunda rodada de testes.

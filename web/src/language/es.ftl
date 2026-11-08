@@ -423,6 +423,7 @@ update-available = Cardwave { $version } está disponible
 update-you-have = Tienes la { $version }.
 update-up-to-date = Cardwave está actualizado ({ $version }).
 update-connection-error = No se pudo buscar actualizaciones. Revisa tu conexión.
+update-check-failed = No se pudo buscar actualizaciones: GitHub no respondió con la versión más reciente.
 update-whats-new = Novedades
 update-close = Cerrar
 update-ok = Aceptar
@@ -432,6 +433,7 @@ update-installing = Descargando Cardwave { $version }…
 update-auto = Buscar automáticamente
 update-auto-about = Buscar una versión nueva al iniciar y una vez al día
 update-check = Buscar
+update-checking = Buscando…
 update-about = Comprueba si hay una versión más nueva de la app.
 
 ## The breadcrumbs of a page under Settings

@@ -239,6 +239,7 @@ impl Builder<'_, '_> {
             local: Some(&mut self.chat.local_variables),
             global: Some(&mut *self.globals),
             tracking_id: Some(tracking_id),
+            language: None,
         };
         macros::render(text, &mut ctx)
     }

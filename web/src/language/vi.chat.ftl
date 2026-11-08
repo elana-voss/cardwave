@@ -299,6 +299,7 @@ provider-form-testing = { " " }· đang thử…
 provider-form-is-saved = Đã lưu ····{ $key_end }
 provider-form-or-type-the-models = { $listedCount }{ $have }. Hoặc gõ tên mô hình đúng như trang của nhà cung cấp ghi.
 provider-form-test-failed = Thử thất bại: { $failed }. Hãy kiểm tra khóa và địa chỉ.
+provider-form-test-failed-own = Thử thất bại: { $failed }. Hãy chọn mô hình khác, hoặc tải lại mô hình này.
 
 ## search-setup (models/search-setup.ts)
 

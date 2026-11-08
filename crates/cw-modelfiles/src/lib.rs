@@ -234,6 +234,49 @@ mod tests {
         fetches.forget_failure(&"a");
         assert!(!fetches.cancel(&"a") && fetches.state(&"a") == Seen::Idle);
     }
+
+    #[tokio::test]
+    async fn a_server_answering_with_a_fault_is_told_as_its_answer_and_tried_again() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let at = listener.local_addr().unwrap();
+        tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut asked = [0; 1024];
+            // What was asked does not matter; the answer is the fault.
+            let _ = tokio::io::AsyncReadExt::read(&mut socket, &mut asked).await;
+            let answer = "HTTP/1.1 500 Internal Server Error\r\ncontent-length: 0\r\nconnection: close\r\n\r\n";
+            socket.write_all(answer.as_bytes()).await.unwrap();
+        });
+        let model = ModelFile {
+            url: format!("http://{at}/model"),
+            size: 1,
+            sha256: String::new(),
+        };
+        let path = std::env::temp_dir().join(format!("cw-modelfiles-fault-{}", at.port()));
+        let mut file = tokio::fs::File::create(&path).await.unwrap();
+        let failure = fetch(
+            &client().unwrap(),
+            &model,
+            &mut file,
+            &mut Sha256::new(),
+            &mut 0,
+            &mut |_| {},
+            &AtomicBool::new(false),
+        )
+        .await
+        .unwrap_err();
+        drop(file);
+        let _ = std::fs::remove_file(&path); // A file left in the temporary folder harms nothing.
+        let why = cw_core::told(&failure, Code::DownloadFailed);
+        assert!(failure.is::<BrokeOff>(), "{failure:#}");
+        assert_eq!(
+            (
+                why.code,
+                why.details.get("whose").map(cw_core::Detail::to_string)
+            ),
+            (Code::Answered, Some("model_download".to_string()))
+        );
+    }
 }
 
 /// A file a model needs (the voice's, dictation's): where it comes from, and
@@ -438,11 +481,19 @@ async fn fetch(
         asked = asked.header(cw_platform::http::header::RANGE, format!("bytes={done}-"));
     }
     let response = asked.send().await.map_err(broke)?;
-    if response.status().is_server_error() {
-        bail!(BrokeOff(format!(
-            "the server answered {}",
-            response.status()
-        )));
+    let status = response.status();
+    if status.is_server_error() {
+        // Tried again like a connection lost; told, when the tries are over, as the server's fault.
+        return Err(
+            anyhow::Error::new(BrokeOff(format!("the server answered {status}"))).context(
+                Fail::said(
+                    Code::Answered,
+                    format!("the model's server answered {status}"),
+                )
+                .with("whose", "model_download")
+                .with("status", status.to_string()),
+            ),
+        );
     }
     let mut response = response.error_for_status().context(
         Fail::said(Code::Unreachable, "the model's file cannot be downloaded")

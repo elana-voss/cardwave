@@ -221,6 +221,8 @@ export function makeTitleBar(tabs: Tabs, alone = false): TitleBar {
 
   function draw(): void {
     if (alone || !bar.clientWidth) return;
+    // Emptied first: a wider window's tabs still in the strip squeeze the bar's other children, which then measure short.
+    strip.replaceChildren();
     const { width, shown } = fit(roomOf(), tabs.list.length);
     // The tab in view always shows: taken from "All tabs", it moves to the last place shown, which draws the bar anew.
     if (tabs.list.indexOf(tabs.now()) >= shown) return tabs.move(tabs.now(), shown - 1);

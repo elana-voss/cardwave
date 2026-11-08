@@ -299,6 +299,7 @@ provider-form-testing = { " " }· 테스트 중…
 provider-form-is-saved = ····{ $key_end } 키가 저장되어 있어요
 provider-form-or-type-the-models = { $listedCount }{ $have }. 또는 모델 이름을 제공자 사이트에 적힌 그대로 입력하세요.
 provider-form-test-failed = 테스트 실패: { $failed }. 키와 주소를 확인하세요.
+provider-form-test-failed-own = 테스트 실패: { $failed }. 다른 모델을 고르거나 이 모델을 다시 내려받으세요.
 
 ## search-setup (models/search-setup.ts)
 

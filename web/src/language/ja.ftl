@@ -420,6 +420,7 @@ update-available = Cardwave { $version }が利用できます
 update-you-have = 現在のバージョンは{ $version }です。
 update-up-to-date = Cardwaveは最新です（{ $version }）。
 update-connection-error = アップデートを確認できませんでした。接続を確認してください。
+update-check-failed = アップデートを確認できませんでした：GitHub から最新バージョンの情報が返ってきませんでした。
 update-whats-new = 新機能
 update-close = 閉じる
 update-ok = OK
@@ -429,6 +430,7 @@ update-installing = Cardwave { $version }をダウンロードしています…
 update-auto = 自動で確認
 update-auto-about = 起動時と1日1回、新しいバージョンを探します
 update-check = 確認
+update-checking = 確認中…
 update-about = アプリの新しいバージョンがあるか確認します。
 
 ## The breadcrumbs of a page under Settings

@@ -425,6 +425,37 @@ fn a_user_without_a_persona_is_named_in_the_apps_language() {
 }
 
 #[test]
+fn a_greetings_date_is_written_in_the_apps_language() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let file = common::card_png(&json!({"data": {"name": "Aki", "first_mes": "Today: {{date}}"}}));
+    let card = cards::import(db, me, &file).unwrap();
+    let change = ChangeSettings {
+        app_language: Some("ja".to_string()),
+        language: Some("en".to_string()),
+        ..Default::default()
+    };
+    settings::change(db, me, &change).unwrap();
+    let new = NewChat {
+        characters: &[(card.version_id, "aki")],
+        persona_id: None,
+        greeting: 0,
+    };
+    let chat = chats::create(db, me, &new).unwrap();
+    let shown = &chats::prompt_inputs(db, me, chat, None)
+        .unwrap()
+        .state
+        .messages[0]
+        .content;
+    // Japanese's "2026年11月9日", not "November 9, 2026".
+    let date = shown.strip_prefix("Today: ").unwrap();
+    assert!(
+        date.ends_with('日') && date.contains('年') && date.contains('月'),
+        "{shown}"
+    );
+}
+
+#[test]
 fn the_librarys_excerpt_names_the_user_in_the_apps_language() {
     let scratch = Scratch::new();
     let (db, me) = (&scratch.db, scratch.user);

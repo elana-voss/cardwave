@@ -56,13 +56,19 @@ pub fn again(db: &dyn crate::chats::Storage, user: i64, chat_id: i64) -> anyhow:
         None => settings::user_stand_in(db, user)?.to_string(),
     };
     let language = settings::get(db, user)?.language;
+    let shown_in = settings::app_language(db, user)?;
     for one in joined.iter().skip(1) {
         let document = cards::document(db, user, one.version_id)?;
         let shown = document.in_language(&one.character, &language);
         let Some(greeting) = document.greetings(shown, true).into_iter().next() else {
             continue;
         };
-        let (text, set) = greeted(&greeting, &document.character_name(shown), &user_name);
+        let (text, set) = greeted(
+            &greeting,
+            &document.character_name(shown),
+            &user_name,
+            &shown_in,
+        );
         let message = NewMessage {
             role: Role::Assistant,
             speaker_id: Some(one.id),

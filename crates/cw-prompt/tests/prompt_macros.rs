@@ -17,6 +17,7 @@ fn render_full(
         local,
         global,
         tracking_id,
+        language: None,
     };
     render(text, &mut ctx)
 }

@@ -862,6 +862,8 @@ const MIGRATIONS: &[&str] = &[
     "alter table messages add column broke_off integer not null default 0;",
     // Whether the provider said it no longer offers the kind's model (`provider::kinds::set_gone`).
     "alter table model_kinds add column gone integer not null default 0 check (gone in (0, 1));",
+    // What the user changed of a memory's entries, held when their block is read again (`memory::changes`).
+    "alter table memory_stores add column changes text not null default '';",
 ];
 
 /// The `what` of the refusal of a database a newer Cardwave wrote.

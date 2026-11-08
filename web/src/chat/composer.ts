@@ -139,6 +139,14 @@ export function composer(s: Screen): Composer {
   return c;
 }
 
+/**
+ * What the field keeps once `sent` (its words when Send was pressed) is sent, `now` being its words then: what was
+ * typed after them while the message went out (G3); a field changed otherwise meanwhile is left as the user made it.
+ */
+export function afterSending(now: string, sent: string): string {
+  return now.startsWith(sent) ? now.slice(sent.length).trimStart() : now;
+}
+
 /** What waits attached on the server, then what was attached before its answer came, each once. */
 export function withWaiting(attached: Attachment[], waiting: Attachment[]): Attachment[] {
   return [...waiting, ...attached.filter((a) => !waiting.some((w) => w.id === a.id))];
@@ -295,7 +303,8 @@ const join = (s: Screen, cardId: number, character: string) =>
   });
 
 function send(s: Screen): void {
-  const content = s.input.value.trim();
+  const field = s.input.value;
+  const content = field.trim();
   const attachments = s.attached.map((attached) => attached.id);
   if ((!content && !attachments.length) || s.drafting) return;
   // The user's message ends the characters' replying by themselves; one being written ends first, and the words wait.
@@ -316,7 +325,7 @@ function send(s: Screen): void {
       throw error;
     }
     s.branchAt = null;
-    s.input.value = "";
+    s.input.value = afterSending(s.input.value, field);
     typed(s);
     s.attached = [];
     show(s, message);

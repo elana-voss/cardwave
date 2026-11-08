@@ -95,10 +95,18 @@ test("\"All tabs\" lists every tab, those hidden too, and the one taken from it 
   for (const name of ["Characters", "Lorebooks", "Personas", "Memories", "Documents", "Settings"]) await railLink(page, name).click({ modifiers: ["Control"] });
   const shown = await titles(page).count();
   expect(shown).toBeLessThan(7);
-  // The last tab shown ends before "+".
-  const lastRight = await bar(page).locator(".wtab").last().evaluate((node) => node.getBoundingClientRect().right);
-  const plusLeft = await bar(page).getByRole("button", { name: "New tab" }).evaluate((node) => node.getBoundingClientRect().left);
-  expect(lastRight).toBeLessThanOrEqual(plusLeft);
+  // The last tab shown ends before "+", also when 800 px is reached from a wide window in one step.
+  const endsBeforePlus = async () => {
+    const lastRight = await bar(page).locator(".wtab").last().evaluate((node) => node.getBoundingClientRect().right);
+    const plusLeft = await bar(page).getByRole("button", { name: "New tab" }).evaluate((node) => node.getBoundingClientRect().left);
+    expect(lastRight).toBeLessThanOrEqual(plusLeft);
+  };
+  await endsBeforePlus();
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await expect(titles(page)).toHaveCount(7);
+  await page.setViewportSize({ width: 800, height: 800 });
+  await expect(titles(page)).toHaveCount(shown);
+  await endsBeforePlus();
   await bar(page).getByRole("button", { name: "All tabs" }).click();
   const lines = bar(page).getByRole("menuitem");
   // The tab in view moved to the last place shown each time; every tab is there.

@@ -297,6 +297,7 @@ provider-form-testing = ・テスト中…
 provider-form-is-saved = ····{ $key_end }が保存されています
 provider-form-or-type-the-models = { $listedCount }{ $have }。またはモデルの名前を、プロバイダーのサイトの表記どおりに入力してください。
 provider-form-test-failed = テストに失敗しました：{ $failed }。キーとアドレスを確認してください。
+provider-form-test-failed-own = テストに失敗しました：{ $failed }。別のモデルを選ぶか、このモデルをもう一度ダウンロードしてください。
 
 ## search-setup (models/search-setup.ts)
 
