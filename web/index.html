@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cardwave</title>
+    <!-- The theme and Compact the user chose are set before the page is drawn (public/early.js). -->
+    <script src="/early.js"></script>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <!-- src/titlebar.ts fills the title bar with the tabs, src/rail.ts the rail and the bar a narrow window has in its place. -->
+    <header id="titlebar" class="tbar tabbar" hidden></header>
+    <nav id="rail" class="rail" aria-label="Main"></nav>
+    <nav id="topbar" class="nbar" aria-label="Main"></nav>
+    <div id="veil" class="dim" hidden></div>
+    <main id="view"></main>
+    <div id="toast" class="notice" role="status"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

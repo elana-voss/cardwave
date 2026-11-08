@@ -1,0 +1,70 @@
+/* The companion window's page (companion.html, board Companion): see-through but for the figure, its compact chat
+   and its menu. The figure's canvas is placed by a transform from the window's top left corner; the chat by its
+   left and top (companion/main.ts). A look's frame round the window (Retrowave's `body::after`) is not drawn here,
+   as the window spans the screen. */
+html.companion-page body::after {
+  content: none;
+}
+html.companion-page,
+html.companion-page body {
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  user-select: none;
+}
+.companion-figure {
+  position: fixed;
+  top: 0;
+  left: 0;
+  touch-action: none;
+}
+.compact-chat {
+  position: fixed;
+  width: 360px;
+  height: 480px;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--r-bubble);
+  box-shadow: var(--shadow-dialog);
+  user-select: text;
+}
+.compact-chat > header {
+  padding: var(--s10) var(--s8) var(--s10) var(--s14);
+  border-bottom: 1px solid var(--rule);
+}
+.compact-list {
+  padding: var(--s14);
+  overflow-y: auto;
+}
+/* The newest message stands right over the field, as in the chat's screen. */
+.compact-list > :first-child {
+  margin-top: auto;
+}
+.compact-list .bubble {
+  align-self: flex-start;
+  max-width: 85%;
+  font-size: var(--fs-body);
+}
+.compact-list .bubble.me {
+  align-self: flex-end;
+  background: var(--me);
+}
+.compact-status:not(:empty) {
+  padding: 0 var(--s14);
+}
+.compact-chat > .composer {
+  margin: var(--s10);
+  padding: var(--s4) var(--s4) var(--s4) var(--s12);
+}
+.compact-chat .send {
+  width: 34px;
+  height: 34px;
+}
+/* What the companion says (live.ts): a chat bubble over its head, which a click goes through. */
+.companion-say {
+  position: fixed;
+  max-width: 240px;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+}

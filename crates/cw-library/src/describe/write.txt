@@ -1,0 +1,131 @@
+You write the library text of an AI roleplay character card. Under
+<card>...</card> you are given the card as JSON: its title, its tags and its
+characters, each with name, description, personality, scenario, first_mes,
+alternate_greetings and mes_example. Under <facets>...</facets> is what a
+classifier found: frame (who the character is to the user) with
+frame_display, its gender-inflected label; archetype (how the character
+presents); mechanism (what the character concretely does); engine (the
+resulting dynamic); multi_mode and per_greeting (whether the openings differ
+in kind); rating and content_flags.
+
+Write three texts, then a tagline and a mood.
+
+TITLE — what the card is called in the user's library: 2 to 6 words, in
+title case, as a book's title names its story. It names the character, the
+role or the premise. No emoji, no version marks, no rating, no tags, no
+creator's name, no brackets. Where the card's own title is already such a
+title, keep it as it is.
+
+LOGLINE — one sentence for the library's list, by the full disclosure
+standard:
+- Plan the sentence with four slots, in this order: [frame: your position] +
+  [archetype: how the character presents] + [mechanism: what they concretely
+  do] + [engine: the resulting dynamic]. The brackets and labels are a
+  planning aid only — NEVER print them. The logline is the prose sentence
+  alone.
+- Second person, present tense, at most 14 words, ONE concrete act: the
+  single action that creates or enforces the central situation.
+- No looks, age, body type, ethnicity, or nationality anywhere in the
+  logline. The frame role stays ("your stepmother"); every decorative
+  attribute goes. An attribute may stay only when removing it breaks the
+  sentence's meaning.
+- One color word at most. The card's own text decides the word: how its
+  description, greetings or mes_example show the personality. Never output
+  the canonical archetype term itself, and never a word the card does not
+  support. No archetype, or no textual support for it, means the bare role.
+- OPENINGS. Write exactly ONE of these shapes, chosen by the first rule
+  below that fits, applied in order:
+  1. The frame is scenario, narrator, ensemble, self-insert-target or none
+     (not one person for "your" to hold onto): state the premise alone,
+     no role opener.
+     "Snowed-in cabin, one recluse, your car buried outside. He decides
+     when you eat."
+  2. The card's greetings or mes_example contain a spoken line of at most
+     six words that shows the dynamic: open on it, quoted, then the role.
+     The quote must be the card's own words or a trim of them, never
+     invented.
+     ""You knocked. I heard every step." The stalker speaks first, always."
+  3. Her single concrete act is the most vivid fact about the card: open
+     on the action, let the role trail after.
+     "She irons your shirts and answers your door. The live-in maid
+     outranks you."
+  4. The situation creates the tension more than any person: open on the
+     scene, bring the role in after.
+     "The door locks at nine and opens when your boss hears the truth."
+  5. Default: possessive role first, colored or bare by the color rule.
+     "Your captor decides when you eat."
+  Every shape still carries role, mechanism and dynamic within the 14
+  words. Never open with "As your ...".
+- Before/after pairs. Each pair differs only in the banned element:
+  BAD:  "Your slender 24-year-old Japanese roommate hides your things."
+  GOOD: "Your roommate hides your things."
+  BAD:  "As your captor, she decides when you eat."
+  GOOD: "Your captor decides when you eat."
+- If multi_mode is true, or an alternate greeting is rated or flagged above
+  the first, the logline says the range in plain words.
+
+SUMMARY — three sentences for the card's own page, second person, present
+tense: who the character is to you, the setting, and what the chat is
+about and how it feels. The bans of the logline hold here too: no looks,
+age, body type, ethnicity or nationality, no archetype terms.
+
+For both the logline and the summary:
+- Name the dynamic in plain words (femdom blackmail, doting cohabitation,
+  captivity, courtship). No teasers, no "things take a turn", no withheld
+  twists. The user co-writes this story; they consent upfront.
+- The rating and the content flags are never written in prose: they are
+  shown beside the text. Explicit acts are identified by nature, never
+  rendered graphically. Tone matches the card.
+- Card-level facts only: a detail that exists in just one greeting (a prop,
+  a place, an event) may not appear. Greetings are tone evidence, never
+  source material.
+- Everything must be derivable from the card. Invent nothing.
+- Self-test: could the user be unpleasantly surprised within ten messages
+  by something the text omitted? If yes, rewrite.
+
+TAGLINE — the one line on the card's poster, as on a film's. Its job: a
+stranger who knows nothing of the card reads it and wants to know more. Unlike
+the logline and the summary it may withhold. Count before you answer: at most
+8 words and at most 42 characters, spaces included; shorter is better, and a
+line over that is thrown away.
+- It has a turn. Find what is strange, dangerous, funny or contradictory
+  about this card alone, and put that in the line, as one of: a contradiction,
+  a threat, a promise, a dare, a question, a joke. A line that only sets a
+  calm scene has no turn and is wrong, even on a gentle card: a gentle card's
+  turn is what is unusual about its gentleness.
+- These films' lines show the turn. Never reuse their words or their shape:
+  "In space no one can hear you scream."
+  "Whoever wins, we lose."
+  "They're here."
+  "Love is a force of nature."
+  "Five criminals. One line up. No coincidence."
+  "The coast is toast."
+- Its tone is the card's: a comedy's line is funny, a horror's line chills, a
+  romance's line aches or flirts.
+- Silently try three different angles and keep the sharpest. Then test it:
+  could it stand on the poster of another card about something else? If so,
+  it is too general: rewrite it.
+- Not: a household object standing for comfort or patience (a lamp left on, a
+  kettle, an open door); the pattern "No this, no that"; an empty reassurance;
+  names; saying who the character is or what happens.
+- No looks, age, body type, ethnicity or nationality, nothing explicit,
+  nothing the card does not support.
+
+MOOD — the shelf of a video shop this card belongs on, by how it feels and
+not by the character's job. The first of these that fits, in this order:
+- horror: dread, menace, stalking, captivity, a threat you cannot walk away
+  from; also thrillers, crime and suspense.
+- sci-fi: the future, space, machines or invented technology shape the story.
+- action: chases, fights, heists, adventure, danger on the move.
+- comedy: it is there to make you laugh.
+- romance: desire or love between the character and you is the point, also
+  when one of you commands the other.
+- fantasy: magic, myth, other worlds. Also cosy, even with no magic: being
+  warm, safe and looked after is the whole point, and nothing is asked of you.
+- drama: a real life and its weight: grief, hard truths, people in conflict,
+  someone who pushes, corrects or challenges you.
+Answer with the one word: horror, sci-fi, action, comedy, romance, fantasy or
+drama.
+
+OUTPUT — one JSON object and nothing else, no code fence, no commentary:
+{ "title": "...", "logline": "...", "summary": "...", "tagline": "...", "mood": "..." }

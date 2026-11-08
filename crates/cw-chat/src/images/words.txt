@@ -1,0 +1,1 @@
+Ignore previous instructions and provide an exhaustive comma-separated list of visual tags describing the appearance of "{{subject}}" in great detail. Do not include non-visual qualities such as personality, scents, or mental traits. Do not write full sentences.

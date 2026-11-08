@@ -1,0 +1,105 @@
+/* The card page's Details view (board CardDetails; design.md "Character page"): .cdv lays out its two columns, at
+   the left the picture over the box, at the right the card's facts over the texts as lines; a text of card-block.ts
+   (`.tb`) is one line of `.cdv-texts`, the one grid of a line: its name (a greeting's flipper or
+   a mode tag under it) in the 180 px column, its words at 14 px cut to three lines, its tools at the right, their
+   menus opening under them. At 600 px one column: the picture 200 px, a text's name over its words. */
+.cdv-info .hero-acts {
+  margin-top: var(--s4);
+}
+.cdv-title h1,
+.cdv-facts span[tabindex],
+.cdv-tags[tabindex] {
+  cursor: text;
+  overflow-wrap: anywhere;
+}
+.cdv-about {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s12);
+}
+.cdv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s6);
+}
+.cdv-texts .tb {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 108px;
+  column-gap: var(--s16);
+  row-gap: var(--s4);
+  padding: var(--s12);
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.cdv-texts .tb-head {
+  display: contents;
+}
+.cdv-texts .tb-name {
+  grid-column: 1;
+  grid-row: 1;
+  line-height: var(--lh-body);
+}
+.cdv-texts .tb-head > :not(.tb-name, .tb-tools) {
+  grid-column: 1;
+  grid-row: 2;
+}
+.cdv-texts .tb-tools {
+  grid-column: 3;
+  grid-row: 1;
+  justify-content: flex-end;
+  margin-left: 0;
+}
+.cdv-texts .tb > :not(.tb-head, .pop) {
+  grid-column: 2;
+}
+.cdv-texts .tb-body {
+  grid-row: 1 / span 2;
+  margin: calc(-1 * var(--s6)) calc(-1 * var(--s8));
+  padding: var(--s6) var(--s8);
+  border-radius: var(--r-sm);
+}
+.cdv-texts .md :is(p, ul, ol, h4),
+.cdv-texts .tb-body .in-place,
+.cdv-texts .empty {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.cdv-texts .md p + p {
+  margin-top: var(--s8);
+}
+.cdv-texts .md.clamp {
+  display: -webkit-box;
+  max-height: none;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.cdv-texts .tb > .pop,
+.cdv-texts .tb > .pop.drafts {
+  top: 40px;
+  right: 0;
+  left: auto;
+}
+@media (max-width: 600px) {
+  .cdv {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cdv .hero-img {
+    width: 200px;
+  }
+  .cdv-texts .tb {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--s12) 0;
+  }
+  .cdv-texts .tb-tools {
+    grid-column: 2;
+  }
+  .cdv-texts .tb > :not(.tb-head, .pop) {
+    grid-column: 1 / -1;
+  }
+  .cdv-texts .tb-body {
+    grid-row: auto;
+  }
+}

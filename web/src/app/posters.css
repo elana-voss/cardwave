@@ -1,0 +1,52 @@
+/* The view Posters (web/src/library/poster.ts): one rule for every card, sizes in container units so that the same
+   rule holds at any tile width. A design is a class poster-<mood>-<a or b> (the table in library/poster-designs.ts);
+   the script sets --dk (fade, "r g b"), --tc (title), --gc (tagline), --ground (no picture) and --tr (spacing), after which
+   the tile is marked poster-drawn. A -.3em margin goes through a variable: stylelint forbids em on a margin.
+   The designs' colours and sizes are the design's own, none a token (docs/design.md, the item "Posters"). */
+.poster { position: absolute; inset: 0; display: block; container-type: inline-size; overflow: hidden; background: var(--ground, #111); --article-pull: -.3em; --tr: .3em; }
+.poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.poster-scrim { position: absolute; left: 0; right: 0; display: block; pointer-events: none; opacity: 0; }
+.poster-scrim-top { top: 0; background: linear-gradient(to bottom, rgb(var(--dk) / .92) 0%, rgb(var(--dk) / .7) 55%, rgb(var(--dk) / 0) 100%); }
+.poster-scrim-foot { bottom: 0; background: linear-gradient(to top, rgb(var(--dk) / .94) 0%, rgb(var(--dk) / .74) 55%, rgb(var(--dk) / 0) 100%); }
+.poster-scrim-mid { background: linear-gradient(to bottom, rgb(var(--dk) / 0) 0%, rgb(var(--dk) / .85) 30%, rgb(var(--dk) / .85) 70%, rgb(var(--dk) / 0) 100%); }
+.poster-zone { position: absolute; left: 7cqw; right: 7cqw; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2.6cqw; visibility: hidden; }
+.poster-drawn .poster-zone { visibility: visible; }
+.poster-top { top: 7cqw; }
+.poster-foot { bottom: 8cqw; }
+.poster-title { display: block; color: var(--tc, #fff); line-height: .95; }
+.poster-line { display: block; white-space: nowrap; }
+.poster-article { display: block; }
+.poster-tagline { display: block; color: var(--gc, #fff); line-height: 1.25; text-wrap: balance; max-width: 100%; font-size: max(11px, var(--gs, 5.6cqw)); }
+.poster-left .poster-zone { align-items: flex-start; text-align: left; left: 6cqw; }
+.poster-measure { position: absolute; left: 0; top: 0; display: inline-block; visibility: hidden; white-space: nowrap; font-size: 100px; }
+
+.poster-horror-a .poster-title{ font-family:'Anton',Impact,sans-serif; text-transform:uppercase; letter-spacing:.01em; line-height:.9 }
+.poster-horror-a .poster-tagline{ font-family:'Anton',Impact,sans-serif; text-transform:uppercase; letter-spacing:.22em; --gs:5.4cqw; opacity:.9 }
+.poster-horror-b .poster-title{ font-family:'Cinzel',Georgia,serif; font-weight:700; letter-spacing:.12em; line-height:1.08 }
+.poster-horror-b .poster-tagline{ font-family:'Cinzel',Georgia,serif; font-weight:500; letter-spacing:.06em; --gs:5.4cqw }
+.poster-drama-a .poster-title{ font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; letter-spacing:.02em; line-height:1 }
+.poster-drama-a .poster-tagline{ font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-weight:500; --gs:6.6cqw }
+.poster-drama-b .poster-title{ font-family:'Oswald','Arial Narrow',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.01em; line-height:.94 }
+.poster-drama-b .poster-tagline{ font-family:'Oswald','Arial Narrow',sans-serif; font-weight:400; letter-spacing:.02em; --gs:5.6cqw }
+.poster-romance-a .poster-title{ font-family:'Dancing Script',cursive; font-weight:700; line-height:.95; transform:rotate(-4deg) }
+.poster-romance-a .poster-tagline{ font-family:'Dancing Script',cursive; font-weight:600; --gs:6.6cqw }
+.poster-romance-b .poster-title{ font-family:'Playfair Display',Georgia,serif; font-weight:800; line-height:.96 }
+.poster-romance-b .poster-tagline{ font-family:'Playfair Display',Georgia,serif; font-style:italic; font-weight:400; --gs:5.8cqw }
+.poster-action-a .poster-title{ font-family:'Archivo Black','Arial Black',sans-serif; text-transform:uppercase; transform:skewX(-9deg); transform-origin:left bottom; line-height:.92; -webkit-text-stroke:.07em rgb(var(--dk)); paint-order:stroke fill; text-shadow:.04em .06em 0 rgb(var(--dk)/.95) }
+.poster-action-a .poster-tagline{ font-family:'Archivo Black','Arial Black',sans-serif; text-transform:uppercase; letter-spacing:.04em; --gs:5.4cqw }
+.poster-action-b .poster-title{ font-family:'Archivo','Arial Black',sans-serif; font-weight:800; font-stretch:125%; text-transform:uppercase; letter-spacing:.02em; line-height:.95 }
+.poster-action-b .poster-tagline{ font-family:'Archivo',Arial,sans-serif; font-weight:600; font-stretch:112.5%; text-transform:uppercase; letter-spacing:.14em; --gs:5.2cqw }
+.poster-sci_fi-a .poster-title{ font-family:'Exo 2',Arial,sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:var(--tr); line-height:1.2 }
+.poster-sci_fi-a .poster-title .poster-line{ margin-right:calc(-1 * var(--tr)) }
+.poster-sci_fi-a .poster-tagline{ font-family:'Exo 2',Arial,sans-serif; font-weight:500; text-transform:uppercase; letter-spacing:.12em; --gs:5.2cqw }
+.poster-sci_fi-b .poster-title{ font-family:'Orbitron',Arial,sans-serif; font-weight:800; text-transform:uppercase; letter-spacing:.03em; line-height:1.04; text-shadow:0 0 .22em var(--tc),0 0 .6em var(--tc) }
+.poster-sci_fi-b .poster-tagline{ font-family:'Orbitron',Arial,sans-serif; font-weight:500; text-transform:uppercase; letter-spacing:.06em; --gs:5cqw }
+.poster-comedy-a .poster-title{ font-family:'Fredoka','Arial Rounded MT Bold',sans-serif; font-weight:700; line-height:.95 }
+.poster-comedy-a .poster-tagline{ font-family:'Fredoka','Arial Rounded MT Bold',sans-serif; font-weight:500; --gs:6.2cqw }
+.poster-comedy-b .poster-title{ font-family:'Lilita One','Arial Black',sans-serif; line-height:.95; transform:rotate(-5deg); -webkit-text-stroke:.08em rgb(var(--dk)); paint-order:stroke fill; text-shadow:0 .07em 0 rgb(var(--dk)/.95) }
+.poster-comedy-b .poster-tagline{ font-family:'Lilita One','Arial Black',sans-serif; letter-spacing:.02em; --gs:6cqw }
+.poster-fantasy-a .poster-title{ font-family:'Marcellus SC',Georgia,serif; letter-spacing:.04em; line-height:1.02; text-shadow:0 0 .45em color-mix(in srgb,var(--tc) 55%,transparent) }
+.poster-fantasy-a .poster-title .poster-article{ display:block; letter-spacing:.3em; margin-right:var(--article-pull); line-height:1.2 }
+.poster-fantasy-a .poster-tagline{ font-family:'Marcellus SC',Georgia,serif; letter-spacing:.06em; --gs:5.6cqw }
+.poster-fantasy-b .poster-title{ font-family:'Kaushan Script',cursive; line-height:1.02; transform:rotate(-5deg); text-shadow:0 .05em .12em rgb(var(--dk)/.8) }
+.poster-fantasy-b .poster-tagline{ font-family:'Kaushan Script',cursive; --gs:6.2cqw }

@@ -1,0 +1,16 @@
+[package]
+name = "cw-whisper"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+tracing.workspace = true
+anyhow.workspace = true
+whisper-rs.workspace = true
+cw-core.workspace = true
+cw-platform.workspace = true

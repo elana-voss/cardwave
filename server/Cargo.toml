@@ -1,0 +1,74 @@
+[package]
+name = "cardwave-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+name = "cardwave_server"
+doctest = false
+
+[[bin]]
+name = "cardwave-server"
+path = "src/main.rs"
+
+[dependencies]
+cw-store.workspace = true
+cw-find.workspace = true
+cw-chat.workspace = true
+cw-coding.workspace = true
+cw-library.workspace = true
+cw-dictation.workspace = true
+cw-voice.workspace = true
+cw-search.workspace = true
+cw-provider.workspace = true
+cw-modelfiles.workspace = true
+cw-accounts.workspace = true
+cw-key.workspace = true
+cw-ccv4.workspace = true
+cw-prompt.workspace = true
+cw-platform.workspace = true
+cw-core.workspace = true
+axum.workspace = true
+axum-extra.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ts-rs.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+getrandom.workspace = true
+rand.workspace = true
+chrono.workspace = true
+toml.workspace = true
+crc32fast.workspace = true
+sha2.workspace = true
+base64.workspace = true
+percent-encoding.workspace = true
+image.workspace = true
+futures-util.workspace = true
+zip.workspace = true
+tower.workspace = true
+tokio-util.workspace = true
+dirs.workspace = true
+
+[target.'cfg(any(windows, target_os = "macos"))'.dependencies]
+keyring.workspace = true
+
+# build.rs reads the API's routes and their handlers (`tools::app`).
+[build-dependencies]
+syn = { version = "2", features = ["full", "visit"] }
+quote = "1"
+
+[dev-dependencies]
+# The tests ask the server over HTTP; the product's HTTP client is cw-platform's.
+reqwest.workspace = true
+# Tests plant rows in the database the server keeps.
+rusqlite.workspace = true
+tokio-tungstenite = "0.29"
+
+# A test reads the database key the credential store keeps under a service of its own.
+[target.'cfg(any(windows, target_os = "macos"))'.dev-dependencies]
+keyring.workspace = true

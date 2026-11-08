@@ -1,0 +1,64 @@
+/* First run (boards FirstRunStep1–3, the key step also in Providers' "Add provider"): what the design system's
+   `.fr-main`, `.fr-col` and their parts leave to the app. */
+/* The buttons under a step as the boards draw them: Continue, Confirm and Open Cardwave wider, the others 40 px high. */
+.setup-actions > .btn {
+  min-height: 40px;
+}
+.setup-actions > .btn-primary {
+  padding: 0 var(--s22);
+}
+.setup-total {
+  margin-top: calc(-1 * var(--s12));
+}
+/* A download's state at its line's right, in a column as wide in each line, right after its bar's end. */
+.download-state {
+  width: 80px;
+}
+/* What says nothing takes no place; the choice of how to set it up only as wide as its words. */
+.key-step .fld > [role="status"]:empty,
+.found-list:empty {
+  display: none;
+}
+.by-hand .seg {
+  align-self: flex-start;
+}
+
+/* The start screen and the sign-in (settings/password.ts, settings/accounts.ts; board SignIn): the logo, the
+   account's round and name, the password with its button, what a forgotten password means; or the accounts to
+   choose from. */
+.start-screen {
+  padding: var(--s64) var(--s24);
+}
+.start-logo {
+  width: 44px;
+  height: auto;
+}
+.start-column > .initial {
+  width: 64px;
+  height: 64px;
+  font-size: var(--fs-title);
+}
+.start-column > h1 {
+  margin: 0;
+  font-size: var(--fs-title);
+  font-weight: 600;
+}
+.start-form,
+.start-says {
+  width: 320px;
+}
+.start-says {
+  text-align: center;
+}
+.start-accounts {
+  width: 360px;
+  overflow: hidden;
+}
+.account-choice {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

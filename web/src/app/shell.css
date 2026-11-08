@@ -1,0 +1,218 @@
+/* The window's frame (index.html, boards RailWide, RailCollapsed, TabsBar, NarrowLibrary): the title bar fixed on
+   top (`--top` high, none in a browser without the rail), the rail wide or folded (`data-rail="narrow"` on the
+   body), in a narrow window the bar in the rail's place and the rail as a drawer (`data-drawer`), the screen in
+   `#view`, the notice. The rail's own parts are the design system's; here only how the frame holds them. */
+.sp .initial {
+  width: 24px;
+  height: 24px;
+  font-size: var(--fs-caption);
+}
+body {
+  --top: 36px;
+  height: 100vh;
+  box-sizing: border-box;
+  padding-top: var(--top);
+  display: flex;
+}
+body[data-bare]:not([data-desktop]) {
+  --top: 0px;
+}
+#view {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+/* The title bar: the tabs, "+", the empty room, All tabs and the magnifier, the window's buttons. Without the
+   rail (first run, the start screen) and in a window of one page it holds no tabs; in a browser then no bar. */
+#titlebar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 6;
+  background: var(--page);
+  user-select: none;
+}
+body[data-bare] #titlebar > :not(.name, .tab-drag, .wc),
+#titlebar.alone > :not(.name, .tab-drag, .wc) {
+  display: none;
+}
+body[data-bare]:not([data-desktop]) #titlebar {
+  display: none;
+}
+#titlebar > .name {
+  display: none;
+}
+body:is([data-bare], [data-rail="narrow"]) #titlebar > .name {
+  display: flex;
+}
+.wtab.dragged {
+  opacity: 0.5;
+}
+/* The view menu (view-menu.ts) opens under the eye, from its right edge. */
+.wtabs > .menu > .vmenu {
+  top: var(--s36);
+}
+.wc .window_close:hover {
+  background: var(--danger-fill);
+  color: var(--on-accent);
+}
+
+/* The rail: lower than its lines, it scrolls by itself. Its account's menu opens over the account. */
+#rail {
+  background: var(--page);
+  overflow: hidden auto;
+}
+/* A latest chat pointed at is filled as a line of the rail is, not the blue of a link's `a:hover`. */
+.nav-chat:is(:hover, .is-hover) {
+  background: var(--marked);
+  color: var(--ink);
+}
+#rail-toggle:not(:hover) {
+  background: none;
+}
+.rail-create > .menu,
+.rail-create .create {
+  width: 100%;
+}
+.rail-foot > .account-menu {
+  flex: 1;
+  min-width: 0;
+}
+:where(.rail-foot) .account {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.rail-foot .account .rail-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#rail .account-menu > .pop {
+  position: fixed;
+  top: auto;
+  right: auto;
+  bottom: 64px;
+  left: var(--s10);
+}
+
+/* The narrow bar's account is a button of the rail's icon links (`.rail-ic`, drawn for links): without the
+   browser's frame and ground, marked only as they are. */
+button.rail-ic {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Folded (board RailCollapsed): icons only, the button that unfolds it on top, Create a round "+", a short rule
+   in each group's place, no latest chats, the gear over the account. The app's name is in the title bar. */
+@media (min-width: 601px) {
+  body[data-rail="narrow"] #rail {
+    width: 60px;
+    padding: var(--s12) var(--s8);
+    align-items: center;
+    gap: var(--s4);
+  }
+  body[data-rail="narrow"] :is(.rail-brand, .rail-text, .rail-chats, .more-link) {
+    display: none;
+  }
+  body[data-rail="narrow"] .rail-head {
+    padding: 0;
+  }
+  body[data-rail="narrow"] #rail-toggle {
+    width: 44px;
+    min-height: 44px;
+  }
+  body[data-rail="narrow"] #rail-toggle svg {
+    transform: scaleX(-1);
+  }
+  body[data-rail="narrow"] .rail-create {
+    margin: var(--s2) 0 var(--s6);
+  }
+  body[data-rail="narrow"] .rail-create .create {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  body[data-rail="narrow"] :is(#rail .nav, #rail .foot-link) {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  body[data-rail="narrow"] .rail-rule {
+    width: 28px;
+    margin: var(--s8) 0;
+  }
+  body[data-rail="narrow"] .rail-foot {
+    flex-direction: column-reverse;
+    padding: 0;
+    border: 0;
+  }
+  body[data-rail="narrow"] #rail .initial {
+    width: 30px;
+    height: 30px;
+  }
+  body[data-rail="narrow"] #rail .account-menu > .pop {
+    left: var(--s8);
+  }
+}
+
+/* A narrow window (board NarrowLibrary): the bar on top in the rail's place, the rail a drawer over the dimmed
+   page when the bar's button asks for it; no tabs, and in a browser no title bar. */
+#topbar {
+  display: none;
+}
+#veil {
+  position: fixed;
+  inset: var(--top) 0 0;
+  z-index: 4;
+  background: var(--scrim);
+}
+@media (max-width: 600px) {
+  body {
+    flex-direction: column;
+  }
+  #titlebar > :not(.name, .tab-drag, .wc) {
+    display: none;
+  }
+  body:not([data-desktop]) {
+    --top: 0px;
+  }
+  body:not([data-desktop]) #titlebar {
+    display: none;
+  }
+  #topbar {
+    display: flex;
+    flex: none;
+  }
+  /* The bar's icons one size: the eye and the magnifier are made 16 px for the title bar. */
+  #topbar .btn-icon > svg {
+    width: 18px;
+    height: 18px;
+  }
+  #rail {
+    display: none;
+  }
+  body[data-drawer] #rail {
+    position: fixed;
+    inset: var(--top) auto 0 0;
+    z-index: 5;
+    display: flex;
+    border-right: 0;
+    background: var(--surface);
+    box-shadow: var(--shadow-drawer);
+    animation: drawer 0.18s ease-out;
+  }
+}
+
+/* The notice at the window's foot (`toast` of dom.ts), there only while it says something. */
+#toast:empty {
+  display: none;
+}

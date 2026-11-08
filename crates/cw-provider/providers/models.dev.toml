@@ -1,0 +1,509 @@
+# Providers taken from models.dev's list (https://models.dev/api.json), written by tools/providers.py, whose head
+# says which are taken. Not kept by hand: a change made here is lost when the file is written anew. An entry is a
+# provider's name and the address of its API up to the version part; own.toml says how the app uses them.
+#
+# models.dev is under the MIT License:
+#
+# Copyright (c) 2025 models.dev
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+[[provider]]
+name = "302.AI"
+base_url = "https://api.302.ai/v1"
+
+[[provider]]
+name = "Abacus"
+base_url = "https://routellm.abacus.ai/v1"
+
+[[provider]]
+name = "abliteration.ai"
+base_url = "https://api.abliteration.ai/v1"
+
+[[provider]]
+name = "above.dev"
+base_url = "https://api.above.dev/v1"
+
+[[provider]]
+name = "Agnes AI"
+base_url = "https://apihub.agnes-ai.com/v1"
+
+[[provider]]
+name = "ai&"
+base_url = "https://api.aiand.com/v1"
+
+[[provider]]
+name = "AI-ROUTER"
+base_url = "https://api.ai-router.dev/v1"
+
+[[provider]]
+name = "ainetcafe"
+base_url = "https://microquickjs.com/v1"
+
+[[provider]]
+name = "Aixy"
+base_url = "https://api.aixy-gateway.com/v1"
+
+[[provider]]
+name = "AKI.IO"
+base_url = "https://aki.io/v1"
+
+[[provider]]
+name = "Alibaba (China)"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+[[provider]]
+name = "Ambient"
+base_url = "https://api.ambient.xyz/v1"
+
+[[provider]]
+name = "AMD"
+base_url = "https://developer.amd.com.cn/radeon/api/v1"
+
+[[provider]]
+name = "AnyAPI"
+base_url = "https://api.anyapi.ai/v1"
+
+[[provider]]
+name = "Arcee"
+base_url = "https://api.arcee.ai/api/v1"
+
+[[provider]]
+name = "Auriko"
+base_url = "https://api.auriko.ai/v1"
+
+[[provider]]
+name = "Bee by HEOSSI"
+base_url = "https://api.bee.heossi.com/bee"
+
+[[provider]]
+name = "Berget.AI"
+base_url = "https://api.berget.ai/v1"
+
+[[provider]]
+name = "Blue Claw"
+base_url = "https://openai.blueclaw.network/v1"
+
+[[provider]]
+name = "Bothub"
+base_url = "https://openai.bothub.ru/v1"
+
+[[provider]]
+name = "Charm Hyper"
+base_url = "https://hyper.charm.land/v1"
+
+[[provider]]
+name = "CloudFerro Sherlock"
+base_url = "https://api-sherlock.cloudferro.com/openai/v1"
+
+[[provider]]
+name = "CoralBricks"
+base_url = "https://inference.coralbricks.ai/v1"
+
+[[provider]]
+name = "CoreWeave"
+base_url = "https://api.inference.wandb.ai/v1"
+
+[[provider]]
+name = "Cortecs"
+base_url = "https://api.cortecs.ai/v1"
+
+[[provider]]
+name = "CrossModel"
+base_url = "https://api.crossmodel.ai/v1"
+
+[[provider]]
+name = "Crusoe"
+base_url = "https://api.inference.crusoecloud.com/v1"
+
+[[provider]]
+name = "D.Run (China)"
+base_url = "https://chat.d.run/v1"
+
+[[provider]]
+name = "DaoXE"
+base_url = "https://daoxe.com/v1"
+
+[[provider]]
+name = "DigitalOcean"
+base_url = "https://inference.do-ai.run/v1"
+
+[[provider]]
+name = "DInference"
+base_url = "https://api.dinference.com/v1"
+
+[[provider]]
+name = "EBCloud"
+base_url = "https://maas-api.ebcloud.com/v1"
+
+[[provider]]
+name = "Echo"
+base_url = "https://echo.tracerml.ai/v1"
+
+[[provider]]
+name = "Eden AI"
+base_url = "https://api.edenai.run/v3"
+
+[[provider]]
+name = "EmpirioLabs AI"
+base_url = "https://api.empiriolabs.ai/v1"
+
+[[provider]]
+name = "engy"
+base_url = "https://api.engy.ai/v1"
+
+[[provider]]
+name = "evroc"
+base_url = "https://models.think.evroc.com/v1"
+
+[[provider]]
+name = "FastRouter"
+base_url = "https://go.fastrouter.ai/api/v1"
+
+[[provider]]
+name = "FrogBot"
+base_url = "https://app.frogbot.ai/api/v1"
+
+[[provider]]
+name = "GMI Cloud"
+base_url = "https://api.gmi-serving.com/v1"
+
+[[provider]]
+name = "GreenPT"
+base_url = "https://api.greenpt.ai/v1"
+
+[[provider]]
+name = "Helicone"
+base_url = "https://ai-gateway.helicone.ai/v1"
+
+[[provider]]
+name = "Hetzner"
+base_url = "https://inference.hetzner.com/api/v1"
+
+[[provider]]
+name = "HPC-AI"
+base_url = "https://api.hpc-ai.com/inference/v1"
+
+[[provider]]
+name = "Impossibl"
+base_url = "https://api.impossibl.com/v1"
+
+[[provider]]
+name = "Inception"
+base_url = "https://api.inceptionlabs.ai/v1"
+
+[[provider]]
+name = "Inceptron"
+base_url = "https://api.inceptron.io/v1"
+
+[[provider]]
+name = "Inco"
+base_url = "https://api.inco.ai/v1"
+
+[[provider]]
+name = "InferX"
+base_url = "https://model.inferx.net/endpoints/v1"
+
+[[provider]]
+name = "IO.NET"
+base_url = "https://api.intelligence.io.solutions/api/v1"
+
+[[provider]]
+name = "IteraCompute"
+base_url = "https://api.iteracompute.com/v1"
+
+[[provider]]
+name = "Jalapeno Cloud"
+base_url = "https://api.jalapeno-cloud.ai/v1"
+
+[[provider]]
+name = "Jiekou.AI"
+base_url = "https://api.jiekou.ai/openai"
+
+[[provider]]
+name = "Kilo Gateway"
+base_url = "https://api.kilo.ai/api/gateway"
+
+[[provider]]
+name = "klokintegration.se"
+base_url = "https://api-gw.klok.ipaas.se/proxy/kloker-key/v1"
+
+[[provider]]
+name = "Kosmik Compute"
+base_url = "https://api.koscompute.com/v1"
+
+[[provider]]
+name = "Llama"
+base_url = "https://api.llama.com/compat/v1"
+
+[[provider]]
+name = "LLM Gateway"
+base_url = "https://api.llmgateway.io/v1"
+
+[[provider]]
+name = "LLM Tech"
+base_url = "https://api.llmtech.eu/v1"
+
+[[provider]]
+name = "LongCat"
+base_url = "https://api.longcat.chat/openai"
+
+[[provider]]
+name = "LowRouter"
+base_url = "https://api.lowrouter.ai/v1"
+
+[[provider]]
+name = "LucidQuery"
+base_url = "https://api.lucidquery.com/v1"
+
+[[provider]]
+name = "Melious"
+base_url = "https://api.melious.ai/v1"
+
+[[provider]]
+name = "Mixlayer"
+base_url = "https://models.mixlayer.ai/v1"
+
+[[provider]]
+name = "Moark"
+base_url = "https://moark.com/v1"
+
+[[provider]]
+name = "Modal"
+base_url = "https://inference.us-west.modal.direct/v1"
+
+[[provider]]
+name = "Model Oracle AI"
+base_url = "https://api.modeloracle.com/api/v1"
+
+[[provider]]
+name = "Modelis"
+base_url = "https://modelishub.com/v1"
+
+[[provider]]
+name = "ModelScope"
+base_url = "https://api-inference.modelscope.cn/v1"
+
+[[provider]]
+name = "Moonshot AI (China)"
+base_url = "https://api.moonshot.cn/v1"
+
+[[provider]]
+name = "Morph"
+base_url = "https://api.morphllm.com/v1"
+
+[[provider]]
+name = "NaN"
+base_url = "https://api.nan.builders/v1"
+
+[[provider]]
+name = "NEAR AI Cloud"
+base_url = "https://cloud-api.near.ai/v1"
+
+[[provider]]
+name = "Neuralwatt"
+base_url = "https://api.neuralwatt.com/v1"
+
+[[provider]]
+name = "Ofox"
+base_url = "https://api.ofox.ai/v1"
+
+[[provider]]
+name = "Ollama Cloud"
+base_url = "https://ollama.com/v1"
+
+[[provider]]
+name = "OpenCode"
+base_url = "https://opencode.ai/inference/v1"
+
+[[provider]]
+name = "OpenCode Go"
+base_url = "https://opencode.ai/inference/go/v1"
+
+[[provider]]
+name = "OpenReason"
+base_url = "https://api.openreason.app/v1"
+
+[[provider]]
+name = "Opper"
+base_url = "https://api.opper.ai/v3/compat"
+
+[[provider]]
+name = "OrcaRouter"
+base_url = "https://api.orcarouter.ai/v1"
+
+[[provider]]
+name = "OVHcloud AI Endpoints"
+base_url = "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
+
+[[provider]]
+name = "Pareto Inference"
+base_url = "https://api.paretoinference.com/v1"
+
+[[provider]]
+name = "Pendra"
+base_url = "https://api.pendra.ai/api/v1"
+
+[[provider]]
+name = "Pioneer"
+base_url = "https://api.fastino.ai/v1"
+
+[[provider]]
+name = "Poolside"
+base_url = "https://inference.poolside.ai/v1"
+
+[[provider]]
+name = "QiHang"
+base_url = "https://api.qhaigc.net/v1"
+
+[[provider]]
+name = "Qiniu"
+base_url = "https://api.qnaigc.com/v1"
+
+[[provider]]
+name = "Regolo AI"
+base_url = "https://api.regolo.ai/v1"
+
+[[provider]]
+name = "routing.run"
+base_url = "https://api.routing.run/v1"
+
+[[provider]]
+name = "RunInfra"
+base_url = "https://api.runinfra.ai/v1"
+
+[[provider]]
+name = "Sakana AI"
+base_url = "https://api.sakana.ai/v1"
+
+[[provider]]
+name = "Sarvam AI"
+base_url = "https://api.sarvam.ai/v1"
+
+[[provider]]
+name = "SCX.ai"
+base_url = "https://api.scx.ai/v1"
+
+[[provider]]
+name = "SenseNova (China)"
+base_url = "https://token.sensenova.cn/v1"
+
+[[provider]]
+name = "SiliconFlow (China)"
+base_url = "https://api.siliconflow.cn/v1"
+
+[[provider]]
+name = "STACKIT"
+base_url = "https://api.openai-compat.model-serving.eu01.onstackit.cloud/v1"
+
+[[provider]]
+name = "StepFun (China)"
+base_url = "https://api.stepfun.com/v1"
+
+[[provider]]
+name = "StepFun (Global)"
+base_url = "https://api.stepfun.ai/v1"
+
+[[provider]]
+name = "submodel"
+base_url = "https://llm.submodel.ai/v1"
+
+[[provider]]
+name = "Tempr Gateway"
+base_url = "https://api.temprhq.io/v1"
+
+[[provider]]
+name = "Tencent TokenHub"
+base_url = "https://tokenhub.tencentmaas.com/v1"
+
+[[provider]]
+name = "TensorX"
+base_url = "https://api.tensorx.ai/v1"
+
+[[provider]]
+name = "The Grid AI"
+base_url = "https://api.thegrid.ai/v1"
+
+[[provider]]
+name = "Tinfoil"
+base_url = "https://inference.tinfoil.sh/v1"
+
+[[provider]]
+name = "TokenGo"
+base_url = "https://api.tokengo.com/v1"
+
+[[provider]]
+name = "TokenRouter"
+base_url = "https://api.tokenrouter.com/v1"
+
+[[provider]]
+name = "TrustedRouter"
+base_url = "https://api.trustedrouter.com/v1"
+
+[[provider]]
+name = "Umans AI"
+base_url = "https://api.code.umans.ai/v1"
+
+[[provider]]
+name = "UnoRouter"
+base_url = "https://api.unorouter.com/v1"
+
+[[provider]]
+name = "Vancine"
+base_url = "https://vancine.com/v1"
+
+[[provider]]
+name = "Vispark"
+base_url = "https://api.lab.vispark.in/v1"
+
+[[provider]]
+name = "Volcengine Ark"
+base_url = "https://ark.cn-beijing.volces.com/api/v3"
+
+[[provider]]
+name = "Vultr"
+base_url = "https://api.vultrinference.com/v1"
+
+[[provider]]
+name = "Wafer"
+base_url = "https://pass.wafer.ai/v1"
+
+[[provider]]
+name = "Wallaby"
+base_url = "https://api.wallabytoken.com/v1"
+
+[[provider]]
+name = "Xiaomi"
+base_url = "https://api.xiaomimimo.com/v1"
+
+[[provider]]
+name = "Xpersona"
+base_url = "https://www.xpersona.co/v1"
+
+[[provider]]
+name = "Zeldoc"
+base_url = "https://api.zeldoc.ai/v1"
+
+[[provider]]
+name = "ZenMux"
+base_url = "https://zenmux.ai/api/v1"
+
+[[provider]]
+name = "Zhipu AI"
+base_url = "https://open.bigmodel.cn/api/paas/v4"

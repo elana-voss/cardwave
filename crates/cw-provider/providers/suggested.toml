@@ -1,0 +1,41 @@
+# The model families first run suggests as a provider's background model, kept by hand (crates/cw-provider/src/suggested.rs).
+# Guidance only: a suggestion is what first run opens with, which the user changes in setup and Settings; nothing
+# stores it as the background model. Families, not versions, so a successor needs no change here (Mistral Small 5
+# takes Small 4's place); a family the provider no longer offers falls to the next, none left to the rules of
+# crates/cw-provider/src/picks.rs, as for a provider not here.
+#
+# Format 1: `format = 1`, then `provider`, one entry per provider or aggregator, each with:
+#   name      the provider's name exactly as on the list (own.toml or models.dev.toml)
+#   families  in the order suggested, each the words of its models' names: a model counts in it when its name
+#             (after its last "/", in lower case, split at every sign) holds each of them, a word written with a
+#             number at its end counting too ("qwen" in "qwen3.8"), and besides them only numbers, sizes ("119b")
+#             and "instruct". So a thinking variant (":thinking", "-reasoning"), a finetune or another size is
+#             another family; a size in the words ("27b") is part of the family, the numbers beside it its version.
+#
+# The order, from milestone 126a's figures (2026-11-06; every Helper job usable, fast, no long thinking, cheap).
+# Anthropic's Sonnet before Haiku on the owner's word.
+# xAI has no plain Grok fallback: its newest (grok-4.7) is not cheap and was never measured.
+
+format = 1
+
+[[provider]]
+name = "NanoGPT"
+families = [
+  ["mistral", "small"],
+  ["deepseek", "flash"],
+  ["qwen", "27b"],
+  ["grok", "non", "reasoning"],
+]
+
+[[provider]]
+name = "xAI"
+families = [
+  ["grok", "non", "reasoning"],
+]
+
+[[provider]]
+name = "Anthropic"
+families = [
+  ["claude", "sonnet"],
+  ["claude", "haiku"],
+]

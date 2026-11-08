@@ -1,0 +1,138 @@
+# `cargo audit` compares Cargo.lock with the RustSec advisories. Five warnings are known and are not in the
+# Windows build, as all come with what Tauri and rfd use on Linux: RUSTSEC-2024-0370 (proc-macro-error),
+# RUSTSEC-2024-0429 (glib), and zbus_names, zvariant and zvariant_derive unmaintained (RUSTSEC-2026-0370 to 0372). cargo-audit 0.22.2 came by `cargo install cargo-audit --locked`, `cargo fmt`
+# by `rustup component add rustfmt`.
+[workspace]
+resolver = "3"
+members = ["server", "desktop", "crates/cw-core", "crates/cw-platform", "crates/cw-faces", "crates/cw-whisper", "crates/cw-prompt", "crates/cw-ccv4", "crates/cw-key", "crates/cw-accounts", "crates/cw-modelfiles", "crates/cw-provider", "crates/cw-search", "crates/cw-voice", "crates/cw-dictation", "crates/cw-library", "crates/cw-coding", "crates/cw-chat", "crates/cw-find", "crates/cw-store"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+cw-store = { path = "crates/cw-store" }
+cw-find = { path = "crates/cw-find" }
+cw-chat = { path = "crates/cw-chat" }
+cw-coding = { path = "crates/cw-coding" }
+cw-library = { path = "crates/cw-library" }
+cw-dictation = { path = "crates/cw-dictation" }
+cw-voice = { path = "crates/cw-voice" }
+cw-search = { path = "crates/cw-search" }
+cw-provider = { path = "crates/cw-provider" }
+cw-modelfiles = { path = "crates/cw-modelfiles" }
+cw-accounts = { path = "crates/cw-accounts" }
+cw-key = { path = "crates/cw-key" }
+cw-ccv4 = { path = "crates/cw-ccv4" }
+cw-prompt = { path = "crates/cw-prompt" }
+cw-whisper = { path = "crates/cw-whisper" }
+cw-faces = { path = "crates/cw-faces" }
+cw-platform = { path = "crates/cw-platform" }
+cw-core = { path = "crates/cw-core" }
+axum = { version = "0.8", features = ["ws"] }
+# The engine of the tools the model writes (`tools::written`); it builds QuickJS from C.
+rquickjs = "0.14"
+# The line diffs of the coding team's changes (`coding::snapshot`).
+similar = "2"
+# Which language a text is in, and this computer's (`languages`).
+whatlang = "0.18"
+sys-locale = "0.3"
+# The folder of cards watched: the system tells of changes (server/src/cards/watch.rs).
+notify = "8.2"
+# The user's Documents folder, which first run offers as the folder of cards (server/src/main.rs).
+dirs = "7"
+# Dictation: whisper.cpp built in, on the graphics card by Vulkan (its build needs the Vulkan SDK and libclang,
+# CLAUDE.md; the crate's bundled bindings are Linux's and do not compile on Windows); "raw-api" for ggml's list
+# of devices (crates/cw-whisper/src/whisper.rs).
+whisper-rs = { version = "0.16", features = ["tracing_backend", "vulkan", "raw-api"] }
+# A query that names one key several times (`?tag=sea&tag=keeper`), which axum's own does not read.
+axum-extra = { version = "0.12", default-features = false, features = ["query"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "macros", "signal", "sync", "time", "process", "fs"] }
+tower-http = { version = "0.6", features = ["fs", "set-header"] }
+serde = { version = "1", features = ["derive"] }
+# A number is read back exactly as it was written (a card's 0.9856906946328695 is no other one), so a form
+# saved unchanged changes nothing; without it about one in ten such numbers is read one step off.
+serde_json = { version = "1", features = ["float_roundtrip"] }
+ts-rs = "12"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# SQLCipher with its own OpenSSL: a cold build needs a native Perl on Windows (see CLAUDE.md).
+rusqlite = { version = "0.40.2", features = ["bundled-sqlcipher-vendored-openssl", "backup"] }
+sqlite-vec = "0.1.9"
+getrandom = "0.3"
+regex = "1"
+unicode-normalization = "0.1"
+# Lorebook keys are JavaScript regexes; this engine has their lookaround and backreferences.
+fancy-regex = "0.17"
+rand = "0.9"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+# CCV4 cards: TOML metadata in PNG chunks; assets are stored once per content hash.
+toml = { version = "1", features = ["preserve_order"] }
+# An edited card: its files are changed where the edit is, and stay as they are written everywhere else.
+toml_edit = "0.25"
+crc32fast = "1"
+sha2 = "0.10"
+# SillyTavern cards: base64-encoded JSON in a PNG text chunk.
+base64 = "0.22"
+# Asset names of a card become part of a URL.
+percent-encoding = "2"
+# An answer made here in the client's own type (the pretend model, This computer's models).
+http = "1"
+# Calls to model providers. TLS is the operating system's own (on Windows no OpenSSL is linked for it).
+reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls", "stream"] }
+# A card's picture made small for the lists (PNG read, JPEG and PNG written), and a JPEG or WebP made a card's
+# PNG (`cards::pictures::as_png`); no other format.
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
+# Several askings at once, answered in their order (the search for a provider's API). axum and reqwest bring it anyway.
+futures-util = "0.3"
+keyring ={ version = "3", features = ["windows-native", "apple-native"] }
+# The search model's process is ended with the server's, by a job object (`crates/cw-provider/src/embedder.rs`).
+# The shell tool's sandbox, an AppContainer (`server/src/tools/sandbox.rs`).
+# The faces on a picture, through Windows ML, which comes with Windows (crates/cw-faces).
+windows = { version = "0.62", features = ["AI_MachineLearning", "Foundation", "Foundation_Collections", "Graphics", "Storage", "Storage_Streams", "Win32_Foundation", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common", "Win32_System_WinRT"] }
+windows-collections = "0.3"
+windows-future = "0.3"
+windows-sys = { version = "0.61", features = ["Win32_System_JobObjects", "Win32_Security_Isolation", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Storage_FileSystem", "Win32_System_Com", "Win32_System_SystemInformation", "Win32_System_LibraryLoader", "Win32_UI_Shell", "Win32_Foundation"] }
+# Documents of a chat or a character: the text of a PDF, and of a Word file (a zip of XML).
+lopdf = { version = "0.45", default-features = false }
+zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
+# models.dev's whole list, shipped gzipped (provider/models_dev.rs); zip brings it anyway.
+flate2 = "1"
+# A password over the database key: argon2id makes a key of it, which seals the database key (ChaCha20-Poly1305).
+argon2 = "0.5"
+chacha20poly1305 = "0.10"
+# The server forwards a request to the app it opens once the password is given.
+tower = { version = "0.5", features = ["util"] }
+# A backup is sent as it is read from its file.
+tokio-util = { version = "0.7", features = ["io"] }
+# The voice model's runtime, ONNX Runtime, loaded from the library the voice downloads (`server/src/voice.rs`).
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "load-dynamic"] }
+
+# Debug builds keep line numbers only: full debug info made the test programs' linking take most of the
+# machine's memory and `target` grow past 49 GB.
+[profile.dev]
+debug = "line-tables-only"
+
+# A picture is made small as fast in a debug build as in a release one: not
+# optimized, reading and scaling a large one takes seconds.
+[profile.dev.package.image]
+opt-level = 3
+[profile.dev.package.png]
+opt-level = 3
+[profile.dev.package.fdeflate]
+opt-level = 3
+# argon2id takes seconds in a debug build: the tests and the start screen wait for it.
+[profile.dev.package.argon2]
+opt-level = 3
+[profile.dev.package.blake2]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

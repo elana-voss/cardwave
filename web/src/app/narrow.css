@@ -1,0 +1,127 @@
+/* The narrow window (600 px and less, boards Narrow*) and what only a wide window shows: read right after
+   app.css, before the areas' files, so its rules win over app.css's; a selector an area's file also sets
+   (app/chat.css's .chat-scroller) has its narrow rule in that file, after the rule it overrides. */
+/* What only a wide window shows, and what only a narrow one. */
+@media (max-width: 600px) {
+  .wide-only {
+    display: none !important;
+  }
+}
+@media (min-width: 601px) {
+  .narrow-only {
+    display: none !important;
+  }
+  /* A text's AI tools end at the page's right margin (design.md, A11): the text stands in the middle of `.cols`,
+     centred in the page. */
+  .main-card {
+    container-type: inline-size;
+  }
+  .cols .tb > .pop.ai {
+    right: calc((100% - 100cqw) / 2);
+    width: auto;
+  }
+}
+@media (max-width: 600px) {
+  /* A window of 600 px or less (design.md "Touch, motion, copy"; boards NarrowLibrary, NarrowChat, NarrowSettings,
+     CardNarrow): pages 16 px from its sides, ending 24 px under their last group, a card's page 48 px; a list's
+     line 10 px by 8 px; the page's tabs scroll sideways; the import's panel 16 px from the corner. */
+  .main {
+    padding: 0 var(--s16) var(--s24);
+  }
+  /* A list's search as wide as the page (board NarrowLibrary). */
+  .search-list {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .main-card {
+    padding: var(--s16) var(--s16) var(--s48);
+    gap: var(--s36);
+  }
+  .hero-title {
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+  }
+  .card-row {
+    padding: var(--s10) var(--s8);
+  }
+  .page-head > .tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .page-head > .tabs > * {
+    flex: none;
+  }
+  #importing {
+    right: var(--s16);
+    bottom: var(--s16);
+  }
+  dialog.sheet {
+    width: 100%;
+  }
+  /* A line of a box keeps its button at its right, 112 px wide, and puts a switch group or a field under its
+     words, as wide as the line. */
+  .group > .item {
+    flex-wrap: wrap;
+    row-gap: var(--s10);
+  }
+  .group > .item > .btn:not(.btn-icon) {
+    width: 112px;
+  }
+  .group > .item:has(> .selectbtn, > .seg, > .field) > .item-text {
+    flex-basis: 100%;
+  }
+  .group > .item > :is(.selectbtn, .field) {
+    width: 100%;
+  }
+  /* A chat: its bar 56 px with a 32 px round, the thread 16 px from the sides, a message 92 % wide at most. */
+  .chat-bar {
+    min-height: 56px;
+    padding: 0 var(--s8) 0 var(--s16);
+  }
+  .chat-bar .ava {
+    width: 32px;
+    height: 32px;
+  }
+  .chat-thread {
+    gap: var(--s18);
+  }
+  .chat-dock {
+    padding: var(--s8) var(--s12) var(--s12);
+  }
+  .bubble {
+    max-width: 92%;
+  }
+  /* What can be done with an item goes under its words. */
+  .trash .row {
+    flex-wrap: wrap;
+  }
+  .trash .side-acts {
+    flex: 1 0 100%;
+    width: auto;
+  }
+  /* A card's page: the picture 200 px over the title, the side column folded into its line, a text's tools
+     opening inside the window. */
+  .hero-img {
+    flex: 0 0 200px;
+    min-width: 0;
+  }
+  .hero-text {
+    padding: 0;
+  }
+  .fold-line {
+    display: block;
+  }
+  .cols > .side {
+    display: none;
+  }
+  .tb > .pop,
+  .tb > .pop.drafts {
+    left: auto;
+    right: 0;
+  }
+}
+@keyframes sheet {
+  from {
+    translate: 100% 0;
+  }
+}

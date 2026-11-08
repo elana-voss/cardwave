@@ -1,0 +1,24 @@
+/* The 14 fonts of the view Posters, Latin only, inside the app and never fetched: the fontsource packages' own files, named
+   one by one so that only these reach the build. No unicode-range: another alphabet falls through to the font list's next. */
+@font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/anton/files/anton-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cinzel"; font-style: normal; font-weight: 500; font-display: block; src: url("@fontsource/cinzel/files/cinzel-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cinzel"; font-style: normal; font-weight: 700; font-display: block; src: url("@fontsource/cinzel/files/cinzel-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; font-display: block; src: url("@fontsource/cormorant-garamond/files/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; font-display: block; src: url("@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
+@font-face { font-family: "Oswald"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/oswald/files/oswald-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Oswald"; font-style: normal; font-weight: 600; font-display: block; src: url("@fontsource/oswald/files/oswald-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Dancing Script"; font-style: normal; font-weight: 600; font-display: block; src: url("@fontsource/dancing-script/files/dancing-script-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Dancing Script"; font-style: normal; font-weight: 700; font-display: block; src: url("@fontsource/dancing-script/files/dancing-script-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Playfair Display"; font-style: normal; font-weight: 800; font-display: block; src: url("@fontsource/playfair-display/files/playfair-display-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Playfair Display"; font-style: italic; font-weight: 400; font-display: block; src: url("@fontsource/playfair-display/files/playfair-display-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Archivo Black"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/archivo-black/files/archivo-black-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/exo-2/files/exo-2-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 500; font-display: block; src: url("@fontsource/exo-2/files/exo-2-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Orbitron"; font-style: normal; font-weight: 500; font-display: block; src: url("@fontsource/orbitron/files/orbitron-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Orbitron"; font-style: normal; font-weight: 800; font-display: block; src: url("@fontsource/orbitron/files/orbitron-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-style: normal; font-weight: 500; font-display: block; src: url("@fontsource/fredoka/files/fredoka-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fredoka"; font-style: normal; font-weight: 700; font-display: block; src: url("@fontsource/fredoka/files/fredoka-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Lilita One"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/lilita-one/files/lilita-one-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Marcellus SC"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/marcellus-sc/files/marcellus-sc-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Kaushan Script"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/kaushan-script/files/kaushan-script-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Archivo"; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: block; src: url("@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2-variations"); }

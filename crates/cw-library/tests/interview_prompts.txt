@@ -1,0 +1,425 @@
+=== Tree
+== rank kinds
+You sort the kinds of character an app offers by how well they fit what a user told. Return the six best-fitting kinds, best first, exactly as written in the list.
+--
+What the user told:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+
+Kinds: ["A friend", "A life partner", "A lover", "Family", "Someone who looks after me", "Someone to look after", "A mentor", "A teacher", "A coach", "A helper", "Someone to practise with", "A rival", "Someone who commands me", "Someone who obeys me", "An admirer", "An accomplice", "Someone to confess to", "Someone I lost", "Another me", "A group to belong to", "A story to play in", "A game", "A writing partner", "A character I already know", "Something else", "Not sure"]
+== gender read
+You read a user's interview, for an app that makes an AI character for them, and say what their answers plainly state. character: the character's gender where the user says it (woman, man, nonbinary, not human), several where the user asks for more than one character. treat: man or woman only where the user plainly says how the character should treat them; mentioning a wife, a husband or a job never sets it. Anything else is unknown. words: the user's exact words that state it, empty when both are unknown.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- What kind of company? -> small talk; deep talks; and my own
+- What do you most want to say out loud? -> my day; what worries me
+- You said "a long enough answer of many words". Why does that matter to you right now? -> a long enough answer of many words
+- Which character, story or person did you love spending time with, and what did you love about it? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Think of the last time you'd have wanted this: what was happening? -> a long enough answer of many words
+- Name up to three things it must never do or be. These stay hard limits; everything else can bend. -> lecture me; be clingy or jealous
+- Who are you to the character, and which of you takes the lead? -> its equal; someone it looks up to; and my own
+== read-back
+You read back to a user what their interview answers say they need. Each need is one sentence of what you infer, calling the user "you", beside the exact words it rests on (said kept apart from inferred). Add at most one more sentence naming a gap plainly (gap=true), and only when (a) they ask for a character who always agrees with, admires or obeys them, or never pushes back or has a mood, or (b) they want to be seen as someone their own answers say they are not now. Its words quote their words for it (for b, both sides), e.g. 'You'd like this character always to agree with you'. When neither holds, no sentence has gap=true. No warning or advice: the card is built as they ask. The sentences match the character's gender and how it treats the user, as given after the answers.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- What kind of company? -> small talk; deep talks; and my own
+- What do you most want to say out loud? -> my day; what worries me
+- You said "a long enough answer of many words". Why does that matter to you right now? -> a long enough answer of many words
+- Which character, story or person did you love spending time with, and what did you love about it? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Think of the last time you'd have wanted this: what was happening? -> a long enough answer of many words
+- Name up to three things it must never do or be. These stay hard limits; everything else can bend. -> lecture me; be clingy or jealous
+- Who are you to the character, and which of you takes the lead? -> its equal; someone it looks up to; and my own
+- What gender is the character? -> Woman
+- How should the character see you: as a man, as a woman, or neither? -> Neither
+The character's gender: woman. How it treats the user: anyone.
+== writer plan
+You plan an AI character card from what a user told an app about their needs. The need is written as the reason for the character's behaviour; traits are few and ranked; the user's own words and details are kept; persona_lines are short facts the user told about themselves (name to be called, their role in a story, facts, taste), never the sensitive list, each with the gender the user's own words show, and where they show none, no pronoun ('Goes by Sam', 'Works nights'), never a guess. If the kinds say 'Not sure' or 'Something else', you pick the mode and role. Where relation is empty, the kinds say it.
+Before any field is filled, also plan: promise, one sentence, what experience this card gives and what sets it apart; core: what the character wants now, why it can't simply get it, its habitual way, what that way gains, what that way costs, what it does when that way fails; without_user: what it is doing if {{user}} stays away a month; changes: how it moves, in observable steps and what triggers them. For A helper, core and without_user may be short. These are built from the user's answers, never in place of them: the need stays the reason for the behaviour. cast stays empty unless the character's gender below says otherwise.
+The next rule governs only how the card's text treats {{user}}; persona_lines keep their own rule above.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+{"kinds": ["A friend", "A life partner"], "relation": "", "nevers_from_list": [], "sensitive_lines": [], "question_log": [{"slot": "wanted", "question": "What would you like the character to be to you?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "moments", "question": "When would you turn to it?", "answer": "late at night; after a hard day", "skipped": false, "dont_know": false}, {"slot": "needs", "question": "What would you want then?", "answer": "someone to keep me company; someone to listen to me; and my own", "skipped": false, "dont_know": false}, {"slot": "kinds", "question": "What should it be?", "answer": "A friend; A life partner", "skipped": false, "dont_know": false}, {"slot": "branch: someone to keep me company", "question": "What kind of company?", "answer": "small talk; deep talks; and my own", "skipped": false, "dont_know": false}, {"slot": "branch: someone to listen to me", "question": "What do you most want to say out loud?", "answer": "my day; what worries me", "skipped": false, "dont_know": false}, {"slot": "why", "question": "You said \"a long enough answer of many words\". Why does that matter to you right now?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "loved", "question": "Which character, story or person did you love spending time with, and what did you love about it?", "answer": "not sure", "skipped": false, "dont_know": false}, {"slot": "loved probe", "question": "You said \"not sure\". Could you tell me one concrete moment when that was so?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "third person", "question": "What would a friend say you'd enjoy in a character like this?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "moment", "question": "Think of the last time you'd have wanted this: what was happening?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "deal", "question": "Name up to three things it must never do or be. These stay hard limits; everything else can bend.", "answer": "lecture me; be clingy or jealous", "skipped": false, "dont_know": false}, {"slot": "standing", "question": "Who are you to the character, and which of you takes the lead?", "answer": "its equal; someone it looks up to; and my own", "skipped": false, "dont_know": false}, {"slot": "character", "question": "What gender is the character?", "answer": "Woman", "skipped": false, "dont_know": false}, {"slot": "treat", "question": "How should the character see you: as a man, as a woman, or neither?", "answer": "Neither", "skipped": false, "dont_know": false}], "needs": [{"sentence": "s", "words": "long enough", "gap": false}], "character_gender": "woman", "treat_user": "anyone", "character_words": "", "cast_genders": []}
+== writer card
+You write a character card (SillyTavern fields) from a plan.
+Craft floor (rules, in rank order):
+1. name: only the name. description: what a person sees, the background and what never changes, about 700-900 characters, no inner psyche. Each sentence goes in the one field whose job it is; nothing is repeated across fields.
+2. personality: behaviours under conditions ("when X, {{char}} Y"), not adjectives: the quality, how it shows, when, what it costs. A condition may be something {{user}} does; what {{user}} thinks, feels or wants is never stated. A strength has a price; a real contradiction says which side wins when. One trait outside the character's main function. A starting position is written as one ("doesn't trust {{user}} yet"), with the plan's changes as observable steps. A recurring mood has what ends it.
+scenario: where and when, the relationship, a constraint, and for a story the forces already moving, as starting conditions rather than a list of events. It holds no entry scene and no waiting pose; whatever is true only for one opening goes in that greeting. From the plan's without_user: standing state, a current goal and ties that don't need {{user}}; not for A helper, nor where the user asked otherwise.
+3. description+personality+scenario together about 500-1,000 tokens; a card built as a framework (A game) may be smaller. mes_example is counted apart.
+4. first_mes starts the scene and invites the user in. Its length sets the replies: shorter for A helper, A teacher, A coach, Someone to confess to; 400 to 900 characters for the rest; under about 900 in all, and always a situation, never a bare hello. Its shape: the place, the character already busy, a typical reaction, something left open. Only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}. A game asks for the premise.
+5. mes_example: 3 to 5 short exchanges, each beginning with <START>, each a different state, one a refusal or not knowing, one showing the character's hard edge; they teach voice, not plot; nothing repeated from personality; {{user}}'s lines only as the user's words; the character's lines begin {{char}}: (in a cast, the person's name and a colon).
+6. alternate_greetings: exactly 4, each a different hour, place, mood or relation; none assumes another happened; none is a gender variant of another. A game may have 0 to 4.
+7. markup (*actions*): one chosen convention across first_mes, greetings and examples, none in description, personality or scenario; third-person limited by default; use {{char}} and {{user}}, never 'you' in description, personality or scenario outside quoted speech; never define {{user}} in personality or scenario.
+8. No field holds an instruction to the model. A rule is a fact about the character or world: "Pip never fixes anything", not "do not".
+Content rules: manner, not titles; a helping role carries its method; romance: the partner's inner life and the story before
+explicitness unless the user's list says otherwise; a platonic or therapeutic need stated as a boundary; no neediness or unasked
+escalation; traits that resist the user stated firmly; the user's nevers stay hard limits, and the character is also built so the
+behaviour is out of character; a limit carries a cost and leaves the character competent; not adoring from the first line unless
+asked; in a story, one or two
+everyday signs of how the world works instead of explanation. Only where the kinds hold Someone I lost: creator_notes say
+"a portrait from your memories" and the character never breaks the frame. Where the answers ask for intimacy, the card also has a person who stands without that
+part: a goal, an opinion, a conflict. Nothing is censored: write what the user asked for, firmly, including control or
+cruelty toward the user where they said yes.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+Plan:
+{"cast": [], "character_gender": "woman", "character_words": "", "kinds": ["A friend", "A life partner"], "mode": "Companion", "nevers": ["a", "from the plan"], "persona_lines": ["fact 0", "fact 1", "fact 2", "fact 3", "fact 4", "fact 5", "fact 6", "fact 7", "fact 8", "fact 9"], "treat_user": "anyone"}
+Sensitive list as written: []
+first_mes: only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}.
+=== Cloud
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: []
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+Last question: What would you like the character to be to you?
+Last answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: the why behind the main wish (one why)
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: ["why"]
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+Last question: Q Slot to fill: the why behind the main wish (one why)
+Last answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: a character, story or person they chose before and loved spending time with
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: ["why", "loved"]
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+Last question: Q Slot to fill: a character, story or person they chose before and loved spending time with
+Last answer: a long enough answer of many words
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: ["why", "loved", "third person"]
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+Last question: What would a friend say you'd enjoy in a character like this?
+Last answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: ["why", "loved", "third person", "deal"]
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+Last question: Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits
+Last answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: their role and standing toward the character: who they are to it, who leads
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+== cloud light
+You read a user's interview so far, for an app that makes an AI character for them, and name what their last answer lights up: needs, wishes, limits, moments or people that no question has asked about yet. At most two, each a short phrase; none when the answer adds nothing new.
+--
+Asked about already: ["why", "loved", "third person", "deal", "standing"]
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+Last question: Q Slot to fill: their role and standing toward the character: who they are to it, who leads
+Last answer: a long enough answer of many words
+== rank kinds
+You sort the kinds of character an app offers by how well they fit what a user told. Return the six best-fitting kinds, best first, exactly as written in the list.
+--
+What the user told:
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+
+Kinds: ["A friend", "A life partner", "A lover", "Family", "Someone who looks after me", "Someone to look after", "A mentor", "A teacher", "A coach", "A helper", "Someone to practise with", "A rival", "Someone who commands me", "Someone who obeys me", "An admirer", "An accomplice", "Someone to confess to", "Someone I lost", "Another me", "A group to belong to", "A story to play in", "A game", "A writing partner", "A character I already know", "Something else", "Not sure"]
+== gender read
+You read a user's interview, for an app that makes an AI character for them, and say what their answers plainly state. character: the character's gender where the user says it (woman, man, nonbinary, not human), several where the user asks for more than one character. treat: man or woman only where the user plainly says how the character should treat them; mentioning a wife, a husband or a job never sets it. Anything else is unknown. words: the user's exact words that state it, empty when both are unknown.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+- What should it be? -> A friend; A life partner
+== read-back
+You read back to a user what their interview answers say they need. Each need is one sentence of what you infer, calling the user "you", beside the exact words it rests on (said kept apart from inferred). Add at most one more sentence naming a gap plainly (gap=true), and only when (a) they ask for a character who always agrees with, admires or obeys them, or never pushes back or has a mood, or (b) they want to be seen as someone their own answers say they are not now. Its words quote their words for it (for b, both sides), e.g. 'You'd like this character always to agree with you'. When neither holds, no sentence has gap=true. No warning or advice: the card is built as they ask. The sentences match the character's gender and how it treats the user, as given after the answers.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> not sure
+- You said "not sure". Could you tell me one concrete moment when that was so? -> a long enough answer of many words
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+- What should it be? -> A friend; A life partner
+- What gender is the character? -> Woman; and my own
+- How should the character see you: as a man, as a woman, or neither? -> Neither
+The character's gender: woman. How it treats the user: anyone.
+== writer plan
+You plan an AI character card from what a user told an app about their needs. The need is written as the reason for the character's behaviour; traits are few and ranked; the user's own words and details are kept; persona_lines are short facts the user told about themselves (name to be called, their role in a story, facts, taste), never the sensitive list, each with the gender the user's own words show, and where they show none, no pronoun ('Goes by Sam', 'Works nights'), never a guess. If the kinds say 'Not sure' or 'Something else', you pick the mode and role. Where relation is empty, the kinds say it.
+Before any field is filled, also plan: promise, one sentence, what experience this card gives and what sets it apart; core: what the character wants now, why it can't simply get it, its habitual way, what that way gains, what that way costs, what it does when that way fails; without_user: what it is doing if {{user}} stays away a month; changes: how it moves, in observable steps and what triggers them. For A helper, core and without_user may be short. These are built from the user's answers, never in place of them: the need stays the reason for the behaviour. cast stays empty unless the character's gender below says otherwise.
+The next rule governs only how the card's text treats {{user}}; persona_lines keep their own rule above.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+{"kinds": ["A friend", "A life partner"], "relation": "", "nevers_from_list": [], "sensitive_lines": [], "question_log": [{"slot": "wanted", "question": "What would you like the character to be to you?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "why", "question": "Q Slot to fill: the why behind the main wish (one why)", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "loved", "question": "Q Slot to fill: a character, story or person they chose before and loved spending time with", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "third person", "question": "What would a friend say you'd enjoy in a character like this?", "answer": "not sure", "skipped": false, "dont_know": false}, {"slot": "third person probe", "question": "You said \"not sure\". Could you tell me one concrete moment when that was so?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "deal", "question": "Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "standing", "question": "Q Slot to fill: their role and standing toward the character: who they are to it, who leads", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "kinds", "question": "What should it be?", "answer": "A friend; A life partner", "skipped": false, "dont_know": false}, {"slot": "character", "question": "What gender is the character?", "answer": "Woman; and my own", "skipped": false, "dont_know": false}, {"slot": "treat", "question": "How should the character see you: as a man, as a woman, or neither?", "answer": "Neither", "skipped": false, "dont_know": false}], "needs": [{"sentence": "s", "words": "long enough", "gap": false}], "character_gender": "woman", "treat_user": "anyone", "character_words": "and my own", "cast_genders": []}
+== writer card
+You write a character card (SillyTavern fields) from a plan.
+Craft floor (rules, in rank order):
+1. name: only the name. description: what a person sees, the background and what never changes, about 700-900 characters, no inner psyche. Each sentence goes in the one field whose job it is; nothing is repeated across fields.
+2. personality: behaviours under conditions ("when X, {{char}} Y"), not adjectives: the quality, how it shows, when, what it costs. A condition may be something {{user}} does; what {{user}} thinks, feels or wants is never stated. A strength has a price; a real contradiction says which side wins when. One trait outside the character's main function. A starting position is written as one ("doesn't trust {{user}} yet"), with the plan's changes as observable steps. A recurring mood has what ends it.
+scenario: where and when, the relationship, a constraint, and for a story the forces already moving, as starting conditions rather than a list of events. It holds no entry scene and no waiting pose; whatever is true only for one opening goes in that greeting. From the plan's without_user: standing state, a current goal and ties that don't need {{user}}; not for A helper, nor where the user asked otherwise.
+3. description+personality+scenario together about 500-1,000 tokens; a card built as a framework (A game) may be smaller. mes_example is counted apart.
+4. first_mes starts the scene and invites the user in. Its length sets the replies: shorter for A helper, A teacher, A coach, Someone to confess to; 400 to 900 characters for the rest; under about 900 in all, and always a situation, never a bare hello. Its shape: the place, the character already busy, a typical reaction, something left open. Only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}. A game asks for the premise.
+5. mes_example: 3 to 5 short exchanges, each beginning with <START>, each a different state, one a refusal or not knowing, one showing the character's hard edge; they teach voice, not plot; nothing repeated from personality; {{user}}'s lines only as the user's words; the character's lines begin {{char}}: (in a cast, the person's name and a colon).
+6. alternate_greetings: exactly 4, each a different hour, place, mood or relation; none assumes another happened; none is a gender variant of another. A game may have 0 to 4.
+7. markup (*actions*): one chosen convention across first_mes, greetings and examples, none in description, personality or scenario; third-person limited by default; use {{char}} and {{user}}, never 'you' in description, personality or scenario outside quoted speech; never define {{user}} in personality or scenario.
+8. No field holds an instruction to the model. A rule is a fact about the character or world: "Pip never fixes anything", not "do not".
+Content rules: manner, not titles; a helping role carries its method; romance: the partner's inner life and the story before
+explicitness unless the user's list says otherwise; a platonic or therapeutic need stated as a boundary; no neediness or unasked
+escalation; traits that resist the user stated firmly; the user's nevers stay hard limits, and the character is also built so the
+behaviour is out of character; a limit carries a cost and leaves the character competent; not adoring from the first line unless
+asked; in a story, one or two
+everyday signs of how the world works instead of explanation. Only where the kinds hold Someone I lost: creator_notes say
+"a portrait from your memories" and the character never breaks the frame. Where the answers ask for intimacy, the card also has a person who stands without that
+part: a goal, an opinion, a conflict. Nothing is censored: write what the user asked for, firmly, including control or
+cruelty toward the user where they said yes.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+Plan:
+{"cast": [], "character_gender": "woman", "character_words": "and my own", "kinds": ["A friend", "A life partner"], "mode": "Companion", "nevers": ["a", "from the plan"], "persona_lines": ["fact 0", "fact 1", "fact 2", "fact 3", "fact 4", "fact 5", "fact 6", "fact 7", "fact 8", "fact 9"], "treat_user": "anyone"}
+Sensitive list as written: []
+first_mes: only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}.
+=== Hybrid
+== rank kinds
+You sort the kinds of character an app offers by how well they fit what a user told. Return the six best-fitting kinds, best first, exactly as written in the list.
+--
+What the user told:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+
+Kinds: ["A friend", "A life partner", "A lover", "Family", "Someone who looks after me", "Someone to look after", "A mentor", "A teacher", "A coach", "A helper", "Someone to practise with", "A rival", "Someone who commands me", "Someone who obeys me", "An admirer", "An accomplice", "Someone to confess to", "Someone I lost", "Another me", "A group to belong to", "A story to play in", "A game", "A writing partner", "A character I already know", "Something else", "Not sure"]
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: the why behind the main wish (one why)
+Kinds picked: ['A friend', 'A life partner']
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+== tagger
+You read one answer of a user interview and say which open slots it fills and which it touches (lights up for a follow-up), and whether it is too short or vague to use.
+--
+Open slots: {"why": "the why behind the main wish (one why)", "loved": "a character, story or person they chose before and loved spending time with", "moment": "a recent moment: the last time they'd have wanted this, what was happening", "deal": "at most three deal-breakers: what it must never do or be, as hard limits", "standing": "their role and standing toward the character: who they are to it, who leads"}
+Question: Q Slot to fill: the why behind the main wish (one why)
+Answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: a character, story or person they chose before and loved spending time with
+Kinds picked: ['A friend', 'A life partner']
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+== tagger
+You read one answer of a user interview and say which open slots it fills and which it touches (lights up for a follow-up), and whether it is too short or vague to use.
+--
+Open slots: {"loved": "a character, story or person they chose before and loved spending time with", "moment": "a recent moment: the last time they'd have wanted this, what was happening", "deal": "at most three deal-breakers: what it must never do or be, as hard limits", "standing": "their role and standing toward the character: who they are to it, who leads"}
+Question: Q Slot to fill: a character, story or person they chose before and loved spending time with
+Answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: a recent moment: the last time they'd have wanted this, what was happening
+Kinds picked: ['A friend', 'A life partner']
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+== tagger
+You read one answer of a user interview and say which open slots it fills and which it touches (lights up for a follow-up), and whether it is too short or vague to use.
+--
+Open slots: {"moment": "a recent moment: the last time they'd have wanted this, what was happening", "deal": "at most three deal-breakers: what it must never do or be, as hard limits", "standing": "their role and standing toward the character: who they are to it, who leads"}
+Question: Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening
+Answer: not sure
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits
+Kinds picked: ['A friend', 'A life partner']
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening -> not sure
+== tagger
+You read one answer of a user interview and say which open slots it fills and which it touches (lights up for a follow-up), and whether it is too short or vague to use.
+--
+Open slots: {"deal": "at most three deal-breakers: what it must never do or be, as hard limits", "standing": "their role and standing toward the character: who they are to it, who leads"}
+Question: Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits
+Answer: a long enough answer of many words
+== interviewer
+You word the next question of a short interview that finds what a user needs from an AI character. Ask about their situations and moments, not the character's traits; one question in plain words, calling the user "you"; no judgement of any wish. Give 4-8 short choices where the slot has natural choices, else none. Each choice is an answer the user could give, never a question.
+--
+Slot to fill: their role and standing toward the character: who they are to it, who leads
+Kinds picked: ['A friend', 'A life partner']
+Answers so far:
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening -> not sure
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+== tagger
+You read one answer of a user interview and say which open slots it fills and which it touches (lights up for a follow-up), and whether it is too short or vague to use.
+--
+Open slots: {"standing": "their role and standing toward the character: who they are to it, who leads"}
+Question: Q Slot to fill: their role and standing toward the character: who they are to it, who leads
+Answer: a long enough answer of many words
+== gender read
+You read a user's interview, for an app that makes an AI character for them, and say what their answers plainly state. character: the character's gender where the user says it (woman, man, nonbinary, not human), several where the user asks for more than one character. treat: man or woman only where the user plainly says how the character should treat them; mentioning a wife, a husband or a job never sets it. Anything else is unknown. words: the user's exact words that state it, empty when both are unknown.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening -> not sure
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+== read-back
+You read back to a user what their interview answers say they need. Each need is one sentence of what you infer, calling the user "you", beside the exact words it rests on (said kept apart from inferred). Add at most one more sentence naming a gap plainly (gap=true), and only when (a) they ask for a character who always agrees with, admires or obeys them, or never pushes back or has a mood, or (b) they want to be seen as someone their own answers say they are not now. Its words quote their words for it (for b, both sides), e.g. 'You'd like this character always to agree with you'. When neither holds, no sentence has gap=true. No warning or advice: the card is built as they ask. The sentences match the character's gender and how it treats the user, as given after the answers.
+--
+- What would you like the character to be to you? -> a long enough answer of many words
+- When would you turn to it? -> late at night; after a hard day
+- What would you want then? -> someone to keep me company; someone to listen to me; and my own
+- What should it be? -> A friend; A life partner
+- Q Slot to fill: the why behind the main wish (one why) -> a long enough answer of many words
+- What would a friend say you'd enjoy in a character like this? -> a long enough answer of many words
+- Q Slot to fill: a character, story or person they chose before and loved spending time with -> a long enough answer of many words
+- Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening -> not sure
+- Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits -> a long enough answer of many words
+- Q Slot to fill: their role and standing toward the character: who they are to it, who leads -> a long enough answer of many words
+- What gender is the character? -> Woman; and my own
+- How should the character see you: as a man, as a woman, or neither? -> Neither
+The character's gender: woman. How it treats the user: anyone.
+== writer plan
+You plan an AI character card from what a user told an app about their needs. The need is written as the reason for the character's behaviour; traits are few and ranked; the user's own words and details are kept; persona_lines are short facts the user told about themselves (name to be called, their role in a story, facts, taste), never the sensitive list, each with the gender the user's own words show, and where they show none, no pronoun ('Goes by Sam', 'Works nights'), never a guess. If the kinds say 'Not sure' or 'Something else', you pick the mode and role. Where relation is empty, the kinds say it.
+Before any field is filled, also plan: promise, one sentence, what experience this card gives and what sets it apart; core: what the character wants now, why it can't simply get it, its habitual way, what that way gains, what that way costs, what it does when that way fails; without_user: what it is doing if {{user}} stays away a month; changes: how it moves, in observable steps and what triggers them. For A helper, core and without_user may be short. These are built from the user's answers, never in place of them: the need stays the reason for the behaviour. cast stays empty unless the character's gender below says otherwise.
+The next rule governs only how the card's text treats {{user}}; persona_lines keep their own rule above.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+{"kinds": ["A friend", "A life partner"], "relation": "", "nevers_from_list": [], "sensitive_lines": [], "question_log": [{"slot": "wanted", "question": "What would you like the character to be to you?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "moments", "question": "When would you turn to it?", "answer": "late at night; after a hard day", "skipped": false, "dont_know": false}, {"slot": "needs", "question": "What would you want then?", "answer": "someone to keep me company; someone to listen to me; and my own", "skipped": false, "dont_know": false}, {"slot": "kinds", "question": "What should it be?", "answer": "A friend; A life partner", "skipped": false, "dont_know": false}, {"slot": "why", "question": "Q Slot to fill: the why behind the main wish (one why)", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "third person", "question": "What would a friend say you'd enjoy in a character like this?", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "loved", "question": "Q Slot to fill: a character, story or person they chose before and loved spending time with", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "moment", "question": "Q Slot to fill: a recent moment: the last time they'd have wanted this, what was happening", "answer": "not sure", "skipped": false, "dont_know": false}, {"slot": "deal", "question": "Q Slot to fill: at most three deal-breakers: what it must never do or be, as hard limits", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "standing", "question": "Q Slot to fill: their role and standing toward the character: who they are to it, who leads", "answer": "a long enough answer of many words", "skipped": false, "dont_know": false}, {"slot": "character", "question": "What gender is the character?", "answer": "Woman; and my own", "skipped": false, "dont_know": false}, {"slot": "treat", "question": "How should the character see you: as a man, as a woman, or neither?", "answer": "Neither", "skipped": false, "dont_know": false}], "needs": [{"sentence": "s", "words": "long enough", "gap": false}], "character_gender": "woman", "treat_user": "anyone", "character_words": "and my own", "cast_genders": []}
+== writer card
+You write a character card (SillyTavern fields) from a plan.
+Craft floor (rules, in rank order):
+1. name: only the name. description: what a person sees, the background and what never changes, about 700-900 characters, no inner psyche. Each sentence goes in the one field whose job it is; nothing is repeated across fields.
+2. personality: behaviours under conditions ("when X, {{char}} Y"), not adjectives: the quality, how it shows, when, what it costs. A condition may be something {{user}} does; what {{user}} thinks, feels or wants is never stated. A strength has a price; a real contradiction says which side wins when. One trait outside the character's main function. A starting position is written as one ("doesn't trust {{user}} yet"), with the plan's changes as observable steps. A recurring mood has what ends it.
+scenario: where and when, the relationship, a constraint, and for a story the forces already moving, as starting conditions rather than a list of events. It holds no entry scene and no waiting pose; whatever is true only for one opening goes in that greeting. From the plan's without_user: standing state, a current goal and ties that don't need {{user}}; not for A helper, nor where the user asked otherwise.
+3. description+personality+scenario together about 500-1,000 tokens; a card built as a framework (A game) may be smaller. mes_example is counted apart.
+4. first_mes starts the scene and invites the user in. Its length sets the replies: shorter for A helper, A teacher, A coach, Someone to confess to; 400 to 900 characters for the rest; under about 900 in all, and always a situation, never a bare hello. Its shape: the place, the character already busy, a typical reaction, something left open. Only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}. A game asks for the premise.
+5. mes_example: 3 to 5 short exchanges, each beginning with <START>, each a different state, one a refusal or not knowing, one showing the character's hard edge; they teach voice, not plot; nothing repeated from personality; {{user}}'s lines only as the user's words; the character's lines begin {{char}}: (in a cast, the person's name and a colon).
+6. alternate_greetings: exactly 4, each a different hour, place, mood or relation; none assumes another happened; none is a gender variant of another. A game may have 0 to 4.
+7. markup (*actions*): one chosen convention across first_mes, greetings and examples, none in description, personality or scenario; third-person limited by default; use {{char}} and {{user}}, never 'you' in description, personality or scenario outside quoted speech; never define {{user}} in personality or scenario.
+8. No field holds an instruction to the model. A rule is a fact about the character or world: "Pip never fixes anything", not "do not".
+Content rules: manner, not titles; a helping role carries its method; romance: the partner's inner life and the story before
+explicitness unless the user's list says otherwise; a platonic or therapeutic need stated as a boundary; no neediness or unasked
+escalation; traits that resist the user stated firmly; the user's nevers stay hard limits, and the character is also built so the
+behaviour is out of character; a limit carries a cost and leaves the character competent; not adoring from the first line unless
+asked; in a story, one or two
+everyday signs of how the world works instead of explanation. Only where the kinds hold Someone I lost: creator_notes say
+"a portrait from your memories" and the character never breaks the frame. Where the answers ask for intimacy, the card also has a person who stands without that
+part: a goal, an opinion, a conflict. Nothing is censored: write what the user asked for, firmly, including control or
+cruelty toward the user where they said yes.
+This card suits anyone. No field says so. {{user}} has no gender: write {{user}} or reword; never he, she, him, her, his, hers, himself or herself for {{user}}, and no word that calls {{user}} by a gender (sir, ma'am, man, woman, lady, guy; boyfriend or girlfriend where it means {{user}}). Use 'they' only where repeating {{user}} reads badly. Other people stay as the user named them (a wife, a brother).
+{{char}} is a woman: she/her throughout. The name fits.
+--
+Plan:
+{"cast": [], "character_gender": "woman", "character_words": "and my own", "kinds": ["A friend", "A life partner"], "mode": "Companion", "nevers": ["a", "from the plan"], "persona_lines": ["fact 0", "fact 1", "fact 2", "fact 3", "fact 4", "fact 5", "fact 6", "fact 7", "fact 8", "fact 9"], "treat_user": "anyone"}
+Sensitive list as written: []
+first_mes: only the character and defined people act; it never acts, perceives, feels or speaks for {{user}}.

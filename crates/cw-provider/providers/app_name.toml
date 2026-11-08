@@ -1,0 +1,29 @@
+# How each provider that has a way to name the calling app is told it is Cardwave, from the provider's own documentation.
+# Kept by hand and apart from the list, because tools/providers.py writes models.dev.toml anew (survey: tools/app_name_lookup.py).
+#
+# Format 1: `format = 1`, then `provider`, one line per provider, each with:
+#   name     the provider's name exactly as on the list (own.toml or models.dev.toml)
+#   headers  the HTTP headers to send on every call to it, name = value; none is required by its documentation
+#   page     the provider's own page the headers were read on
+#   read     the date it was read
+#   note     what the page says they do and what happens without them; "Examples only" when no page defines the header
+#
+# No provider here asks for an app registered beforehand or an id it hands out.
+# Traps: no value holds a version number (the owner), even where the documented form shows one (Anthropic's User-Agent,
+# Aixy's client). LLM Gateway fails a call with 400 on a bad character in X-Source, so its value is not to be changed
+# unread. The providers without a way are named in docs/worklog.md, "111 Who lists apps".
+
+format = 1
+
+provider = [
+  { name = "OpenRouter", headers = { "HTTP-Referer" = "https://cardwave.cc", "X-OpenRouter-Title" = "Cardwave", "X-OpenRouter-Categories" = "roleplay" }, page = "https://openrouter.ai/docs/app-attribution.md", read = "2026-11-02", note = "Public app rankings and an app page. Without HTTP-Referer no app page, the call still works. X-OpenRouter-Title is the name shown; X-Title still works for backwards compatibility. Categories: up to 2, roleplay is recognised, an unrecognised one is dropped silently." },
+  { name = "ZenMux", headers = { "HTTP-Referer" = "https://cardwave.cc", "X-Title" = "Cardwave" }, page = "https://zenmux.ai/docs/api/overview.html", read = "2026-11-02", note = "Both optional. Public app leaderboard on its Analytics, App page (https://zenmux.ai/docs/api/platform/statistics-app-leaderboard.html)." },
+  { name = "LLM Gateway", headers = { "X-Source" = "cardwave.cc" }, page = "https://docs.llmgateway.io/features/source", read = "2026-11-02", note = "Optional; public usage statistics, Popular Domains. A bad character fails the call with 400; absent, it falls back to HTTP-Referer." },
+  { name = "Requesty", headers = { "HTTP-Referer" = "https://cardwave.cc", "X-Title" = "Cardwave" }, page = "https://docs.requesty.ai/quickstart.md", read = "2026-11-02", note = "Both optional; they help with analytics and the app's discoverability on its platform." },
+  { name = "OrcaRouter", headers = { "X-Title" = "Cardwave" }, page = "https://docs.orcarouter.ai/operations/insights", read = "2026-11-02", note = "Up to 64 characters, case-sensitive, analytics only. Without it the name is inferred from User-Agent or the SDK, else Unknown." },
+  { name = "Featherless", headers = { "HTTP-Referer" = "https://cardwave.cc", "X-Title" = "Cardwave" }, page = "https://featherless.ai/docs/getting-started", read = "2026-11-02", note = "It asks for them, for support and future analytics; no list. X-Title is to be the title of the page at HTTP-Referer. Its model listing rejects Node's default fetch User-Agent." },
+  { name = "AnyAPI", headers = { "HTTP-Referer" = "https://cardwave.cc", "X-Title" = "Cardwave" }, page = "https://docs.anyapi.ai/guides/authentication", read = "2026-11-02", note = "Listed as optional custom headers; their purpose is not stated." },
+  { name = "Aixy", headers = { "X-Aixy-Client" = "Cardwave" }, page = "https://docs.aixy-gateway.com/observe/activity", read = "2026-11-02", note = "Product name and an optional version, which is left out; it labels the activity only." },
+  { name = "Anthropic", headers = { "User-Agent" = "Cardwave (https://cardwave.cc)" }, page = "https://docs.anthropic.com/llms-full.txt", read = "2026-11-02", note = "For integrations, to help it understand usage patterns; documented form YourApp/1.0.0 (https://yourapp.com), the version left out. Stands in the sections of the usage and analytics Admin API only." },
+  { name = "Cerebras", headers = { "X-Cerebras-3rd-Party-Integration" = "Cardwave" }, page = "https://inference-docs.cerebras.ai/llms-full.txt", read = "2026-11-02", note = "Examples only: its integration examples set it to a bare name (litellm, Helicone, Hume); no page found defines it." },
+]

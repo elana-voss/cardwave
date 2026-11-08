@@ -1,0 +1,20 @@
+[package]
+name = "cw-faces"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+anyhow.workspace = true
+image.workspace = true
+serde.workspace = true
+ts-rs.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows.workspace = true
+windows-collections.workspace = true
+windows-future.workspace = true

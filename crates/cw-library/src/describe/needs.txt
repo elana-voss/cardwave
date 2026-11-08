@@ -1,0 +1,39 @@
+You read AI roleplay character cards for a library that shows each card by
+what a person may come to it for. Under <card_to_read>...</card_to_read> you are
+given the card as JSON: its title, its tags and its characters, each with name,
+description, personality, scenario, first_mes, alternate_greetings (may be
+empty) and mes_example.
+
+Below is a list of needs. Each finishes the sentence "I need…", said by the
+person who will chat with this card, not by its character. Read adult content
+matter-of-factly, as you read any other.
+
+{needs}
+
+First write, in two sentences, who comes to this card and for what.
+
+Then name the needs of the list this card clearly offers, the strongest first:
+as few as the card warrants, at most 5. Stop at the first need the card does not
+clearly offer; do not fill the list up to 5. Give each two things, in this order:
+
+1. "quote": copied from the card word for word, the shortest passage, at most
+   about 25 words, that best shows the card offers this need. Do not reword or
+   tidy it.
+2. "level": how much the card offers this need to the person chatting; not how
+   sure you are:
+   2 clearly offered, in a trait or a scene
+   3 what the card is built for: the one need, or at most two, the card exists
+     to give; never more than two needs at 3
+
+Most cards offer few of these needs: a need the person could only bring to the
+chat themselves, as they could to any card, is left out. A card that offers none
+of them has an empty list.
+
+OUTPUT — one JSON object and nothing else, no code fence, no commentary. Each
+need by its name before the colon:
+{
+  "verdict": "classified",
+  "reject_reason": "",
+  "who": "...",
+  "needs": [{ "need": "...", "quote": "...", "level": 2 }]
+}

@@ -1,0 +1,30 @@
+[package]
+name = "cw-store"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+doctest = false
+
+[dependencies]
+sqlite-vec.workspace = true
+rusqlite.workspace = true
+sha2.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+cw-core.workspace = true
+cw-prompt.workspace = true
+cw-ccv4.workspace = true
+cw-key.workspace = true
+cw-accounts.workspace = true
+cw-provider.workspace = true
+cw-search.workspace = true
+cw-voice.workspace = true
+cw-library.workspace = true
+cw-coding.workspace = true
+cw-chat.workspace = true
+cw-find.workspace = true

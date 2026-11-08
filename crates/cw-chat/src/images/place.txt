@@ -1,0 +1,5 @@
+A ComfyUI workflow makes pictures. Below are the text fields of its nodes, each with its number, its node's type and title, its name and what it holds now. Which one takes the description of the picture to make, the positive prompt? Not a negative prompt, a file name, a style or a setting.
+
+Answer with JSON alone: {"place": <the field's number>}, or {"place": 0} where none takes it.
+
+{{fields}}

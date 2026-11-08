@@ -1,0 +1,1072 @@
+/* The app's own rules over the design system's parts (cardwave.css, read before this file): what no part of it
+   holds, written with its tokens. A size the boards draw inline is a rule here, never a `style=` in the
+   TypeScript, so a user's own CSS can change it. An area's own rules are in app/<area>.css. */
+/* An icon is drawn in lines of the words' colour. */
+svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* A search field's × is the quiet grey of every icon, the words' colour while pointed at, drawn as the icon "close"
+   (the browser's own is dark and bold). */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--grey);
+  cursor: pointer;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+input[type="search"]::-webkit-search-cancel-button:hover {
+  background: var(--ink);
+}
+
+/* What is hidden stays hidden, also where a part sets how it is shown. */
+[hidden] {
+  display: none !important;
+}
+
+/* A screen's main area scrolls by itself, under the tab bar. */
+.main {
+  overflow: auto;
+}
+
+/* The profile's letter, as large as the board AccountProfile draws it. */
+.initial.initial-lg {
+  width: var(--s64);
+  height: var(--s64);
+  font-size: 24px;
+}
+
+/* An account's letter in its line (board AccountServer). */
+.initial.initial-md {
+  width: var(--s32);
+  height: var(--s32);
+}
+
+/* Why a line failed, under the line and as wide; a line whose value is being changed holds its field there. */
+.item:has(> .item-wrong),
+.item.renaming {
+  flex-wrap: wrap;
+}
+.item-wrong {
+  flex-basis: 100%;
+}
+
+/* A dialog (`dialog` of dialogs.ts, a `<dialog>`, over the page's `::backdrop`): as wide as most boards draw it; its
+   name is a heading in the head's words. Centred without a transform, which would hold a menu that places itself
+   in the window (a picker's) inside the dialog's clipped box. */
+dialog.dialog {
+  width: 420px;
+  right: 0;
+  left: 0;
+  margin-inline: auto;
+  transform: none;
+}
+/* A picture a model made, opened whole: as wide as it is, within the window. */
+dialog.dialog.picture-dialog {
+  width: auto;
+  max-width: calc(100vw - 2 * var(--s16));
+}
+.picture-whole > img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 200px);
+}
+dialog.dialog.model-dialog {
+  width: 500px;
+}
+/* New chat, Add a character, Companion (board NewChatPick): 520 px; the list scrolls between the search and the
+   foot; a line's "+" is 36 px, and what is spent stands where its buttons would, 96 px wide. */
+dialog.dialog.adding {
+  width: 520px;
+}
+.adding .dlg-body {
+  flex: none;
+  padding-bottom: var(--s12);
+}
+.pick-list {
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--s10);
+}
+.item-dlg .btn-icon {
+  width: 36px;
+  min-height: 36px;
+}
+.spent {
+  width: 96px;
+  text-align: center;
+}
+/* An editing page (board PromptPreset): its form lays out as the page, its fields 18 px apart; its Save and
+   Cancel stay at the window's foot under a rule while it scrolls (`.form-foot`: a sticky box keeps off the
+   scroller's padding, so its bottom is the page's bottom padding below the edge, to stand on the edge). */
+form.editor {
+  display: contents;
+}
+.edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s18);
+}
+.form-foot {
+  position: sticky;
+  bottom: calc(-1 * var(--s40));
+  margin: auto calc(-1 * var(--s32)) calc(-1 * var(--s40));
+  padding: var(--s14) var(--s32);
+  background: var(--page);
+  border-top: 1px solid var(--rule);
+}
+/* A slider between two words (.sl): each word next to the track, and the track not filled, as its knob in the
+   middle means neither word (the browser fills a range up to the knob in the accent colour); the knob is .steps'. */
+.sl span:first-child {
+  text-align: right;
+}
+.sl span:last-child {
+  text-align: left;
+}
+.sl input[type="range"] {
+  appearance: none;
+  height: 18px;
+  margin: 0;
+  background: transparent;
+}
+.sl input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+}
+.sl input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+}
+:is(.dlg-head, .chat-bar, .sheet-head, .bhead, .import-head) > :is(h1, h2) {
+  margin: 0;
+  font: inherit;
+}
+
+/* A switch group standing in a settings group of its own (Coding team's Team) is as wide as its pills, as the
+   design system's `.fld > .seg`. */
+.settings-group > .seg { align-self: flex-start; }
+
+/* A field's name over it (`.fld > label`), as `.label`, and the line it stands in with its tools, 32 px high; a
+   warning in a box, red. */
+/* A field whose value cannot be taken, red with its hint; the line the search jumped to, marked for a moment. */
+.field.wrong {
+  box-shadow: inset 0 0 0 2px var(--danger);
+}
+.fld:has(.field.wrong) .hint {
+  color: var(--danger);
+}
+.found {
+  background: var(--accent-soft);
+  transition: background 0.4s;
+}
+.field-head {
+  min-height: 32px;
+}
+.fld > label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.banner.warning {
+  background: var(--danger-soft);
+}
+
+/* A menu (`menuOn` of dialogs.ts): its list under its button, from its right edge; one that places itself in the
+   window (`.float`), as the right-click menu (`.at-pointer`), stands where it is put; opened by a right-click (`.by-pointer`) without a ring until a key. */
+.menu {
+  position: relative;
+  display: inline-flex;
+}
+.menu > .pop {
+  top: calc(100% + var(--s4));
+  right: 0;
+}
+.mtag-menu > .pop {
+  left: 0;
+  right: auto;
+}
+.menu.float > .pop,
+.pop.at-pointer {
+  position: fixed;
+  right: auto;
+}
+/* One opened by the pointer shows no focus ring until a key is pressed in it. */
+.pop.by-pointer button:focus-visible {
+  outline: none;
+}
+
+/* A long name in a page's path is cut with "…"; the path stays one line. */
+.pbar > .crumbs,
+.crumbs .cut {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* A list of rows that is a list for a screen reader. */
+ul.rows-plain,
+.part > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A link in a row's grey line (the chat or character a memory or document is from) reads as the app's other links
+   (.textbtn, .ink-link): the accent, not underlined. */
+.meta a {
+  text-decoration: none;
+}
+
+/* The account's tabs are links (`tabs` of dom.ts): the open one, a heading, is marked as the chosen tab is. */
+a.tab {
+  text-decoration: none;
+}
+.tab[aria-current="page"] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Why something failed, said on the page (`noticeBox` of dom.ts; the design system's `.notice` is the one at the
+   bottom of the window), and why a line or a download failed: nothing while it says nothing. */
+:is(.note, .item-wrong, .download-wrong, .import-slot):empty {
+  display: none;
+}
+.note :is(p, ul) {
+  margin: 0 0 var(--s2);
+}
+
+/* The Trash: the column, and what can be done with an item in a place as wide in every row, so the buttons line up;
+   "Delete forever" ends where the row's words may. */
+.trash {
+  max-width: 920px;
+}
+.trash .side-acts {
+  width: 400px;
+}
+.trash .left {
+  margin-right: var(--s8);
+}
+.trash .side-acts > .btn-danger {
+  padding: 0 0 0 var(--s14);
+}
+
+/* Advanced (board Advanced): the sampling's fields in columns of at least 240 px under its name; what the AI is told
+   in a chat without a character, its field under its name; the own CSS's dialog, 820 px. */
+.sampling-part {
+  gap: var(--s18);
+}
+.sampling-part h2 {
+  margin: 0 0 var(--s4);
+}
+.sampling {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s18) var(--s16);
+}
+.item.plain-told {
+  padding-block: var(--s12) var(--s14);
+}
+dialog.dialog.own-css-dialog {
+  width: 820px;
+}
+
+/* A panel from the window's right (`sheet` of dialogs.ts, a `<dialog>`, as the design system's `.sheet`): its head (the
+   × and its name), its body, which scrolls, and its foot, whose buttons share the width. */
+dialog.sheet {
+  position: fixed;
+  inset: 0 0 0 auto;
+  height: auto;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* The page beside it is not dimmed (docs/design.md), unlike the browser's own backdrop. */
+dialog.sheet::backdrop {
+  background: transparent;
+}
+dialog.sheet:not([open]) {
+  display: none;
+}
+.sheet-head,
+.sheet-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s8);
+  padding: var(--s14) var(--s16);
+}
+.sheet-head {
+  border-bottom: 1px solid var(--rule);
+}
+.sheet-head h2 {
+  font-weight: 600;
+}
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--s16) var(--s20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s12);
+}
+.sheet-foot {
+  border-top: 1px solid var(--rule);
+}
+.sheet-foot > .btn {
+  flex: 1;
+}
+.sheet-body p {
+  margin: 0;
+}
+
+/* A line's name that opens it: words, not a button's look. */
+.row-link,
+button.task-step,
+button.task-file,
+.key-off,
+.pic-choose {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* About Cardwave and the tools the model wrote (boards About, WrittenTools): the logo 40 px wide; what a version
+   brought, as written; a tool's box of 40 px. */
+.about-head img {
+  width: 40px;
+  height: auto;
+}
+.about-notes :is(p, h4, ul) {
+  margin: 0;
+}
+.about-notes ul {
+  padding-left: var(--s20);
+}
+.about-license {
+  font-weight: 400;
+  text-decoration: underline;
+}
+.written-row .icover {
+  width: 40px;
+  height: 40px;
+}
+
+/* Settings › Providers (board "Providers"): the model picker's list between two rules, eight lines high, scrolling
+   within (board "Model picker"); what a provider says is not known about its kind in the words' weight. */
+.kind-list {
+  margin: 0 calc(-1 * var(--s20));
+  padding: var(--s6) var(--s8);
+  max-height: 260px;
+  overflow-y: auto;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.kind-hint {
+  margin-top: calc(-1 * var(--s4));
+}
+.kind-note {
+  margin: 0;
+  padding: var(--s4) var(--s12);
+}
+
+/* Settings › Voices (board "Voices"): a character's "Back to the default voice" shows while the line is pointed at. */
+.item:is(:hover, :focus-within) .reveal {
+  opacity: 1;
+}
+
+/* A coding task (board "Coding task"): its goal, the steps beside the checkpoints and the files changed; a step's
+   mark is blue while it runs and once done, red where it failed; a step's output and a diff scroll within. */
+.task-title h1 {
+  font-size: 22px;
+}
+.task-state-word {
+  font-weight: 600;
+}
+.task-state-word.running {
+  color: var(--accent);
+}
+.task-state-word.failed,
+.task-step.failed .task-step-icon {
+  color: var(--danger);
+}
+.task-steps {
+  flex: 1 1 480px;
+}
+.task-side {
+  flex: 0 1 300px;
+  min-width: 260px;
+}
+button.task-step,
+button.task-file {
+  width: 100%;
+}
+button.task-step {
+  padding: var(--s10) var(--s4);
+  border-top: 1px solid var(--rule);
+}
+.task-step-icon {
+  display: flex;
+  margin-top: var(--s2);
+  color: var(--grey);
+}
+.task-step:is(.running, .done) .task-step-icon {
+  color: var(--accent);
+}
+.task-verdict {
+  margin-top: var(--s20);
+  padding: var(--s14) var(--s16);
+}
+.task-file .item-text {
+  font-size: var(--fs-small);
+}
+:is(.task-step-open, .task-diff, .task-verdict) pre {
+  margin: 0;
+  max-height: 480px;
+  overflow: auto;
+}
+
+/* The character generator's picks stand in a fieldset, which greys them all while the card is written. */
+.gen-picks {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* The view By need: "I need…" and its grey line stand on the middle of a line of pills. */
+.need-row {
+  margin-top: var(--s16);
+}
+.need-line {
+  line-height: 34px;
+}
+/* The view's name beside the page's title, as By need gives it. */
+.ptitle > .meta {
+  margin-left: var(--s8);
+  font-weight: 400;
+}
+/* A pill of dom.ts's `pill` is as wide as its words in semibold, pressed or not, so pressing one moves none after
+   it: the words stand a second time under them, unseen and of no height. */
+.pill[data-label] {
+  flex-direction: column;
+  justify-content: center;
+}
+.pill[data-label]::after {
+  content: attr(data-label) / "";
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+}
+
+/* The library's lists (boards Library, ChatsList, Lorebooks, Personas): a row's title is its link and reaches over
+   the row, and what stands at the row's right lies over that. A favorite's star is filled and blue; the order and
+   filter's button is blue while a choice is made behind it, and its panel's parts stand 22 px apart. */
+.row-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-2xl);
+}
+.star {
+  color: var(--faint);
+}
+.star[aria-pressed="true"] {
+  color: var(--accent);
+}
+.star[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+/* A library row's star (design.md "List rows") stands where it is a favourite, else only while the row is pointed
+   at or focused, or worked by touch: always there it reads as a rating. */
+.library .rows-plain .item:not(:hover, :focus-within) .star:not([aria-pressed="true"]) {
+  opacity: 0;
+}
+@media (hover: none) {
+  .library .rows-plain .item .star:not([aria-pressed="true"]) {
+    opacity: 1;
+  }
+}
+/* A list read anew that brought another item under a resting pointer (library/list-screen.ts): its items take no
+   hover or press until the pointer moves, so a row that moved there is not opened by a click meant for the one before. */
+.still > li {
+  pointer-events: none;
+}
+/* An icon button that is on (a filter set, a panel shown, reading aloud) is marked so, as a pressed button; a star is marked by its own colour. */
+.btn-icon.on,
+.btn-icon:not(.star)[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.sort-sheet {
+  gap: var(--s22);
+  padding-block: var(--s18);
+}
+
+/* Discovery (board Discovery): the entries take turns, the picture left and right, 1,040 px wide at most; the
+   title large, the logline 16 px. */
+.discovery {
+  width: 100%;
+  max-width: 1040px;
+  margin: var(--s32) auto 0;
+  padding: 0;
+  list-style: none;
+}
+.discovery > li:nth-child(even) > .entry {
+  flex-direction: row-reverse;
+}
+@container (max-width: 719px) {
+  .discovery > li + li {
+    margin-top: var(--s40);
+  }
+}
+.entry {
+  color: var(--ink);
+  text-decoration: none;
+}
+/* Pointed at or in focus, an entry's picture grows as a Gallery tile's does: all of it can be pressed. */
+.entry .art img {
+  transition: transform 0.25s ease-out;
+}
+.entry:is(:hover, :focus-visible) .art img {
+  transform: scale(1.03);
+}
+.etext .short-rule {
+  margin: var(--s4) 0;
+}
+.logline {
+  max-width: 440px;
+  font-size: var(--fs-lead);
+  line-height: 1.65;
+}
+
+/* A persona's form in its row begins where the rows' words do; its round is 48 px. Nothing in a section yet: the
+   fresh start's two lists, centred, 48 px apart (board FirstStart). */
+.persona-form {
+  padding: var(--s14) var(--s16) var(--s16) calc(var(--s56) + var(--s16));
+}
+.persona-form .initial {
+  width: 48px;
+  height: 48px;
+}
+.fresh {
+  gap: var(--s48);
+  margin: auto;
+  padding: var(--s32);
+}
+
+/* A card's page (boards Main, CardEdit, CardPicture, NewCard): the picture keeps two by three until it comes; a
+   click anywhere on it picks a file (`.pic-choose`, under the rest); pointed at, the fade with its round buttons
+   rises (`.pic-ov`); one without art shows `.pic-empty`; a file dragged over the page, the dashed fill
+   (`.dropping`, `.pic-drop`). */
+.hero-picture {
+  align-self: flex-start;
+}
+.hero-picture > img {
+  min-height: 220px;
+  aspect-ratio: auto 2 / 3;
+  background: var(--rule);
+}
+.hero-picture.empty {
+  aspect-ratio: 2 / 3;
+}
+.pic-choose {
+  position: absolute;
+  inset: 0;
+}
+.hero-picture .pic-ov {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.hero-picture:is(:hover, :focus-within) .pic-ov {
+  opacity: 1;
+}
+.pic-ov .rbtn {
+  pointer-events: auto;
+}
+.hero-picture .pic-empty,
+.pic-drop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.pic-empty button {
+  pointer-events: auto;
+}
+.pic-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--accent);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--accent-soft) 80%, transparent);
+  font-weight: 500;
+}
+.hero-picture.empty > img,
+.hero-picture.empty .pic-ov,
+.hero-picture:not(.empty) .pic-empty,
+.hero-picture:not(.dropping) .pic-drop {
+  display: none;
+}
+/* What is written in place: the title, the summary, the side's lines and a text, each a field without its look. */
+.hero-title,
+.chat-title,
+.logline[tabindex],
+.side p[tabindex],
+.side p span[tabindex] {
+  cursor: text;
+  overflow-wrap: anywhere;
+}
+.in-place {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: var(--edit);
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+}
+.tb-body .in-place {
+  background: none;
+  font-size: var(--fs-read);
+  line-height: var(--lh-read);
+  white-space: pre-wrap;
+}
+.side.long {
+  position: static;
+}
+.md.changes p {
+  white-space: pre-wrap;
+}
+/* A text's AI tools and its earlier drafts open beside it (board CardAITools); the side's place at 600 px is one
+   grey line (`.fold-line`). */
+.tb > .pop {
+  top: 38px;
+  left: calc(100% + var(--s16));
+}
+.tb > .pop.drafts {
+  left: calc(100% - 32px);
+  width: 240px;
+}
+.fold-line {
+  display: none;
+  margin: 0;
+  color: var(--grey);
+  font-size: var(--fs-small);
+}
+/* The card's box: its parts' names, and their lines as a list. */
+.bhead h2 {
+  flex: 1;
+  font-weight: 600;
+}
+.part > p {
+  margin: 0;
+  line-height: 32px;
+}
+/* "Make a picture", 760 px, the picture 240 by 360 (board MakePicture); "Earlier pictures", 640 px; Add
+   expressions and Add a 3D figure, 520 px, the tick on the one chosen. */
+dialog.dialog.make-picture-dialog {
+  width: 760px;
+}
+dialog.dialog.earlier-dialog {
+  width: 640px;
+}
+dialog.dialog.expressions-dialog {
+  width: 520px;
+}
+.made-side {
+  flex: 0 0 240px;
+}
+.made-frame {
+  width: 240px;
+  height: 360px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  color: var(--grey);
+}
+.made-frame.waiting {
+  background: var(--fill);
+}
+.made-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pack-tick {
+  visibility: hidden;
+}
+.pk[aria-pressed="true"] .pack-tick {
+  visibility: visible;
+}
+
+/* A lorebook's editor (board LorebookEditor): the entry beside the panel of its entries, as high as the window,
+   the entry in view marked in the list; from 960 px down list and entry are screens of their own (`.at-entry`). */
+.lorebook {
+  flex: 1;
+  min-height: 0;
+}
+.crumbs .here {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lore-entries {
+  background: var(--page);
+}
+.entry-heads {
+  padding: 0 var(--s12);
+}
+.rows-plain > .entry-line {
+  border-radius: var(--r-xl);
+}
+.entry-line:has([aria-current]) {
+  background: var(--accent-soft);
+}
+.entry-link[aria-current] > .entry-label {
+  font-weight: 600;
+}
+.entry-form .fld > .seg {
+  align-self: stretch;
+}
+.entry-form .seg > .btn {
+  flex: 1;
+}
+.entry-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+.entry-name > .in-place {
+  width: 100%;
+  font: inherit;
+}
+/* A field of keywords: each a pill, and behind them the place to type the next. */
+.keys {
+  height: auto;
+  padding: var(--s6) var(--s8);
+  cursor: text;
+}
+.keys > input {
+  min-width: 140px;
+  padding: 0 var(--s4);
+  background: none;
+}
+.key-off {
+  display: flex;
+}
+.lore-change {
+  padding: var(--s6) var(--s8);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+}
+.lore-bar > input {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 960px) {
+  .lorebook {
+    flex-direction: column;
+  }
+  .lorebook:not(.at-entry) > .main {
+    flex: none;
+    overflow: visible;
+  }
+  .lorebook:not(.at-entry) .entry-form,
+  .lorebook.at-entry > .lore-entries {
+    display: none;
+  }
+  .lore-entries {
+    flex: 1;
+    min-width: 0;
+    padding: var(--s8) var(--s16);
+    border-left: 0;
+  }
+  .lorebook:not(.at-entry) .entry-line:has([aria-current]):not(:hover) {
+    background: none;
+  }
+  .lorebook:not(.at-entry) .entry-link[aria-current] > .entry-label {
+    font-weight: 500;
+  }
+}
+
+/* The message field (board Chat): who replies over it, then what waits attached, as tiles with their × at the
+   corner; the text grows with its words to eight lines; the ring of a field in focus is around the whole field.
+   Its menus open upward, 12 px over it, from their button's left edge. While a call is asked about it waits,
+   dimmed, but for Stop; while the model writes the message, its words are grey. A notice stands over it. */
+.chat-wrap {
+  anchor-name: --message-field;
+}
+.chat-dock:not(:has(> :not([hidden]))) {
+  display: none;
+}
+.composer {
+  cursor: text;
+}
+.composer:has(textarea:focus) {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.composer textarea {
+  min-width: 0;
+  max-height: calc(8 * 1.5em + 18px);
+  field-sizing: content;
+}
+.composer.drafting textarea {
+  color: var(--grey);
+}
+.composer .btn-quiet:hover:enabled {
+  background: var(--fill-hover);
+}
+.composer .dictate.recording {
+  color: var(--recording);
+}
+.chat-wrap .menu > .pop {
+  top: auto;
+  right: auto;
+  bottom: calc(100% + var(--s12));
+  left: 0;
+}
+.chat-wrap.waiting .composer > :not(.send),
+.chat-wrap.waiting .replier {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.replier,
+.replier > .menu,
+.replier .btn {
+  max-width: 100%;
+}
+.replier .btn {
+  min-height: 32px;
+  padding: 0 var(--s10);
+}
+.replier .btn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.waiting-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s8);
+  margin: 0 0 var(--s8) var(--s8);
+}
+.waiting-tile {
+  position: relative;
+}
+.attached-picture.small {
+  display: block;
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--r-md);
+}
+.attached-file.small {
+  min-height: 48px;
+  padding: 0 var(--s10);
+  border-radius: var(--r-md);
+}
+.waiting-tile > .remove {
+  position: absolute;
+  top: calc(-1 * var(--s8));
+  right: calc(-1 * var(--s8));
+  width: 22px;
+  min-height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+}
+
+/* The chat's side panel (board Chat): it scrolls by itself; its name and × show only where it lies over the chat,
+   as a sheet (under 960 px). A line of "Tools" sets its switches in. Reply length is a range over the board's
+   track and dots: its knob the board's, the blue up to it (`--at`), greyed where it is not sent. */
+.side-panel {
+  overflow: auto;
+}
+.side-panel .item-text {
+  overflow-wrap: anywhere;
+}
+.side-panel .select-field,
+.side-panel .selectbtn {
+  width: 100%;
+}
+/* The heading beside "Add lorebook" is the size of the panel's other headings, not a box's. */
+.side-panel .gh .panel-label {
+  font-size: var(--fs-small);
+}
+.panel-close {
+  display: none;
+  align-items: center;
+  gap: var(--s8);
+  margin: calc(-1 * var(--s16)) calc(-1 * var(--s16)) 0;
+  padding: var(--s10) var(--s12);
+  border-bottom: 1px solid var(--rule);
+}
+.item.sub-item {
+  padding-left: var(--s28);
+}
+.reply-length {
+  flex: none;
+  width: 76px;
+  text-align: right;
+}
+.steps .trk,
+.steps .fil {
+  left: 9px;
+}
+.steps .trk {
+  right: 9px;
+}
+.steps .fil {
+  width: calc((100% - 18px) * var(--at, 0));
+}
+.steps .steps-row {
+  box-sizing: border-box;
+  padding: 0 calc(var(--s10) / 2);
+}
+.steps input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+}
+.steps input::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+  appearance: none;
+}
+.steps input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.steps:has(input:disabled),
+.reply-length:disabled {
+  opacity: 0.45;
+}
+.portrait {
+  width: 100%;
+  border-radius: var(--r-xl);
+}
+@media (max-width: 960px) {
+  .side-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    width: min(300px, 100%);
+    box-shadow: var(--shadow-sheet);
+    animation: sheet 0.18s ease-out;
+  }
+  .panel-close {
+    display: flex;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-panel {
+    animation: none;
+  }
+}
+
+/* The import's panel at the window's bottom right (board Import): its head, the bar, and its files' lines, the
+   mark of each in the colour of its state. */
+#importing {
+  position: fixed;
+  right: var(--s24);
+  bottom: var(--s24);
+  z-index: 5;
+  width: 380px;
+  max-width: calc(100vw - 2 * var(--s16));
+  background: var(--surface);
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-menu);
+  overflow: hidden;
+}
+.import-head {
+  padding: var(--s14) var(--s12) var(--s6) var(--s18);
+}
+.import-progress {
+  padding: 0 var(--s18) var(--s12);
+}
+.import-lines {
+  max-height: 260px;
+  padding: var(--s4) var(--s6);
+  border-top: 1px solid var(--rule);
+  overflow: auto;
+}
+.import-line {
+  padding: var(--s8) var(--s4) var(--s8) var(--s12);
+}
+.import-mark {
+  color: var(--grey);
+}
+.import-mark.done {
+  color: var(--accent);
+}
+.import-mark.failed {
+  color: var(--danger);
+}
+/* Make a voice (board MakeVoice): the recording's box, its clock in figures of one width, the bar filling red. */
+.recording {
+  padding: var(--s10) var(--s12);
+  border-radius: var(--r-xl);
+}
+.recording-time {
+  font-variant-numeric: tabular-nums;
+}
+.recording-bar > div {
+  background: var(--recording);
+}
+.update-notes {
+  white-space: pre-wrap;
+}
+
+/* The read-back's closed private line: a group's line as a button. */
+.private-line {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* "Try another model": a provider's list is long. */
+.model-menu .pop {
+  max-height: 320px;
+  overflow: auto;
+}

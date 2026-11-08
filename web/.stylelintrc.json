@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-duplicate-selectors": true,
+    "declaration-block-no-duplicate-properties": [true, { "ignore": ["consecutive-duplicates-with-different-syntaxes"] }],
+    "declaration-property-value-disallowed-list": {
+      "/^(padding|margin|gap|row-gap|column-gap)/": ["/(^|[^\\w.-])([2-9]|\\d{2,})(\\.\\d+)?px/", "/\\d(\\.\\d+)?r?em\\b/"]
+    }
+  }
+}

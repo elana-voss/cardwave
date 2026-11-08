@@ -1,0 +1,326 @@
+/* The chat's own rules over the design system's chat parts (boards Chat, ChatPlain, SplitView, ChatTools,
+   ChatPicture, ChatWebPicture, CodingTaskStart), read after app.css. A message is
+   `.msg` (`.me` the user's) of `.msg-head`, `.bubble-row` (the bubble and its `.tools`) and `.acts`; Plain
+   (`data-chat="plain"` on the root) lays the same markup out as the board ChatPlain's `.pm`. */
+
+/* The account's picture fills its round, where it has one in place of its letter; the AI of a chat without a
+   character is a robot head in the grey round. */
+.initial > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.avatar.ai {
+  background: var(--fill);
+  color: var(--ink);
+}
+
+/* "(you)" behind the user's name only in Plain; the bubbles say it by their side. */
+.you {
+  display: none;
+  color: var(--grey);
+  font-weight: 400;
+}
+
+/* The messages scroll under the bar. */
+.chat-scroller {
+  min-height: 0;
+  overflow: auto;
+  padding: var(--s28) var(--s24);
+}
+@media (max-width: 600px) {
+  .chat-scroller {
+    padding: var(--s20) var(--s16);
+  }
+}
+
+/* While the model thinks, its line stands in the bubble's place (board ChatThinking). */
+.msg.thinking > .bubble-row {
+  display: none;
+}
+
+/* A message's (i), "…" and the line under it show while it is pointed at, has the focus or is the newest, and
+   always where nothing can hover. */
+.msg:is(:hover, :focus-within, :last-child) .reveal {
+  opacity: 1;
+}
+@media (hover: none), (pointer: coarse) {
+  .msg .reveal {
+    opacity: 1;
+  }
+}
+.bubble {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.me > .acts {
+  margin: 0 var(--s36) 0 0;
+}
+.msg > .message-edit {
+  align-self: stretch;
+  margin-left: var(--s36);
+}
+.me > .message-edit {
+  margin: 0 var(--s36) 0 0;
+}
+/* A message edited in place keeps the bubble's words and line height, so they do not move. */
+.message-edit textarea {
+  field-sizing: content;
+  min-height: 82px;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-chat);
+}
+
+/* What the user attached stands over the bubble, at the user's side for the user's. */
+.me .attached-stack {
+  align-items: flex-end;
+}
+
+/* The messages after the one the next message branches off from, dimmed, and that one underlined. */
+.later > :is(.msg-head, .bubble-row),
+.repicture img.dimmed {
+  opacity: 0.45;
+}
+.branch-point {
+  padding-bottom: var(--s12);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* A message's text: its paragraphs as written; a reply without words yet says "…". */
+.text p {
+  white-space: pre-wrap;
+}
+.text:empty::before {
+  content: "…";
+  color: var(--grey);
+}
+
+/* A picture a model made stands in the bubble's place without its ground, 300 × 440 px, covered (board
+   ChatPicture, held by the owner 2026-10-24), a grey box of that size until it has come; its "…" at its top right, shown on hover and always
+   on touch (board ChatPicture). */
+.bubble.painted {
+  padding: 0;
+  background: none;
+}
+.picture-open {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-2xl);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bubble .picture {
+  display: block;
+  width: 300px;
+  height: 440px;
+  max-width: 100%;
+  object-fit: cover;
+  background: var(--fill);
+  border-radius: var(--r-2xl);
+}
+.bubble .picture.loaded {
+  background: none;
+}
+.painted-picture {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+.picture-menu {
+  position: absolute;
+  top: var(--s8);
+  right: var(--s8);
+  opacity: 0;
+}
+.picture-menu > button {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.painted-picture:hover > .picture-menu,
+.picture-menu:focus-within,
+.picture-menu:has([aria-expanded="true"]) {
+  opacity: 1;
+}
+@media (hover: none) {
+  .picture-menu {
+    opacity: 1;
+  }
+}
+.repicture {
+  max-width: min(350px, 100%);
+}
+.repicture textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* A picture a message's Markdown shows, within its bubble; one from another website held back while "Pictures from
+   the web" is off: its warning in a box of the line's colour (board ChatWebPicture). */
+.message-picture {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  margin: var(--s4) 0;
+  border-radius: var(--r-lg);
+}
+.web-picture {
+  max-width: 520px;
+  margin: var(--s4) 0;
+  padding: var(--s14) var(--s16);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  font-style: normal;
+}
+
+/* What leads on from a failure stands in its line, over the message field. */
+.chat-main > .note {
+  padding: var(--s6) var(--s24);
+  font-size: var(--fs-small);
+}
+.chat-main > .note p:has(+ a) {
+  display: inline;
+  margin-right: var(--s8);
+}
+.chat-main > .note button {
+  margin-left: var(--s8);
+}
+
+/* A tool's call that waits for the user: a raised card over the message field (the owner, 2026-10-15), its file
+   or command scrolled within from 12 lines on (board ChatTools). */
+.chat-main > .tool-ask {
+  width: calc(100% - 2 * var(--s24));
+  max-width: 720px;
+  margin: 0 auto var(--s8);
+  padding: var(--s14) var(--s16);
+  background: var(--surface);
+  border-radius: var(--r-3xl);
+  box-shadow: var(--shadow-menu);
+}
+.tool-ask pre {
+  max-height: calc(12 * 1.5em + var(--s20));
+  overflow: auto;
+}
+
+/* A coding task's card in the chat (board CodingTaskStart). */
+.task-card {
+  max-width: 560px;
+  margin-left: var(--s36);
+  padding: var(--s14) var(--s16);
+  background: var(--surface);
+  border-radius: var(--r-3xl);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+/* The split view (board SplitView): the chat beside the card's texts, the line between them dragged to change
+   their widths. */
+.chat.with-split {
+  display: grid;
+  grid-template-columns: minmax(420px, 560fr) var(--split-width, minmax(420px, 480fr));
+  grid-template-rows: minmax(0, 1fr);
+}
+.split-pane {
+  position: relative;
+  border-left: 1px solid var(--rule);
+}
+.split-divider {
+  position: absolute;
+  inset: 0 auto 0 -4px;
+  z-index: 1;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+.split-head {
+  padding: var(--s10) var(--s12) var(--s10) var(--s20);
+  border-bottom: 1px solid var(--rule);
+}
+.split-head img {
+  flex: none;
+  width: 30px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: var(--r-xs);
+}
+.split-choose {
+  padding: var(--s16) var(--s28) 0;
+}
+.split-pane > .note:not(:empty) {
+  padding: var(--s12) var(--s28) 0;
+}
+.split-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.split-texts {
+  padding: var(--s20) var(--s28) var(--s32);
+  gap: var(--s36);
+}
+
+/* "Reply statistics" (board ReplyStats): Context with its bar, and "Sent to the AI" with a line per part. */
+.reply-stats > .item:is(.context, .sent) {
+  padding: var(--s10) var(--s12);
+}
+
+/* Plain (board ChatPlain): every message at the left, its name's line, which ends with its "…", over its text; the
+   user's on the grey fill. */
+[data-chat="plain"] .chat-thread {
+  gap: var(--s8);
+}
+[data-chat="plain"] .msg {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s4) var(--s8);
+  padding: var(--s12) var(--s14);
+  border-radius: var(--r-2xl);
+}
+[data-chat="plain"] .me {
+  background: var(--fill);
+}
+[data-chat="plain"] .msg > *,
+[data-chat="plain"] .bubble-row > * {
+  grid-column: 1 / -1;
+}
+[data-chat="plain"] .msg > .msg-head {
+  grid-column: 1;
+  flex-direction: row;
+  min-height: 32px;
+}
+[data-chat="plain"] .bubble-row {
+  display: contents;
+}
+[data-chat="plain"] .bubble-row > .tools {
+  grid-row: 1;
+  grid-column: 2;
+}
+[data-chat="plain"] .you {
+  display: inline;
+}
+[data-chat="plain"] .bubble {
+  max-width: none;
+  margin: 0 0 0 var(--s36);
+  padding: 0;
+  background: none;
+  border-radius: 0;
+}
+[data-chat="plain"] .msg > :is(.acts, .message-edit) {
+  margin: 0 0 0 var(--s28);
+}
+
+/* A chat of several's rounds in the header (board ChatGroup): written last to first in a row drawn from the
+   right, each overlapping the one before it, so the first character is painted last, in front. */
+.chat-rounds {
+  display: flex;
+  flex: none;
+  flex-direction: row-reverse;
+}
+.chat-rounds > .ava-stack + .ava-stack {
+  margin-left: 0;
+  margin-right: calc(-1 * var(--s12));
+}

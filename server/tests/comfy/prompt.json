@@ -1,0 +1,116 @@
+{
+ "1": {
+  "inputs": {
+   "ckpt_name": "model.safetensors"
+  },
+  "class_type": "CheckpointLoaderSimple",
+  "_meta": {
+   "title": "Load Checkpoint"
+  }
+ },
+ "3": {
+  "inputs": {
+   "seed": 42,
+   "steps": 20,
+   "cfg": 7,
+   "sampler_name": "euler",
+   "scheduler": "normal",
+   "denoise": 1,
+   "model": [
+    "1",
+    0
+   ],
+   "positive": [
+    "6",
+    0
+   ],
+   "negative": [
+    "7",
+    0
+   ],
+   "latent_image": [
+    "5:16",
+    0
+   ]
+  },
+  "class_type": "KSampler",
+  "_meta": {
+   "title": "KSampler"
+  }
+ },
+ "6": {
+  "inputs": {
+   "text": "a lighthouse at dusk",
+   "clip": [
+    "1",
+    1
+   ]
+  },
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Positive"
+  }
+ },
+ "7": {
+  "inputs": {
+   "text": "blurry, text",
+   "clip": [
+    "1",
+    1
+   ]
+  },
+  "class_type": "CLIPTextEncode",
+  "_meta": {
+   "title": "Negative"
+  }
+ },
+ "8": {
+  "inputs": {
+   "samples": [
+    "3",
+    0
+   ],
+   "vae": [
+    "1",
+    2
+   ]
+  },
+  "class_type": "VAEDecode",
+  "_meta": {
+   "title": "VAE Decode"
+  }
+ },
+ "9": {
+  "inputs": {
+   "filename_prefix": "Cardwave-a lighthouse at dusk",
+   "images": [
+    "8",
+    0
+   ]
+  },
+  "class_type": "SaveImage",
+  "_meta": {
+   "title": "Save Image"
+  }
+ },
+ "15": {
+  "inputs": {
+   "image": "photo.png"
+  },
+  "class_type": "LoadImage",
+  "_meta": {
+   "title": "Load Image"
+  }
+ },
+ "5:16": {
+  "inputs": {
+   "width": 640,
+   "height": 768,
+   "batch_size": 1
+  },
+  "class_type": "EmptyLatentImage",
+  "_meta": {
+   "title": "Empty Latent Image"
+  }
+ }
+}

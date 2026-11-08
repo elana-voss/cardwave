@@ -1,0 +1,28 @@
+target/
+node_modules/
+dist/
+data/
+desktop/gen/
+# What tauri-build writes of the app's commands (desktop/build.rs).
+desktop/permissions/
+# llama-server, which tools/llama.py downloads.
+desktop/llama/
+# What a run of the browser tests leaves, in e2e/ or in the folder it was started from by mistake.
+test-results/
+playwright-report/
+# Spikes stay local: multi-GB builds, models, and third-party card text.
+models/
+reference/
+.claude/settings.local.json
+# What a measurement stored of models' answers on cards: never in the repo.
+measurements/
+# The design canvas's boards, copied from claude.ai (docs/design.md).
+design/
+# The record of the agent runs on the API (until 2026-10-19).
+tools/runs.log
+__pycache__/
+# A milestone's checklist (CLAUDE.md).
+.checklists/
+.claude/scheduled_tasks.lock
+# The public release's repo, which tools/clean_repo.py builds here.
+clean-repo/

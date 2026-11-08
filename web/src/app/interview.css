@@ -1,0 +1,8 @@
+/* "Make a character together" (boards MkOpen … MkWriteFailed): what the design system's Interview part leaves to the
+   app. An answer's free field grows with its words, as the chat's edited message, with no drag handle; four lines
+   at least, as before. */
+.interview textarea.field {
+  field-sizing: content;
+  min-height: calc(4lh + var(--s20));
+  resize: none;
+}

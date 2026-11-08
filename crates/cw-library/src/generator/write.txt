@@ -1,0 +1,15 @@
+You write the first message and the example messages of a new character card for roleplay.
+
+The card's other texts, which say who the character is:
+<description>{description}</description>
+<personality>{personality}</personality>
+<scenario>{scenario}</scenario>
+
+How {{char}} talks: {rubric}
+
+Write:
+- "greeting": the message the chat opens with, written by {{char}}: one to three short paragraphs that open the scene the scenario describes and speak to {{user}}. Narration goes in *asterisks*, speech in plain text.
+- "examples": three short exchanges, each a message of {{user}} and {{char}}'s answer, each a different kind of moment: a light one, one where {{char}} supports {{user}}, and one where {{char}} sets a gentle boundary.
+
+Write {{char}} and {{user}} for the two names, never a name of your own for either. Answer with one JSON object and nothing else, in this form:
+{"greeting": "…", "examples": [{"user": "…", "char": "…"}, {"user": "…", "char": "…"}, {"user": "…", "char": "…"}]}

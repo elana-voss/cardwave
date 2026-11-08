@@ -1,0 +1,28 @@
+[package]
+name = "cardwave-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "cardwave"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+cw-platform.workspace = true
+cardwave-server = { path = "../server" }
+tauri = { version = "2", features = [] }
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+# The app's updates (src/update.rs). Without its "zip": the update is the
+# signed installer itself, and that feature brings a zip with known holes.
+tauri-plugin-updater = { version = "2", default-features = false, features = ["rustls-tls", "system-proxy"] }
+anyhow.workspace = true
+# The system's folder picker (`pick_folder`).
+rfd = "0.15"

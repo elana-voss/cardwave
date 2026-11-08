@@ -1,0 +1,78 @@
+{
+ "talk": [
+  "Hello Maren. Is the lamp lit yet?",
+  "Tell me about the wreck of the Asta.",
+  "Can we climb up to the gallery?",
+  "Could you help me plan my week? I have three deadlines.",
+  "Make me a list: groceries for four days.",
+  "Thanks. Back to the lighthouse: is a storm coming?",
+  "I hold the lantern while you check the lens.",
+  "What did your father teach you about the light?",
+  "Please summarise what we did today in two lines.",
+  "Good night, Maren. I'll come back tomorrow."
+ ],
+ "fakes": {
+  "classify": {
+   "verdict": "classified",
+   "reject_reason": "",
+   "characters": [
+    {
+     "name": "X",
+     "gender": "female",
+     "age": "adult"
+    }
+   ],
+   "pairing": "",
+   "engine": "",
+   "multi_mode": false,
+   "per_greeting": [],
+   "frame": "",
+   "frame_display": "",
+   "rating": "sfw",
+   "content_flags": [],
+   "archetype": [],
+   "mechanism": "",
+   "confidence": 0.8,
+   "evidence": "e"
+  },
+  "write": {
+   "title": "A title",
+   "logline": "A line.",
+   "summary": "A summary.",
+   "tagline": "A tagline",
+   "mood": ""
+  },
+  "needs": {
+   "verdict": "classified",
+   "reject_reason": "",
+   "who": "x",
+   "needs": [
+    {
+     "need": "keep_company",
+     "quote": "q",
+     "level": 3
+    }
+   ]
+  },
+  "title": {
+   "title": "A windy evening"
+  },
+  "pick_mode": {
+   "mode": "Roleplay"
+  },
+  "memory": "FACTS:\nMaren | home | Maren keeps the north light | lasting | all | open | \nEVENTS:\nMaren greeted you | | | all | chat",
+  "companion": {
+   "steps": [
+    {
+     "do": "play",
+     "clip": "wave"
+    }
+   ]
+  },
+  "keywords": "sea, light, ship",
+  "lore_keywords_translate": "Meer, Licht",
+  "chat": "*Maren smiles.* Of course."
+ },
+ "picture_words": "woman, grey braids, lantern, lighthouse",
+ "other": "Ein neuer Text."
+}

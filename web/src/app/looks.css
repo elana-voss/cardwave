@@ -1,0 +1,210 @@
+/* The five looks of the theme menu (theme.ts), written by tools/looks.py from the page "Cardwave Themes"'s files: do
+   not edit here. Each applies under the root's data-theme="<its id>" and sets its own colour scheme; none sets a size,
+   so Compact works on each. Their selectors weigh what they did as the user's own CSS, which still wins over them.
+   They are carried over as they are (the owner: each keeps its own character), hence the lint's two rules off. */
+/* stylelint-disable no-duplicate-selectors, declaration-property-value-disallowed-list */
+@font-face { font-family: "Quicksand"; font-style: normal; font-weight: 500; font-display: block; src: url("@fontsource/quicksand/files/quicksand-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Quicksand"; font-style: normal; font-weight: 600; font-display: block; src: url("@fontsource/quicksand/files/quicksand-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Michroma"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/michroma/files/michroma-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/exo-2/files/exo-2-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 600; font-display: block; src: url("@fontsource/exo-2/files/exo-2-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Racing Sans One"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/racing-sans-one/files/racing-sans-one-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Yellowtail"; font-style: normal; font-weight: 400; font-display: block; src: url("@fontsource/yellowtail/files/yellowtail-latin-400-normal.woff2") format("woff2"); }
+
+/* Downtempo dusk: muted violet and teal, a slow dusk gradient, soft glow, round corners; calm for long chats. */
+:root:where([data-theme="downtempo"]) {
+  color-scheme: dark !important;
+  --page: #1b1a2e; --surface: #24233b; --fill: #2a2944; --fill-hover: #33324f; --marked: #2e2d48;
+  --control: #2c2b46; --edit: #201f35; --seg-on: #3a3858;
+  --ink: #ecebf5; --grey: #c4c1dc; --faint: #b9b6d4; --ink-soft: #d6d3ea; --disabled: #918eb2;
+  --rule: #2d2c47; --line: #3d3b5c; --divider: #3d3b5c; --switch-off: #47456a;
+  --accent: #7fd1c7; --accent-hover: #a3e2da; --on-accent: #10201e;
+  --accent-soft: rgb(127 209 199 / 14%); --chosen: rgb(127 209 199 / 8%); --accent-ink: #a8e8df;
+  --me: #3a3360; --danger: #f28b9a; --danger-soft: rgb(242 139 154 / 14%);
+  --scrim: rgb(15 14 30 / 60%);
+  --shadow-menu: 0 10px 34px rgb(5 4 20 / 55%), 0 0 0 1px rgb(255 255 255 / 5%);
+  --shadow-dialog: 0 20px 60px rgb(5 4 20 / 65%), 0 0 0 1px rgb(178 150 255 / 18%);
+  --font: "Quicksand", "Segoe UI", sans-serif;
+  --r-2xl: 18px; --r-xl: 16px; --r-3xl: 22px; --r-bubble: 22px; --r-md: 12px; --r-lg: 14px;
+}
+:where(:root[data-theme="downtempo"]) body {
+  background:
+    radial-gradient(ellipse 70% 50% at 85% 110%, rgb(240 139 154 / 26%), transparent 70%) fixed,
+    radial-gradient(ellipse 60% 50% at 10% -10%, rgb(127 209 199 / 14%), transparent 70%) fixed,
+    linear-gradient(170deg, #1b1a2e 0%, #26213f 60%, #3a2a4f 100%) fixed;
+}
+:where(:root[data-theme="downtempo"]) body { font-weight: 500; }
+:where(:root[data-theme="downtempo"]) #rail { background: rgb(27 26 46 / 70%); border-right: 1px solid rgb(255 255 255 / 6%); backdrop-filter: blur(8px); }
+:where(:root[data-theme="downtempo"]) #titlebar { background: rgb(27 26 46 / 85%); }
+:where(:root[data-theme="downtempo"]) .rail-brand { font-weight: 600; letter-spacing: .06em; background: linear-gradient(90deg, #b296ff, #7fd1c7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+:where(:root[data-theme="downtempo"]) h1 { font-weight: 600; color: #f3effc; text-shadow: 0 0 18px rgb(178 150 255 / 35%); }
+:where(:root[data-theme="downtempo"]) .main h2 { color: #c9b8ff; font-weight: 600; }
+:where(:root[data-theme="downtempo"]) :is(.nav, .nav-chat, .rail-ic)[aria-current=page] { background: rgb(178 150 255 / 16%); color: #fff; }
+:where(:root[data-theme="downtempo"]) .create, :where(:root[data-theme="downtempo"]) .btn-primary { background: linear-gradient(135deg, #7fd1c7, #b296ff); color: #15142a; border: none; box-shadow: 0 6px 18px rgb(127 209 199 / 25%); }
+:where(:root[data-theme="downtempo"]) .btn-primary:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 8px 24px rgb(178 150 255 / 35%); }
+:where(:root[data-theme="downtempo"]) .bubble { background: rgb(42 41 68 / 80%); }
+:where(:root[data-theme="downtempo"]) .composer { background: rgb(36 35 59 / 85%); box-shadow: 0 8px 30px rgb(5 4 20 / 35%); }
+:where(:root[data-theme="downtempo"]) :focus-visible { outline: 2px solid rgb(127 209 199 / 80%) !important; outline-offset: 2px; }
+:where(:root[data-theme="downtempo"]) .row:is(:hover, .is-hover), :where(:root[data-theme="downtempo"]) .rows-plain .item:is(:hover, .is-hover) { background: rgb(178 150 255 / 8%); }
+
+/* Outrun, third pass: a night drive. The sunset, town and road stand in the sidebar's empty stretch; the rest is plain night. Buttons are a car radio's: square-cornered, lit amber for what you press. */
+:root:where([data-theme="outrun"]) {
+  color-scheme: dark !important;
+  --page: #140832; --surface: #1c0d42; --fill: #22104d; --fill-hover: #2c1660; --marked: #29145a;
+  --control: #2c1660; --edit: #170a38; --seg-on: #3a2470;
+  --ink: #eef4ff; --ink-soft: #c9f6ff; --grey: #b4abdf; --faint: #a096d4; --disabled: #8f85c2;
+  --rule: #281652; --line: #3a2470; --divider: #3a2470; --switch-off: #4a3488;
+  --accent: #3ef2ff; --accent-hover: #8af7ff; --on-accent: #06142a; --accent-ink: #8af7ff;
+  --accent-soft: rgb(62 242 255 / 13%); --chosen: rgb(62 242 255 / 7%);
+  --me: #2f1a66; --danger: #ff8099; --danger-soft: rgb(255 128 153 / 14%);
+  --scrim: rgb(8 2 24 / 72%);
+  --shadow-menu: 0 8px 28px rgb(0 0 0 / 60%), 0 0 0 1px #3a2470;
+  --shadow-dialog: 0 16px 48px rgb(0 0 0 / 70%), 0 0 0 1px #3a2470;
+  --font: "Exo 2", "Segoe UI", sans-serif;
+  --display: "Michroma", "Segoe UI", sans-serif;
+  --r-pill: 4px; --r-composer: 8px; --r-bubble: 6px; --r-3xl: 8px; --r-2xl: 6px; --r-xl: 4px; --r-lg: 4px; --r-md: 4px; --r-sm: 3px;
+}
+:where(:root[data-theme="outrun"]) body { background: #140832; position: relative; isolation: isolate; }
+/* Night lifting toward the horizon, behind the page; the sidebar's sunset is its end. */
+:where(:root[data-theme="outrun"]) #view { background: linear-gradient(180deg, #140832 0%, #1f0c4e 55%, #3b1270 100%); }
+:where(:root[data-theme="outrun"]) .form-foot { background: #1c0d42; }
+:where(:root[data-theme="outrun"]) #rail { background: #0e0526; border-right: 1px solid #3a2470; }
+:where(:root[data-theme="outrun"]) #titlebar { background: #0e0526; border-bottom: 1px solid #3a2470; }
+:where(:root[data-theme="outrun"]) .rail-brand { font-family: var(--display); font-size: 14px; font-weight: 400; color: #eef4ff; }
+:where(:root[data-theme="outrun"]) h1 { font-family: var(--display); font-weight: 400; color: #ffffff; }
+:where(:root[data-theme="outrun"]) .main h2 { font-weight: 600; color: #ff9bdb; }
+:where(:root[data-theme="outrun"]) :is(.nav, .nav-chat, .rail-ic)[aria-current=page] { background: #2f1a66; color: #ffffff; }
+:where(:root[data-theme="outrun"]) .create, :where(:root[data-theme="outrun"]) .btn-primary:not(:disabled, [aria-disabled=true]), :where(:root[data-theme="outrun"]) .send:not(:disabled) { background: #ffb454; border-color: #ffb454; color: #2a0f00; font-weight: 600; box-shadow: 0 2px 0 #b8681f; }
+:where(:root[data-theme="outrun"]) .create:hover, :where(:root[data-theme="outrun"]) .btn-primary:not(:disabled, [aria-disabled=true]):hover, :where(:root[data-theme="outrun"]) .send:not(:disabled):hover { background: #ffc878; border-color: #ffc878; color: #2a0f00; }
+:where(:root[data-theme="outrun"]) .bubble { background: #22104d; border: 1px solid #3a2470; }
+:where(:root[data-theme="outrun"]) .me .bubble { background: #2f1a66; }
+:where(:root[data-theme="outrun"]) .composer { background: #1c0d42; border: 1px solid #4a3488; }
+:where(:root[data-theme="outrun"]) .send { border-radius: 4px; }
+:where(:root[data-theme="outrun"]) :focus-visible { outline: 2px solid #3ef2ff !important; outline-offset: 2px; }
+:where(:root[data-theme="outrun"]) ::selection { background: #ffb454; color: #2a0f00; }
+:where(:root[data-theme="outrun"]) input, :where(:root[data-theme="outrun"]) textarea, :where(:root[data-theme="outrun"]) [contenteditable] { caret-color: #ffb454; }
+:where(:root[data-theme="outrun"]), :where(:root[data-theme="outrun"]) * { scrollbar-color: #3a2470 transparent; }
+
+/* The scenery lives in the sidebar's empty stretch, whose height is what the list leaves over: a full list leaves too
+   little and the scenery simply goes, so it never stands behind a word and takes no room from the page. */
+:where(:root[data-theme="outrun"]) .rail-spacer { position: relative; margin: 0 calc(-1 * var(--s10)); container-type: size; }
+@container (min-height: 96px) and (min-width: 200px) {
+  :where(:root[data-theme="outrun"]) .rail-spacer::before {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: min(100cqh, 150px); pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 248 150'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd76a'/%3E%3Cstop offset='1' stop-color='%23ff4f9a'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='248' height='150' fill='%23fff'/%3E%3Crect y='92' width='248' height='2' fill='%23000'/%3E%3Crect y='104' width='248' height='3' fill='%23000'/%3E%3Crect y='116' width='248' height='4' fill='%23000'/%3E%3Crect y='128' width='248' height='5' fill='%23000'/%3E%3C/mask%3E%3C/defs%3E%3Ccircle cx='124' cy='104' r='42' fill='url%28%23s%29' mask='url%28%23m%29'/%3E%3Crect x='0' y='109' width='15' height='35' fill='%2313062b'/%3E%3Crect x='3' y='115' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='7' y='123' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='10' y='135' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='3' y='128' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='15' y='103' width='11' height='41' fill='%230e0526'/%3E%3Crect x='17' y='134' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='22' y='138' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='17' y='127' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='26' y='110' width='18' height='34' fill='%2313062b'/%3E%3Crect x='30' y='124' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='37' y='132' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='29' y='123' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='33' y='138' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='46' y='114' width='21' height='30' fill='%23170833'/%3E%3Crect x='54' y='126' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='58' y='127' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='59' y='132' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='53' y='119' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='67' y='82' width='11' height='62' fill='%2313062b'/%3E%3Crect x='71' y='95' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='71' y='103' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='69' y='109' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='70' y='93' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='70' y='110' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='78' y='126' width='10' height='18' fill='%230e0526'/%3E%3Crect x='82' y='130' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='88' y='129' width='19' height='15' fill='%23170833'/%3E%3Crect x='91' y='140' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='97' y='140' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='107' y='125' width='21' height='19' fill='%2313062b'/%3E%3Crect x='118' y='130' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='120' y='141' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='120' y='139' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='130' y='129' width='11' height='15' fill='%230e0526'/%3E%3Crect x='134' y='139' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='143' y='130' width='13' height='14' fill='%2313062b'/%3E%3Crect x='146' y='139' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='156' y='128' width='16' height='16' fill='%2313062b'/%3E%3Crect x='164' y='133' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='172' y='92' width='21' height='52' fill='%2313062b'/%3E%3Crect x='181' y='132' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='179' y='132' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='181' y='141' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='179' y='125' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='174' y='132' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='185' y='102' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='178' y='97' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='188' y='98' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='195' y='93' width='16' height='51' fill='%2313062b'/%3E%3Crect x='198' y='111' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='197' y='129' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='200' y='113' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='198' y='120' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='198' y='141' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='205' y='135' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='211' y='117' width='19' height='27' fill='%230e0526'/%3E%3Crect x='222' y='129' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='223' y='133' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='222' y='130' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='230' y='111' width='11' height='33' fill='%2313062b'/%3E%3Crect x='235' y='126' width='2' height='2' fill='%23ff5ec4'/%3E%3Crect x='232' y='137' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='241' y='97' width='21' height='47' fill='%23170833'/%3E%3Crect x='258' y='131' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='249' y='108' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='247' y='107' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='252' y='100' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='251' y='108' width='2' height='2' fill='%23ffb454'/%3E%3Crect x='248' y='119' width='2' height='2' fill='%233ef2ff'/%3E%3Crect x='253' y='101' width='2' height='2' fill='%23ffb454'/%3E%3Crect y='144' width='248' height='6' fill='%230b0420'/%3E%3Crect y='146' width='248' height='1.5' fill='%232ad4c4'/%3E%3C/svg%3E") 50% 100% / 248px 150px no-repeat,
+      linear-gradient(180deg, #0e0526 0%, #3b1270 34%, #c2267f 66%, #ff8a3c 90%, #ffc05a 100%);
+  }
+}
+
+/* Retrowave, third pass: the bright one, a beach at daybreak. The palms stand in the sidebar's empty stretch; the page is plain peach inside the neon frame. Round buttons are kept here: soft fits a sunny look. */
+:root:where([data-theme="retrowave"]) {
+  color-scheme: light !important;
+  --page: #ffe6c4; --surface: #fff3e2; --fill: #fff3e2; --fill-hover: #ffe9cc; --marked: #ffdcb8;
+  --control: #fffaf3; --edit: #fffaf3; --seg-on: #ffffff;
+  --ink: #2e1250; --ink-soft: #4d2276; --grey: #5a3d70; --faint: #694a6e; --disabled: #75587e;
+  --rule: #f4c79c; --line: #d99a68; --divider: #d99a68; --switch-off: #c99a7c;
+  --accent: #b0128b; --accent-hover: #8f0e72; --on-accent: #ffffff; --accent-ink: #8f0e72;
+  --accent-soft: rgb(176 18 139 / 12%); --chosen: rgb(176 18 139 / 7%);
+  --me: #fde0f3; --danger: #a3132a; --danger-soft: rgb(179 23 47 / 12%);
+  --scrim: rgb(60 20 70 / 40%);
+  --shadow-menu: 0 8px 24px rgb(160 70 40 / 25%);
+  --shadow-dialog: 0 0 0 2px #ffffff, 0 0 0 4px rgb(63 140 255 / 55%), 0 24px 60px rgb(120 40 60 / 35%);
+  --display: "Racing Sans One", "Segoe UI", sans-serif;
+  --script: "Yellowtail", cursive;
+  --r-2xl: 14px; --r-xl: 10px; --r-3xl: 18px; --r-bubble: 16px;
+}
+:where(:root[data-theme="retrowave"]) body { background: #ffe6c4; position: relative; isolation: isolate; }
+@media (min-width: 601px) {
+  /* The neon frame round the whole window, a gradient ring; it never takes a click. */
+  :where(:root[data-theme="retrowave"]) body::after {
+    content: ""; position: fixed; inset: 5px; z-index: 50; pointer-events: none; border-radius: 16px; padding: 3px;
+    background: linear-gradient(180deg, #ffffff 0%, #ffc2ee 35%, #7fe0ff 70%, #3f6bff 100%);
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+}
+/* Daybreak behind the page, the sidebar's sunset carried across at a whisper. */
+:where(:root[data-theme="retrowave"]) #view { background: linear-gradient(180deg, #ffe6c4 0%, #ffdcbc 55%, #ffc4b4 100%); }
+:where(:root[data-theme="retrowave"]) .form-foot { background: #fff3e2; }
+:where(:root[data-theme="retrowave"]) #rail { background: #fff3e2; border-right: 1px solid #e9b083; }
+:where(:root[data-theme="retrowave"]) #titlebar { background: #ffecd2; border-bottom: 1px solid #e9b083; }
+:where(:root[data-theme="retrowave"]) .rail-brand { font-family: var(--display); font-weight: 400; font-style: italic; font-size: 19px; color: #4a1fb8; }
+:where(:root[data-theme="retrowave"]) h1 { font-family: var(--display); font-weight: 400; color: #a0107e; }
+:where(:root[data-theme="retrowave"]) .main h2 { font-family: var(--script); font-weight: 400; font-size: 24px; line-height: 1.2; color: #06537f; }
+:where(:root[data-theme="retrowave"]) :is(.nav, .nav-chat, .rail-ic)[aria-current=page] { background: #5b3fe0; color: #ffffff; }
+:where(:root[data-theme="retrowave"]) :is(.nav, .nav-chat, .rail-ic)[aria-current=page] svg { color: #ffffff; }
+:where(:root[data-theme="retrowave"]) .create, :where(:root[data-theme="retrowave"]) .btn-primary:not(:disabled, [aria-disabled=true]) { background: #b0128b; border-color: #b0128b; color: #ffffff; }
+:where(:root[data-theme="retrowave"]) .create:hover, :where(:root[data-theme="retrowave"]) .btn-primary:not(:disabled, [aria-disabled=true]):hover { background: #8f0e72; border-color: #8f0e72; color: #ffffff; }
+:where(:root[data-theme="retrowave"]) .bubble { background: #fff8ee; border: 1px solid #e9b083; }
+:where(:root[data-theme="retrowave"]) .me .bubble { background: #fde0f3; border-color: rgb(176 18 139 / 30%); }
+:where(:root[data-theme="retrowave"]) .composer { background: #fffaf3; border: 1px solid #7a96e8; }
+:where(:root[data-theme="retrowave"]) :focus-visible { outline: 2px solid #3f6bff !important; outline-offset: 2px; }
+:where(:root[data-theme="retrowave"]) ::selection { background: #5b3fe0; color: #ffffff; }
+:where(:root[data-theme="retrowave"]) input, :where(:root[data-theme="retrowave"]) textarea, :where(:root[data-theme="retrowave"]) [contenteditable] { caret-color: #b0128b; }
+:where(:root[data-theme="retrowave"]), :where(:root[data-theme="retrowave"]) * { scrollbar-color: #d99a68 transparent; }
+
+/* The scenery lives in the sidebar's empty stretch, whose height is what the list leaves over: a full list leaves too
+   little and the scenery simply goes, so it never stands behind a word and takes no room from the page. */
+:where(:root[data-theme="retrowave"]) .rail-spacer { position: relative; margin: 0 calc(-1 * var(--s10)); container-type: size; }
+@container (min-height: 96px) and (min-width: 200px) {
+  :where(:root[data-theme="retrowave"]) .rail-spacer::before {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: min(100cqh, 170px); pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 248 170'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23d63fd0'/%3E%3Cstop offset='1' stop-color='%233b45e0'/%3E%3C/linearGradient%3E%3Cg id='p'%3E%3Cpath d='M-4 0Q-14 130 -3 260L9 260Q-1 130 5 0Z'/%3E%3Cpath d='M0 0Q45 -34 100 12Q50 -12 0 6Z'/%3E%3Cpath d='M0 0Q30 -50 80 -50Q34 -36 0 4Z'/%3E%3Cpath d='M0 0Q-45 -34 -100 12Q-50 -12 0 6Z'/%3E%3Cpath d='M0 0Q-30 -50 -80 -50Q-34 -36 0 4Z'/%3E%3Cpath d='M0 0Q20 30 30 70Q10 30 -2 4Z'/%3E%3Cpath d='M0 0Q-22 28 -36 64Q-10 30 2 4Z'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='url%28%23g%29'%3E%3Cuse href='%23p' transform='translate%2858 44%29 scale%28.62%29'/%3E%3Cuse href='%23p' transform='translate%28132 84%29 scale%28.42%29'/%3E%3Cuse href='%23p' transform='translate%28198 58%29 scale%28.54%29'/%3E%3C/g%3E%3C/svg%3E") 50% 100% / 248px 170px no-repeat,
+      linear-gradient(180deg, #fff3e2 0%, #ffc99a 42%, #ff8aa8 76%, #a88af0 100%);
+  }
+}
+
+/* Neon Wave, dark: the old Flutter app's neon theme (compact_theme.dart), colours only. The wave (cyan-teal, violet, hot pink) behind the app under a dark veil, opaque dark violet surfaces, pink accents, cyan focus and glow, the cyan-white-pink wordmark. */
+:root:where([data-theme="neonwave-dark"]) {
+  color-scheme: dark !important;
+  --page: #0c0620; --surface: #1a1336; --fill: #241b47; --fill-hover: #2c2152; --marked: #241b47;
+  --control: #1c1438; --edit: #161029; --seg-on: #55093a;
+  --ink: #f2f0ff; --grey: #d0caee; --faint: #bdb5e4; --ink-soft: #ebd6ff; --disabled: #a89ed8;
+  --rule: #3a3162; --line: #3a3162; --divider: #3a3162; --switch-off: #3a3162;
+  --accent: #ff2da8; --accent-hover: #ff5cbe; --on-accent: #ffffff;
+  --accent-soft: rgb(255 45 168 / 16%); --chosen: rgb(255 45 168 / 8%); --accent-ink: #ffd7ee;
+  --me: #1e2748; --danger: #ff8094; --danger-soft: rgb(255 107 129 / 16%);
+  --scrim: rgb(7 3 22 / 70%);
+  --shadow-menu: 0 6px 18px rgb(0 248 255 / 30%), 0 0 0 1px rgb(0 248 255 / 18%);
+  --shadow-dialog: 0 0 0 1px rgb(0 248 255 / 30%), 0 12px 40px rgb(0 248 255 / 28%);
+}
+:where(:root[data-theme="neonwave-dark"]) body {
+  background:
+    linear-gradient(rgb(7 3 22 / 50%), rgb(7 3 22 / 50%)) fixed,
+    linear-gradient(180deg, #129ac0, #6f1cb7, #d11f69) fixed;
+}
+:where(:root[data-theme="neonwave-dark"]) #rail { background: rgb(26 19 54 / 84%); border-right-color: #3a3162; }
+:where(:root[data-theme="neonwave-dark"]) #titlebar { background: rgb(12 6 32 / 84%); border-bottom-color: #3a3162; }
+:where(:root[data-theme="neonwave-dark"]) .rail-brand { background: linear-gradient(180deg, #00f8ff, #ffffff 50%, #ff0099); -webkit-background-clip: text; background-clip: text; color: transparent; }
+:where(:root[data-theme="neonwave-dark"]) .create, :where(:root[data-theme="neonwave-dark"]) .btn-primary { background: #d6007f; color: #ffffff; }
+:where(:root[data-theme="neonwave-dark"]) .btn-primary:hover:not(:disabled) { background: #b8006d; }
+:where(:root[data-theme="neonwave-dark"]) .seg .btn[aria-pressed=true] { background: #d6007f; color: #ffffff; }
+:where(:root[data-theme="neonwave-dark"]) .bubble { background: #1a1336; border-color: #3a3162; }
+:where(:root[data-theme="neonwave-dark"]) .composer { background: #1a1336; border-color: #3a3162; }
+:where(:root[data-theme="neonwave-dark"]) :focus-visible { outline-color: #00f8ff !important; }
+:where(:root[data-theme="neonwave-dark"]) dialog.dialog { border-color: rgb(0 248 255 / 40%); }
+
+/* Neon Wave, light: the old Flutter app's light neon theme (compact_theme.dart), colours only. A pastel wave (ice blue, lilac, blush) behind the app, near-white pink surfaces, deep pink accents, teal focus, the teal-violet-pink wordmark. */
+:root:where([data-theme="neonwave-light"]) {
+  color-scheme: light !important;
+  --page: #fdf4fb; --surface: #fdf4fb; --fill: #f1e4f4; --fill-hover: #e9d8ee; --marked: #f6ebf6;
+  --control: #ffffff; --edit: #ffffff; --seg-on: #ffd7ee;
+  --ink: #1f1430; --grey: #5a4a66; --faint: #5f4e6b; --ink-soft: #4a2a7a; --disabled: #6f5f7b;
+  --rule: #e6d6ea; --line: #d9c7e0; --divider: #d9c7e0; --switch-off: #d9c7e0;
+  --accent: #d1006f; --accent-hover: #e8207f; --on-accent: #ffffff;
+  --accent-soft: rgb(209 0 111 / 10%); --chosen: rgb(209 0 111 / 6%); --accent-ink: #a3005a;
+  --me: #e4f6f8; --danger: #a8122f; --danger-soft: rgb(168 18 47 / 10%);
+  --scrim: rgb(31 20 48 / 35%);
+  --shadow-menu: 0 6px 18px rgb(0 139 152 / 22%), 0 0 0 1px rgb(0 139 152 / 12%);
+  --shadow-dialog: 0 0 0 1px rgb(0 139 152 / 22%), 0 12px 40px rgb(0 139 152 / 22%);
+}
+:where(:root[data-theme="neonwave-light"]) body { background: linear-gradient(180deg, #bfeaf4, #d6cbf4, #f4cbdd) fixed; }
+:where(:root[data-theme="neonwave-light"]) #rail { background: rgb(253 244 251 / 70%); border-right-color: #d9c7e0; }
+:where(:root[data-theme="neonwave-light"]) #titlebar { background: rgb(191 234 244 / 55%); border-bottom-color: #d9c7e0; }
+:where(:root[data-theme="neonwave-light"]) .rail-brand { background: linear-gradient(180deg, #008b98, #8a2be2 50%, #d1006f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+:where(:root[data-theme="neonwave-light"]) .create, :where(:root[data-theme="neonwave-light"]) .btn-primary { background: #d1006f; color: #ffffff; }
+:where(:root[data-theme="neonwave-light"]) .btn-primary:hover:not(:disabled) { background: #e8207f; }
+:where(:root[data-theme="neonwave-light"]) .seg .btn[aria-pressed=true] { background: #d1006f; color: #ffffff; }
+:where(:root[data-theme="neonwave-light"]) .bubble { background: #fdf4fb; border-color: #d9c7e0; }
+:where(:root[data-theme="neonwave-light"]) .composer { background: #ffffff; border-color: #d9c7e0; }
+:where(:root[data-theme="neonwave-light"]) :focus-visible { outline-color: #008b98 !important; }
+:where(:root[data-theme="neonwave-light"]) dialog.dialog { border-color: #d9c7e0; }

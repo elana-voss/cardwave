@@ -1,0 +1,280 @@
+# The providers the account's form offers by name ("Provider" over the address of the chat model), kept by hand.
+# With those of models.dev.toml they are the list the server reads (crates/cw-provider/src/list.rs), built into it.
+#
+#   name      as the form shows it; no two providers of the list are called the same, whatever their case
+#   base_url  the address of the provider's API up to the version part, without a slash at its end: what the
+#             form fills in, and so where the user's key goes. https, but for a server on the user's own machine,
+#             which is http://127.0.0.1 with its port and stands apart in the form ("On this computer")
+#   website   the provider's website, without "www.": who gives that domain, or a host under it, where the form
+#             asks for the website of a provider that is not on the list, is given this entry. Without one, an
+#             entry is found by its address's host
+#   keys      how the provider's keys begin, where that is known: first run takes a key that begins so for this
+#             provider's. Where a key begins as several entries say, the longest beginning counts, and among
+#             entries with the same one the user chooses ("sk-" is OpenAI's older keys, DeepSeek's and Alibaba's
+#             older ones)
+#
+# Each address of a service was asked without a key and answered as an API does (GET <base_url>/models: a list of
+# models, or 401 or 403 that is no HTML) on 2026-10-13; Gemini's, which answers 404 there without a key, by its
+# place for chat completions. The three servers on the user's own machine are at the ports the Flutter app names.
+# A beginning of a key is the one a public scanner for leaked keys looks for, read on 2026-10-14: gitleaks'
+# config/gitleaks.toml (OpenAI, Anthropic, Google, Hugging Face, Perplexity) and trufflehog's pkg/detectors (Groq,
+# xAI, OpenRouter, NVIDIA, DeepSeek). Every other service, which neither scanner names by a beginning, was looked up
+# in its own API docs on 2026-10-16, and a beginning is taken only where they state it, not from a placeholder:
+# NanoGPT docs.nano-gpt.com/authentication, Chutes chutes.ai/llms.txt, Novita docs.novita.ai/guides/llm-api-keys,
+# Alibaba alibabacloud.com/help/en/model-studio/get-api-key ("sk-ws", older "sk-"; Coding Plan's "sk-sp-" asks
+# another address), Baseten's changelog of the "b10_" keys, Electron Hub docs.electronhub.ai authentication. The
+# others' docs say no beginning. No key of a provider was tried.
+# "Pretend model" is no service: the server answers its address itself (crates/cw-provider/src/pretend.rs).
+
+[[provider]]
+name = "KoboldCpp"
+base_url = "http://127.0.0.1:5001/v1"
+
+[[provider]]
+name = "LM Studio"
+base_url = "http://127.0.0.1:1234/v1"
+
+[[provider]]
+name = "Ollama"
+base_url = "http://127.0.0.1:11434/v1"
+
+[[provider]]
+name = "OpenAI"
+website = "openai.com"
+keys = ["sk-proj-", "sk-svcacct-", "sk-"]
+base_url = "https://api.openai.com/v1"
+
+[[provider]]
+name = "Anthropic"
+website = "anthropic.com"
+keys = ["sk-ant-"]
+base_url = "https://api.anthropic.com/v1"
+
+[[provider]]
+name = "Google Gemini"
+website = "ai.google.dev"
+keys = ["AIza"]
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+
+[[provider]]
+name = "Mistral"
+website = "mistral.ai"
+base_url = "https://api.mistral.ai/v1"
+
+[[provider]]
+name = "Groq"
+website = "groq.com"
+keys = ["gsk_"]
+base_url = "https://api.groq.com/openai/v1"
+
+[[provider]]
+name = "OpenRouter"
+website = "openrouter.ai"
+keys = ["sk-or-v1-"]
+base_url = "https://openrouter.ai/api/v1"
+
+[[provider]]
+name = "Together AI"
+website = "together.ai"
+base_url = "https://api.together.xyz/v1"
+
+[[provider]]
+name = "DeepSeek"
+website = "deepseek.com"
+keys = ["sk-"]
+base_url = "https://api.deepseek.com/v1"
+
+[[provider]]
+name = "xAI"
+website = "x.ai"
+keys = ["xai-"]
+base_url = "https://api.x.ai/v1"
+
+[[provider]]
+name = "Perplexity"
+website = "perplexity.ai"
+keys = ["pplx-"]
+base_url = "https://api.perplexity.ai/v1"
+
+[[provider]]
+name = "Cohere"
+website = "cohere.com"
+base_url = "https://api.cohere.ai/compatibility/v1"
+
+[[provider]]
+name = "Fireworks AI"
+website = "fireworks.ai"
+base_url = "https://api.fireworks.ai/inference/v1"
+
+[[provider]]
+name = "Cerebras"
+website = "cerebras.ai"
+base_url = "https://api.cerebras.ai/v1"
+
+[[provider]]
+name = "SambaNova"
+website = "sambanova.ai"
+base_url = "https://api.sambanova.ai/v1"
+
+[[provider]]
+name = "DeepInfra"
+website = "deepinfra.com"
+base_url = "https://api.deepinfra.com/v1/openai"
+
+[[provider]]
+name = "Hyperbolic"
+website = "hyperbolic.ai"
+base_url = "https://api.hyperbolic.xyz/v1"
+
+[[provider]]
+name = "Novita AI"
+website = "novita.ai"
+keys = ["sk_"]
+base_url = "https://api.novita.ai/openai/v1"
+
+[[provider]]
+name = "Nebius"
+website = "nebius.com"
+base_url = "https://api.tokenfactory.nebius.com/v1"
+
+[[provider]]
+name = "Featherless"
+website = "featherless.ai"
+base_url = "https://api.featherless.ai/v1"
+
+[[provider]]
+name = "NanoGPT"
+website = "nano-gpt.com"
+keys = ["sk-nano-"]
+base_url = "https://nano-gpt.com/api/v1"
+
+[[provider]]
+name = "Infermatic"
+website = "infermatic.ai"
+base_url = "https://api.totalgpt.ai/v1"
+
+[[provider]]
+name = "ArliAI"
+website = "arliai.com"
+base_url = "https://api.arliai.com/v1"
+
+[[provider]]
+name = "Chutes"
+website = "chutes.ai"
+keys = ["cpk_"]
+base_url = "https://llm.chutes.ai/v1"
+
+[[provider]]
+name = "Mancer"
+website = "mancer.tech"
+base_url = "https://neuro.mancer.tech/oai/v1"
+
+[[provider]]
+name = "Venice AI"
+website = "venice.ai"
+base_url = "https://api.venice.ai/api/v1"
+
+[[provider]]
+name = "Moonshot AI"
+website = "moonshot.ai"
+base_url = "https://api.moonshot.ai/v1"
+
+[[provider]]
+name = "Z.ai"
+website = "z.ai"
+base_url = "https://api.z.ai/api/paas/v4"
+
+[[provider]]
+name = "SiliconFlow"
+website = "siliconflow.com"
+base_url = "https://api.siliconflow.com/v1"
+
+[[provider]]
+name = "Alibaba Cloud Model Studio"
+website = "alibabacloud.com"
+keys = ["sk-ws", "sk-"]
+base_url = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+
+[[provider]]
+name = "Parasail"
+website = "parasail.io"
+base_url = "https://api.parasail.io/v1"
+
+[[provider]]
+name = "Scaleway"
+website = "scaleway.com"
+base_url = "https://api.scaleway.ai/v1"
+
+[[provider]]
+name = "Hugging Face"
+website = "huggingface.co"
+keys = ["hf_"]
+base_url = "https://router.huggingface.co/v1"
+
+[[provider]]
+name = "Friendli"
+website = "friendli.ai"
+base_url = "https://api.friendli.ai/serverless/v1"
+
+[[provider]]
+name = "Baseten"
+website = "baseten.co"
+keys = ["b10_"]
+base_url = "https://inference.baseten.co/v1"
+
+[[provider]]
+name = "MiniMax"
+website = "minimax.io"
+base_url = "https://api.minimax.io/v1"
+
+[[provider]]
+name = "Electron Hub"
+website = "electronhub.ai"
+keys = ["ek-"]
+base_url = "https://api.electronhub.ai/v1"
+
+[[provider]]
+name = "AI/ML API"
+website = "aimlapi.com"
+base_url = "https://api.aimlapi.com/v1"
+
+[[provider]]
+name = "Requesty"
+website = "requesty.ai"
+base_url = "https://router.requesty.ai/v1"
+
+[[provider]]
+name = "Nvidia NIM"
+website = "build.nvidia.com"
+keys = ["nvapi-"]
+base_url = "https://integrate.api.nvidia.com/v1"
+
+[[provider]]
+name = "Inference.net"
+website = "inference.net"
+base_url = "https://api.inference.net/v1"
+
+[[provider]]
+name = "Upstage"
+website = "upstage.ai"
+base_url = "https://api.upstage.ai/v1"
+
+[[provider]]
+name = "AI21"
+website = "ai21.com"
+base_url = "https://api.ai21.com/studio/v1"
+
+[[provider]]
+name = "Poe"
+website = "poe.com"
+base_url = "https://api.poe.com/v1"
+
+[[provider]]
+name = "Synthetic"
+website = "synthetic.new"
+base_url = "https://api.synthetic.new/v1"
+
+[[provider]]
+name = "Pretend model"
+keys = ["sk-cardwave-fake-"]
+base_url = "https://pretend.cardwave.invalid/v1"
