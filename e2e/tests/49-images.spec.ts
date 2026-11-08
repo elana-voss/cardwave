@@ -84,6 +84,10 @@ test("a picture and a document attached wait as tiles over the field, and stand 
   // Its × takes one off again.
   await waiting.locator(".waiting-tile").last().getByRole("button", { name: "Remove" }).click();
   await expect(waiting.locator(".waiting-tile")).toHaveCount(1);
+  // What waits comes back with the chat, after leaving it or a reload.
+  await page.reload();
+  await expect(waiting.locator(".waiting-tile")).toHaveCount(1);
+  await expect(waiting.locator("img.attached-picture")).toHaveAttribute("alt", "lamp.png");
   // A message of the picture alone is sent, without a bubble.
   await page.getByRole("button", { name: "Send", exact: true }).click();
   const mine = page.locator("article.message.user");

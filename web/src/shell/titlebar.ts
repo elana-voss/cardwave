@@ -201,12 +201,21 @@ export function makeTitleBar(tabs: Tabs, alone = false): TitleBar {
     return node;
   }
 
-  /** The room the tabs have: the bar's, but for its other parts, the gaps between them and the least of the empty room. */
+  /**
+   * The room the tabs have: the bar's, but for its other children as drawn (margins too), the gaps between the
+   * children shown and the least of the empty room. The children are measured, not named: "All tabs", the eye and
+   * the magnifier sit in one box with its own gaps and margin.
+   */
   function roomOf(): number {
     const style = getComputedStyle(bar);
-    const parts = [name, plus, all.node, view, search, buttons].filter((part): part is HTMLElement => part !== null && part.getBoundingClientRect().width > 0);
-    const taken = parts.reduce((sum, part) => sum + part.getBoundingClientRect().width, 0);
-    const gaps = (parseFloat(style.columnGap) || 0) * (parts.length + 1);
+    const shown = [...bar.children].filter((part) => part.getBoundingClientRect().width > 0 || part === strip);
+    const taken = shown
+      .filter((part) => part !== strip && !part.classList.contains("tab-drag"))
+      .reduce((sum, part) => {
+        const own = getComputedStyle(part);
+        return sum + part.getBoundingClientRect().width + (parseFloat(own.marginLeft) || 0) + (parseFloat(own.marginRight) || 0);
+      }, 0);
+    const gaps = (parseFloat(style.columnGap) || 0) * Math.max(0, shown.length - 1);
     return bar.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0) - taken - gaps - ROOM_LEAST;
   }
 

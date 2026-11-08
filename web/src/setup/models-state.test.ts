@@ -1,8 +1,8 @@
 // First run's step 2: its lead line, when its main button is greyed and its clock of 8 and 30 seconds.
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { greyed, lead, workClock } from "./models-state";
+import { chatAction, greyed, keyLine, lead, workClock } from "./models-state";
 
-const done = { open: false, slow: false, chat: "gemma-4", chatFailed: false, workerFailed: false, noList: false };
+const done = { open: false, slow: false, chat: "gemma-4", chatFailed: false, workerFailed: false, noList: false, keyRefused: false };
 
 test("the lead line says the work, that it is slow, done, one failed, or nothing fits, and says to go on only where the main button can", () => {
   expect(lead({ ...done, open: true })).toBe("Cardwave is choosing your models and trying them out…");
@@ -15,6 +15,8 @@ test("the lead line says the work, that it is slow, done, one failed, or nothing
   // Without a list or picks, nothing was found wanting: the provider did not answer.
   expect(lead({ ...done, chat: "", noList: true })).toBe("Your provider didn't answer. Try again, or choose a model.");
   expect(lead({ ...done, noList: true })).toBe("One model didn't answer. Pick another, or go on and set it later.");
+  // A key the provider refused is told as such, with the way back to it.
+  expect(lead({ ...done, chat: "", noList: true, keyRefused: true })).toBe("Your provider did not take the key. Go Back and check it.");
 });
 
 test("the main button is greyed while work is open, without a chat model, and while the chat model failed; not for the helper", () => {
@@ -23,6 +25,17 @@ test("the main button is greyed while work is open, without a chat model, and wh
   expect(greyed({ ...done, chat: "" })).toBe(true);
   expect(greyed({ ...done, chatFailed: true })).toBe(true);
   expect(greyed({ ...done, workerFailed: true })).toBe(false);
+});
+
+test("the key's line shows the key's end, or says the key is saved where it is too short to show one", () => {
+  expect(keyLine("OpenAI", "x9Qz")).toBe("OpenAI · ····x9Qz");
+  expect(keyLine("localhost:8622", "")).toBe("localhost:8622 · key saved");
+});
+
+test("the chat line's button says Change while a model is chosen or being picked, Choose only when none came", () => {
+  expect(chatAction(false, true)).toBe("Change");
+  expect(chatAction(true, false)).toBe("Change");
+  expect(chatAction(false, false)).toBe("Choose");
 });
 
 beforeEach(() => vi.useFakeTimers());

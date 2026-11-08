@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { thinkingSays, whereOf, workflowChoices, workflowNote } from "./providers";
+import type { ProvidersView } from "../api/generated/ProvidersView";
+import { chatUnchosen, thinkingSays, whereOf, workflowChoices, workflowNote } from "./providers";
 
 const entry = (base_url: string, key_end: string | null, has_key: boolean) => ({ id: 1, name: "x", own_name: null, base_url, has_key, key_end, workflow: null, folder: null });
 
@@ -27,5 +28,11 @@ describe("the page Providers", () => {
   it("says under a saved workflow that it uses its own models and size, and nothing under the default", () => {
     expect(workflowNote("flux.json")).toBe("This workflow uses its own models and size, not the Images model.");
     expect(workflowNote(null)).toBeNull();
+  });
+
+  it("sends on to first run's models after a provider is added while no chat model is chosen", () => {
+    const view = (kinds: string[]) => ({ providers: [], kinds: kinds.map((kind) => ({ kind, provider_id: 1, model: "m", thinking: "on", gone: false })), own: [] }) as unknown as ProvidersView;
+    expect(chatUnchosen(view(["images"]))).toBe(true);
+    expect(chatUnchosen(view(["chat", "images"]))).toBe(false);
   });
 });

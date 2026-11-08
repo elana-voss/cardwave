@@ -73,7 +73,10 @@ error-not-found = No existe { $what ->
    *[other] cosa
 }. Puede que se haya eliminado.
 error-chat-busy = Se está escribiendo una respuesta en este chat; detenla primero.
-error-no-provider = Aún no hay ningún proveedor configurado. Añade uno en Ajustes › Proveedores.
+error-no-provider = { $what ->
+    [chat_model] Aún no has elegido un modelo de chat. Elige uno en Ajustes › Modelos.
+   *[other] Aún no hay ningún proveedor configurado. Añade uno en Ajustes › Proveedores.
+}
 error-provider-refused = { $refusal ->
     [key] El proveedor no aceptó la clave: revísala en Ajustes › Proveedores.
     [paid] El proveedor pide un pago por esto: añade saldo o elige un modelo que incluya tu plan.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] El proveedor no responde: inténtalo más tarde.
     [fault] El proveedor tuvo un fallo por su parte: { $reason } Inténtalo más tarde.
     [no_model] El proveedor ya no ofrece este modelo: elige otro en Ajustes › Modelos.
-    [too_long] El mensaje es demasiado largo para este modelo: acórtalo o elige en Ajustes › Modelos uno que admita más.
+    [too_long] Al modelo se le envió más de lo que puede leer de una vez: elige en Ajustes › Modelos uno que lea más.
    *[other] El proveedor rechazó esto: { $reason }
 }
 error-model-declined = { $model } se negó a escribir esto. Cambia el mensaje o elige otro modelo.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] El personaje es demasiado largo para el modelo auxiliar; elige un modelo auxiliar que lea más.
+    [card_for_chat] El personaje es demasiado largo para el modelo de chat y no sería él mismo; elige un modelo de chat que lea más o acorta el personaje.
     [card_file] El archivo supera los { $most } MB.
     [checkpoint_folder] La carpeta es demasiado grande para guardar copias antes de cada paso.
     [expression_pack_size] Las imágenes de { $name } son demasiado grandes.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] Las voces del proveedor respondieron { $status }.
     [search_model] El modelo de búsqueda respondió { $status }.
    *[other] Respondió { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] El proveedor no aceptó la clave.
+    [asks_for_a_key] El proveedor pide una clave.
+   *[other] El proveedor no tiene una lista de modelos en esta dirección.
 }

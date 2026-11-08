@@ -73,7 +73,10 @@ error-not-found = There is no such { $what ->
    *[other] thing
 }. It may have been deleted.
 error-chat-busy = A reply is being written in this chat; stop it first.
-error-no-provider = No provider is set up yet. Add one in Settings › Providers.
+error-no-provider = { $what ->
+    [chat_model] No chat model is chosen yet. Choose one in Settings › Models.
+   *[other] No provider is set up yet. Add one in Settings › Providers.
+}
 error-provider-refused = { $refusal ->
     [key] The provider did not take the key: check it in Settings › Providers.
     [paid] The provider wants payment for this: add credit, or pick a model your plan includes.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] The provider is not answering: try again later.
     [fault] The provider had a fault on its side: { $reason } Try again later.
     [no_model] The provider no longer offers this model: choose another in Settings › Models.
-    [too_long] The message is too long for this model: shorten it, or pick a model that takes more in Settings › Models.
+    [too_long] The model was sent more than it can read at once: pick a model that reads more in Settings › Models.
    *[other] The provider refused this: { $reason }
 }
 error-model-declined = { $model } declined to write this. Change the message, or pick another model.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] The character is too long for the helper model; pick a helper model that reads more.
+    [card_for_chat] The character is too long for the chat model, so it would not be itself; pick a chat model that reads more, or shorten the character.
     [card_file] The file is larger than { $most } MB.
     [checkpoint_folder] The folder is too large to keep copies of before each step.
     [expression_pack_size] { $name }'s pictures are too large.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] The provider's voices answered { $status }.
     [search_model] The search model answered { $status }.
    *[other] It answered { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] The provider did not take the key.
+    [asks_for_a_key] The provider asks for a key.
+   *[other] The provider has no list of models at this address.
 }

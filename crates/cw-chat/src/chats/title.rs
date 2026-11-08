@@ -140,6 +140,11 @@ impl Titles {
         let free = held(&self.0).insert((user, chat_id));
         free.then(|| Titling(self.0.clone(), (user, chat_id)))
     }
+
+    /// Whether no chat is being titled.
+    pub fn is_empty(&self) -> bool {
+        held(&self.0).is_empty()
+    }
 }
 
 impl Drop for Titling {

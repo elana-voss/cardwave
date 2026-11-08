@@ -95,6 +95,10 @@ test("\"All tabs\" lists every tab, those hidden too, and the one taken from it 
   for (const name of ["Characters", "Lorebooks", "Personas", "Memories", "Documents", "Settings"]) await railLink(page, name).click({ modifiers: ["Control"] });
   const shown = await titles(page).count();
   expect(shown).toBeLessThan(7);
+  // The last tab shown ends before "+".
+  const lastRight = await bar(page).locator(".wtab").last().evaluate((node) => node.getBoundingClientRect().right);
+  const plusLeft = await bar(page).getByRole("button", { name: "New tab" }).evaluate((node) => node.getBoundingClientRect().left);
+  expect(lastRight).toBeLessThanOrEqual(plusLeft);
   await bar(page).getByRole("button", { name: "All tabs" }).click();
   const lines = bar(page).getByRole("menuitem");
   // The tab in view moved to the last place shown each time; every tab is there.

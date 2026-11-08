@@ -490,7 +490,7 @@ export const pictureFromFile = (id: number, file: Blob) => request<PictureChange
 /** Has the card show one of its pictures. */
 export const useCardPicture = (id: number, picture: number) => request<PictureChanged>("PUT", `/api/cards/${id}/picture`, { picture } satisfies UsePicture);
 /** Has the background model read the whole card and write what its picture shows, for the image model. */
-export const pictureWords = (id: number) => request<PictureWords>("POST", `/api/cards/${id}/pictures/words`);
+export const pictureWords = (id: number, signal?: AbortSignal) => request<PictureWords>("POST", `/api/cards/${id}/pictures/words`, undefined, signal);
 /** Has the image model draw `words` for the card: the picture joins the card's, not shown until it is used. */
 export const makeCardPicture = (id: number, words: string) => request<CardPicture>("POST", `/api/cards/${id}/pictures/made`, { words } satisfies MakeCardPicture);
 /** The sizes the server makes a picture small in, by what draws it: a line of a list, or a tile of the Gallery and an entry of Discovery. */
@@ -711,6 +711,8 @@ export const sendMessage = (chatId: number, message: SendMessage) =>
 /** Attaches a picture or a document to the chat's next message; a picture only where the chat model sees. */
 export const attach = (chatId: number, file: File) =>
   request<Attachment>("POST", withQuery(`/api/chats/${chatId}/attachments`, { name: file.name }), file);
+/** What waits attached in a chat for its next message, kept across leaving it. */
+export const waitingAttachments = (chatId: number) => request<Attachment[]>("GET", `/api/chats/${chatId}/attachments`);
 /** Takes off an attachment that waits for the next message, with its document. */
 export const removeAttachment = (id: number) => request<void>("DELETE", `/api/attachments/${id}`);
 /** Where an attached picture is. */

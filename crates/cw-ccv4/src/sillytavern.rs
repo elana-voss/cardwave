@@ -88,6 +88,15 @@ type Object = Map<String, Json>;
 /// the card as a CCV4 container (its picture without the card data) and notes on
 /// what was not taken over, or `None` when the PNG holds no SillyTavern card.
 pub fn convert(picture: &[u8]) -> anyhow::Result<Option<(Container, Vec<ImportNote>)>> {
+    convert_named(picture, "")
+}
+
+/// [`convert`], a card whose data names no character (or only spaces) named `unnamed` (its file's name),
+/// where that is not empty.
+pub fn convert_named(
+    picture: &[u8],
+    unnamed: &str,
+) -> anyhow::Result<Option<(Container, Vec<ImportNote>)>> {
     let (image, texts) = png::take_text(picture, is_card_chunk)?;
     // A chunk that cannot be read, or holds nothing, gives way to the next one.
     let candidates = CARD_CHUNKS.into_iter().flat_map(|keyword| {
@@ -97,7 +106,7 @@ pub fn convert(picture: &[u8]) -> anyhow::Result<Option<(Container, Vec<ImportNo
     });
     let mut failure = None;
     for (_, text) in candidates {
-        match decode(text).and_then(|root| Card::build(&root, &texts)) {
+        match decode(text).and_then(|root| Card::build(&root, &texts, unnamed)) {
             Ok(mut card) => {
                 let toml = vec![(ONE_FILE.to_string(), card.toml()?)];
                 return Ok(Some((
@@ -130,6 +139,14 @@ pub fn convert(picture: &[u8]) -> anyhow::Result<Option<(Container, Vec<ImportNo
 /// fields (a `name` and a `first_mes`). Returns it as [`convert`] does, its picture empty, or `None` where the
 /// file is not such a card (any other JSON, or no JSON at all).
 pub fn convert_json(file: &[u8]) -> anyhow::Result<Option<(Container, Vec<ImportNote>)>> {
+    convert_json_named(file, "")
+}
+
+/// [`convert_json`], a card without a name named `unnamed` as [`convert_named`] does.
+pub fn convert_json_named(
+    file: &[u8],
+    unnamed: &str,
+) -> anyhow::Result<Option<(Container, Vec<ImportNote>)>> {
     let file = file
         .strip_prefix([0xEF, 0xBB, 0xBF].as_slice())
         .unwrap_or(file);
@@ -141,7 +158,7 @@ pub fn convert_json(file: &[u8]) -> anyhow::Result<Option<(Container, Vec<Import
     if !spec.starts_with("chara_card") && !oldest {
         return Ok(None);
     }
-    let mut card = Card::build(&root, &[]).context(
+    let mut card = Card::build(&root, &[], unnamed).context(
         Fail::said(
             Code::NotReadable,
             "the SillyTavern card in this file cannot be read",
@@ -322,14 +339,14 @@ struct Card {
 }
 
 impl Card {
-    fn build(root: &Object, chunks: &[png::Text<'_>]) -> anyhow::Result<Self> {
+    fn build(root: &Object, chunks: &[png::Text<'_>], unnamed: &str) -> anyhow::Result<Self> {
         // V2 and V3 wrap the card in `data`; the oldest cards are the bare fields.
         let data = match root.get("data") {
             Some(Json::Object(data)) => data,
             _ => root,
         };
         let mut card = Self::default();
-        card.fill(root, data, chunks);
+        card.fill(root, data, chunks, unnamed);
         if !CONTENT.iter().any(|kind| card.root.contains_key(*kind)) {
             bail!(
                 Fail::said(Code::NotReadable, "the card is empty")
@@ -391,12 +408,18 @@ impl Card {
             .collect()
     }
 
-    fn fill(&mut self, root: &Object, data: &Object, chunks: &[png::Text<'_>]) {
+    fn fill(&mut self, root: &Object, data: &Object, chunks: &[png::Text<'_>], unnamed: &str) {
         self.root.insert("spec".to_string(), "ccv4:1.0.0".into());
         self.meta(data);
         let field = |key: &str| string(data.get(key));
-        let name = field("name");
         let nickname = field("nickname");
+        // A card without a name takes its file's: its ID would show as one (C4).
+        let name = match field("name") {
+            name if name.trim().is_empty() && nickname.trim().is_empty() => {
+                unnamed.trim().to_string()
+            }
+            name => name,
+        };
         let id = &slug_or(&name, "character");
         let mut character = Table::new();
         let mut set = |key: &str, value: Value| {

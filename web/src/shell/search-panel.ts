@@ -16,6 +16,7 @@ import type { Hit } from "../api/generated/Hit";
 import { el } from "../dom";
 import { onLanguage, wording } from "../language/language";
 import { initialOf } from "../format";
+import { account, elsewhere } from "../account";
 import { grouped, pageHits, shown, wordsOf, type Shown } from "./find";
 import { icon } from "../icons";
 
@@ -93,7 +94,9 @@ async function search(): Promise<void> {
   whole.clear();
   if (!wordsOf(asked).length) return void list.replaceChildren(el("p", { className: "meta m0" }, wording("search-panel-what")));
   const now = (asking = new AbortController());
-  const pages = pageHits(asked, { "#/settings/voices": await voiceLabels });
+  // Another account's search leaves out what is this computer's account's alone.
+  const local = (await account().catch(() => undefined))?.local ?? !elsewhere;
+  const pages = pageHits(asked, { "#/settings/voices": await voiceLabels }, local);
   if (now.signal.aborted) return;
   for (const meaning of [false, true]) {
     // A search that fails or is ended shows what the one before found; a newer one draws its own.

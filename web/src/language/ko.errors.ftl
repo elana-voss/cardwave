@@ -72,7 +72,10 @@ error-not-found = 그런 { $what ->
    *[other] 것이
 } 없어요. 삭제되었을 수 있어요.
 error-chat-busy = 이 채팅에서 답장을 쓰는 중이에요. 먼저 멈추세요.
-error-no-provider = 아직 설정한 제공자가 없어요. 설정 › 제공자에서 추가하세요.
+error-no-provider = { $what ->
+    [chat_model] 아직 고른 채팅 모델이 없어요. 설정 › 모델에서 고르세요.
+   *[other] 아직 설정한 제공자가 없어요. 설정 › 제공자에서 추가하세요.
+}
 error-provider-refused = { $refusal ->
     [key] 제공자가 키를 받지 않았어요. 설정 › 제공자에서 확인하세요.
     [paid] 제공자가 이 요청에 결제를 요구해요. 크레딧을 충전하거나 요금제에 포함된 모델을 고르세요.
@@ -80,7 +83,7 @@ error-provider-refused = { $refusal ->
     [down] 제공자가 응답하지 않아요. 나중에 다시 해 보세요.
     [fault] 제공자 쪽에 문제가 생겼어요: { $reason } 나중에 다시 해 보세요.
     [no_model] 제공자가 이 모델을 더 이상 제공하지 않아요. 설정 › 모델에서 다른 모델을 고르세요.
-    [too_long] 이 모델에는 메시지가 너무 길어요. 줄이거나, 설정 › 모델에서 더 많이 받는 모델을 고르세요.
+    [too_long] 모델에 한 번에 읽을 수 있는 것보다 많이 보냈어요. 설정 › 모델에서 더 많이 읽는 모델을 고르세요.
    *[other] 제공자가 거절했어요: { $reason }
 }
 error-model-declined = { $model } 모델이 이 글을 쓰기를 거부했어요. 메시지를 바꾸거나 다른 모델을 고르세요.
@@ -281,6 +284,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] 캐릭터가 보조 모델에게 너무 길어요. 더 많이 읽는 보조 모델을 고르세요.
+    [card_for_chat] 캐릭터가 채팅 모델에게 너무 길어서 캐릭터답게 말할 수 없어요. 더 많이 읽는 채팅 모델을 고르거나 캐릭터를 줄이세요.
     [card_file] 파일이 { $most } MB보다 커요.
     [checkpoint_folder] 폴더가 너무 커서 단계마다 그 전에 사본을 남길 수 없어요.
     [expression_pack_size] { $name }의 이미지가 너무 커요.
@@ -451,4 +455,9 @@ error-answered = { $whose ->
     [provider_voices] 제공자 음성의 응답: { $status }.
     [search_model] 검색 모델의 응답: { $status }.
    *[other] 응답: { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] 제공자가 키를 받지 않았어요.
+    [asks_for_a_key] 제공자가 키를 요구해요.
+   *[other] 이 주소에는 제공자의 모델 목록이 없어요.
 }

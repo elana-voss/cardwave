@@ -91,6 +91,7 @@ card-picture-what-the-picture-shows = 画像に写っているもの
 card-picture-making-a-picture = 画像を作成中…
 card-picture-the-picture-made = 新しい画像
 card-picture-reading-the-card = カードを読み込み中…
+card-picture-no-answer = プロバイダーが 30 秒以内に応答しませんでした。もう一度尋ねるには「AIに画像をもう一度説明させる」を押してください。
 card-picture-no-earlier-pictures = 以前の画像はありません。
 
 ## card-texts (card/card-texts.ts)

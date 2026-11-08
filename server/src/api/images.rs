@@ -20,8 +20,8 @@ use axum::{Json, Router};
 use cw_chat::chats::{self, MessageView};
 use cw_chat::images::{self, ImageModelView};
 use cw_core::{Code, Fail};
+use cw_provider as provider;
 use cw_provider::models::{ListModels, ListedModels};
-use cw_provider::{self as provider, NOT_SET_UP};
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -88,7 +88,7 @@ async fn make(
             // anything is spent on it.
             chats::ensure_kept(db, user, id)?;
             chats::ensure_idle(db, id)?;
-            let worker = provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            let worker = provider::worker(db, user)?;
             let whom = images::whom(db, user)?;
             Ok((worker, whom, chats::prompt_inputs(db, user, id, speaker)?))
         })
@@ -131,7 +131,7 @@ async fn remake(
     let (worker, whom, inputs) = state
         .run(move |db| {
             let (chat, speaker) = images::chat_of(db, user, id)?;
-            let worker = provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            let worker = provider::worker(db, user)?;
             let whom = images::whom(db, user)?;
             Ok((worker, whom, chats::prompt_inputs(db, user, chat, speaker)?))
         })

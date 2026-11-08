@@ -230,12 +230,12 @@ backup-back-up = Guardar copia
 backup-no-file = Ningún archivo elegido
 backup-choose-file = Elegir archivo
 backup-its-password = La contraseña de la copia de seguridad
-backup-restoring = Restaurar reemplaza todo lo que hay en Cardwave: chats, personajes, personas, lorebooks, recuerdos y ajustes. No se puede deshacer. La contraseña de aquí se queda como está.
+backup-restoring = Restaurar reemplaza todo lo que hay en Cardwave: chats, personajes, personas, lorebooks, recuerdos y ajustes. No se puede deshacer. La contraseña de aquí se queda como está. También se reemplazan las otras cuentas.
+backup-restored = Se restauró la copia: todo en Cardwave está como cuando se hizo la copia. Los otros dispositivos vuelven a iniciar sesión.
 backup-file = Archivo
 backup-restore-title = Restaurar una copia de seguridad
 backup-choose-first = Elige primero el archivo de la copia de seguridad.
 backup-restore = Restaurar copia
-backup-save = Guardar una copia de seguridad
 backup-from-file = Desde un archivo de copia de seguridad
 backup-about-own = Chats, personajes y ajustes en un solo archivo, cifrado con tu contraseña
 backup-about-chosen = Chats, personajes y ajustes en un solo archivo, cifrado con una contraseña que tú eliges
@@ -322,6 +322,7 @@ password-is-on = Activada · se pide al abrir la app
 password-is-off = Desactivada · cualquiera en este equipo puede abrir Cardwave
 password-start-forgotten = Una contraseña olvidada no se puede recuperar.
 password-open = Abrir
+password-locked-elsewhere = Cardwave está bloqueado en su ordenador. Se abrirá aquí cuando se desbloquee allí.
 password-back = Atrás
 
 ## Words many pages use
@@ -786,6 +787,11 @@ about-version-built = Versión { $version } · { $built }
 about-models = Modelos
 about-figures = Figuras y animaciones
 about-voices = Voces
+about-voice-donations = Voces donadas
+about-voice-acted-by = Interpretada por { $name }
+about-voice-vctk = Hablante { $speaker } del CSTR VCTK Corpus de Junichi Yamagishi, Christophe Veaux y Kirsten MacDonald, University of Edinburgh; limpiada por Kyutai
+about-voice-cml-tts = Hablante { $speaker } de CML-TTS de Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares y Arlindo R. Galvão Filho, leída para LibriVox
+about-voice-cml-tts-cleaned = Hablante { $speaker } de CML-TTS de Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares y Arlindo R. Galvão Filho, leída para LibriVox; limpiada por Kyutai
 about-lists = Lista de proveedores y modelos
 
 about-or = o

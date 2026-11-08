@@ -49,7 +49,11 @@ composer-replies = { $name } trả lời
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = Đọc chính tả
-dictate-the-microphone-cannot-be = Không dùng được micrô: { $reason }. Hãy cho phép Cardwave dùng micrô trong cài đặt quyền riêng tư của Windows, hoặc cắm một micrô vào.
+mic-none = Không tìm thấy micrô: hãy cắm một micrô vào rồi thử lại.
+mic-not-allowed-desktop = Cardwave không được dùng micrô: hãy cho phép trong cài đặt quyền riêng tư của Windows, mục Micrô.
+mic-not-allowed-browser = Trang này không được dùng micrô: hãy cho phép trong cài đặt của trình duyệt cho trang web này.
+mic-not-started = Không bật được micrô: hãy đóng các chương trình khác đang dùng nó rồi thử lại.
+mic-not-offered = Ở địa chỉ này trình duyệt không cho dùng micrô: hãy dùng micrô trên máy tính chạy Cardwave.
 dictate-dictation-failed = Đọc chính tả thất bại: { $reason }. Hãy thử lại.
 dictate-writing-what-was-said = Đang ghi lại lời đã nói…
 dictate-nothing-was-heard = Không nghe thấy gì.
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = Thư mục trên máy tính này
 
 dom-text = { $name }: { $reason }
 dom-keep-all = Giữ mọi thay đổi
+dom-chosen-by-you = Do bạn chọn
 dom-address-copied = Đã sao chép địa chỉ.
 dom-the-browser-did-not = không được phép sao chép ở đây; hãy chọn văn bản rồi nhấn Ctrl+C
 

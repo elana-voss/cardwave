@@ -94,12 +94,12 @@ export function backupLine(home: () => HTMLElement): { nodes: HTMLElement[]; sho
   let on = false;
   const backUp = () => (on ? keep() : backupDialog(home()));
   const nodes = [
-    el("div", { className: "item" }, el("div", { className: "item-text" }, el("span", { className: "item-label" }, LABELS.settings.backup), says), el("button", { type: "button", className: "btn btn-secondary on-box", ariaLabel: wording("backup-save"), disabled: true, onclick: backUp }, wording("backup-back-up"))),
+    el("div", { className: "item" }, el("div", { className: "item-text" }, el("span", { className: "item-label" }, LABELS.settings.backup), says), el("button", { type: "button", className: "btn btn-secondary on-box", disabled: true, onclick: backUp }, wording("backup-back-up"))),
     el(
       "div",
       { className: "item" },
       el("div", { className: "item-text" }, el("span", { className: "item-label" }, LABELS.settings.restore), el("span", { className: "meta" }, wording("backup-from-file"))),
-      el("button", { type: "button", className: "btn btn-secondary on-box", ariaLabel: wording("backup-restore-title"), onclick: () => restoreDialog(home()) }, wording("backup-restore")),
+      el("button", { type: "button", className: "btn btn-secondary on-box", onclick: () => restoreDialog(home()) }, wording("backup-restore")),
     ),
   ];
   const show = (password: boolean) => {
@@ -108,4 +108,17 @@ export function backupLine(home: () => HTMLElement): { nodes: HTMLElement[]; sho
     says.textContent = password ? wording("backup-about-own") : wording("backup-about-chosen");
   };
   return { nodes, show };
+}
+
+/** Where a page keeps, over the reload, that the server said a backup was restored. */
+const RESTORED = "cardwave.restored";
+
+/** The server said a backup was restored: the page, about to load anew, tells it once it is there (`tellRestored`). */
+export const restoredHeard = () => sessionStorage.setItem(RESTORED, "1");
+
+/** Says, once, after the reload, that a backup was restored and what that changed. */
+export function tellRestored(): void {
+  if (sessionStorage.getItem(RESTORED) === null) return;
+  sessionStorage.removeItem(RESTORED);
+  announce(wording("backup-restored"), undefined, true);
 }

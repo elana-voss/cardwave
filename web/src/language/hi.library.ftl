@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = तस्वीर में क्या 
 card-picture-making-a-picture = तस्वीर बन रही है…
 card-picture-the-picture-made = नई तस्वीर
 card-picture-reading-the-card = कार्ड पढ़ा जा रहा है…
+card-picture-no-answer = आपके प्रोवाइडर ने 30 सेकंड में जवाब नहीं दिया। फिर से पूछने के लिए “AI से तस्वीर का वर्णन फिर से लिखवाएँ” दबाएँ।
 card-picture-no-earlier-pictures = कोई पुरानी तस्वीर नहीं।
 
 ## card-texts (card/card-texts.ts)

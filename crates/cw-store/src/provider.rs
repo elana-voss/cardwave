@@ -92,6 +92,22 @@ fn entry_for(
     }
 }
 
+/// The user's first entry at `base_url`, where none there holds `key`.
+fn corrected_entry(
+    conn: &Connection,
+    user: i64,
+    base_url: &str,
+    key: &str,
+) -> rusqlite::Result<Option<i64>> {
+    conn.query_row(
+        "select min(id) from provider_entries where user_id = ?1 and base_url = ?2
+         and not exists (select 1 from provider_entries
+                         where user_id = ?1 and base_url = ?2 and api_key = ?3)",
+        params![user, base_url, key],
+        |r| r.get(0),
+    )
+}
+
 /// Puts `kind` at the entry with the model, its thinking on; the background
 /// kind at the chat model's is none. Whether the entry is the user's.
 fn pick(
@@ -261,7 +277,14 @@ impl Storage for Db {
             let own = chat(&tx, user)?
                 .filter(|(chat, _)| chat.base_url == new.base_url)
                 .map(|(_, entry)| entry);
-            let entry = match own {
+            // A key typed for an address that has an entry, but none with that
+            // key, corrects that entry's key (setup run again) rather than
+            // adding a second entry beside it.
+            let corrected = match (&own, &new.api_key) {
+                (None, Some(key)) => corrected_entry(&tx, user, &new.base_url, key)?,
+                _ => None,
+            };
+            let entry = match own.or(corrected) {
                 Some(entry) => entry,
                 None => {
                     let key = match &new.api_key {
@@ -277,7 +300,10 @@ impl Storage for Db {
                 [entry],
                 |r| Ok((r.get(0)?, r.get(1)?)),
             )?;
-            let typed = new.api_key.as_ref().filter(|_| own.is_some());
+            let typed = new
+                .api_key
+                .as_ref()
+                .filter(|_| own.is_some() || corrected.is_some());
             let renamed = new
                 .name
                 .as_ref()

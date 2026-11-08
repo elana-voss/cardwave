@@ -24,6 +24,9 @@ pub const KEEPER: &str = "Read these new messages of a ";
 /// taking a scripted answer or counting in `asked`.
 pub const TITLE: &str = "You title a chat";
 
+/// Words of a chat whose title `Model` answers slowly.
+pub const SLOW_TITLE: &str = "<slow title>";
+
 /// Where an answer of `Model` pauses a moment before it goes on.
 pub const PAUSE: &str = "<pause>";
 
@@ -44,7 +47,15 @@ impl Model {
             let (status, text) = if system.starts_with(KEEPER) {
                 (200, stream(&[text_piece("PRESENT:\nFACTS:\nEVENTS:")]))
             } else if system.starts_with(TITLE) {
-                (200, stream(&[text_piece(r#"{"title": "A chat"}"#)]))
+                // A chat that says `SLOW_TITLE` is titled after about three seconds.
+                let slow = body.to_string().contains(SLOW_TITLE);
+                let title = stream(&[text_piece(r#"{"title": "A chat"}"#)]);
+                let wait = if slow {
+                    PAUSE.repeat(100)
+                } else {
+                    String::new()
+                };
+                (200, format!("{wait}{title}"))
             } else {
                 let mut log = log.lock().unwrap();
                 log.push(body);

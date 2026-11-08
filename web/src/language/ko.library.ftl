@@ -91,6 +91,7 @@ card-picture-what-the-picture-shows = 이미지에 담길 내용
 card-picture-making-a-picture = 이미지를 만드는 중…
 card-picture-the-picture-made = 새 이미지
 card-picture-reading-the-card = 카드를 읽는 중…
+card-picture-no-answer = 제공업체가 30초 안에 응답하지 않았어요. 다시 물어보려면 “AI가 그림을 다시 설명하게 하기”를 누르세요.
 card-picture-no-earlier-pictures = 이전 이미지가 없어요.
 
 ## card-texts (card/card-texts.ts)

@@ -776,7 +776,7 @@ async fn move_character(
 /// that fails here matters: the next reply asks again.
 pub(super) fn name_itself(state: &AppState, user: i64, chat_id: i64) {
     let state = state.clone();
-    let Some(titling) = state.titles.start(user, chat_id) else {
+    let Ok(Some(titling)) = state.unless_restoring(|| state.titles.start(user, chat_id)) else {
         return;
     };
     tokio::spawn(async move {

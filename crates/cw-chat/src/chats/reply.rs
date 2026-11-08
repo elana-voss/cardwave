@@ -8,6 +8,8 @@
 //! first, or answers after a pause, is told the date, the time and how long
 //! since the last message (`time_note`), after the log, where it leaves the
 //! cached beginning of the prompt as it was.
+//! A prompt with no room for the character (its system message) is refused
+//! (`whole`), never sent without it.
 
 use anyhow::ensure;
 use chrono::{DateTime, FixedOffset, Local};
@@ -15,7 +17,7 @@ use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_prompt::builder::{self, PromptRequest};
 use cw_prompt::{ChatMessage, PromptMessage, Role, Variables};
-use cw_provider::{self as provider, NOT_SET_UP, Provider, Sampling};
+use cw_provider::{self as provider, Provider, Sampling};
 
 use crate::chats::{self, Chat, Message};
 
@@ -84,7 +86,7 @@ pub fn continue_prompt(
     sampling: &Sampling,
     given: Given,
     direction: Option<&str>,
-) -> Vec<PromptMessage> {
+) -> anyhow::Result<Vec<PromptMessage>> {
     let instruction = steered(CONTINUE, direction);
     // A reply being written stays out of a prompt; this one is what is continued.
     if let Some(last) = inputs.state.messages.last_mut() {
@@ -97,7 +99,27 @@ pub fn continue_prompt(
         data_context: given.documents,
         ..PromptRequest::new(&inputs.character, sampling.context())
     };
-    builder::build(&request, &mut inputs.state, &mut Variables::new()).messages
+    let built = builder::build(&request, &mut inputs.state, &mut Variables::new());
+    Ok(whole(built)?.messages)
+}
+
+/// Refuses a prompt that left out the character (the system message) as it
+/// is longer than the chat model reads: a reply without it would be no
+/// longer the character's, and nothing would tell the user why.
+fn whole(built: builder::BuiltPrompt) -> anyhow::Result<builder::BuiltPrompt> {
+    if let Some(tokens) = built.system_left_out {
+        let needed = tokens + built.breakdown.reserved_reply;
+        let context = built.breakdown.context_size;
+        return Err(Fail::said(
+            Code::TooBig,
+            format!("the character is longer than the chat model reads (about {needed} tokens of {context})"),
+        )
+        .with("what", "card_for_chat")
+        .with("needed", needed.to_string())
+        .with("context", context.to_string())
+        .into());
+    }
+    Ok(built)
 }
 
 /// How long a pause is: a user's message written this long after the one
@@ -173,7 +195,11 @@ pub fn prompt_for(
         ..PromptRequest::new(&inputs.character, sampling.context())
     };
     // Variables shared by all of a user's chats are not stored yet.
-    let built = builder::build(&request, &mut inputs.state, &mut Variables::new());
+    let built = whole(builder::build(
+        &request,
+        &mut inputs.state,
+        &mut Variables::new(),
+    ))?;
     chats::save_prompt_state(db, user, chat.id, &inputs.state)?;
     let context = chats::ContextUse {
         used: built
@@ -225,7 +251,7 @@ pub fn draft_prompt(
         .with("what", "improve_direction")
     );
     let chat = chats::get(db, user, chat_id)?.ok_or(NotFound("chat"))?;
-    let provider = provider::get(db, user)?.ok_or(NOT_SET_UP)?;
+    let provider = provider::chat(db, user)?;
     // The character picked to reply, else the one the chat began with.
     let mut inputs = chats::prompt_inputs_after(db, user, &chat, chat.replier_id, chat.head_id)?;
     let prompt = match improve {
@@ -249,7 +275,12 @@ pub fn draft_prompt(
                 is_impersonating: true,
                 ..PromptRequest::new(&inputs.character, provider.sampling.context())
             };
-            builder::build(&request, &mut inputs.state, &mut Variables::new()).messages
+            whole(builder::build(
+                &request,
+                &mut inputs.state,
+                &mut Variables::new(),
+            ))?
+            .messages
         }
     };
     Ok((provider, prompt, inputs.state.persona_name))

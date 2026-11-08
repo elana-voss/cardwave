@@ -238,12 +238,12 @@ backup-back-up = बैकअप सहेजें
 backup-no-file = कोई फ़ाइल नहीं चुनी गई
 backup-choose-file = फ़ाइल चुनें
 backup-its-password = बैकअप का पासवर्ड
-backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता। यहाँ का पासवर्ड जैसा है वैसा ही रहता है।
+backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता। यहाँ का पासवर्ड जैसा है वैसा ही रहता है। दूसरे खाते भी बदल जाते हैं।
+backup-restored = बैकअप रीस्टोर हो गया: Cardwave में सब कुछ वैसा है जैसा बैकअप बनाते समय था। दूसरे डिवाइस फिर से साइन इन करेंगे।
 backup-file = फ़ाइल
 backup-restore-title = बैकअप रीस्टोर करें
 backup-choose-first = पहले बैकअप की फ़ाइल चुनें।
 backup-restore = बैकअप बहाल करें
-backup-save = बैकअप सेव करें
 backup-from-file = बैकअप फ़ाइल से
 backup-about-own = चैट, किरदार और सेटिंग्स एक फ़ाइल में, आपके पासवर्ड से एन्क्रिप्टेड
 backup-about-chosen = चैट, किरदार और सेटिंग्स एक फ़ाइल में, आपके चुने हुए पासवर्ड से एन्क्रिप्टेड
@@ -329,6 +329,7 @@ password-is-on = चालू · ऐप खुलते समय पूछा �
 password-is-off = बंद · इस कंप्यूटर पर कोई भी Cardwave खोल सकता है
 password-start-forgotten = भूला हुआ पासवर्ड वापस नहीं मिल सकता।
 password-open = खोलें
+password-locked-elsewhere = Cardwave अपने कंप्यूटर पर लॉक है। वहाँ अनलॉक होते ही यह यहाँ खुल जाएगा।
 password-back = वापस
 
 ## Words many pages use
@@ -774,6 +775,11 @@ about-version-built = वर्ज़न { $version } · { $built }
 about-models = मॉडल
 about-figures = फ़िगर और एनिमेशन
 about-voices = आवाज़ें
+about-voice-donations = दान की गई आवाज़ें
+about-voice-acted-by = आवाज़: { $name }
+about-voice-vctk = CSTR VCTK Corpus (Junichi Yamagishi, Christophe Veaux और Kirsten MacDonald, University of Edinburgh) के वक्ता { $speaker }; Kyutai द्वारा साफ़ की गई
+about-voice-cml-tts = CML-TTS (Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares और Arlindo R. Galvão Filho) के वक्ता { $speaker }, LibriVox के लिए पढ़ा गया
+about-voice-cml-tts-cleaned = CML-TTS (Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares और Arlindo R. Galvão Filho) के वक्ता { $speaker }, LibriVox के लिए पढ़ा गया; Kyutai द्वारा साफ़ की गई
 about-lists = प्रोवाइडर और मॉडल की सूची
 
 about-or = या

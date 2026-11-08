@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = 圖片的內容
 card-picture-making-a-picture = 正在產生圖片……
 card-picture-the-picture-made = 新圖片
 card-picture-reading-the-card = 正在讀取角色卡……
+card-picture-no-answer = 你的服務商在 30 秒內沒有回應。按「讓 AI 重新描述這張圖」再問一次。
 card-picture-no-earlier-pictures = 沒有較早的圖片。
 
 ## card-texts (card/card-texts.ts)

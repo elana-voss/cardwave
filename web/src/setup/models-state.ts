@@ -16,6 +16,8 @@ export interface StepState {
   workerFailed: boolean;
   /** Whether the list of models or the picks did not come: then nothing was found wanting. */
   noList: boolean;
+  /** Whether the provider's list refused the key: then the way out is Back to it. */
+  keyRefused: boolean;
 }
 
 /** After how long open work is slow, and after how long it is given up. */
@@ -27,10 +29,18 @@ export function lead(s: StepState): string {
   if (s.open) return s.slow ? wording("setup-working-slow") : wording("setup-working");
   // Where the main button waits for the chat model, the lead does not say to go on.
   if (s.chatFailed) return wording("setup-chat-failed");
+  if (s.keyRefused) return wording("setup-key-refused");
   if (!s.chat) return s.noList ? wording("setup-provider-silent") : wording("setup-none-lead");
   if (s.workerFailed || s.noList) return wording("setup-one-failed");
   return wording("setup-ready");
 }
+
+/** The key's line: its end, or "key saved" as Settings › Providers says where the key is too short to show one. */
+export const keyLine = (provider: string, end: string) =>
+  end ? wording("setup-key-line", { provider, end }) : wording("providers-key-saved", { where: provider });
+
+/** The chat line's button: "Change" while a model is chosen or being picked (the spinner alone on the line), "Choose" only when none came. */
+export const chatAction = (chosen: boolean, picking: boolean) => (chosen || picking ? wording("setup-change") : wording("setup-choose"));
 
 /** Whether the main button waits: for open work, for a chat model, for one that answers. A helper model that did not answer does not hold it: the chat model does its work. */
 export const greyed = (s: StepState) => s.open || !s.chat || s.chatFailed;

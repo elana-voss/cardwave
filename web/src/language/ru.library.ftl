@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = Что на картинке
 card-picture-making-a-picture = Создаётся картинка…
 card-picture-the-picture-made = Новая картинка
 card-picture-reading-the-card = Чтение карточки…
+card-picture-no-answer = Ваш провайдер не ответил за 30 секунд. Нажмите «Пусть ИИ опишет картинку заново», чтобы спросить ещё раз.
 card-picture-no-earlier-pictures = Прежних картинок нет.
 
 ## card-texts (card/card-texts.ts)

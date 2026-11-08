@@ -467,3 +467,43 @@ async fn a_key_the_providers_list_of_models_refuses_is_not_saved_at_add_or_chang
         "{refused}"
     );
 }
+
+/// Setup run again with a corrected key for an address that has a provider
+/// gives that provider the key, rather than adding a second beside it.
+#[tokio::test]
+async fn setup_again_with_another_key_corrects_the_provider_at_its_address() {
+    let list = json!({ "data": [{ "id": "tide-1" }] }).to_string();
+    let api = Api::start(says(200, JSON, &list)).await;
+    let server = start().await;
+    let old = json!({ "base_url": api.url, "api_key": "sk-old-0123456789" });
+    add(&server, old).await;
+    let new = json!({ "base_url": api.url, "model": "tide-1", "api_key": "sk-new-0123456789" });
+    assert_eq!(server.put("/api/provider", new).await.0, 200);
+
+    let listed = server.get("/api/provider-list").await.1;
+    assert_eq!(listed["providers"].as_array().unwrap().len(), 1, "{listed}");
+    let asked = json!({ "base_url": api.url });
+    assert_eq!(server.post("/api/provider/models", asked).await.0, 200);
+    assert_eq!(api.last_key().as_deref(), Some("Bearer sk-new-0123456789"));
+}
+
+#[tokio::test]
+async fn a_provider_added_with_no_chat_model_picked_says_none_is_chosen() {
+    let server = start().await;
+    add(
+        &server,
+        json!({ "base_url": RIG, "api_key": "sk-rig-secret-1234" }),
+    )
+    .await;
+    let picks = json!({
+        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
+        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
+        "relationship": "Rival", "name": "Mara", "creator": "local",
+    });
+    let (status, refused) = server.post("/api/generator", picks).await;
+    assert_eq!(
+        (status, &refused["details"]),
+        (424, &json!({ "what": "chat_model" })),
+        "{refused}"
+    );
+}

@@ -329,11 +329,16 @@ impl AppState {
     /// account that is gone. Begun while a restore runs, it is refused once the restore has ended: its ids
     /// are the old data's.
     fn at_work(&self, user: i64) -> Result<AtWork, cw_core::Fail> {
-        let before = self.0.restores.load(Ordering::SeqCst);
-        unless_restored(&self.0.restores, &self.guarded, before, || {
+        self.unless_restoring(|| {
             *cw_core::lock(&self.0.at_work).entry(user).or_default() += 1;
             AtWork(self.clone(), user)
         })
+    }
+
+    /// Does `then`, which registers work on the data (a reply, a memory pass, a title, describing), unless a
+    /// restore runs: then it waits for the restore and is refused.
+    fn unless_restoring<T>(&self, then: impl FnOnce() -> T) -> Result<T, cw_core::Fail> {
+        unless_restoring(&self.0.restores, &self.guarded, then)
     }
 
     /// Whether any piece of work marked by [`AppState::at_work`] is under way.
@@ -361,6 +366,15 @@ fn unless_restored<T>(
         return Err(cw_core::Fail::new(cw_core::Code::RestoreBusy));
     }
     Ok(then())
+}
+
+/// [`unless_restored`] from now: work asked while a restore runs waits for it and is refused.
+fn unless_restoring<T>(
+    restores: &AtomicU64,
+    guarded: &Mutex<()>,
+    then: impl FnOnce() -> T,
+) -> Result<T, cw_core::Fail> {
+    unless_restored(restores, guarded, restores.load(Ordering::SeqCst), then)
 }
 
 struct AtWork(AppState, i64);
@@ -728,7 +742,6 @@ pub(crate) fn tidy(db: &cw_store::Db, alone: bool) -> anyhow::Result<()> {
         cw_coding::coding::stop_interrupted(db)?;
         cw_chat::memory::purge_deleted(db)?;
         cw_chat::documents::purge_deleted(db)?;
-        cw_chat::attachments::purge_waiting(db)?;
         cw_coding::tools::written::purge_deleted(db)?;
         cw_search::Index::forget_unused_vectors(db)?;
         cw_library::describe::forget_unfinished(db)?;
@@ -866,8 +879,26 @@ pub async fn serve(
 
 #[cfg(test)]
 mod tests {
-    use super::{account_name_from, unless_restored};
-    use std::sync::{Mutex, atomic::AtomicU64};
+    use super::{account_name_from, unless_restored, unless_restoring};
+    use std::sync::{Arc, Mutex, atomic::AtomicU64, atomic::Ordering};
+
+    /// A reply, a memory pass, a title or a describing asked while a restore copies the backup waits for it
+    /// and is then refused: begun, it would write into the restored data by the old data's ids.
+    #[test]
+    fn work_asked_while_a_restore_runs_is_refused_once_it_ends() {
+        let shared = Arc::new((AtomicU64::new(0), Mutex::new(())));
+        let restoring = cw_core::lock(&shared.1);
+        let asked = {
+            let shared = shared.clone();
+            std::thread::spawn(move || unless_restoring(&shared.0, &shared.1, || ()))
+        };
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        shared.0.fetch_add(1, Ordering::SeqCst);
+        drop(restoring);
+        let refused = asked.join().unwrap().unwrap_err();
+        assert_eq!(refused.code, cw_core::Code::RestoreBusy);
+        assert!(unless_restoring(&shared.0, &shared.1, || ()).is_ok());
+    }
 
     #[test]
     fn work_begun_before_a_restore_ended_is_refused() {

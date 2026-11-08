@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { APIRequestContext } from "@playwright/test";
@@ -16,14 +16,18 @@ import { NOW, picture, stopClock } from "../pictures";
 
 let api: FakeProvider;
 let folder: string;
+/** The folder's long path, under which the task's card shows its title on one line. */
+let root: string;
 
 test.beforeAll(async () => {
   api = await startFakeProvider();
-  folder = mkdtempSync(join(tmpdir(), "cardwave-coding-"));
+  root = mkdtempSync(join(tmpdir(), "cardwave-coding-"));
+  folder = join(root, "a project whose folder has a rather long name", "and one more level", "proj");
+  mkdirSync(folder, { recursive: true });
 });
 test.afterAll(async () => {
   await api.close();
-  rmSync(folder, { recursive: true, force: true });
+  rmSync(root, { recursive: true, force: true });
 });
 
 /** A chat with Mira, a roleplay, and one without a character: their numbers. */
@@ -42,6 +46,13 @@ async function chat(request: APIRequestContext): Promise<{ roleplay: number; pla
 
 test("a coding task is set up, started in a chat, allowed to write, and undone from its page", async ({ page, request }) => {
   const { roleplay, plain: id } = await chat(request);
+  // While Files is off, "Start a coding task" is greyed and says what it needs.
+  await page.goto(`/#/chats/${id}`);
+  await page.getByRole("button", { name: "Attach, or let the AI write" }).click();
+  const offered = page.getByRole("menuitem", { name: "Start a coding task" });
+  await expect(offered).toHaveAttribute("aria-disabled", "true");
+  await expect(offered).toContainText("Switch on Files in Settings › Tools first");
+  await page.keyboard.press("Escape");
   await page.goto("/#/settings");
   await page.getByRole("link", { name: /Coding team/ }).click();
   await expect(page.locator(".settings-group p.hint").first()).toHaveText("Balanced: one planner, two workers and an auditor who runs the tests.");
@@ -69,6 +80,9 @@ test("a coding task is set up, started in a chat, allowed to write, and undone f
   await dialog.getByRole("button", { name: "Start" }).click();
 
   const card = page.locator(".task-card");
+  // Its title stays on one line beside a long folder, which gives way instead.
+  await expect(card.locator(".task-folder")).toHaveText(folder);
+  expect((await card.locator(".task-head .semi").boundingBox())!.height).toBeLessThan(30);
   await expect(card.locator(".task-goal")).toHaveText("Say hi in hello.txt");
   const asking = card.locator(".tool-ask");
   await expect(asking.locator(":scope > span")).toHaveText("Worker 1 wants to write “hello.txt” in your folder:");

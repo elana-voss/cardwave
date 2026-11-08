@@ -49,7 +49,11 @@ composer-replies = 由 { $name } 回覆
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = 聽寫
-dictate-the-microphone-cannot-be = 無法使用麥克風：{ $reason }。請在 Windows 的隱私權設定中允許 Cardwave 使用它，或接上一個麥克風。
+mic-none = 找不到麥克風：請接上一個，然後再試一次。
+mic-not-allowed-desktop = Cardwave 無權使用麥克風：請在 Windows 隱私權設定的「麥克風」中允許。
+mic-not-allowed-browser = 此頁面無權使用麥克風：請在瀏覽器中此網站的設定裡允許。
+mic-not-started = 無法啟動麥克風：請關閉正在使用它的其他程式，然後再試一次。
+mic-not-offered = 在這個位址上瀏覽器不提供麥克風：請在執行 Cardwave 的電腦上使用麥克風。
 dictate-dictation-failed = 聽寫失敗：{ $reason }。請再試一次。
 dictate-writing-what-was-said = 正在寫下說出的內容……
 dictate-nothing-was-heard = 沒有聽到任何聲音。
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = 這台電腦上的資料夾
 
 dom-text = { $name }：{ $reason }
 dom-keep-all = 保留全部變更
+dom-chosen-by-you = 由你選擇
 dom-address-copied = 已複製網址。
 dom-the-browser-did-not = 這裡不允許複製；請選取文字後按 Ctrl+C
 

@@ -90,6 +90,11 @@ const known = () => [
 /** Opens first run as of a user who has no provider, with the spec's list of providers. */
 async function firstRun(page: Page): Promise<void> {
   await page.route("**/api/provider", (route) => (route.request().method() === "GET" ? route.fulfill({ json: null }) : route.fallback()));
+  // A provider kept in the list would open setup at step 2.
+  await page.route("**/api/provider-list", async (route) => {
+    const response = await route.fetch();
+    return route.fulfill({ response, json: { ...(await response.json()), providers: [] } });
+  });
   await page.route("**/api/providers", (route) => route.fulfill({ json: known() }));
   await page.goto("/#/setup");
   await expect(page.getByRole("heading", { name: "Provider" })).toBeVisible();
@@ -171,7 +176,7 @@ for (const [width, height] of SIZES) {
       test("the password's dialog, switching one on, with both fields typed", async ({ page }) => {
         await page.addInitScript(() => localStorage.setItem("rail", "narrow"));
         await page.goto("/#/account/profile");
-        await page.getByRole("button", { name: "Set a password" }).click();
+        await page.getByRole("button", { name: "Set password" }).click();
         await page.getByLabel("Password", { exact: true }).fill("harbour lights");
         await page.getByLabel("Repeat password").fill("harbour lights");
         await page.getByLabel("Repeat password").blur();

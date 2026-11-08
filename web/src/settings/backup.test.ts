@@ -2,7 +2,7 @@
 // with a password is asked for it at the restore, and sent again with it.
 import { beforeEach, expect, test, vi } from "vitest";
 import { ApiError, restoreBackup, saveBackup } from "../api/client";
-import { backupLine, restoreDialog } from "./backup";
+import { backupLine, restoreDialog, restoredHeard, tellRestored } from "./backup";
 
 vi.mock("../api/client", async (actual) => ({ ...(await actual<typeof import("../api/client")>()), restoreBackup: vi.fn(), saveBackup: vi.fn() }));
 
@@ -77,4 +77,23 @@ test("Back up waits until it is known whether a password is on", () => {
   expect(button.disabled).toBe(true);
   line.show(false);
   expect(button.disabled).toBe(false);
+});
+
+test("a restore heard is told after the reload, once: what it changed, and that other devices sign in again", () => {
+  const told = () => {
+    const shown = document.body.appendChild(Object.assign(document.createElement("div"), { id: "toast" }));
+    tellRestored();
+    const text = shown.textContent;
+    shown.remove();
+    return text;
+  };
+  expect(told()).toBe("");
+  restoredHeard();
+  expect(told()).toContain("The backup was restored: everything in Cardwave is as it was when the backup was made. Other devices sign in again.");
+  expect(told()).toBe("");
+});
+
+test("the buttons' spoken names hold their visible words", () => {
+  for (const button of backupLine(() => document.body).nodes.flatMap((node) => [...node.querySelectorAll("button")]))
+    expect(button.ariaLabel ?? button.textContent).toContain(button.textContent);
 });

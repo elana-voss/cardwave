@@ -25,7 +25,8 @@ import { companionApp, connectEvents, getLock, getProvider, getSettings, getSign
 import { appWindow, PAGE_WINDOW } from "./desktop";
 import { clearNotice, type View } from "./dom";
 import { followComputer, onLanguage } from "./language/language";
-import { passwordIs, startScreen } from "./settings/password";
+import { restoredHeard, tellRestored } from "./settings/backup";
+import { lockedElsewhere, passwordIs, startScreen, untilUnlocked } from "./settings/password";
 import { pickCompanion, startCompanion } from "./library/companion-app";
 import { readOwnCss } from "./settings/own-css";
 import { readAppLanguage } from "./settings/app-language";
@@ -152,7 +153,10 @@ function drawn(tab: Tab): void {
 /** The desktop app's window of one page ("Cardwave's CSS") has no tabs. */
 const alone = window.cardwaveDesktop?.window === PAGE_WINDOW;
 const tabs = new Tabs(screen, drawn, alone);
-followComputer();
+/** Where the page keeps whether it was signed in to another account than this computer's, for when the app is locked. */
+const OTHER_ACCOUNT = "cardwave.other-account";
+/** The computer's language in use: the start and sign-in screens, which no change of language redraws, wait for it. */
+const computerLanguage = followComputer();
 const bar = makeTitleBar(tabs, alone);
 // The companion knows which screen Cardwave's window shows: its address and the name of its tab; a browser's page of
 // the same user, or the window of one page, is not that window.
@@ -174,10 +178,14 @@ async function start(): Promise<void> {
   // The font is there before the first screen is made, which is made after the server's answer: a screen made
   // before it came and one made after would differ (seen: a field's words a pixel lower, in some runs).
   const font = document.fonts.load(`16px ${getComputedStyle(document.body).fontFamily}`).catch(() => []);
-  const [lock, signing] = await Promise.all([getLock().catch(() => null), getSignIn().catch(() => null), font]);
+  const [lock, signing] = await Promise.all([getLock().catch(() => null), getSignIn().catch(() => null), font, computerLanguage]);
   if (lock?.locked) {
     chrome(false);
-    main.replaceChildren(startScreen(lock.name, (password) => unlock(password).then(() => location.reload())));
+    // A device signed in to another account cannot open the app: its password is this computer's account's.
+    const other = localStorage.getItem(OTHER_ACCOUNT) === "1";
+    main.replaceChildren(other ? lockedElsewhere() : startScreen(lock.name, (password) => unlock(password).then(() => location.reload())));
+    // Unlocked elsewhere (on the computer, or another page), the page goes on by itself.
+    untilUnlocked(getLock, () => location.reload());
     return;
   }
   passwordIs(lock?.password ?? false);
@@ -188,6 +196,9 @@ async function start(): Promise<void> {
     return;
   }
   startedSignedIn();
+  tellRestored();
+  const current = signing?.accounts.find((one) => one.current);
+  if (current) localStorage.setItem(OTHER_ACCOUNT, current.local ? "0" : "1");
   // The first screen is drawn with the user's own CSS, unless the server does not say within `START_WAIT`.
   const settings = getSettings();
   // The switch of pictures from the web as the page's policy was given (narration.ts).
@@ -212,7 +223,7 @@ async function start(): Promise<void> {
   void settings.then((read) => followsAtStart(read, location.hash) && followDownloads(), () => undefined);
   window.addEventListener("hashchange", go);
   // The tabs of the start before, of this account, with the address asked for in the one in view.
-  const account = signing?.accounts.find((one) => one.current)?.id;
+  const account = current?.id;
   const restore = () => tabs.restore(account === undefined ? "tabs" : `tabs.${account}`, unasked() ? "" : location.hash);
   if (location.hash === "#/companion") companion(restore);
   else restore();
@@ -254,7 +265,10 @@ function listen(): void {
       heard = true;
     }
     // All the app holds is the backup's now.
-    if (event.type === "restored") location.reload();
+    if (event.type === "restored") {
+      restoredHeard();
+      location.reload();
+    }
     if (event.type === "settings") {
       void readOwnCss();
       readAppLanguage();

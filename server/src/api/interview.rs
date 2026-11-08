@@ -20,7 +20,7 @@ use cw_library::interview::readback::{self, Line, Verdict};
 use cw_library::interview::writer::{self, Making};
 use cw_library::interview::{self, Asker, Interview, Move, gender, shown, texts};
 use cw_library::settings;
-use cw_provider::{self as provider, NOT_SET_UP, Provider};
+use cw_provider::{self as provider, Provider};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -162,7 +162,7 @@ fn goes_to(provider: &Provider) -> Option<String> {
 async fn start(State(state): State<AppState>, User(user): User) -> ApiResult<Json<InterviewStart>> {
     let (provider, style) = state
         .run(move |db| {
-            let provider = provider::get(db, user)?.ok_or(NOT_SET_UP)?;
+            let provider = provider::chat(db, user)?;
             Ok((provider, settings::get(db, user)?.interview_style))
         })
         .await?;
@@ -249,7 +249,7 @@ async fn provider_of(
 ) -> ApiResult<Provider> {
     let provider = state
         .run(move |db| {
-            let chat = provider::get(db, user)?.ok_or(NOT_SET_UP)?;
+            let chat = provider::chat(db, user)?;
             let Some(other) = other else {
                 return Ok(chat);
             };

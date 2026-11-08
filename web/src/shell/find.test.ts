@@ -55,4 +55,12 @@ describe("Search Cardwave's settings", () => {
     expect(pageHits("alba")).toEqual([]);
     expect(pageHits("alba", { "#/settings/voices": ["Alba"] })).toMatchObject([{ name: "Alba", line: "Settings › Voices", address: "#/settings/voices", reveal: "Alba" }]);
   });
+
+  it("are not offered to another account where they are this computer's account's alone: Sharing, Backup, Restore, This computer", () => {
+    const of = (query: string, local: boolean) => pageHits(query, {}, local).map((one) => one.name);
+    for (const query of ["sharing", "home network", "backup", "restore"]) {
+      expect(of(query, true), query).not.toEqual([]);
+      expect(of(query, false), query).toEqual([]);
+    }
+  });
 });

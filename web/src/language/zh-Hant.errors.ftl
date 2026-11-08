@@ -73,7 +73,10 @@ error-not-found = 沒有這個{ $what ->
    *[other] 項目
 }。它可能已被刪除。
 error-chat-busy = 這個聊天正在撰寫回覆，請先停止。
-error-no-provider = 還沒有設定任何供應商。請在「設定 › 供應商」中新增一個。
+error-no-provider = { $what ->
+    [chat_model] 還沒有選擇聊天模型。請在 設定 › 模型 中選擇一個。
+   *[other] 還沒有設定任何供應商。請在「設定 › 供應商」中新增一個。
+}
 error-provider-refused = { $refusal ->
     [key] 供應商沒有接受這組金鑰：請到「設定 › 供應商」檢查。
     [paid] 供應商要求為此付費：請儲值，或選擇你的方案包含的模型。
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] 供應商沒有回應：請稍後再試。
     [fault] 供應商那邊出了故障：{ $reason } 請稍後再試。
     [no_model] 供應商已不再提供這個模型：請在 設定 › 模型 中另選一個。
-    [too_long] 這則訊息對這個模型來說太長了：請縮短它，或在 設定 › 模型 中選一個能接收更多內容的模型。
+    [too_long] 傳給模型的內容超過了它一次能讀的量：請在 設定 › 模型 中選一個能讀更多內容的模型。
    *[other] 供應商拒絕了：{ $reason }
 }
 error-model-declined = { $model } 拒絕撰寫這段內容。請修改訊息，或換一個模型。
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] 角色太長，輔助模型讀不完；請選擇能讀取更多內容的輔助模型。
+    [card_for_chat] 角色太長，聊天模型讀不完，角色就不再是自己；請選擇能讀取更多內容的聊天模型，或縮短角色。
     [card_file] 檔案大於 { $most } MB。
     [checkpoint_folder] 資料夾太大，無法在每一步之前保留副本。
     [expression_pack_size] { $name } 的圖片太大。
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] 供應商的語音服務回應 { $status }。
     [search_model] 搜尋模型回應 { $status }。
    *[other] 回應 { $status }。
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] 供應商沒有接受這組金鑰。
+    [asks_for_a_key] 供應商需要一組金鑰。
+   *[other] 供應商在這個地址沒有模型清單。
 }

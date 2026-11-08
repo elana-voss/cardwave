@@ -852,6 +852,8 @@ fn a_character_moved_in_the_speaking_order_speaks_in_its_new_place() {
         let failure = turn::reorder(db, who, which, 0).unwrap_err();
         assert!(failure.is::<NotFound>(), "{failure:#}");
     }
+    // The reply ends first: a chat is not moved to the Trash while one is written in it.
+    chats::finish_interrupted(db).unwrap();
     chats::set_trashed(db, me, chat, true).unwrap();
     let why = refused(turn::reorder(db, me, bo, 0));
     assert_eq!(why, "the chat is in the Trash; restore it first");

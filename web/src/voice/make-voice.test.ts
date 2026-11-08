@@ -18,7 +18,7 @@ function choose(dialog: HTMLElement, name: string): void {
 test("a file too short leaves the recording made before, which “Make voice” sends", async () => {
   const good = new Blob(["ten seconds"]);
   vi.mocked(toWav).mockResolvedValueOnce({ file: good, seconds: 10 }).mockResolvedValueOnce({ file: new Blob(["one"]), seconds: 1 });
-  vi.mocked(makeVoice).mockResolvedValue({ id: "own-1", name: "Evening", language: "", set: "", license: "", credit: "", own: true });
+  vi.mocked(makeVoice).mockResolvedValue({ id: "own-1", name: "Evening", language: "", set: "", license: "", credit: { kind: "none" }, own: true });
   const made = vi.fn();
   makeVoiceDialog(document.body, 24_000, made);
   const dialog = document.body.querySelector("dialog")!;

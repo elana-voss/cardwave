@@ -1,3 +1,13 @@
+# 0.1.1
+
+Fixes from a second round of testing.
+
+- Backups: a restore waits for work still running, and a backup file is named by your own day.
+- First run: a provider added in Settings goes on to choosing its models, a refused key is told as refused, and setting up again with a corrected key keeps one provider.
+- Chats: a character too long for the model is told, not left out; attached pictures are made smaller once, and stay attached when you leave the chat.
+- The password screen and other devices' sign-in in your language, and settings that fit a phone's width.
+- Many smaller fixes to texts, tabs, pictures and imports.
+
 # 0.1.0
 
 Cardwave, made anew from the ground up: chat with the characters of your library, with models on this computer or at a provider.

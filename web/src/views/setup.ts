@@ -3,7 +3,8 @@
 // computer's own models among them (`keyStep`, setup/key-step.ts, setup/this-computer.ts). Step 2 opens with a
 // model of each kind picked from the key and tested, and the language the AI writes in (setup/models-step.ts).
 // Step 3, this computer's account's, takes a folder of cards, imported when setup ends (setup/cards-step.ts). Step
-// 4 asks which of the search model and the voice to download, then downloads them (setup/downloads-step.ts). "Enter the provider's address in Settings" leads to Settings › Providers.
+// 4 asks which of the search model and the voice to download, then downloads them (setup/downloads-step.ts). "Enter the provider's address in Settings" leads to Settings › Providers;
+// a provider there and no chat model chosen opens setup at step 2 for it (`begin`), at start and from the chat too.
 //
 // Step 1 has the field of "Language of the app" alone at the top right, above the key's field (settings/app-language.ts).
 // At `#/setup`, a screen without the rail (`route` in main.ts hides it): the logo beside "Cardwave" with which

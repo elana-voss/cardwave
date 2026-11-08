@@ -1,3 +1,13 @@
+# 0.1.1
+
+Correcciones de una segunda ronda de pruebas.
+
+- Copias de seguridad: una restauración espera al trabajo que sigue en marcha, y el archivo de copia lleva tu propia fecha.
+- Primer inicio: un proveedor añadido en Ajustes pasa a elegir sus modelos, una clave rechazada se indica como rechazada, y configurar de nuevo con una clave corregida mantiene un solo proveedor.
+- Chats: un personaje demasiado largo para el modelo se avisa en lugar de omitirse; las imágenes adjuntas se reducen una vez y siguen adjuntas al salir del chat.
+- La pantalla de contraseña y el inicio de sesión de otros dispositivos en tu idioma, y ajustes que caben en el ancho de un móvil.
+- Muchas correcciones menores en textos, pestañas, imágenes e importaciones.
+
 # 0.1.0
 
 Cardwave, hecho de nuevo desde cero: chatea con los personajes de tu biblioteca, con modelos en este equipo o en un proveedor.

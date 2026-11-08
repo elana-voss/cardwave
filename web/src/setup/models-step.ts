@@ -4,7 +4,7 @@
 // image model's (images-setup.ts, held until "Continue"); then "Language the AI writes in" (language-line.ts),
 // stored at once.
 //
-// With an address or key new to it, the step opens with the server's picks (`pick`, crates/cw-provider/src/picks.rs):
+// Without a chat model, the provider added last stands for the stored one (`storedFor`). With an address or key new to it, the step opens with the server's picks (`pick`, crates/cw-provider/src/picks.rs):
 // a model of each kind, chat and background then tested with the small question, images not. While that runs, the
 // lead under the title turns the one spinner and each open line a spinner alone; a line shows only its result, by
 // the model's readable name (models-state.ts, which also holds the 8 s and 30 s rules and when Continue waits). A
@@ -16,8 +16,9 @@
 // folder of cards step 3 held and imports its cards; views/setup.ts makes the state (`Setup`).
 import { wording } from "../language/language";
 import { failureWords } from "../language/errors";
-import { changeSettings, getProvider, getSettings, pickModels, setProvider } from "../api/client";
+import { changeSettings, getProvider, getProviderList, getSettings, pickModels, setProvider } from "../api/client";
 import type { NamedPicks } from "../api/generated/NamedPicks";
+import type { ProvidersView } from "../api/generated/ProvidersView";
 import type { ProviderView } from "../api/generated/ProviderView";
 import { announce, el, failure, item, reason, told } from "../dom";
 import { useCardFolder } from "../library/card-folder";
@@ -27,8 +28,8 @@ import { modelLine, modelName, type models, type ModelTest } from "../models/pro
 import { LABELS } from "../setting-labels";
 import type { cardsStep } from "./cards-step";
 import { downloadsChosen, firstRunLeft, type downloadsChoice, type downloadsStep } from "./downloads-step";
-import type { Asked, KeyStep } from "./key-step";
-import { greyed, lead, workClock, type StepState } from "./models-state";
+import type { Asked, KeyStep, Stored } from "./key-step";
+import { chatAction, greyed, keyLine, lead, workClock, type StepState } from "./models-state";
 
 /** How much of a key the line for it shows, of a key at least so long: as the server tells of a stored one (`Provider::key_end` in `crates/cw-provider/src/lib.rs`, which has the same two numbers). */
 const KEY_END = 4;
@@ -79,8 +80,8 @@ export interface Setup extends ReturnType<typeof modelsParts> {
   downloading: boolean;
   notice: HTMLElement;
   attempt: (action: () => Promise<void>) => Promise<boolean>;
-  /** The stored provider, when the setup is gone through again. */
-  stored: ProviderView | null;
+  /** The stored provider, when the setup is gone through again, else the one added last while no chat model is chosen. */
+  stored: Stored | null;
   /** Whether this computer's account it is, which alone downloads the voice and the search model. */
   local: boolean;
   /** The step shown; 0 until it is known whether a provider is stored. 3 is the folder of cards, 4 the downloads. */
@@ -121,7 +122,7 @@ function keyText(s: Setup, { base_url, key, name }: Asked): string {
   // A name that was not asked for anew is the stored one, which stays with its address.
   const own = name ?? (same ? s.stored?.name : null);
   const provider = own || s.first.named(base_url) || host;
-  return typed || kept ? wording("setup-key-line", { provider, end }) : wording("setup-key-line-none", { provider });
+  return typed || kept ? keyLine(provider, end) : wording("setup-key-line-none", { provider });
 }
 
 /** What the line of the chat model says while none is chosen. */
@@ -142,6 +143,7 @@ export const stepState = (s: Setup): StepState => ({
   chatFailed: !!s.check.failed(),
   workerFailed: !!s.worker && !!s.workerCheck.failed(),
   noList: !!s.pickFailed || !!s.picked?.failed,
+  keyRefused: s.picked?.failed?.details?.said === "did not take the key",
 });
 
 /** Gives up the work still open after 30 s: no spinner turns for ever. */
@@ -180,7 +182,7 @@ export function show(s: Setup): void {
   const result = (id: string, check: ModelTest, otherwise: string) =>
     check.asking() ? spinner() : modelName(id, known) + (check.passed() ? tested() : check.failed() ? wording("setup-no-answer") : otherwise);
   const chat = s.picking && !s.model ? spinner() : s.model ? result(s.model, s.check, "") : unchosen(s);
-  s.chat.show(chat, failed, s.model ? wording("setup-change") : wording("setup-choose"), s.check.passed());
+  s.chat.show(chat, failed, chatAction(!!s.model, !!s.picking), s.check.passed());
   const worker = s.picking && !s.worker ? spinner() : s.worker ? result(s.worker, s.workerCheck, wording("setup-worker-does")) : wording("setup-same-as-chat");
   // A helper model that did not answer: the chat model does its work, and the line says so.
   const workerFailed = s.workerCheck.failed() && `${s.workerCheck.failed()} ${wording("setup-helper-falls-back")}`;
@@ -353,18 +355,34 @@ const download = (s: Setup) =>
     s.third.read();
   });
 
-/** Reads the stored provider: without one first run begins at step 1, with one at step 2, nothing asked until changed, and at step 4 while its downloads are not through. */
+/** Whom setup begins with: the stored provider, else the one added last, as with "Enter the provider's address in Settings" while no chat model is chosen; none begins at step 1. */
+export function storedFor(provider: ProviderView | null, list: ProvidersView | undefined): Stored | null {
+  if (provider) return provider;
+  // One that only makes the pictures (a ComfyUI) lists no chat model: it is passed over.
+  const picturesOnly = (id: number) => {
+    const kinds = list?.kinds.filter((k) => k.provider_id === id) ?? [];
+    return kinds.length > 0 && kinds.every((k) => k.kind === "images");
+  };
+  const last = list?.providers.filter((p) => !picturesOnly(p.id)).at(-1);
+  return last ? { base_url: last.base_url, name: last.own_name, has_key: last.has_key, key_end: last.key_end } : null;
+}
+
+/** Reads the stored provider: without one first run begins at step 1, with one at step 2, nothing asked until changed, and at step 4 while its downloads are not through. A provider added but no chat model chosen begins at step 2 with its models picked, as from a key; the key kept at its address goes with them. */
 export function begin(s: Setup, local: Promise<boolean>): void {
-  Promise.all([getProvider(), getSettings(), local])
+  // The list is only a way to step 2: unread, setup begins at step 1 as without it.
+  const list = getProviderList().catch(() => undefined);
+  Promise.all([getProvider(), getSettings(), local, list])
     .then(
-      ([provider, settings, here]) => {
-        s.stored = provider;
+      ([provider, settings, here, added]) => {
+        const kept = storedFor(provider, added);
+        s.stored = kept;
         s.local = here;
-        s.step = provider ? (firstRunLeft(settings) && here ? 4 : 2) : 1;
+        s.step = provider ? (firstRunLeft(settings) && here ? 4 : 2) : kept ? 2 : 1;
         // Downloads not through bring a start back to their bars.
         s.downloading = s.step === 4;
-        s.first.fill(provider);
+        s.first.fill(kept);
         if (s.step === 4) s.third.read();
+        if (kept && !provider) toModels(s, { base_url: kept.base_url, key: {} });
         if (!provider) return;
         s.asked = { base_url: provider.base_url, key: {} };
         s.model = provider.model;

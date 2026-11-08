@@ -73,7 +73,10 @@ error-not-found = Tidak ada { $what ->
    *[other] yang
 } seperti itu. Mungkin sudah dihapus.
 error-chat-busy = Balasan sedang ditulis di chat ini; hentikan dulu.
-error-no-provider = Belum ada penyedia yang disiapkan. Tambahkan satu di Pengaturan › Penyedia.
+error-no-provider = { $what ->
+    [chat_model] Belum ada model chat yang dipilih. Pilih satu di Pengaturan › Model.
+   *[other] Belum ada penyedia yang disiapkan. Tambahkan satu di Pengaturan › Penyedia.
+}
 error-provider-refused = { $refusal ->
     [key] Penyedia tidak menerima kuncinya: periksa di Pengaturan › Penyedia.
     [paid] Penyedia meminta pembayaran untuk ini: tambah kredit, atau pilih model yang termasuk dalam paketmu.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] Penyedia tidak menjawab: coba lagi nanti.
     [fault] Penyedia mengalami gangguan di pihaknya: { $reason } Coba lagi nanti.
     [no_model] Penyedia tidak lagi menawarkan model ini: pilih yang lain di Pengaturan › Model.
-    [too_long] Pesan ini terlalu panjang untuk model ini: persingkat, atau pilih model yang muat lebih banyak di Pengaturan › Model.
+    [too_long] Model dikirimi lebih banyak daripada yang bisa dibacanya sekaligus: pilih model yang membaca lebih banyak di Pengaturan › Model.
    *[other] Penyedia menolak ini: { $reason }
 }
 error-model-declined = { $model } menolak menulis ini. Ubah pesannya, atau pilih model lain.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] Karakter terlalu panjang untuk model pembantu; pilih model pembantu yang membaca lebih banyak.
+    [card_for_chat] Karakter terlalu panjang untuk model chat, sehingga ia tidak akan menjadi dirinya sendiri; pilih model chat yang membaca lebih banyak, atau persingkat karakternya.
     [card_file] Berkas lebih besar dari { $most } MB.
     [checkpoint_folder] Folder terlalu besar untuk disalin sebelum setiap langkah.
     [expression_pack_size] Gambar-gambar { $name } terlalu besar.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] Suara-suara penyedia menjawab { $status }.
     [search_model] Model pencarian menjawab { $status }.
    *[other] Jawabannya { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] Penyedia tidak menerima kuncinya.
+    [asks_for_a_key] Penyedia meminta kunci.
+   *[other] Penyedia tidak punya daftar model di alamat ini.
 }

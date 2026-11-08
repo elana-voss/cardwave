@@ -196,7 +196,7 @@ export function taskCard(id: number, failed: (error: unknown) => void): { node: 
     }
     const ask = task.ask ? askNode(task.ask, asker(task), (allow) => answerTask(task.id, allow), failed, false) : null;
     node.replaceChildren(
-      el("div", { className: "task-head flex ai-c g-8" }, el("span", { className: "c-grey flex" }, icon("code", 16)), el("span", { className: "semi" }, wording("page-coding-task")), statePill(task.state), el("span", { className: "meta ml-auto minw0 ellipsis task-folder" }, task.folder)),
+      el("div", { className: "task-head flex ai-c g-8" }, el("span", { className: "c-grey flex" }, icon("code", 16)), el("span", { className: "semi f-none nowrap" }, wording("page-coding-task")), statePill(task.state), el("span", { className: "meta ml-auto minw0 ellipsis task-folder" }, task.folder)),
       el("span", { className: "task-goal" }, task.goal),
       el("div", { className: "bar f-none bg-fill", role: "progressbar", ariaValueNow: String(Math.round(share * 100)), ariaValueMin: "0", ariaValueMax: "100" }, bar(share)),
       el("span", { className: task.state === "failed" ? "c-danger fs-small" : "meta" }, line),

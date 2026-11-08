@@ -22,17 +22,17 @@ test("a password switched on is asked for when the app opens, and is switched of
   await page.goto("/#/settings");
   await expect(line(page, "Backup")).toContainText("encrypted with a password you choose");
   // The password is the profile's alone (the owner, 2026-10-15).
-  await expect(page.getByRole("button", { name: "Set a password" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Set password" })).toHaveCount(0);
   await page.goto("/#/account/profile");
   await expect(line(page, "Password")).toContainText("Off · anyone at this computer can open Cardwave");
-  await page.getByRole("button", { name: "Set a password" }).click();
+  await page.getByRole("button", { name: "Set password" }).click();
   await expect(dialog(page)).toContainText("A forgotten password cannot be recovered,");
   await page.getByLabel("Password", { exact: true }).fill("harbour lights");
   await page.getByLabel("Repeat password").fill("harbor lights");
-  await button(page, "Set password").click();
+  await dialog(page).getByRole("button", { name: "Set password" }).click();
   await expect(dialog(page)).toContainText("The two passwords differ.");
   await page.getByLabel("Repeat password").fill("harbour lights");
-  await button(page, "Set password").click();
+  await dialog(page).getByRole("button", { name: "Set password" }).click();
   await expect(page.locator("#toast span")).toHaveText("Password set.");
   await expect(line(page, "Password")).toContainText("On · asked when the app opens");
   await page.goto("/#/settings");
@@ -90,19 +90,19 @@ test("a backup saved with the password asked for is restored with it in the plac
   await page.goto("/#/settings");
   // What the server refuses is said, and the page stays.
   await page.route("**/api/backup/save", (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ code: "internal", error: "The disk is full.", details: {} }) }), { times: 1 });
-  await page.getByRole("button", { name: "Save a backup" }).click();
+  await page.getByRole("button", { name: "Save backup" }).click();
   await page.getByLabel("Password", { exact: true }).fill("harbour lights");
   await page.getByLabel("Repeat password").fill("harbour lights");
-  await button(page, "Save backup").click();
+  await dialog(page).getByRole("button", { name: "Save backup" }).click();
   await expect(page.locator("#toast span")).toHaveText("Something went wrong in Cardwave. Try again.");
   await expect(line(page, "Backup")).toBeVisible();
 
   const saved = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Save a backup" }).click();
+  await page.getByRole("button", { name: "Save backup" }).click();
   await expect(dialog(page)).toContainText("A forgotten password cannot be recovered");
   await page.getByLabel("Password", { exact: true }).fill("harbour lights");
   await page.getByLabel("Repeat password").fill("harbour lights");
-  await button(page, "Save backup").click();
+  await dialog(page).getByRole("button", { name: "Save backup" }).click();
   const download = await saved;
   expect(download.suggestedFilename()).toMatch(/^cardwave-backup-\d{4}-\d\d-\d\d\.cwbackup$/);
   await expect(page.locator("#toast span")).toHaveText("Saving the backup.");
@@ -110,14 +110,14 @@ test("a backup saved with the password asked for is restored with it in the plac
 
   // Made after the backup, and gone once it is restored.
   expect((await request.post("/api/personas", { data: { name: "Stranger", description: "" } })).status()).toBe(201);
-  await page.getByRole("button", { name: "Restore a backup" }).click();
+  await page.getByRole("button", { name: "Restore backup" }).click();
   await dialog(page).locator("input[type=file]").setInputFiles({ name: "backup.cwbackup", mimeType: "application/octet-stream", buffer: file });
   await expect(dialog(page)).toContainText("backup.cwbackup");
-  await button(page, "Restore backup").click();
+  await dialog(page).getByRole("button", { name: "Restore backup" }).click();
   await expect(dialog(page)).toContainText("This backup needs its password.");
   await page.getByLabel("The backup’s password").fill("harbour lights");
   const anew = page.waitForEvent("load");
-  await button(page, "Restore backup").click();
+  await dialog(page).getByRole("button", { name: "Restore backup" }).click();
   await anew;
   await expect(line(page, "Backup")).toBeVisible();
   expect(await personas(request)).toEqual(["Wanderer"]);
@@ -126,7 +126,7 @@ test("a backup saved with the password asked for is restored with it in the plac
 test("a line's button grows with a longer language's words: German's restore button holds its label", async ({ page, request }) => {
   expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
   await page.goto("/#/settings");
-  const restore = page.getByRole("button", { name: "Eine Sicherung wiederherstellen" });
+  const restore = page.getByRole("button", { name: "Sicherung wiederherstellen", exact: true });
   await expect(restore).toBeVisible();
   expect(await restore.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);

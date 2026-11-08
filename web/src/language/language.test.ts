@@ -1,7 +1,7 @@
 // The UI's words (language.ts): which of the computer's languages is taken, a language that lacks a text, and
 // every message of the English file read.
 import { afterEach, expect, it, vi } from "vitest";
-import { appCode, language, languagesNamed, languageName, midSentence, onLanguage, pick, useLanguage, wanted, wording, englishText as english } from "./language";
+import { appCode, followComputer, language, languagesNamed, languageName, midSentence, onLanguage, pick, useLanguage, wanted, wording, englishText as english } from "./language";
 import { keysOf } from "./keys";
 import fileCodes from "./file-codes.json";
 
@@ -84,4 +84,10 @@ it("names a language inside a sentence as the language in use writes it there", 
   expect(wording("card-languages-translating-into", { name: languageName("de", "German", true), doing: "1" })).toContain("alemán");
   useLanguage("en", "");
   expect(languageName("de", "German", true)).toBe("German");
+});
+
+it("is done following the computer once its language is in use, so a screen drawn after it is in that language", async () => {
+  vi.spyOn(navigator, "languages", "get").mockReturnValue(["de-DE"]);
+  await followComputer();
+  expect(language()).toBe("de");
 });

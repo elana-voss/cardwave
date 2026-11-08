@@ -13,7 +13,7 @@
 //! `saveReply`, `ensureSwipes`, `getFirstMessage` in `public/script.js` write
 //! the lines; `/api/chats/import` and `/api/chats/group/import` take the file.
 
-use chrono::{DateTime, SecondsFormat, Utc};
+use chrono::{DateTime, Local, SecondsFormat, Utc};
 use cw_core::NotFound;
 use cw_library::cards::{Exported, file_stem};
 use cw_prompt::Role;
@@ -116,7 +116,7 @@ fn date(ms: i64) -> String {
 /// The chat as a file SillyTavern opens as a chat: its branch in view, every
 /// character's message with its other versions. The user is called what the
 /// chat's persona is called now, and a character what the list of chats calls
-/// it. The file is named after the chat and the moment it was started, as
+/// it. The file is named after the chat and the moment it was started in local time, as
 /// SillyTavern names a chat: `Mira - 2026-10-12@09h15m02s.jsonl`.
 pub fn export(db: &dyn crate::chats::Storage, user: i64, chat_id: i64) -> anyhow::Result<Exported> {
     // The chat, its characters as (ID, name) in the order they joined, the first
@@ -200,7 +200,10 @@ pub fn export(db: &dyn crate::chats::Storage, user: i64, chat_id: i64) -> anyhow
         };
         lines.push(serde_json::to_string(&line)?);
     }
-    let started = moment(chat.created_at).format("%Y-%m-%d@%Hh%Mm%Ss");
+    // On the computer's clock, as SillyTavern names its chat files (B1); the lines' dates stay UTC.
+    let started = moment(chat.created_at)
+        .with_timezone(&Local)
+        .format("%Y-%m-%d@%Hh%Mm%Ss");
     Ok(Exported {
         file_name: format!("{} - {started}.jsonl", file_stem(&chat.title, "chat")),
         data: lines.join("\n").into_bytes(),

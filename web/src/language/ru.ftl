@@ -236,12 +236,12 @@ backup-back-up = Сохранить копию
 backup-no-file = Файл не выбран
 backup-choose-file = Выбрать файл
 backup-its-password = Пароль резервной копии
-backup-restoring = Восстановление заменяет всё в Cardwave: чаты, персонажей, персоны, лорбуки, воспоминания и настройки. Это нельзя отменить. Пароль, заданный здесь, остаётся прежним.
+backup-restoring = Восстановление заменяет всё в Cardwave: чаты, персонажей, персоны, лорбуки, воспоминания и настройки. Это нельзя отменить. Пароль, заданный здесь, остаётся прежним. Другие аккаунты тоже заменяются.
+backup-restored = Резервная копия восстановлена: всё в Cardwave как в момент её создания. Другие устройства входят заново.
 backup-file = Файл
 backup-restore-title = Восстановить резервную копию
 backup-choose-first = Сначала выберите файл резервной копии.
 backup-restore = Восстановить копию
-backup-save = Сохранить резервную копию
 backup-from-file = Из файла резервной копии
 backup-about-own = Чаты, персонажи и настройки в одном файле, зашифрованном вашим паролем
 backup-about-chosen = Чаты, персонажи и настройки в одном файле, зашифрованном паролем, который вы выберете
@@ -329,6 +329,7 @@ password-is-on = Включён · запрашивается при откры�
 password-is-off = Выключен · любой за этим компьютером может открыть Cardwave
 password-start-forgotten = Забытый пароль восстановить нельзя.
 password-open = Открыть
+password-locked-elsewhere = Cardwave заблокирован на своём компьютере. Он откроется здесь, когда его разблокируют там.
 password-back = Назад
 
 ## Words many pages use
@@ -812,6 +813,11 @@ about-version-built = Версия { $version } · { $built }
 about-models = Модели
 about-figures = Фигуры и анимации
 about-voices = Голоса
+about-voice-donations = Подаренные голоса
+about-voice-acted-by = Озвучено: { $name }
+about-voice-vctk = Диктор { $speaker } из CSTR VCTK Corpus (Junichi Yamagishi, Christophe Veaux и Kirsten MacDonald, University of Edinburgh); очищено Kyutai
+about-voice-cml-tts = Диктор { $speaker } из CML-TTS (Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares и Arlindo R. Galvão Filho), прочитано для LibriVox
+about-voice-cml-tts-cleaned = Диктор { $speaker } из CML-TTS (Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares и Arlindo R. Galvão Filho), прочитано для LibriVox; очищено Kyutai
 about-lists = Список провайдеров и моделей
 
 about-or = или

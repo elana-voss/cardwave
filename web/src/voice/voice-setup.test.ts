@@ -12,8 +12,8 @@ vi.mock("../account", () => ({ account: vi.fn() }));
 vi.mock("../api/client", () => ({ getSettings: vi.fn(), getVoice: vi.fn() }));
 
 const voices = [
-  { id: "alba", name: "Alba", language: "en", set: "Alba MacKenna", license: "CC BY 4.0", credit: "Voice-acted by Alba MacKenna", own: false },
-  { id: "marius", name: "Marius", language: "en", set: "Voice donations", license: "CC0", credit: "", own: false },
+  { id: "alba", name: "Alba", language: "en", set: "Alba MacKenna", license: "CC BY 4.0", credit: { kind: "acted_by" as const, name: "Alba MacKenna" }, own: false },
+  { id: "marius", name: "Marius", language: "en", set: "Voice donations", license: "CC0", credit: { kind: "donated" as const }, own: false },
 ];
 const model = (state: VoiceModel["state"], more: Partial<VoiceModel> = {}): VoiceModel => ({
   size: 192_406_993,

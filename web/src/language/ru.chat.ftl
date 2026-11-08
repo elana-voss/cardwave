@@ -49,7 +49,11 @@ composer-replies = { $name } отвечает
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = Диктовать
-dictate-the-microphone-cannot-be = Микрофон нельзя использовать: { $reason }. Разрешите его Cardwave в параметрах конфиденциальности Windows или подключите микрофон.
+mic-none = Микрофон не найден: подключите его и попробуйте снова.
+mic-not-allowed-desktop = Cardwave не может использовать микрофон: разрешите это в параметрах конфиденциальности Windows, в разделе «Микрофон».
+mic-not-allowed-browser = Этой странице нельзя использовать микрофон: разрешите это в настройках браузера для этого сайта.
+mic-not-started = Не удалось включить микрофон: закройте другие программы, которые его используют, и попробуйте снова.
+mic-not-offered = По этому адресу браузер не даёт микрофон: используйте микрофон на компьютере, где работает Cardwave.
 dictate-dictation-failed = Диктовка не удалась: { $reason }. Попробуйте ещё раз.
 dictate-writing-what-was-said = Записывается сказанное…
 dictate-nothing-was-heard = Ничего не было слышно.
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = Папка на этом компьютере
 
 dom-text = { $name }: { $reason }
 dom-keep-all = Оставить все изменения
+dom-chosen-by-you = Выбрано вручную
 dom-address-copied = Адрес скопирован.
 dom-the-browser-did-not = копировать здесь не разрешено; выделите текст и нажмите Ctrl+C
 

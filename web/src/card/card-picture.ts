@@ -142,6 +142,9 @@ function foot(box: () => HTMLDialogElement, ...buttons: HTMLButtonElement[]): HT
   return el("div", { className: "dfoot" }, ...buttons, cancel);
 }
 
+/** How long the background model has to write what the picture shows; "card-picture-no-answer" names it. */
+const WORDS_WAIT = 30_000;
+
 /**
  * "Make a picture": the background model reads the whole card and writes what the picture shows, then the image
  * model draws it; each picture made joins the card's pictures, and "Use this picture" shows the one in view.
@@ -221,7 +224,16 @@ async function makeDialog(c: Card): Promise<void> {
   const write = () =>
     working("reading", async () => {
       words.value = "";
-      const written = await pictureWords(id);
+      // A provider that never answers would leave "Reading the card…" for minutes: after WORDS_WAIT the request
+      // is given up and the dialog says so, with "again" free. A timer, not AbortSignal.timeout, which the
+      // browser tests' clock cannot hurry.
+      const giveUp = new AbortController();
+      const timer = setTimeout(() => giveUp.abort(), WORDS_WAIT);
+      const written = await pictureWords(id, giveUp.signal)
+        .catch((error: unknown) => {
+          throw giveUp.signal.aborted ? new Error(wording("card-picture-no-answer")) : error;
+        })
+        .finally(() => clearTimeout(timer));
       if (!box.open) return;
       words.value = written.words;
       // A program on this computer comes unnamed; the sentence then says so in its own words.

@@ -230,12 +230,12 @@ backup-back-up = Simpan cadangan
 backup-no-file = Belum ada berkas yang dipilih
 backup-choose-file = Pilih berkas
 backup-its-password = Kata sandi cadangan
-backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan. Kata sandi di sini tetap seperti sekarang.
+backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan. Kata sandi di sini tetap seperti sekarang. Akun lain juga ikut diganti.
+backup-restored = Cadangan dipulihkan: semua di Cardwave kembali seperti saat cadangan dibuat. Perangkat lain masuk lagi.
 backup-file = Berkas
 backup-restore-title = Pulihkan cadangan
 backup-choose-first = Pilih dulu berkas cadangannya.
 backup-restore = Pulihkan cadangan
-backup-save = Simpan cadangan
 backup-from-file = Dari berkas cadangan
 backup-about-own = Chat, karakter, dan pengaturan dalam satu berkas, dienkripsi dengan kata sandimu
 backup-about-chosen = Chat, karakter, dan pengaturan dalam satu berkas, dienkripsi dengan kata sandi pilihanmu
@@ -320,6 +320,7 @@ password-is-on = Nyala · diminta saat aplikasi dibuka
 password-is-off = Mati · siapa pun di komputer ini dapat membuka Cardwave
 password-start-forgotten = Kata sandi yang terlupa tidak dapat dipulihkan.
 password-open = Buka
+password-locked-elsewhere = Cardwave terkunci di komputernya. Cardwave terbuka di sini begitu dibuka di sana.
 password-back = Kembali
 
 ## Words many pages use
@@ -748,6 +749,11 @@ about-version-built = Versi { $version } · { $built }
 about-models = Model
 about-figures = Figur dan animasi
 about-voices = Suara
+about-voice-donations = Suara sumbangan
+about-voice-acted-by = Disuarakan oleh { $name }
+about-voice-vctk = Penutur { $speaker } dari CSTR VCTK Corpus oleh Junichi Yamagishi, Christophe Veaux dan Kirsten MacDonald, University of Edinburgh; dibersihkan oleh Kyutai
+about-voice-cml-tts = Penutur { $speaker } dari CML-TTS oleh Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares dan Arlindo R. Galvão Filho, dibacakan untuk LibriVox
+about-voice-cml-tts-cleaned = Penutur { $speaker } dari CML-TTS oleh Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares dan Arlindo R. Galvão Filho, dibacakan untuk LibriVox; dibersihkan oleh Kyutai
 about-lists = Daftar penyedia dan model
 
 about-or = atau

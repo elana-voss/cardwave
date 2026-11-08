@@ -129,6 +129,44 @@ pub(crate) struct VoiceModel {
 /// A voice to choose, with the set its recording is of, the set's license and
 /// whom it credits (`Voice::credit`); `language` is its code ("en"); one the
 /// account made has `own` set, no language, set or license.
+/// Whom a shipped voice credits (`voice::Credit`), which the page puts into
+/// words in its language: the names stay as they are.
+#[derive(Default, Serialize, TS)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+#[ts(export)]
+pub enum Credit {
+    #[default]
+    None,
+    Donated,
+    ActedBy {
+        name: String,
+    },
+    Vctk {
+        speaker: String,
+    },
+    CmlTts {
+        speaker: String,
+        cleaned: bool,
+    },
+}
+
+impl From<voice::Credit> for Credit {
+    fn from(credit: voice::Credit) -> Self {
+        match credit {
+            voice::Credit::None => Self::None,
+            voice::Credit::Donated => Self::Donated,
+            voice::Credit::ActedBy(name) => Self::ActedBy { name: name.into() },
+            voice::Credit::Vctk(speaker) => Self::Vctk {
+                speaker: speaker.into(),
+            },
+            voice::Credit::CmlTts { speaker, cleaned } => Self::CmlTts {
+                speaker: speaker.into(),
+                cleaned,
+            },
+        }
+    }
+}
+
 #[derive(Default, Serialize, TS)]
 #[ts(export)]
 pub struct VoiceChoice {
@@ -137,7 +175,7 @@ pub struct VoiceChoice {
     pub language: String,
     pub set: String,
     pub license: String,
-    pub credit: String,
+    pub credit: Credit,
     pub own: bool,
 }
 
@@ -241,7 +279,7 @@ fn shipped_voices() -> Vec<VoiceChoice> {
             language: voice.code().into(),
             set: voice.set.into(),
             license: voice.license.into(),
-            credit: voice.credit(),
+            credit: voice.credit().into(),
             own: false,
         })
         .collect()

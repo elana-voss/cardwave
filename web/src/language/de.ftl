@@ -228,12 +228,12 @@ backup-back-up = Sicherung speichern
 backup-no-file = Keine Datei gewählt
 backup-choose-file = Datei wählen
 backup-its-password = Das Passwort der Sicherung
-backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen. Das hier gesetzte Passwort bleibt, wie es ist.
+backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen. Das hier gesetzte Passwort bleibt, wie es ist. Auch die anderen Konten werden ersetzt.
+backup-restored = Die Sicherung wurde wiederhergestellt: Alles in Cardwave ist so, wie es beim Sichern war. Andere Geräte melden sich neu an.
 backup-file = Datei
 backup-restore-title = Eine Sicherung wiederherstellen
 backup-choose-first = Wähle zuerst die Datei der Sicherung.
 backup-restore = Sicherung wiederherstellen
-backup-save = Eine Sicherung speichern
 backup-from-file = Aus einer Sicherungsdatei
 backup-about-own = Chats, Charaktere und Einstellungen in einer Datei, verschlüsselt mit deinem Passwort
 backup-about-chosen = Chats, Charaktere und Einstellungen in einer Datei, verschlüsselt mit einem Passwort deiner Wahl
@@ -319,6 +319,7 @@ password-is-on = An · wird beim Öffnen der App abgefragt
 password-is-off = Aus · jeder an diesem Computer kann Cardwave öffnen
 password-start-forgotten = Ein vergessenes Passwort lässt sich nicht wiederherstellen.
 password-open = Öffnen
+password-locked-elsewhere = Cardwave ist auf seinem Computer gesperrt. Es öffnet sich hier, sobald es dort entsperrt wird.
 password-back = Zurück
 
 ## Words many pages use
@@ -764,6 +765,11 @@ about-version-built = Version { $version } · { $built }
 about-models = Modelle
 about-figures = Figuren und Animationen
 about-voices = Stimmen
+about-voice-donations = Gespendete Stimmen
+about-voice-acted-by = Gesprochen von { $name }
+about-voice-vctk = Sprecher { $speaker } des CSTR VCTK Corpus von Junichi Yamagishi, Christophe Veaux und Kirsten MacDonald, University of Edinburgh; bereinigt von Kyutai
+about-voice-cml-tts = Sprecher { $speaker } von CML-TTS von Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares und Arlindo R. Galvão Filho, gelesen für LibriVox
+about-voice-cml-tts-cleaned = Sprecher { $speaker } von CML-TTS von Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares und Arlindo R. Galvão Filho, gelesen für LibriVox; bereinigt von Kyutai
 about-lists = Liste der Anbieter und Modelle
 
 about-or = oder

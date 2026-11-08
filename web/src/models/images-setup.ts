@@ -13,9 +13,9 @@ import { el, failure, newest, reason } from "../dom";
 import { modelLine, modelName, models } from "./provider-form";
 import { wording } from "../language/language";
 
-/** What the line says under its name, and its button. */
-export function imageSays(model: ImageModelView | null): { says: string; action: string } {
-  if (!model) return { says: wording("images-not-set-up"), action: wording("downloaded-set-up") };
+/** What the line says under its name, and its button: "Change" also while first run picks (`waiting`), its spinner alone on the line. */
+export function imageSays(model: ImageModelView | null, waiting = false): { says: string; action: string } {
+  if (!model) return { says: wording("images-not-set-up"), action: waiting ? wording("password-change") : wording("downloaded-set-up") };
   if (!model.base_url) return { says: model.model, action: wording("password-change") };
   let host = model.base_url;
   try {
@@ -38,8 +38,8 @@ export function imagesLine(
   /** The model taken in first run, not stored yet. */
   let chosen = "";
   const draw = () => {
-    const { says, action } = imageSays(chosen ? { model: chosen, base_url: null, has_key: false, key_end: null } : (stored ?? null));
     const waiting = !chosen && at.picking();
+    const { says, action } = imageSays(chosen ? { model: chosen, base_url: null, has_key: false, key_end: null } : (stored ?? null), waiting);
     shown.show(waiting ? el("span", { className: "spinner" }) : chosen ? modelName(chosen, at.names()) : stored === undefined ? "" : says, "", action);
     shown.retry.hidden = true;
   };

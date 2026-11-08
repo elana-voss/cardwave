@@ -237,12 +237,12 @@ backup-back-up = バックアップを保存
 backup-no-file = ファイルが選択されていません
 backup-choose-file = ファイルを選択
 backup-its-password = バックアップのパスワード
-backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。ここで設定したパスワードはそのまま残ります。
+backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。ここで設定したパスワードはそのまま残ります。 ほかのアカウントも置き換わります。
+backup-restored = バックアップを復元しました：Cardwaveのすべてがバックアップ作成時の状態に戻りました。ほかのデバイスはもう一度サインインします。
 backup-file = ファイル
 backup-restore-title = バックアップを復元
 backup-choose-first = 先にバックアップのファイルを選択してください。
 backup-restore = バックアップを復元
-backup-save = バックアップを保存
 backup-from-file = バックアップファイルから
 backup-about-own = チャット、キャラクター、設定をひとつのファイルに。自分のパスワードで暗号化
 backup-about-chosen = チャット、キャラクター、設定をひとつのファイルに。選んだパスワードで暗号化
@@ -327,6 +327,7 @@ password-is-on = オン・アプリを開くときに入力
 password-is-off = オフ・このコンピューターなら誰でも Cardwave を開けます
 password-start-forgotten = パスワードを忘れると取り戻せません。
 password-open = 開く
+password-locked-elsewhere = Cardwaveはそのコンピューターでロックされています。あちらでロックが解除されると、ここでも開きます。
 password-back = 戻る
 
 ## Words many pages use
@@ -753,6 +754,11 @@ about-version-built = バージョン{ $version }・{ $built }
 about-models = モデル
 about-figures = フィギュアとアニメーション
 about-voices = 音声
+about-voice-donations = 寄付された声
+about-voice-acted-by = 声の出演：{ $name }
+about-voice-vctk = CSTR VCTK Corpus（Junichi Yamagishi、Christophe Veaux、Kirsten MacDonald、University of Edinburgh）の話者 { $speaker }、Kyutai がクリーニング
+about-voice-cml-tts = CML-TTS（Frederico S. Oliveira、Edresson Casanova、Arnaldo Candido Junior、Anderson S. Soares、Arlindo R. Galvão Filho）の話者 { $speaker }、LibriVox のための朗読
+about-voice-cml-tts-cleaned = CML-TTS（Frederico S. Oliveira、Edresson Casanova、Arnaldo Candido Junior、Anderson S. Soares、Arlindo R. Galvão Filho）の話者 { $speaker }、LibriVox のための朗読、Kyutai がクリーニング
 about-lists = プロバイダーとモデルのリスト
 
 about-or = または

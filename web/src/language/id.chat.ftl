@@ -47,7 +47,11 @@ composer-replies = { $name } membalas
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = Dikte
-dictate-the-microphone-cannot-be = Mikrofon tidak bisa dipakai: { $reason }. Izinkan Cardwave memakainya di pengaturan privasi Windows, atau colokkan mikrofon.
+mic-none = Mikrofon tidak ditemukan: colokkan satu, lalu coba lagi.
+mic-not-allowed-desktop = Cardwave tidak boleh memakai mikrofon: izinkan di pengaturan privasi Windows, di bagian Mikrofon.
+mic-not-allowed-browser = Halaman ini tidak boleh memakai mikrofon: izinkan di pengaturan browser untuk situs ini.
+mic-not-started = Mikrofon tidak bisa dinyalakan: tutup program lain yang memakainya, lalu coba lagi.
+mic-not-offered = Browser tidak menyediakan mikrofon di alamat ini: pakai mikrofon di komputer tempat Cardwave berjalan.
 dictate-dictation-failed = Dikte gagal: { $reason }. Coba lagi.
 dictate-writing-what-was-said = Menulis yang diucapkan…
 dictate-nothing-was-heard = Tidak ada yang terdengar.
@@ -206,6 +210,7 @@ dialogs-folder-on-this-computer = Folder di komputer ini
 
 dom-text = { $name }: { $reason }
 dom-keep-all = Simpan semua perubahan
+dom-chosen-by-you = Dipilih olehmu
 dom-address-copied = Alamat disalin.
 dom-the-browser-did-not = menyalin tidak diizinkan di sini; pilih teksnya lalu tekan Ctrl+C
 

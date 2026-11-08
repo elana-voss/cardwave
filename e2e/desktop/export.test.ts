@@ -91,7 +91,7 @@ test("a card imported in the desktop window is exported from its menu, and the f
 
   await app.hover(await app.find(".card-row"));
   await app.click(await app.find('.card-row button[aria-label="More"]'));
-  await app.click(await app.findText("button[@role='menuitem']", "Export"));
+  await app.click(await app.findText("button[@role='menuitem']", "Export as card file"));
 
   // Saved under the card's name, without a question, and it is the card.
   const saved = join(app.downloads, "Desk Lamp.png");
@@ -111,7 +111,7 @@ test("a card imported in the desktop window is exported from its menu, and the f
 test("a chat started in the desktop window is exported from its menu, and the file is saved", async () => {
   // The card of the test before, in the library that is still shown.
   await app.hover(await app.find(".card-row"));
-  await app.click(await app.findText("li[contains(@class, 'card-row')]//button", "New chat"));
+  await app.click(await app.findText("li[contains(@class, 'card-row')]//button", "Chat"));
   await app.findText("p", "Click.");
   await app.click(await app.find('button[aria-label="Chat options"]'));
   await app.click(await app.findText("button[@role='menuitem']", "Export"));
@@ -123,7 +123,7 @@ test("a chat started in the desktop window is exported from its menu, and the fi
     const written = readFileSync(join(app.downloads, saved), "utf8").split("\n");
     return written.length === 2 && written.map((line) => JSON.parse(line));
   });
-  assert.deepEqual(lines[0], { chat_metadata: {}, user_name: "User", character_name: "Desk Lamp" });
+  assert.deepEqual(lines[0], { chat_metadata: {}, user_name: "Guest", character_name: "Desk Lamp" });
   assert.deepEqual([lines[1].name, lines[1].is_user, lines[1].mes, lines[1].swipes], ["Desk Lamp", false, "Click.", ["Click."]]);
   assert.deepEqual(readdirSync(app.downloads).sort(), ["Desk Lamp.png", saved].sort());
   assert.equal(await app.text(await app.find("#toast")), `Chat exported to ${downloadsFolder()}.`);

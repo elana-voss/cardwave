@@ -10,7 +10,7 @@ import { voicesView } from "./voices";
 vi.mock("../account", () => ({ account: vi.fn() }));
 vi.mock("../api/client", () => ({ getVoice: vi.fn(), getSettings: vi.fn(), getCharacterVoices: vi.fn(), changeSettings: vi.fn(), listCards: vi.fn() }));
 
-const voice = (name: string) => ({ id: `at:${name}`, name, language: "", set: "tts-1", license: "", credit: "", own: false });
+const voice = (name: string) => ({ id: `at:${name}`, name, language: "", set: "tts-1", license: "", credit: { kind: "none" as const }, own: false });
 const model: VoiceModel = { size: 1, state: "absent", done: 0, failure: null, rate: 24_000, voices: [voice("alloy"), voice("echo")], languages: [], reads_in: "English", at_provider: true };
 const settings = { voice: "at:echo", voice_speed: 100 } as Settings;
 

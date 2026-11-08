@@ -73,7 +73,10 @@ error-not-found = 没有这个{ $what ->
    *[other] 东西
 }。它可能已被删除。
 error-chat-busy = 这个聊天正在撰写回复；请先停止它。
-error-no-provider = 还没有设置服务商。请在“设置 › 服务商”中添加一个。
+error-no-provider = { $what ->
+    [chat_model] 还没有选择聊天模型。请在 设置 › 模型 中选择一个。
+   *[other] 还没有设置服务商。请在“设置 › 服务商”中添加一个。
+}
 error-provider-refused = { $refusal ->
     [key] 服务商没有接受这个密钥：请在“设置 › 服务商”中检查。
     [paid] 服务商要求为此付费：请充值，或选择你的套餐包含的模型。
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] 服务商没有响应：请稍后再试。
     [fault] 服务商那边出了故障：{ $reason } 请稍后再试。
     [no_model] 服务商已不再提供这个模型：请在 设置 › 模型 中另选一个。
-    [too_long] 这条消息对这个模型来说太长了：请缩短它，或在 设置 › 模型 中选一个能接收更多内容的模型。
+    [too_long] 发给模型的内容超过了它一次能读的量：请在 设置 › 模型 中选一个能读更多内容的模型。
    *[other] 服务商拒绝了：{ $reason }
 }
 error-model-declined = { $model } 拒绝写这个内容。请修改消息，或换一个模型。
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] 角色太长，辅助模型读不完；请选择能读取更多内容的辅助模型。
+    [card_for_chat] 角色太长，聊天模型读不完，角色就不再是自己；请选择能读取更多内容的聊天模型，或缩短角色。
     [card_file] 文件大于 { $most } MB。
     [checkpoint_folder] 文件夹太大，无法在每一步之前保留副本。
     [expression_pack_size] { $name } 的图片太大了。
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] 服务商的语音列表返回了 { $status }。
     [search_model] 搜索模型返回了 { $status }。
    *[other] 返回了 { $status }。
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] 服务商没有接受这个密钥。
+    [asks_for_a_key] 服务商需要一个密钥。
+   *[other] 服务商在这个地址没有模型列表。
 }

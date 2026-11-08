@@ -517,6 +517,8 @@ const itemText = (tag: "div" | "span", label: HTMLElement | string, about: HTMLE
   el(tag, { className: "item-text" }, typeof label === "string" ? el("span", { className: "item-label" }, label) : label, typeof about === "string" ? el("span", { className: "meta" }, about) : about);
 /** A line of a group: its label and grey line (`itemText`), then its control. */
 export const item = (label: HTMLElement | string, about: HTMLElement | string, control: HTMLElement) => el("div", { className: "item" }, itemText("div", label, about), control);
+/** A setting's grey line: `until` (how it is set while the user has not chosen), or that the user chose it. */
+export const aboutChoice = (chosen: boolean, until: string): string => (chosen ? wording("dom-chosen-by-you") : until);
 /** A line of a group that leads to `href`: its label and grey line (`itemText`), then an arrow. */
 export const link = (href: string, label: string, about: HTMLElement | string) => el("a", { className: "item ink-link", href }, itemText("span", label, about), icon("right"));
 

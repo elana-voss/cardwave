@@ -112,6 +112,16 @@ fn said(lines: &[Value]) -> Vec<&str> {
 }
 
 /// The file name a download is given.
+/// The moment `ms` on this computer's clock, as SillyTavern names a chat file (B1: local time, not UTC).
+fn local(ms: i64) -> String {
+    use chrono::TimeZone;
+    chrono::Local
+        .timestamp_millis_opt(ms)
+        .unwrap()
+        .format("%Y-%m-%d@%Hh%Mm%Ss")
+        .to_string()
+}
+
 fn file_name(headers: &reqwest::header::HeaderMap) -> String {
     let disposition = headers["content-disposition"].to_str().unwrap();
     let encoded = disposition
@@ -157,7 +167,7 @@ async fn a_chat_is_written_as_the_file_sillytavern_keeps_a_chat_in() {
     assert_eq!(headers["content-type"], "application/jsonl");
     assert_eq!(
         file_name(&headers),
-        "Mira (storm night) - 2025-10-09@08h53m20s.jsonl"
+        format!("Mira (storm night) - {}.jsonl", local(STARTED))
     );
     // One object on each line, and no line after the last.
     assert_eq!(text.matches('\n').count(), 3, "{text}");
@@ -542,6 +552,7 @@ fn nobody_exports_another_users_chat() {
 
 #[tokio::test]
 async fn the_file_is_named_after_the_chat_and_its_start() {
+    let at = local(1798761599500);
     let server = start().await;
     let view = chat_with(&server, &["mira"], 0).await;
     let chat = view["chat"]["id"].as_i64().unwrap();
@@ -552,24 +563,21 @@ async fn the_file_is_named_after_the_chat_and_its_start() {
     for (title, name) in [
         (
             "Who/What: \"Why\"? <*|>\\",
-            "Who_What_ _Why__ _____ - 2026-12-31@23h59m59s.jsonl",
+            &format!("Who_What_ _Why__ _____ - {at}.jsonl"),
         ),
-        ("Søren & 灯台.", "Søren & 灯台 - 2026-12-31@23h59m59s.jsonl"),
+        ("Søren & 灯台.", &format!("Søren & 灯台 - {at}.jsonl")),
         // A chat without a character that has not named itself yet: no title, as a title of no letters.
-        ("", "chat - 2026-12-31@23h59m59s.jsonl"),
-        (" ... ", "chat - 2026-12-31@23h59m59s.jsonl"),
+        ("", &format!("chat - {at}.jsonl")),
+        (" ... ", &format!("chat - {at}.jsonl")),
         (
             &"long ".repeat(40),
-            &format!(
-                "{} - 2026-12-31@23h59m59s.jsonl",
-                "long ".repeat(16).trim_end()
-            ),
+            &format!("{} - {at}.jsonl", "long ".repeat(16).trim_end()),
         ),
     ] {
         plant(&server, |conn| {
             conn.execute("update chats set title = ?1", [title])
         });
         let (headers, _, _) = file(&server, chat).await;
-        assert_eq!(file_name(&headers), name, "{title:?}");
+        assert_eq!(&file_name(&headers), name, "{title:?}");
     }
 }

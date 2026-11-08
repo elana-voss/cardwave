@@ -9,7 +9,7 @@ use axum::routing::post;
 use axum::{Json, Router};
 use cw_ccv4::languages::LoreText;
 use cw_library::rewrite::{self, LoreRewrite, Rewrite};
-use cw_provider::{self as provider, NOT_SET_UP};
+use cw_provider as provider;
 use serde::Serialize;
 use ts_rs::TS;
 
@@ -34,9 +34,7 @@ async fn change(
     User(user): User,
     Json(asked): Json<Rewrite>,
 ) -> ApiResult<Json<Rewritten>> {
-    let provider = state
-        .run(move |db| Ok(provider::for_work(db, user)?.ok_or(NOT_SET_UP)?))
-        .await?;
+    let provider = state.run(move |db| provider::worker(db, user)).await?;
     let text = rewrite::ask(&state.http, &provider, &asked).await?;
     Ok(Json(Rewritten { text }))
 }
@@ -46,9 +44,7 @@ async fn change_lore(
     User(user): User,
     Json(asked): Json<LoreRewrite>,
 ) -> ApiResult<Json<Vec<LoreText>>> {
-    let provider = state
-        .run(move |db| Ok(provider::for_work(db, user)?.ok_or(NOT_SET_UP)?))
-        .await?;
+    let provider = state.run(move |db| provider::worker(db, user)).await?;
     Ok(Json(rewrite::lore(&state.http, &provider, asked).await?))
 }
 

@@ -11,7 +11,7 @@ import { getVoice } from "../api/client";
 import { failureWords } from "../language/errors";
 import { startDialog } from "./coding";
 import { narrated, readWebPictures } from "../narration";
-import { atBottom, failed, find, load, personalityNow, show, tell, toBottom, toolsNow, type Screen } from "./screen";
+import { atBottom, failed, filesNow, find, load, personalityNow, show, tell, toBottom, toolsNow, type Screen } from "./screen";
 import { showThinking } from "./messages";
 import { end } from "./talk";
 
@@ -42,7 +42,7 @@ export function onEvent(s: Screen, event: ServerEvent): void {
   }
   // Settings changed in another window: "Show pictures from other websites" may have, and the tools or the model, by which
   // the side panel tells whether Reply length is used.
-  if (event.type === "settings") return redraw(s, Promise.all([readWebPictures(), toolsNow(s)]));
+  if (event.type === "settings") return redraw(s, Promise.all([readWebPictures(), toolsNow(s), filesNow(s)]));
   // A written tool switched or deleted: whether the chat offers a tool, by which Reply length is used.
   if (event.type === "written_tools") return redraw(s, toolsNow(s));
   // The chat renamed, starred, archived or put in the Trash in another window.

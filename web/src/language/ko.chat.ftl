@@ -49,7 +49,11 @@ composer-replies = { $name } 캐릭터가 답장
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = 음성 입력
-dictate-the-microphone-cannot-be = 마이크를 쓸 수 없어요: { $reason }. Windows 개인 정보 설정에서 Cardwave의 사용을 허용하거나 마이크를 연결하세요.
+mic-none = 마이크를 찾지 못했어요. 마이크를 연결한 뒤 다시 시도하세요.
+mic-not-allowed-desktop = Cardwave가 마이크를 쓸 수 없어요. Windows 개인 정보 설정의 마이크에서 허용하세요.
+mic-not-allowed-browser = 이 페이지가 마이크를 쓸 수 없어요. 브라우저의 이 사이트 설정에서 허용하세요.
+mic-not-started = 마이크를 시작하지 못했어요. 마이크를 쓰는 다른 프로그램을 닫은 뒤 다시 시도하세요.
+mic-not-offered = 이 주소에서는 브라우저가 마이크를 제공하지 않아요. Cardwave가 실행되는 컴퓨터에서 마이크를 쓰세요.
 dictate-dictation-failed = 받아쓰기에 실패했어요: { $reason }. 다시 해 보세요.
 dictate-writing-what-was-said = 말한 내용을 받아쓰는 중…
 dictate-nothing-was-heard = 아무 소리도 들리지 않았어요.
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = 이 컴퓨터의 폴더
 
 dom-text = { $name }: { $reason }
 dom-keep-all = 모든 변경 유지
+dom-chosen-by-you = 직접 선택함
 dom-address-copied = 주소를 복사했어요.
 dom-the-browser-did-not = 여기서는 복사할 수 없었어요. 텍스트를 선택하고 Ctrl+C를 누르세요
 

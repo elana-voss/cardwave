@@ -90,6 +90,7 @@ card-picture-what-the-picture-shows = Nội dung ảnh
 card-picture-making-a-picture = Đang tạo ảnh…
 card-picture-the-picture-made = Ảnh mới
 card-picture-reading-the-card = Đang đọc thẻ…
+card-picture-no-answer = Nhà cung cấp của bạn không trả lời trong 30 giây. Nhấn “Để AI mô tả lại bức ảnh” để hỏi lại.
 card-picture-no-earlier-pictures = Không có ảnh trước đây.
 
 ## card-texts (card/card-texts.ts)

@@ -369,6 +369,11 @@ async fn bad_uploads_and_missing_items_are_told_apart() {
     );
     let (status, body) = server.upload("/api/cards", b"hello".to_vec()).await;
     assert_eq!((status, &body["error"]), (400, &json!("not a PNG file")));
+    // A file named .json that is empty or a JSON array holds no card; it is no PNG the user meant.
+    for file in [b"".to_vec(), b"[]".to_vec()] {
+        let (status, body) = server.upload("/api/cards?name=empty.JSON", file).await;
+        assert_eq!((status, &body["details"]["what"]), (400, &json!("no_card")));
+    }
     assert_eq!(server.get("/api/cards").await.1, json!([]));
 
     let missing =

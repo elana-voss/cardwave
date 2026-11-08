@@ -122,6 +122,9 @@ pub struct BuiltPrompt {
     /// The lorebook entries in the prompt, by their key in the chat's sticky
     /// and cooldown state, in the order they stand there.
     pub lore: Vec<String>,
+    /// The tokens of the system message (the character, the persona, the
+    /// tools), where it did not fit and was left out.
+    pub system_left_out: Option<usize>,
 }
 
 /// Builds the prompt for the next reply in `chat`. Macros may write `chat`'s and
@@ -153,6 +156,7 @@ pub fn build(
         memory: None,
         injected: None,
         history_cut: false,
+        system_left_out: None,
     };
     builder.build_static();
     // The newest message's room, kept while what is recalled for it is added.
@@ -172,6 +176,7 @@ pub fn build(
             segments: builder.segments,
         },
         lore,
+        system_left_out: builder.system_left_out,
     }
 }
 
@@ -197,6 +202,7 @@ struct Builder<'r, 'a> {
     injected: Option<PromptMessage>,
     /// Older messages of the chat were left out of the history.
     history_cut: bool,
+    system_left_out: Option<usize>,
 }
 
 /// Appends `<tag>` / content / `</tag>`, each on its own line.
@@ -289,6 +295,7 @@ impl Builder<'_, '_> {
                     .push(PromptMessage::new(Role::System, content));
             } else {
                 self.segments.truncate(recorded);
+                self.system_left_out = Some(tokens);
             }
         }
         self.build_later();

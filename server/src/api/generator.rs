@@ -10,7 +10,7 @@ use axum::routing::post;
 use axum::{Json, Router};
 use cw_library::cards::Imported;
 use cw_library::generator::{self, GeneratorPicks};
-use cw_provider::{self as provider, NOT_SET_UP};
+use cw_provider as provider;
 
 use super::{ApiResult, Page, User};
 use crate::AppState;
@@ -27,9 +27,7 @@ async fn generate(
     Json(picks): Json<GeneratorPicks>,
 ) -> ApiResult<(StatusCode, Json<Imported>)> {
     let _at_work = state.at_work(user)?;
-    let provider = state
-        .run(move |db| Ok(provider::get(db, user)?.ok_or(NOT_SET_UP)?))
-        .await?;
+    let provider = state.run(move |db| provider::chat(db, user)).await?;
     let new = generator::make(&state.http, &provider, picks).await?;
     super::cards::made(&state, user, &page, new).await
 }

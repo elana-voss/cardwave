@@ -154,7 +154,8 @@ fn a_preset_is_in_use_while_the_stored_provider_is_what_it_holds() {
     };
     assert!(!set(RIG, "tide-2", json!({})));
     assert!(!set(OPENROUTER, "tide-1", json!({})));
-    assert!(!set(RIG, "tide-1", json!({ "api_key": "sk-rig-1111" })));
+    // A corrected key moves the entry there, its presets with it (0.1.1, C5).
+    assert!(set(RIG, "tide-1", json!({ "api_key": "sk-rig-1111" })));
     assert!(set(RIG, "tide-1", json!({ "api_key": "sk-rig-0000" })));
     // What the provider is called is no part of what the preset holds.
     assert!(set(RIG, "tide-1", json!({ "name": "Rig two" })));

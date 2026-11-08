@@ -365,32 +365,39 @@ impl Voice {
             .map_or("en", |pack| pack.code)
     }
 
-    /// Whom the page "About Cardwave" names for the recording, as CC BY asks;
-    /// empty for CC0, which asks for nothing.
-    pub fn credit(&self) -> String {
+    /// Whom the page "About Cardwave" names for the recording, as CC BY asks
+    /// (CC0 asks for nothing); the page puts it into words in its language.
+    pub fn credit(&self) -> Credit {
         match (self.set, &self.recording) {
-            ("Alba MacKenna", _) => "Voice-acted by Alba MacKenna".into(),
+            ("Voice donations", _) => Credit::Donated,
+            ("Alba MacKenna", _) => Credit::ActedBy("Alba MacKenna"),
             ("VCTK", Recording::Fetched { file, .. }) => {
                 let speaker = file.trim_start_matches("vctk/");
-                let speaker = speaker.split('_').next().unwrap_or_default();
-                format!(
-                    "Speaker {speaker} of the CSTR VCTK Corpus by Junichi Yamagishi, Christophe Veaux and Kirsten MacDonald, University of Edinburgh; cleaned by Kyutai"
-                )
+                Credit::Vctk(speaker.split('_').next().unwrap_or_default())
             }
-            (_, Recording::Shipped { speaker, .. }) => {
-                // The French recordings are those Kyutai picked and cleaned.
-                let cleaned = if self.language == "French" {
-                    "; cleaned by Kyutai"
-                } else {
-                    ""
-                };
-                format!(
-                    "Speaker {speaker} of CML-TTS by Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares and Arlindo R. Galvão Filho, read for LibriVox{cleaned}"
-                )
-            }
-            _ => String::new(),
+            // The French recordings are those Kyutai picked and cleaned.
+            (_, Recording::Shipped { speaker, .. }) => Credit::CmlTts {
+                speaker,
+                cleaned: self.language == "French",
+            },
+            _ => Credit::None,
         }
     }
+}
+
+/// Whom a voice's recording credits: nothing; that it is donated (CC0);
+/// the actor; a speaker of the CSTR VCTK Corpus (cleaned by Kyutai); or a
+/// speaker of CML-TTS, read for LibriVox, `cleaned` where Kyutai cleaned it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Credit {
+    None,
+    Donated,
+    ActedBy(&'static str),
+    Vctk(&'static str),
+    CmlTts {
+        speaker: &'static str,
+        cleaned: bool,
+    },
 }
 
 /// Every voice to choose: the English ones, then the native speakers'.

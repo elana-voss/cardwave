@@ -23,7 +23,7 @@ use cw_provider::catalog::{self, Catalog};
 use cw_provider::check;
 use cw_provider::fit::FitView;
 use cw_provider::kinds::{self, ChangeEntry, EntryView, Kind, NewEntry, PickModel, ProvidersView};
-use cw_provider::{self as provider, NOT_SET_UP, Sampling};
+use cw_provider::{self as provider, Sampling};
 use cw_store::Db;
 use serde::Deserialize;
 use ts_rs::TS;
@@ -159,7 +159,7 @@ async fn workflow(
             let (entry, worker) = state
                 .run(move |db| {
                     let entry = kinds::entry(db, user, id)?;
-                    Ok((entry, provider::for_work(db, user)?.ok_or(NOT_SET_UP)?))
+                    Ok((entry, provider::worker(db, user)?))
                 })
                 .await?;
             let http = &state.http;

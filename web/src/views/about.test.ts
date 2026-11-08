@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { getWhatsNew } from "../api/client";
-import { found, spoken, versions } from "./about";
+import { useLanguage } from "../language/language";
+import { found, spoken, versions, voiceText } from "./about";
 
 describe("the page About Cardwave", () => {
   it("shows what each version brought, in the file's order, its points as a list and its links as links", () => {
@@ -47,4 +48,17 @@ describe("the notes' file", () => {
     expect([await getWhatsNew("de"), await getWhatsNew("ja"), await getWhatsNew("en")]).toEqual(["# 0.1.0 Deutsch", "# 0.1.0 English", "# 0.1.0 English"]);
     vi.unstubAllGlobals();
   });
+});
+
+it("names a voice's set and whom it credits in the app's language, the names as they are", () => {
+  const voice = { id: "v", name: "V", language: "en", license: "CC BY 4.0", own: false };
+  useLanguage(
+    "xx",
+    "about-voice-donations = Spenden\nabout-voice-acted-by = Gesprochen von { $name }\nabout-voice-vctk = Sprecher { $speaker } des VCTK\nabout-voice-cml-tts = Sprecher { $speaker } von CML-TTS\nabout-voice-cml-tts-cleaned = Sprecher { $speaker } von CML-TTS, bereinigt",
+  );
+  expect(voiceText({ ...voice, set: "Voice donations", license: "CC0", credit: { kind: "donated" } })).toBe("Spenden · CC0");
+  expect(voiceText({ ...voice, set: "Alba MacKenna", credit: { kind: "acted_by", name: "Alba MacKenna" } })).toBe("Alba MacKenna · CC BY 4.0 · Gesprochen von Alba MacKenna");
+  expect(voiceText({ ...voice, set: "VCTK", credit: { kind: "vctk", speaker: "p228" } })).toBe("VCTK · CC BY 4.0 · Sprecher p228 des VCTK");
+  expect(voiceText({ ...voice, set: "CML-TTS", credit: { kind: "cml_tts", speaker: "3277", cleaned: true } })).toBe("CML-TTS · CC BY 4.0 · Sprecher 3277 von CML-TTS, bereinigt");
+  useLanguage("en");
 });

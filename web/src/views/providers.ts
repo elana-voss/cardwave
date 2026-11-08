@@ -1,6 +1,6 @@
 // Settings › Providers, at `#/settings/providers` (board "Providers"): "Settings / Providers", a grey box per
 // provider (`.group.provider`) in the order added, and "Add provider" (first run's step 1, setup/key-step.ts,
-// in a dialog). A box's head (`.provider-head`): the name, where it is (`whereOf`) and "…" with Edit (address
+// in a dialog; with no chat model chosen yet it goes on to first run's step 2 for it, `chatUnchosen`). A box's head (`.provider-head`): the name, where it is (`whereOf`) and "…" with Edit (address
 // and key, "Remove key") and Remove (asks in the menu's place). Under it a line per kind at it, what model it
 // uses, chosen only in Settings › Models (proposal 18 of 88, the owner), under a model that thinks or whose thinking is off the line "Thinking" (`thinkingSays`),
 // whose switch has the server try the forms of turning it off; a provider no kind is at says "Not used · [n]
@@ -224,6 +224,9 @@ function edit(page: Page, provider: EntryView): void {
   address.focus();
 }
 
+/** Whether no kind's model is the chat's: then adding a provider goes on to first run's models. */
+export const chatUnchosen = (view: ProvidersView) => !view.kinds.some((each) => each.kind === "chat");
+
 /** "Add provider": first run's step 1 in a dialog; what it hands on is added. */
 function adding(page: Page): void {
   const wrong = el("div");
@@ -233,7 +236,9 @@ function adding(page: Page): void {
       async (added) => {
         shown.close();
         await page.read();
-        page.say(wording("providers-added", { name: providerName(added.name) }));
+        // With no chat model chosen yet, first run's step 2 picks this provider's models, as from a key (C2).
+        if (page.view && chatUnchosen(page.view)) location.hash = "#/setup";
+        else page.say(wording("providers-added", { name: providerName(added.name) }));
       },
       (error) => wrong.replaceChildren(failure(reason(error))),
     );

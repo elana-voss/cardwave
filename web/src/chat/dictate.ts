@@ -11,6 +11,7 @@
 import { getDictation, hear, loadDictation } from "../api/client";
 import { announce, el, reason } from "../dom";
 import { icon } from "../icons";
+import { microphone } from "../voice/microphone";
 import { resampled, wav } from "../voice/wav";
 import { Pauses } from "./pauses";
 import { wording } from "../language/language";
@@ -55,12 +56,7 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
   const record = async () => {
     // The model loads while the user speaks (a first load took 26 s); a failure shows at the hearing.
     loadDictation().catch(() => {});
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (error) {
-      throw new Error(wording("dictate-the-microphone-cannot-be", { reason: reason(error) }));
-    }
+    const stream = await microphone();
     const sound = new AudioContext();
     void sound.resume();
     const rate = sound.sampleRate;

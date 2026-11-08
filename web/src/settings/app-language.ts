@@ -5,7 +5,7 @@
 // `notice` says why it was not stored.
 import { changeSettings, getSettings } from "../api/client";
 import type { Settings } from "../api/generated/Settings";
-import { failure, item, noticeBox, reason, selectField } from "../dom";
+import { aboutChoice, el, failure, item, noticeBox, reason, selectField } from "../dom";
 import { LABELS } from "../setting-labels";
 import { appLanguages, chooseLanguage, language, wording } from "../language/language";
 
@@ -15,7 +15,10 @@ export function appLanguageLine(): { node: HTMLElement; field: HTMLElement; noti
   const take = (code: string) => {
     notice.replaceChildren();
     changeSettings({ app_language: code }).then(
-      (settings) => chooseLanguage(settings.app_language),
+      (settings) => {
+        say(settings);
+        chooseLanguage(settings.app_language);
+      },
       (error: unknown) => {
         field.value = language();
         notice.replaceChildren(failure(reason(error)));
@@ -24,7 +27,11 @@ export function appLanguageLine(): { node: HTMLElement; field: HTMLElement; noti
   };
   const options = appLanguages().map((one) => ({ value: one.code, label: one.name }));
   const field = selectField(options, language(), take, { ariaLabel: LABELS.settings.appLanguage, wide: true });
-  const node = item(LABELS.settings.appLanguage, wording("language-line-taken-from-this-computer"), field.node);
+  // The grey line says the computer's language is followed until one is chosen, then that the user chose it.
+  const about = el("span", { className: "meta" }, wording("language-line-taken-from-this-computer"));
+  const say = (settings: Settings) => (about.textContent = aboutChoice(settings.app_language !== null, wording("language-line-taken-from-this-computer")));
+  getSettings().then(say, () => {}); // unread, the first state's words stay
+  const node = item(LABELS.settings.appLanguage, about, field.node);
   return { node, field: field.node, notice };
 }
 

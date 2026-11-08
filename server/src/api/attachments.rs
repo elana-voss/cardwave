@@ -7,20 +7,21 @@
 //! life), else a document, kept for the chat too, which is pushed as `documents` and read by the search model. `DELETE
 //! /api/attachments/{id}` takes off one that waits, its document with it (204
 //! also where none waits);
-//! `GET /api/attachments/{id}` is a picture. `POST /api/chats/{id}/messages`
+//! `GET /api/chats/{id}/attachments` lists those waiting in the chat (kept
+//! across restarts). `GET /api/attachments/{id}` is a picture. `POST /api/chats/{id}/messages`
 //! (`api::chats`) gives the waiting ones it names to the message.
 
 use axum::body::Bytes;
 use axum::extract::{DefaultBodyLimit, Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::Response;
-use axum::routing::{get, post};
+use axum::routing::get;
 use axum::{Json, Router};
 use cw_chat::attachments::{self, Attachment};
 use cw_chat::chats;
 use cw_chat::documents::FILE_LIMIT;
 use cw_core::{Code, Fail};
-use cw_provider::{self as provider, NOT_SET_UP, check};
+use cw_provider::{self as provider, check};
 use serde::Deserialize;
 
 use super::{ApiResult, User};
@@ -30,7 +31,9 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .route(
             "/api/chats/{id}/attachments",
-            post(attach).layer(DefaultBodyLimit::max(FILE_LIMIT)),
+            get(waiting)
+                .post(attach)
+                .layer(DefaultBodyLimit::max(FILE_LIMIT)),
         )
         .route("/api/attachments/{id}", get(picture).delete(remove))
 }
@@ -58,7 +61,7 @@ async fn attach(
     let provider = state
         .run(move |db| {
             chats::ensure_kept(db, user, id)?;
-            Ok(provider::get(db, user)?.ok_or(NOT_SET_UP)?)
+            provider::chat(db, user)
         })
         .await?;
     if !sees(&state, &provider).await? {
@@ -86,6 +89,17 @@ async fn sees(state: &AppState, provider: &provider::Provider) -> anyhow::Result
         state.seeing().insert(model);
     }
     Ok(sees)
+}
+
+async fn waiting(
+    State(state): State<AppState>,
+    User(user): User,
+    Path(id): Path<i64>,
+) -> ApiResult<Json<Vec<Attachment>>> {
+    let waiting = state
+        .run(move |db| attachments::waiting(db, user, id))
+        .await?;
+    Ok(Json(waiting))
 }
 
 async fn picture(

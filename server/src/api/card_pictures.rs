@@ -24,7 +24,7 @@ use cw_core::{Code, Fail};
 use cw_library::cards::pictures::{CardPicture, PictureChanged};
 use cw_library::cards::{self, pictures};
 use cw_library::describe;
-use cw_provider::{self as provider, NOT_SET_UP};
+use cw_provider as provider;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -140,7 +140,7 @@ async fn words(
         .run(move |db| {
             let (card, _) = cards::newest(db, user, id)?;
             anyhow::ensure!(!card.trashed, Fail::new(Code::CardTrashed));
-            let worker = provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            let worker = provider::worker(db, user)?;
             let whom = images::whom(db, user)?;
             let document = cards::document_of(db, card.version_id)?;
             let character = document

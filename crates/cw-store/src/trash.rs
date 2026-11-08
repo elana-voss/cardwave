@@ -87,12 +87,7 @@ fn remove_chat(conn: &Connection, chat_id: i64) -> rusqlite::Result<bool> {
 /// it leaves unused are for [`cards::remove_unused_blobs`]; its expression pack
 /// and figures go to the Trash where no other card has them.
 fn remove_card(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
-    let writing: bool = conn.query_row(
-        &format!("select exists (select 1 from messages where complete = 0 and chat_id in ({CHATS_OF_CARD}))"),
-        [card_id],
-        |r| r.get(0),
-    )?;
-    if writing {
+    if card_writing(conn, card_id)? {
         return Ok(false);
     }
     conn.execute(
@@ -114,6 +109,15 @@ fn remove_card(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
 }
 
 /// The chats the characters of the card `?1` are in.
+/// Whether a reply is being written in one of the card's chats.
+fn card_writing(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
+    conn.query_row(
+        &format!("select exists (select 1 from messages where complete = 0 and chat_id in ({CHATS_OF_CARD}))"),
+        [card_id],
+        |r| r.get(0),
+    )
+}
+
 const CHATS_OF_CARD: &str = "select p.chat_id from chat_characters p
      join card_versions v on v.id = p.version_id where v.card_id = ?1";
 
@@ -206,6 +210,10 @@ impl Storage for Db {
             if found == 0 {
                 return Ok(Err(NotFound("card").into()));
             }
+            // Not while a reply is written in one of its chats: it would go on into the Trash.
+            if card_writing(&tx, card_id)? {
+                return Ok(Err(BUSY.into()));
+            }
             tx.execute(
                 &format!(
                     "update chats set trashed_at = ?2, trashed_with = ?1
@@ -239,16 +247,24 @@ impl Storage for Db {
         })?
     }
 
+    /// Not while a reply is written in the chat: it would go on into the Trash.
     fn trash_chat(&self, user: i64, chat_id: i64) -> anyhow::Result<()> {
-        let found = self.with(|conn| {
-            conn.execute(
+        self.with(|conn| {
+            let tx = conn.transaction()?;
+            if crate::chats::writing(&tx, chat_id)? {
+                return Ok(Err(BUSY.into()));
+            }
+            let found = tx.execute(
                 "update chats set trashed_at = coalesce(trashed_at, ?3), trashed_with = null
                  where id = ?1 and user_id = ?2",
                 params![chat_id, user, now_ms()],
-            )
-        })?;
-        anyhow::ensure!(found == 1, NotFound("chat"));
-        Ok(())
+            )?;
+            if found != 1 {
+                return Ok(Err(NotFound("chat").into()));
+            }
+            tx.commit()?;
+            Ok(Ok(()))
+        })?
     }
 
     fn restore_trashed_chat(&self, user: i64, chat_id: i64) -> anyhow::Result<()> {

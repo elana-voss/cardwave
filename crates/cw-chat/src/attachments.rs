@@ -5,14 +5,15 @@
 //! One is attached to the chat first and waits (`attach_picture`,
 //! `attach_document`), shown over the message field with ×, which takes it off
 //! again with its document (`remove`); sending the message takes those it
-//! names (`ensure_waiting`, `take`). Those a page left waiting go at the
-//! server's start (`purge_waiting`). A message's are its view's
+//! names (`ensure_waiting`, `take`). Those waiting stay, across leaving the
+//! chat and restarts, and the chat lists them (`waiting`). A message's are its view's
 //! `attachments`; its pictures go into its prompt as data URLs (`pictures`),
 //! its documents into its reply's whole (`api/memory.rs`'s `recall`).
 //!
 //! Traps: whether the chat model sees is asked when a picture is attached
 //! (`provider::check::sees`), by the provider's refusal, as the models' facts
 //! are not known; the handler asks it after `chats::ensure_kept`, before keeping.
+//! A picture is kept made `smaller` once, when attached, as it goes whole with each later turn.
 
 use std::collections::HashMap;
 
@@ -67,7 +68,8 @@ pub trait Storage {
         user: i64,
         message_id: i64,
     ) -> anyhow::Result<Vec<(i64, String, String)>>;
-    fn purge_waiting(&self) -> anyhow::Result<()>;
+    /// The attachments waiting in the user's chat, the first first.
+    fn waiting(&self, user: i64, chat_id: i64) -> anyhow::Result<Vec<Attachment>>;
 }
 
 /// The longest name kept, in characters.
@@ -88,7 +90,36 @@ fn kept(name: &str) -> String {
     name.trim().chars().take(NAME_LIMIT).collect()
 }
 
-/// Keeps a picture (`picture_type`) waiting in the chat; answers it.
+/// The long side an attached picture is kept at most. A picture goes whole with
+/// every later turn of its chat, so it is made smaller once, when attached.
+/// Anthropic reads at most 1568 px on the long edge on its standard tier and
+/// takes 5 MB per picture on Bedrock (docs.claude.com/en/docs/build-with-claude/vision,
+/// "Image limits and costs"); OpenAI fits a picture in 2048 x 2048
+/// (platform.openai.com/docs/guides/images-vision); Gemini caps a whole request
+/// of inline pictures at 20 MB (ai.google.dev/gemini-api/docs/image-understanding).
+const LONG_SIDE: u32 = 1568;
+/// A picture within [`LONG_SIDE`] and of fewer bytes is kept as it came.
+const KEPT_AS_IT_CAME: usize = 3 * 1024 * 1024;
+/// A picture of more pixels is kept as it came: read whole, it would take
+/// gigabytes. Cameras of phones give 50 million.
+const MAX_PIXELS: u64 = 100_000_000;
+
+/// The picture made smaller to be kept: its long side [`LONG_SIDE`] at most,
+/// upright, a JPEG or a see-through PNG. `None` to keep it as it came: small
+/// enough already, too large to read, or not made smaller by it.
+fn smaller(file: &[u8]) -> Option<Vec<u8>> {
+    let small = cw_library::thumbnails::scale_down(file, MAX_PIXELS, |(wide, high)| {
+        let long = wide.max(high);
+        if long <= LONG_SIDE {
+            return (file.len() > KEPT_AS_IT_CAME).then_some((wide, high));
+        }
+        let scaled = |side: u32| (u64::from(side) * u64::from(LONG_SIDE) / u64::from(long)).max(1);
+        Some((scaled(wide) as u32, scaled(high) as u32))
+    })?;
+    (small.len() < file.len()).then_some(small)
+}
+
+/// Keeps a picture (`picture_type`) waiting in the chat, made [`smaller`]; answers it.
 pub fn attach_picture(
     db: &dyn Storage,
     user: i64,
@@ -102,6 +133,8 @@ pub fn attach_picture(
             .with("what", "attachment_picture")
     );
     let name = kept(name);
+    let smaller = smaller(file);
+    let file = smaller.as_deref().unwrap_or(file);
     let id = db.keep_attachment(user, chat_id, &name, Some(file), None)?;
     let id = id.ok_or(NotFound("chat"))?;
     Ok(Attachment {
@@ -141,7 +174,7 @@ pub fn picture(db: &dyn Storage, user: i64, id: i64) -> anyhow::Result<(&'static
 }
 
 /// Takes off an attachment that waits, its document with it: whether it had
-/// one. One that waits no longer (sent, or let go as the server started) is
+/// one. One that waits no longer (sent) is
 /// taken off already, so that the page's × always clears its tile.
 pub fn remove(db: &dyn crate::chats::Storage, user: i64, id: i64) -> anyhow::Result<bool> {
     let Some(document) = db.remove_waiting(user, id)? else {
@@ -193,7 +226,13 @@ pub fn pictures(db: &dyn Storage, ids: &[i64]) -> anyhow::Result<HashMap<i64, Ve
     Ok(by_message)
 }
 
-/// Lets go the attachments no message took, as a page that attached them is gone.
-pub fn purge_waiting(db: &dyn Storage) -> anyhow::Result<()> {
-    db.purge_waiting()
+/// The attachments waiting in the user's chat for its next message, so that
+/// a page opened again shows their tiles.
+pub fn waiting(
+    db: &dyn crate::chats::Storage,
+    user: i64,
+    chat_id: i64,
+) -> anyhow::Result<Vec<Attachment>> {
+    crate::chats::get(db, user, chat_id)?.ok_or(NotFound("chat"))?;
+    db.waiting(user, chat_id)
 }

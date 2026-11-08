@@ -210,3 +210,88 @@ async fn a_document_attached_to_the_message_goes_whole_into_its_reply_without_a_
         "{asked}"
     );
 }
+
+#[tokio::test]
+async fn the_chat_lists_what_waits_so_a_page_opened_again_shows_it() {
+    let server = start().await;
+    let api = Api::start(seen()).await;
+    let chat = chat_at(&server, &api).await;
+    let mut ids = Vec::new();
+    for name in ["cats.txt", "dogs.txt"] {
+        let path = format!("{chat}/attachments?name={name}");
+        let (status, attached) = server.upload(&path, b"Cats nap.".to_vec()).await;
+        assert_eq!(status, 201, "{attached}");
+        ids.push(attached["id"].clone());
+    }
+    let path = format!("/api/attachments/{}", ids[0]);
+    assert_eq!(
+        server.call(reqwest::Method::DELETE, &path, None).await.0,
+        204
+    );
+
+    let (status, waiting) = server.get(&format!("{chat}/attachments")).await;
+    assert_eq!(status, 200, "{waiting}");
+    assert_eq!(
+        waiting,
+        json!([{ "id": ids[1], "name": "dogs.txt", "picture": false }])
+    );
+}
+
+/// A photo `width` by `height` as a JPEG of fine detail, as a camera's is,
+/// with the EXIF orientation `turned` (6: turned a quarter clockwise) where given.
+fn photo(width: u32, height: u32, turned: Option<u8>) -> Vec<u8> {
+    let picture = image::RgbImage::from_fn(width, height, |x, y| {
+        let noise = (x.wrapping_mul(7919) ^ y.wrapping_mul(104_729)) % 61;
+        image::Rgb([(x % 256) as u8, (y % 256) as u8, (noise * 4) as u8])
+    });
+    let mut file = Vec::new();
+    let encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut file, 95);
+    picture.write_with_encoder(encoder).unwrap();
+    let Some(turned) = turned else { return file };
+    // An APP1 segment of one IFD entry, Orientation (0x0112), right after SOI.
+    let mut exif = b"Exif\0\0II*\0\x08\0\0\0\x01\0\x12\x01\x03\0\x01\0\0\0".to_vec();
+    exif.extend_from_slice(&[turned, 0, 0, 0, 0, 0, 0, 0]);
+    let length = (exif.len() + 2) as u16;
+    let mut segment = vec![0xFF, 0xE1];
+    segment.extend_from_slice(&length.to_be_bytes());
+    segment.extend_from_slice(&exif);
+    file.splice(2..2, segment);
+    file
+}
+
+/// A picture attached, as it is kept for the chat: its kind and its size.
+async fn attached(server: &Server, chat: &str, file: Vec<u8>) -> (String, Vec<u8>, (u32, u32)) {
+    let path = format!("{chat}/attachments?name=photo.jpg");
+    let (status, attached) = server.upload(&path, file).await;
+    assert_eq!(status, 201, "{attached}");
+    let address = format!("/api/attachments/{}", attached["id"]);
+    let (headers, kept) = server.download(&address).await;
+    let size = image::load_from_memory(&kept).unwrap();
+    let kind = headers["content-type"].to_str().unwrap().to_owned();
+    (kind, kept, (size.width(), size.height()))
+}
+
+#[tokio::test]
+async fn a_large_photo_is_kept_smaller_once_so_each_turn_sends_less() {
+    let server = start().await;
+    let api = Api::start(seen()).await;
+    let chat = chat_at(&server, &api).await;
+    let whole = photo(2400, 1800, None);
+    let (kind, kept, size) = attached(&server, &chat, whole.clone()).await;
+    assert_eq!((kind.as_str(), size), ("image/jpeg", (1568, 1176)));
+    assert!(
+        kept.len() < whole.len(),
+        "{} of {}",
+        kept.len(),
+        whole.len()
+    );
+}
+
+#[tokio::test]
+async fn a_photo_turned_by_its_camera_is_kept_upright() {
+    let server = start().await;
+    let api = Api::start(seen()).await;
+    let chat = chat_at(&server, &api).await;
+    let (_, _, size) = attached(&server, &chat, photo(2400, 1800, Some(6))).await;
+    assert_eq!(size, (1176, 1568));
+}

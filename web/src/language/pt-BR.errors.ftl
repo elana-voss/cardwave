@@ -73,7 +73,10 @@ error-not-found = Não existe { $what ->
    *[other] isso
 }. Talvez isso tenha sido excluído.
 error-chat-busy = Uma resposta está sendo escrita neste chat; interrompa-a primeiro.
-error-no-provider = Nenhum provedor foi configurado ainda. Adicione um em Configurações › Provedores.
+error-no-provider = { $what ->
+    [chat_model] Nenhum modelo de chat foi escolhido ainda. Escolha um em Configurações › Modelos.
+   *[other] Nenhum provedor foi configurado ainda. Adicione um em Configurações › Provedores.
+}
 error-provider-refused = { $refusal ->
     [key] O provedor não aceitou a chave: confira em Configurações › Provedores.
     [paid] O provedor pede pagamento por isto: adicione crédito ou escolha um modelo incluído no seu plano.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] O provedor não está respondendo: tente de novo mais tarde.
     [fault] O provedor teve uma falha do lado dele: { $reason } Tente de novo mais tarde.
     [no_model] O provedor não oferece mais este modelo: escolha outro em Configurações › Modelos.
-    [too_long] A mensagem é longa demais para este modelo: encurte-a ou escolha em Configurações › Modelos um modelo que aceite mais.
+    [too_long] O modelo recebeu mais do que consegue ler de uma vez: escolha em Configurações › Modelos um modelo que leia mais.
    *[other] O provedor recusou isto: { $reason }
 }
 error-model-declined = { $model } se recusou a escrever isso. Mude a mensagem ou escolha outro modelo.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] O personagem é longo demais para o modelo auxiliar; escolha um modelo auxiliar que leia mais.
+    [card_for_chat] O personagem é longo demais para o modelo de chat e não seria ele mesmo; escolha um modelo de chat que leia mais ou encurte o personagem.
     [card_file] O arquivo passa de { $most } MB.
     [checkpoint_folder] A pasta é grande demais para guardar cópias antes de cada passo.
     [expression_pack_size] As imagens de { $name } são grandes demais.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] As vozes do provedor responderam { $status }.
     [search_model] O modelo de pesquisa respondeu { $status }.
    *[other] A resposta foi { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] O provedor não aceitou a chave.
+    [asks_for_a_key] O provedor pede uma chave.
+   *[other] O provedor não tem uma lista de modelos neste endereço.
 }

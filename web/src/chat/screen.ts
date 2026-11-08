@@ -20,7 +20,7 @@ import type { PromptPreset } from "../api/generated/PromptPreset";
 import type { ServerEvent } from "../api/generated/ServerEvent";
 import type { ToolAsk } from "../api/generated/ToolAsk";
 import type { VoiceModel } from "../api/generated/VoiceModel";
-import { generate, getChat, getPersonality, getVoice, libraryLorebooks, listPersonas, listPromptPresets, needsSetup, stopReply } from "../api/client";
+import { generate, getChat, getPersonality, getSettings, getVoice, libraryLorebooks, listPersonas, listPromptPresets, needsSetup, stopReply } from "../api/client";
 import type { taskCard } from "./coding";
 import { el, reason } from "../dom";
 import { isPersonal, modeInUse } from "../card/modes";
@@ -51,6 +51,8 @@ export interface Screen {
   personality: Personality | null;
   /** The call of a tool the reply waits for the user to allow. */
   asking: ToolAsk | null;
+  /** Whether the tool Files is on, without which a coding task cannot start. */
+  filesOn: boolean;
   /** The message the next one branches off after, while the user has chosen to branch. */
   branchAt: number | null;
   /** The reply chosen with a click, whose "Used in this reply" the side panel shows; else the newest's. */
@@ -103,6 +105,7 @@ export function newScreen(chatId: number): Screen {
     account: undefined,
     personality: null,
     asking: null,
+    filesOn: false,
     branchAt: null,
     chosen: null,
     asked: null,
@@ -170,6 +173,7 @@ export function load(s: Screen): Promise<void> {
         known().catch(() => {}),
         // Whether a picture from another website shows; held back where the settings do not say.
         readWebPictures(),
+        filesNow(s),
       ]);
       s.asking = s.view.asking;
       if (first) sayBrokeOff(s);
@@ -188,6 +192,13 @@ export function load(s: Screen): Promise<void> {
 export function sayBrokeOff(s: Screen): void {
   if (newest(s)?.broke_off) failed(s, failureWords({ code: "model_answer", error: "", details: { what: "reply_broke_off" } }));
 }
+
+/** Reads whether the tool Files is on; where the settings do not say, it is held off. */
+export const filesNow = (s: Screen) =>
+  getSettings().then(
+    ({ tools }) => void (s.filesOn = tools.files),
+    () => void (s.filesOn = false),
+  );
 
 /**
  * Reads anew whether the chat's model thinks and whether a tool is offered its replies, by which the side panel

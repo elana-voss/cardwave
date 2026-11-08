@@ -47,7 +47,7 @@ export interface MenuItem {
   chosen?: boolean;
   /** The line cannot be picked: it is greyed, and a press on it does nothing. */
   off?: boolean;
-  /** What the line does, in grey under its name. */
+  /** What the line does, in grey under its name; read again at each opening, as `off` and `hidden` are ("" for none). */
   sub?: string;
   /** The line is not shown, as what it does is not there for the user. */
   hidden?: boolean;
@@ -76,15 +76,12 @@ function menuItems(items: MenuItem[], shut: (back: boolean) => void): { list: HT
     const mark = item.chosen ? icon("check", 16) : item.picture ? el("img", { className: "menu-picture ico", width: 16, height: 16, src: item.picture, alt: "" }) : item.shape && icon(item.shape, 16);
     const line = el(
       "button",
-      { type: "button", className: [item.danger && "danger", item.narrow && "narrow-only", item.sub && "two"].filter(Boolean).join(" "), role: choice ? "menuitemradio" : "menuitem", onclick: () => pick(item) },
-      ...(item.sub ? [el("span", { className: "l1" }, item.label, mark), el("span", { className: "sub" }, item.sub)] : [item.label, mark]),
+      { type: "button", className: [item.danger && "danger", item.narrow && "narrow-only"].filter(Boolean).join(" "), role: choice ? "menuitemradio" : "menuitem", onclick: () => pick(item) },
+      ...(item.sub !== undefined ? [el("span", { className: "l1" }, item.label, mark), el("span", { className: "sub" })] : [item.label, mark]),
     );
     if (choice) line.ariaChecked = String(item.chosen);
     // The line's name is its label; the grey line under it describes it.
-    if (item.sub) {
-      line.ariaLabel = item.label;
-      line.setAttribute("aria-description", item.sub);
-    }
+    if (item.sub !== undefined) line.ariaLabel = item.label;
     return line;
   });
   const rules = items.map((item, at) => ((item.group !== undefined || item.apart) && at > 0 ? el("hr") : null));
@@ -94,6 +91,12 @@ function menuItems(items: MenuItem[], shut: (back: boolean) => void): { list: HT
     lines.forEach((line, at) => {
       line.ariaDisabled = items[at].off ? "true" : null;
       line.hidden = items[at].hidden ?? false;
+      const sub = items[at].sub;
+      line.classList.toggle("two", !!sub);
+      const under = line.querySelector<HTMLElement>(".sub");
+      if (under) Object.assign(under, { textContent: sub ?? "", hidden: !sub });
+      if (sub) line.setAttribute("aria-description", sub);
+      else line.removeAttribute("aria-description");
       const rule = rules[at];
       if (rule) rule.hidden = items.slice(0, at).every((item) => item.hidden);
     });

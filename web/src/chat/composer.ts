@@ -3,7 +3,7 @@
 // while dictation is set up (dictate.ts), Send, grey while there is nothing to send and Stop while something is written, and
 // over the field the pill "Who replies" of a chat of several characters, with the turn orders, "Always" a character,
 // and "Keep replying by themselves", and the tiles of what waits attached for the next message, each with its ×.
-// What is attached goes to the server at once and waits there (`s.attached`); a message of attachments alone is sent.
+// What is attached goes to the server at once and waits there (`s.attached`), and comes back on opening the chat; a message of attachments alone is sent.
 //
 // "Write for me" and a message's Continue are steered by the field's words, which are sent as no message (C7).
 //
@@ -13,10 +13,11 @@
 // say changes, as an open menu would close. What is typed and not sent is kept as the field's unsaved text
 // (`typed`, ../unsaved.ts) and comes back when the chat is opened again. The field takes words while a reply
 // arrives; only Send waits, being Stop meanwhile.
+import type { Attachment } from "../api/generated/Attachment";
 import type { MessageView } from "../api/generated/MessageView";
 import type { Turn } from "../api/generated/Turn";
 import type { TurnOrder } from "../api/generated/TurnOrder";
-import { addCharacter, attach, draft, makePicture, moveHead, removeAttachment, removeCharacter, sendMessage, setTurn } from "../api/client";
+import { addCharacter, attach, draft, makePicture, moveHead, removeAttachment, removeCharacter, sendMessage, setTurn, waitingAttachments } from "../api/client";
 import { addCharacterDialog } from "../library/add-character";
 import { modeInUse, sameMode } from "../card/modes";
 import { startDialog } from "./coding";
@@ -80,7 +81,7 @@ export function composer(s: Screen): Composer {
       sub: wording("composer-joins-this-chat"),
       action: () => addCharacterDialog(s.node, s.view?.characters ?? [], (cardId, character) => void join(s, cardId, character)),
     },
-    codingLine: { label: wording("coding-start-a-coding-task"), shape: "code", hidden: true, action: () => void startDialog(s.node, s.chatId, () => void load(s)).catch((error: unknown) => failed(s, error)) },
+    codingLine: { label: wording("coding-start-a-coding-task"), shape: "code", hidden: true, sub: "", action: () => void startDialog(s.node, s.chatId, () => void load(s)).catch((error: unknown) => failed(s, error)) },
     replier,
     repliersFor: "",
     go: {
@@ -120,6 +121,15 @@ export function composer(s: Screen): Composer {
       offer(s, c);
     }
   });
+  // So does what waits attached, beside what was attached meanwhile.
+  void waitingAttachments(s.chatId).then(
+    (waiting) => {
+      if (!waiting.length) return;
+      s.attached = withWaiting(s.attached, waiting);
+      s.render();
+    },
+    (error: unknown) => failed(s, error),
+  );
   // Enter sends, Shift+Enter starts a new line.
   s.input.onkeydown = (event) => {
     if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
@@ -127,6 +137,11 @@ export function composer(s: Screen): Composer {
     send(s);
   };
   return c;
+}
+
+/** What waits attached on the server, then what was attached before its answer came, each once. */
+export function withWaiting(attached: Attachment[], waiting: Attachment[]): Attachment[] {
+  return [...waiting, ...attached.filter((a) => !waiting.some((w) => w.id === a.id))];
 }
 
 /**
@@ -151,10 +166,13 @@ export function typed(s: Screen): void {
 /**
  * Sets whether the lines of "+" that write are there (not in a chat without a character, which has no one to write
  * as) and can be picked (not while something is written, and Improve not without words); whether "Start a coding
- * task" is there (`codingOffered`); and whether Send can be pressed.
+ * task" is there (`codingOffered`) and can be picked (Files on); and whether Send can be pressed.
  */
 function offer(s: Screen, c: Composer): void {
   c.codingLine.hidden = !codingOffered(s);
+  // The team reads and writes the task's folder with Files: while it is off the line is greyed and says so.
+  c.codingLine.off = !s.filesOn;
+  c.codingLine.sub = s.filesOn ? "" : wording("error-files-tool-off");
   const alone = !s.view || s.view.characters.length === 0;
   for (const line of [c.writeLine, c.improveLine, c.pictureLine]) line.hidden = alone;
   c.writeLine.off = !idle(s);

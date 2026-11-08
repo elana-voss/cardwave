@@ -118,3 +118,22 @@ test("in a narrow window a card without a picture shows its name on the first sc
     expect(name && name.y + name.height, `${width} px`).toBeLessThanOrEqual(height);
   }
 });
+
+test("Make a picture says when the provider has not written the words within 30 seconds, and can ask again", async ({ page, request }) => {
+  expect((await setProvider(request, { base_url: "https://pretend.cardwave.invalid/v1", model: "pretend-chat", api_key: "sk-cardwave-fake-0000" })).status()).toBe(200);
+  expect((await setImages(request, { model: "pretend-image" })).status()).toBe(200);
+  const made = await request.post("/api/cards", { data: cardFile({ name: "Pell Marsh", first_mes: "The tide is out." }) });
+  expect(made.status(), await made.text()).toBe(201);
+  await page.clock.install();
+  // The provider never answers: the request is held.
+  await page.route("**/pictures/words", () => {});
+  await page.goto(`/#/library/${(await made.json()).card_id}`);
+  await page.locator(".hero-picture").hover();
+  await page.getByRole("button", { name: "Make a picture" }).click();
+  const making = page.getByRole("dialog", { name: "Make a picture" });
+  const again = making.getByRole("button", { name: "Let the AI describe the picture again" });
+  await expect(again).toBeDisabled();
+  await page.clock.runFor(30_000);
+  await expect(making).toContainText("Your provider didn't answer within 30 seconds. Press “Let the AI describe the picture again” to ask once more.");
+  await expect(again).toBeEnabled();
+});

@@ -231,12 +231,12 @@ backup-back-up = Salvar backup
 backup-no-file = Nenhum arquivo escolhido
 backup-choose-file = Escolher arquivo
 backup-its-password = A senha do backup
-backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito. A senha definida aqui continua como está.
+backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito. A senha definida aqui continua como está. As outras contas também são substituídas.
+backup-restored = O backup foi restaurado: tudo no Cardwave está como quando o backup foi feito. Os outros dispositivos entram de novo.
 backup-file = Arquivo
 backup-restore-title = Restaurar um backup
 backup-choose-first = Escolha primeiro o arquivo do backup.
 backup-restore = Restaurar backup
-backup-save = Salvar um backup
 backup-from-file = De um arquivo de backup
 backup-about-own = Chats, personagens e configurações em um só arquivo, criptografado com sua senha
 backup-about-chosen = Chats, personagens e configurações em um só arquivo, criptografado com uma senha que você escolhe
@@ -323,6 +323,7 @@ password-is-on = Ativada · pedida quando o aplicativo abre
 password-is-off = Desativada · qualquer pessoa neste computador pode abrir o Cardwave
 password-start-forgotten = Uma senha esquecida não pode ser recuperada.
 password-open = Abrir
+password-locked-elsewhere = O Cardwave está bloqueado no computador dele. Ele abre aqui quando for desbloqueado lá.
 password-back = Voltar
 
 ## Words many pages use
@@ -787,6 +788,11 @@ about-version-built = Versão { $version } · { $built }
 about-models = Modelos
 about-figures = Figuras e animações
 about-voices = Vozes
+about-voice-donations = Vozes doadas
+about-voice-acted-by = Interpretada por { $name }
+about-voice-vctk = Locutor { $speaker } do CSTR VCTK Corpus de Junichi Yamagishi, Christophe Veaux e Kirsten MacDonald, University of Edinburgh; limpa pela Kyutai
+about-voice-cml-tts = Locutor { $speaker } do CML-TTS de Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares e Arlindo R. Galvão Filho, lida para o LibriVox
+about-voice-cml-tts-cleaned = Locutor { $speaker } do CML-TTS de Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares e Arlindo R. Galvão Filho, lida para o LibriVox; limpa pela Kyutai
 about-lists = Lista de provedores e modelos
 
 about-or = ou

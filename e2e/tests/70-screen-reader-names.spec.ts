@@ -139,7 +139,7 @@ test("Documents", async ({ page }) => {
 
 test("Profile", async ({ page }) => {
   await screen(page, "/#/account/profile", (p) => button(p, "Change the name"));
-  await opens(page, button(page, "Set a password"));
+  await opens(page, button(page, "Set password"));
 });
 
 test("Sharing", async ({ page }) => {
@@ -148,8 +148,8 @@ test("Sharing", async ({ page }) => {
 });
 
 test("Settings", async ({ page }) => {
-  await screen(page, "/#/settings", (p) => button(p, "Save a backup"));
-  await opens(page, button(page, "Language the AI writes in"), button(page, "Change the chat model"), button(page, "Set up voice"), button(page, "Set up search"), button(page, "Change folder"), button(page, "Save a backup"));
+  await screen(page, "/#/settings", (p) => button(p, "Save backup"));
+  await opens(page, button(page, "Language the AI writes in"), button(page, "Change the chat model"), button(page, "Set up voice"), button(page, "Set up search"), button(page, "Change folder"), button(page, "Save backup"));
 });
 
 test("Trash", async ({ page }) => {

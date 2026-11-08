@@ -236,12 +236,12 @@ backup-back-up = 保存备份
 backup-no-file = 未选择文件
 backup-choose-file = 选择文件
 backup-its-password = 备份的密码
-backup-restoring = 恢复会替换 Cardwave 中的所有内容：聊天、角色、人设、世界书、记忆和设置。此操作无法撤销。这里设置的密码保持不变。
+backup-restoring = 恢复会替换 Cardwave 中的所有内容：聊天、角色、人设、世界书、记忆和设置。此操作无法撤销。这里设置的密码保持不变。 其他账户也会被替换。
+backup-restored = 备份已恢复：Cardwave 中的一切都回到了备份时的样子。其他设备需要重新登录。
 backup-file = 文件
 backup-restore-title = 恢复备份
 backup-choose-first = 请先选择备份文件。
 backup-restore = 恢复备份
-backup-save = 保存备份
 backup-from-file = 从备份文件恢复
 backup-about-own = 聊天、角色和设置存为一个文件，用你的密码加密
 backup-about-chosen = 聊天、角色和设置存为一个文件，用你选择的密码加密
@@ -326,6 +326,7 @@ password-is-on = 已打开 · 应用打开时需要输入
 password-is-off = 关闭 · 这台电脑前的任何人都能打开 Cardwave
 password-start-forgotten = 忘记的密码无法找回。
 password-open = 打开
+password-locked-elsewhere = Cardwave 在它的电脑上已锁定。那边解锁后，这里会自动打开。
 password-back = 返回
 
 ## Words many pages use
@@ -752,6 +753,11 @@ about-version-built = 版本 { $version } · { $built }
 about-models = 模型
 about-figures = 形象和动画
 about-voices = 语音
+about-voice-donations = 捐赠的声音
+about-voice-acted-by = 配音：{ $name }
+about-voice-vctk = CSTR VCTK Corpus（Junichi Yamagishi、Christophe Veaux、Kirsten MacDonald，University of Edinburgh）的说话人 { $speaker }；由 Kyutai 清理
+about-voice-cml-tts = CML-TTS（Frederico S. Oliveira、Edresson Casanova、Arnaldo Candido Junior、Anderson S. Soares、Arlindo R. Galvão Filho）的说话人 { $speaker }，为 LibriVox 朗读
+about-voice-cml-tts-cleaned = CML-TTS（Frederico S. Oliveira、Edresson Casanova、Arnaldo Candido Junior、Anderson S. Soares、Arlindo R. Galvão Filho）的说话人 { $speaker }，为 LibriVox 朗读；由 Kyutai 清理
 about-lists = 服务商和模型列表
 
 about-or = 或

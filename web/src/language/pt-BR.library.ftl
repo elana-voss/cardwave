@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = O que a imagem mostra
 card-picture-making-a-picture = Criando uma imagem…
 card-picture-the-picture-made = A imagem nova
 card-picture-reading-the-card = Lendo a ficha…
+card-picture-no-answer = Seu provedor não respondeu em 30 segundos. Toque em “Deixar a IA descrever a imagem de novo” para perguntar outra vez.
 card-picture-no-earlier-pictures = Não há imagens anteriores.
 
 ## card-texts (card/card-texts.ts)

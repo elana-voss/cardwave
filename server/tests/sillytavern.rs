@@ -829,3 +829,26 @@ fn every_built_card_imports_field_for_field() {
         );
     }
 }
+
+/// C4: a card whose data has no name (or one of spaces) takes its file's name, as a PNG and as a JSON
+/// file, for its title and for what the chat calls it; never its internal ID.
+#[test]
+fn a_card_without_a_name_is_named_by_its_file() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let mut nameless = sample();
+    nameless["data"]["name"] = json!("  ");
+    nameless["data"].as_object_mut().unwrap().remove("nickname");
+    let as_json = serde_json::to_vec(&nameless).unwrap();
+    for (file, name) in [
+        (card_png(&nameless), "Wren draft.png"),
+        (as_json, "Bram v2.JSON"),
+    ] {
+        let imported = cards::import_named(db, me, &file, Some(name)).unwrap();
+        let stem = name.rsplit_once('.').unwrap().0;
+        assert_eq!(imported.title, stem);
+        let document = cards::document(db, me, imported.version_id).unwrap();
+        let first = &document.ids("character")[0];
+        assert_eq!(document.character_name(first), stem);
+    }
+}

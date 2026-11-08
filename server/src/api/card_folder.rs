@@ -37,7 +37,7 @@ use ts_rs::TS;
 
 use super::cards::MAX_CARD_FILE;
 use super::{ApiResult, Owner};
-use crate::AppState;
+use crate::{AppState, AtWork};
 
 /// How often the pages are told how far an import has come.
 const TELL_EVERY: Duration = Duration::from_secs(1);
@@ -104,6 +104,8 @@ async fn start(
         running: true,
         ..FolderImport::default()
     };
+    // Held to the import's end, so a restore or the account's delete waits for it.
+    let work = state.at_work(user)?;
     {
         let mut held = state.card_folder();
         if let Some(going) = held.clone().filter(|going| going.running) {
@@ -111,14 +113,14 @@ async fn start(
         }
         *held = Some(begun.clone());
     }
-    tokio::spawn(run(state.clone(), user, folder));
+    tokio::spawn(run(state.clone(), user, folder, work));
     state.push(user, &PageEvent::CardFolder);
     Ok((StatusCode::ACCEPTED, Json(begun)))
 }
 
 /// Finds the card files of `folder` and imports them one after the other, keeping how far it has come in
 /// `card_folder`; however it ends, a panic too, the import is no longer going on and the pages are told.
-async fn run(state: AppState, user: i64, folder: PathBuf) {
+async fn run(state: AppState, user: i64, folder: PathBuf, work: AtWork) {
     let held = state.clone();
     let ended = Place::new(move || {
         if let Some(going) = held.card_folder().as_mut() {
@@ -152,7 +154,7 @@ async fn run(state: AppState, user: i64, folder: PathBuf) {
         }
     };
     import_files(&state, user, folder, files, false).await;
-    drop(ended);
+    drop((ended, work));
 }
 
 /// Imports the card files put in the folder of cards since the last look (`watch`), where the settings
@@ -180,6 +182,10 @@ pub(crate) async fn look(state: &AppState, watch: &mut Watch) {
     {
         return;
     }
+    // Not while a restore runs: the folder is looked at the next time.
+    let Ok(_work) = state.at_work(user) else {
+        return;
+    };
     let (looked, mut held) = (folder.clone(), std::mem::take(watch));
     let walked = tokio::task::spawn_blocking(move || {
         let taken = held.look(&looked);

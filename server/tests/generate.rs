@@ -709,11 +709,9 @@ async fn nothing_is_deleted_for_good_while_a_reply_is_written_in_it() {
     let asked = provider.next().await;
     asked.answer.send(says("Because")).unwrap();
     assert_eq!(event(&mut socket).await["text"], "Because");
-    // Neither the chat by itself, nor with its card, nor with all of the Trash.
-    assert_eq!(server.patch(&chat, json!({ "trashed": true })).await.0, 200);
-    assert_eq!(delete(&chat).await, 409);
-    assert_eq!(server.patch(&card, json!({ "trashed": true })).await.0, 200);
-    assert_eq!(delete(&card).await, 409);
+    // Neither the chat nor its card goes to the Trash, so emptying it keeps them.
+    assert_eq!(server.patch(&chat, json!({ "trashed": true })).await.0, 409);
+    assert_eq!(server.patch(&card, json!({ "trashed": true })).await.0, 409);
     assert_eq!(delete("/api/trash").await, 204);
     assert_eq!(server.get(&card).await.0, 200);
     let (_, view) = server.get(&chat).await;
@@ -722,6 +720,7 @@ async fn nothing_is_deleted_for_good_while_a_reply_is_written_in_it() {
     // Once the reply has ended, it all goes.
     assert_eq!(server.post(&format!("{chat}/stop"), json!({})).await.0, 204);
     follow(&mut socket, "Because").await;
+    assert_eq!(server.patch(&card, json!({ "trashed": true })).await.0, 200);
     assert_eq!(delete(&card).await, 204);
     assert_eq!(server.get(&chat).await.0, 404);
 }
@@ -762,5 +761,34 @@ async fn a_reply_keeps_whom_it_was_asked_of_and_how_long_it_took() {
     assert_eq!(
         view["messages"].as_array().unwrap().last().unwrap()["times"],
         reply["times"]
+    );
+}
+
+/// A character longer than the chat model reads is not left out of the
+/// prompt without a word: the reply is refused and says so.
+#[tokio::test]
+async fn a_character_longer_than_the_model_reads_is_told_not_dropped() {
+    let server = start().await;
+    let provider = Provider::start().await;
+    let small = json!({ "base_url": provider.url, "model": "test-model", "api_key": "sk-test",
+                        "sampling": { "context_size": 512 } });
+    assert_eq!(server.put("/api/provider", small).await.0, 200);
+    let card = json!({ "spec": "chara_card_v2", "spec_version": "2.0",
+        "data": { "name": "Hal", "description": "Hal is long. ".repeat(2000), "first_mes": "Hello." } });
+    let (status, card) = server
+        .upload("/api/cards", card.to_string().into_bytes())
+        .await;
+    assert_eq!(status, 201, "{card}");
+    let new = json!({ "characters": [{ "version_id": card["version_id"], "character": "hal" }] });
+    let (_, view) = server.post("/api/chats", new).await;
+    let chat = format!("/api/chats/{}", view["chat"]["id"]);
+    let said = json!({ "content": "Hello there" });
+    assert_eq!(server.post(&format!("{chat}/messages"), said).await.0, 201);
+
+    let (status, refused) = generate(&server, &chat, json!({})).await;
+    assert_eq!(
+        (status, &refused["code"], &refused["details"]["what"]),
+        (400, &json!("too_big"), &json!("card_for_chat")),
+        "{refused}"
     );
 }

@@ -4,7 +4,7 @@
 // Tested here: `announce` fading, `copyText` without a clipboard, `told` and `reason`, `oneAtATime`, `latest`, `coalesced`, `suggest`,
 // `selectField`, `savedChoice` and `atMost`.
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { announce, atMost, clearNotice, coalesced, copyText, el, latest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
+import { aboutChoice, announce, atMost, clearNotice, coalesced, copyText, el, latest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -457,5 +457,12 @@ describe("savedChoice", () => {
     document.querySelectorAll("button")[0].click();
     await new Promise((over) => setTimeout(over, 60));
     expect(pressed()).toBe("Woman");
+  });
+});
+
+describe("aboutChoice", () => {
+  test("a setting's grey line says how it is set until the user chooses, and that the user chose it after", () => {
+    expect(aboutChoice(false, "Follows the system unless you pick one")).toBe("Follows the system unless you pick one");
+    expect(aboutChoice(true, "Follows the system unless you pick one")).toBe("Chosen by you");
   });
 });

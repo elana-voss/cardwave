@@ -3,7 +3,7 @@
 // and in grey that it follows "Language of the app" until changed (the server's `language_chosen`). `notice` says why it was not read or not stored.
 import { changeSettings, getSettings, listLanguages } from "../api/client";
 import type { Language } from "../api/generated/Language";
-import { el, failure, item, noticeBox, reason, selectField } from "../dom";
+import { aboutChoice, el, failure, item, noticeBox, reason, selectField } from "../dom";
 import { LABELS } from "../setting-labels";
 import { languageName, wording } from "../language/language";
 
@@ -14,11 +14,15 @@ export function languageLine(): { node: HTMLElement; notice: HTMLElement; read()
     void (saving = saving.then(async () => {
       notice.replaceChildren();
       try {
-        field.value = (await changeSettings({ language: code })).language;
+        const settings = await changeSettings({ language: code });
+        field.value = settings.language;
+        say(settings.language_chosen);
       } catch (error) {
         notice.replaceChildren(failure(reason(error)));
       }
     }));
+  const about = el("span", { className: "meta" }, wording("language-line-follows-the-app"));
+  const say = (chosen: boolean) => (about.textContent = aboutChoice(chosen, wording("language-line-follows-the-app")));
   const field = selectField([], "", take, { ariaLabel: wording("label-settings-language"), disabled: true, wide: true });
   // The languages once they were read; a reading that failed is tried again at the next.
   let languages: Promise<Language[]> | null = null;
@@ -27,6 +31,7 @@ export function languageLine(): { node: HTMLElement; notice: HTMLElement; read()
       ([all, settings]) => {
         field.offer(all.map((one) => ({ value: one.code, label: languageName(one.code, one.name) })));
         field.value = settings.language;
+        say(settings.language_chosen);
         field.field.disabled = false;
         notice.replaceChildren();
       },
@@ -36,6 +41,6 @@ export function languageLine(): { node: HTMLElement; notice: HTMLElement; read()
       },
     );
   read();
-  const node = item(LABELS.settings.language, wording("language-line-follows-the-app"), field.node);
+  const node = item(LABELS.settings.language, about, field.node);
   return { node, notice, read };
 }

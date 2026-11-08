@@ -14,7 +14,7 @@ use cw_ccv4::languages::{LoreText, Translation};
 use cw_core::languages::{self, Language};
 use cw_library::cards::{self, CardVersion};
 use cw_library::rewrite;
-use cw_provider::{self as provider, NOT_SET_UP};
+use cw_provider as provider;
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -47,7 +47,7 @@ async fn lore(
 ) -> ApiResult<Json<Vec<LoreText>>> {
     let (provider, entries) = state
         .run(move |db| {
-            let provider = provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            let provider = provider::worker(db, user)?;
             Ok((provider, cards::lore_texts(db, user, id)?))
         })
         .await?;

@@ -1,3 +1,13 @@
+# 0.1.1
+
+Các sửa lỗi từ vòng kiểm thử thứ hai.
+
+- Sao lưu: việc khôi phục chờ công việc đang chạy, và tệp sao lưu được đặt tên theo ngày của bạn.
+- Lần chạy đầu: nhà cung cấp thêm trong Cài đặt sẽ chuyển sang chọn mô hình, khóa bị từ chối được báo là bị từ chối, và thiết lập lại với khóa đã sửa vẫn giữ một nhà cung cấp.
+- Trò chuyện: nhân vật quá dài so với mô hình được thông báo chứ không bị bỏ qua; ảnh đính kèm được thu nhỏ một lần và vẫn đính kèm khi bạn rời cuộc trò chuyện.
+- Màn hình mật khẩu và đăng nhập trên thiết bị khác bằng ngôn ngữ của bạn, và phần cài đặt vừa với chiều rộng điện thoại.
+- Nhiều sửa lỗi nhỏ về văn bản, thẻ, hình ảnh và nhập.
+
 # 0.1.0
 
 Cardwave, làm lại hoàn toàn từ đầu: trò chuyện với các nhân vật trong thư viện của bạn, với mô hình trên máy tính này hoặc ở một nhà cung cấp.

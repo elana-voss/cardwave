@@ -47,7 +47,11 @@ composer-replies = { $name }が返信
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = 音声入力
-dictate-the-microphone-cannot-be = マイクを使えません: { $reason }。Windowsのプライバシー設定でCardwaveに使用を許可するか、マイクを接続してください。
+mic-none = マイクが見つかりません。マイクを接続してから、もう一度お試しください。
+mic-not-allowed-desktop = Cardwaveはマイクを使えません。Windowsのプライバシー設定の「マイク」で許可してください。
+mic-not-allowed-browser = このページはマイクを使えません。ブラウザーのこのサイトの設定で許可してください。
+mic-not-started = マイクを起動できませんでした。マイクを使っているほかのプログラムを閉じてから、もう一度お試しください。
+mic-not-offered = このアドレスではブラウザーがマイクを使わせません。Cardwave が動いているコンピューターでマイクを使ってください。
 dictate-dictation-failed = 音声入力に失敗しました: { $reason }。もう一度お試しください。
 dictate-writing-what-was-said = 話した内容を書き起こし中…
 dictate-nothing-was-heard = 何も聞こえませんでした。
@@ -206,6 +210,7 @@ dialogs-folder-on-this-computer = このコンピューターのフォルダー
 
 dom-text = { $name }：{ $reason }
 dom-keep-all = すべての変更を残す
+dom-chosen-by-you = あなたが選択
 dom-address-copied = アドレスをコピーしました。
 dom-the-browser-did-not = ここではコピーできませんでした。テキストを選択して Ctrl+C を押してください
 

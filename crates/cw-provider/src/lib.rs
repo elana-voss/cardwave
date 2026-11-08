@@ -292,6 +292,33 @@ pub fn get(db: &dyn kinds::Storage, user: i64) -> anyhow::Result<Option<Provider
     kinds::provider_of(db, user, Kind::Chat)
 }
 
+/// Why there is no model to ask: no provider at all, or (`what` chat_model)
+/// providers but no chat model picked, as after adding one in Settings at first run.
+pub fn not_set_up(db: &dyn kinds::Storage, user: i64) -> anyhow::Result<Fail> {
+    Ok(if db.entries(user)?.is_empty() {
+        NOT_SET_UP
+    } else {
+        NOT_SET_UP.with("what", "chat_model")
+    })
+}
+
+/// The chat model's provider, else the failure telling why there is none.
+pub fn chat(db: &dyn kinds::Storage, user: i64) -> anyhow::Result<Provider> {
+    match get(db, user)? {
+        Some(chat) => Ok(chat),
+        None => Err(not_set_up(db, user)?.into()),
+    }
+}
+
+/// The provider the app's own work is asked of ([`for_work`]), else the
+/// failure telling why there is none.
+pub fn worker(db: &dyn Storage, user: i64) -> anyhow::Result<Provider> {
+    match for_work(db, user)? {
+        Some(work) => Ok(work),
+        None => Err(not_set_up(db, user)?.into()),
+    }
+}
+
 /// A provider as the user sets it.
 #[derive(Deserialize, TS)]
 #[ts(export, optional_fields)]

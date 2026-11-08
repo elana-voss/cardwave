@@ -31,6 +31,11 @@ use crate::cards::{CardIndex, Imported, MAX_LISTED, MAX_LISTED_CHARS, Storage, d
 /// a card the library has already is refused ([`super::in_library`]), a file without a card is
 /// [`super::not_a_card`].
 pub fn import(db: &dyn Storage, user: i64, file: &[u8]) -> anyhow::Result<Imported> {
+    import_as(db, user, file, "")
+}
+
+/// [`import`], a SillyTavern card that names no character named `unnamed` (its file's name).
+fn import_as(db: &dyn Storage, user: i64, file: &[u8], unnamed: &str) -> anyhow::Result<Imported> {
     let fingerprint = Sha256::digest(file);
     // Asked before the file is parsed, so a folder imported again costs only reading and hashing it; asked
     // again as it is stored, in the transaction.
@@ -46,7 +51,7 @@ pub fn import(db: &dyn Storage, user: i64, file: &[u8]) -> anyhow::Result<Import
         );
     }
     let (mut container, mut notes) = if is_json_object(file) {
-        match sillytavern::convert_json(file)? {
+        match sillytavern::convert_json_named(file, unnamed)? {
             Some((mut container, notes)) => {
                 container.image = blank_picture()?;
                 (container, notes)
@@ -61,7 +66,14 @@ pub fn import(db: &dyn Storage, user: i64, file: &[u8]) -> anyhow::Result<Import
         (png::read(file)?, Vec::new())
     };
     notes.extend(edit::first_only(&mut container.toml)?);
-    let mut imported = store(db, user, container, Source::Imported, Some(&fingerprint))?;
+    let mut imported = store(
+        db,
+        user,
+        container,
+        Source::Imported,
+        Some(&fingerprint),
+        unnamed,
+    )?;
     imported.warnings.extend(notes);
     Ok(imported)
 }
@@ -84,14 +96,25 @@ fn blank_picture() -> anyhow::Result<Vec<u8>> {
 const MAX_FILE_NAME: usize = 255;
 
 /// [`import`], the card keeping `name`, the file's name, for its texts' imported drafts; a name of
-/// only spaces is none, a longer one is cut to [`MAX_FILE_NAME`] characters.
+/// only spaces is none, a longer one is cut to [`MAX_FILE_NAME`] characters. A file named `.json` that
+/// is no JSON object (empty, an array) is [`super::not_a_card`], not a PNG that is none; a card that names no character is named by the file's
+/// name without its extension (C4).
 pub fn import_named(
     db: &dyn Storage,
     user: i64,
     file: &[u8],
     name: Option<&str>,
 ) -> anyhow::Result<Imported> {
-    let imported = import(db, user, file)?;
+    let is_json_name = name.is_some_and(|n| n.trim().to_ascii_lowercase().ends_with(".json"));
+    if is_json_name && !is_json_object(file) {
+        return Err(crate::cards::not_a_card(
+            "this file holds no character card",
+        ));
+    }
+    // The name without its extension names a card that names no character.
+    let stem = name.map(str::trim).unwrap_or("");
+    let stem = stem.rsplit_once('.').map_or(stem, |(stem, _)| stem);
+    let imported = import_as(db, user, file, stem)?;
     let name: String = name
         .unwrap_or("")
         .trim()
@@ -127,7 +150,7 @@ pub fn create(db: &dyn Storage, user: i64, mut new: NewCard) -> anyhow::Result<I
         toml,
         assets: Vec::new(),
     };
-    let made = store(db, user, container, Source::File, None)?;
+    let made = store(db, user, container, Source::File, None, "")?;
     // Its title and its tags are the user's own.
     db.mark_card_made(made.card_id)?;
     Ok(made)
@@ -141,10 +164,11 @@ fn store(
     mut container: Container,
     source: Source,
     fingerprint: Option<&[u8]>,
+    unnamed: &str,
 ) -> anyhow::Result<Imported> {
     let mut warnings = Vec::new();
     if container.toml.is_empty() {
-        match sillytavern::convert(&container.image)? {
+        match sillytavern::convert_named(&container.image, unnamed)? {
             Some((converted, notes)) => (container, warnings) = (converted, notes),
             None => return Err(crate::cards::not_a_card("this PNG holds no character card")),
         }

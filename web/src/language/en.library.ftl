@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = What the picture shows
 card-picture-making-a-picture = Making a picture…
 card-picture-the-picture-made = The new picture
 card-picture-reading-the-card = Reading the card…
+card-picture-no-answer = Your provider didn't answer within 30 seconds. Press “Let the AI describe the picture again” to ask once more.
 card-picture-no-earlier-pictures = No earlier pictures.
 
 ## card-texts (card/card-texts.ts)

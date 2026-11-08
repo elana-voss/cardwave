@@ -73,7 +73,10 @@ error-not-found = { $what ->
    *[other] Das gibt es nicht.
 } Vielleicht wurde das gelöscht.
 error-chat-busy = In diesem Chat wird gerade eine Antwort geschrieben; halte sie zuerst an.
-error-no-provider = Es ist noch kein Anbieter eingerichtet. Füge einen unter Einstellungen › Anbieter hinzu.
+error-no-provider = { $what ->
+    [chat_model] Es ist noch kein Chatmodell gewählt. Wähle eines unter Einstellungen › Modelle.
+   *[other] Es ist noch kein Anbieter eingerichtet. Füge einen unter Einstellungen › Anbieter hinzu.
+}
 error-provider-refused = { $refusal ->
     [key] Der Anbieter hat den Schlüssel nicht angenommen: Prüfe ihn unter Einstellungen › Anbieter.
     [paid] Der Anbieter verlangt dafür eine Zahlung: Lade Guthaben auf oder wähle ein Modell, das dein Abo enthält.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] Der Anbieter antwortet nicht: Versuche es später noch einmal.
     [fault] Beim Anbieter ist ein Fehler aufgetreten: { $reason } Versuche es später noch einmal.
     [no_model] Der Anbieter bietet dieses Modell nicht mehr an: Wähle ein anderes unter Einstellungen › Modelle.
-    [too_long] Die Nachricht ist zu lang für dieses Modell: Kürze sie oder wähle unter Einstellungen › Modelle ein Modell, das mehr aufnimmt.
+    [too_long] Das Modell hat mehr bekommen, als es auf einmal lesen kann: Wähle unter Einstellungen › Modelle ein Modell, das mehr liest.
    *[other] Der Anbieter hat das abgelehnt: { $reason }
 }
 error-model-declined = { $model } hat es abgelehnt, das zu schreiben. Ändere die Nachricht oder wähle ein anderes Modell.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] Der Charakter ist zu lang für das Hilfsmodell; wähle ein Hilfsmodell, das mehr liest.
+    [card_for_chat] Der Charakter ist zu lang für das Chatmodell und wäre so nicht er selbst; wähle ein Chatmodell, das mehr liest, oder kürze den Charakter.
     [card_file] Die Datei ist größer als { $most } MB.
     [checkpoint_folder] Der Ordner ist zu groß, um vor jedem Schritt Kopien davon zu behalten.
     [expression_pack_size] Die Bilder von { $name } sind zu groß.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] Die Stimmen des Anbieters antworteten { $status }.
     [search_model] Das Suchmodell antwortete { $status }.
    *[other] Es antwortete { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] Der Anbieter hat den Schlüssel nicht angenommen.
+    [asks_for_a_key] Der Anbieter verlangt einen Schlüssel.
+   *[other] Der Anbieter hat unter dieser Adresse keine Liste der Modelle.
 }

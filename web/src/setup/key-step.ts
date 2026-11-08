@@ -11,7 +11,8 @@
 // (`.by-hand`). "Find by name" looks the name up in the list and asks the server for a website's API, without the
 // key (`look`), each address found a line with "Use this" (`.found-list`). "No key?" asks the servers on this
 // computer that the list knows for their models and offers those that answer (`servers`), with "Enter address"
-// under them; in first run This computer's line first (`own`, setup/this-computer.ts). The step hands on whom
+// under them; in first run This computer's line first (`own`, setup/this-computer.ts). On another device (`elsewhere` of
+// account.ts) its words name the computer Cardwave runs on instead. The step hands on whom
 // the next one asks (`Asked`) through `go`, and sends the key nowhere itself.
 // Gone through again, it begins with what is stored (`fill`). First run's way elsewhere (`elsewhere`) stands beside Continue, but not
 // while the provider is set by hand, whose switch has "Enter address".
@@ -23,6 +24,7 @@ import { atMost, el, failure, item, latest, pill, reason, segmented } from "../d
 import { icon } from "../icons";
 import { field, keyStored, listed as onList, plain } from "../models/provider-form";
 import { comma } from "../format";
+import { elsewhere } from "../account";
 
 /** How many providers "Find by name" offers at most for a part of a name. */
 const FOUND_MOST = 5;
@@ -59,6 +61,9 @@ export function recognise(key: string, list: KnownProvider[]): KnownProvider[] {
 
 type Mode = "find" | "address";
 
+/** What setup shows of a provider kept: the stored one, or one added in Settings while no chat model is chosen. */
+export type Stored = Pick<ProviderView, "base_url" | "name" | "has_key" | "key_end">;
+
 export interface KeyStep {
   node: HTMLFormElement;
   /** The key's field, which has the focus when the step is come back to. */
@@ -66,7 +71,7 @@ export interface KeyStep {
   /** The name the list has for the provider at `address`, if it is one of the list's. */
   named(address: string): string | undefined;
   /** Begins the step anew, with the provider that is stored, if one is. The key never comes back, only its end. */
-  fill(stored: ProviderView | null): void;
+  fill(stored: Stored | null): void;
 }
 
 /** The step's parts. */
@@ -128,7 +133,7 @@ function parts() {
   const byHand = el("div", { className: "by-hand flex f-col g-14" }, unknown, how, finding, entering);
   const next = el("button", { type: "submit", className: "btn btn-primary btn-lg" }, wording("setup-continue"));
   // Without a key: a program on this computer (the only place naming the example, LM Studio or Ollama).
-  const local = el("button", { type: "button", className: "textbtn" }, wording("setup-local"));
+  const local = el("button", { type: "button", className: "textbtn" }, (elsewhere ? wording("setup-local-there") : wording("setup-local")));
   const noKey = el("p", { className: "hint m0 no-key" }, wording("setup-no-key"), local);
   // What a server on this computer answers comes right under its line, before Continue.
   const servers = el("div", { className: "found-list servers flex f-col g-10", role: "status", hidden: true });
@@ -194,7 +199,7 @@ export function keyStep(go: (asked: Asked) => void, listed: () => void = () => {
 }
 
 /** Begins the step anew with what is stored: its address and the name the user gave it, set by hand until another key is typed. */
-function fill(k: Step, stored: ProviderView | null): void {
+function fill(k: Step, stored: Stored | null): void {
   k.key.value = "";
   k.key.placeholder = keyStored(stored) || wording("setup-key-placeholder");
   k.chosen = null;
@@ -339,10 +344,16 @@ async function look(k: Step): Promise<void> {
   k.find.disabled = false;
 }
 
+/** That no server answers, where none or none but This computer's does; on another device "this computer" names nothing, so there it is the computer Cardwave runs on. */
+function noServer(own: boolean, names: string): string {
+  if (elsewhere) return own ? wording("setup-no-other-server-there", { names }) : wording("setup-no-server-there", { names });
+  return own ? wording("setup-no-other-server", { names }) : wording("setup-no-server", { names });
+}
+
 /** The servers on this computer that the list knows are asked for their models, without a key: one that answers is there. */
 async function askServers(k: Step): Promise<void> {
   const mine = (k.asking = {});
-  k.servers.replaceChildren(el("p", { className: "meta m0" }, wording("setup-looking-servers")));
+  k.servers.replaceChildren(el("p", { className: "meta m0" }, elsewhere ? wording("setup-looking-servers-there") : wording("setup-looking-servers")));
   show(k);
   const here = k.providers.filter((provider) => provider.local);
   const [answers, own] = await Promise.all([
@@ -364,5 +375,5 @@ async function askServers(k: Step): Promise<void> {
   const group = lines.length ? [el("div", { className: "group" }, ...lines)] : [];
   const names = here.map((provider) => provider.name).join(comma());
   if (there.length) k.servers.replaceChildren(...group, entry(k));
-  else k.servers.replaceChildren(...group, ...nothing(k, (own ? wording("setup-no-other-server", { names }) : wording("setup-no-server", { names }))));
+  else k.servers.replaceChildren(...group, ...nothing(k, noServer(!!own, names)));
 }

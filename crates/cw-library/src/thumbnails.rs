@@ -9,7 +9,8 @@
 //!
 //! `Size` is the sizes, each called by the pixels of its box on the wire
 //! (`ThumbnailSize` in the UI); `shrink` scales a PNG down with the crate
-//! `image`, as a JPEG, or as a PNG where it is see-through; `kept` and `make`
+//! `image`, as a JPEG, or as a PNG where it is see-through (`scale_down` any
+//! picture, upright, as a chat's attached one is); `kept` and `make`
 //! read and keep them (`Storage`, the table `thumbnails`); who makes a
 //! small picture takes a turn first (`Turns`, a `Turn`) and hands it to `make`,
 //! as `small_image` in `api/cards.rs` does; `remove_unasked` runs at the
@@ -22,6 +23,7 @@ use std::sync::Arc;
 use image::codecs::jpeg::JpegEncoder;
 use image::codecs::png::PngEncoder;
 use image::imageops::{self, FilterType};
+use image::metadata::Orientation;
 use image::{
     DynamicImage, GenericImageView, ImageBuffer, ImageDecoder, ImageEncoder, ImageFormat,
     ImageReader, ImageResult, PixelWithColorType, Rgba, RgbaImage,
@@ -183,15 +185,52 @@ pub(crate) fn shrink(whole: &[u8], size: Size) -> Option<Vec<u8>> {
 }
 
 fn shrunk(whole: &[u8], size: Size) -> ImageResult<Option<Vec<u8>>> {
-    let mut decoder =
-        ImageReader::with_format(Cursor::new(whole), ImageFormat::Png).into_decoder()?;
+    let reader = ImageReader::with_format(Cursor::new(whole), ImageFormat::Png);
+    scaled(reader, MAX_PIXELS, |upright| fitted(upright, size.pixels()))
+}
+
+/// A picture of any kind the crate `image` reads, scaled down: upright, as its
+/// camera's EXIF orientation says, to the width and height `sized` gives for
+/// its upright ones; as a JPEG, or a PNG where it is see-through. `None` where
+/// `sized` gives none, the picture has more than `max_pixels`, or it cannot be
+/// read as a picture. What a chat's attached picture is made smaller by.
+pub fn scale_down(
+    whole: &[u8],
+    max_pixels: u64,
+    sized: impl FnOnce((u32, u32)) -> Option<(u32, u32)>,
+) -> Option<Vec<u8>> {
+    let made = ImageReader::new(Cursor::new(whole))
+        .with_guessed_format()
+        .map_err(image::ImageError::IoError)
+        .and_then(|reader| scaled(reader, max_pixels, sized));
+    made.unwrap_or_else(|error| {
+        tracing::debug!("a picture cannot be made smaller: {error}");
+        None
+    })
+}
+
+fn scaled(
+    reader: ImageReader<Cursor<&[u8]>>,
+    max_pixels: u64,
+    sized: impl FnOnce((u32, u32)) -> Option<(u32, u32)>,
+) -> ImageResult<Option<Vec<u8>>> {
+    let mut decoder = reader.into_decoder()?;
     let (wide, high) = decoder.dimensions();
-    let Some((width, height)) = fitted((wide, high), size.pixels()) else {
-        return Ok(None);
-    };
-    if u64::from(wide) * u64::from(high) > MAX_PIXELS {
+    if u64::from(wide) * u64::from(high) > max_pixels {
         return Ok(None);
     }
+    let orientation = decoder.orientation()?;
+    let sideways = matches!(
+        orientation,
+        Orientation::Rotate90
+            | Orientation::Rotate270
+            | Orientation::Rotate90FlipH
+            | Orientation::Rotate270FlipH
+    );
+    let upright = if sideways { (high, wide) } else { (wide, high) };
+    let Some((width, height)) = sized(upright) else {
+        return Ok(None);
+    };
     // A profile that cannot be read is done without. So is that of a picture
     // of greys, which is one for greys: the small picture is written in
     // colours, which it does not fit.
@@ -200,7 +239,8 @@ fn shrunk(whole: &[u8], size: Size) -> ImageResult<Option<Vec<u8>>> {
     } else {
         None
     };
-    let picture = DynamicImage::from_decoder(decoder)?;
+    let mut picture = DynamicImage::from_decoder(decoder)?;
+    picture.apply_orientation(orientation);
 
     let mut small = Vec::new();
     let picture = if picture.color().has_alpha() {

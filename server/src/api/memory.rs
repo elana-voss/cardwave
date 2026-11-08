@@ -120,8 +120,9 @@ impl Helper for Worker<'_> {
 
 /// Has a memory pass read the chat's new messages, unless one does already.
 pub(super) fn remember(state: &AppState, user: i64, chat_id: i64) {
-    if state.remembering().insert(chat_id, user).is_some() {
-        // A pass already reads the chat, which is the same user's.
+    // Refused while a restore runs; a pass already reading the chat is the same user's.
+    let first = state.unless_restoring(|| state.remembering().insert(chat_id, user).is_none());
+    if !matches!(first, Ok(true)) {
         return;
     }
     let held = state.clone();

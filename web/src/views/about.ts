@@ -6,7 +6,7 @@
 // Models, figures and lists have "Licence" at their right; a press on a package's
 // row (its name is the button that reaches over the line, `.row-link`) opens the panel from the right with its
 // license texts; the libraries are searched by name as typed. The voices are the shipped ones (`/api/voice/shipped`, also where Voice is at a provider), each with
-// its set, license and whom CC BY asks to be named; the rest is the file tools/licenses.py writes, which comes with
+// its set, license and whom CC BY asks to be named, in the app's language (`voiceText`); the rest is the file tools/licenses.py writes, which comes with
 // the UI: nothing is fetched from elsewhere.
 import { language, wording } from "../language/language";
 import { getLicenses, getShippedVoices, getStatus, getWhatsNew, type Library, type Licensed, type Licenses } from "../api/client";
@@ -97,7 +97,7 @@ export function aboutView(): View {
     return node;
   };
 
-  const voiceLine = (voice: VoiceChoice) => line(voice.name, [voice.set, voice.license, voice.credit].filter(Boolean).join(" · "));
+  const voiceLine = (voice: VoiceChoice) => line(voice.name, voiceText(voice));
 
   // The desktop app tells the page the folder; a browser's page may be on another computer than the server.
   const folder = window.cardwaveDesktop?.logs;
@@ -155,4 +155,21 @@ export function aboutView(): View {
     )
     .catch((error) => groups.append(failure(reason(error))));
   return { node: node };
+}
+
+/** A shipped voice's set, licence and whom it credits, as CC BY asks, in the app's language; the names as they are. */
+export function voiceText(voice: VoiceChoice): string {
+  const credit = voice.credit;
+  const set = credit.kind === "donated" ? wording("about-voice-donations") : voice.set;
+  const by =
+    credit.kind === "acted_by"
+      ? wording("about-voice-acted-by", { name: credit.name })
+      : credit.kind === "vctk"
+        ? wording("about-voice-vctk", { speaker: credit.speaker })
+        : credit.kind === "cml_tts"
+          ? credit.cleaned
+            ? wording("about-voice-cml-tts-cleaned", { speaker: credit.speaker })
+            : wording("about-voice-cml-tts", { speaker: credit.speaker })
+          : "";
+  return [set, voice.license, by].filter(Boolean).join(" · ");
 }

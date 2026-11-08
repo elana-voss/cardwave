@@ -102,7 +102,7 @@ export function passwordLine(label: string, home: () => HTMLElement, changed: (o
   const says = el("span", { className: "meta" });
   let other = false;
   const open = (kind: Kind) => () => passwordDialog(home(), kind, (on) => (show(on, other), changed(on)), other);
-  const switchOn = el("button", { type: "button", className: "btn btn-secondary", ariaLabel: wording("password-on-title"), hidden: true, onclick: open("on") }, wording("password-on"));
+  const switchOn = el("button", { type: "button", className: "btn btn-secondary", hidden: true, onclick: open("on") }, wording("password-on"));
   const change = el("button", { type: "button", className: "btn btn-secondary", ariaLabel: wording("password-change-title"), hidden: true, onclick: open("change") }, wording("password-change"));
   const switchOff = el("button", { type: "button", className: "btn btn-secondary", ariaLabel: wording("password-off-title"), hidden: true, onclick: open("off") }, wording("password-off"));
   const node = el("div", { className: "item" }, el("div", { className: "item-text" }, el("span", { className: "item-label" }, label), says), switchOn, change, switchOff);
@@ -179,4 +179,34 @@ export function startScreen(
   );
   queueMicrotask(() => input.focus());
   return node;
+}
+
+/** How often a page waiting for the app to be unlocked asks again. */
+const UNLOCK_POLL = 3000;
+
+/**
+ * The start screen of a device signed in to another account than this computer's while the app is locked: it cannot
+ * open it (the password is this computer's account's), so it says that it waits, without a field.
+ */
+export function lockedElsewhere(): HTMLElement {
+  return el(
+    "section",
+    { className: "start-screen f-grow flex f-col ai-c jc-c" },
+    el(
+      "div",
+      { className: "start-column flex f-col ai-c g-20" },
+      el("img", { src: logo, alt: wording("app-name"), className: "start-logo" }),
+      el("p", { className: "start-says", role: "status" }, wording("password-locked-elsewhere")),
+    ),
+  );
+}
+
+/** Asks `read` every few seconds whether the app is still locked, and calls `opened` once when it is not. */
+export function untilUnlocked(read: () => Promise<{ locked: boolean }>, opened: () => void): void {
+  const ask = () =>
+    void read().then(
+      (state) => (state.locked ? setTimeout(ask, UNLOCK_POLL) : opened()),
+      () => setTimeout(ask, UNLOCK_POLL),
+    );
+  setTimeout(ask, UNLOCK_POLL);
 }

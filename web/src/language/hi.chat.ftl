@@ -49,7 +49,11 @@ composer-replies = { $name } की ओर से
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = बोलकर लिखें
-dictate-the-microphone-cannot-be = माइक्रोफ़ोन इस्तेमाल नहीं हो सकता: { $reason }। Windows की प्राइवेसी सेटिंग्स में Cardwave को इसकी अनुमति दें, या कोई माइक्रोफ़ोन लगाएँ।
+mic-none = कोई माइक्रोफ़ोन नहीं मिला: एक लगाएँ, फिर दोबारा कोशिश करें।
+mic-not-allowed-desktop = Cardwave माइक्रोफ़ोन इस्तेमाल नहीं कर सकता: Windows की प्राइवेसी सेटिंग्स में Microphone के नीचे इसकी अनुमति दें।
+mic-not-allowed-browser = यह पेज माइक्रोफ़ोन इस्तेमाल नहीं कर सकता: ब्राउज़र की इस साइट की सेटिंग्स में इसकी अनुमति दें।
+mic-not-started = माइक्रोफ़ोन शुरू नहीं हो सका: उसे इस्तेमाल कर रहा कोई दूसरा प्रोग्राम बंद करें, फिर दोबारा कोशिश करें।
+mic-not-offered = इस पते पर ब्राउज़र कोई माइक्रोफ़ोन नहीं देता: जिस कंप्यूटर पर Cardwave चलता है, उस पर माइक्रोफ़ोन इस्तेमाल करें।
 dictate-dictation-failed = डिक्टेशन नहीं हो सका: { $reason }। फिर से कोशिश करें।
 dictate-writing-what-was-said = जो कहा गया, वह लिखा जा रहा है…
 dictate-nothing-was-heard = कुछ सुनाई नहीं दिया।
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = इस कंप्यूटर पर फ़�
 
 dom-text = { $name }: { $reason }
 dom-keep-all = सारे बदलाव रखें
+dom-chosen-by-you = आपने चुना
 dom-address-copied = पता कॉपी किया गया।
 dom-the-browser-did-not = यहाँ कॉपी करने की अनुमति नहीं थी; टेक्स्ट चुनें और Ctrl+C दबाएँ
 

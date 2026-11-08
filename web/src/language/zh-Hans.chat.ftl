@@ -49,7 +49,11 @@ composer-replies = { $name } 回复
 ## dictate (chat/dictate.ts)
 
 dictate-dictate = 语音输入
-dictate-the-microphone-cannot-be = 无法使用麦克风：{ $reason }。请在 Windows 的隐私设置中允许 Cardwave 使用它，或者接上一个麦克风。
+mic-none = 没有找到麦克风：请接上一个，然后再试一次。
+mic-not-allowed-desktop = Cardwave 无权使用麦克风：请在 Windows 的隐私设置的“麦克风”中允许。
+mic-not-allowed-browser = 此页面无权使用麦克风：请在浏览器中此网站的设置里允许。
+mic-not-started = 无法启动麦克风：请关闭正在使用它的其他程序，然后再试一次。
+mic-not-offered = 在这个地址上浏览器不提供麦克风：请在运行 Cardwave 的电脑上使用麦克风。
 dictate-dictation-failed = 听写失败：{ $reason }。请再试一次。
 dictate-writing-what-was-said = 正在把说的话转成文字……
 dictate-nothing-was-heard = 没有听到声音。
@@ -208,6 +212,7 @@ dialogs-folder-on-this-computer = 这台电脑上的文件夹
 
 dom-text = { $name }：{ $reason }
 dom-keep-all = 保留全部更改
+dom-chosen-by-you = 由你选择
 dom-address-copied = 地址已复制。
 dom-the-browser-did-not = 这里不允许复制；请选中文字后按 Ctrl+C
 

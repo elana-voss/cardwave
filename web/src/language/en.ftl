@@ -215,12 +215,12 @@ backup-back-up = Save backup
 backup-no-file = No file chosen
 backup-choose-file = Choose file
 backup-its-password = The backup’s password
-backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories and settings. This cannot be undone. The password set here stays as it is.
+backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories, settings and the other accounts. This cannot be undone. The password set here stays as it is.
+backup-restored = The backup was restored: everything in Cardwave is as it was when the backup was made. Other devices sign in again.
 backup-file = File
 backup-restore-title = Restore a backup
 backup-choose-first = Choose the backup’s file first.
 backup-restore = Restore backup
-backup-save = Save a backup
 backup-from-file = From a backup file
 backup-about-own = Chats, characters and settings in one file, encrypted with your password
 backup-about-chosen = Chats, characters and settings in one file, encrypted with a password you choose
@@ -306,6 +306,7 @@ password-is-on = On · asked when the app opens
 password-is-off = Off · anyone at this computer can open Cardwave
 password-start-forgotten = A forgotten password cannot be recovered.
 password-open = Open
+password-locked-elsewhere = Cardwave is locked on its computer. It opens here when it is unlocked there.
 password-back = Back
 
 ## Words many pages use
@@ -751,6 +752,11 @@ about-version-built = Version { $version } · { $built }
 about-models = Models
 about-figures = Figures and animations
 about-voices = Voices
+about-voice-donations = Voice donations
+about-voice-acted-by = Voice-acted by { $name }
+about-voice-vctk = Speaker { $speaker } of the CSTR VCTK Corpus by Junichi Yamagishi, Christophe Veaux and Kirsten MacDonald, University of Edinburgh; cleaned by Kyutai
+about-voice-cml-tts = Speaker { $speaker } of CML-TTS by Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares and Arlindo R. Galvão Filho, read for LibriVox
+about-voice-cml-tts-cleaned = Speaker { $speaker } of CML-TTS by Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares and Arlindo R. Galvão Filho, read for LibriVox; cleaned by Kyutai
 about-lists = Provider and model list
 
 about-or = or

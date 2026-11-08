@@ -6,6 +6,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 import { findProvider, getProviders, listModels } from "../api/client";
 import type { KnownProvider } from "../api/generated/KnownProvider";
 import type { ProviderView } from "../api/generated/ProviderView";
+import { setElsewhere } from "../account";
 import { keyStep, recognise, type Asked, type KeyStep } from "./key-step";
 
 vi.mock("../api/client", () => ({ findProvider: vi.fn(), getProviders: vi.fn(), listModels: vi.fn() }));
@@ -361,4 +362,13 @@ test("until the list of providers has come nothing is said of a key", async () =
   expect(button("Continue").disabled).toBe(true);
   come(LIST);
   await vi.waitFor(() => expect(state()).toEqual({ ...NOTHING, byHand: true, unknown: true, noKey: false }));
+});
+
+test("on another device the programs are those of the computer Cardwave runs on", async () => {
+  setElsewhere(true);
+  await make();
+  button("Use a program on the computer Cardwave runs on (such as LM Studio or Ollama)").click();
+  expect(part(".servers").textContent).toBe("Looking for programs on the computer Cardwave runs on…");
+  await vi.waitFor(() => expect(part(".servers").textContent).toContain("No AI program answers on the computer Cardwave runs on (Cardwave looked for KoboldCpp, Ollama). Start one there, then look again."));
+  setElsewhere(false);
 });

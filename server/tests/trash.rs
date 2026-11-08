@@ -803,3 +803,29 @@ async fn every_page_of_the_user_is_told_of_a_change_of_the_trash() {
     assert_eq!(delete(&server, "/api/trash").await.0, 204);
     assert_eq!(event(&mut socket).await, trash);
 }
+
+/// A chat whose reply is being written does not go to the Trash: the reply would go on into it, and at its
+/// end the worker model would read and name a chat the user has thrown away.
+#[test]
+fn a_chat_does_not_go_to_the_trash_while_a_reply_is_written() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let (mira, version) = card(&scratch, "Mira");
+    let talk = chat(&scratch, &[version]);
+    let writing = NewMessage {
+        role: Role::Assistant,
+        speaker_id: None,
+        content: "",
+        complete: false,
+    };
+    chats::append(db, me, talk, &writing).unwrap();
+    let refused = trash::put_chat(db, me, talk).expect_err("the chat went to the Trash");
+    assert_eq!(
+        format!("{refused:#}"),
+        "a reply is being generated in this chat; stop it first"
+    );
+    assert!(!chat_trashed(&scratch, talk));
+    // Nor does its card, which takes the chat along.
+    cards::set_trashed(db, me, mira, true).expect_err("the card went to the Trash");
+    assert!(!card_trashed(&scratch, mira) && !chat_trashed(&scratch, talk));
+}

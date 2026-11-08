@@ -32,7 +32,7 @@ use cw_chat::companion::{
 };
 use cw_core::{Code, Fail};
 use cw_library::settings;
-use cw_provider::{self as provider, NOT_SET_UP};
+use cw_provider as provider;
 use serde::de::DeserializeOwned;
 use tokio::sync::Notify;
 use tokio::time::Instant;
@@ -131,7 +131,9 @@ async fn plan(
                 Occasion::Reply => provider::chat_for_work(db, user)?,
                 Occasion::Handled | Occasion::Alone => provider::for_work(db, user)?,
             };
-            let provider = provider.ok_or(NOT_SET_UP)?;
+            let Some(provider) = provider else {
+                return Err(provider::not_set_up(db, user)?.into());
+            };
             Ok(Some((question, persona, provider, asked)))
         })
         .await?;

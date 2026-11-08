@@ -170,10 +170,13 @@ async function take(): Promise<void> {
   if (source !== null && at === takings) useLanguage(code, source);
 }
 
-/** Takes the computer's language where a file has it, now and whenever the computer's changes, while none is chosen. */
-export function followComputer(): void {
-  void take();
+/**
+ * Takes the computer's language where a file has it, now and whenever the computer's changes, while none is chosen;
+ * done once the first is in use (the start screens, drawn before the app's own language can be read, wait for it).
+ */
+export function followComputer(): Promise<void> {
   window.addEventListener("languagechange", () => void take());
+  return take();
 }
 
 /** Takes the language `code` the user chose (Settings), or the computer's again for none. */

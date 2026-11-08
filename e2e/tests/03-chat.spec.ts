@@ -121,6 +121,11 @@ test("the provider is added on the page Providers, its model made the chat model
   await adding.getByLabel("Address").fill(provider.url);
   await adding.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(adding).toBeHidden();
+  // With no chat model chosen yet, setup's step 2 picks this provider's model, as from a key.
+  await expect(page).toHaveURL(/#\/setup$/);
+  await expect(page.getByRole("heading", { name: "Models" })).toBeVisible();
+  await expect(page.locator(".setup")).toContainText("Test Model · works");
+  await page.goto("/#/settings/providers");
   const box = page.locator(".group.provider");
   await expect(box.locator(".item").nth(1)).toContainText("Not used for anything yet1 model");
   // Its model is made the chat model under Settings › Models.

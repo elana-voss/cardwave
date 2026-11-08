@@ -6,9 +6,10 @@
 // becomes a WAV at the voice's rate (wav.ts) before it is sent; the server prepares it as the shipped
 // recordings are and refuses one too short, saying so in the dialog. Closing it stops the microphone.
 import { makeVoice } from "../api/client";
-import { el, noticeBox, oneAtATime, reason } from "../dom";
+import { el, noticeBox, oneAtATime } from "../dom";
 import { dialog } from "../dialogs";
 import { icon } from "../icons";
+import { microphone } from "./microphone";
 import { LONGEST, SHORTEST, toWav } from "./wav";
 import { wording } from "../language/language";
 
@@ -63,12 +64,7 @@ export function makeVoiceDialog(home: HTMLElement, rate: number, made: () => voi
   const start = async () => {
     playing?.pause();
     playing = null;
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (error) {
-      throw new Error(wording("dictate-the-microphone-cannot-be", { reason: reason(error) }));
-    }
+    const stream = await microphone();
     // The dialog closed while the window asked whether the microphone may be used.
     if (!shown.open) {
       for (const track of stream.getTracks()) track.stop();

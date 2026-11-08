@@ -18,7 +18,7 @@ import type { ProvidersView } from "../api/generated/ProvidersView";
 import { backupLine } from "../settings/backup";
 import { cardFolderLines } from "../settings/card-folder";
 import type { ServerEvent } from "../api/generated/ServerEvent";
-import { el, group, item, link, noticeBox, oneAtATime, segmented, selectField, type View } from "../dom";
+import { aboutChoice, el, group, item, link, noticeBox, oneAtATime, segmented, selectField, type View } from "../dom";
 import { modelsGroup } from "../models/models-group";
 import { lineFiller, settingSwitch } from "../settings/setting-lines";
 import { account } from "../account";
@@ -48,9 +48,13 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
   const themeField = selectField(themes().map(([value, label]) => ({ value, label })), theme(), (to) => setTheme(to as Theme), { ariaLabel: LABELS.settings.theme });
   const layouts = () => segmented(LABELS.settings.chatLayout, chatLayouts(), chatLayout(), setChatLayout);
   let layoutNode = layouts();
+  const themeAbout = el("span", { className: "meta" });
+  const sayTheme = () => (themeAbout.textContent = aboutChoice(theme() !== "system", wording("settings-theme-about")));
+  sayTheme();
   const watching = new AbortController();
   document.addEventListener(LOOK, () => {
     themeField.value = theme();
+    sayTheme();
     if (layoutNode.contains(document.activeElement)) return;
     layoutNode.replaceWith((layoutNode = layouts()));
   }, { signal: watching.signal });
@@ -68,7 +72,7 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
     el(
       "div",
       { className: "group" },
-      item(LABELS.settings.theme, wording("settings-theme-about"), themeField.node),
+      item(LABELS.settings.theme, themeAbout, themeField.node),
       item(LABELS.settings.chatLayout, wording("settings-layout-about"), layoutNode),
       item(LABELS.settings.webPictures, wording("settings-web-pictures-about"), web.toggle),
       companion?.node ?? null,

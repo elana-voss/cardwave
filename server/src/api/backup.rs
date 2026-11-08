@@ -93,16 +93,26 @@ async fn save(
     let size = head.len() as u64 + file.metadata()?.len();
     let rest = tokio_util::io::ReaderStream::new(tokio::fs::File::from_std(file));
     let body = Body::from_stream(futures_util::stream::once(async { Ok(head.into()) }).chain(rest));
-    let day = chrono::Utc::now().format("%Y-%m-%d");
+    let name = file_name(&chrono::Local::now());
     let headers = [
         (header::CONTENT_TYPE, "application/octet-stream".to_string()),
         (header::CONTENT_LENGTH, size.to_string()),
         (
             header::CONTENT_DISPOSITION,
-            format!("attachment; filename*=UTF-8''cardwave-backup-{day}.cwbackup"),
+            format!("attachment; filename*=UTF-8''{name}"),
         ),
     ];
     Ok((headers, body).into_response())
+}
+
+/// The backup file's name by the day of `now`: the user's own day, as every
+/// other date they see, handed the local clock.
+fn file_name<Tz: chrono::TimeZone>(now: &chrono::DateTime<Tz>) -> String
+where
+    Tz::Offset: std::fmt::Display,
+{
+    let day = now.format("%Y-%m-%d");
+    format!("cardwave-backup-{day}.cwbackup")
 }
 
 async fn restore(
@@ -161,6 +171,7 @@ fn put_back(
             && state.describing().is_empty()
             && state.remembering().is_empty()
             && state.coding().is_empty()
+            && state.titles.is_empty()
             && !state.is_at_work()
             && !state.search.is_reading(),
         Fail::new(Code::RestoreBusy)
@@ -187,3 +198,15 @@ fn put_back(
 
 // This file's routes as tools (`tools::app`), which build.rs lists.
 include!(concat!(env!("OUT_DIR"), "/route_tools/backup.rs"));
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn the_file_is_named_by_the_local_day_just_after_midnight() {
+        let now = chrono::DateTime::parse_from_rfc3339("2026-11-10T00:05:00+02:00").unwrap();
+        assert_eq!(
+            super::file_name(&now),
+            "cardwave-backup-2026-11-10.cwbackup"
+        );
+    }
+}

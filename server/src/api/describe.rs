@@ -34,7 +34,7 @@ use cw_library::describe::{self, Describing};
 use cw_library::needs::{self, NeedsOverview};
 use cw_library::posters;
 use cw_library::settings;
-use cw_provider::{self as provider, NOT_SET_UP, Provider};
+use cw_provider::{self as provider, Provider};
 use cw_store::Db;
 
 use super::{ApiResult, User};
@@ -90,7 +90,7 @@ async fn describe_again(
 ) -> ApiResult<Json<DescribingAgain>> {
     state
         .run(move |db| {
-            provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            provider::worker(db, user)?;
             again::start(db, user)
         })
         .await?;
@@ -129,7 +129,7 @@ async fn describe_all(
 ) -> ApiResult<Json<Describing>> {
     let queued = state
         .run(move |db| {
-            provider::for_work(db, user)?.ok_or(NOT_SET_UP)?;
+            provider::worker(db, user)?;
             describe::queue(db, user, None)
         })
         .await?;
@@ -212,10 +212,17 @@ pub(super) fn started(state: &AppState, user: i64) {
 /// Has the worker describe the user's queued cards, unless it does already.
 fn start(state: &AppState, user: i64) {
     // A worker running keeps the card it has in hand, which "Stop" spares.
-    match state.describing().entry(user) {
-        std::collections::hash_map::Entry::Occupied(_) => return,
-        std::collections::hash_map::Entry::Vacant(place) => place.insert(None),
-    };
+    // Not while a restore runs: the queue is the old data's.
+    let first = state.unless_restoring(|| match state.describing().entry(user) {
+        std::collections::hash_map::Entry::Occupied(_) => false,
+        std::collections::hash_map::Entry::Vacant(place) => {
+            place.insert(None);
+            true
+        }
+    });
+    if !matches!(first, Ok(true)) {
+        return;
+    }
     let held = state.clone();
     let place = Place::new(move || {
         held.describing().remove(&user);
@@ -300,14 +307,21 @@ async fn run(state: AppState, user: i64, place: Place) {
             Ok((None, _)) => {
                 let failed = state
                     .work(move |db| {
-                        let reason = describe::kept_failure(db, &NOT_SET_UP.into());
-                        describe::fail_waiting(db, user, &reason)
+                        let why = provider::not_set_up(db, user)?;
+                        let reason = describe::kept_failure(db, &why.clone().into());
+                        describe::fail_waiting(db, user, &reason)?;
+                        Ok(why)
                     })
                     .await;
-                if let Err(failure) = failed {
-                    tracing::warn!("the cards waiting to be described stay waiting: {failure:#}");
+                match failed {
+                    Ok(why) => Err(why.into()),
+                    Err(failure) => {
+                        tracing::warn!(
+                            "the cards waiting to be described stay waiting: {failure:#}"
+                        );
+                        Err(provider::NOT_SET_UP.into())
+                    }
                 }
-                Err(NOT_SET_UP.into())
             }
             Err(failure) => Err(failure),
         };

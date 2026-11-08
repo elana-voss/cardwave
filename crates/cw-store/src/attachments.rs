@@ -2,7 +2,7 @@
 //! row per picture (its file in `picture`) or document (`document_id`) of a
 //! chat, waiting while it has no message.
 
-use cw_chat::attachments::Storage;
+use cw_chat::attachments::{Attachment, Storage};
 use cw_core::now_ms;
 use rusqlite::{OptionalExtension, params};
 
@@ -102,8 +102,20 @@ impl Storage for Db {
         })?)
     }
 
-    fn purge_waiting(&self) -> anyhow::Result<()> {
-        self.with(|conn| conn.execute("delete from attachments where message_id is null", []))?;
-        Ok(())
+    fn waiting(&self, user: i64, chat_id: i64) -> anyhow::Result<Vec<Attachment>> {
+        Ok(self.with(|conn| {
+            conn.prepare(
+                "select id, name, picture is not null from attachments
+                 where user_id = ?1 and chat_id = ?2 and message_id is null order by id",
+            )?
+            .query_map([user, chat_id], |r| {
+                Ok(Attachment {
+                    id: r.get(0)?,
+                    name: r.get(1)?,
+                    picture: r.get(2)?,
+                })
+            })?
+            .collect()
+        })?)
     }
 }

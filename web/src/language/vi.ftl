@@ -232,12 +232,12 @@ backup-back-up = Lưu bản sao lưu
 backup-no-file = Chưa chọn tệp
 backup-choose-file = Chọn tệp
 backup-its-password = Mật khẩu của bản sao lưu
-backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác. Mật khẩu đặt ở đây vẫn giữ nguyên.
+backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác. Mật khẩu đặt ở đây vẫn giữ nguyên. Các tài khoản khác cũng bị thay thế.
+backup-restored = Đã khôi phục bản sao lưu: mọi thứ trong Cardwave như lúc tạo bản sao lưu. Các thiết bị khác đăng nhập lại.
 backup-file = Tệp
 backup-restore-title = Khôi phục bản sao lưu
 backup-choose-first = Hãy chọn tệp sao lưu trước.
 backup-restore = Khôi phục bản sao lưu
-backup-save = Lưu bản sao lưu
 backup-from-file = Từ tệp sao lưu
 backup-about-own = Các cuộc trò chuyện, nhân vật và cài đặt trong một tệp, mã hóa bằng mật khẩu của bạn
 backup-about-chosen = Các cuộc trò chuyện, nhân vật và cài đặt trong một tệp, mã hóa bằng mật khẩu bạn chọn
@@ -322,6 +322,7 @@ password-is-on = Bật · được hỏi khi ứng dụng mở
 password-is-off = Tắt · ai dùng máy tính này cũng mở được Cardwave
 password-start-forgotten = Mật khẩu đã quên thì không lấy lại được.
 password-open = Mở
+password-locked-elsewhere = Cardwave đang bị khóa trên máy tính của nó. Nó sẽ mở ở đây khi được mở khóa ở đó.
 password-back = Quay lại
 
 ## Words many pages use
@@ -748,6 +749,11 @@ about-version-built = Phiên bản { $version } · { $built }
 about-models = Mô hình
 about-figures = Hình 3D và hoạt ảnh
 about-voices = Giọng nói
+about-voice-donations = Giọng nói được hiến tặng
+about-voice-acted-by = Lồng tiếng: { $name }
+about-voice-vctk = Người nói { $speaker } của CSTR VCTK Corpus do Junichi Yamagishi, Christophe Veaux và Kirsten MacDonald, University of Edinburgh; Kyutai làm sạch
+about-voice-cml-tts = Người nói { $speaker } của CML-TTS do Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares và Arlindo R. Galvão Filho, đọc cho LibriVox
+about-voice-cml-tts-cleaned = Người nói { $speaker } của CML-TTS do Frederico S. Oliveira, Edresson Casanova, Arnaldo Candido Junior, Anderson S. Soares và Arlindo R. Galvão Filho, đọc cho LibriVox; Kyutai làm sạch
 about-lists = Danh sách nhà cung cấp và mô hình
 
 about-or = hoặc

@@ -19,7 +19,7 @@ use cw_core::{Code, Fail};
 use serde::Serialize;
 use ts_rs::TS;
 
-use crate::{NAME_LIMIT, NOT_SET_UP, Provider, get, kinds, name_of};
+use crate::{NAME_LIMIT, Provider, chat, kinds, name_of};
 
 /// A preset as its list shows it. The key never leaves the server.
 #[derive(Debug, PartialEq, Serialize, TS)]
@@ -144,7 +144,7 @@ fn one(db: &dyn Storage, user: i64, id: i64) -> anyhow::Result<PresetView> {
 
 /// The chat model in use with the account's values, which a preset keeps.
 fn in_use(db: &dyn Storage, user: i64) -> anyhow::Result<Provider> {
-    Ok(get(db, user)?.ok_or(NOT_SET_UP)?)
+    chat(db, user)
 }
 
 /// Keeps the chat model in use and the account's values under `name`, which

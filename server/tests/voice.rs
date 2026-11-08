@@ -74,7 +74,7 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
     assert_eq!(voices.len(), 29);
     assert_eq!(
         voices[0],
-        json!({ "id": "alba", "name": "Alba", "language": "en", "set": "Alba MacKenna", "license": "CC BY 4.0", "credit": "Voice-acted by Alba MacKenna", "own": false })
+        json!({ "id": "alba", "name": "Alba", "language": "en", "set": "Alba MacKenna", "license": "CC BY 4.0", "credit": { "kind": "acted_by", "name": "Alba MacKenna" }, "own": false })
     );
     assert!(
         voices
@@ -83,22 +83,13 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
     );
     // CC BY asks for the attribution the page "About Cardwave" gives; CC0 for none.
     let anna = voices.iter().find(|voice| voice["id"] == "anna").unwrap();
-    assert!(
-        anna["credit"]
-            .as_str()
-            .unwrap()
-            .starts_with("Speaker p228 of the CSTR VCTK Corpus"),
-        "{anna}"
-    );
+    assert_eq!(anna["credit"], json!({ "kind": "vctk", "speaker": "p228" }));
     // The native speakers' voices, each with its language, after the English ones.
     let lena = voices.iter().find(|voice| voice["id"] == "lena").unwrap();
     assert_eq!(lena["language"], "de", "{lena}");
-    assert!(
-        lena["credit"]
-            .as_str()
-            .unwrap()
-            .starts_with("Speaker 3277 of CML-TTS"),
-        "{lena}"
+    assert_eq!(
+        lena["credit"],
+        json!({ "kind": "cml_tts", "speaker": "3277", "cleaned": false })
     );
     let languages: Vec<&str> = voices[19..]
         .iter()
@@ -109,7 +100,8 @@ async fn the_voice_is_downloaded_when_asked_and_a_download_cancelled_leaves_noth
     }
     for voice in voices {
         let by = voice["license"] == "CC BY 4.0";
-        assert_eq!(voice["credit"] != "", by, "{voice}");
+        let kind = &voice["credit"]["kind"];
+        assert_eq!(kind != "donated" && kind != "none", by, "{voice}");
     }
 
     // Held at its start, the download is cancelled and leaves no file behind.

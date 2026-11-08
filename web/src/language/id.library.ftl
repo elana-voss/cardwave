@@ -89,6 +89,7 @@ card-picture-what-the-picture-shows = Yang ditunjukkan gambar
 card-picture-making-a-picture = Membuat gambar…
 card-picture-the-picture-made = Gambar baru
 card-picture-reading-the-card = Membaca kartu…
+card-picture-no-answer = Penyedia Anda tidak menjawab dalam 30 detik. Tekan “Biarkan AI menggambarkan gambar lagi” untuk bertanya sekali lagi.
 card-picture-no-earlier-pictures = Tidak ada gambar sebelumnya.
 
 ## card-texts (card/card-texts.ts)

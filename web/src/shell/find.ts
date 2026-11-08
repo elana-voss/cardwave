@@ -11,7 +11,7 @@ import { knownLine } from "../memory-known";
 import { ago } from "../format";
 import type { IconName } from "../icons";
 import { PAGES, type Page } from "./pages";
-import { onPage } from "../setting-labels";
+import { LABELS, onPage } from "../setting-labels";
 import { wording } from "../language/language";
 
 /** A hit as the panel shows it: the kinds of the server's and the app's pages. */
@@ -48,7 +48,7 @@ const SHAPES: Record<Shown["kind"], IconName> = {
 };
 
 /** Every page of the app a search finds, its name with the place it is under, and the grey line under it (where it is), in the language in use. */
-const found = () => PAGES.filter((page): page is Page & { address: string; under: string } => page.address !== null && page.under !== null).map(({ address, name, under, shape }) => ({
+const pages = () => PAGES.filter((page): page is Page & { address: string; under: string } => page.address !== null && page.under !== null).map(({ address, name, under, shape }) => ({
   address,
   name: under ? `${under} › ${name}` : name,
   line: under ? under.split(" › ")[0] : wording("find-page"),
@@ -67,14 +67,24 @@ export const wordsOf = (query: string) => fold(query).split(/\s+/).filter(Boolea
 /** Whether `text` holds every one of `words`. */
 const holds = (text: string, words: string[]) => words.length > 0 && words.every((word) => fold(text).includes(word));
 
-/** The pages whose names hold every word of `query`, then the settings whose labels do; `more` the labels the server told, by page. */
-export function pageHits(query: string, more: Record<string, string[]> = {}): Shown[] {
+/** The page that is this computer's account's alone (Account › Sharing), which another account's search leaves out. */
+const OWNERS_PAGE = "#/account/server";
+/** The settings shown to this computer's account alone, left out of another's search. */
+const ownersLabels = () => [LABELS.settings.backup, LABELS.settings.restore, LABELS.providers.thisComputer];
+
+/**
+ * The pages whose names hold every word of `query`, then the settings whose labels do; `more` the labels the server
+ * told, by page. Of another account than this computer's (`local` false), not what that account is not shown.
+ */
+export function pageHits(query: string, more: Record<string, string[]> = {}, local = true): Shown[] {
   const words = wordsOf(query);
-  const pages = found().filter(({ name }) => holds(name, words)).map(({ address, name, line, shape }): Shown => ({ kind: "page", name, line, address, reveal: null, picture: null, shape }));
+  const kept = (label: string) => local || !ownersLabels().includes(label);
+  const found = () => pages().filter(({ address }) => local || address !== OWNERS_PAGE);
+  const named = found().filter(({ name }) => holds(name, words)).map(({ address, name, line, shape }): Shown => ({ kind: "page", name, line, address, reveal: null, picture: null, shape }));
   const settings = found().flatMap(({ address, name, shape }) =>
-    [...(onPage()[address] ?? []), ...(more[address] ?? [])].filter((label) => holds(label, words)).map((label): Shown => ({ kind: "page", name: label, line: name, address, reveal: label, picture: null, shape })),
+    [...(onPage()[address] ?? []), ...(more[address] ?? [])].filter((label) => kept(label) && holds(label, words)).map((label): Shown => ({ kind: "page", name: label, line: name, address, reveal: label, picture: null, shape })),
   );
-  return [...pages, ...settings];
+  return [...named, ...settings];
 }
 
 /** The page a hit of the server's opens: a lorebook on its entry, a card's own in the card. */

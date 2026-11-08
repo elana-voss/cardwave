@@ -12,7 +12,8 @@ import { startFakeSearch, type FakeSearch } from "../fake-search";
 // fake-search.ts (`search`); no test asks a provider. The first test downloads both, so the second's "Skip"
 // leads into the app at once.
 //
-// `open` starts the app anew from an empty page, as a `page.goto` to the address it is at does nothing. A
+// `open` starts the app anew from an empty page, as a `page.goto` to the address it is at does nothing, and
+// answers no provider stored and none added (`noneAdded`: one in the list opens setup at step 2). A
 // stand-in is on no list of providers and its key (`KEY`) begins as no provider's does, so `toModels` gets to
 // step 2 by "Enter address" (`byAddress`). The servers on this computer that the list names may be running,
 // so `open` answers the asking for their models itself: none is there (`LOCAL`). A key that begins with "sk-"
@@ -70,9 +71,19 @@ const host = (of: FakeProvider) => new URL(of.url).host;
 /** The first step has what it shows: the list of providers has come, and with it the step is as it stays. */
 const ready = (page: Page) => expect(page.locator(".key-step :is(.no-key, .by-hand):visible")).toHaveCount(1);
 
+/** Answers the list of providers as of a user who has added none, as one kept there would open setup at step 2. */
+async function noneAdded(page: Page): Promise<void> {
+  await page.route("**/api/provider-list", async (route) => {
+    if (route.request().method() !== "GET") return route.fallback();
+    const response = await route.fetch();
+    return route.fulfill({ response, json: { ...(await response.json()), providers: [] } });
+  });
+}
+
 /** Opens first run as of a user who has no stored provider. */
 async function open(page: Page): Promise<void> {
   await page.route("**/api/provider", (route) => (route.request().method() === "GET" ? route.fulfill({ json: null }) : route.fallback()));
+  await noneAdded(page);
   await page.route("**/api/provider/models", (route) => {
     const { base_url } = route.request().postDataJSON();
     if (!LOCAL.test(base_url)) return route.fallback();
@@ -219,6 +230,7 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   await expect(openApp(page)).toBeEnabled();
   // A start before they are through and before "Open Cardwave" comes back to them.
   await page.unroute("**/api/provider");
+  await page.unroute("**/api/provider-list");
   await page.goto("about:blank");
   await page.goto("/");
   await expect(heading(page)).toHaveText("Downloads");
@@ -292,7 +304,7 @@ test("a chat model chosen while the picks are on their way stays, and is not als
   const release = await holdPicks(page);
   await open(page);
   await toModels(page);
-  await button(page, "Choose the chat model").click();
+  await button(page, "Change the chat model").click();
   await pick(page, "Chat model", "kelp/small-1");
   release();
   await expect(says(page, "Chat")).toHaveText("Small 1 · works");
@@ -305,7 +317,7 @@ test("a helper taken as the chat model while the picks are on their way stays so
   const release = await holdPicks(page);
   await open(page);
   await toModels(page);
-  await button(page, "Choose the chat model").click();
+  await button(page, "Change the chat model").click();
   await pick(page, "Chat model", "kelp/small-1");
   await button(page, "Change the helper model").click();
   // The chat model is ticked and marked in the list, where Enter takes the line: the button takes it.
@@ -364,6 +376,7 @@ test("first run's picks are the chat model's answer among the candidates, each t
   await expect(page).toHaveURL(/#\/chats$/);
   // The settings show what was stored.
   await page.unroute("**/api/provider");
+  await page.unroute("**/api/provider-list");
   await page.goto("/#/settings");
   const stated = (name: string) => page.locator(".settings-group .item", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) }).locator(".item-text > .meta");
   // Each with its provider, here the stand-in by its host.

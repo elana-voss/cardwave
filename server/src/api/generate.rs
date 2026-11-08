@@ -38,7 +38,7 @@ use cw_prompt::{PromptMessage, Role};
 use cw_provider::Call;
 use cw_provider::images::Picture;
 use cw_provider::kinds::{self, Kind};
-use cw_provider::{self as provider, NOT_SET_UP, Provider};
+use cw_provider::{self as provider, Provider};
 use cw_store::Db;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -156,10 +156,13 @@ struct Writer {
 impl Writer {
     fn list(state: &AppState, user: i64, chat_id: i64) -> Result<Self, Fail> {
         let stop = Arc::new(Notify::new());
-        match state.replies().entry((user, chat_id)) {
-            Entry::Occupied(_) => return Err(BUSY),
-            Entry::Vacant(place) => place.insert(stop.clone()),
-        };
+        state.unless_restoring(|| match state.replies().entry((user, chat_id)) {
+            Entry::Occupied(_) => Err(BUSY),
+            Entry::Vacant(place) => {
+                place.insert(stop.clone());
+                Ok(())
+            }
+        })??;
         Ok(Self {
             state: state.clone(),
             user,
@@ -303,7 +306,7 @@ fn let_go(db: &Db, user: i64, reply: &Message, head_before: Option<i64>, text: &
 /// reads what its prompt is built of.
 fn claim(db: &Db, user: i64, chat_id: i64, new: &Generate) -> anyhow::Result<Claimed> {
     let chat = chats::get(db, user, chat_id)?.ok_or(NotFound("chat"))?;
-    let provider = provider::get(db, user)?.ok_or(NOT_SET_UP)?;
+    let provider = provider::chat(db, user)?;
     ensure!(
         new.direction.is_none() || new.go_on == Some(true),
         Fail::new(Code::DirectionWithoutGoOn)
@@ -421,7 +424,7 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
     let before = continued.unwrap_or_default();
     let made = (|| -> anyhow::Result<_> {
         let prompt = if continuing {
-            reply::continue_prompt(&mut inputs, &provider.sampling, given, direction.as_deref())
+            reply::continue_prompt(&mut inputs, &provider.sampling, given, direction.as_deref())?
         } else {
             reply::prompt_for(db, user, &chat, &provider.sampling, &reply, inputs, given)?
         };

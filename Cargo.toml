@@ -7,7 +7,7 @@ resolver = "3"
 members = ["server", "desktop", "crates/cw-core", "crates/cw-platform", "crates/cw-faces", "crates/cw-whisper", "crates/cw-prompt", "crates/cw-ccv4", "crates/cw-key", "crates/cw-accounts", "crates/cw-modelfiles", "crates/cw-provider", "crates/cw-search", "crates/cw-voice", "crates/cw-dictation", "crates/cw-library", "crates/cw-coding", "crates/cw-chat", "crates/cw-find", "crates/cw-store"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "UNLICENSED"
 publish = false

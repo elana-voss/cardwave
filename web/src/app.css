@@ -221,6 +221,10 @@ form.editor {
 .pop.by-pointer button:focus-visible {
   outline: none;
 }
+/* A line whose grey line is empty for now keeps its drawing at the right, as a one-line line does. */
+.pop button > .l1 {
+  flex: 1;
+}
 
 /* A long name in a page's path is cut with "…"; the path stays one line. */
 .pbar > .crumbs,

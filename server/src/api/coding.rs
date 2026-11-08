@@ -17,7 +17,7 @@ use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_core::{Events, PageEvent};
 use cw_library::settings::{self, Permissions, Team};
-use cw_provider::{self as provider, NOT_SET_UP, Sampling};
+use cw_provider::{self as provider, Sampling};
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -78,10 +78,12 @@ async fn start(
         Err(Fail::new(Code::GoalMissing))?;
     }
     let data = state.data_dir.clone();
+    // Held until the task is listed, so a restore neither swaps the data in between nor lets it begin later.
+    let work = state.at_work(user)?;
     let (task, started) = state
         .run(move |db| {
             cw_library::settings::folder_checked(&folder, &data)?;
-            let chat = provider::get(db, user)?.ok_or(NOT_SET_UP)?;
+            let chat = provider::chat(db, user)?;
             // A background model at another provider is not the workers': the team is asked at the chat model's.
             let background = provider::background_beside(db, user, &chat)?;
             let settings = settings::get(db, user)?;
@@ -125,6 +127,7 @@ async fn start(
         })
         .await?;
     run::spawn(state.actions(), started);
+    drop(work);
     state.push(
         user,
         &PageEvent::CodingTask {

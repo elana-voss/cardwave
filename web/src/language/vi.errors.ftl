@@ -73,7 +73,10 @@ error-not-found = Không có { $what ->
    *[other] thứ
 } nào như vậy. Có thể nó đã bị xóa.
 error-chat-busy = Một câu trả lời đang được viết trong cuộc trò chuyện này; hãy dừng nó trước.
-error-no-provider = Chưa thiết lập nhà cung cấp nào. Hãy thêm một nhà cung cấp trong Cài đặt › Nhà cung cấp.
+error-no-provider = { $what ->
+    [chat_model] Chưa chọn mô hình trò chuyện nào. Hãy chọn một mô hình trong Cài đặt › Mô hình.
+   *[other] Chưa thiết lập nhà cung cấp nào. Hãy thêm một nhà cung cấp trong Cài đặt › Nhà cung cấp.
+}
 error-provider-refused = { $refusal ->
     [key] Nhà cung cấp không nhận khóa: hãy kiểm tra trong Cài đặt › Nhà cung cấp.
     [paid] Nhà cung cấp yêu cầu thanh toán cho việc này: hãy nạp thêm tín dụng, hoặc chọn một mô hình có trong gói của bạn.
@@ -81,7 +84,7 @@ error-provider-refused = { $refusal ->
     [down] Nhà cung cấp không trả lời: hãy thử lại sau.
     [fault] Nhà cung cấp gặp lỗi ở phía họ: { $reason } Hãy thử lại sau.
     [no_model] Nhà cung cấp không còn cung cấp mô hình này: hãy chọn mô hình khác trong Cài đặt › Mô hình.
-    [too_long] Tin nhắn quá dài cho mô hình này: hãy rút ngắn, hoặc chọn trong Cài đặt › Mô hình một mô hình nhận được nhiều hơn.
+    [too_long] Mô hình được gửi nhiều hơn mức nó đọc được một lần: hãy chọn trong Cài đặt › Mô hình một mô hình đọc được nhiều hơn.
    *[other] Nhà cung cấp đã từ chối: { $reason }
 }
 error-model-declined = { $model } từ chối viết nội dung này. Hãy đổi tin nhắn, hoặc chọn mô hình khác.
@@ -282,6 +285,7 @@ error-not-readable = { $what ->
 }
 error-too-big = { $what ->
     [card_for_worker] Nhân vật quá dài với mô hình phụ trợ; hãy chọn mô hình phụ trợ đọc được nhiều hơn.
+    [card_for_chat] Nhân vật quá dài với mô hình trò chuyện nên sẽ không còn là chính mình; hãy chọn mô hình trò chuyện đọc được nhiều hơn, hoặc rút gọn nhân vật.
     [card_file] Tệp lớn hơn { $most } MB.
     [checkpoint_folder] Thư mục quá lớn để giữ bản sao trước mỗi bước.
     [expression_pack_size] Các hình ảnh của { $name } quá lớn.
@@ -452,4 +456,9 @@ error-answered = { $whose ->
     [provider_voices] Giọng nói của nhà cung cấp trả lời { $status }.
     [search_model] Mô hình tìm kiếm trả lời { $status }.
    *[other] Phía bên kia trả lời { $status }.
+}
+error-answered-said = { $said ->
+    [did_not_take_the_key] Nhà cung cấp không nhận khóa.
+    [asks_for_a_key] Nhà cung cấp yêu cầu khóa.
+   *[other] Nhà cung cấp không có danh sách mô hình ở địa chỉ này.
 }
