@@ -743,6 +743,7 @@ about-logs = Nhật ký
 about-logs-about = Những gì Cardwave đã làm và các lần lỗi, mỗi ngày một tệp, giữ 7 ngày: để được giúp khi có sự cố · { $where }
 about-version = Phiên bản { $version }
 about-whats-new = Có gì mới
+about-community = Tham gia cộng đồng Cardwave trên Discord
 about-packages = { $count } gói
 about-open-source = Phần mềm nguồn mở
 about-search = Tìm kiếm

@@ -807,6 +807,7 @@ about-logs = Журналы
 about-logs-about = Что делал Cardwave и сбои, по файлу в день, хранятся 7 дней: для помощи, когда что-то идёт не так · { $where }
 about-version = Версия { $version }
 about-whats-new = Что нового
+about-community = Присоединяйтесь к сообществу Cardwave в Discord
 about-packages = Пакетов: { $count }
 about-open-source = Программы с открытым кодом
 about-search = Поиск

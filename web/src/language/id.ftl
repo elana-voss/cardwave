@@ -743,6 +743,7 @@ about-logs = Log
 about-logs-about = Apa yang dilakukan Cardwave dan crash yang terjadi, satu file per hari, disimpan 7 hari: untuk bantuan saat ada yang salah · { $where }
 about-version = Versi { $version }
 about-whats-new = Yang baru
+about-community = Bergabunglah dengan komunitas Cardwave di Discord
 about-packages = { $count } paket
 about-open-source = Perangkat lunak sumber terbuka
 about-search = Cari

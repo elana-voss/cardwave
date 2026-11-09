@@ -759,6 +759,7 @@ about-logs = Protokolle
 about-logs-about = Was Cardwave getan hat und etwaige Abstürze, eine Datei pro Tag, 7 Tage aufbewahrt: zur Hilfe, wenn etwas schiefgeht · { $where }
 about-version = Version { $version }
 about-whats-new = Was ist neu
+about-community = Komm zur Cardwave-Community auf Discord
 about-packages = { $count } Pakete
 about-open-source = Open-Source-Software
 about-search = Suchen

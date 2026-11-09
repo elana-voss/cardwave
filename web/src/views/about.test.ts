@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { getWhatsNew } from "../api/client";
 import { useLanguage } from "../language/language";
-import { found, spoken, versions, voiceText } from "./about";
+import { community, found, spoken, versions, voiceText } from "./about";
 
 describe("the page About Cardwave", () => {
   it("shows what each version brought, in the file's order, its points as a list and its links as links", () => {
@@ -60,5 +60,12 @@ it("names a voice's set and whom it credits in the app's language, the names as 
   expect(voiceText({ ...voice, set: "Alba MacKenna", credit: { kind: "acted_by", name: "Alba MacKenna" } })).toBe("Alba MacKenna · CC BY 4.0 · Gesprochen von Alba MacKenna");
   expect(voiceText({ ...voice, set: "VCTK", credit: { kind: "vctk", speaker: "p228" } })).toBe("VCTK · CC BY 4.0 · Sprecher p228 des VCTK");
   expect(voiceText({ ...voice, set: "CML-TTS", credit: { kind: "cml_tts", speaker: "3277", cleaned: true } })).toBe("CML-TTS · CC BY 4.0 · Sprecher 3277 von CML-TTS, bereinigt");
+  useLanguage("en");
+});
+
+it("links the community's Discord server, opened outside the app, in the app's language", () => {
+  useLanguage("xx", "about-community = Komm zu Cardwaves Gemeinschaft auf Discord");
+  const link = community();
+  expect([link.href, link.target, link.textContent]).toEqual(["https://discord.gg/C62KZVg6J", "_blank", "Komm zu Cardwaves Gemeinschaft auf Discord"]);
   useLanguage("en");
 });

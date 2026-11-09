@@ -746,6 +746,7 @@ about-logs = Logs
 about-logs-about = What Cardwave did and any crashes, a file a day, kept 7 days: for help when something goes wrong · { $where }
 about-version = Version { $version }
 about-whats-new = What's new
+about-community = Join the Cardwave community on Discord
 about-packages = { $count } packages
 about-open-source = Open-source software
 about-search = Search

@@ -1,5 +1,6 @@
 // Settings › "About Cardwave" (board "About Cardwave, licenses"), at `#/settings/about` with the path "Settings / About
-// Cardwave": the logo, the name, the version and the day its server was built (`/api/status`); the line "Logs", which in the
+// Cardwave": the logo, the name, the version and the day its server was built (`/api/status`), the link to the community's
+// Discord server (`community`, the owner, 2026-11-09); the line "Logs", which in the
 // desktop app names the logs' folder and opens it ("Open folder"); the group "What's new", a line per version,
 // newest first, from the file `web/public/whats-new.<code>.md` in the language in use, else the English `whats-new.md` (`versions`); then the groups Models, "Figures and
 // animations" (the companion's figure and Mixamo), Voices, "Open-source software" and "Provider and model list".
@@ -67,6 +68,11 @@ export function versions(text: string): Version[] {
   return all;
 }
 
+/** The link to the community's Discord server, under the version; it opens outside the app. */
+export function community(): HTMLAnchorElement {
+  return el("a", { href: "https://discord.gg/C62KZVg6J", target: "_blank", rel: "noopener noreferrer" }, wording("about-community"));
+}
+
 export function aboutView(): View {
   const node = el("section", { className: "main g-24 about" });
   const said = el("span", { className: "meta" });
@@ -75,7 +81,7 @@ export function aboutView(): View {
     el("header", { className: "page-head" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-about")))),
     groups,
   );
-  groups.append(el("div", { className: "about-head flex ai-c g-14" }, el("img", { src: logo, alt: "" }), el("div", { className: "flex f-col" }, el("span", { className: "fs-title bold" }, wording("app-name")), said)));
+  groups.append(el("div", { className: "about-head flex ai-c g-14" }, el("img", { src: logo, alt: "" }), el("div", { className: "flex f-col" }, el("span", { className: "fs-title bold" }, wording("app-name")), said, community())));
 
   /** Opens the panel with the texts `of` names. */
   const show = (title: string, about: string, texts: string[]) =>

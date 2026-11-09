@@ -2,7 +2,7 @@
 
 Chat with characters. Bring any AI provider you already use, or run a model on your own computer. Your cards and chats stay with you.
 
-**[Download for Windows](https://github.com/elana-voss/cardwave/releases/latest)** · [cardwave.cc](https://cardwave.cc)
+**[Download for Windows](https://github.com/elana-voss/cardwave/releases/latest)** / [cardwave.cc](https://cardwave.cc) / [Discord](https://discord.gg/C62KZVg6J)
 
 Beta: Cardwave is in active development and this is its first public release. An update may not keep what an earlier version stored, so export the cards you care about and keep a backup.
 

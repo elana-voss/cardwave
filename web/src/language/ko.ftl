@@ -750,6 +750,7 @@ about-logs = 로그
 about-logs-about = Cardwave가 한 일과 충돌 기록, 하루에 한 파일, 7일간 보관: 문제가 생겼을 때 도움을 받기 위해 · { $where }
 about-version = 버전 { $version }
 about-whats-new = 새로운 기능
+about-community = Discord에서 Cardwave 커뮤니티에 참여하기
 about-packages = 패키지 { $count }개
 about-open-source = 오픈 소스 소프트웨어
 about-search = 검색

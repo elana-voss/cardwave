@@ -747,6 +747,7 @@ about-logs = 日志
 about-logs-about = Cardwave 的运行记录和崩溃记录，每天一个文件，保留 7 天：出问题时用于求助 · { $where }
 about-version = 版本 { $version }
 about-whats-new = 更新内容
+about-community = 加入 Discord 上的 Cardwave 社区
 about-packages = { $count } 个软件包
 about-open-source = 开源软件
 about-search = 搜索
