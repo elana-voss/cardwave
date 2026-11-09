@@ -24,5 +24,7 @@ tracing.workspace = true
 # signed installer itself, and that feature brings a zip with known holes.
 tauri-plugin-updater = { version = "2", default-features = false, features = ["rustls-tls", "system-proxy"] }
 anyhow.workspace = true
-# The system's folder picker (`pick_folder`).
+# The system's folder picker (`pick_folder`) and the message box at a start without a free port.
 rfd = "0.15"
+# A second start brings the open window up instead (`main`).
+tauri-plugin-single-instance = "2"

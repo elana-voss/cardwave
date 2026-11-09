@@ -775,3 +775,40 @@ fn a_messages_pictures_count_against_the_context_and_go_without_an_empty_text() 
         serde_json::json!({ "role": "user", "content": [{ "type": "image_url", "image_url": { "url": "data:image/png;base64,AA==" } }] })
     );
 }
+
+#[test]
+fn history_macros_run_once_in_order_and_draw_the_same_on_every_build() {
+    let card = Character {
+        name: "Mira".into(),
+        ..Default::default()
+    };
+    let req = request(&card, 10_000);
+    let mut chat = chat(&[
+        "{{setvar::mood::happy}}Hello.",
+        "Hi.",
+        "{{setvar::mood::sad}}I roll {{roll:1d1000000000}}, {{random::a::b::c::d::e::f::g::h}}.",
+    ]);
+    let first = run(&req, &mut chat);
+    // The newer message's value is the one kept.
+    assert_eq!(chat.local_variables["mood"], "sad");
+    let said = first
+        .messages
+        .iter()
+        .find(|m| m.content.starts_with("I roll"))
+        .unwrap()
+        .content
+        .clone();
+
+    // The next build sees the reply and a new message; the first three are in the variables already.
+    chat.messages
+        .push(ChatMessage::new("3", Role::Assistant, "So be it."));
+    chat.messages
+        .push(ChatMessage::new("4", Role::User, "And now?"));
+    chat.settled = 3;
+    let second = run(&req, &mut chat);
+    assert_eq!(chat.local_variables["mood"], "sad");
+    assert!(
+        second.messages.iter().any(|m| m.content == said),
+        "{said} drawn anew"
+    );
+}

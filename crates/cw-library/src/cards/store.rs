@@ -269,8 +269,9 @@ pub(super) fn index_of(title: &str, document: Option<&Document>) -> CardIndex {
                 Some(display::excerpt(&display::render(
                     display::head(&greeting),
                     &document.character_name(id),
-                    // The word is put in when the card is read, in the app's language.
+                    // The word, date and time are put in when the card is read, in the app's language.
                     super::USER_MARK,
+                    cw_prompt::macros::MARKS,
                 )))
             })
             .unwrap_or_default();

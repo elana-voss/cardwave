@@ -145,6 +145,13 @@ impl Titles {
     pub fn is_empty(&self) -> bool {
         held(&self.0).is_empty()
     }
+
+    /// Whether a chat of `user` is being titled.
+    pub fn for_user(&self, user: i64) -> bool {
+        held(&self.0)
+            .iter()
+            .any(|(held_user, _)| *held_user == user)
+    }
 }
 
 impl Drop for Titling {

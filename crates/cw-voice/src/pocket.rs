@@ -405,7 +405,8 @@ impl Pocket {
     }
 
     /// `text` in pieces of at most `most_tokens` tokens: its sentences, put
-    /// together while they fit, a longer one cut at its commas, colons and semicolons.
+    /// together while they fit, a longer one cut at its commas, colons and
+    /// semicolons, and a part still longer before a word (`Pieces::cuts_within`).
     fn split(&self, text: &str) -> Vec<String> {
         let (prepared, _) = self.prepare(text);
         let tokens = self.pieces.encode(prepared.trim());
@@ -418,12 +419,14 @@ impl Pocket {
                 continue;
             }
             let own = self.pieces.encode(sentence.trim());
-            let parts = self.pieces_of(&own, &Self::cuts(&own, &marks));
-            if parts.len() > 1 {
-                sentences.extend(parts);
-            } else {
-                sentences.push((count, sentence));
+            let mut cuts = vec![0];
+            for pair in Self::cuts(&own, &marks).windows(2) {
+                let within = self
+                    .pieces
+                    .cuts_within(&own[pair[0]..pair[1]], self.most_tokens);
+                cuts.extend(within.into_iter().skip(1).map(|at| pair[0] + at));
             }
+            sentences.extend(self.pieces_of(&own, &cuts));
         }
         let mut chunks = Vec::new();
         let (mut chunk, mut tokens) = (String::new(), 0);

@@ -325,6 +325,7 @@ pub(crate) fn greeted(
         global: None,
         tracking_id: None,
         language: Some(language),
+        seed: None,
     };
     let text = macros::render(greeting, &mut context);
     (text, variables)

@@ -317,6 +317,8 @@ test("in a narrow window the side panel lies over the messages only: its Close, 
   const toggle = button(page, "Show side panel");
   await toggle.click();
   await expect(panel(page)).toBeVisible();
+  // The panel slides in (narrow.css's `sheet`); its controls are where the user reaches them once it has come to rest.
+  await panel(page).evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
   for (const control of [panel(page).getByRole("button", { name: "Close", exact: true }), button(page, "Hide side panel"), button(page, "Send")]) {
     const box = (await control.boundingBox())!;
     const topmost = await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest("button")?.ariaLabel ?? null, [box.x + box.width / 2, box.y + box.height / 2]);

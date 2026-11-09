@@ -31,6 +31,9 @@ use whisper_rs::{
 const LOUD: f32 = 0.001;
 /// 30 ms at 16 kHz.
 const WINDOW: usize = 480;
+/// 1.1 s at 16 kHz: whisper.cpp returns no words for less than 1 s (its
+/// "input is too short"), so a shorter recording is padded to this.
+const SHORTEST: usize = 16_000 * 11 / 10;
 /// The processor's threads for what whisper.cpp does there (the sound's
 /// spectrum), as the trial ran it.
 const THREADS: c_int = 4;
@@ -124,7 +127,7 @@ impl Whisper {
         params.set_print_progress(false);
         params.set_print_realtime(false);
         params.set_print_timestamps(false);
-        self.state.full(params, samples).context(
+        self.state.full(params, &padded(samples)).context(
             Fail::said(Code::NotPossible, "the dictation model failed")
                 .with("what", "dictation_failed"),
         )?;
@@ -137,6 +140,16 @@ impl Whisper {
     }
 }
 
+/// `samples` with silence after them up to [`SHORTEST`]: whisper.cpp hears
+/// nothing in less than a second.
+fn padded(samples: &[f32]) -> Vec<f32> {
+    let mut samples = samples.to_vec();
+    if samples.len() < SHORTEST {
+        samples.resize(SHORTEST, 0.0);
+    }
+    samples
+}
+
 /// Whether no stretch of `samples` reaches [`LOUD`].
 fn silent(samples: &[f32]) -> bool {
     !samples.chunks(WINDOW).any(|stretch| {
@@ -147,7 +160,7 @@ fn silent(samples: &[f32]) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::whisper::{Kind, pick, silent};
+    use crate::whisper::{Kind, SHORTEST, padded, pick, silent};
 
     #[test]
     fn the_discrete_card_is_picked_before_an_integrated_one() {
@@ -156,6 +169,15 @@ mod tests {
         assert_eq!(pick(&[Discrete, Integrated, Discrete]), Some(0));
         assert_eq!(pick(&[Integrated]), Some(0));
         assert_eq!(pick(&[]), None);
+    }
+
+    #[test]
+    fn a_short_recording_is_padded_with_silence_to_the_shortest_heard() {
+        let short = padded(&[0.5; 1_000]);
+        assert_eq!(short.len(), SHORTEST);
+        assert_eq!(&short[..1_000], &[0.5; 1_000]);
+        assert!(short[1_000..].iter().all(|x| *x == 0.0));
+        assert_eq!(padded(&[0.5; 20_000]).len(), 20_000);
     }
 
     #[test]

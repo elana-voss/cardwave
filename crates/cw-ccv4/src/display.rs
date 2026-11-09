@@ -13,8 +13,9 @@ const EXCERPT_CHARS: usize = 300;
 pub const EXCERPT_SOURCE: usize = 8 * 1024;
 
 /// A text of the character named `char_name` with its macros resolved, as a
-/// chat started without a persona would show it: `{{user}}` is `user_name`.
-pub fn render(text: &str, char_name: &str, user_name: &str) -> String {
+/// chat started without a persona would show it: `{{user}}` is `user_name`,
+/// `{{date}}` and `{{time}}` as `language` writes them (macros' `MARKS`: marks).
+pub fn render(text: &str, char_name: &str, user_name: &str, language: &str) -> String {
     let mut variables = Variables::new();
     let mut context = MacroContext {
         char_name,
@@ -22,7 +23,8 @@ pub fn render(text: &str, char_name: &str, user_name: &str) -> String {
         local: Some(&mut variables),
         global: None,
         tracking_id: None,
-        language: None,
+        language: Some(language),
+        seed: None,
     };
     macros::render(text, &mut context).trim().to_string()
 }

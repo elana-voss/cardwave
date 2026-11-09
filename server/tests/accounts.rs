@@ -9,6 +9,7 @@
 mod common;
 
 use common::api::{Api, JSON, Says, says};
+use common::model::{Model, SLOW_TITLE, next_event, stream, text_piece};
 use common::server::{Device, Server, WAIT, event, phone, start};
 use reqwest::Method;
 use serde_json::{Value, json};
@@ -401,4 +402,39 @@ async fn an_account_is_not_deleted_while_its_work_is_under_way() {
         "{said}"
     );
     assert_eq!(making.await.unwrap(), 201);
+}
+
+/// An account is not deleted while one of its chats is being titled: the title would go into a chat that
+/// is gone. The chat says `SLOW_TITLE`, so its title takes seconds.
+#[tokio::test]
+async fn an_account_is_not_deleted_while_its_chat_is_titled() {
+    let model = Model::start(vec![(200, stream(&[text_piece("Hello.")]))]).await;
+    let server = start().await;
+    let ada = add(&server, "Ada", "tide pool").await;
+    let mut phone = phone(&server).await;
+    assert_eq!(phone.sign_in(ada, Some("tide pool")).await, 204);
+    let provider = json!({ "base_url": model.url, "model": "test-model", "api_key": "sk-test" });
+    let set = phone
+        .call(Method::PUT, "/api/provider", Some(provider))
+        .await;
+    assert_eq!(set.0, 200, "{}", set.1);
+    let (_, view) = phone.post("/api/chats", json!({ "characters": [] })).await;
+    let chat = format!("/api/chats/{}", view["chat"]["id"]);
+    let mut socket = phone.listen().await.unwrap();
+    let asked = json!({ "content": format!("Plan a trip. {SLOW_TITLE}") });
+    assert_eq!(phone.post(&format!("{chat}/messages"), asked).await.0, 201);
+    assert_eq!(
+        phone.post(&format!("{chat}/generate"), json!({})).await.0,
+        202
+    );
+    while next_event(&mut socket).await["type"] != "reply_ended" {}
+
+    let (status, said) = server
+        .call(Method::DELETE, &format!("/api/accounts/{ada}"), None)
+        .await;
+    assert_eq!(
+        (status, said["code"].as_str()),
+        (400, Some("account_busy")),
+        "{said}"
+    );
 }

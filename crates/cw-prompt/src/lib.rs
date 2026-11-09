@@ -295,6 +295,10 @@ pub struct ChatState {
     /// newest messages are about, by id; none where the search model does
     /// not tell, and such entries go by their keys.
     pub meaning: Option<HashSet<String>>,
+    /// How many of the first messages' macros the variables already hold the
+    /// effects of (those up to the message the variables were kept on): their
+    /// macros are read again without setting anything, the rest's run, oldest first.
+    pub settled: usize,
 }
 
 #[cfg(test)]

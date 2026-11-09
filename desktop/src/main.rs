@@ -1,20 +1,17 @@
 //! The desktop app: starts the Cardwave server in-process on a free local port
-//! and opens a window on it, just another browser client, with its logs in
-//! the data folder's `logs` (`cardwave_server::logs`, opened by `open_logs`).
+//! (none free: a message box, `no_free_port`) and opens a window on it, just
+//! another browser client; logs in the data folder's `logs` (`open_logs`). A
+//! second start brings the open window up and ends (not on a test's scratch folder).
 //!
-//! The companion window (`open_companion`, `companion.html`) is see-through,
-//! frameless, on top and as large as the work area; it lets clicks through
-//! but where the page says the cursor is on what it shows, which a thread asks
-//! about 60 times a second (`companionCursor`, `companion_over`). The pages
-//! call the commands here by a capability given to the server's address at
-//! start (`allow_pages`). Closing the app's window leaves the app running
-//! while the companion is out (`open_main` makes it anew); the last window
-//! closed ends the process, a reply under way too (`end_with_last`). The page draws the
-//! title bar and asks for the window's buttons and move (`window_*`) and the
-//! folder picker (`pick_folder`); a link opened in a new window goes to the
-//! system's browser (`outside`), and a page of the app asked for in a window
-//! of its own (`open_page`: "Cardwave's CSS") opens in a third window, `page`.
-//! The app's updates are update.rs's (`update_check`, `update_install`).
+//! The companion window (`open_companion`) is see-through, frameless, on top
+//! and as large as the work area; it lets clicks through but where its page
+//! says the cursor is on what it shows, asked about 60 times a second
+//! (`follow_cursor`). The pages call the commands here by a capability given
+//! to the server's address (`allow_pages`). The last window closed ends the
+//! process, a reply under way too (`end_with_last`). The page draws the title
+//! bar (`window_*`); a link opened in a new window goes to the system's
+//! browser (`outside`); `open_page` opens a third window, `page`. Updates:
+//! update.rs.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -65,7 +62,23 @@ struct Companion {
 }
 
 fn main() -> tauri::Result<()> {
-    tauri::Builder::default()
+    let scratch = std::env::var_os(DATA_DIR_ENV).map(PathBuf::from);
+    let mut builder = tauri::Builder::default();
+    // A second start brings the open window up and ends: two would share one
+    // database. Not on a test's scratch folder, which the owner's open app
+    // (the same identifier) would otherwise take over.
+    if scratch.is_none() {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _, _| {
+            let app = app.clone();
+            // Made off the main thread, where a window made waits for ever on Windows.
+            tauri::async_runtime::spawn(async move {
+                if let Err(failure) = bring(&app, MAIN, None, |hash| main_window(&app, hash)) {
+                    eprintln!("the open window could not be brought up: {failure}");
+                }
+            });
+        }));
+    }
+    builder
         .manage(Companion::default())
         .manage(update::Pending::default())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -75,8 +88,7 @@ fn main() -> tauri::Result<()> {
                 end_with_last(window.app_handle(), window.label());
             }
         })
-        .setup(|app| {
-            let scratch = std::env::var_os(DATA_DIR_ENV).map(PathBuf::from);
+        .setup(move |app| {
             let data_dir = match &scratch {
                 Some(dir) => dir.join("data"),
                 None => app.path().app_data_dir()?,
@@ -87,7 +99,9 @@ fn main() -> tauri::Result<()> {
             let logs = logs::folder(&data_dir);
             let web_dir = web_dir(app.handle())?;
             let runtime = tokio::runtime::Runtime::new()?;
-            let listener = runtime.block_on(bind_local(DEFAULT_PORTS))?;
+            let listener = runtime
+                .block_on(bind_local(DEFAULT_PORTS))
+                .inspect_err(|_| no_free_port())?;
             let url = format!("http://{}/", listener.local_addr()?);
             // The home network's listener starts on this runtime, where the database says so.
             let inside = runtime.enter();
@@ -114,6 +128,22 @@ fn main() -> tauri::Result<()> {
         })
         .run(tauri::generate_context!())
 }
+
+/// Tells the user, in a system message box, that the app cannot start while
+/// other programs hold all its ports; the app ends after it. English: the
+/// shell has no texts of its own in the app's languages.
+fn no_free_port() {
+    rfd::MessageDialog::new()
+        .set_level(rfd::MessageLevel::Error)
+        .set_title("Cardwave")
+        .set_description(NO_FREE_PORT)
+        .set_buttons(rfd::MessageButtons::Ok)
+        // Its answer can only be the one button.
+        .show();
+}
+
+const NO_FREE_PORT: &str = "Cardwave could not start because the ports it uses are in use by \
+    other programs. Close some programs or restart your computer, then start Cardwave again.";
 
 /// Ends the app once its last window is gone. Tauri should end it then by
 /// itself, but once a window closed while a reply was written left the process

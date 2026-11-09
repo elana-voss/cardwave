@@ -53,6 +53,10 @@ pub(super) struct Snapshot {
     /// straight after it starts from.
     #[serde(default, skip_serializing_if = "Variables::is_empty")]
     pub(super) opening: Variables,
+    /// How many messages the build saw (the branch up to the one it is kept
+    /// on), whose macros' effects the variables hold (`ChatState::settled`).
+    #[serde(default)]
+    pub(super) settled: usize,
 }
 
 /// Loads what the prompt builder needs for the next reply of `speaker` (a
@@ -175,6 +179,7 @@ pub fn prompt_inputs_after(
             active_stickies: snapshot.stickies,
             active_cooldowns: snapshot.cooldowns,
             meaning: None,
+            settled: snapshot.settled,
         },
         card_id: Some(card_id),
         character_id: participant.character.clone(),
@@ -347,6 +352,7 @@ pub fn save_prompt_state(
         stickies: state.active_stickies.clone(),
         cooldowns: state.active_cooldowns.clone(),
         opening: opening_of(db, chat_id, newest)?,
+        settled: state.messages.len(),
     })?;
     let counted: Vec<(i64, i64)> = state
         .messages

@@ -2,20 +2,17 @@
 //! lorebook entries, as much chat history as fits the context, and the example
 //! dialogue in what is left.
 //!
-//! What stays the same from reply to reply comes first, so the provider's
-//! cache of the prompt's start holds (the owner): the system message, the
-//! lorebook entries always given (`is_steady`), the example dialogue, the
-//! history. What changes (the other lorebook entries triggered, the
-//! documents' pieces, the memory note, in that order) stands just before the
-//! newest message (build spec A7). The history is dropped in blocks, not
-//! message by message (the owner): a block is an [`HISTORY_BLOCKS`]th of the
-//! context, counted from the chat's first message, and the oldest message
-//! kept is the first of its block. The example dialogue is cut to whole
-//! blocks of room too, and is left out once the history no longer fits
-//! whole. The memory note takes `MEMORY_ROOM` where that fits, so the history
-//! does not move as it grows. The reply's room is kept first, and a part
-//! that would leave none is left out; the newest message's room is kept
-//! before the memory, the documents and the lorebook are added.
+//! What stays the same from reply to reply comes first, so the provider's cache
+//! of the prompt's start holds (the owner): the system message, the lorebook
+//! entries always given (`is_steady`), the example dialogue, the history; what
+//! changes (other entries triggered, documents' pieces, the memory note) stands
+//! just before the newest message (build spec A7). A history message's macros
+//! draw the same every build and set variables once (`expand_message`). The
+//! history is dropped in blocks of an [`HISTORY_BLOCKS`]th of the context,
+//! counted from the chat's first message (the owner); the example dialogue in
+//! whole blocks, left out once the history no longer fits whole. The reply's
+//! room is kept first, then the newest message's, then `MEMORY_ROOM` for the
+//! memory note, so the history does not move as it grows.
 
 use crate::lorebook::{self, Activated};
 use crate::macros::{self, MacroContext};
@@ -240,8 +237,38 @@ impl Builder<'_, '_> {
             global: Some(&mut *self.globals),
             tracking_id: Some(tracking_id),
             language: None,
+            seed: None,
         };
         macros::render(text, &mut ctx)
+    }
+
+    /// The chat's `i`th message with its macros run, its draws seeded by its id
+    /// so they are the same on every build; one of the messages whose effects
+    /// the variables hold already (`ChatState::settled`) is read on copies of them.
+    fn expand_message(&mut self, i: usize) -> String {
+        let message = &self.chat.messages[i];
+        if !message.content.contains("{{") {
+            return message.content.clone();
+        }
+        let raw = message.content.clone();
+        let tracking_id = format!("history_{}", message.id);
+        let seed = seed_of(&message.id);
+        let mut copies = (i < self.chat.settled)
+            .then(|| (self.chat.local_variables.clone(), self.globals.clone()));
+        let (local, global) = match &mut copies {
+            Some((local, global)) => (local, global),
+            None => (&mut self.chat.local_variables, &mut *self.globals),
+        };
+        let mut ctx = MacroContext {
+            char_name: self.req.character.display_name(),
+            user_name: &self.chat.persona_name,
+            local: Some(local),
+            global: Some(global),
+            tracking_id: Some(&tracking_id),
+            language: None,
+            seed: Some(seed),
+        };
+        macros::render(&raw, &mut ctx)
     }
 
     /// Adds a section to the system message and records its cost.
@@ -603,6 +630,11 @@ impl Builder<'_, '_> {
         // Each message taken: where it stands in the chat, its tokens and text.
         let mut taken: Vec<(usize, usize, String)> = Vec::new();
         let mut full = None;
+        // The messages not yet settled run their macros first, oldest first, so a newer one's variable wins.
+        let settled = self.chat.settled.min(total);
+        let mut fresh: Vec<Option<String>> = (settled..total)
+            .map(|i| self.is_sent(i).then(|| self.expand_message(i)))
+            .collect();
 
         for i in (0..total).rev() {
             if !self.is_sent(i) {
@@ -611,10 +643,11 @@ impl Builder<'_, '_> {
             let message = &self.chat.messages[i];
             let role = message.role;
             let cached = message.token_count.unwrap_or(0);
-            let tracking_id = format!("history_{}", message.id);
-            let raw = message.content.clone();
             let pictures = message.pictures.clone();
-            let content = self.expand(&raw, &tracking_id);
+            let content = match i.checked_sub(settled) {
+                Some(at) => fresh[at].take().unwrap_or_default(),
+                None => self.expand_message(i),
+            };
 
             let mut tokens = cached;
             if tokens == 0 && !content.is_empty() {
@@ -757,4 +790,11 @@ impl Builder<'_, '_> {
             self.messages.insert(index, message);
         }
     }
+}
+
+/// A message's id as a seed (FNV-1a), the same in every build and app version.
+fn seed_of(id: &str) -> u64 {
+    id.bytes().fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
+        (hash ^ u64::from(byte)).wrapping_mul(0x0100_0000_01b3)
+    })
 }

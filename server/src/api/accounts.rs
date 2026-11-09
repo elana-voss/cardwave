@@ -352,6 +352,7 @@ async fn delete(
                 || held.describing().contains_key(&id)
                 || held.remembering().values().any(|user| *user == id)
                 || held.coding().values().any(|task| task.user() == id)
+                || held.titles.for_user(id)
                 || held.user_at_work(id);
             anyhow::ensure!(!busy, Fail::new(Code::AccountBusy));
             users::delete(db, id)?;

@@ -447,10 +447,47 @@ fn a_greetings_date_is_written_in_the_apps_language() {
         .state
         .messages[0]
         .content;
-    // Japanese's "2026年11月9日", not "November 9, 2026".
     let date = shown.strip_prefix("Today: ").unwrap();
+    assert!(japanese_date(date), "{shown}");
+}
+
+/// Japanese's long date ("2026年11月9日"), not English's ("November 9, 2026").
+fn japanese_date(shown: &str) -> bool {
+    shown.ends_with('日') && shown.contains('年') && shown.contains('月')
+}
+
+#[test]
+fn the_librarys_excerpt_writes_its_date_in_the_apps_language() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    // Indexed before the language is chosen: the stored excerpt holds no date of a language.
+    let file = common::card_png(&json!({"data": {"name": "Aki", "first_mes": "Today: {{date}}"}}));
+    let card = cards::import(db, me, &file).unwrap();
+    let change = ChangeSettings {
+        app_language: Some("ja".to_string()),
+        ..Default::default()
+    };
+    settings::change(db, me, &change).unwrap();
+    let listed = cards::list(db, me).unwrap();
+    let date = listed[0].excerpt.strip_prefix("Today: ").unwrap();
+    assert!(japanese_date(date), "{}", listed[0].excerpt);
+    let one = cards::get(db, me, card.card_id).unwrap().unwrap();
+    assert_eq!(one.excerpt, listed[0].excerpt);
+}
+
+#[tokio::test]
+async fn the_cards_page_writes_its_date_in_the_apps_language() {
+    let server = start().await;
+    let file = common::card_png(&json!({"data": {"name": "Aki", "first_mes": "Today: {{date}}"}}));
+    let (id, _) = server.add_card(file, false).await;
+    let set = server
+        .patch("/api/settings", json!({ "app_language": "ja" }))
+        .await;
+    assert_eq!(set.0, 200, "{}", set.1);
+    let (_, page) = server.get(&format!("/api/cards/{id}")).await;
+    let shown = page["characters"][0]["greetings"][0].as_str().unwrap();
     assert!(
-        date.ends_with('日') && date.contains('年') && date.contains('月'),
+        japanese_date(shown.strip_prefix("Today: ").unwrap()),
         "{shown}"
     );
 }

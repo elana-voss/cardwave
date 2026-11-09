@@ -1,3 +1,13 @@
+# 0.1.3
+
+Perbaikan kecil.
+
+- Membuka Cardwave saat sudah terbuka membawa jendelanya ke depan, dan saat tidak bisa dimulai karena program lain memakai port-nya, Cardwave memberitahukannya.
+- Lebih mudah dibaca: kata pada tombol biru dan petunjuk kolom kosong di tema gelap, inisialmu di tema terang.
+- Obrolan: dadu, pilihan acak, dan variabel dalam pesan yang terkirim tetap sama di setiap balasan berikutnya.
+- Tanggal dan waktu di perpustakaan dan di halaman karakter mengikuti bahasamu.
+- Dikte mendengar bahkan satu kata pendek, dan kalimat panjang tanpa tanda baca dibacakan utuh.
+
 # 0.1.2
 
 Perbaikan lagi, dari putaran pengujian ketiga.

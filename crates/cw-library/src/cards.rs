@@ -12,7 +12,8 @@
 //! and then the user's own (`cards.own_tags`) and the file's as its tags, each once, and its logline; a title the user gave
 //! (`cards.title_edited`) is never replaced. Traps: the file's `user-state` flags are not taken over (the
 //! file may be a stranger's); `edit` asks for the card's version again inside its transaction; a stored
-//! excerpt names the user by `USER_MARK`, worded in the app's language when read (`worded`). Its parts:
+//! excerpt names the user by `USER_MARK` and the date by macros' marks, worded in the app's language when read
+//! (`worded`). Its parts:
 //! `store` (putting a card in), `versions` (edits and drafts), `files` (reading and exporting it), `folder`
 //! and `watch` (a folder of cards imported, and watched).
 
@@ -23,6 +24,7 @@ use cw_ccv4::png::Container;
 use cw_ccv4::tag_key;
 use cw_ccv4::{Document, display};
 use cw_core::{Code, Fail};
+use cw_prompt::macros;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use unicode_normalization::UnicodeNormalization;
@@ -263,18 +265,22 @@ pub fn list(db: &dyn Storage, user: i64) -> anyhow::Result<Vec<CardSummary>> {
 pub(crate) const USER_MARK: &str = "\u{E000}";
 
 /// `cards` with [`USER_MARK`] in their excerpts replaced by the stand-in name in
-/// the app's language; the settings are read only when a mark is there.
+/// the app's language, and the date and time marks by now's in that language;
+/// the settings are read only when a mark is there.
 fn worded(
     db: &dyn Storage,
     user: i64,
     mut cards: Vec<CardSummary>,
 ) -> anyhow::Result<Vec<CardSummary>> {
-    if cards.iter().any(|card| card.excerpt.contains(USER_MARK)) {
+    let marked = |excerpt: &str| excerpt.contains(USER_MARK) || macros::has_marks(excerpt);
+    if cards.iter().any(|card| marked(&card.excerpt)) {
         let word = crate::settings::user_outside_chat(db, user)?;
+        let language = crate::settings::app_language(db, user)?;
         for card in &mut cards {
-            if card.excerpt.contains(USER_MARK) {
-                // Cut again: the word is longer than the mark it was measured as.
-                card.excerpt = display::excerpt(&card.excerpt.replace(USER_MARK, &word));
+            if marked(&card.excerpt) {
+                let worded = card.excerpt.replace(USER_MARK, &word);
+                // Cut again: the words are longer than the marks they were measured as.
+                card.excerpt = display::excerpt(&macros::marks_in(&worded, &language));
             }
         }
     }

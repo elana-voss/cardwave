@@ -1,6 +1,18 @@
 /* The app's own rules over the design system's parts (cardwave.css, read before this file): what no part of it
    holds, written with its tokens. A size the boards draw inline is a rule here, never a `style=` in the
    TypeScript, so a user's own CSS can change it. An area's own rules are in app/<area>.css. */
+/* Light's and Dark's colours where the design system's fall under 4.5:1 for small words (WCAG AA): the faint grey
+   in Dark, the blue words on the pale blue round in Light, the white words on the blue in both. A look of
+   app/looks.css keeps its own colours: it sets these tokens itself, read later at the same weight, and the
+   buttons' blue is changed only without a look. */
+:root {
+  --faint: light-dark(#a3a3a3, #858588);
+  --accent-ink: light-dark(#006fc6, #9cceff);
+}
+:root:is(:not([data-theme]), [data-theme="light"], [data-theme="dark"]) :is(.btn-primary, .send) {
+  --accent: light-dark(#0078d6, #3178c6);
+  --accent-hover: light-dark(#006bc4, #2d6eb6);
+}
 /* An icon is drawn in lines of the words' colour. */
 svg {
   flex: none;

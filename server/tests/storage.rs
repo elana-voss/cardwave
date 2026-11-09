@@ -656,6 +656,28 @@ fn what_a_reply_changed_holds_only_on_its_own_branch() {
 }
 
 #[test]
+fn a_sent_messages_macros_change_the_variables_once() {
+    let scratch = Scratch::new();
+    let (db, me) = (&scratch.db, scratch.user);
+    let chat_id = chat_with_mira(&scratch, None, 0);
+    chats::append(db, me, chat_id, &user("{{.visits++}}Hello.")).unwrap();
+    let mut visits = Vec::new();
+    for next in ["Go on.", "And then?"] {
+        let mut inputs = chats::prompt_inputs(db, me, chat_id, None).unwrap();
+        build(
+            &PromptRequest::new(&inputs.character, 10_000),
+            &mut inputs.state,
+            &mut Variables::new(),
+        );
+        visits.push(inputs.state.local_variables["visits"].clone());
+        chats::save_prompt_state(db, me, chat_id, &inputs.state).unwrap();
+        chats::append(db, me, chat_id, &reply("Mm.")).unwrap();
+        chats::append(db, me, chat_id, &user(next)).unwrap();
+    }
+    assert_eq!(visits, ["1", "1"]);
+}
+
+#[test]
 fn a_reply_that_ends_without_text_is_removed() {
     let scratch = Scratch::new();
     let (db, me) = (&scratch.db, scratch.user);

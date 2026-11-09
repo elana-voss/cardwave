@@ -1,3 +1,13 @@
+# 0.1.3
+
+Pequenas correções.
+
+- Abrir o Cardwave quando ele já está aberto traz a janela para a frente, e quando ele não consegue iniciar porque outros programas usam as portas dele, ele avisa.
+- Mais fácil de ler: as palavras dos botões azuis e as dicas de campos vazios no tema escuro, suas iniciais no tema claro.
+- Chats: dados, escolhas aleatórias e variáveis de uma mensagem enviada continuam iguais em todas as respostas seguintes.
+- Datas e horas na biblioteca e na página de um personagem seguem o seu idioma.
+- O ditado ouve até uma única palavra curta, e frases longas sem pontuação são lidas em voz alta por inteiro.
+
 # 0.1.2
 
 Mais correções, de uma terceira rodada de testes.

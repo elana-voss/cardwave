@@ -2,9 +2,29 @@
 //! (a greeting shown in a chat): each language's own long date and clock, by
 //! its file's code (cw-core's `file_code`). English's for a language the app
 //! has no file of, and where no language is given: the prompt's form, which the
-//! model reads. Trap: a new language's file needs its forms here too.
+//! model reads. A text stored before it is shown (the library's excerpt) is
+//! rendered with the language [`MARKS`] and gets the forms when it is read
+//! ([`marks_in`]). Trap: a new language's file needs its forms here too.
 
-use chrono::{Datelike, NaiveDate, NaiveTime, Timelike};
+use chrono::{Datelike, Local, NaiveDate, NaiveTime, Timelike};
+
+/// Stands as the language for marks in place of `{{date}}` and `{{time}}`,
+/// characters of Unicode's private use area, which no card's text holds.
+pub const MARKS: &str = "\u{E001}";
+const DATE_MARK: &str = "\u{E002}";
+const TIME_MARK: &str = "\u{E003}";
+
+/// Whether `text` holds a mark of [`MARKS`].
+pub fn has_marks(text: &str) -> bool {
+    text.contains(DATE_MARK) || text.contains(TIME_MARK)
+}
+
+/// `text` with its marks replaced by now's date and time as `language` writes them.
+pub fn marks_in(text: &str, language: &str) -> String {
+    let now = Local::now();
+    text.replace(DATE_MARK, &date_in(Some(language), now.date_naive()))
+        .replace(TIME_MARK, &time_in(Some(language), now.time()))
+}
 
 const DE: [&str; 12] = [
     "Januar",
@@ -108,6 +128,9 @@ const EN: [&str; 12] = [
 
 /// `date` as `language` writes a day in full ("November 9, 2026", "9. November 2026").
 pub(crate) fn date_in(language: Option<&str>, date: NaiveDate) -> String {
+    if language == Some(MARKS) {
+        return DATE_MARK.into();
+    }
     let (day, year, month) = (date.day(), date.year(), date.month0() as usize);
     match code(language).as_str() {
         "de" => format!("{day}. {} {year}", DE[month]),
@@ -125,6 +148,9 @@ pub(crate) fn date_in(language: Option<&str>, date: NaiveDate) -> String {
 
 /// `time` as `language` reads a clock ("9:05 PM", "21:05").
 pub(crate) fn time_in(language: Option<&str>, time: NaiveTime) -> String {
+    if language == Some(MARKS) {
+        return TIME_MARK.into();
+    }
     let (hour, minute) = (time.hour(), time.minute());
     let twelve = match hour % 12 {
         0 => 12,
@@ -187,6 +213,7 @@ mod tests {
                     global: None,
                     tracking_id: None,
                     language,
+                    seed: None,
                 },
             )
         };

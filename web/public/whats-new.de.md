@@ -1,3 +1,13 @@
+# 0.1.3
+
+Kleine Korrekturen.
+
+- Wird Cardwave gestartet, während es schon offen ist, kommt sein Fenster nach vorn; kann es nicht starten, weil andere Programme seine Ports belegen, sagt es das.
+- Besser lesbar: die Worte auf blauen Schaltflächen und die Hinweise auf leere Felder im dunklen Design, deine Initialen im hellen Design.
+- Chats: Würfel, Zufallswahlen und Variablen in einer gesendeten Nachricht bleiben in jeder späteren Antwort, wie sie waren.
+- Datum und Uhrzeit in der Bibliothek und auf der Seite eines Charakters folgen deiner Sprache.
+- Das Diktat hört auch ein einzelnes kurzes Wort, und lange Sätze ohne Satzzeichen werden ganz vorgelesen.
+
 # 0.1.2
 
 Weitere Korrekturen aus einer dritten Testrunde.

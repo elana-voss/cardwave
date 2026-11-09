@@ -1,3 +1,13 @@
+# 0.1.3
+
+Các sửa lỗi nhỏ.
+
+- Mở Cardwave khi nó đang mở sẽ đưa cửa sổ của nó lên trước, và khi không thể khởi động vì chương trình khác đang dùng cổng của nó, Cardwave sẽ báo cho bạn.
+- Dễ đọc hơn: chữ trên nút màu xanh và gợi ý ô trống trong giao diện tối, chữ viết tắt tên bạn trong giao diện sáng.
+- Trò chuyện: xúc xắc, lựa chọn ngẫu nhiên và biến trong tin nhắn đã gửi giữ nguyên trong mọi câu trả lời sau đó.
+- Ngày và giờ trong thư viện và trên trang nhân vật theo ngôn ngữ của bạn.
+- Đọc chính tả nghe được cả một từ ngắn, và câu dài không có dấu câu được đọc to trọn vẹn.
+
 # 0.1.2
 
 Thêm các sửa lỗi từ vòng kiểm thử thứ ba.

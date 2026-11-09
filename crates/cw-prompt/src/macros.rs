@@ -9,11 +9,15 @@ use std::fmt;
 use std::sync::LazyLock;
 
 use chrono::{DateTime, Duration, Local, TimeZone, Utc};
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 use regex::{Captures, Regex};
 
 use crate::Variables;
 
 mod dates;
+
+pub use dates::{MARKS, has_marks, marks_in};
 
 /// Limits re-expansion of a macro's returned value (a variable whose stored value
 /// is itself `{{char}}`), so variables that refer to each other in a cycle end.
@@ -62,6 +66,9 @@ pub struct MacroContext<'a> {
     /// The app's language a text is shown in (a greeting), for `{{date}}` and
     /// `{{time}}`; none: English's forms, as the prompt has them.
     pub language: Option<&'a str>,
+    /// Where set, `{{random}}`, `{{roll}}` and a `{{pick}}` not yet kept draw from
+    /// it, so a text renders the same draws every time (a chat's sent message).
+    pub seed: Option<u64>,
 }
 
 /// Replaces every macro in `text`. Unknown macros and unbalanced braces are left
@@ -70,16 +77,49 @@ pub fn render(text: &str, ctx: &mut MacroContext<'_>) -> String {
     if !text.contains("{{") {
         return text.to_string();
     }
-    Engine { ctx, picks: 0 }.render(text, 0, 0)
+    let rng = ctx.seed.map(StdRng::seed_from_u64);
+    Engine { ctx, picks: 0, rng }.render(text, 0, 0)
 }
 
 struct Engine<'e, 'a> {
     ctx: &'e mut MacroContext<'a>,
     /// Number of `{{pick}}`s met so far in this render.
     picks: usize,
+    /// The seeded draws (`MacroContext::seed`); none: the thread's.
+    rng: Option<StdRng>,
 }
 
 impl Engine<'_, '_> {
+    /// A number in `low..=high`.
+    fn draw(&mut self, low: i64, high: i64) -> i64 {
+        match &mut self.rng {
+            Some(rng) => rng.random_range(low..=high),
+            None => rand::random_range(low..=high),
+        }
+    }
+
+    fn random_of(&mut self, options: Vec<&str>) -> String {
+        options[self.draw(0, options.len() as i64 - 1) as usize].to_string()
+    }
+
+    /// `{{roll::6}}` or `{{roll::2d6}}`.
+    fn roll(&mut self, arg: &str) -> String {
+        if arg.is_empty() {
+            return String::new();
+        }
+        let arg = arg.to_lowercase();
+        let faces = |text: &str| parse_int(text).unwrap_or(20).clamp(1, MAX_FACES);
+        let Some((count, sides)) = arg.split_once('d') else {
+            return self.draw(1, faces(&arg)).to_string();
+        };
+        let count = parse_int(count).unwrap_or(1).min(MAX_DICE);
+        let sides = faces(sides);
+        (0..count)
+            .map(|_| self.draw(1, sides))
+            .sum::<i64>()
+            .to_string()
+    }
+
     /// One pass over `text`. At each `{{` the matching `}}` is found, nested macros
     /// are resolved first, then the macro itself is applied before the walk moves
     /// on. `depth` counts re-expansions of returned values, `level` all nesting.
@@ -239,12 +279,12 @@ impl Engine<'_, '_> {
             "time" => dates::time_in(self.ctx.language, Local::now().time()),
             "date" => dates::date_in(self.ctx.language, Local::now().date_naive()),
             "random" => options(arg, double_colon)
-                .map(random_of)
+                .map(|o| self.random_of(o))
                 .unwrap_or_default(),
             "pick" => options(arg, double_colon)
                 .map(|o| self.pick(o))
                 .unwrap_or_default(),
-            "roll" => roll(arg),
+            "roll" => self.roll(arg),
             "getvar" => get_var(self.ctx.local.as_deref(), arg, double_colon),
             "setvar" => set_var(self.ctx.local.as_deref_mut(), arg, double_colon),
             "getglobalvar" => get_var(self.ctx.global.as_deref(), arg, double_colon),
@@ -261,10 +301,9 @@ impl Engine<'_, '_> {
     /// text, remembered in the chat's variables. Without them or a tracking id it
     /// is a plain random choice.
     fn pick(&mut self, options: Vec<&str>) -> String {
-        let (Some(local), Some(tracking_id)) =
-            (self.ctx.local.as_deref_mut(), self.ctx.tracking_id)
+        let (Some(local), Some(tracking_id)) = (self.ctx.local.as_deref(), self.ctx.tracking_id)
         else {
-            return random_of(options);
+            return self.random_of(options);
         };
         let key = format!("__sys_pick_{tracking_id}_{}", self.picks);
         self.picks += 1;
@@ -273,8 +312,10 @@ impl Engine<'_, '_> {
         {
             return saved.clone();
         }
-        let picked = random_of(options);
-        store(local, &key, picked.clone());
+        let picked = self.random_of(options);
+        if let Some(local) = self.ctx.local.as_deref_mut() {
+            store(local, &key, picked.clone());
+        }
         picked
     }
 
@@ -482,28 +523,6 @@ fn options(arg: &str, double_colon: bool) -> Option<Vec<&str>> {
         .filter(|o| !o.is_empty())
         .collect();
     (!options.is_empty()).then_some(options)
-}
-
-fn random_of(options: Vec<&str>) -> String {
-    options[rand::random_range(0..options.len())].to_string()
-}
-
-/// `{{roll::6}}` or `{{roll::2d6}}`.
-fn roll(arg: &str) -> String {
-    if arg.is_empty() {
-        return String::new();
-    }
-    let arg = arg.to_lowercase();
-    let faces = |text: &str| parse_int(text).unwrap_or(20).clamp(1, MAX_FACES);
-    let Some((count, sides)) = arg.split_once('d') else {
-        return rand::random_range(1..=faces(&arg)).to_string();
-    };
-    let count = parse_int(count).unwrap_or(1).min(MAX_DICE);
-    let sides = faces(sides);
-    (0..count)
-        .map(|_| rand::random_range(1..=sides))
-        .sum::<i64>()
-        .to_string()
 }
 
 fn repeat_count(arg: &str) -> usize {

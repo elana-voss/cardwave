@@ -171,6 +171,38 @@ impl Pieces {
         let text = String::from_utf8_lossy(&bytes).replace(SPACE, " ");
         text.strip_prefix(' ').map(str::to_string).unwrap_or(text)
     }
+
+    /// Where `tokens` are cut so that no piece holds more than `most`: before
+    /// the last word that fits, else at the limit, never inside a character.
+    pub fn cuts_within(&self, tokens: &[u32], most: usize) -> Vec<usize> {
+        let most = most.max(1);
+        let starts_word = |id: u32| {
+            self.all
+                .get(id as usize)
+                .is_some_and(|text| text.starts_with(SPACE))
+        };
+        // A UTF-8 continuation byte (10xxxxxx) goes on the character before it.
+        let inside = |id: u32| {
+            self.bytes
+                .iter()
+                .position(|byte| *byte == Some(id))
+                .is_some_and(|byte| byte & 0xC0 == 0x80)
+        };
+        let mut cuts = vec![0];
+        let mut start = 0;
+        while tokens.len() - start > most {
+            let end = start + most;
+            let at = (start + 1..=end)
+                .rev()
+                .find(|&i| starts_word(tokens[i]))
+                .or_else(|| (start + 1..=end).rev().find(|&i| !inside(tokens[i])))
+                .unwrap_or(end);
+            cuts.push(at);
+            start = at;
+        }
+        cuts.push(tokens.len());
+        cuts
+    }
 }
 
 /// Keeps the better of the way at a place and `way`.
@@ -288,5 +320,17 @@ mod tests {
         let model = model();
         assert_eq!(model.decode(&model.encode("the cat")), "the cat");
         assert_eq!(model.decode(&[5, 9, 10]), "é");
+    }
+
+    #[test]
+    fn a_long_run_is_cut_before_a_word_else_at_the_limit_between_characters() {
+        let model = model();
+        assert_eq!(
+            model.cuts_within(&model.encode("the cat the cat the cat"), 3),
+            [0, 3, 6]
+        );
+        // "▁" C3 A9 C3 A9: never between C3 and A9.
+        assert_eq!(model.cuts_within(&model.encode("éé"), 2), [0, 1, 3, 5]);
+        assert_eq!(model.cuts_within(&model.encode("the cat"), 2), [0, 2]);
     }
 }

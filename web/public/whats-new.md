@@ -1,3 +1,13 @@
+# 0.1.3
+
+Small fixes.
+
+- Starting Cardwave while it is open brings its window to the front, and when it cannot start because other programs use its ports, it says so.
+- Easier to read: the words on blue buttons and the empty hints in the dark theme, your initials in the light theme.
+- Chats: dice, random picks and variables in a sent message stay as they were in every later reply.
+- Dates and times in the library and on a character's page follow your language.
+- Dictation hears even a single short word, and long sentences without punctuation are read aloud in full.
+
 # 0.1.2
 
 More fixes, from a third round of testing.

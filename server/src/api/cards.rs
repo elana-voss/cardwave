@@ -396,10 +396,11 @@ async fn detail(
             let (card, files) = cards::newest(db, user, id)?;
             let document = Document::parse(&files)?;
             let stand_in = settings::user_outside_chat(db, user)?;
+            let language = settings::app_language(db, user)?;
             let mut characters = Vec::new();
             for character in document.characters() {
                 let name = document.character_name(character);
-                let shown = |text: &str| display::render(text, &name, &stand_in);
+                let shown = |text: &str| display::render(text, &name, &stand_in, &language);
                 let texts = mapping::character(&document, character).unwrap_or_default();
                 characters.push(CardCharacter {
                     id: character.to_string(),
