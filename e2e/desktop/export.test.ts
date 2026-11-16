@@ -85,7 +85,7 @@ test("a card imported in the desktop window is exported from its menu, and the f
 
   const card = join(app.scratch, "lamp.png");
   writeFileSync(card, cardFile({ name: "Desk Lamp", description: "A lamp.", first_mes: "Click.", tags: ["desk"] }));
-  await app.type(await app.find('input[type="file"]'), card);
+  await app.type(await app.find('input[type="file"]', true), card);
   // One file alone: the notice at the window's foot says that it came.
   await app.findText("span", "“Desk Lamp” imported.");
 

@@ -806,3 +806,114 @@ characters = ["character.ada", "character.bo"]
     assert_eq!(cw_ccv4::edit::first_only(&mut files).unwrap(), None);
     assert_eq!(files, before);
 }
+
+#[test]
+fn of_a_card_imported_with_several_characters_its_translations_stay_with_the_first() {
+    let file = r#"spec = "ccv4:1.0.0"
+
+[name.ada]
+text = "Ada"
+
+[name.bo]
+text = "Bo"
+
+[scenario.both]
+text = "A ship."
+
+[scenario.both-de]
+language = "de"
+text = "Ein Schiff."
+
+[character.ada]
+name-char = "name.ada"
+prompt = ["name.ada", "scenario.both", "CHAT-HISTORY"]
+
+[character.ada-de]
+name-char = "name.ada"
+prompt = ["name.ada", "scenario.both-de", "CHAT-HISTORY"]
+
+[character.bo]
+name-char = "name.bo"
+prompt = ["name.bo", "scenario.both", "CHAT-HISTORY"]
+"#;
+    let mut files = vec![("card/0001_card.toml".to_string(), file.to_string())];
+    let note = cw_ccv4::edit::first_only(&mut files).unwrap();
+    assert_eq!(
+        note,
+        Some(cw_ccv4::ImportNote::FirstCharacterKept { name: "Ada".into() })
+    );
+    let document = Document::parse(&files).unwrap();
+    assert_eq!(document.ids("character"), ["ada", "ada-de"]);
+    assert_eq!(document.text("scenario.both-de"), Some("Ein Schiff."));
+    // A card of one character in two languages stays as it is.
+    let before = files.clone();
+    assert_eq!(cw_ccv4::edit::first_only(&mut files).unwrap(), None);
+    assert_eq!(files, before);
+}
+
+#[test]
+fn a_mode_renamed_or_removed_is_so_in_the_texts_of_the_cards_other_language() {
+    let file = r#"spec = "ccv4:1.0.0"
+
+[meta-info]
+modes = ["Roleplay", "Assistant"]
+
+[name.ada]
+text = "Ada"
+
+[scenario.work]
+text = "An office."
+modes = ["Assistant"]
+
+[scenario.work-de]
+language = "de"
+text = "Ein Büro."
+modes = ["Assistant"]
+
+[scenario.play-de]
+language = "de"
+text = "Ein Spiel."
+modes = ["Roleplay"]
+
+[character.ada]
+name-char = "name.ada"
+prompt = ["name.ada", "scenario.work", "CHAT-HISTORY"]
+
+[character.ada-de]
+name-char = "name.ada"
+prompt = ["name.ada", "scenario.work-de", "scenario.play-de", "CHAT-HISTORY"]
+"#;
+    let files = vec![("card/0001_card.toml".to_string(), file.to_string())];
+    let modes = |document: &Document, reference: &str| {
+        let block = document.lookup(reference).unwrap();
+        let listed = block.get("modes").and_then(|modes| modes.as_array());
+        let listed = listed.map(|modes| modes.iter().filter_map(|mode| mode.as_str()));
+        listed
+            .into_iter()
+            .flatten()
+            .map(str::to_string)
+            .collect::<Vec<_>>()
+    };
+    // Renamed with the first language in view, as the page does it.
+    let mut edit = CardEdit::of(&Document::parse(&files).unwrap(), 1, "Ada", None);
+    edit.modes = vec!["Roleplay".into(), "Helper".into()];
+    edit.renamed = vec![("assistant".into(), "Helper".into())];
+    edit.characters[0].scenario[0].modes = vec!["Helper".into()];
+    let renamed = cw_ccv4::edit::apply(&files, &edit, None, 0)
+        .unwrap()
+        .unwrap();
+    assert_eq!(modes(&renamed.document, "scenario.work-de"), ["Helper"]);
+    assert_eq!(modes(&renamed.document, "scenario.play-de"), ["Roleplay"]);
+    // Removed: a text that was in that mode alone is used in all.
+    let mut edit = CardEdit::of(&renamed.document, 2, "Ada", None);
+    edit.modes = vec!["Roleplay".into()];
+    edit.characters[0].scenario[0].modes.clear();
+    let removed = cw_ccv4::edit::apply(&renamed.files, &edit, None, 0)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        modes(&removed.document, "scenario.work-de"),
+        Vec::<String>::new()
+    );
+    assert_eq!(modes(&removed.document, "scenario.play-de"), ["Roleplay"]);
+}

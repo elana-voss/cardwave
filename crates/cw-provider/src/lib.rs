@@ -149,9 +149,7 @@ pub fn refusal_of(failure: &anyhow::Error) -> Option<(u16, Fail)> {
 
 /// Whether `failure` is the provider saying it no longer offers the model ([`refused`]'s "no_model").
 pub fn no_longer_offered(failure: &anyhow::Error) -> bool {
-    refusal_of(failure).is_some_and(|(_, fail)| {
-        matches!(fail.details.get("refusal"), Some(Detail::Text(said)) if said == "no_model")
-    })
+    refusal_of(failure).is_some_and(|(_, fail)| fail.has("refusal", "no_model"))
 }
 
 /// What goes along with a prompt. A value left unset is not sent, so the

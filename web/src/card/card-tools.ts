@@ -120,9 +120,12 @@ export function wholeCard(c: Card): CardTools {
         for (const [at] of kept) redraw(at);
       },
       kept[0][1].made,
-    ).finally(() => {
+    ).then((saved) => {
       saving = false;
-      enable();
+      // Not saved: the page read the card anew, so the changes still hold; they wait for Keep again.
+      if (!saved) for (const [at, change] of kept) waiting.set(at, change);
+      drawBar();
+      if (!saved) for (const [at] of kept) redraw(at);
     });
   };
 

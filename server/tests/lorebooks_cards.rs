@@ -748,7 +748,7 @@ async fn lorebooks_are_imported_listed_changed_and_deleted_over_http() {
         (status, &imported["lorebook"]["name"]),
         (201, &json!("Large"))
     );
-    let huge = reqwest::Client::new()
+    let huge = common::server::client()
         .post(format!("http://{}/api/lorebooks", server.addr))
         .body(vec![b' '; 20 * 1024 * 1024 + 1]);
     // The server may hang up on what it will not read, before it has said so.

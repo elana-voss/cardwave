@@ -1,4 +1,4 @@
-//! [`first_only`]: a card imported with several characters keeps the first.
+//! [`first_only`]: a card imported with several characters keeps the first, with its translations.
 
 use anyhow::Context;
 use cw_core::{Code, Fail};
@@ -10,7 +10,8 @@ use crate::{Document, ImportNote, is_placeholder, plain, split_reference, string
 use crate::edit::{Named, find};
 
 /// Keeps the first character of a card imported with several, as a card holds
-/// one (the owner, 2026-10-18): the others go from its `files`, with its groups
+/// one (the owner, 2026-10-18), and the first's translations
+/// (`languages::add`): the others go from its `files`, with its groups
 /// and every block that only they named. Answers what the import tells the
 /// user then; none where the card had one character or none.
 pub fn first_only(files: &mut [(String, String)]) -> anyhow::Result<Option<ImportNote>> {
@@ -20,14 +21,24 @@ pub fn first_only(files: &mut [(String, String)]) -> anyhow::Result<Option<Impor
     }
     let document = Document::parse(files)?;
     let ids = document.ids("character");
-    let [first, others @ ..] = ids.as_slice() else {
+    let Some(&first) = ids.first() else {
         return Ok(None);
     };
+    let translations = document.translations();
+    let translated: Vec<&str> = translations
+        .iter()
+        .map(|code| document.in_language(first, code))
+        .collect();
+    let others: Vec<&str> = ids[1..]
+        .iter()
+        .copied()
+        .filter(|id| !translated.contains(id))
+        .collect();
     if others.is_empty() {
         return Ok(None);
     }
     let mut gone: Vec<String> = Vec::new();
-    for id in others {
+    for &id in &others {
         // `others` are ids the document listed.
         let block = document.character(id).expect("listed");
         for key in ["prompt", "greetings", "group-greetings", "lorebooks"] {
@@ -66,7 +77,7 @@ pub fn first_only(files: &mut [(String, String)]) -> anyhow::Result<Option<Impor
         if let Some(all) =
             find(file.as_item_mut(), &["character"]).and_then(Item::as_table_like_mut)
         {
-            for id in others {
+            for id in &others {
                 all.remove(id);
             }
         }

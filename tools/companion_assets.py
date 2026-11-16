@@ -1,60 +1,146 @@
-"""Writes what the companion plays, from the owner's Mixamo material (..\\mixamo_dataset, Make-It-Animatable's copy of
-Mixamo's clips and characters; the raw files are never handed out, only these):
+"""Writes what the companion plays, from the owner's Mixamo material (../mixamo_dataset: its named clips in
+data_named/animation_motion, their catalogue viewer/catalogue/clips.json, the characters in data; the raw files are
+never handed out, only these):
 
 - web/src/figures/animations.glb, the carrier: a Mixamo skeleton with no body carrying the clips `CLIPS` names, which
-  every 3D figure is given (web/src/figures/retarget.ts) and which is never shown;
+  every 3D figure is given (web/src/figures/retarget.ts) and which is never shown; a name's first version is the
+  action of its name, the others `<name>_2`, `<name>_3` (the companion rotates among them);
+- web/src/figures/animations.json, each action's mood and the pose it starts and ends in, from the catalogue
+  (`POSES` maps the catalogue's poses to the companion's, web/src/companion/clips.ts);
 - web/src/figures/woman.glb and man.glb, the base figures `FIGURES` names, textures at most `TEXTURE` px, as JPEG.
 
-The clips were picked by their motion (milestone 95a; the plan holds the list and which chains into which): each is
-in place (retarget.ts keeps only the hips' height), standing ones start and end near the idle's pose. Every clip's
-skeleton must rest as the first one's, or the run stops.
-
-Run with Blender 5.2, from anywhere (every path is absolute); a rerun writes the same bytes:
+`CLIPS` is the owner's 100 names (ticket 141); where he kept fewer versions than exist, the files are those taken
+until he picks in the viewer (the ticket's questions): a swap is one file name here. Every clip's skeleton must rest
+as the first one's, or the run stops. Run with Blender 5.2, from anywhere (every path is absolute):
 blender -b -P tools/companion_assets.py
 """
 
+import json
 import pathlib
 
 import bpy
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT.parent / "mixamo_dataset"
+MOTION = DATA / "data_named" / "animation_motion"
+CATALOGUE = DATA / "viewer" / "catalogue" / "clips.json"
 OUT = ROOT / "web" / "src" / "figures"
 TEXTURE = 1024
 
-# The companion's name of each clip (web/src/companion/figure.ts, `CARRIED`) and its file in DATA/animation.
+# The companion's name of each clip (the model plays it by this name, crates/cw-chat's `Clip`) and its versions' files
+# in MOTION.
 CLIPS = {
-    "idle": "2a468c494f0a8a54c69309f243addf52",
-    "idle_shift": "21d68",
-    "stretch": "2042b",
-    "thinking": "13a81",
-    "listening": "13902",
-    "talking": "30e75",
-    "walk": "f5bf4",
-    "sit_down": "fdb93",
-    "sitting": "cd137",
-    "stand_up": "9333a",
-    "lying": "70929",
-    "get_up": "4a510",
-    "wave": "35b3b",
-    "nod": "143d7",
-    "no": "58396",
-    "jump": "b60a4",
-    "dance": "3ad27",
-    "hanging": "13ea8",
-    "climbing": "73a4b",
-    "startled": "ff732",
-    "falling": "27781",
-    "shaken": "18db2",
-    "landing": "19a3d",
+    "acknowledging": ['Acknowledging.fbx'],
+    "agreeing": ['Agreeing.fbx', 'Agreeing_2.fbx'],
+    "angry": ['Angry.fbx'],
+    "arm_stretching": ['Arm_Stretching.fbx'],
+    "bashful": ['Bashful.fbx'],
+    "being_cocky": ['Being_Cocky.fbx'],
+    "bellydancing": ['Bellydancing.fbx'],
+    "blow_a_kiss": ['Blow_A_Kiss.fbx'],
+    "bored": ['Bored.fbx'],
+    "braced_hang_shimmy": ['Braced_Hang_Shimmy.fbx', 'Braced_Hang_Shimmy_2.fbx'],
+    "breathing_idle": ['Breathing_Idle.fbx'],
+    "can_can": ['Can_Can.fbx'],
+    "cheering": ['Cheering.fbx', 'Cheering_2.fbx'],
+    "chicken_dance": ['Chicken_Dance.fbx'],
+    "clapping": ['Clapping.fbx'],
+    "climbing_down_wall": ['Climbing_Down_Wall.fbx'],
+    "climbing_up_wall": ['Climbing_Up_Wall.fbx'],
+    "crying": ['Crying.fbx'],
+    "dancing": ['Dancing.fbx', 'Dancing_5.fbx'],
+    "defeat": ['Defeat.fbx', 'Defeat_2.fbx'],
+    "disappointed": ['Disappointed.fbx'],
+    "dismissing_gesture": ['Dismissing_Gesture.fbx'],
+    "excited": ['Excited.fbx'],
+    "fall_landing": ['Fall_A_Land_To_Standing_Idle_01.fbx'],
+    "fall_loop": ['Fall_A_Loop.fbx'],
+    "falling_down": ['Falling_Down.fbx'],
+    "falling_idle": ['Falling_Idle.fbx'],
+    "freehang_climb": ['Freehang_Climb.fbx'],
+    "freehang_drop": ['Freehang_Drop.fbx'],
+    "getting_up": ['Getting_Up.fbx', 'Getting_Up_4.fbx'],
+    "hand_raising": ['Hand_Raising.fbx'],
+    "hanging_idle": ['Hanging_Idle.fbx', 'Hanging_Idle_2.fbx'],
+    "happy": ['Happy.fbx'],
+    "happy_idle": ['Happy_Idle.fbx', 'Happy_Idle_2.fbx'],
+    "happy_walk": ['Happy_Walk.fbx'],
+    "hard_landing": ['Hard_Landing.fbx', 'Hard_Landing_2.fbx'],
+    "head_nod_yes": ['Head_Nod_Yes.fbx'],
+    "hip_hop_dancing": ['Hip_Hop_Dancing.fbx', 'Hip_Hop_Dancing_3.fbx', 'Hip_Hop_Dancing_13.fbx'],
+    "idle": ['Idle.fbx', 'Idle_2.fbx', 'Idle_14.fbx', 'Idle_16.fbx'],
+    "joyful_jump": ['Joyful_Jump.fbx'],
+    "jump": ['Jump.fbx', 'Jump_2.fbx', 'Jump_5.fbx'],
+    "laughing": ['Laughing.fbx'],
+    "laying_idle": ['Laying_Idle.fbx', 'Laying_Idle_2.fbx'],
+    "laying_sleeping": ['Laying_Sleeping.fbx'],
+    "leaning": ['Leaning_2.fbx'],
+    "look_around": ['Look_Around.fbx', 'Look_Around_3.fbx'],
+    "looking": ['Looking.fbx', 'Looking_2.fbx'],
+    "looking_around": ['Looking_Around.fbx'],
+    "macarena_dance": ['Macarena_Dance.fbx'],
+    "nervously_look_around": ['Nervously_Look_Around.fbx'],
+    "neutral_idle": ['Neutral_Idle.fbx'],
+    "no": ['No.fbx'],
+    "one_shoulder_lean": ['One_Shoulder_Lean.fbx'],
+    "pointing_gesture": ['Pointing_Gesture.fbx'],
+    "pouting": ['Pouting.fbx'],
+    "quick_formal_bow": ['Quick_Formal_Bow.fbx'],
+    "quick_informal_bow": ['Quick_Informal_Bow.fbx'],
+    "reacting": ['Reacting.fbx'],
+    "relieved_sigh": ['Relieved_Sigh.fbx'],
+    "run_forward": ['Run_Forward.fbx', 'Run_Forward_3.fbx'],
+    "sad_idle": ['Sad_Idle.fbx', 'Sad_Idle_2.fbx'],
+    "sad_walk": ['Sad_Walk.fbx'],
+    "scratch_idle": ['Zombie_Scratch_Idle.fbx'],
+    "seated_idle": ['Seated_Idle.fbx'],
+    "shake_fist": ['Shake_Fist.fbx'],
+    "shaking_head_no": ['Shaking_Head_No.fbx'],
+    "shrugging": ['Shrugging.fbx'],
+    "shuffling": ['Shuffling.fbx'],
+    "silly_dancing": ['Silly_Dancing_2.fbx', 'Silly_Dancing.fbx'],
+    "sitting_idle": ['Sitting_Idle.fbx', 'Sitting_Idle_2.fbx'],
+    "sleeping_idle": ['Sleeping_Idle.fbx', 'Sleeping_Idle_2.fbx'],
+    "snake_hip_hop_dance": ['Snake_Hip_Hop_Dance.fbx'],
+    "sneak_walk": ['Sneak_Walk.fbx', 'Sneak_Walk_2.fbx'],
+    "stand_to_sit": ['Stand_To_Sit.fbx'],
+    "stand_up": ['Stand_Up_2.fbx', 'Stand_Up_3.fbx'],
+    "standard_idle": ['Standard_Idle.fbx'],
+    "standing_greeting": ['Standing_Greeting.fbx'],
+    "standing_thumbs_up": ['Standing_Thumbs_Up.fbx'],
+    "standing_up": ['Standing_Up.fbx', 'Standing_Up_3.fbx'],
+    "start_walking": ['Female_Start_Walking.fbx', 'Start_Walking.fbx'],
+    "stop_walking": ['Female_Stop_Walking.fbx', 'Stop_Walking_2.fbx'],
+    "stumble_backwards": ['Stumble_Backwards.fbx'],
+    "surprised": ['Surprised.fbx'],
+    "talking": ['Talking.fbx', 'Talking_2.fbx', 'Talking_5.fbx'],
+    "telling_a_secret": ['Telling_A_Secret.fbx'],
+    "terrified": ['Terrified.fbx'],
+    "thankful": ['Thankful.fbx'],
+    "thinking": ['Thinking.fbx'],
+    "thoughtful_head_nod": ['Thoughtful_Head_Nod.fbx'],
+    "twist_dance": ['Twist_Dance.fbx'],
+    "victory_idle": ['Victory_Idle.fbx', 'Victory_Idle_2.fbx'],
+    "waking": ['Waking.fbx'],
+    "walk_backwards": ['Walk_Backwards.fbx'],
+    "walking": ['Walking.fbx', 'Walking_12.fbx', 'Walking_13.fbx', 'Walking_2.fbx'],
+    "wave_hip_hop_dance": ['Wave_Hip_Hop_Dance.fbx', 'Wave_Hip_Hop_Dance_2.fbx'],
+    "waving": ['Waving.fbx', 'Waving_3.fbx'],
+    "weight_shift": ['Weight_Shift.fbx'],
+    "whatever_gesture": ['Whatever_Gesture.fbx'],
+    "yawn": ['Yawn.fbx'],
+    "ymca_dance": ['Ymca_Dance.fbx'],
 }
-# The base figures and their files in DATA/character_fbx_upgraded.
+# The catalogue's poses as the companion's (a lying one face down lies too; a crouch is where a landing ends).
+POSES = {"stand": "stand", "sit": "sit", "sit-floor": "floor", "lie": "lie", "lie-front": "lie", "hang": "hang",
+         "air": "air", "crouch": "land"}
+# The base figures and their files in DATA/data/character_fbx_upgraded.
 FIGURES = {"woman": "cf7e9c498421b75e2df678adc5284783", "man": "8dfaf7ace7778cd25a6b181d98cd7e77"}
 
 
 def file_of(folder: str, prefix: str) -> pathlib.Path:
     """The one file in DATA/folder whose name starts with `prefix`."""
-    found = sorted((DATA / folder).glob(f"{prefix}*.fbx"))
+    found = sorted((DATA / "data" / folder).glob(f"{prefix}*.fbx"))
     assert len(found) == 1, f"{folder}/{prefix}: {len(found)} files"
     return found[0]
 
@@ -69,8 +155,13 @@ def imported(path: pathlib.Path) -> list:
 def carrier() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     base = None
-    for name, prefix in CLIPS.items():
-        new = imported(file_of("animation", prefix))
+    catalogue = {entry["file"]: entry for entry in json.loads(CATALOGUE.read_text(encoding="utf-8"))}
+    meta = {}
+    versions = [(name if i == 0 else f"{name}_{i + 1}", file) for name, files in CLIPS.items() for i, file in enumerate(files)]
+    for name, file in versions:
+        entry = catalogue[file]
+        meta[name] = [entry["mood"], POSES[entry["startPose"]], POSES[entry["endPose"]]]
+        new = imported(MOTION / file)
         armature = next(one for one in new if one.type == "ARMATURE")
         action = armature.animation_data.action
         action.name = name
@@ -104,6 +195,7 @@ def carrier() -> None:
         export_def_bones=False,
         export_materials="NONE",
     )
+    (OUT / "animations.json").write_text(json.dumps(meta, indent=0, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def figure(name: str, file: str) -> None:

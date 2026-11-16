@@ -13,7 +13,7 @@
 // language.ts's.
 import { cardThumbnailUrl, findAll, getVoice } from "../api/client";
 import type { Hit } from "../api/generated/Hit";
-import { el } from "../dom";
+import { el, failure, reason } from "../dom";
 import { onLanguage, wording } from "../language/language";
 import { initialOf } from "../format";
 import { account, elsewhere } from "../account";
@@ -100,9 +100,17 @@ async function search(): Promise<void> {
   if (now.signal.aborted) return;
   for (const meaning of [false, true]) {
     // A search that fails or is ended shows what the one before found; a newer one draws its own.
-    const hits = await findAll(asked, meaning, now.signal).catch((): Hit[] | null => null);
+    let why: unknown;
+    const hits = await findAll(asked, meaning, now.signal).catch((error): Hit[] | null => ((why = error), null));
     if (now.signal.aborted) return;
-    if (hits || !meaning) draw({ hits: [...(hits ?? []).map(shown), ...pages], asked });
+    if (hits) draw({ hits: [...hits.map(shown), ...pages], asked });
+    else if (!meaning) {
+      // The search failed: the pages alone, or nothing, under the failure, never "Nothing found".
+      const told = failure(reason(why));
+      if (pages.length) draw({ hits: pages, asked });
+      list.prepend(told);
+      if (!pages.length) list.replaceChildren(told);
+    }
   }
 }
 

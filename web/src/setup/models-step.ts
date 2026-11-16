@@ -13,20 +13,21 @@
 // to step 3, the folder of cards (cards-step.ts), another back to where the user came from. After step 3
 // (`toDownloads`), where a download can be made, step 4 asks which (`choice`, downloads-step.ts); its button stores
 // them as not through (`setup_downloads`) and shows their bars (`downloading`). Setup's end (`openApp`) stores the
-// folder of cards step 3 held and imports its cards; views/setup.ts makes the state (`Setup`).
+// folder of cards step 3 held and imports its cards; a start before it comes back to step 3 (`startStep`);
+// views/setup.ts makes the state (`Setup`).
 import { wording } from "../language/language";
 import { failureWords } from "../language/errors";
 import { changeSettings, getProvider, getProviderList, getSettings, pickModels, setProvider } from "../api/client";
 import type { NamedPicks } from "../api/generated/NamedPicks";
 import type { ProvidersView } from "../api/generated/ProvidersView";
 import type { ProviderView } from "../api/generated/ProviderView";
-import { announce, el, failure, item, reason, told } from "../dom";
+import { announce, el, failure, item, newest, reason, told } from "../dom";
 import { useCardFolder } from "../library/card-folder";
 import { imagesLine } from "../models/images-setup";
 import { languageLine } from "../models/language-line";
 import { modelLine, modelName, type models, type ModelTest } from "../models/provider-form";
 import { LABELS } from "../setting-labels";
-import type { cardsStep } from "./cards-step";
+import { cardsReached, type cardsStep } from "./cards-step";
 import { downloadsChosen, firstRunLeft, type downloadsChoice, type downloadsStep } from "./downloads-step";
 import type { Asked, KeyStep, Stored } from "./key-step";
 import { chatAction, greyed, keyLine, lead, workClock, type StepState } from "./models-state";
@@ -73,6 +74,10 @@ export interface Setup extends ReturnType<typeof modelsParts> {
   title: HTMLElement;
   about: HTMLElement;
   first: KeyStep;
+  /** Step 1's "Restore a backup", this computer's account's alone, the restore screen it opens, and whether it is open. */
+  restoreLink: HTMLElement;
+  restore: HTMLElement;
+  restoring: boolean;
   cards: ReturnType<typeof cardsStep>;
   /** Step 4 as it asks which downloads, and then its bars, once they began (`downloading`). */
   choice: ReturnType<typeof downloadsChoice>;
@@ -88,8 +93,9 @@ export interface Setup extends ReturnType<typeof modelsParts> {
   step: 0 | 1 | 2 | 3 | 4;
   /** Whom step 2 asks: the address and the key as step 1 gave them. Another address or key is another one of these. */
   asked: Asked | null;
-  /** The picks on their way (the asking whose answer counts), what they came to, and why they did not come. */
-  picking: object | null;
+  /** Whether the picks are on their way, the askings for them (the last one's answer counts), what they came to, and why they did not come. */
+  picking: boolean;
+  picks: ReturnType<typeof newest>;
   picked: NamedPicks | null;
   pickFailed: string;
   /** The chat model's ID, once it is chosen, and its test with this address and key. */
@@ -143,13 +149,16 @@ export const stepState = (s: Setup): StepState => ({
   chatFailed: !!s.check.failed(),
   workerFailed: !!s.worker && !!s.workerCheck.failed(),
   noList: !!s.pickFailed || !!s.picked?.failed,
-  keyRefused: s.picked?.failed?.details?.said === "did not take the key",
+  keyRefused: s.picked?.failed?.details?.said === "did_not_take_the_key",
 });
 
 /** Gives up the work still open after 30 s: no spinner turns for ever. */
 export function giveUp(s: Setup): void {
   const why = wording("error-timed-out", { whose: "model_server" });
-  if (s.picking) [s.picking, s.pickFailed] = [null, wording("setup-no-picks", { why })];
+  if (s.picking) {
+    s.picks.drop();
+    [s.picking, s.pickFailed] = [false, wording("setup-no-picks", { why })];
+  }
   s.check.giveUp(why);
   s.workerCheck.giveUp(why);
   show(s);
@@ -157,7 +166,9 @@ export function giveUp(s: Setup): void {
 
 /** Shows the step and what is known by now. */
 export function show(s: Setup): void {
-  s.first.node.hidden = s.step !== 1;
+  s.first.node.hidden = s.step !== 1 || s.restoring;
+  s.restore.hidden = s.step !== 1 || !s.restoring;
+  s.restoreLink.hidden = !s.local;
   s.second.hidden = s.step !== 2;
   s.cards.node.hidden = s.step !== 3;
   s.choice.node.hidden = s.step !== 4 || s.downloading;
@@ -168,6 +179,13 @@ export function show(s: Setup): void {
   s.title.textContent = ["", wording("setup-title-1"), wording("setup-title-2"), wording("setup-title-3"), wording("setup-title-4")][s.step];
   const state = stepState(s);
   s.clock.run(state.open);
+  if (s.restoring) {
+    // The header without which step it is (docs/design.md, "Restore a backup at first run").
+    s.where.textContent = "";
+    s.title.textContent = wording("backup-restore-title");
+    s.about.replaceChildren(wording("backup-restoring"));
+    return;
+  }
   // Step 2's line under the title is its lead, with the one spinner while work is open.
   const about = ["", wording("setup-about-1"), lead(state), wording("setup-about-3"), s.downloading ? wording("setup-about-4") : wording("setup-about-4-choose")][s.step];
   s.about.replaceChildren(...(s.step === 2 && state.open ? [spinner()] : []), about);
@@ -207,13 +225,13 @@ function pick(s: Setup): void {
   const asked = s.asked!;
   // The asking whose answer counts: another address or key, or giving up, makes another or none (not `s.asked`,
   // which step 1 gives anew also with the same address and key).
-  const mine = {};
-  [s.picking, s.picked, s.pickFailed] = [mine, null, ""];
+  const mine = s.picks.ask();
+  [s.picking, s.picked, s.pickFailed] = [true, null, ""];
   show(s);
   pickModels({ base_url: asked.base_url, ...asked.key }).then(
     (picks) => {
-      if (s.picking !== mine) return;
-      [s.picking, s.picked] = [null, picks];
+      if (!s.picks.last(mine)) return;
+      [s.picking, s.picked] = [false, picks];
       // A model the user chose meanwhile stays, and is tested already, "Same as the chat model" too; a worker model
       // that is the chat model now is none, as the server stores it.
       const chose = { chat: !!s.model, worker: s.workerChosen };
@@ -230,8 +248,8 @@ function pick(s: Setup): void {
       show(s);
     },
     (error) => {
-      if (s.picking !== mine) return;
-      [s.picking, s.pickFailed] = [null, wording("setup-no-picks", { why: told(error) })];
+      if (!s.picks.last(mine)) return;
+      [s.picking, s.pickFailed] = [false, wording("setup-no-picks", { why: told(error) })];
       show(s);
     },
   );
@@ -367,7 +385,16 @@ export function storedFor(provider: ProviderView | null, list: ProvidersView | u
   return last ? { base_url: last.base_url, name: last.own_name, has_key: last.has_key, key_end: last.key_end } : null;
 }
 
-/** Reads the stored provider: without one first run begins at step 1, with one at step 2, nothing asked until changed, and at step 4 while its downloads are not through. A provider added but no chat model chosen begins at step 2 with its models picked, as from a key; the key kept at its address goes with them. */
+/** The step setup begins at: 1 without a provider, 2 with one or one `kept` in Settings; with a provider, on this
+ * computer (`here`), 4 while first run's `downloads` are not through, else 3 where first run reached the folder of
+ * `cards` and did not end. */
+export function startStep(left: { provider: boolean; kept: boolean; downloads: boolean; cards: boolean; here: boolean }): 1 | 2 | 3 | 4 {
+  if (!left.provider) return left.kept ? 2 : 1;
+  if (!left.here) return 2;
+  return left.downloads ? 4 : left.cards ? 3 : 2;
+}
+
+/** Reads the stored provider: without one first run begins at step 1, with one at step 2, nothing asked until changed, at step 3 where first run reached it and did not end, and at step 4 while its downloads are not through. A provider added but no chat model chosen begins at step 2 with its models picked, as from a key; the key kept at its address goes with them. */
 export function begin(s: Setup, local: Promise<boolean>): void {
   // The list is only a way to step 2: unread, setup begins at step 1 as without it.
   const list = getProviderList().catch(() => undefined);
@@ -377,7 +404,8 @@ export function begin(s: Setup, local: Promise<boolean>): void {
         const kept = storedFor(provider, added);
         s.stored = kept;
         s.local = here;
-        s.step = provider ? (firstRunLeft(settings) && here ? 4 : 2) : kept ? 2 : 1;
+        s.step = startStep({ provider: !!provider, kept: !!kept, downloads: firstRunLeft(settings), cards: cardsReached(), here });
+        if (s.step === 3) void s.cards.offer();
         // Downloads not through bring a start back to their bars.
         s.downloading = s.step === 4;
         s.first.fill(kept);

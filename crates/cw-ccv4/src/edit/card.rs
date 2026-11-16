@@ -117,6 +117,11 @@ impl<'a> Card<'a> {
         })
     }
 
+    /// Whether the edit has given the block `reference` its modes.
+    pub(super) fn has_modes(&self, reference: &str) -> bool {
+        self.moded.contains_key(reference)
+    }
+
     /// Gives the block `reference` the modes it is used in; none for all.
     pub(super) fn set_modes(&mut self, reference: &str, modes: &[String]) -> anyhow::Result<()> {
         if let Some(other) = self.moded.insert(reference.to_string(), modes.to_vec()) {

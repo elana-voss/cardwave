@@ -271,7 +271,10 @@ fn unzip(name: &str, data: Vec<u8>) -> anyhow::Result<Vec<(String, Vec<u8>)>> {
     );
     let (mut files, mut total) = (Vec::new(), 0);
     for at in 0..zip.len() {
-        let mut file = zip.by_index(at)?;
+        // An entry that cannot be opened or read is left out as any other that does not fit.
+        let Ok(mut file) = zip.by_index(at) else {
+            continue;
+        };
         // A name that is not UTF-8 names no mood.
         let Ok(path) = file.name().map(|name| name.to_string()) else {
             continue;
@@ -280,7 +283,13 @@ fn unzip(name: &str, data: Vec<u8>) -> anyhow::Result<Vec<(String, Vec<u8>)>> {
             continue;
         }
         let mut bytes = Vec::new();
-        (&mut file).take(MAX_PICTURE + 1).read_to_end(&mut bytes)?;
+        if (&mut file)
+            .take(MAX_PICTURE + 1)
+            .read_to_end(&mut bytes)
+            .is_err()
+        {
+            continue;
+        }
         if picture_type(&bytes).is_none() || bytes.len() as u64 > MAX_PICTURE {
             continue;
         }
@@ -461,4 +470,36 @@ pub(crate) fn take_from_card(
     let pack = db.store_pack(user, &name_of(&name), &hash_of(&pictures), &pictures)?;
     db.set_card_pack(user, card_id, Some(pack))?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::Write;
+
+    use super::*;
+
+    fn png(tail: &[u8]) -> Vec<u8> {
+        [&[0x89, b'P', b'N', b'G', 13, 10, 26, 10][..], tail].concat()
+    }
+
+    #[test]
+    fn an_entry_of_a_zip_that_cannot_be_read_is_left_out_not_the_whole_zip() {
+        let mut writer = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        let stored = zip::write::SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored);
+        for (name, data) in [
+            ("joy.png", png(b"joy-bytes")),
+            ("anger.png", png(b"anger-bytes")),
+        ] {
+            writer.start_file(name, stored).unwrap();
+            writer.write_all(&data).unwrap();
+        }
+        let mut bytes = writer.finish().unwrap().into_inner();
+        // A wrong checksum: one byte of joy's picture changed.
+        let at = bytes.windows(9).position(|w| w == b"joy-bytes").unwrap();
+        bytes[at] ^= 1;
+        let kept = unzip("moods.zip", bytes).unwrap();
+        assert_eq!(kept.len(), 1);
+        assert_eq!(kept[0].0, "anger.png");
+    }
 }

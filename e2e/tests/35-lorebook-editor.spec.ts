@@ -254,6 +254,17 @@ test("“New entry” opens a new entry, kept as the lorebook's last once it has
   await expect(title(page)).toHaveText("Camlann Keep");
 });
 
+test("Tab after a new entry's name keeps it and goes on in the entry, not to “New entry”", async ({ page, request }) => {
+  const id = await make(request, "Tabbed");
+  await open(page, id);
+  await show(page, "Camlann Keep");
+  await panel(page).getByRole("button", { name: "New entry" }).click();
+  await title(page).getByRole("textbox", { name: "Entry name" }).fill("Gull Point");
+  await page.keyboard.press("Tab");
+  await expect(title(page)).toHaveText("Gull Point");
+  await expect(used(page).getByRole("button", { pressed: true })).toBeFocused();
+});
+
 test("the header's AI tools change every entry, each change kept or undone, “Keep all” in the bar", async ({ page, request }) => {
   const id = await make(request, "Fixed");
   const changes = sent(page);
@@ -341,6 +352,9 @@ test("“Lorebook settings” changes the name, the description, the scan depth 
   const dialog = page.getByRole("dialog", { name: "Lorebook settings" });
   await dialog.getByLabel("Name", { exact: true }).fill("Camlann");
   await dialog.getByLabel("Messages searched").fill("6");
+  // The token limit stands behind "More settings".
+  await expect(dialog.getByLabel("Token limit")).toBeHidden();
+  await dialog.getByRole("button", { name: "More settings" }).click();
   await dialog.getByLabel("Token limit").fill("300");
   await dialog.getByRole("button", { name: "Save" }).click();
   await expect(dialog).toBeHidden();

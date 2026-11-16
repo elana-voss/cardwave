@@ -49,9 +49,10 @@ function personaRow(persona: Persona, lines: MenuItem[], edit: () => void): HTML
 }
 
 export function personasView(): View {
-  /** The personas last read, and what to say when there are none. */
+  /** The personas last read, what to say when there are none, and whether there are none at all. */
   let personas: Persona[] = [];
   let none = "";
+  let nothing = false;
   const { node, tools, list, attempt, load } = listScreen({
     title: wording("page-personas"),
     kind: "library",
@@ -62,8 +63,8 @@ export function personasView(): View {
     plain: true,
     // Personas are searched only and have no archive: what the list asks for beside the words is not sent.
     read: () => readList(({ q }) => listPersonas({ q }), wording("list-screen-personas"), asked, noPersonas(), "", false),
-    show: ([found, empty]) => {
-      [personas, none] = [found, empty];
+    show: ([found, empty, bare]) => {
+      [personas, none, nothing] = [found, empty, bare];
       draw();
     },
   });
@@ -82,11 +83,13 @@ export function personasView(): View {
     const held = open?.row.contains(document.activeElement) ? (document.activeElement as HTMLElement) : null;
     list.replaceChildren(...rows);
     held?.focus();
-    if (none && !open) list.append(emptyLine(none, none === noPersonas() ? [{ label: wording("create-new-persona"), go: () => edit() }] : []));
+    if (none && !open) list.append(emptyLine(none, nothing ? [{ label: wording("create-new-persona"), go: () => edit() }] : []));
   }
 
   /** Opens the form in a persona's place, or for a new one on top of the list. Another one that was open is closed. */
   function edit(persona?: Persona): void {
+    /** The new persona once it is made: a Save after its picture failed changes it, and makes no second one. */
+    let made: Persona | undefined;
     const save: PersonaSave = (name, description, picture, lorebooks) =>
       attempt(async () => {
         const small = picture && (await smallPicture(picture));
@@ -95,7 +98,8 @@ export function personasView(): View {
           if (small !== undefined) await setPersonaPicture(persona.id, small);
           return;
         }
-        const made = await createPersona({ name, description, lorebooks });
+        if (made) await changePersona(made.id, { name, description, lorebooks });
+        else made = await createPersona({ name, description, lorebooks });
         if (small) await setPersonaPicture(made.id, small);
         // A new persona is in view at once, whatever the list was searched or filtered for.
         tools.showAll();

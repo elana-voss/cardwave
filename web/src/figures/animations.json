@@ -1,0 +1,687 @@
+{
+"acknowledging": [
+"neutral",
+"stand",
+"stand"
+],
+"agreeing": [
+"neutral",
+"stand",
+"stand"
+],
+"agreeing_2": [
+"neutral",
+"stand",
+"stand"
+],
+"angry": [
+"angry",
+"stand",
+"stand"
+],
+"arm_stretching": [
+"neutral",
+"stand",
+"stand"
+],
+"bashful": [
+"bashful",
+"stand",
+"stand"
+],
+"being_cocky": [
+"confident",
+"stand",
+"stand"
+],
+"bellydancing": [
+"playful",
+"stand",
+"stand"
+],
+"blow_a_kiss": [
+"neutral",
+"stand",
+"stand"
+],
+"bored": [
+"neutral",
+"stand",
+"stand"
+],
+"braced_hang_shimmy": [
+"neutral",
+"hang",
+"hang"
+],
+"braced_hang_shimmy_2": [
+"neutral",
+"hang",
+"hang"
+],
+"breathing_idle": [
+"neutral",
+"stand",
+"stand"
+],
+"can_can": [
+"playful",
+"stand",
+"stand"
+],
+"cheering": [
+"happy",
+"stand",
+"stand"
+],
+"cheering_2": [
+"happy",
+"stand",
+"stand"
+],
+"chicken_dance": [
+"playful",
+"stand",
+"stand"
+],
+"clapping": [
+"neutral",
+"stand",
+"stand"
+],
+"climbing_down_wall": [
+"neutral",
+"hang",
+"hang"
+],
+"climbing_up_wall": [
+"neutral",
+"hang",
+"hang"
+],
+"crying": [
+"sad",
+"stand",
+"stand"
+],
+"dancing": [
+"playful",
+"stand",
+"stand"
+],
+"dancing_2": [
+"playful",
+"stand",
+"stand"
+],
+"defeat": [
+"sad",
+"stand",
+"stand"
+],
+"defeat_2": [
+"sad",
+"stand",
+"stand"
+],
+"disappointed": [
+"sad",
+"stand",
+"stand"
+],
+"dismissing_gesture": [
+"neutral",
+"stand",
+"stand"
+],
+"excited": [
+"happy",
+"stand",
+"stand"
+],
+"fall_landing": [
+"focused",
+"air",
+"stand"
+],
+"fall_loop": [
+"afraid",
+"air",
+"air"
+],
+"falling_down": [
+"surprised",
+"stand",
+"lie"
+],
+"falling_idle": [
+"afraid",
+"air",
+"air"
+],
+"freehang_climb": [
+"neutral",
+"hang",
+"stand"
+],
+"freehang_drop": [
+"neutral",
+"hang",
+"stand"
+],
+"getting_up": [
+"tired",
+"floor",
+"stand"
+],
+"getting_up_2": [
+"neutral",
+"lie",
+"stand"
+],
+"hand_raising": [
+"neutral",
+"stand",
+"stand"
+],
+"hanging_idle": [
+"neutral",
+"hang",
+"hang"
+],
+"hanging_idle_2": [
+"neutral",
+"hang",
+"hang"
+],
+"happy": [
+"happy",
+"stand",
+"stand"
+],
+"happy_idle": [
+"happy",
+"stand",
+"stand"
+],
+"happy_idle_2": [
+"happy",
+"stand",
+"stand"
+],
+"happy_walk": [
+"happy",
+"stand",
+"stand"
+],
+"hard_landing": [
+"focused",
+"air",
+"stand"
+],
+"hard_landing_2": [
+"focused",
+"air",
+"stand"
+],
+"head_nod_yes": [
+"neutral",
+"stand",
+"stand"
+],
+"hip_hop_dancing": [
+"playful",
+"stand",
+"stand"
+],
+"hip_hop_dancing_2": [
+"playful",
+"stand",
+"stand"
+],
+"hip_hop_dancing_3": [
+"playful",
+"stand",
+"stand"
+],
+"idle": [
+"neutral",
+"stand",
+"stand"
+],
+"idle_2": [
+"neutral",
+"stand",
+"stand"
+],
+"idle_3": [
+"neutral",
+"stand",
+"stand"
+],
+"idle_4": [
+"neutral",
+"stand",
+"stand"
+],
+"joyful_jump": [
+"happy",
+"stand",
+"stand"
+],
+"jump": [
+"neutral",
+"stand",
+"stand"
+],
+"jump_2": [
+"focused",
+"stand",
+"stand"
+],
+"jump_3": [
+"neutral",
+"stand",
+"stand"
+],
+"laughing": [
+"happy",
+"stand",
+"stand"
+],
+"laying_idle": [
+"neutral",
+"lie",
+"lie"
+],
+"laying_idle_2": [
+"neutral",
+"lie",
+"lie"
+],
+"laying_sleeping": [
+"tired",
+"lie",
+"lie"
+],
+"leaning": [
+"confident",
+"stand",
+"stand"
+],
+"look_around": [
+"afraid",
+"stand",
+"stand"
+],
+"look_around_2": [
+"neutral",
+"stand",
+"stand"
+],
+"looking": [
+"neutral",
+"stand",
+"stand"
+],
+"looking_2": [
+"neutral",
+"stand",
+"stand"
+],
+"looking_around": [
+"neutral",
+"stand",
+"stand"
+],
+"macarena_dance": [
+"playful",
+"stand",
+"stand"
+],
+"nervously_look_around": [
+"afraid",
+"stand",
+"stand"
+],
+"neutral_idle": [
+"neutral",
+"stand",
+"stand"
+],
+"no": [
+"neutral",
+"stand",
+"stand"
+],
+"one_shoulder_lean": [
+"tired",
+"stand",
+"stand"
+],
+"pointing_gesture": [
+"neutral",
+"stand",
+"stand"
+],
+"pouting": [
+"neutral",
+"stand",
+"stand"
+],
+"quick_formal_bow": [
+"neutral",
+"stand",
+"stand"
+],
+"quick_informal_bow": [
+"neutral",
+"stand",
+"stand"
+],
+"reacting": [
+"surprised",
+"stand",
+"stand"
+],
+"relieved_sigh": [
+"happy",
+"stand",
+"stand"
+],
+"run_forward": [
+"neutral",
+"stand",
+"stand"
+],
+"run_forward_2": [
+"sad",
+"stand",
+"stand"
+],
+"sad_idle": [
+"sad",
+"stand",
+"stand"
+],
+"sad_idle_2": [
+"sad",
+"stand",
+"stand"
+],
+"sad_walk": [
+"sad",
+"stand",
+"stand"
+],
+"scratch_idle": [
+"neutral",
+"stand",
+"stand"
+],
+"seated_idle": [
+"neutral",
+"sit",
+"sit"
+],
+"shake_fist": [
+"angry",
+"stand",
+"stand"
+],
+"shaking_head_no": [
+"neutral",
+"stand",
+"stand"
+],
+"shrugging": [
+"neutral",
+"stand",
+"stand"
+],
+"shuffling": [
+"playful",
+"stand",
+"stand"
+],
+"silly_dancing": [
+"playful",
+"stand",
+"stand"
+],
+"silly_dancing_2": [
+"playful",
+"stand",
+"stand"
+],
+"sitting_idle": [
+"neutral",
+"floor",
+"floor"
+],
+"sitting_idle_2": [
+"neutral",
+"floor",
+"floor"
+],
+"sleeping_idle": [
+"tired",
+"lie",
+"lie"
+],
+"sleeping_idle_2": [
+"tired",
+"lie",
+"lie"
+],
+"snake_hip_hop_dance": [
+"playful",
+"stand",
+"stand"
+],
+"sneak_walk": [
+"neutral",
+"stand",
+"stand"
+],
+"sneak_walk_2": [
+"neutral",
+"stand",
+"stand"
+],
+"stand_to_sit": [
+"neutral",
+"stand",
+"sit"
+],
+"stand_up": [
+"tired",
+"lie",
+"stand"
+],
+"stand_up_2": [
+"neutral",
+"lie",
+"stand"
+],
+"standard_idle": [
+"neutral",
+"stand",
+"stand"
+],
+"standing_greeting": [
+"happy",
+"stand",
+"stand"
+],
+"standing_thumbs_up": [
+"happy",
+"stand",
+"stand"
+],
+"standing_up": [
+"tired",
+"floor",
+"stand"
+],
+"standing_up_2": [
+"pained",
+"lie",
+"stand"
+],
+"start_walking": [
+"neutral",
+"stand",
+"stand"
+],
+"start_walking_2": [
+"neutral",
+"stand",
+"stand"
+],
+"stop_walking": [
+"neutral",
+"stand",
+"stand"
+],
+"stop_walking_2": [
+"neutral",
+"stand",
+"stand"
+],
+"stumble_backwards": [
+"surprised",
+"stand",
+"floor"
+],
+"surprised": [
+"surprised",
+"stand",
+"stand"
+],
+"talking": [
+"neutral",
+"stand",
+"stand"
+],
+"talking_2": [
+"neutral",
+"stand",
+"stand"
+],
+"talking_3": [
+"neutral",
+"stand",
+"stand"
+],
+"telling_a_secret": [
+"playful",
+"stand",
+"stand"
+],
+"terrified": [
+"afraid",
+"stand",
+"stand"
+],
+"thankful": [
+"happy",
+"stand",
+"stand"
+],
+"thinking": [
+"neutral",
+"stand",
+"stand"
+],
+"thoughtful_head_nod": [
+"neutral",
+"stand",
+"stand"
+],
+"twist_dance": [
+"playful",
+"stand",
+"stand"
+],
+"victory_idle": [
+"happy",
+"stand",
+"stand"
+],
+"victory_idle_2": [
+"happy",
+"stand",
+"stand"
+],
+"waking": [
+"tired",
+"floor",
+"floor"
+],
+"walk_backwards": [
+"afraid",
+"stand",
+"stand"
+],
+"walking": [
+"happy",
+"stand",
+"stand"
+],
+"walking_2": [
+"neutral",
+"stand",
+"stand"
+],
+"walking_3": [
+"confident",
+"stand",
+"stand"
+],
+"walking_4": [
+"neutral",
+"stand",
+"stand"
+],
+"wave_hip_hop_dance": [
+"playful",
+"stand",
+"stand"
+],
+"wave_hip_hop_dance_2": [
+"playful",
+"stand",
+"stand"
+],
+"waving": [
+"happy",
+"stand",
+"stand"
+],
+"waving_2": [
+"happy",
+"stand",
+"stand"
+],
+"weight_shift": [
+"neutral",
+"stand",
+"stand"
+],
+"whatever_gesture": [
+"neutral",
+"stand",
+"stand"
+],
+"yawn": [
+"tired",
+"stand",
+"stand"
+],
+"ymca_dance": [
+"playful",
+"stand",
+"stand"
+]
+}

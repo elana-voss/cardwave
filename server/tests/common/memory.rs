@@ -186,3 +186,38 @@ pub async fn memories(server: &Server) -> Vec<Value> {
     assert_eq!(status, 200, "{list}");
     list.as_array().unwrap().clone()
 }
+
+/// Imports the sample card (a copy of its own) with the modes `modes`, such as
+/// `["Roleplay", "Assistant"]`. Answers the import's view.
+pub async fn card_in_modes(server: &Server, modes: &[&str]) -> Value {
+    let mut card = super::container();
+    let line = format!(
+        "[meta-info]
+modes = {modes:?}
+"
+    );
+    card.toml[0].1 = super::unique(&card.toml[0].1.replacen(
+        "[meta-info]
+",
+        &line,
+        1,
+    ));
+    let (status, view) = server
+        .upload_whole(cw_ccv4::png::write(&card).unwrap())
+        .await;
+    assert_eq!(status, 201, "{view}");
+    view
+}
+
+/// Starts a chat of the characters `cast`, each a card's import view and the character's ID.
+pub async fn chat_of(server: &Server, cast: &[(&Value, &str)]) -> String {
+    let characters: Vec<Value> = cast
+        .iter()
+        .map(|(card, id)| json!({ "version_id": card["version_id"], "character": id }))
+        .collect();
+    let (status, view) = server
+        .post("/api/chats", json!({ "characters": characters }))
+        .await;
+    assert_eq!(status, 201, "{view}");
+    format!("/api/chats/{}", view["chat"]["id"])
+}

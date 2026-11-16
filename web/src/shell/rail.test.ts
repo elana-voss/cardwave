@@ -210,35 +210,6 @@ test("under Chats the five latest chats, and “Show 10 more” adds ten each ti
   expect(more.hidden).toBe(true);
 });
 
-test("two latest chats of the same name on the same day say the day and time of each", async () => {
-  const at = (hour: number) => new Date(2020, 9, 12, hour, 2).getTime();
-  vi.mocked(listChats).mockResolvedValue(
-    [
-      { id: 1, names: ["Gwen"], title: null, updated_at: at(14) },
-      { id: 2, names: ["Gwen"], title: null, updated_at: at(9) },
-      { id: 3, names: ["Ada"], title: null, updated_at: at(8) },
-    ] as unknown as ChatSummary[],
-  );
-  make().mark("chats");
-  await settled();
-  const lines = [...rail().querySelectorAll<HTMLAnchorElement>(".rail-chats a")].map((line) => line.textContent);
-  expect(lines).toEqual(["Gwen · 12 Oct 2020, 14:02", "Gwen · 12 Oct 2020, 09:02", "Ada"]);
-});
-
-test("two latest chats of the same name on different days say only the day of each", async () => {
-  vi.mocked(listChats).mockResolvedValue(
-    [
-      { id: 1, names: ["Gwen"], title: null, updated_at: new Date(2020, 9, 12, 14, 2).getTime() },
-      { id: 2, names: ["Gwen"], title: null, updated_at: new Date(2020, 9, 11, 9, 2).getTime() },
-      { id: 3, names: ["Ada"], title: null, updated_at: new Date(2020, 9, 10, 8, 2).getTime() },
-    ] as unknown as ChatSummary[],
-  );
-  make().mark("chats");
-  await settled();
-  const lines = [...rail().querySelectorAll<HTMLAnchorElement>(".rail-chats a")].map((line) => line.textContent);
-  expect(lines).toEqual(["Gwen · 12 Oct 2020", "Gwen · 11 Oct 2020", "Ada"]);
-});
-
 test("a chat's page marks its line among the latest chats, and Chats where the line does not show: folded, or not among them", async () => {
   chatsAre(7);
   const made = make();

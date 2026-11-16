@@ -251,20 +251,28 @@ fn cut(line: &str) -> Vec<&str> {
     parts
 }
 
+/// A document attached to a message, out of the Trash.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Attached {
+    pub id: i64,
+    pub name: String,
+    pub text: String,
+}
+
 /// What a reply is given of the documents: those attached to the message it
-/// answers (`attached`: ID, name, text) from their start, as the user means
+/// answers (`attached`) from their start, as the user means
 /// them whatever the search model makes of the question; then of the other
 /// `read` pieces those near `query` ([`excerpts`]), where the search model
 /// made one; all in at most `budget` tokens. None where none is.
 pub fn given(
-    attached: &[(i64, String, String)],
+    attached: &[Attached],
     query: Option<&[f32]>,
     read: Vec<Piece>,
     budget: usize,
 ) -> Option<String> {
     let mut given = Vec::new();
     let mut used = 0;
-    for (_, name, text) in attached {
+    for Attached { name, text, .. } in attached {
         let head = format!("From \"{name}\":");
         let mut parts = vec![head.clone()];
         used += tokens::estimate(&head);
@@ -282,7 +290,11 @@ pub fn given(
     }
     let others: Vec<Piece> = read
         .into_iter()
-        .filter(|piece| !attached.iter().any(|(id, ..)| *id == piece.document))
+        .filter(|piece| {
+            !attached
+                .iter()
+                .any(|document| document.id == piece.document)
+        })
         .collect();
     if let Some(near) = query.and_then(|query| excerpts(query, others, budget.saturating_sub(used)))
     {

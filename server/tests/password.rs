@@ -8,7 +8,6 @@ use common::server::{Server, answer, event, start};
 use cw_key::FILE_NAME;
 use cw_store::Db;
 use futures_util::StreamExt;
-use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 use serde_json::{Value, json};
 use tokio_tungstenite::tungstenite::Message;
 
@@ -165,19 +164,6 @@ async fn backup(server: &Server, password: Option<&str>) -> Vec<u8> {
     file
 }
 
-/// Restores `file` on `server`, with `password` where it is given, as the page
-/// sends it: percent-encoded, as a header holds ASCII alone.
-async fn restore(server: &Server, file: Vec<u8>, password: Option<&str>) -> (u16, Value) {
-    let mut request = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .body(file);
-    if let Some(password) = password {
-        let sent = utf8_percent_encode(password, NON_ALPHANUMERIC).to_string();
-        request = request.header("x-cardwave-password", sent);
-    }
-    answer(request.send().await.unwrap()).await
-}
-
 #[tokio::test]
 async fn a_backup_is_read_back_by_another_server_which_keeps_its_own_key() {
     let first = start().await;
@@ -189,8 +175,8 @@ async fn a_backup_is_read_back_by_another_server_which_keeps_its_own_key() {
     let second = start().await;
     persona(&second, "Stranger").await;
     let mut socket = second.listen().await;
-    assert_eq!(restore(&second, b"not one".to_vec(), None).await.0, 400);
-    assert_eq!(restore(&second, file, Some("harbour lights")).await.0, 204);
+    assert_eq!(second.restore(b"not one".to_vec(), None).await.0, 400);
+    assert_eq!(second.restore(file, Some("harbour lights")).await.0, 204);
     assert_eq!(event(&mut socket).await, json!({ "type": "restored" }));
     drop(socket);
     assert_eq!(personas(&second).await, ["Wanderer"]);
@@ -216,10 +202,10 @@ async fn a_backup_where_no_password_is_on_is_sealed_by_the_one_given_and_refused
     assert!(!server_locked(&first.restart().await).await);
 
     let second = start().await;
-    assert_eq!(restore(&second, file.clone(), None).await.0, 401);
-    assert_eq!(restore(&second, file.clone(), Some("Hafen")).await.0, 401);
+    assert_eq!(second.restore(file.clone(), None).await.0, 401);
+    assert_eq!(second.restore(file.clone(), Some("Hafen")).await.0, 401);
     assert_eq!(
-        restore(&second, file, Some("Hafenlichter, 港の灯")).await.0,
+        second.restore(file, Some("Hafenlichter, 港の灯")).await.0,
         204
     );
     assert_eq!(personas(&second).await, ["Wanderer"]);
@@ -237,7 +223,7 @@ async fn a_backup_made_before_every_one_had_a_password_is_restored_still() {
     old.extend_from_slice(&file[head..]);
 
     let second = start().await;
-    assert_eq!(restore(&second, old, None).await.0, 204);
+    assert_eq!(second.restore(old, None).await.0, 204);
     assert_eq!(personas(&second).await, ["Wanderer"]);
 }
 
@@ -250,24 +236,66 @@ async fn a_backup_made_with_a_password_is_read_back_with_it_alone() {
     let file = backup(&first, Some("other")).await;
 
     let second = start().await;
-    let (status, needs) = restore(&second, file.clone(), None).await;
+    let (status, needs) = second.restore(file.clone(), None).await;
     assert_eq!(
         (status, needs["error"].as_str()),
         (401, Some("This backup needs its password."))
     );
     assert_eq!(
-        restore(&second, file.clone(), Some("Hafenlichter")).await.0,
+        second.restore(file.clone(), Some("Hafenlichter")).await.0,
         401
     );
     assert_eq!(
-        restore(&second, file, Some("Hafenlichter, 港の灯")).await.0,
+        second.restore(file, Some("Hafenlichter, 港の灯")).await.0,
         204
     );
     assert_eq!(personas(&second).await, ["Wanderer"]);
-    // The password was the first server's: the second opens without one, as before.
+    // The first server asked for its password on opening: the second does now, the same one.
     let second = second.restart().await;
-    assert!(!server_locked(&second).await);
+    assert!(server_locked(&second).await);
+    assert_eq!(unlock(&second, "other").await, 401);
+    assert_eq!(unlock(&second, "Hafenlichter, 港の灯").await, 204);
     assert_eq!(personas(&second).await, ["Wanderer"]);
+}
+
+#[tokio::test]
+async fn a_backup_made_without_the_lock_leaves_the_lock_here_as_it_was() {
+    let first = start().await;
+    persona(&first, "Wanderer").await;
+    let file = backup(&first, Some("harbour lights")).await;
+
+    // Unlocked here, it stays so.
+    let open = start().await;
+    assert_eq!(
+        open.restore(file.clone(), Some("harbour lights")).await.0,
+        204
+    );
+    let open = open.restart().await;
+    assert!(!server_locked(&open).await);
+
+    // Locked here, it stays so, behind this computer's password.
+    let locked = start().await;
+    set_password(&locked, json!({ "password": "own" })).await;
+    assert_eq!(locked.restore(file, Some("harbour lights")).await.0, 204);
+    let locked = locked.restart().await;
+    assert!(server_locked(&locked).await);
+    assert_eq!(unlock(&locked, "harbour lights").await, 401);
+    assert_eq!(unlock(&locked, "own").await, 204);
+    assert_eq!(personas(&locked).await, ["Wanderer"]);
+}
+
+#[tokio::test]
+async fn a_lock_that_cannot_come_back_fails_the_restore_rather_than_leave_it_open() {
+    let first = start().await;
+    persona(&first, "Wanderer").await;
+    set_password(&first, json!({ "password": "harbour lights" })).await;
+    let file = backup(&first, None).await;
+
+    // The password file cannot be written beside: a folder holds its place.
+    let second = start().await;
+    std::fs::create_dir(second.dir.join("password.json.new")).unwrap();
+    let (status, _) = second.restore(file, Some("harbour lights")).await;
+    assert_eq!(status, 500);
 }
 
 async fn server_locked(server: &Server) -> bool {
@@ -301,7 +329,7 @@ async fn a_backup_restored_is_tidied_as_at_a_start() {
     let file = backup(&first, Some("harbour lights")).await;
 
     let second = start().await;
-    assert_eq!(restore(&second, file, Some("harbour lights")).await.0, 204);
+    assert_eq!(second.restore(file, Some("harbour lights")).await.0, 204);
     let queued: i64 = database(&second)
         .with(|c| {
             c.query_row(
@@ -327,7 +355,7 @@ async fn a_backup_whose_password_would_cost_too_much_to_try_is_refused() {
     crafted.extend_from_slice(&file[200..]);
 
     let second = start().await;
-    let (status, refused) = restore(&second, crafted, Some("harbour lights")).await;
+    let (status, refused) = second.restore(crafted, Some("harbour lights")).await;
     assert_eq!(status, 400, "{refused}");
 }
 

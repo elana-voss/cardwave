@@ -154,14 +154,9 @@ fn the_prompt_builder_gets_what_the_card_meant() {
     assert_eq!(wiper.keys, ["wiper", "virus"]);
     assert_eq!(wiper.secondary_keys, ["fear"]);
     assert_eq!(wiper.content, "A virus.");
-    assert!(
-        wiper.enabled
-            && wiper.selective
-            && wiper.use_regex
-            && wiper.match_whole_words
-            && wiper.ignore_budget
-    );
-    assert!(!wiper.constant && !wiper.case_sensitive);
+    assert!(wiper.enabled && wiper.selective && wiper.match_whole_words && wiper.ignore_budget);
+    // SillyTavern says use_regex on every entry; only a key written /like this/ is one.
+    assert!(!wiper.constant && !wiper.case_sensitive && !wiper.use_regex);
     assert_eq!(wiper.selective_logic, SelectiveLogic::NotAny);
     assert_eq!(
         (wiper.at_depth, wiper.depth, wiper.role),

@@ -267,6 +267,43 @@ async fn ask_and_keep<O: Send + 'static, F: Future<Output = anyhow::Result<O>>>(
     state.work(move |db| keep(db, outcome)).await
 }
 
+/// The provider to ask and the text of card version `version_id`. Where no
+/// provider is set up, every card waiting is failed with the reason.
+async fn provider_and_card(
+    state: &AppState,
+    user: i64,
+    version_id: i64,
+) -> anyhow::Result<(Provider, String)> {
+    let asked = state
+        .work(move |db| {
+            let provider = provider::for_work(db, user)?;
+            let card = describe::card_text(&cards::document_of(db, version_id)?)?;
+            Ok((provider, card))
+        })
+        .await;
+    match asked {
+        Ok((Some(provider), card)) => Ok((provider, card)),
+        Ok((None, _)) => {
+            let failed = state
+                .work(move |db| {
+                    let why = provider::not_set_up(db, user)?;
+                    let reason = describe::kept_failure(db, &why.clone().into());
+                    describe::fail_waiting(db, user, &reason)?;
+                    Ok(why)
+                })
+                .await;
+            match failed {
+                Ok(why) => Err(why.into()),
+                Err(failure) => {
+                    tracing::warn!("the cards waiting to be described stay waiting: {failure:#}");
+                    Err(provider::NOT_SET_UP.into())
+                }
+            }
+        }
+        Err(failure) => Err(failure),
+    }
+}
+
 async fn run(state: AppState, user: i64, place: Place) {
     loop {
         let taken = state.clone();
@@ -295,36 +332,7 @@ async fn run(state: AppState, user: i64, place: Place) {
                 return;
             }
         };
-        let asked = state
-            .work(move |db| {
-                let provider = provider::for_work(db, user)?;
-                let card = describe::card_text(&cards::document_of(db, version_id)?)?;
-                Ok((provider, card))
-            })
-            .await;
-        let asked = match asked {
-            Ok((Some(provider), card)) => Ok((provider, card)),
-            Ok((None, _)) => {
-                let failed = state
-                    .work(move |db| {
-                        let why = provider::not_set_up(db, user)?;
-                        let reason = describe::kept_failure(db, &why.clone().into());
-                        describe::fail_waiting(db, user, &reason)?;
-                        Ok(why)
-                    })
-                    .await;
-                match failed {
-                    Ok(why) => Err(why.into()),
-                    Err(failure) => {
-                        tracing::warn!(
-                            "the cards waiting to be described stay waiting: {failure:#}"
-                        );
-                        Err(provider::NOT_SET_UP.into())
-                    }
-                }
-            }
-            Err(failure) => Err(failure),
-        };
+        let asked = provider_and_card(&state, user, version_id).await;
         let http = &state.http;
         let kept = match job {
             Job::Describe { again } => {
@@ -356,8 +364,12 @@ async fn run(state: AppState, user: i64, place: Place) {
                 ask_and_keep(&state, asked, ask, keep).await
             }
         };
+        // Not kept (a full disk): the card stays queued as it was, so the worker
+        // ends, as where the queue cannot be read; the next start takes it up.
+        let ended = kept.is_err();
         if let Err(failure) = kept {
             tracing::error!("card {card_id}'s description cannot be kept: {failure:#}");
+            state.describing().remove(&user);
         }
         state.push(
             user,
@@ -365,6 +377,10 @@ async fn run(state: AppState, user: i64, place: Place) {
                 card_id: Some(card_id),
             },
         );
+        if ended {
+            place.release();
+            return;
+        }
     }
 }
 

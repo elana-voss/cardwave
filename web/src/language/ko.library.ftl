@@ -246,6 +246,7 @@ character-translate-card = 캐릭터 번역…
 character-discard-card = 캐릭터 버리기
 character-card-menu = 캐릭터 메뉴
 character-title = 제목
+character-click-to-edit = 클릭하여 편집
 character-name-the-card = 캐릭터 이름 짓기
 character-summary = 라이브러리용 한 줄 요약
 character-this-card-is-in = 이 캐릭터는 휴지통에 있어요.{ " " }

@@ -1,7 +1,7 @@
 //! The MCP server at `POST /api/mcp`: a program on this computer reads an
 //! account's cards and chats as the API answers in-process (`api`), a long
 //! chat in pages (`paged`), writes into a chat and waits for the reply at
-//! most `REPLY_WAIT` (`send`), and calls the tools Settings › Tools switch on
+//! most `REPLY_WAIT` (`send`), and calls the tools Settings switches on
 //! (`tools::Toolbox`), with "Cardwave" one per route (`tools::app`), which the
 //! program asks its user about (`readOnlyHint`, `destructiveHint`). Streamable HTTP, stateless;
 //! a request whose `_meta` names its version is of 2026-07-28 (`checked`), one
@@ -10,7 +10,9 @@
 //! (`/api/mcp/settings`, `cw_coding::mcp`): the switch, the account served, the
 //! programs by the name each gives itself (`program`). Traps: an older client
 //! names itself in `initialize` alone, so its session id is its name; a call
-//! the settings ask about first is refused, as MCP cannot ask the user.
+//! the settings ask about first is refused, as MCP cannot ask the user, and so
+//! are the routes that answer such an ask or switch it off, or decide who is
+//! served and signs in (`the_users_alone`).
 
 use axum::Router;
 use axum::body::Bytes;
@@ -28,7 +30,7 @@ use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 use serde_json::{Value, json};
 
 use super::app_tools::{self, tool_routes};
-use super::{Api, ApiResult, Caller, Owner};
+use super::{Api, ApiResult, Caller, Owner, events};
 use crate::AppState;
 
 pub fn routes() -> Router<AppState> {
@@ -523,8 +525,38 @@ fn paged(text: String, page: usize) -> String {
     chat.to_string()
 }
 
+/// Whether the route `name` does what only the user does, in Cardwave itself:
+/// allows what Cardwave asks the user first (a tool call's answer, a coding
+/// task's) or switches the asking off, which would let a program allow by
+/// itself what the direct call of the tool is refused for; or decides who is
+/// served and who signs in (the account served, accounts, their passwords, the
+/// home network), which would let a program read another account's data.
+fn the_users_alone(name: &str, arguments: &Value) -> bool {
+    match name {
+        _ if USERS_ALONE.contains(&name) => true,
+        ASKING => ["ask_writes", "ask_commands", "ask_new_tools"]
+            .iter()
+            .any(|ask| !arguments["body"]["tools"][ask].is_null()),
+        _ => false,
+    }
+}
+
+/// The routes `the_users_alone` refuses whatever they are given; a test holds
+/// each to be a route, and each route that takes `Owner` to be here or excused.
+const USERS_ALONE: [&str; 6] = [
+    "post_chats_id_answer",
+    "post_coding_tasks_id_answer",
+    "put_mcp_settings",
+    "post_accounts",
+    "put_accounts_id_password",
+    "put_network",
+];
+
+/// The route that switches the asking off among other settings.
+const ASKING: &str = "patch_settings";
+
 /// Sends `text` into the chat `chat` as the user and waits for the reply:
-/// the messages after it, as the chat's answer has them.
+/// the messages after it, as the chat's answer has them; why it failed, where it did.
 async fn send(
     state: &AppState,
     app: &Api,
@@ -537,7 +569,9 @@ async fn send(
     let sent = ask(app, caller, Method::POST, &path, Some(message)).await?;
     let sent = serde_json::from_str::<Value>(&sent).map_err(|e| e.to_string())?["id"].clone();
     let path = format!("/api/chats/{chat}/generate");
-    ask(app, caller, Method::POST, &path, Some(json!({}))).await?;
+    let (end_to, end) = events::reply_end();
+    let body = Some(json!({}).to_string());
+    app_tools::request(app, caller, Method::POST, &path, body, Some(end_to)).await?;
     // The reply is written on a task of its own, until it leaves the replies;
     // one that waits for the user to allow a tool is not waited for.
     let key = (caller.user, chat);
@@ -550,7 +584,11 @@ async fn send(
         (true, false) => None,
     };
     match waited(REPLY_WAIT, now).await {
-        Waited::Done => {}
+        Waited::Done => {
+            if let Some(failure) = end.failure() {
+                return Err(failure);
+            }
+        }
         Waited::Asks => return Ok(WAITS.to_string()),
         Waited::Writing => return Ok(WRITING.to_string()),
     }
@@ -579,7 +617,7 @@ async fn ask(
     body: Option<Value>,
 ) -> Result<String, String> {
     let body = body.map(|body| body.to_string());
-    app_tools::request(app, caller, method, path, body).await
+    app_tools::request(app, caller, method, path, body, None).await
 }
 
 async fn their_tool(
@@ -600,6 +638,10 @@ async fn their_tool(
     };
     let offers_app = toolbox.as_ref().is_some_and(Toolbox::offers_app);
     if let Some(route) = app::named(tool_routes(), name).filter(|_| offers_app) {
+        if the_users_alone(name, arguments) {
+            let refused = "Only the user does this, in Cardwave itself; a program cannot over MCP.";
+            return Ok(text_result(refused.to_string(), true));
+        }
         return Ok(match app_tools::call(app, caller, route, arguments).await {
             Ok(text) => text_result(text, false),
             Err(failure) => text_result(failure, true),
@@ -622,7 +664,7 @@ async fn their_tool(
             _ => "Ask before running",
         };
         let refused = format!(
-            "Cardwave's settings ask the user first, which it cannot do over MCP. The user may switch \"{switch}\" off in Cardwave's Settings › Tools to allow it."
+            "Cardwave's settings ask the user first, which it cannot do over MCP. The user may switch \"{switch}\" off in Cardwave's Settings › Advanced › Tools for the AI to allow it."
         );
         return Ok(text_result(refused, true));
     }
@@ -646,8 +688,54 @@ include!(concat!(env!("OUT_DIR"), "/route_tools/mcp.rs"));
 
 #[cfg(test)]
 mod tests {
-    use super::{Waited, waited};
+    use super::{ASKING, USERS_ALONE, Waited, waited};
+    use crate::api::OWNER_ROUTES;
+    use crate::api::app_tools::tool_routes;
     use std::time::Duration;
+
+    /// The routes that take `Owner` which a program may still call: each
+    /// answers this computer's account and changes neither who is served nor
+    /// what is asked first.
+    const OWNER_OPEN: [&str; 18] = [
+        // What the user reads in Settings, changing nothing.
+        "get_network",
+        "get_mcp_settings",
+        // The folder of cards the library takes in, this computer's alone.
+        "get_card_folder_import",
+        "post_card_folder_import",
+        "get_card_folder_offered",
+        // This computer's models: fetched, stopped and removed.
+        "delete_dictation",
+        "delete_dictation_download",
+        "post_dictation_download",
+        "get_this_computer_models",
+        "delete_this_computer_models_file",
+        "post_this_computer_models_file",
+        "delete_search",
+        "delete_search_download",
+        "post_search_download",
+        "delete_voice_download",
+        "post_voice_download",
+        "delete_voice_languages_id",
+        "post_voice_languages_id",
+    ];
+
+    #[test]
+    fn each_route_kept_from_programs_is_a_route_and_each_owners_route_is_kept_or_excused() {
+        let names: Vec<&str> = tool_routes().iter().map(|route| route.name).collect();
+        for name in USERS_ALONE.iter().chain([&ASKING]) {
+            assert!(names.contains(name), "{name} is no route");
+        }
+        assert!(!OWNER_ROUTES.is_empty());
+        let open: Vec<_> = OWNER_ROUTES
+            .iter()
+            .filter(|name| !USERS_ALONE.contains(name) && !OWNER_OPEN.contains(name))
+            .collect();
+        assert!(
+            open.is_empty(),
+            "take Owner, neither kept from programs nor excused: {open:?}"
+        );
+    }
 
     #[tokio::test]
     async fn a_reply_still_written_is_waited_for_no_longer_than_the_limit() {

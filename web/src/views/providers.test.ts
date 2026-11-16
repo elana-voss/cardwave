@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ProvidersView } from "../api/generated/ProvidersView";
-import { chatUnchosen, thinkingSays, whereOf, workflowChoices, workflowNote } from "./providers";
+import { chatUnchosen, keyHint, thinkingSays, whereOf, workflowChoices, workflowNote } from "./providers";
 
 const entry = (base_url: string, key_end: string | null, has_key: boolean) => ({ id: 1, name: "x", own_name: null, base_url, has_key, key_end, workflow: null, folder: null });
 
@@ -9,6 +9,13 @@ describe("the page Providers", () => {
     expect(whereOf(entry("https://openrouter.ai/api/v1", "4f2a", true))).toBe("openrouter.ai · key ····4f2a");
     expect(whereOf(entry("http://127.0.0.1:8080/v1", null, false))).toBe("http://127.0.0.1:8080/v1 · no key");
     expect(whereOf(entry("http://localhost:5001/v1", null, true))).toBe("http://localhost:5001/v1 · key saved");
+  });
+
+  it("says under the key of an edited provider that another address needs the key typed again", () => {
+    const own = entry("https://a.example/v1", "4f2a", true);
+    expect(keyHint(own, "https://a.example/v1/")).toBe("Leave empty to keep the saved key.");
+    expect(keyHint(own, "https://b.example/v1")).toBe("A new address needs its key typed again: a key never goes to another server.");
+    expect(keyHint(entry("https://a.example/v1", null, false), "https://b.example/v1")).toBe("Leave empty to keep the saved key.");
   });
 
   it("has a line Thinking under a model that thinks, or whose thinking was turned off", () => {

@@ -1,7 +1,7 @@
 //! The MCP server (`api/mcp.rs`): an older client's `initialize`, a newer
 //! one's `server/discover` and its headers, the cards and chats read as the API
 //! gives them, a long chat in pages, a message sent and its reply, the tools
-//! Settings › Tools switches on with Cardwave's own one per route, who
+//! the settings switch on with Cardwave's own one per route, who
 //! reaches it, and Account › Server's switch, account and programs.
 //!
 //! `serving` is a server whose MCP server is switched on. `older` sends as a
@@ -38,7 +38,7 @@ async fn hello(server: &Server, name: &str) -> (u16, Value) {
 
 /// Posts `body` to the MCP server with `headers`; the status and the JSON body (`Null` when it has none).
 async fn post(server: &Server, headers: &[(&str, &str)], body: &Value) -> (u16, Value) {
-    let mut request = reqwest::Client::new()
+    let mut request = common::server::client()
         .post(format!("http://{}{PATH}", server.addr))
         .header("accept", "application/json, text/event-stream")
         .json(body);
@@ -264,7 +264,9 @@ async fn a_newer_client_is_answered_by_its_revision() {
 
     let (status, unknown) = newer(&server, "prompts/list", json!({})).await;
     assert_eq!((status, &unknown["error"]["code"]), (404, &json!(-32601)));
-    let got = reqwest::get(format!("http://{}{PATH}", server.addr))
+    let got = common::server::client()
+        .get(format!("http://{}{PATH}", server.addr))
+        .send()
         .await
         .unwrap();
     assert_eq!(got.status(), 405);
@@ -459,7 +461,7 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
     // An older client is given its name as its session id, which it sends back.
     let body = json!({ "jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {
         "protocolVersion": "2025-11-25", "clientInfo": { "name": "Claude", "version": "1" } } });
-    let given = reqwest::Client::new()
+    let given = common::server::client()
         .post(format!("http://{}{PATH}", server.addr))
         .json(&body)
         .send()
@@ -584,6 +586,24 @@ async fn a_program_sends_a_message_and_is_given_the_reply() {
     assert_eq!(missing["isError"], true, "{missing}");
 }
 
+/// The provider refuses the key: the program is told the reply failed and why.
+#[tokio::test]
+async fn a_reply_that_failed_is_answered_as_an_error() {
+    let server = serving().await;
+    let refused = r#"{"error":{"message":"Invalid API key"}}"#.to_string();
+    let model = Model::start(vec![(401, refused)]).await;
+    let provider = json!({ "base_url": model.url, "model": "test-model", "api_key": "sk-test" });
+    assert_eq!(server.set_provider(provider).await.0, 200);
+    let (_, view) = server.post("/api/chats", json!({ "characters": [] })).await;
+    let chat = view["chat"]["id"].as_i64().unwrap();
+
+    let sent = json!({ "chat_id": chat, "text": "Plan a trip to Lisbon." });
+    let said = call(&server, "send_message", sent).await;
+    assert_eq!(said["isError"], true, "{said}");
+    let text = said["content"][0]["text"].as_str().unwrap();
+    assert!(text.contains("Invalid API key"), "{text}");
+}
+
 #[tokio::test]
 async fn a_long_chat_is_read_in_pages_of_fifty_the_newest_first() {
     let server = serving().await;
@@ -641,4 +661,56 @@ async fn a_reply_that_waits_for_the_user_is_not_waited_for() {
     assert!(text.contains("waits for the user"), "{text}");
     let (_, view) = server.get(&format!("/api/chats/{chat}")).await;
     assert_eq!(view["asking"]["kind"], "app", "{view}");
+
+    // Nor does the program allow it, or switch the asking off, in the user's place.
+    let allow = json!({ "id": chat, "body": { "allow": true } });
+    let refused = call(&server, "post_chats_id_answer", allow).await;
+    assert_eq!(refused["isError"], true, "{refused}");
+    assert!(refused.to_string().contains("over MCP"), "{refused}");
+    let (_, view) = server.get(&format!("/api/chats/{chat}")).await;
+    assert_eq!(view["asking"]["kind"], "app", "{view}");
+    let off = json!({ "body": { "tools": { "ask_commands": false } } });
+    let refused = call(&server, "patch_settings", off).await;
+    assert!(refused.to_string().contains("over MCP"), "{refused}");
+    let (_, settings) = server.get("/api/settings").await;
+    assert_eq!(settings["tools"]["ask_commands"], true, "{settings}");
+}
+
+#[tokio::test]
+async fn a_program_changes_no_account_and_no_network() {
+    let server = serving().await;
+    let on = json!({ "tools": { "app": true } });
+    assert_eq!(server.patch("/api/settings", on).await.0, 200);
+    let (_, before) = server.get("/api/mcp/settings").await;
+    let (_, ada) = server
+        .post(
+            "/api/accounts",
+            json!({ "name": "Ada", "password": "lantern" }),
+        )
+        .await;
+    let ada = ada["id"].as_i64().expect("Ada's id");
+
+    let asked = [
+        ("put_mcp_settings", json!({ "body": { "account": ada } })),
+        (
+            "put_accounts_id_password",
+            json!({ "id": ada, "body": { "password": "taken" } }),
+        ),
+        (
+            "post_accounts",
+            json!({ "body": { "name": "Eve", "password": "lantern" } }),
+        ),
+        ("put_network", json!({ "body": { "on": true } })),
+    ];
+    for (name, arguments) in asked {
+        let refused = call(&server, name, arguments).await;
+        assert!(
+            refused.to_string().contains("over MCP"),
+            "{name}: {refused}"
+        );
+    }
+    let (_, after) = server.get("/api/mcp/settings").await;
+    assert_eq!(after["account"], before["account"]);
+    let (_, accounts) = server.get("/api/accounts").await;
+    assert!(!accounts.to_string().contains("Eve"), "{accounts}");
 }

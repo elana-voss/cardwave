@@ -423,6 +423,59 @@ async fn an_assistant_remembers_the_user_in_all_its_chats() {
 }
 
 #[tokio::test]
+async fn chats_of_a_character_with_different_personas_share_no_memory() {
+    let server = start().await;
+    let bees = "PRESENT: Gwen, User
+FACTS:
+user | hobby | Erin keeps bees | personal | everyone | current
+EVENTS:";
+    let model = Model::start("assistant", bees, vec![text("Noted.")]).await;
+    let version = set_up(&server, &model).await;
+    let mut socket = server.listen().await;
+    let first = chat_with(&server, &version).await;
+    server
+        .put(&format!("{first}/mode"), json!({ "mode": "Assistant" }))
+        .await;
+    for n in 2..19 {
+        let said = json!({ "content": format!("Message {n}.") });
+        assert_eq!(server.post(&format!("{first}/messages"), said).await.0, 201);
+    }
+    talk(&server, &mut socket, &first, "I keep bees, by the way.").await;
+    next(&mut socket, "memories").await;
+
+    // A chat with a persona is the character's memory with that persona: not the first's.
+    let made = json!({ "name": "Bea", "description": "" });
+    let (_, bea) = server.post("/api/personas", made).await;
+    let second = chat_with(&server, &version).await;
+    server
+        .put(&format!("{second}/mode"), json!({ "mode": "Assistant" }))
+        .await;
+    let persona = json!({ "persona_id": bea["id"] });
+    assert_eq!(
+        server.put(&format!("{second}/persona"), persona).await.0,
+        200
+    );
+    talk(&server, &mut socket, &second, "What do I keep?").await;
+    let reply = model.asked("reply").pop().unwrap();
+    assert!(
+        !reply["messages"].to_string().contains("Erin keeps bees"),
+        "{reply}"
+    );
+
+    // A chat without one is still the first's.
+    let third = chat_with(&server, &version).await;
+    server
+        .put(&format!("{third}/mode"), json!({ "mode": "Assistant" }))
+        .await;
+    talk(&server, &mut socket, &third, "What do I keep?").await;
+    let reply = model.asked("reply").pop().unwrap();
+    assert!(
+        reply["messages"].to_string().contains("Erin keeps bees"),
+        "{reply}"
+    );
+}
+
+#[tokio::test]
 async fn what_a_chat_no_longer_holds_is_given_to_no_other_chat_of_its_memory() {
     let server = start().await;
     let bees = "PRESENT: Gwen, User\nFACTS:\nuser | hobby | Erin keeps bees | personal | everyone | current\nEVENTS:";

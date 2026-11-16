@@ -70,7 +70,7 @@ async fn start(
     Json(new): Json<StartTask>,
 ) -> ApiResult<(StatusCode, Json<Task>)> {
     if user != state.local_user() {
-        Err(owner_only("use its files"))?;
+        Err(owner_only("use_its_files"))?;
     }
     let goal = new.goal.trim().to_string();
     let folder = new.folder.trim().to_string();
@@ -87,7 +87,7 @@ async fn start(
             // A background model at another provider is not the workers': the team is asked at the chat model's.
             let background = provider::background_beside(db, user, &chat)?;
             let settings = settings::get(db, user)?;
-            // The team reads and writes the task's folder by Settings › Tools' Files.
+            // The team reads and writes the task's folder by the Files tool (Tools for the AI).
             if !settings.tools.files {
                 Err(Fail::new(Code::FilesToolOff))?;
             }

@@ -139,7 +139,7 @@ pub fn export(db: &dyn crate::chats::Storage, user: i64, chat_id: i64) -> anyhow
             .map_or(first, |(_, name)| name)
     };
 
-    let memories = match crate::assistant::chat_remembering(db, user, &chat)?.owner(chat.id) {
+    let memories = match crate::assistant::chat_remembering(db, user, &chat)?.owner(&chat) {
         Some((owner, _)) => memory::of_chat(db, user, &chat, &owner)?
             .into_iter()
             .map(|(entry, known_by)| Remembered {

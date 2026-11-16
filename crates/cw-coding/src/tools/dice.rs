@@ -1,6 +1,6 @@
 //! The dice a chat's model rolls (`dice(count, sides)`, the owner,
 //! 2026-10-23): the server rolls, so the model cannot pick its own number.
-//! It is offered in every chat reply while Settings › Tools › Dice is on (off
+//! It is offered in every chat reply while Tools for the AI › Dice is on (off
 //! at first, the owner, 2026-10-23), and as its arguments are two numbers it
 //! leaves the Reply length sent (`cuts`).
 //!

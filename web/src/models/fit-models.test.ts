@@ -1,20 +1,27 @@
 import { describe, expect, it } from "vitest";
 import type { FitModel } from "../api/generated/FitModel";
-import { fitSays, memoryLine, onlySteps, usedFor } from "./fit-models";
+import { fitSays, memoryLine, onlySteps, runsLine, usedFor } from "./fit-models";
 
 const GB = 1024 ** 3;
 const model = (change: Partial<FitModel>): FitModel => ({ file: "q.gguf", name: "Qwen3 4B", size: 2.5 * GB, fits: true, offered: true, state: "absent", done: 0, failure: null, ...change });
 const own = { id: 7, name: "This computer", own_name: null, base_url: "", has_key: false, key_end: null, workflow: null, folder: "C:\\Models" };
 
 describe("the models that fit this computer", () => {
-  it("say their size and whether they fit, then how far they are", () => {
-    expect(fitSays(model({}), [])).toBe("2.5 GB · Runs on this computer");
-    expect(fitSays(model({ fits: false }), [])).toBe("2.5 GB · Too large for this computer");
-    expect(fitSays(model({ state: "downloading", done: 1.05 * GB }), [])).toBe("2.5 GB · Runs on this computer · downloading 42%");
-    expect(fitSays(model({ state: "downloaded" }), [])).toBe("2.5 GB · Runs on this computer · downloaded");
-    expect(fitSays(model({ state: "downloaded" }), ["Chat", "Background"])).toBe("2.5 GB · Runs on this computer · used for Chat and Background");
+  it("say whether they fit, then how far they are, and their size only while Details is open", () => {
+    expect(fitSays(model({}), [])).toBe("Runs on this computer");
+    expect(fitSays(model({}), [], true)).toBe("2.5 GB · Runs on this computer");
+    expect(fitSays(model({ fits: false }), [], true)).toBe("2.5 GB · Too large for this computer");
+    expect(fitSays(model({ state: "downloading", done: 1.05 * GB }), [])).toBe("Runs on this computer · downloading 42%");
+    expect(fitSays(model({ state: "downloaded" }), [])).toBe("Runs on this computer · downloaded");
+    expect(fitSays(model({ state: "downloaded" }), ["Chat", "Background"])).toBe("Runs on this computer · used for Chat and Background");
     // A file of the user's own is there, not downloaded.
-    expect(fitSays(model({ state: "downloaded", offered: false }), [])).toBe("2.5 GB · Runs on this computer");
+    expect(fitSays(model({ state: "downloaded", offered: false }), [])).toBe("Runs on this computer");
+  });
+
+  it("say in the box's head what runs: the models there that fit, or that none is yet", () => {
+    const fit = (...models: Partial<FitModel>[]) => ({ memory: 8 * GB, models: models.map(model) });
+    expect(runsLine(fit({ state: "downloaded" }, { state: "downloaded", offered: false }, { state: "absent" }, { state: "downloaded", fits: false }))).toBe("Ready to run: 2 models");
+    expect(runsLine(fit({ state: "absent" }, { state: "downloading" }))).toBe("No model yet: download one that fits below");
   });
 
   it("tell the kinds at a model of This computer, and the memory beside the folder", () => {

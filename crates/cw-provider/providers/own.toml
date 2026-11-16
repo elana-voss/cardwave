@@ -12,6 +12,11 @@
 #             provider's. Where a key begins as several entries say, the longest beginning counts, and among
 #             entries with the same one the user chooses ("sk-" is OpenAI's older keys, DeepSeek's and Alibaba's
 #             older ones)
+#   own_api   its API where it is more than OpenAI's, by which the app asks it (crates/cw-provider/src/list.rs
+#             `OwnApi`): "openrouter" (pictures at /images), "nanogpt" (a list with details, picture models
+#             apart, a subscription); an address on the host of base_url or under it is the provider's
+#   key_check where a provider whose list of models comes to anyone tells whether it takes a key (url; post =
+#             true where it is asked by POST), else the key is asked at its list of models
 #
 # Each address of a service was asked without a key and answered as an API does (GET <base_url>/models: a list of
 # models, or 401 or 403 that is no HTML) on 2026-10-13; Gemini's, which answers 404 there without a key, by its
@@ -24,6 +29,9 @@
 # Alibaba alibabacloud.com/help/en/model-studio/get-api-key ("sk-ws", older "sk-"; Coding Plan's "sk-sp-" asks
 # another address), Baseten's changelog of the "b10_" keys, Electron Hub docs.electronhub.ai authentication. The
 # others' docs say no beginning. No key of a provider was tried.
+# A key_check is from the provider's docs, each seen to answer a made-up key with 401 or 403 on 2026-11-08.
+# NanoGPT's is its balance (POST): its subscription's usage refuses a working key that is not a UUID ("Malformed
+# API key"), the balance took a working key and refused made-up ones.
 # "Pretend model" is no service: the server answers its address itself (crates/cw-provider/src/pretend.rs).
 
 [[provider]]
@@ -72,6 +80,8 @@ name = "OpenRouter"
 website = "openrouter.ai"
 keys = ["sk-or-v1-"]
 base_url = "https://openrouter.ai/api/v1"
+own_api = "openrouter"
+key_check = { url = "https://openrouter.ai/api/v1/key" }
 
 [[provider]]
 name = "Together AI"
@@ -131,6 +141,7 @@ name = "Novita AI"
 website = "novita.ai"
 keys = ["sk_"]
 base_url = "https://api.novita.ai/openai/v1"
+key_check = { url = "https://api.novita.ai/v3/user" }
 
 [[provider]]
 name = "Nebius"
@@ -147,6 +158,8 @@ name = "NanoGPT"
 website = "nano-gpt.com"
 keys = ["sk-nano-"]
 base_url = "https://nano-gpt.com/api/v1"
+own_api = "nanogpt"
+key_check = { url = "https://nano-gpt.com/api/check-balance", post = true }
 
 [[provider]]
 name = "Infermatic"
@@ -173,6 +186,7 @@ base_url = "https://neuro.mancer.tech/oai/v1"
 name = "Venice AI"
 website = "venice.ai"
 base_url = "https://api.venice.ai/api/v1"
+key_check = { url = "https://api.venice.ai/api/v1/api_keys/rate_limits" }
 
 [[provider]]
 name = "Moonshot AI"
@@ -210,6 +224,7 @@ name = "Hugging Face"
 website = "huggingface.co"
 keys = ["hf_"]
 base_url = "https://router.huggingface.co/v1"
+key_check = { url = "https://huggingface.co/api/whoami-v2" }
 
 [[provider]]
 name = "Friendli"
@@ -268,6 +283,7 @@ base_url = "https://api.ai21.com/studio/v1"
 name = "Poe"
 website = "poe.com"
 base_url = "https://api.poe.com/v1"
+key_check = { url = "https://api.poe.com/usage/current_balance" }
 
 [[provider]]
 name = "Synthetic"

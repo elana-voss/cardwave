@@ -122,7 +122,7 @@ export function switchItems(lines: AccountLine[], owner: boolean): MenuItem[] {
 }
 
 /** The menu line "Sign out", of a page on another device; `apart` under a rule. */
-export const signOutItem = (apart: boolean): MenuItem => ({ label: wording("account-sign-out"), shape: "switch", apart, action: () => void signOut().then(anew) });
+export const signOutItem = (apart: boolean): MenuItem => ({ label: wording("account-sign-out"), shape: "switch", apart, action: () => void signOut().then(anew, (error) => announce(told(error))) });
 
 /** What main.ts shows where the page is to sign in: `accounts` are those it can sign in to. */
 export function signInScreen(accounts: AccountLine[]): HTMLElement {

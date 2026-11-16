@@ -34,7 +34,7 @@ import { onEvent } from "../chat/events";
 import { drawHeader, header, type Header } from "../chat/header";
 import { drawMessages, replierName } from "../chat/messages";
 import { chatPanel, sourceOf, type ChatPanel, type PanelActions } from "../chat/panel";
-import { act, atBottom, failed, branch, find, load, newScreen, newest, tell, toBottom, took, toolsNow, type Screen } from "../chat/screen";
+import { act, atBottom, keepEnd, failed, branch, find, load, newScreen, newest, tell, toBottom, took, toolsNow, type Screen } from "../chat/screen";
 import { splitView, type Split } from "../chat/split";
 import { canTalk, end, halt, onward } from "../chat/talk";
 import { el, escapeFree, failure, NARROW, TOUCH, WIDE, type View } from "../dom";
@@ -82,6 +82,53 @@ export const opensWriting = (view: ChatView | null | undefined, active: Element 
 
 export function chatView(chatId: number): View {
   const s = newScreen(chatId);
+  const p = makeParts(s);
+  s.render = () => render(s, p);
+  s.onEvent = (event) => {
+    // Dictation's model downloaded or removed: the microphone shows while it is there.
+    if (event.type === "dictation") p.composer.dictate.read();
+    onEvent(s, event);
+  };
+  const main = el("div", { className: "chat-main" }, p.header.node, s.scroller, p.status, p.branching, p.talking, p.ask.node, el("div", { className: "chat-dock" }, p.composer.form, p.inTrash));
+  s.node.append(main, p.panel.node, p.split.node);
+  wireSides(s, p, main);
+  const sides = () => showSides(s, p);
+  const unkeep = keepEnd(s);
+  WIDE.addEventListener("change", sides);
+  showSides(s, p);
+  // What the account is called, as it is known and after a rename: the rounds beside the user's messages of a chat
+  // without a persona have its letter, until the chat is left.
+  const left = watchAccount((now) => {
+    s.account = now;
+    p.composer.codingLine.hidden = !codingOffered(s);
+    for (const own of s.node.querySelectorAll<HTMLElement>(".avatar.own:not(.of-persona)")) showRound(own, now);
+  });
+  void load(s).then(() => {
+    toBottom(s);
+    if (s.node.isConnected && opensWriting(s.view, document.activeElement)) s.input.focus();
+  });
+  const unchoose = escapeKey(s, p);
+  document.addEventListener("keydown", unchoose);
+  const leave = () => {
+    document.removeEventListener("keydown", unchoose);
+    // The characters reply by themselves, and the model writes the user's message, only while their chat is in view.
+    end(s);
+    s.drafting?.stop.abort();
+    stopReading();
+    left();
+    WIDE.removeEventListener("change", sides);
+    unkeep();
+    if (p.splitShown) foldFor(false);
+  };
+  // What is being read may be from before the socket opened, so it is read again after.
+  return { node: s.node, onEvent: s.onEvent, onConnected: () => {
+    p.composer.dictate.read();
+    void (s.loading ?? Promise.resolve()).then(() => load(s));
+  }, left: leave, views: CHAT_VIEWS };
+}
+
+/** The screen's parts, the side panel's and the split view's open state read from the last start. */
+function makeParts(s: Screen): Parts {
   const talkCount = el("span");
   const trashLeft = el("span", { className: "meta" });
   const p: Parts = {
@@ -105,18 +152,15 @@ export function chatView(chatId: number): View {
     splitOpen: remembered(SPLIT) === "open",
     splitShown: false,
   };
-  s.render = () => render(s, p);
-  s.onEvent = (event) => {
-    // Dictation's model downloaded or removed: the microphone shows while it is there.
-    if (event.type === "dictation") p.composer.dictate.read();
-    onEvent(s, event);
-  };
-  const main = el("div", { className: "chat-main" }, p.header.node, s.scroller, p.status, p.branching, p.talking, p.ask.node, el("div", { className: "chat-dock" }, p.composer.form, p.inTrash));
+  return p;
+}
+
+/** The side panel's and the split view's buttons, the chat menu's "Add lorebook", and a press on the chat under the panel. */
+function wireSides(s: Screen, p: Parts, main: HTMLElement): void {
   // Where the panel lies over the chat, a press on the chat closes it; its own button does that on its click.
   main.addEventListener("pointerdown", (event) => {
     if (NARROW.matches && p.panelOpen && !p.header.panelToggle.contains(event.target as Node)) showPanel(s, p, false);
   });
-  s.node.append(main, p.panel.node, p.split.node);
   const toggle = p.header.panelToggle;
   toggle.onclick = () => {
     // The panel's button shows the panel where the split view hides it, closing the split view.
@@ -141,21 +185,11 @@ export function chatView(chatId: number): View {
     showSides(s, p);
     p.header.splitToggle.focus();
   };
-  const sides = () => showSides(s, p);
-  WIDE.addEventListener("change", sides);
-  showSides(s, p);
-  // What the account is called, as it is known and after a rename: the rounds beside the user's messages of a chat
-  // without a persona have its letter, until the chat is left.
-  const left = watchAccount((now) => {
-    s.account = now;
-    p.composer.codingLine.hidden = !codingOffered(s);
-    for (const own of s.node.querySelectorAll<HTMLElement>(".avatar.own:not(.of-persona)")) showRound(own, now);
-  });
-  void load(s).then(() => {
-    toBottom(s);
-    if (s.node.isConnected && opensWriting(s.view, document.activeElement)) s.input.focus();
-  });
-  const unchoose = (event: KeyboardEvent) => {
+}
+
+/** Escape: closes the panel where it lies over the chat, else lets a reply chosen go. */
+function escapeKey(s: Screen, p: Parts): (event: KeyboardEvent) => void {
+  return (event) => {
     // A chat in a tab out of view takes no key.
     if (!s.node.isConnected || !escapeFree(event) || s.asking) return;
     // Where the panel lies over the chat, Escape closes it first.
@@ -170,22 +204,6 @@ export function chatView(chatId: number): View {
     s.chosen = null;
     s.render();
   };
-  document.addEventListener("keydown", unchoose);
-  const leave = () => {
-    document.removeEventListener("keydown", unchoose);
-    // The characters reply by themselves, and the model writes the user's message, only while their chat is in view.
-    end(s);
-    s.drafting?.stop.abort();
-    stopReading();
-    left();
-    WIDE.removeEventListener("change", sides);
-    if (p.splitShown) foldFor(false);
-  };
-  // What is being read may be from before the socket opened, so it is read again after.
-  return { node: s.node, onEvent: s.onEvent, onConnected: () => {
-    p.composer.dictate.read();
-    void (s.loading ?? Promise.resolve()).then(() => load(s));
-  }, left: leave, views: CHAT_VIEWS };
 }
 
 /** A chat in the Trash is only read: nothing is written into what is about to go. Restore takes it out. */

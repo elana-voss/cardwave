@@ -1,0 +1,19 @@
+/* A choice field's width: a panel's field fills its line, a field in a box's line is 140 px (180 px when wide), the
+   latter after the former (same weight). Read before app/narrow.css, whose phone rule makes both the line's width. */
+/* A choice field in a side panel (chat/panel.ts) fills its line. */
+.side-panel .select-field,
+.side-panel .selectbtn {
+  width: 100%;
+}
+/* A choice field in a box's line (`selectField` wraps its button in `.select-field`): the line's width for a field. */
+.item > .select-field {
+  width: 140px;
+  flex: none;
+}
+.item > .select-field:has(.selectbtn-wide) {
+  width: 180px;
+}
+.select-field .menu,
+.select-field .selectbtn:not(.selectbtn-wide) {
+  width: 100%;
+}

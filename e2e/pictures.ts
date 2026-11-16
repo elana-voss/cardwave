@@ -133,6 +133,9 @@ export async function still(page: Page): Promise<void> {
   });
 }
 
+/** The rail's chats with `name`: they say their day and time, made on the real clock, so a picture masks them. */
+export const railChats = (page: Page, name: string) => [page.locator(".nav-chat", { hasText: name })];
+
 /** Compares the window with its stored picture `name`, once the screen lies still; `mask` covers what reads the real clock. */
 export async function picture(page: Page, name: string, mask: Locator[] = []): Promise<void> {
   await still(page);

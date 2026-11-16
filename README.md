@@ -46,15 +46,13 @@ Cardwave opens SillyTavern cards (PNG) and [CCV4](https://cardwave.cc/ccv4.html)
 
 ## Phones and other computers
 
-Early: this works, but has not been thoroughly tested yet.
-
 While Cardwave runs on your computer, phones and other computers in your home network can open it in a browser:
 
 1. On the computer, open Account › Sharing and switch on "Reachable in the home network" under "Other devices".
 2. Under "Accounts", press "Add account" and give each person a name and a password. Each account has chats and characters of its own.
 3. On the other device, open the address Sharing shows beside "Address" (such as `http://192.168.1.20:8477/`), choose your account and type its password.
 
-Only devices in the same network can reach it.
+Only devices in the same network can reach it. To reach it from anywhere, install the free app [Tailscale](https://tailscale.com/) on the computer and the phone and sign in to both; Sharing then shows a second address beside "From anywhere", which the phone opens wherever it is.
 
 ## Build from source
 

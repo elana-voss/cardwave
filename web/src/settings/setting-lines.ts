@@ -13,8 +13,11 @@ export function settingSwitch(attempt: ReturnType<typeof oneAtATime>, label: str
   // The folder of cards' two are held within its settings.
   const held = (settings: Settings) => (key === "watch" || key === "recycle" ? settings.card_folder[key] : settings[key]);
   const change = (on: boolean) => (key === "watch" || key === "recycle" ? { card_folder: { [key]: on } } : { [key]: on });
-  toggle.onchange = () =>
-    attempt(async () => {
+  toggle.onchange = () => {
+    // The runner drops an action while another of its own runs, saying only `false`; the switch goes back then.
+    let ran = false;
+    void attempt(async () => {
+      ran = true;
       toggle.disabled = true;
       try {
         toggle.checked = held(await changeSettings(change(toggle.checked)));
@@ -24,7 +27,10 @@ export function settingSwitch(attempt: ReturnType<typeof oneAtATime>, label: str
       } finally {
         toggle.disabled = false;
       }
+    }).then((done) => {
+      if (!done && !ran) toggle.checked = !toggle.checked;
     });
+  };
   const show = (settings: Settings) => {
     toggle.checked = held(settings);
     toggle.disabled = false;

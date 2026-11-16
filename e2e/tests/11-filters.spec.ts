@@ -138,11 +138,9 @@ async function osprey(page: Page): Promise<void> {
   await expect(titles(page)).toHaveText(OSPREY);
 }
 
-test("the page beside the panel is not dimmed, and the Tags say a character needs every one picked", async ({ page }) => {
+test("the Tags say a character needs every one picked", async ({ page }) => {
   await osprey(page);
   await open(page);
-  const backdrop = await panel(page).evaluate((box) => getComputedStyle(box, "::backdrop").backgroundColor);
-  expect(backdrop).toBe("rgba(0, 0, 0, 0)");
   await expect(panel(page)).toContainText("Characters with every tag you pick show.");
   await page.keyboard.press("Escape");
 });

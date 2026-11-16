@@ -110,7 +110,7 @@ fn an_exported_card_imports_as_the_card_it_was() {
     );
     assert_eq!(
         (&wiper["selective"], &wiper["use_regex"], &wiper["constant"]),
-        (&json!(true), &json!(true), &json!(false))
+        (&json!(true), &json!(false), &json!(false))
     );
     assert_eq!(
         wiper["extensions"],

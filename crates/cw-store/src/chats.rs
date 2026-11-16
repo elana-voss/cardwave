@@ -43,9 +43,8 @@ pub(super) fn chat(row: &Row<'_>) -> rusqlite::Result<Chat> {
         deleted_at: trashed_at.map(cw_library::trash::deleted_at),
         created_at: row.get(7)?,
         updated_at: row.get(8)?,
-        turn_order: crate::chat_turns::turn_order(row.get_ref(9)?).map_err(|e| {
-            rusqlite::Error::FromSqlConversionFailure(9, rusqlite::types::Type::Text, e.into())
-        })?,
+        turn_order: crate::chat_turns::turn_order(row.get_ref(9)?)
+            .map_err(|e| crate::json::unreadable(9, e))?,
         replier_id: row.get(10)?,
         prompt_preset: ChatPromptPreset::of(row.get(11)?, row.get(12)?),
         mode: row.get(13)?,

@@ -2,10 +2,11 @@
 //! back, on this computer or another.
 //!
 //! The file is the line [`MAGIC`], a line of JSON (`Header`): the key sealed by a
-//! password (cw-accounts' `password`), the one that is on or, where none is, one
-//! asked for at the backup (a backup always has a password), and then the
-//! database's file, encrypted with that key, as SQLite's backup copies it while
-//! the server runs (`snapshot`). An older backup may hold the key plain.
+//! password (cw-accounts' `password`), the one that is on (`locked`: Cardwave
+//! asked for it on opening, and a restore brings that lock back) or, where none
+//! is, one asked for at the backup (a backup always has a password), and then
+//! the database's file, encrypted with that key, as SQLite's backup copies it
+//! while the server runs (`snapshot`). An older backup may hold the key plain.
 //!
 //! `restore` opens that copy with its key, brings its schema up to date, gives it
 //! this data folder's key (`PRAGMA rekey`) and copies it page by page over the
@@ -39,8 +40,10 @@ const HEADER_LIMIT: u64 = 64 * 1024;
 enum Header {
     /// As it is, in hex: only read, of backups made before every one had a password.
     Key(String),
-    /// Sealed by a password.
+    /// Sealed by a password chosen for the backup.
     Sealed(Sealed),
+    /// Sealed by the password Cardwave asked for on opening when the backup was made.
+    Locked(Sealed),
 }
 
 /// What a backup needs of the database, which `backup_sql` gives.
@@ -52,26 +55,38 @@ pub trait Storage {
 
 /// Copies the database at `live`, encrypted with its `key`, into the new file
 /// `to`, and answers what goes before that copy in the backup: `sealed` is the
-/// key as the backup's password seals it. The copy is read by a
+/// key as the backup's password seals it, `locked` whether that password is the
+/// one Cardwave asks for on opening. The copy is read by a
 /// connection of its own, all in one step: the server writes on meanwhile,
 /// and a copy in steps would begin anew at every write.
-pub fn snapshot(live: &Path, key: &DbKey, sealed: Sealed, to: &Path) -> anyhow::Result<Vec<u8>> {
+pub fn snapshot(
+    live: &Path,
+    key: &DbKey,
+    sealed: Sealed,
+    locked: bool,
+    to: &Path,
+) -> anyhow::Result<Vec<u8>> {
     crate::backup_sql::copy(live, key, to)?;
     let mut head = MAGIC.to_vec();
-    serde_json::to_writer(&mut head, &Header::Sealed(sealed))?;
+    let header = match locked {
+        true => Header::Locked(sealed),
+        false => Header::Sealed(sealed),
+    };
+    serde_json::to_writer(&mut head, &header)?;
     head.push(b'\n');
     Ok(head)
 }
 
 /// Puts what the backup `file` holds in the place of what `db` holds. `key`
 /// is the database's key, `password` the backup's where it was made with one.
+/// Answers whether the backup was made while that password locked Cardwave.
 pub fn restore(
     db: &Db,
     key: &DbKey,
     file: &Path,
     password: Option<&str>,
     data_dir: &Path,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<bool> {
     let mut reader = BufReader::new(File::open(file)?);
     let mut magic = vec![0; MAGIC.len()];
     if reader.read_exact(&mut magic).is_err() || magic != MAGIC {
@@ -91,12 +106,10 @@ pub fn restore(
         )
         .with("what", "backup_key"),
     )?;
-    let theirs = match header {
-        Header::Key(hex) => DbKey::from_hex(&hex)?,
-        Header::Sealed(sealed) => match password {
-            Some(password) => password::unseal(&sealed, password)?,
-            None => return Err(Fail::new(Code::BackupPasswordNeeded).into()),
-        },
+    let (theirs, locked) = match header {
+        Header::Key(hex) => (DbKey::from_hex(&hex)?, false),
+        Header::Sealed(sealed) => (unsealed(&sealed, password)?, false),
+        Header::Locked(sealed) => (unsealed(&sealed, password)?, true),
     };
     let copy = data_dir.join(RESTORE);
     let result = (|| {
@@ -105,12 +118,7 @@ pub fn restore(
         out.flush()?;
         drop(out);
         let restored = Db::open(&copy, &theirs).map_err(|failure| {
-            let newer = failure.chain().any(|cause| {
-                cause.downcast_ref::<Fail>().is_some_and(|fail| {
-                    fail.details.get("what").map(ToString::to_string).as_deref()
-                        == Some(crate::schema::NEWER)
-                })
-            });
+            let newer = cw_core::failed_as(&failure, crate::schema::NEWER).is_some();
             let told = if newer {
                 Fail::said(
                     Code::NotReadable,
@@ -129,7 +137,13 @@ pub fn restore(
         // Not there, or left for `backup::remove_left` at the next start.
         let _ = std::fs::remove_file(data_dir.join(format!("{RESTORE}{end}")));
     }
-    result
+    result.map(|()| locked)
+}
+
+/// The key `sealed` holds, by the backup's `password`, which it needs.
+fn unsealed(sealed: &Sealed, password: Option<&str>) -> anyhow::Result<DbKey> {
+    let password = password.ok_or(Fail::new(Code::BackupPasswordNeeded))?;
+    password::unseal(sealed, password)
 }
 
 /// Removes what a backup or a restore left in `data_dir` when the server was

@@ -10,6 +10,7 @@
 // choose, another order than the list's own, which is the first of its orders.
 // `tagsPart` is the panel's part "Tags", which only a list with tags has.
 import type { TagCount } from "../api/generated/TagCount";
+import { tagWord } from "../content-level";
 import { el, latest, noticeBox, pill, searchField } from "../dom";
 import { sheet } from "../dialogs";
 import { icon } from "../icons";
@@ -135,7 +136,7 @@ function tagsPart(read: (tags: string[]) => Promise<TagCount[]>, first: string[]
   /** Shows the tags that have the letters typed, in any case. */
   function narrow(): void {
     const typed = field.value.trim();
-    for (const { tag, node } of lines) node.hidden = !tag.toLowerCase().includes(typed.toLowerCase());
+    for (const { tag, node } of lines) node.hidden = !`${tag} ${tagWord(tag)}`.toLowerCase().includes(typed.toLowerCase());
     nothing.textContent = lines.length ? wording("sort-filter-no-tags-match", { typed }) : wording("sort-filter-no-tags-to-choose");
     nothing.hidden = lines.some(({ node }) => !node.hidden);
   }
@@ -149,7 +150,7 @@ function tagsPart(read: (tags: string[]) => Promise<TagCount[]>, first: string[]
       tags = found.filter((tag) => tag.chosen).map(({ tag }) => tag);
       clear.disabled = tags.length === 0;
       lines = found.map(({ tag, cards, chosen }) => {
-        const node = pill(tag, chosen, () => choose(chosen ? tags.filter((other) => other !== tag) : [...tags, tag], () => focus(tag)));
+        const node = pill(tagWord(tag), chosen, () => choose(chosen ? tags.filter((other) => other !== tag) : [...tags, tag], () => focus(tag)));
         // One that would leave no card cannot be pressed; one that is chosen can always be given up.
         node.disabled = cards === 0 && !chosen;
         return { tag, node };

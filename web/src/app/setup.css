@@ -38,11 +38,15 @@
    account's round and name, the password with its button, what a forgotten password means; or the accounts to
    choose from. */
 .start-screen {
+  min-width: 0;
   padding: var(--s64) var(--s24);
 }
 .start-logo {
   width: 44px;
   height: auto;
+}
+.start-column {
+  max-width: 100%;
 }
 .start-column > .initial {
   width: 64px;
@@ -63,6 +67,7 @@
 }
 .start-accounts {
   width: 360px;
+  max-width: 100%;
   overflow: hidden;
 }
 .account-choice {

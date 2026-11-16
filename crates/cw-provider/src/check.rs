@@ -173,13 +173,13 @@ const KEY_WAIT: Duration = Duration::from_secs(15);
 
 /// Whether the provider refuses `key`, asked by one request that costs nothing: the list of models, which most
 /// providers give only with a valid key, or, where a provider lists its models to anyone, its own place for
-/// the key or the account ([`OWN_PLACES`]). Without a key, or where the answer does not tell (none came,
+/// the key or the account (`own.toml`'s `key_check`). Without a key, or where the answer does not tell (none came,
 /// another status), the key is taken: the chat says what is wrong then.
 pub async fn key(http: &Http, base_url: &str, key: &str) -> anyhow::Result<()> {
     if key.is_empty() {
         return Ok(());
     }
-    let (url, post) = key_place(base_url);
+    let KeyPlace { url, post, own } = key_place(base_url);
     let ask = if post { http.post(url) } else { http.get(url) };
     let Ok(answer) = crate::send(crate::keyed(ask, key).timeout(KEY_WAIT)).await else {
         return Ok(());
@@ -187,61 +187,45 @@ pub async fn key(http: &Http, base_url: &str, key: &str) -> anyhow::Result<()> {
     let status = answer.status().as_u16();
     // Some (xAI, Gemini) refuse a key with 400; its words tell it from another 400.
     let words = match status {
-        400 => answer.text().await.unwrap_or_default(),
+        400 | 401 | 403 => answer.text().await.unwrap_or_default(),
         _ => String::new(),
     };
-    taken(status, &words)
+    taken(status, &words, own)
 }
 
-/// Where a provider whose list of models comes to anyone tells whether it takes a key, by the host of its
-/// API, each from the provider's docs and seen to answer a made-up key with 401 or 403 (2026-11-08), and
-/// whether it is asked by POST. NanoGPT's is its balance (POST): its subscription's usage refuses a working
-/// key that is not a UUID ("Malformed API key"), the balance took a working key and refused made-up ones.
-const OWN_PLACES: &[(&str, &str, bool)] = &[
-    ("openrouter.ai", "https://openrouter.ai/api/v1/key", false),
-    (
-        "nano-gpt.com",
-        "https://nano-gpt.com/api/check-balance",
-        true,
-    ),
-    (
-        "router.huggingface.co",
-        "https://huggingface.co/api/whoami-v2",
-        false,
-    ),
-    (
-        "api.venice.ai",
-        "https://api.venice.ai/api/v1/api_keys/rate_limits",
-        false,
-    ),
-    (
-        "api.poe.com",
-        "https://api.poe.com/usage/current_balance",
-        false,
-    ),
-    ("api.novita.ai", "https://api.novita.ai/v3/user", false),
-];
-
-/// Where the provider at `base_url` tells whether it takes a key, and whether by POST: its own place, else
-/// its list of models.
-fn key_place(base_url: &str) -> (String, bool) {
-    let base = base_url.trim_end_matches('/');
-    let host = cw_platform::http::Url::parse(base)
-        .ok()
-        .and_then(|url| url.host_str().map(str::to_string));
-    OWN_PLACES
-        .iter()
-        .find(|(at, _, _)| host.as_deref() == Some(*at))
-        .map_or_else(
-            || (format!("{base}/models"), false),
-            |(_, place, post)| ((*place).to_string(), *post),
-        )
+/// Where a provider is asked whether it takes a key.
+#[derive(Debug, PartialEq, Eq)]
+struct KeyPlace {
+    url: String,
+    /// Whether it is asked by POST.
+    post: bool,
+    /// Whether it is the provider's own place (`own.toml`'s `key_check`), else its list of models.
+    own: bool,
 }
 
-/// The key check's answer: 401 or 403 refuse the key, and a 400 that speaks of the key.
-fn taken(status: u16, words: &str) -> anyhow::Result<()> {
-    let of_the_key = status == 400 && words.to_lowercase().contains("key");
-    if matches!(status, 401 | 403) || of_the_key {
+/// Where the provider at `base_url` tells whether it takes a key.
+fn key_place(base_url: &str) -> KeyPlace {
+    match crate::list::key_check(base_url) {
+        Some(check) => KeyPlace {
+            url: check.url.clone(),
+            post: check.post,
+            own: true,
+        },
+        None => KeyPlace {
+            url: format!("{}/models", base_url.trim_end_matches('/')),
+            post: false,
+            own: false,
+        },
+    }
+}
+
+/// The key check's answer: 401 or 403 refuse the key, and a 400 that speaks of the key. A refusal of the
+/// list of models (not `own`) that speaks of permission or scope is of a key that may chat but not list.
+fn taken(status: u16, words: &str, own: bool) -> anyhow::Result<()> {
+    let words = words.to_lowercase();
+    let of_the_key = status == 400 && words.contains("key");
+    let of_the_scope = !own && ["permission", "scope"].iter().any(|w| words.contains(w));
+    if (matches!(status, 401 | 403) && !of_the_scope) || of_the_key {
         bail!(Fail::said(Code::NotPossible, "the key was refused").with("what", "key_refused"));
     }
     Ok(())
@@ -253,25 +237,35 @@ mod tests {
 
     #[test]
     fn a_key_is_asked_at_the_models_or_the_providers_own_place_and_refused_only_so() {
+        let place = |url: &str, post, own| KeyPlace {
+            url: url.to_string(),
+            post,
+            own,
+        };
         assert_eq!(
             key_place("https://openrouter.ai/api/v1/"),
-            ("https://openrouter.ai/api/v1/key".to_string(), false)
+            place("https://openrouter.ai/api/v1/key", false, true)
         );
         assert_eq!(
-            key_place("https://api.x.ai/v1"),
-            ("https://api.x.ai/v1/models".to_string(), false)
+            key_place("https://api.x.ai/v1/"),
+            place("https://api.x.ai/v1/models", false, false)
         );
         // NanoGPT's usage refuses a working key that is not a UUID; its balance takes every key.
         assert_eq!(
             key_place("https://nano-gpt.com/api/v1"),
-            ("https://nano-gpt.com/api/check-balance".to_string(), true)
+            place("https://nano-gpt.com/api/check-balance", true, true)
         );
         assert_eq!(
             key_place("https://router.huggingface.co/v1"),
-            ("https://huggingface.co/api/whoami-v2".to_string(), false)
+            place("https://huggingface.co/api/whoami-v2", false, true)
+        );
+        // A host under the provider's is the provider's, as its own API is told.
+        assert_eq!(
+            key_place("https://eu.nano-gpt.com/api/v1"),
+            place("https://nano-gpt.com/api/check-balance", true, true)
         );
         for (status, words) in [(401, ""), (403, ""), (400, "Incorrect API key provided")] {
-            let refused = taken(status, words).expect_err("refused");
+            let refused = taken(status, words, false).expect_err("refused");
             let fail = refused.downcast_ref::<Fail>().expect("a Fail");
             assert_eq!(
                 fail.details.get("what").map(ToString::to_string).as_deref(),
@@ -285,7 +279,12 @@ mod tests {
             (429, ""),
             (500, ""),
         ] {
-            assert!(taken(status, words).is_ok());
+            assert!(taken(status, words, false).is_ok());
         }
+        // A key that may chat but not list models is let through; at the provider's own place it is not.
+        let scope = "Missing scope: models.read";
+        assert!(taken(403, scope, false).is_ok());
+        assert!(taken(401, "You have insufficient permissions", false).is_ok());
+        assert!(taken(403, scope, true).is_err());
     }
 }

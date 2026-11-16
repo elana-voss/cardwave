@@ -24,7 +24,8 @@ fn read(r: &Row) -> rusqlite::Result<WrittenTool> {
         chat_id: r.get(6)?,
         chat_title: r.get(7)?,
         uses: r.get(8)?,
-        parameters: serde_json::from_str(&parameters).unwrap_or_default(),
+        parameters: crate::json::or_none(Some(&parameters), "a written tool's parameters")
+            .unwrap_or_default(),
     })
 }
 
@@ -133,6 +134,14 @@ impl Storage for Db {
             )?;
             if taken {
                 return Ok(Err(anyhow!(Fail::said(Code::Changed, format!("another tool is named {name} now")).with("what", "tool_name").with("name", name.to_string()))));
+            }
+            let kept: i64 = conn.query_row(
+                "select count(*) from written_tools where user_id = ?1 and deleted = 0",
+                [user],
+                |r| r.get(0),
+            )?;
+            if kept >= MOST_TOOLS as i64 {
+                return Ok(Err(anyhow!(Fail::said(Code::NotPossible, format!("the account keeps {MOST_TOOLS} tools at most; the user is to delete one first")).with("what", "written_tools_full").with("most_tools", MOST_TOOLS))));
             }
             conn.execute("update written_tools set deleted = 0 where id = ?1", [id])?;
             Ok(Ok(()))

@@ -864,6 +864,65 @@ const MIGRATIONS: &[&str] = &[
     "alter table model_kinds add column gone integer not null default 0 check (gone in (0, 1));",
     // What the user changed of a memory's entries, held when their block is read again (`memory::changes`).
     "alter table memory_stores add column changes text not null default '';",
+    // A deleted row's unsaved texts go with it, as SQLite gives its number to the next row made
+    // (`unsaved`'s names: the page's, web/src/unsaved.ts; a lorebook's by its `LoreOf` as JSON).
+    r#"create trigger unsaved_of_chat after delete on chats begin
+        delete from unsaved where field = 'chat.' || old.id;
+     end;
+     create trigger unsaved_of_message after delete on messages begin
+        delete from unsaved where field = 'message.' || old.id;
+     end;
+     create trigger unsaved_of_card after delete on cards begin
+        delete from unsaved where field glob 'card.' || old.id || '.*'
+           or field glob 'lorebook.{"card":' || old.id || '[},]*';
+     end;
+     create trigger unsaved_of_lorebook after delete on lorebooks begin
+        delete from unsaved where field glob 'lorebook.{"library":' || old.id || '}*';
+     end;"#,
+    // A memory is of a persona (none: the user without one) and a chat or a card's character (the owner,
+    // 2026-11-14): another persona is another memory. A deleted persona's memories go with it. NULL is
+    // distinct in a unique index, so the keys read none as 0 (a persona's ID is never 0). What was
+    // remembered before goes, unread (the owner: greenfield), and its search rows.
+    "delete from search_texts where store_id is not null;
+     drop table memory_vectors;
+     drop table memory_blocks;
+     drop table memory_stores;
+     create table memory_stores (
+        id integer primary key,
+        user_id integer not null references users (id) on delete cascade,
+        chat_id integer references chats (id) on delete cascade,
+        card_id integer references cards (id) on delete cascade,
+        character text,
+        persona_id integer references personas (id) on delete cascade,
+        day_one integer,
+        changes text not null default '',
+        check ((chat_id is null) <> (card_id is null))
+     ) strict;
+     create unique index memory_stores_by_chat on memory_stores (chat_id, ifnull(persona_id, 0))
+        where chat_id is not null;
+     create unique index memory_stores_by_character on memory_stores (card_id, character, ifnull(persona_id, 0))
+        where card_id is not null;
+     create index memory_stores_by_user on memory_stores (user_id);
+     create index memory_stores_by_persona on memory_stores (persona_id);
+     create table memory_blocks (
+        id integer primary key autoincrement,
+        store_id integer not null references memory_stores (id) on delete cascade,
+        chat_id integer references chats (id) on delete set null,
+        block integer not null,
+        chain text not null,
+        state text not null,
+        saved text not null default '[]',
+        message_id integer references messages (id) on delete set null
+     ) strict;
+     create index memory_blocks_by_store on memory_blocks (store_id, id);
+     create index memory_blocks_by_chat on memory_blocks (chat_id);
+     create index memory_blocks_by_message on memory_blocks (message_id);
+     create table memory_vectors (
+        store_id integer not null references memory_stores (id) on delete cascade,
+        hash blob not null,
+        embedding blob not null,
+        primary key (store_id, hash)
+     ) strict, without rowid;",
 ];
 
 /// The `what` of the refusal of a database a newer Cardwave wrote.

@@ -82,8 +82,8 @@ export function verdictText(verdict: Pick<Verdict, "passed" | "tests_passed" | "
 }
 
 /** The first verbs a plan's step is known to begin with that change as said; the others take -s and -ed. */
-const IRREGULAR: Record<string, [string, string]> = { write: ["writes", "wrote"], rewrite: ["rewrites", "rewrote"], run: ["runs", "ran"], make: ["makes", "made"], build: ["builds", "built"], read: ["reads", "read"], set: ["sets", "set"], put: ["puts", "put"], find: ["finds", "found"], split: ["splits", "split"] };
-const REGULAR = new Set(["add", "create", "update", "fix", "remove", "delete", "refactor", "implement", "test", "move", "rename", "change", "check", "install", "replace", "extend", "clean", "document", "handle", "copy", "connect", "convert", "improve", "simplify", "show", "use", "load", "save", "list", "parse", "format", "render", "export", "import", "validate", "translate", "configure", "generate"]);
+const IRREGULAR: Record<string, [string, string]> = { write: ["writes", "wrote"], rewrite: ["rewrites", "rewrote"], run: ["runs", "ran"], make: ["makes", "made"], build: ["builds", "built"], read: ["reads", "read"], set: ["sets", "set"], put: ["puts", "put"], find: ["finds", "found"], split: ["splits", "split"], format: ["formats", "formatted"] };
+const REGULAR = new Set(["add", "create", "update", "fix", "remove", "delete", "refactor", "implement", "test", "move", "rename", "change", "check", "install", "replace", "extend", "clean", "document", "handle", "copy", "connect", "convert", "improve", "simplify", "show", "use", "load", "save", "list", "parse", "render", "export", "import", "validate", "translate", "configure", "generate"]);
 
 /** `verb` as it is while running ("Writes") and once done ("Wrote"), or null where it is not a known one. */
 function conjugate(verb: string): [string, string] | null {

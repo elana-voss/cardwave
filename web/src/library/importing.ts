@@ -276,7 +276,7 @@ async function run(): Promise<void> {
   tell();
   // With something to keep it stays until it is closed, and comes back if it was closed while the import ran. Else
   // it goes by itself.
-  if (entries.some(kept)) panel.hidden = false;
+  if (entries.some(kept) || keeps) panel.hidden = false;
   else closing = window.setTimeout(() => (panel.hidden = true), CLOSE_AFTER);
 }
 
@@ -292,8 +292,9 @@ function importFiles(kind: Kind, files: File[], add: Entry["add"]): void {
   clearTimeout(closing);
   // A new import begins with a panel of its own lines. Files join the import that runs, and the panel that still
   // shows what it keeps: that stays until it is closed.
-  if (!running && (panel.hidden || !entries.some(kept))) {
+  if (!running && (panel.hidden || !(entries.some(kept) || keeps))) {
     entries = [];
+    keeps = false;
     lines.replaceChildren();
   }
   // The files have the panel now; a folder's import that goes on takes it again once they are done.
@@ -305,7 +306,7 @@ function importFiles(kind: Kind, files: File[], add: Entry["add"]): void {
   }
   // The panel lies under the notice, which comes and goes.
   if (!panel.isConnected) toast().before(panel);
-  panel.hidden = entries.length === 1;
+  panel.hidden = entries.length === 1 && !keeps;
   void run();
 }
 
@@ -323,6 +324,8 @@ export function folderSaid({ running, found, imported, skipped, failed }: Folder
 let following = false;
 /** How many of the folder's failed files have their line in the panel; -1 while the panel is not the folder's. */
 let folderShown = -1;
+/** Whether the panel shows lines to keep that are no entry's: a folder's failed files, or lines left by files before it. */
+let keeps = false;
 
 /** Shows a folder's import in the panel: the head, the bar, and a line for each file that failed not shown yet. */
 function showFolder(state: FolderImport): void {
@@ -330,7 +333,8 @@ function showFolder(state: FolderImport): void {
   // files' lines that are to stay.
   if (running) return;
   if (folderShown < 0) {
-    if (!entries.some(kept)) lines.replaceChildren();
+    keeps = entries.some(kept) || (keeps && !panel.hidden);
+    if (!keeps) lines.replaceChildren();
     entries = [];
     folderShown = 0;
     clearTimeout(closing);
@@ -353,6 +357,7 @@ function showFolder(state: FolderImport): void {
     why.textContent = failureWords(file.reason);
     whole(wording("importing-why"));
     lines.append(node);
+    keeps = true;
   }
   folderShown = state.failed.length;
 }

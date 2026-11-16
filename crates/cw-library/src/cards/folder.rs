@@ -131,9 +131,12 @@ pub(crate) fn is_card_file(path: &Path) -> bool {
     })
 }
 
-/// The [`Stamp`] of the file at `path`; none where it is gone, or no file.
+/// The [`Stamp`] of the file at `path`; none where it is gone, or no file (a link is none).
 pub fn stamp(path: &Path) -> Option<Stamp> {
-    let meta = std::fs::metadata(path).ok().filter(|meta| meta.is_file())?;
+    // A link is left out, as `card_files` leaves it.
+    let meta = std::fs::symlink_metadata(path)
+        .ok()
+        .filter(|meta| meta.is_file())?;
     Some(Stamp {
         len: meta.len(),
         modified: meta.modified().ok(),

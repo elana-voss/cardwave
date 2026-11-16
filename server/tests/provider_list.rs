@@ -495,11 +495,7 @@ async fn a_provider_added_with_no_chat_model_picked_says_none_is_chosen() {
         json!({ "base_url": RIG, "api_key": "sk-rig-secret-1234" }),
     )
     .await;
-    let picks = json!({
-        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
-        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
-        "relationship": "Rival", "name": "Mara", "creator": "local",
-    });
+    let picks = common::generator_picks("Mara");
     let (status, refused) = server.post("/api/generator", picks).await;
     assert_eq!(
         (status, &refused["details"]),

@@ -21,6 +21,8 @@
 //! [`RemovedEntry`], all that puts it back; a new entry's ID is its lorebook's
 //! with its name, never one in use, listed, with a history kept or `taken`.
 
+use std::collections::HashSet;
+
 use anyhow::{Context, ensure};
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
@@ -485,6 +487,28 @@ impl Open {
         )
     }
 
+    /// The entries the card's other lorebooks list, whose blocks stay when
+    /// this one lets them go.
+    fn listed_elsewhere(&self) -> HashSet<String> {
+        let books = self.document.ids("lorebook").into_iter();
+        books
+            .filter(|other| *other != self.id)
+            .flat_map(|other| {
+                let listed = self.document.lookup(&format!("lorebook.{other}"));
+                strings(listed.and_then(|other| other.get("entries")))
+            })
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// The block of the entry `id`, as the file that has it holds it.
+    fn copy(&self, id: &str) -> Option<toml_edit::Table> {
+        self.files.iter().find_map(|file| {
+            let block = file.get("lore")?.get(id)?;
+            block.clone().into_table().ok()
+        })
+    }
+
     /// Takes the block of the entry `id` out of the file that has it.
     fn take(&mut self, id: &str) -> Option<toml_edit::Table> {
         self.files.iter_mut().find_map(|file| {
@@ -645,7 +669,8 @@ pub fn add(
 }
 
 /// Takes the entry `reference` out of the lorebook `book` in `files`: its
-/// block, and its line in the lorebook's list. Answers with what puts it back.
+/// block, unless another lorebook of the card lists it too, and its line in
+/// the lorebook's list. Answers with what puts it back.
 pub fn remove(
     files: &[(String, String)],
     book: &str,
@@ -653,7 +678,11 @@ pub fn remove(
 ) -> anyhow::Result<(Rewritten, RemovedEntry)> {
     let mut open = Open::of(files, book)?;
     let id = open.entry(reference)?;
-    let block = open.take(id).ok_or(NotFound("lorebook entry"))?;
+    let block = match open.listed_elsewhere().contains(reference) {
+        true => open.copy(id),
+        false => open.take(id),
+    };
+    let block = block.ok_or(NotFound("lorebook entry"))?;
     let mut blocks = toml_edit::Table::new();
     blocks.set_implicit(true);
     blocks.insert(id, Item::Table(block));
@@ -673,7 +702,8 @@ pub fn remove(
 /// Puts an entry that was taken out back into the lorebook `book` in `files`,
 /// at its place among the entries, or as the last where there are fewer now.
 /// Refused: what is no entry's block, and an entry whose ID is another's by
-/// now. Answers with the entry too.
+/// now; one another lorebook of the card lists is listed again as it stands
+/// there. Answers with the entry too.
 pub fn restore(
     files: &[(String, String)],
     book: &str,
@@ -702,8 +732,9 @@ pub fn restore(
         let blocks = file.get("lore");
         blocks.and_then(|all| all.get(id)).is_some()
     });
+    let shared = elsewhere && open.listed_elsewhere().contains(&reference);
     ensure!(
-        !elsewhere && !open.listed.contains(&reference),
+        (!elsewhere || shared) && !open.listed.contains(&reference),
         Fail::said(
             Code::Changed,
             format!("the lorebook has another entry {reference} by now")
@@ -711,8 +742,10 @@ pub fn restore(
         .with("what", "lorebook_entry")
         .with("reference", reference.to_string())
     );
-    unplace(&mut block);
-    open.blocks()?.insert(id, Item::Table(block));
+    if !shared {
+        unplace(&mut block);
+        open.blocks()?.insert(id, Item::Table(block));
+    }
     let mut listed = open.listed.clone();
     listed.insert(
         (removed.position as usize).min(listed.len()),
@@ -787,4 +820,49 @@ pub fn describe(
         return Ok(None);
     }
     open.finish().map(Some)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A card's two lorebooks that both list the entry x.
+    const TWO: &str = r#"spec = "ccv4:1.0.0"
+
+[lorebook.a]
+name = "A"
+entries = ["lore.x", "lore.y"]
+
+[lorebook.b]
+name = "B"
+entries = ["lore.x"]
+
+[lore.x]
+keywords = ["x"]
+text = "X."
+
+[lore.y]
+keywords = ["y"]
+text = "Y."
+"#;
+
+    #[test]
+    fn an_entry_removed_from_one_lorebook_stays_in_another_that_lists_it_and_comes_back() {
+        let files = vec![(FILE.to_string(), TWO.to_string())];
+        let (rewritten, removed) = remove(&files, "lorebook.a", "lore.x").unwrap();
+        assert_eq!(
+            mapping::entries(&rewritten.document, "lorebook.a"),
+            ["lore.y"]
+        );
+        assert_eq!(
+            mapping::entries(&rewritten.document, "lorebook.b"),
+            ["lore.x"]
+        );
+        let (back, _) = restore(&rewritten.files, "lorebook.a", &removed).unwrap();
+        assert_eq!(
+            mapping::entries(&back.document, "lorebook.a"),
+            ["lore.x", "lore.y"]
+        );
+        assert_eq!(mapping::entries(&back.document, "lorebook.b"), ["lore.x"]);
+    }
 }

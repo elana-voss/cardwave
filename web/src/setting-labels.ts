@@ -18,6 +18,9 @@ export const LABELS = {
     get webPictures() {
       return wording("label-settings-web-pictures");
     },
+    get tabs() {
+      return wording("label-settings-tabs");
+    },
     get appLanguage() {
       return wording("label-settings-app-language");
     },
@@ -44,33 +47,6 @@ export const LABELS = {
     },
     get web() {
       return wording("label-settings-web");
-    },
-    get files() {
-      return wording("label-settings-files");
-    },
-    get commands() {
-      return wording("label-settings-commands");
-    },
-    get imageGeneration() {
-      return wording("label-settings-image-generation");
-    },
-    get app() {
-      return wording("label-settings-app");
-    },
-    get dice() {
-      return wording("label-settings-dice");
-    },
-    get folder() {
-      return wording("label-settings-folder");
-    },
-    get written() {
-      return wording("label-settings-written");
-    },
-    get coding() {
-      return wording("label-settings-coding");
-    },
-    get trash() {
-      return wording("label-settings-trash");
     },
     get backup() {
       return wording("label-settings-backup");
@@ -122,6 +98,30 @@ export const LABELS = {
     },
     get interview() {
       return wording("label-advanced-interview");
+    },
+    get files() {
+      return wording("label-settings-files");
+    },
+    get commands() {
+      return wording("label-settings-commands");
+    },
+    get imageGeneration() {
+      return wording("label-settings-image-generation");
+    },
+    get app() {
+      return wording("label-settings-app");
+    },
+    get dice() {
+      return wording("label-settings-dice");
+    },
+    get folder() {
+      return wording("label-settings-folder");
+    },
+    get written() {
+      return wording("label-settings-written");
+    },
+    get coding() {
+      return wording("label-settings-coding");
     },
     get format() {
       return wording("label-advanced-format");

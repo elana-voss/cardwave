@@ -126,9 +126,6 @@ pub(crate) struct VoiceModel {
     pub(crate) at_provider: bool,
 }
 
-/// A voice to choose, with the set its recording is of, the set's license and
-/// whom it credits (`Voice::credit`); `language` is its code ("en"); one the
-/// account made has `own` set, no language, set or license.
 /// Whom a shipped voice credits (`voice::Credit`), which the page puts into
 /// words in its language: the names stay as they are.
 #[derive(Default, Serialize, TS)]
@@ -167,6 +164,9 @@ impl From<voice::Credit> for Credit {
     }
 }
 
+/// A voice to choose, with the set its recording is of, the set's license and
+/// whom it credits (`Voice::credit`); `language` is its code ("en"); one the
+/// account made has `own` set, no language, set or license.
 #[derive(Default, Serialize, TS)]
 #[ts(export)]
 pub struct VoiceChoice {

@@ -632,7 +632,7 @@ async fn a_persona_has_a_picture_of_its_own() {
         .await;
     assert_eq!(made["picture"], Value::Null);
     let id = made["id"].as_i64().unwrap();
-    let sent = reqwest::Client::new()
+    let sent = common::server::client()
         .put(format!("http://{}/api/personas/{id}/picture", server.addr))
         .body(common::picture())
         .send()

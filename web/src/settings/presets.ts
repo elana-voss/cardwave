@@ -3,7 +3,7 @@
 // its name with "New preset" (`.group-head`), why something failed (`.note`), the lines (`.item.preset`),
 // and what a preset is. A line says the name, "· in use" while the chat model is what it holds, and `about`;
 // while pointed at or focused (`.reveal.preset-tools`), "Use" and "More" (Edit, Duplicate, Delete, which asks
-// under its line by `askUnder`). "New preset" and Edit are form dialogs: the name, and for Edit the switch
+// under its line: `menuDeleting`). "New preset" and Edit are form dialogs: the name, and for Edit the switch
 // that has the preset take the chat model and sampling in use.
 //
 // The page is `PresetForm`: one store at a time (`alone`) and what it reads anew after a preset was put in use
@@ -16,7 +16,7 @@ import { providerName } from "../models/kinds";
 import { changePreset, createPreset, deletePreset, duplicatePreset, listPresets, usePreset } from "../api/client";
 import type { PresetView } from "../api/generated/PresetView";
 import { announce, atMost, el, item, latest, noticeBox, oneAtATime, switchBox } from "../dom";
-import { askUnder, formDialog, menu } from "../dialogs";
+import { formDialog, menuDeleting } from "../dialogs";
 import { icon } from "../icons";
 
 /** How many signs a preset's name may have, as the server counts them (`NAME_LIMIT` in crates/cw-provider/src/lib.rs). */
@@ -102,26 +102,25 @@ export function presetsGroup(home: () => HTMLElement, form: PresetForm): { node:
         await after(made.id);
         say(wording("preset-added", { name: made.name }));
       });
-    const more = menu(wording("common-more"), [
-      { label: wording("common-edit"), shape: "edit", action: () => name(preset) },
-      { label: wording("common-duplicate"), shape: "copy", action: copy },
-      { label: wording("common-delete"), shape: "trash", danger: true, apart: true, action: () => ask() },
-    ]);
+    /** Deletes the preset, once asked under the line, which cannot be taken back. */
+    const remove = () =>
+      void attempt(async () => {
+        await deletePreset(preset.id);
+        await after(null);
+        say(wording("preset-deleted", { name: preset.name }));
+      });
+    const more = menuDeleting(
+      wording("common-more"),
+      [
+        { label: wording("common-edit"), shape: "edit", action: () => name(preset) },
+        { label: wording("common-duplicate"), shape: "copy", action: copy },
+      ],
+      { label: wording("common-delete"), question: () => wording("preset-delete-ask"), yes: wording("common-delete"), action: remove },
+    );
     const tools = el("div", { className: "reveal preset-tools flex g-4" }, !preset.in_use && use, more);
     const line = item(el("span", { className: "item-label" }, preset.name, preset.in_use && el("span", { className: "meta" }, wording("common-in-use"))), el("span", { className: "meta" }, about(preset)), tools);
     line.classList.add("preset", "row");
     line.dataset.preset = String(preset.id);
-
-    /** Asks under the line whether the preset is to be deleted, which cannot be taken back. */
-    function ask(): void {
-      const remove = () =>
-        void attempt(async () => {
-          await deletePreset(preset.id);
-          await after(null);
-          say(wording("preset-deleted", { name: preset.name }));
-        });
-      askUnder(tools, more.querySelector("button")!, wording("preset-delete-ask"), wording("common-delete"), remove);
-    }
     return line;
   }
 

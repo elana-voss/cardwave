@@ -140,14 +140,17 @@ test("“This computer” runs the GGUF files of a folder chosen in the dialog �
     await dialog.getByLabel("Folder on this computer").fill(folder);
     await dialog.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("dialog")).toHaveCount(0);
-    await expect(own.locator(".provider-head")).toContainText(/This computer\d+ GB of RAM · /);
-    await expect(own.locator(".provider-head")).toContainText(folder);
-    // No line "Not used": the models that fit are listed, Cardwave's first, then the folder's own.
-    const lines = own.locator(".item:not(.provider-head) .item-label");
-    await expect(lines).toHaveText(["Test model", "Huge model", "gemma-3-1b.gguf", "qwen3-4b.gguf"]);
+    // The head says what runs; no line "Not used": Cardwave's models are listed, and behind "Details" the memory,
+    // the folder and the folder's own files, every line with its size while it is open.
+    await expect(own.locator(".provider-head")).toContainText("This computerReady to run: 2 models");
+    const lines = own.locator(".fit-model:visible .item-label");
+    await expect(lines).toHaveText(["Test model", "Huge model"]);
     const line = (name: string) => own.locator(".fit-model").filter({ hasText: name });
-    await expect(line("Huge model").locator(".meta")).toContainText("Too large for this computer");
+    await expect(line("Huge model").locator(".meta")).toHaveText("Too large for this computer");
     await expect(line("Huge model").getByRole("button")).toHaveCount(0);
+    await own.getByRole("button", { name: "Details" }).click();
+    await expect(own.locator(".item:visible").filter({ hasText: folder })).toContainText(/\d+ GB of RAM · /);
+    await expect(lines).toHaveText(["Test model", "Huge model", "gemma-3-1b.gguf", "qwen3-4b.gguf"]);
     await expect(line("qwen3-4b.gguf").locator(".meta")).toHaveText("1 KB · Runs on this computer");
 
     // Downloaded, a model is used for a kind and removed again.
@@ -158,7 +161,7 @@ test("“This computer” runs the GGUF files of a folder chosen in the dialog �
     expect((await request.put("/api/kinds/chat", { data: { provider_id: computer.id, model: "test-model.gguf" } })).status()).toBe(200);
     await page.reload();
     await expect(line("Test model").locator(".meta")).toContainText("used for Chat");
-    await expect(own.locator(".item:not(.fit-model):not(.provider-head) .item-text")).toHaveText("Chattest-model.gguf");
+    await expect(own.locator(".item:not(.fit-model):not(.provider-head):not(.item-sub) .item-text")).toHaveText("Chattest-model.gguf");
     await line("Test model").getByRole("button", { name: "Model menu: delete Test model" }).click();
     await page.getByRole("menuitem", { name: "Delete" }).click();
     await expect(line("Test model").locator("+ .confirm .question")).toHaveText(/^Delete this model from this computer\? It frees \S+ \S+\.$/);

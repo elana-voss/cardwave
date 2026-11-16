@@ -1,6 +1,6 @@
 // A card's page, where it is written, and a new card, the same page empty: `#/library/{id}` (`characterView`)
 // and `#/library/new` (`newCardView`). A card holds one character, the first of the server's list.
-// Everything shown is edited where it stands (`inPlace`): a text (card-texts.ts, which the chat's split view
+// Everything shown is edited where it stands (`inPlace`, its tooltip "Click to edit"): a text (card-texts.ts, which the chat's split view
 // shares), the title, summary, tags and the lines under About; leaving saves. The state and the saves are
 // card-page.ts's, the modes card-modes.ts's (mode bar, mode tags, "Add a way to chat…", "Modes…"), the languages
 // card-languages.ts's (language bar, "Translate the character…" and the translation shown until Keep all or Undo all), the
@@ -21,9 +21,9 @@ import { addMode, askMode, modeBar, modesDialog } from "../card/card-modes";
 import { otherWays } from "../card/card-ways";
 import { after, load, modes, newCard, person, save, SHOWN, written, type Card } from "../card/card-page";
 import { begin, firstMessage, reading } from "../card/card-texts";
-import { tagWord } from "../card/content-level";
+import { tagWord } from "../content-level";
 import { wholeCard, type CardTools } from "../card/card-tools";
-import { announce, el, noticeBox, titled, type View } from "../dom";
+import { announce, crumbs, el, noticeBox, titled, type View } from "../dom";
 import { menu, type MenuItem } from "../dialogs";
 import { comma, count as grouped, day } from "../format";
 import { icon } from "../icons";
@@ -53,7 +53,7 @@ function cardPage(given: number | null): View {
   const node = el(
     "section",
     { className: "main main-card" },
-    el("header", { className: "pbar" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/library" }, wording("page-characters")), "/", crumb), saved),
+    el("header", { className: "pbar" }, crumbs([wording("page-characters"), "#/library"], crumb), saved),
     notice,
     given === null && otherWays(),
     body,
@@ -177,6 +177,7 @@ function drawAbout(c: Card, one: EditCharacter | undefined, texts: boolean, toke
 function tagsField<T extends HTMLElement>(c: Card, node: T, tags: string[], shown: () => (HTMLElement | string)[]): T {
   inPlace(node, {
     label: wording("character-tags-separated-by-commas"),
+    hint: wording("character-click-to-edit"),
     value: () => c.edit.tags.join(", "),
     show: () => (tags.length ? shown() : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-tags"))]),
     button: () => !tags.length,
@@ -191,6 +192,7 @@ function aboutFields(c: Card, one: EditCharacter | undefined): { name: HTMLEleme
   const name = el("span");
   inPlace(name, {
     label: wording("character-name-in-the-chat"),
+    hint: wording("character-click-to-edit"),
     value: () => one?.name ?? "",
     show: () => [one?.name || el("span", { className: "c-faint" }, wording("character-name"))],
     commit: (text) =>
@@ -202,6 +204,7 @@ function aboutFields(c: Card, one: EditCharacter | undefined): { name: HTMLEleme
   const creator = el("span");
   inPlace(creator, {
     label: wording("character-creator"),
+    hint: wording("character-click-to-edit"),
     value: () => c.edit.creator,
     // "by" is the field's own: without a creator only "Add creator", as "Add tags".
     show: () => (c.edit.creator ? [wording("character-by"), el("span", null, c.edit.creator)] : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-creator"))]),
@@ -261,6 +264,7 @@ function title(c: Card, className = "hero-title"): HTMLElement {
   const heading = el("h1", { className });
   inPlace(heading, {
     label: wording("character-title"),
+    hint: wording("character-click-to-edit"),
     placeholder: wording("character-name-the-card"),
     value: () => c.edit.title,
     show: () => [c.edit.title || el("span", { className: "c-faint" }, wording("character-name-the-card"))],
@@ -283,6 +287,7 @@ function summary(c: Card, className = "hero-sum logline"): HTMLElement | null {
   const line = el("p", { className });
   inPlace(line, {
     label: wording("character-summary"),
+    hint: wording("character-click-to-edit"),
     multiline: true,
     value: () => words,
     show: () => [words],

@@ -1,7 +1,6 @@
 //! A backup's copies of the database by SQLite's backup (`backup::Storage`).
 
 use std::path::Path;
-use std::time::Duration;
 
 use anyhow::{Context, bail};
 use cw_core::{Code, Fail};
@@ -11,9 +10,6 @@ use rusqlite::backup::{Backup, StepResult};
 
 use crate::Db;
 use crate::backup::Storage;
-
-/// How many pages a restore copies at a time.
-const PAGES: std::ffi::c_int = 1024;
 
 /// Copies the database at `live`, encrypted with its `key`, into the new file
 /// `to`, by a connection of its own, all in one step: the server writes on
@@ -29,26 +25,41 @@ pub fn copy(live: &Path, key: &DbKey, to: &Path) -> anyhow::Result<()> {
     };
     let from = keyed(live)?;
     let mut copy = keyed(to)?;
-    if Backup::new(&from, &mut copy)?.step(-1)? != StepResult::Done {
-        bail!(
-            Fail::said(Code::NotNow, "the database was busy; try again")
-                .with("what", "database_busy")
-        );
+    if !whole(&from, &mut copy)? {
+        bail!(busy());
     }
     Ok(())
 }
 
+/// Copies all of `from` into `to` in one step, which takes `to`'s write lock
+/// first: busy past the connection's busy timeout, `to` stays untouched and
+/// false is returned, never retried without end.
+fn whole(from: &Connection, to: &mut Connection) -> rusqlite::Result<bool> {
+    Ok(Backup::new(from, to)?.step(-1)? == StepResult::Done)
+}
+
+/// The refusal of a copy while the database is busy.
+fn busy() -> Fail {
+    Fail::said(Code::NotNow, "the database was busy; try again").with("what", "database_busy")
+}
+
 impl Storage for Db {
     fn replace_with(&self, restored: &Db, key: &DbKey) -> anyhow::Result<()> {
-        restored.with(|from| {
+        let done = restored.with(|from| {
             from.pragma_update(None, "rekey", format!("x'{}'", key.to_hex()))?;
+            // The caches go while the live connection is still held: no search reads old vectors meanwhile.
             self.with(|live| {
-                Backup::new(from, live)?.run_to_completion(PAGES, Duration::ZERO, None)?;
-                *self.card_vectors() = None;
-                *self.text_vectors() = None;
-                Ok(())
+                let done = whole(from, live)?;
+                if done {
+                    *self.card_vectors() = None;
+                    *self.text_vectors() = None;
+                }
+                Ok(done)
             })
         })?;
+        if !done {
+            bail!(busy());
+        }
         Ok(())
     }
 }

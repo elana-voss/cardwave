@@ -8,11 +8,15 @@ const voice = { state: "ready" };
 const saved: object[] = [];
 /** The card's chats, newest first, as the server lists them. */
 const chats: { id: number }[] = [];
+const failing = { chats: false };
 /** The chats shown. */
 const viewed: number[] = [];
 vi.mock("../api/client", () => ({
   avatarUrl: () => "",
-  cardChats: async () => chats,
+  cardChats: async () => {
+    if (failing.chats) throw new Error("not answering");
+    return chats;
+  },
   getCard: async () => ({ card: { version_id: 7 }, characters: [{ id: "gwen" }] }),
   startChat: async () => {
     started.push(started.length + 1);
@@ -48,12 +52,15 @@ beforeEach(() => {
   saved.length = 0;
   companion.muted = false;
   voice.state = "ready";
+  failing.chats = false;
 });
 
 describe("the compact chat", () => {
+  const hooks = { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] };
+
   it("starts one chat with a card that has none, also when it is opened twice at once", async () => {
     const { compactChat } = await import("./chat");
-    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const chat = compactChat(3, hooks);
     await Promise.all([chat.open(), chat.open()]);
     expect(started).toEqual([1]);
   });
@@ -61,13 +68,13 @@ describe("the compact chat", () => {
   it("opens the card's own chat, never a chat of several the card is in", async () => {
     chats.push({ id: 9 }, { id: 8 });
     const { compactChat } = await import("./chat");
-    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const chat = compactChat(3, hooks);
     await chat.open();
     expect(started).toEqual([]);
     expect(viewed.at(-1)).toBe(8);
     // Only in a chat of several: a chat of its own is started.
     chats.splice(1);
-    const other = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const other = compactChat(3, hooks);
     await other.open();
     expect(started).toEqual([1]);
   });
@@ -75,7 +82,7 @@ describe("the compact chat", () => {
   it("reads the reply it asked for aloud in the card's voice, the figure talking until the reading ends", async () => {
     const { compactChat } = await import("./chat");
     const moods: (string | null)[] = [];
-    const chat = compactChat(3, { mood: (mood) => moods.push(mood), replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const chat = compactChat(3, { ...hooks, mood: (mood) => moods.push(mood) });
     await chat.open();
     const input = chat.node.querySelector("textarea")!;
     input.value = "Hello";
@@ -94,7 +101,7 @@ describe("the compact chat", () => {
   it("reads no reply while the speaker in its head is off, which is kept with the settings", async () => {
     companion.muted = true;
     const { compactChat } = await import("./chat");
-    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const chat = compactChat(3, hooks);
     await chat.open();
     // The head's buttons: "Open in Cardwave", the speaker, More, Close.
     const speaker = chat.node.querySelectorAll<HTMLButtonElement>("header button")[1];
@@ -119,7 +126,7 @@ describe("the compact chat", () => {
     const { compactChat } = await import("./chat");
     let still = false;
     const more = () => [{ label: still ? "Walk around" : "Sit still", action: () => void (still = !still) }];
-    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more });
+    const chat = compactChat(3, { ...hooks, more });
     document.body.append(chat.node);
     await chat.open();
     const button = chat.node.querySelectorAll<HTMLButtonElement>("header button")[2];
@@ -137,10 +144,49 @@ describe("the compact chat", () => {
   it("greys its speaker, saying why, while no voice is set up", async () => {
     voice.state = "absent";
     const { compactChat } = await import("./chat");
-    const chat = compactChat(3, { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] });
+    const chat = compactChat(3, hooks);
     await chat.open();
     const speaker = chat.node.querySelectorAll<HTMLButtonElement>("header button")[1];
     await vi.waitFor(() => expect(speaker.disabled).toBe(true));
     expect(speaker.title).toMatch(/Voices/);
+  });
+
+  it("asks the server again for its chat after a failed search", async () => {
+    chats.push({ id: 8 });
+    failing.chats = true;
+    const { compactChat } = await import("./chat");
+    const chat = compactChat(3, hooks);
+    await chat.open();
+    expect(viewed).toEqual([]);
+    failing.chats = false;
+    await chat.open();
+    // Once to find the chat, once to show it.
+    expect(viewed).toEqual([8, 8]);
+  });
+
+  it("finds the chat anew when the one it had was deleted or archived", async () => {
+    chats.push({ id: 8 });
+    const { compactChat } = await import("./chat");
+    const chat = compactChat(3, hooks);
+    await chat.open();
+    chats.splice(0, 1, { id: 7 });
+    chat.onEvent({ type: "trash" } as never);
+    await vi.waitFor(() => expect(viewed.at(-1)).toBe(7));
+  });
+
+  it("can send again after the server is heard anew, a reply's end having been missed", async () => {
+    chats.push({ id: 8 });
+    const { compactChat } = await import("./chat");
+    const moods: (string | null)[] = [];
+    const chat = compactChat(3, { ...hooks, mood: (mood) => moods.push(mood) });
+    await chat.open();
+    // The reply began and its end was never heard.
+    chat.onEvent({ type: "hello" } as never);
+    chat.onEvent({ type: "reply_text", chat_id: 8, message_id: 4, start: 0, text: "Hi" } as never);
+    chat.onEvent({ type: "hello" } as never);
+    const input = chat.node.querySelector("textarea")!;
+    input.value = "Two";
+    input.form!.requestSubmit();
+    await vi.waitFor(() => expect(moods).toContain("thinking"));
   });
 });

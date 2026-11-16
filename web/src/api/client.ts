@@ -173,7 +173,7 @@ import type { PictureChanged } from "./generated/PictureChanged";
 import type { PictureWords } from "./generated/PictureWords";
 import type { UsePicture } from "./generated/UsePicture";
 import { language, wording } from "../language/language";
-import { type Answered, errorWords } from "../language/errors";
+import { type Answered, errorWords, spokenCode } from "../language/errors";
 
 /** A request the server refused. The message is the UI's words for its code (language/errors.ts), never the server's sentence. */
 export class ApiError extends Error {
@@ -181,6 +181,8 @@ export class ApiError extends Error {
   readonly code: Code | null;
   /** What the server's answer gives with its code (the seconds of a wait, ...). */
   readonly details: NonNullable<Answered>["details"];
+  /** Whether it is told as Cardwave's own failure ("Something went wrong in Cardwave"), which says nothing more. */
+  readonly internal: boolean;
   constructor(
     readonly status: number,
     body: Answered | Code,
@@ -189,8 +191,12 @@ export class ApiError extends Error {
     super(errorWords(status, answered));
     this.code = answered?.code ?? null;
     this.details = answered?.details ?? {};
+    this.internal = spokenCode(status, answered) === "internal";
   }
 }
+
+/** Whether a request failed in Cardwave itself, which its words say no more of than that. */
+export const isInternal = (error: unknown) => error instanceof ApiError && error.internal;
 
 /** Whether a request failed because it needs a model and the user has no provider yet: the server's 424. */
 export const needsSetup = (error: unknown) => error instanceof ApiError && error.status === 424;

@@ -56,7 +56,7 @@ test("the search model is downloaded from the settings when asked, and the libra
   search.hold();
   await dialog(page).getByRole("button", { name: "Download" }).click();
   await expect(state(page)).toHaveText(/^\d+%$/);
-  await expect(line(page).locator(".meta")).toHaveText(/^bge-m3 · downloading \d+%$/);
+  await expect(line(page).locator(".meta")).toHaveText(/^Finds characters by what they are about · downloading \d+%$/);
   await dialog(page).getByRole("button", { name: "Cancel" }).click();
   search.release();
   await expect(state(page)).toHaveText("Not downloaded");
@@ -65,7 +65,7 @@ test("the search model is downloaded from the settings when asked, and the libra
   await expect(state(page)).toHaveText("Ready");
   await expect(dialog(page).getByRole("button", { name: "Delete" })).toBeFocused();
   await dialog(page).getByRole("button", { name: "Close" }).click();
-  await expect(line(page).locator(".meta")).toHaveText("bge-m3 · This computer");
+  await expect(line(page).locator(".meta")).toHaveText("Finds characters by what they are about · This computer");
 
   // "ocean" is in neither card's words, and near the lighthouse in meaning.
   await page.goto("/#/library");

@@ -72,7 +72,10 @@ error-not-found = Không có { $what ->
     [voice] giọng nói
    *[other] thứ
 } nào như vậy. Có thể nó đã bị xóa.
-error-chat-busy = Một câu trả lời đang được viết trong cuộc trò chuyện này; hãy dừng nó trước.
+error-chat-busy = { $what ->
+    [coding_task] Một tác vụ lập trình của cuộc trò chuyện này đang chạy; hãy dừng nó trước.
+   *[other] Một câu trả lời đang được viết trong cuộc trò chuyện này; hãy dừng nó trước.
+}
 error-no-provider = { $what ->
     [chat_model] Chưa chọn mô hình trò chuyện nào. Hãy chọn một mô hình trong Cài đặt › Mô hình.
    *[other] Chưa thiết lập nhà cung cấp nào. Hãy thêm một nhà cung cấp trong Cài đặt › Nhà cung cấp.
@@ -102,7 +105,7 @@ error-drive-root-for-model = Thư mục gốc của ổ đĩa chứa quá nhiề
 error-data-folder = Thư mục đó chứa dữ liệu của chính Cardwave, hoặc nằm trong đó; hãy chọn thư mục khác.
 error-commands-windows-only = Lệnh chỉ chạy được trên Windows.
 error-recycle-bin-windows-only = Tệp chỉ được chuyển vào Thùng rác của Windows khi chạy trên Windows.
-error-files-tool-off = Hãy bật Tệp trong Cài đặt › Công cụ trước: nhóm dùng nó để đọc và ghi thư mục của nhiệm vụ.
+error-files-tool-off = Hãy bật Tệp trong Cài đặt › Nâng cao › Công cụ cho AI trước: nhóm dùng nó để đọc và ghi thư mục của nhiệm vụ.
 
 ## Hình ảnh, câu trả lời và giọng nói
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] Persona “{ $name }” đang ở trong Thùng rác; hãy khôi phục để dùng.
    *[other] Thứ đó đang ở trong Thùng rác; hãy khôi phục trước.
 }
+-card-unreadable = Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
 error-not-readable = { $what ->
     [damaged_key] Khóa của nó bị hỏng.
     [json] Tệp không phải JSON hợp lệ.
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] Bản sao lưu này bị hỏng: không đọc được khóa của nó.
     [base64] Đó không phải base64.
     [base64_file] { $name } không phải base64.
-    [card_defined_twice] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] Một tên tệp trong thẻ không dùng được.
     [card_reference] Không trỏ đến phần nào của thẻ.
     [ccv4_version] Thẻ này được tạo bởi Cardwave mới hơn. Hãy cập nhật Cardwave để mở nó.
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] Ảnh tĩnh của hình 3D không phải PNG tối đa 4 MB.
     [figure_type] Hình 3D phải là tệp VRM, GLB hoặc FBX.
     [folder_read] Không đọc được thư mục.
-    [format_version] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
+    [format_version] { -card-unreadable }
     [image_model_answer] Không đọc được câu trả lời của mô hình hình ảnh.
     [image_model_picture] Không đọc được hình của mô hình hình ảnh.
     [key_characters] Khóa có ký tự mà khóa không thể có. Hãy sao chép lại từ trang của nhà cung cấp.
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] Bản ghi âm quá ngắn: cần ít nhất { $shortest } giây.
     [recording_silent] Bản ghi âm không có tiếng.
     [recording_wav] Bản ghi âm không phải tệp WAV.
-    [sillytavern_base64] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] Thẻ trống.
     [sillytavern_file] Không đọc được thẻ SillyTavern trong tệp này.
-    [sillytavern_json] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
-    [sillytavern_object] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] Không đọc được thẻ SillyTavern trong tệp PNG này.
-    [spec_version] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
-    [spec_version_form] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
-    [toml] Tệp này không phải thẻ nhân vật mà Cardwave đọc được. Hãy xuất lại từ ứng dụng mà nó đến từ đó.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] Không đọc được tệp Word.
     [word_text] Tệp Word không có văn bản.
     [workflow] Không đọc được quy trình “{ $name }”.
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] Nhân vật quá dài với mô hình phụ trợ; hãy chọn mô hình phụ trợ đọc được nhiều hơn.
     [card_for_chat] Nhân vật quá dài với mô hình trò chuyện nên sẽ không còn là chính mình; hãy chọn mô hình trò chuyện đọc được nhiều hơn, hoặc rút gọn nhân vật.
+    [message_for_chat] Tin nhắn quá dài với mô hình trò chuyện; hãy rút gọn, gửi kèm ít ảnh hơn, hoặc chọn mô hình trò chuyện đọc được nhiều hơn.
     [card_file] Tệp lớn hơn { $most } MB.
     [checkpoint_folder] Thư mục quá lớn để giữ bản sao trước mỗi bước.
     [expression_pack_size] Các hình ảnh của { $name } quá lớn.
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] Đọc to cần một thành phần của Microsoft đang bị thiếu: hãy cài Visual C++ Redistributable từ microsoft.com, rồi khởi động lại Cardwave.
     [workflow_no_text] Quy trình “{ $name }” không có trường văn bản cho lời mô tả hình ảnh.
     [workflow_use] Không dùng được quy trình “{ $name }”.
-    [written_tools_full] Bạn chỉ giữ được tối đa { $most_tools } công cụ; hãy xóa một cái trong Cài đặt › Công cụ do AI viết trước.
+    [written_tools_full] Bạn chỉ giữ được tối đa { $most_tools } công cụ; hãy xóa một cái trong Cài đặt › Nâng cao › Công cụ do AI viết trước.
     [delete_not_in_trash] Chỉ thứ trong Thùng rác mới xóa vĩnh viễn được; hãy chuyển nó vào đó trước.
    *[other] Không làm được việc đó.
 }
+-helper-unusable = Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
 error-model-answer = { $what ->
     [no_greeting] AI không viết lời chào.
-    [background_answer] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
-    [background_text] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] Câu trả lời của AI không phải các văn bản của nhân vật.
-    [classification] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [classification] { -helper-unusable }
     [example_messages] AI không viết tin nhắn mẫu nào.
     [no_example_message] AI viết một tin nhắn mẫu không có nội dung.
     [json] Câu trả lời của AI không theo dạng đã yêu cầu.
-    [keywords] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
-    [logline] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] Nhà cung cấp AI không gửi câu trả lời trò chuyện.
     [no_fitting_answer] AI không đưa ra câu trả lời dùng được sau ba lần thử.
     [no_picture] Mô hình hình ảnh trả lời mà không có hình.
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] Mô hình phụ trợ không tìm thấy trường cho lời mô tả hình ảnh.
     [picture_server_no_picture] Máy chủ hình ảnh trả lời mà không có hình.
     [picture_words] Mô hình phụ trợ không viết lời mô tả cho hình ảnh.
-    [rating] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [rating] { -helper-unusable }
     [reply_broke_off] Câu trả lời bị ngắt giữa chừng.
-    [needs] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [needs] { -helper-unusable }
     [rounds] Nhóm không hoàn thành công việc trong { $rounds } vòng.
     [search_left_out] Mô hình tìm kiếm bỏ sót một văn bản.
     [search_model] Không đọc được câu trả lời của mô hình tìm kiếm.
     [search_tokens] Không đọc được token của mô hình tìm kiếm.
-    [title] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [title] { -helper-unusable }
     [too_many_tools] AI gọi quá nhiều công cụ.
-    [worker_mode] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
-    [worker_texts] Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] Nhà cung cấp AI báo: { $reason }
    *[other] Không dùng được câu trả lời của AI.
 }

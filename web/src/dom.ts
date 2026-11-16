@@ -4,9 +4,10 @@
 // What is here: `View`, a screen, with what main.ts tells it; `el`; what went wrong (`told`, `reason`, `failure`)
 // and `oneAtATime`, which runs a screen's actions and shows why one failed in `noticeBox`; the readings of a list
 // (`latest`, `newest`); `announce`, the notice at the bottom with "Undo", and `copyText`, which says so; `titled`,
-// which names a screen's tab; the small parts (`iconButton`, `lineButton`, `segmented`, `savedChoice`, `searchField`, `suggest`,
-// `selectField`, the app's own select, `typingDots`, `pill`, `closeButton`, `item`, `tabs`, `changesBar`, `fileField`, `atMost`),
-// a settings page's `group`; the window's width (`SMALL`, 600 px or less, `NARROW`, 960 px or less, `WIDE`, 1200 px
+// which names a screen's tab; `crumbs`, a page's path; the small parts (`iconButton`, `lineButton`, `segmented`, `savedChoice`, `searchField`, `suggest`,
+// `selectField`, the app's own select, `typingDots`, `pill`, `closeButton`, `item`, `tabs`, `changesBar`, `fileField`, `atMost`,
+// `moreOpener`, which shows and hides "More settings" or "Details", and opens for a wrong field), a settings page's `group`; `suggest` with readable names
+// shows each value (a model's ID) only on hover; the window's width (`SMALL`, 600 px or less, `NARROW`, 960 px or less, `WIDE`, 1200 px
 // or more).
 //
 // Escape closes one thing at a time: what takes it calls `preventDefault`, and a listener on the document asks
@@ -121,9 +122,10 @@ export const noticeBox = () => el("div", { className: "note", role: "status" });
  * Numbers a screen's readings of one thing, so that an answer that comes late is not taken over a newer one:
  * `ask` gives a reading its number as it is sent, and `take` answers whether its answer is still to be taken
  * (none of a reading sent after it was taken), and notes it taken. `take()` without a number is the screen's own
- * store being taken, which every reading sent before it is older than.
+ * store being taken, which every reading sent before it is older than. Where another reading means other input (an
+ * address, a key), `last` takes only the reading sent last, and `drop` (given up, gone) none on its way.
  */
-export function newest(): { ask(): number; take(mine?: number): boolean } {
+export function newest(): { ask(): number; take(mine?: number): boolean; last(mine: number): boolean; drop(): void } {
   let asked = 0;
   let taken = 0;
   return {
@@ -132,6 +134,10 @@ export function newest(): { ask(): number; take(mine?: number): boolean } {
       if (mine < taken) return false;
       taken = mine;
       return true;
+    },
+    last: (mine) => mine === asked,
+    drop() {
+      asked++;
     },
   };
 }
@@ -292,6 +298,8 @@ export interface Choice {
   group?: string;
   off?: boolean;
   sub?: string;
+  /** The language the label is in where it is not the app's. */
+  lang?: string;
 }
 
 /** The app's own select field: where it stands (`node`), its button (`field`), the value chosen, and `offer`, which gives it other choices. */
@@ -330,8 +338,11 @@ export function selectField(
     const made = offered.find((one) => one.value === chosen);
     words.textContent = made?.label ?? placeholder;
     words.classList.toggle("c-grey", !made);
-    const items = offered.map(({ value, label, group, off, sub }): MenuItem => ({
+    if (made?.lang) words.lang = made.lang;
+    else words.removeAttribute("lang");
+    const items = offered.map(({ value, label, group, off, sub, lang }): MenuItem => ({
       label,
+      lang,
       group,
       off,
       sub,
@@ -412,8 +423,8 @@ export function suggest(input: HTMLInputElement, from: (typed: string) => string
     const offered = now ? from(input.value === typed ? typed : "") : [];
     // The value in use is ticked and marked, so the arrows start from it (design.md, "A choice from a list").
     const lines = offered.map((value, n) => {
-      const words = label ? el("span", { className: "flex f-col g-2" }, label(value), el("span", { className: "opt-id" }, value)) : value;
-      const line = el("div", { id: `${list.id}-${n}`, className: label ? "opt two" : "opt", role: "option" }, words, value === chosen && icon("check", 16));
+      // A readable name tells its value (a model's ID) on hover alone.
+      const line = el("div", { id: `${list.id}-${n}`, className: "opt", role: "option", title: label ? value : "" }, label ? label(value) : value, value === chosen && icon("check", 16));
       line.dataset.value = value;
       return line;
     });
@@ -430,6 +441,8 @@ export function suggest(input: HTMLInputElement, from: (typed: string) => string
     input.value = line.dataset.value ?? "";
     typed = null;
     show(false);
+    // The list drawn again marks the value in use; Enter after a taking is the form's.
+    mark(null);
   }
 
   input.addEventListener("input", () => {
@@ -535,6 +548,15 @@ export function tabs(label: string, of: { name: string; href: string; open: bool
 }
 
 /** The × that closes what lies over the page, its drawing of a `size`. */
+/**
+ * A page's path (`.crumbs`): the pages over it, each `[its name, its address]` a link, "/" between, and the page
+ * itself, its name in bold, or a node of its own where the page changes it.
+ */
+export function crumbs(...path: (readonly [string, string] | string | Node)[]): HTMLElement {
+  const steps = path.flatMap((step, at) => [at ? "/" : null, typeof step === "string" ? el("b", null, step) : step instanceof Node ? step : el("a", { href: step[1] }, step[0])]);
+  return el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, ...steps);
+}
+
 export const closeButton = (size?: number) => el("button", { type: "button", className: "quiet icon btn btn-quiet btn-icon", ariaLabel: wording("window-close") }, icon("close", size));
 
 /** A pill: a small grey button that is light blue while it is `pressed`, which says that it is the choice made, or one of them. */
@@ -543,6 +565,40 @@ export function pill(label: string, pressed: boolean, press: () => void): HTMLBu
   // Its words in semibold, unseen, hold the width it has pressed (app.css `.pill[data-label]`): pressing moves no other.
   one.dataset.label = label;
   return one;
+}
+
+/** "More settings", "Details" and the like: a text button with a chevron that shows and hides `rest` (one part or
+ * several, each with an `id`; several where they are a group's own lines), open at first where `open` says, and
+ * opened by a field in it the browser finds wrong; `toggled` is told each change. */
+export function moreOpener(label: string, rest: HTMLElement | HTMLElement[], open: boolean, toggled: (open: boolean) => void = () => {}): HTMLButtonElement {
+  const parts = [rest].flat();
+  const opener = el("button", { type: "button", className: "textbtn as-s" }, icon(open ? "up" : "down", 14), label);
+  let shown = open;
+  const show = (now: boolean) => {
+    shown = now;
+    for (const part of parts) part.hidden = !now;
+    opener.setAttribute("aria-expanded", String(now));
+    opener.firstElementChild?.replaceWith(icon(now ? "up" : "down", 14));
+  };
+  opener.setAttribute("aria-controls", parts.map((part) => part.id).join(" "));
+  show(open);
+  opener.onclick = () => {
+    show(!shown);
+    toggled(shown);
+  };
+  // A field in `rest` the browser finds wrong on Save opens it: hidden, the field could not show its message, and
+  // the form would neither save nor say why. `invalid` does not bubble, so it is caught on the way down.
+  for (const part of parts)
+    part.addEventListener(
+      "invalid",
+      () => {
+        if (shown) return;
+        show(true);
+        toggled(true);
+      },
+      true,
+    );
+  return opener;
 }
 
 /** A small button that is an icon, with its name for who does not see it and what it says when pointed at. */

@@ -10,6 +10,7 @@
 // The view By need is Gallery's tiles under the row "I need…" (../library/by-need.ts): only it sends the picks.
 // The view Posters is Gallery's tiles with only a poster (../library/poster.ts); a card that has none yet keeps the plain tile.
 // It alone asks the list for what a poster shows (`posters`), so coming to it reads the list anew.
+// A card shows its own tags (`own_tags`) and its content level as a word of its own; the classifier's terms stay for search and By need.
 import { cardChats, cardTags, cardThumbnailUrl, changeCard, copyLorebook, getCard, getNeeds, getSearchModel, importCard, listCards } from "../api/client";
 import type { NeedsOverview } from "../api/generated/NeedsOverview";
 import type { CardSummary } from "../api/generated/CardSummary";
@@ -25,14 +26,14 @@ import { poster } from "../library/poster";
 import { designOf } from "../library/poster-designs";
 import { type Came, fileImport } from "../library/importing";
 import { beginChat, cardItems, cover, starButton } from "../library/library-actions";
-import { characterWays, emptyLine, keyed, lastSeen, type ListScreen, listScreen, readList } from "../library/list-screen";
+import { characterWays, emptyLine, keyed, lastSeen, type ListRead, type ListScreen, listScreen, readList } from "../library/list-screen";
 import { sortFilter } from "../library/sort-filter";
 import { needWords } from "../language/interview";
-import { language, wording } from "../language/language";
+import { wording } from "../language/language";
 import { windowed } from "../windowed";
 import { cardTitle } from "../card-title";
-import { tagWord } from "../card/content-level";
-import { comma } from "../format";
+import { tagWord } from "../content-level";
+import { comma, names } from "../format";
 
 /** How the cards are laid out. */
 type Layout = "list" | "gallery" | "discovery" | "by_need" | "posters";
@@ -94,24 +95,25 @@ async function addCard(file: File): Promise<Came> {
 /** The tags the list is narrowed by, as an empty list says them: " with the tags “sea” and “keeper”". */
 function withTags(tags: string[]): string {
   if (!tags.length) return "";
-  const named = new Intl.ListFormat(language()).format(tags.map((tag) => wording("library-actions-quoted", { name: tag })));
+  const named = names(tags.map((tag) => wording("library-actions-quoted", { name: tagWord(tag) })));
   return wording("library-with-tags", { count: tags.length, named });
 }
 
 
 /** Reads the list as it was asked for; in the view By need also what its row shows, and of the picks those a card still has. */
-async function readCards(): Promise<[CardSummary[], string, NeedsOverview | null]> {
+async function readCards(): Promise<[ListRead<CardSummary>, NeedsOverview | null]> {
   const overview = layout === "by_need" ? await getNeeds() : null;
   const need = overview ? asked.needs.filter((picked) => overview.needs.includes(picked)) : [];
   const having = withTags(asked.tags) + (need.length ? wording("library-with-needs") : "");
-  const [found, empty] = await readList((query) => listCards({ ...query, sort: asked.sort, tag: asked.tags, need, posters: layout === "posters" }), wording("library-characters"), asked, wording("library-no-cards"), having);
-  return [found, empty, overview];
+  const read = await readList((query) => listCards({ ...query, sort: asked.sort, tag: asked.tags, need, posters: layout === "posters" }), wording("library-characters"), asked, wording("library-no-cards"), having);
+  return [read, overview];
 }
 
 export function libraryView(): View {
-  /** The cards last read, and what to say when there are none. */
+  /** The cards last read, what to say when there are none, and whether the library holds none at all. */
   let cards: CardSummary[] = [];
   let none = "";
+  let nothing = false;
   /** In By need, each card's needs, which its tile shows where Gallery's shows the tags. */
   let byCard: NeedsOverview["by_card"] = {};
   let back: number | null = scrolled;
@@ -125,8 +127,8 @@ export function libraryView(): View {
     unread: wording("library-couldnt-load"),
     asked,
     read: readCards,
-    show: ([found, empty, overview]) => {
-      [cards, none] = [found, empty];
+    show: ([[found, empty, bare], overview]) => {
+      [cards, none, nothing] = [found, empty, bare];
       if (overview) needs.show(overview);
       byCard = overview?.by_card ?? {};
       draw();
@@ -177,7 +179,7 @@ export function libraryView(): View {
     if (layout !== "by_need") viewName.remove();
     else bar.querySelector("h1")?.append(viewName);
     shown.draw(cards, (card) => keyed(drawn(card, { attempt, load, starred }), card.id));
-    if (none) list.append(emptyLine(none, none === wording("library-no-cards") ? characterWays(() => (location.hash = "#/library/new"), () => file.click()) : []));
+    if (none) list.append(emptyLine(none, nothing ? characterWays(() => (location.hash = "#/library/new"), () => file.click()) : []));
   }
 
   void load();
@@ -264,7 +266,7 @@ const menuOf = (card: CardSummary, link: HTMLElement, { attempt, load }: Acts) =
 function row(card: CardSummary, acts: Acts): HTMLElement {
   const { chat, more, star } = controls(card, acts);
   const names = namesOf(card);
-  const tags = card.tags.map(tagWord).join(" · ");
+  const tags = card.own_tags.join(" · ");
   const both = [names, tags].filter(Boolean).join(" · ");
   const link = el("a", { className: "row-title ttl ink-link row-link", href: `#/library/${card.id}` }, cardTitle(card.title));
   menuOf(card, link, acts);
@@ -281,6 +283,7 @@ function row(card: CardSummary, acts: Acts): HTMLElement {
         link,
         names && el("span", { className: "meta wide-only" }, names),
         card.archived && el("span", { className: "meta" }, wording("add-character-archived")),
+        card.rating && el("span", { className: "meta" }, tagWord(card.rating)),
         card.describing && el("span", { className: "meta" }, wording("character-describing")),
       ),
       tags && el("span", { className: "meta tags wide-only" }, tags),
@@ -305,7 +308,7 @@ function row(card: CardSummary, acts: Acts): HTMLElement {
  * and what can be done with the card is in the menu a right-click opens.
  * Pointed at or in focus, the picture shows the card's first words and tags, or By need's `marks`, its needs.
  */
-function tile(card: CardSummary, acts: Acts, marks = card.tags): HTMLElement {
+function tile(card: CardSummary, acts: Acts, marks = card.own_tags): HTMLElement {
   const tags = marks.join(" · ");
   const words =
     (card.excerpt || tags) &&
@@ -315,7 +318,7 @@ function tile(card: CardSummary, acts: Acts, marks = card.tags): HTMLElement {
       card.excerpt && el("span", { className: "tile-log" }, card.excerpt),
       tags && el("span", { className: "tile-tags" }, tags),
     );
-  const state = card.archived ? wording("add-character-archived") : namesOf(card);
+  const state = [card.archived ? wording("add-character-archived") : namesOf(card), card.rating && tagWord(card.rating)].filter(Boolean).join(" · ");
   const link = el(
     "a",
     { className: "tile", href: `#/library/${card.id}` },
@@ -362,7 +365,8 @@ function entry(card: CardSummary, acts: Acts): HTMLElement {
     el(
       "span",
       { className: "etext" },
-      card.tags.length > 0 && el("span", { className: "meta" }, card.tags.map(tagWord).join(" · ")),
+      card.rating && el("span", { className: "meta" }, tagWord(card.rating)),
+      card.own_tags.length > 0 && el("span", { className: "meta" }, card.own_tags.join(" · ")),
       el("span", { className: "entry-title t-display" }, cardTitle(card.title)),
       el("span", { className: "short-rule" }),
       card.excerpt && el("span", { className: "logline m0" }, card.excerpt),

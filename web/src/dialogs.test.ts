@@ -1,7 +1,7 @@
 // What dialogs.ts decides, without a browser: `step`, `within`, and of `menuOn` a menu's groups, its choices and
 // its lines that cannot be picked.
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { askUnder, menuOn, step, within, type MenuItem } from "./dialogs";
+import { askUnder, menuDeleting, menuOn, step, within, type MenuItem } from "./dialogs";
 import { el } from "./dom";
 
 afterEach(() => document.body.replaceChildren());
@@ -180,5 +180,26 @@ describe("askUnder", () => {
     expect(row.nextElementSibling).toBeNull();
     expect(tools.hidden).toBe(false);
     expect(document.activeElement).toBe(opener);
+  });
+});
+
+describe("menuDeleting", () => {
+  test("its red last line asks under the line; Cancel gives the focus back to the …", () => {
+    const done = vi.fn();
+    const more = menuDeleting("More", [{ label: "Edit", action: () => {} }], { label: "Delete", question: () => "Delete it?", yes: "Delete", action: done });
+    const tools = el("div", null, more);
+    const row = el("div", { className: "item" }, el("span", null, "Ann"), tools);
+    document.body.append(el("div", null, row));
+    const button = more.querySelector("button")!;
+    button.click();
+    const line = [...more.querySelectorAll<HTMLElement>("[role=menuitem]")].find((one) => one.textContent === "Delete")!;
+    expect(line.className).toMatch(/danger/);
+    line.click();
+    const asking = row.nextElementSibling as HTMLElement;
+    expect([asking.textContent?.includes("Delete it?"), tools.hidden]).toEqual([true, true]);
+    asking.querySelector<HTMLElement>(".btn-danger-fill")!.click();
+    expect(done).toHaveBeenCalledOnce();
+    (document.activeElement as HTMLElement).click();
+    expect(document.activeElement).toBe(button);
   });
 });

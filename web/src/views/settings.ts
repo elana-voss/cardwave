@@ -1,7 +1,7 @@
 // Account settings, at `#/settings`, what is often changed (the split into basic and advanced, milestone 70):
 // the groups Appearance (theme and chat layout, this browser's own; "Show pictures from other websites", the server's; in the
-// desktop app the companion and its figure, companion-app.ts), Language (the app's, the AI's), Models (the line to
-// Providers, Chat, Images, Voice, Search and Dictation; ../models/models-group.ts), Tools (tools.ts), Data (Trash, Backup and
+// desktop app the companion and, once one exists, its figure and size, companion-app.ts), Language (the app's, the AI's), Models (the line to
+// Providers, Chat, Images, Voice, Search and Dictation; ../models/models-group.ts), Tools (Web alone; the rest on Advanced, tools.ts), Data (Backup and
 // Restore, backup.ts; the folder of cards, card-folder.ts) and the last box: "Advanced" (advanced.ts, which holds the rest), in the desktop app
 // "Check for updates" and "Check automatically" (update.ts), "Run setup again" (first run, `#/setup`) and "About Cardwave" (about.ts). Its bar has the account's tabs.
 //
@@ -10,15 +10,16 @@
 // group is `item` of dom.ts. Traps: `getProvider` of api/client.ts answers after a store that is on its way, so
 // this page and "Advanced" each show what the other stored. A store made in another window (the event
 // `provider`), and the server heard again after a drop, have Models and its line to Providers read anew; so do the settings changed in
-// another window (the event `settings`) every line that shows one, and the Trash changed its line in Data.
+// another window (the event `settings`) every line that shows one.
 import { wording } from "../language/language";
-import { getLock, getSettings, getStatus, getTrash } from "../api/client";
+import { getLock, getSettings, getStatus } from "../api/client";
 import type { EntryView } from "../api/generated/EntryView";
 import type { ProvidersView } from "../api/generated/ProvidersView";
 import { backupLine } from "../settings/backup";
 import { cardFolderLines } from "../settings/card-folder";
 import type { ServerEvent } from "../api/generated/ServerEvent";
-import { aboutChoice, el, group, item, link, noticeBox, oneAtATime, segmented, selectField, type View } from "../dom";
+import { aboutChoice, el, group, item, link, noticeBox, oneAtATime, segmented, selectField, switchBox, type View } from "../dom";
+import { setTabsOn, tabsOn } from "../shell/tabs";
 import { modelsGroup } from "../models/models-group";
 import { lineFiller, settingSwitch } from "../settings/setting-lines";
 import { account } from "../account";
@@ -58,12 +59,17 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
     if (layoutNode.contains(document.activeElement)) return;
     layoutNode.replaceWith((layoutNode = layouts()));
   }, { signal: watching.signal });
-  const companion = companionLine();
   const figure = figureLine();
   const size = figure && sizeLine(figure.notice);
+  // The companion's figure and size are hidden until a companion exists (Claude, 2026-11-15).
+  for (const line of [figure?.node, size?.node]) if (line) line.hidden = true;
+  const companion = companionLine((exists) => [figure?.node, size?.node].forEach((line) => line && (line.hidden = !exists)));
   const notice = noticeBox();
   const web = settingSwitch(oneAtATime(notice), LABELS.settings.webPictures, "web_pictures");
   const fill = lineFiller(notice);
+  // The tabs, this browser's own, on at first (the owner, 2026-11-15); the switch shows them at once.
+  const tabs = switchBox({ checked: tabsOn(), ariaLabel: LABELS.settings.tabs });
+  tabs.onchange = () => setTabsOn(tabs.checked);
   const node = group(
     wording("settings-appearance"),
     null,
@@ -75,6 +81,7 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
       item(LABELS.settings.theme, themeAbout, themeField.node),
       item(LABELS.settings.chatLayout, wording("settings-layout-about"), layoutNode),
       item(LABELS.settings.webPictures, wording("settings-web-pictures-about"), web.toggle),
+      item(LABELS.settings.tabs, wording("settings-tabs-about"), tabs),
       companion?.node ?? null,
       figure?.node ?? null,
       size?.node ?? null,
@@ -102,23 +109,17 @@ function languageGroup(): { node: HTMLElement; read(): void } {
 }
 
 /**
- * The group "Data": the way to the Trash, then Backup and Restore (backup.ts), then the folder of cards
- * (card-folder.ts); what Export writes is Settings › Advanced's.
+ * The group "Data": Backup and Restore (backup.ts), then the folder of cards (card-folder.ts); what Export writes is
+ * Settings › Advanced's. The Trash is the rail's alone (Claude, 2026-11-15).
  */
-function dataGroup(home: () => HTMLElement): { node: HTMLElement; readTrash(): void; read(): void } {
+function dataGroup(home: () => HTMLElement): { node: HTMLElement; read(): void } {
   const notice = noticeBox();
   const backup = backupLine(home);
   const cards = cardFolderLines(home, oneAtATime(notice));
   // The database's backup is this computer's account's. The password is Profile's alone (the owner, 2026-10-15).
   for (const line of backup.nodes) line.hidden = true;
   void account().then(({ local }) => backup.nodes.forEach((line) => (line.hidden = !local)), () => {});
-  const inTrash = el("span", { className: "meta" });
   const fill = lineFiller(notice);
-  const readTrash = () =>
-    fill(getTrash, ({ days, items }) => {
-      inTrash.textContent = wording("settings-trash-about", { count: items.length, days });
-    });
-  readTrash();
   fill(getLock, ({ password: on }) => backup.show(on));
   const read = () => void fill(getSettings, cards.show);
   read();
@@ -129,16 +130,11 @@ function dataGroup(home: () => HTMLElement): { node: HTMLElement; readTrash(): v
     el(
       "div",
       { className: "group" },
-      item(
-        el("span", { className: "item-label" }, LABELS.settings.trash),
-        inTrash,
-        el("button", { type: "button", className: "btn btn-secondary on-box", ariaLabel: wording("settings-open-trash"), onclick: () => (location.hash = "#/settings/trash") }, wording("settings-open")),
-      ),
       ...backup.nodes,
       ...cards.nodes,
     ),
   );
-  return { node, readTrash: () => void readTrash(), read };
+  return { node, read };
 }
 
 /**
@@ -202,7 +198,7 @@ export function settingsView(): View {
     ],
     foot: [dictation.node],
   });
-  const tools = toolsGroup(() => node);
+  const tools = toolsGroup(() => node, "web");
   const [appearance, language, data] = [appearanceGroup(), languageGroup(), dataGroup(() => node)];
   const tabs = accountTabs("#/settings");
   node.append(
@@ -222,14 +218,12 @@ export function settingsView(): View {
       if (event.type === "dictation") dictation.read();
       if (event.type === "voice") voice.read();
       if (event.type === "settings") settled();
-      if (event.type === "trash") data.readTrash();
     },
     onConnected: () => {
       settled();
       models.read();
       search.read();
       dictation.read();
-      data.readTrash();
     },
     left: () => {
       tabs.left();

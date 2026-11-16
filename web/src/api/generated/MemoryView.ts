@@ -34,4 +34,8 @@ known_to: Array<string> | null,
 /**
  * Who may know it: the chat's characters, then the user.
  */
-names: Array<string>, };
+names: Array<string>, 
+/**
+ * The persona the memory is with, which is the user's name in `names`; none for the user without one.
+ */
+persona: string | null, };

@@ -37,8 +37,8 @@ const server = process.env.CARDWAVE_SERVER ?? "http://127.0.0.1:8477";
 export default defineConfig({
   plugins: [wordsChecked()],
   // Two pages: the app, and the desktop app's companion window (src/companion/main.ts), with its 3D model.
-  // The companion's script is three.js with it (about 590 kB), read from this computer: no warning for its size.
-  build: { rollupOptions: { input: { main: "index.html", companion: "companion.html" } }, chunkSizeWarningLimit: 700 },
+  // The figures' script is three.js with WebGPU and WebGL 2 (about 1,060 kB), read from this computer: no warning for its size.
+  build: { rollupOptions: { input: { main: "index.html", companion: "companion.html" } }, chunkSizeWarningLimit: 1100 },
   assetsInclude: ["**/*.glb"],
   server: {
     proxy: {

@@ -255,7 +255,7 @@ impl Default for Tools {
 
 /// The coding team (`coding`): the team a task is given unless it names
 /// another, and the models of its roles. What its tools may do is the
-/// account's Settings › Tools (`Permissions::of`; second review of the v4
+/// account's Tools for the AI (`Permissions::of`; second review of the v4
 /// boards, 2026-10-17).
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[serde(default)]
@@ -350,7 +350,7 @@ pub struct Permissions {
 }
 
 impl Permissions {
-    /// What Settings › Tools allow: Files reads and writes, asking first
+    /// What Tools for the AI allow: Files reads and writes, asking first
     /// where "Ask before writing" is on; Commands runs commands and installs
     /// packages, asking first where "Ask before running" is on; Web searches
     /// and reads pages. What is switched off is not offered.

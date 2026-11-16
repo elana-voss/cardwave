@@ -104,6 +104,7 @@ search-keys = Search Cardwave (Ctrl+K)
 label-settings-theme = Theme
 label-settings-chat-layout = Chat layout
 label-settings-web-pictures = Show pictures from other websites
+label-settings-tabs = Tabs
 label-settings-app-language = Language of the app
 label-settings-language = Language the AI writes in
 label-settings-providers = Providers
@@ -121,7 +122,6 @@ label-settings-dice = Dice
 label-settings-folder = Folder
 label-settings-written = Tools the AI wrote
 label-settings-coding = Coding team
-label-settings-trash = Trash
 label-settings-backup = Backup
 label-settings-restore = Restore
 label-settings-cards-folder = Cards folder
@@ -159,17 +159,12 @@ settings-appearance = Appearance
 settings-theme-about = Follows the system unless you pick one
 settings-layout-about = Messages as bubbles, or as plain text
 settings-web-pictures-about = Those websites can see when you open the chat.
+settings-tabs-about = Keep several pages open in the title bar
 settings-language = Language
 settings-data = Data
-settings-trash-about = { $count ->
-    [one] 1 item
-   *[other] { $count } items
-  } · emptied after { $days } days
-settings-open-trash = Open Trash
-settings-open = Open
 settings-version = Version { $version } · licences
 settings-licences = Licences
-settings-advanced-about = Helper model, library, export, chat without a character, sampling, presets, your own CSS
+settings-advanced-about = Helper model, library, tools for the AI, export, chat without a character, sampling, presets, your own CSS
 settings-setup-about = Providers, models and voice, step by step
 settings-providers-about = Addresses and keys of the services that run the models
 settings-this-computer = this computer
@@ -215,7 +210,7 @@ backup-back-up = Save backup
 backup-no-file = No file chosen
 backup-choose-file = Choose file
 backup-its-password = The backup’s password
-backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories, settings and the other accounts. This cannot be undone. The password set here stays as it is.
+backup-restoring = Restoring replaces everything in Cardwave: chats, characters, personas, lorebooks, memories, settings and the other accounts. This cannot be undone.
 backup-restored = The backup was restored: everything in Cardwave is as it was when the backup was made. Other devices sign in again.
 backup-file = File
 backup-restore-title = Restore a backup
@@ -253,7 +248,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = Let AI apps on this computer use Cardwave
-mcp-ask = Programs on this computer, such as Claude Desktop, can read your characters and chats, write in your chats and use the tools switched on in Settings › Tools. What Cardwave would ask you first, they cannot do.
+mcp-ask = Programs on this computer, such as Claude Desktop, can read your characters and chats, write in your chats and use the tools switched on in Settings. What Cardwave would ask you first, they cannot do.
 mcp-switch-on = Switch on
 mcp-about = Such as Claude Desktop, through MCP: they use your characters, chats and tools
 mcp-copy-address = Copy the MCP address
@@ -384,6 +379,7 @@ tools-change = Change
 tools-choose = Choose
 tools-none-chosen = None chosen
 tools-title = Tools
+tools-for-ai = Tools for the AI
 tools-ask-new = { $name } wants to use a new tool: { $what }
 tools-ask-write = { $name } wants to write “{ $what }” in your folder:
 tools-ask-read = { $name } wants to read in your folder:
@@ -445,6 +441,9 @@ providers-choose-folder = Choose a folder of models
 providers-change = Change
 providers-not-set-up = Not set up
 providers-folder-not-set-up = Runs models from a folder on this computer · not set up
+providers-this-computer-runs = Ready to run: { $models }
+providers-this-computer-none = No model yet: download one that fits below
+providers-details = Details
 providers-menu = Provider menu: edit, remove
 providers-remove = Remove
 providers-removed = Provider “{ $name }” removed.
@@ -454,6 +453,7 @@ providers-remove-key = Remove key
 providers-key-removed = The key is removed when you save
 providers-edit = Edit provider
 providers-keep-key = Leave empty to keep the saved key.
+providers-new-address-key = A new address needs its key typed again: a key never goes to another server.
 providers-saved = Provider “{ $name }” saved.
 providers-added = Provider “{ $name }” added.
 providers-add = Add provider
@@ -528,17 +528,14 @@ advanced-not-described = { $count ->
    *[other] { $count } characters
   } not described yet
 advanced-describe-cards = Describe characters
-advanced-describe-cost = About { $low } to { $high } tokens for { $count ->
-    [one] 1 character
-   *[other] { $count } characters
-  }
+advanced-describe-cost = Cards to read: { $count }
 advanced-failed = { $count ->
     [one] 1 failed
    *[other] { $count } failed
   }: { $failure }. Press Describe characters to try them again.
 advanced-describe-again = Describe all again
 advanced-describe-again-stop = Stop
-advanced-describe-again-about = With the helper model, rewrites every character's one-line description, summary, tags and what By need finds them by, about 11,000 to 12,000 tokens each. What you edited yourself stays. Tokens are what providers bill by.
+advanced-describe-again-about = With the helper model, reads every card again and rewrites each character's one-line description, summary, tags and what By need finds them by. What you edited yourself stays.
 advanced-no-characters = No characters to describe
 advanced-describe-again-far = { $done } of { $all } described again
 advanced-describe-again-stopped = Stopped at { $done } of { $all } described again
@@ -803,6 +800,8 @@ server-switch-on = Switch on
 server-network-about = Phones and other computers open Cardwave in a browser
 server-other-devices = Other devices
 server-inside = Only devices in this network can reach it, unless you set up your router to let others in.
+server-anywhere = From anywhere
+server-tailscale = To open it from anywhere, install the free app Tailscale (tailscale.com) on this computer and your phone, and sign in to both.
 server-add-account = Add account
 server-owner = This computer · can add and remove accounts
 server-more-of = More: { $name }

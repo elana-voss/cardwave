@@ -71,7 +71,7 @@ async fn a_picture_goes_with_its_message_to_a_model_that_sees() {
 
     let (status, _) = server.post(&format!("{chat}/generate"), json!({})).await;
     assert_eq!(status, 202);
-    let asked = until_asked(&api, 2).await;
+    let asked = api.until_asked(2).await.body;
     let body: Value = serde_json::from_str(&asked).unwrap();
     let messages = body["messages"].as_array().unwrap();
     let mine = messages
@@ -91,17 +91,6 @@ async fn a_picture_goes_with_its_message_to_a_model_that_sees() {
     let (_, view) = server.get(&chat).await;
     let sent = &view["messages"].as_array().unwrap()[1];
     assert_eq!(sent["attachments"][0]["id"], id);
-}
-
-/// The body of the `count`th asking of `api`, waited for.
-async fn until_asked(api: &Api, count: usize) -> String {
-    for _ in 0..250 {
-        if let Some(asked) = api.asked().get(count - 1) {
-            return asked.body.clone();
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    panic!("the model was not asked");
 }
 
 #[tokio::test]
@@ -204,7 +193,7 @@ async fn a_document_attached_to_the_message_goes_whole_into_its_reply_without_a_
         server.post(&format!("{chat}/generate"), json!({})).await.0,
         202
     );
-    let asked = until_asked(&api, 1).await;
+    let asked = api.until_asked(1).await.body;
     assert!(
         asked.contains("From \\\"log.txt\\\":\\nThe keeper's cats were Pitch, Tar and Rope."),
         "{asked}"

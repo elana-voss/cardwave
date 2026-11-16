@@ -325,6 +325,19 @@ async fn an_address_that_gives_no_list_says_why() {
 }
 
 #[tokio::test]
+async fn a_refusal_names_its_reason_by_a_code() {
+    // The page picks its words by the code, never by the sentence.
+    for (status, key, code) in [
+        (401, Some("sk-typed"), "did_not_take_the_key"),
+        (403, None, "asks_for_a_key"),
+        (404, None, "no_list"),
+    ] {
+        let (_, refused) = answered(says(status, JSON, ""), key).await;
+        assert_eq!(refused["details"]["said"], code, "{status}");
+    }
+}
+
+#[tokio::test]
 async fn an_address_where_nothing_listens_says_so() {
     // Port 1 of this machine: nothing listens there.
     let server = start().await;

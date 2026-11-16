@@ -783,7 +783,16 @@ async fn a_reply_that_goes_on_in_another_characters_lines_is_cut_to_its_own() {
 fn a_greeting_after_the_first_in_a_new_chat_keeps_what_its_macros_set() {
     let scratch = Scratch::new();
     let (db, me) = (&scratch.db, scratch.user);
-    let mira = common::import_whole(db, me, &common::card_file()).unwrap();
+    let first = card_with(|blocks, cards| {
+        (
+            blocks.replace(
+                "All of you, inside.",
+                "{{setvar::place::bar}}All of you, inside.",
+            ),
+            cards.to_string(),
+        )
+    });
+    let mira = common::import_whole(db, me, &first).unwrap();
     let setting = card_with(|blocks, cards| {
         let blocks = blocks.replace(
             "[name.mira]\ntext = \"Mira\"",
@@ -818,6 +827,17 @@ fn a_greeting_after_the_first_in_a_new_chat_keeps_what_its_macros_set() {
     assert_eq!(states[1].0, "All of you, inside.");
     let kept: Value = serde_json::from_str(states[1].1.as_deref().expect("no state kept")).unwrap();
     assert_eq!(kept["opening"]["mood"], "wry");
+    // A reply straight after the greetings reads what both set.
+    let inputs = chats::prompt_inputs(db, me, made, None).unwrap();
+    let set = &inputs.state.local_variables;
+    assert_eq!(
+        (
+            set.get("place").map(String::as_str),
+            set.get("mood").map(String::as_str)
+        ),
+        (Some("bar"), Some("wry")),
+        "{set:?}"
+    );
 }
 
 #[tokio::test]
@@ -832,13 +852,7 @@ async fn a_reply_in_a_chat_of_several_is_told_to_write_only_as_its_character() {
         server.post(&format!("{chat}/generate"), json!({})).await.0,
         202
     );
-    for _ in 0..250 {
-        if !api.asked().is_empty() {
-            break;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    let body: Value = serde_json::from_str(&api.asked()[0].body).unwrap();
+    let body: Value = serde_json::from_str(&api.until_asked(1).await.body).unwrap();
     let last = body["messages"].as_array().unwrap().last().unwrap().clone();
     assert!(
         last["content"]

@@ -155,6 +155,9 @@ test("the settings read the languages again after they could not be read", async
   await page.route("**/api/languages", (route) => (failed ? route.fallback() : ((failed = true), route.fulfill({ status: 500, body: "down" }))));
   await page.goto("/#/settings");
   const language = page.getByRole("button", { name: "Language the AI writes in" });
+  // The field is grey from its start: the change waits for the failure to show, else the reading it should
+  // repeat may still be under way and fail after it (seen in the full run).
+  await expect(page.locator(".page-col").getByRole("alert")).toBeVisible();
   await expect(language).toBeDisabled();
   expect((await request.patch("/api/settings", { data: { export_history: true } })).status()).toBe(200);
   await expect(language).toBeEnabled();

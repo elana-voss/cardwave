@@ -58,7 +58,7 @@ fn the_search_asks_the_places_themselves_and_no_proxy() {
         let server = start_asking(Some(places)).await;
         let website = json!({ "website": "tidewater.test" });
         // The test itself asks the server round the proxy too.
-        let direct = reqwest::Client::builder().no_proxy().build().unwrap();
+        let direct = common::server::client_with(reqwest::Client::builder().no_proxy());
         let address = format!("http://{}/api/provider/find", server.addr);
         let answer = direct.post(address).json(&website).send().await.unwrap();
         assert_eq!(answer.status(), 200);

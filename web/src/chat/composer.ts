@@ -19,7 +19,7 @@ import type { Turn } from "../api/generated/Turn";
 import type { TurnOrder } from "../api/generated/TurnOrder";
 import { addCharacter, attach, draft, makePicture, moveHead, removeAttachment, removeCharacter, sendMessage, setTurn, waitingAttachments } from "../api/client";
 import { addCharacterDialog } from "../library/add-character";
-import { modeInUse, sameMode } from "../card/modes";
+import { forWork } from "../card/modes";
 import { startDialog } from "./coding";
 import { announce, el } from "../dom";
 import { menuOn, type MenuItem } from "../dialogs";
@@ -159,7 +159,7 @@ export function withWaiting(attached: Attachment[], waiting: Attachment[]): Atta
 export function codingOffered(s: Screen): boolean {
   const view = s.view;
   if (!s.account?.local || !view) return false;
-  return view.characters.length === 0 || sameMode(modeInUse(view.chat, view.modes) ?? "", "assistant");
+  return forWork(view);
 }
 
 /** The name the message field's unsaved text is kept by (../unsaved.ts). */

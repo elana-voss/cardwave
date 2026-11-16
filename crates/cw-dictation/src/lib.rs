@@ -12,6 +12,8 @@
 //! `api/dictation.rs`, its HTTP, runs them on a blocking thread.
 
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use anyhow::{bail, ensure};
@@ -29,7 +31,8 @@ const REVISION: &str = "5359861c739e955e79d9a303bcbc70fb988958b1";
 /// The rate of the sound Whisper hears, a second.
 const RATE: u32 = 16_000;
 
-/// What hears: Whisper, or the tests' stand-in, which loads in `loading` and says `says` after `slow`.
+/// What hears: Whisper, or the tests' stand-in, which loads in `loading` and says `says` after `slow`,
+/// counting its loads and hearings in `counts`.
 #[derive(Clone, Debug)]
 pub(crate) enum Ears {
     Whisper,
@@ -37,7 +40,15 @@ pub(crate) enum Ears {
         says: String,
         slow: Duration,
         loading: Duration,
+        counts: Arc<Counts>,
     },
+}
+
+/// How often the stand-in finished loading and began hearing, which a test reads instead of a clock.
+#[derive(Debug, Default)]
+pub struct Counts {
+    loaded: AtomicUsize,
+    heard: AtomicUsize,
 }
 
 /// Where the model comes from and what hears.
@@ -80,7 +91,25 @@ impl Setup {
                 says: says.into(),
                 slow,
                 loading: Duration::ZERO,
+                counts: Arc::default(),
             },
+        }
+    }
+
+    /// How often the stand-in has finished loading; 0 for Whisper.
+    pub fn loaded(&self) -> usize {
+        self.count(|counts| &counts.loaded)
+    }
+
+    /// How often the stand-in has begun to hear; 0 for Whisper.
+    pub fn heard(&self) -> usize {
+        self.count(|counts| &counts.heard)
+    }
+
+    fn count(&self, which: fn(&Counts) -> &AtomicUsize) -> usize {
+        match &self.ears {
+            Ears::StandIn { counts, .. } => which(counts).load(Ordering::SeqCst),
+            Ears::Whisper => 0,
         }
     }
 
@@ -101,7 +130,11 @@ pub fn folder(data_dir: &Path) -> PathBuf {
 /// The model while it is loaded.
 pub enum Model {
     Whisper(Whisper),
-    StandIn { says: String, slow: Duration },
+    StandIn {
+        says: String,
+        slow: Duration,
+        counts: Arc<Counts>,
+    },
 }
 
 impl Model {
@@ -113,11 +146,14 @@ impl Model {
                 says,
                 slow,
                 loading,
+                counts,
             } => {
                 std::thread::sleep(*loading);
+                counts.loaded.fetch_add(1, Ordering::SeqCst);
                 Self::StandIn {
                     says: says.clone(),
                     slow: *slow,
+                    counts: counts.clone(),
                 }
             }
         })
@@ -127,7 +163,8 @@ impl Model {
     pub fn hear(&mut self, samples: &[f32]) -> anyhow::Result<String> {
         match self {
             Self::Whisper(whisper) => whisper.hear(samples),
-            Self::StandIn { says, slow } => {
+            Self::StandIn { says, slow, counts } => {
+                counts.heard.fetch_add(1, Ordering::SeqCst);
                 std::thread::sleep(*slow);
                 Ok(says.clone())
             }

@@ -78,6 +78,21 @@ pub(crate) async fn light_due<M: Models>(
     Ok(())
 }
 
+/// Of `items` the model named, those not empty, not in `known` and not named twice (compared in lower case).
+fn fresh(items: Vec<String>, known: &[String]) -> Vec<String> {
+    let mut seen: Vec<String> = known.iter().map(|item| item.to_lowercase()).collect();
+    let mut new = Vec::new();
+    for item in items {
+        let item = item.trim().to_string();
+        let lower = item.to_lowercase();
+        if !item.is_empty() && !seen.contains(&lower) {
+            seen.push(lower);
+            new.push(item);
+        }
+    }
+    new
+}
+
 /// One call: at most two new items, and none past the room the limit leaves.
 async fn light<M: Models>(
     models: &M,
@@ -102,13 +117,7 @@ async fn light<M: Models>(
             temperature: None,
         })
         .await?;
-    let lowered: Vec<String> = known.iter().map(|item| item.to_lowercase()).collect();
-    let mut new: Vec<String> = strings(&reply["lit"]).into_iter().take(2).collect();
-    new = new
-        .iter()
-        .map(|item| item.trim().to_string())
-        .filter(|item| !item.is_empty() && !lowered.contains(&item.to_lowercase()))
-        .collect();
+    let mut new = fresh(strings(&reply["lit"]).into_iter().take(2).collect(), &known);
     let used = gender::guard_count(&interview.log);
     while !new.is_empty() && used + queue.len() + new.len() > GUARD - RESERVE {
         let dropped = new.pop();
@@ -183,4 +192,19 @@ pub(crate) fn clear(interview: &mut Interview, just: usize, old: &Entry) {
     drop_after(interview, just, |entry| {
         !entry.probe && gone.contains(&entry.slot)
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fresh;
+
+    #[test]
+    fn an_item_the_model_names_twice_in_one_answer_is_kept_once() {
+        let named = |items: &[&str]| items.iter().map(|item| item.to_string()).collect();
+        assert_eq!(fresh(named(&["pets", "Pets"]), &[]), ["pets".to_string()]);
+        assert_eq!(
+            fresh(named(&[" ", "home", "work"]), &["Home".to_string()]),
+            ["work".to_string()]
+        );
+    }
 }

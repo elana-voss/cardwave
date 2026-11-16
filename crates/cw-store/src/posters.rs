@@ -46,7 +46,7 @@ impl Storage for Db {
             .filter_map(|(letter, means)| {
                 Some(Earlier {
                     letter: Letter::read(&letter)?,
-                    means: means.and_then(|json| serde_json::from_str(&json).ok()),
+                    means: crate::json::or_none(means.as_deref(), "a poster letter's meaning"),
                 })
             })
             .collect())

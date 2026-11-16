@@ -18,8 +18,8 @@ const PACK: &str = "select e.id, e.name,
 
 fn pack(row: &Row<'_>) -> rusqlite::Result<ExpressionPack> {
     let moods: String = row.get(2)?;
-    // `json_group_array` writes valid JSON of strings: the default is never taken.
-    let mut moods: Vec<String> = serde_json::from_str(&moods).unwrap_or_default();
+    // `json_group_array` writes it: one that does not parse is a fault of this crate.
+    let mut moods: Vec<String> = crate::json::of(&moods, 2)?;
     // In `MOODS`' order, neutral last.
     moods.sort_by_key(|mood| {
         MOODS

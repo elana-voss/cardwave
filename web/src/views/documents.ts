@@ -12,7 +12,7 @@
 import { addCardDocument, addChatDocument, deleteDocument, getSearchModel, listCards, listChats, listDocuments, restoreDocument } from "../api/client";
 import type { DocumentView } from "../api/generated/DocumentView";
 import { announce, el, latest, noticeBox, oneAtATime, searchField, selectField, type View } from "../dom";
-import { chatTitle } from "../chat-title";
+import { chatNames, chatTitle } from "../chat-title";
 import { formDialog, menu } from "../dialogs";
 import { icon } from "../icons";
 import { emptyLine, pageTitle } from "../library/list-screen";
@@ -44,9 +44,10 @@ function addAnywhere(home: HTMLElement, run: (action: () => Promise<void>) => Pr
       field.remove();
       if (!file) return;
       const [chats, cards] = await Promise.all([listChats(), listCards()]);
+      if (!chats.length && !cards.length) throw new Error(wording("documents-needs-an-owner"));
       const group = (label: string, options: [string, string][]) => options.map(([value, text], at) => ({ value, label: text, group: at === 0 ? label : undefined }));
       const choices = [
-        ...group(wording("page-chats"), chats.map((chat) => [`chat:${chat.id}`, chatTitle(chat.title)])),
+        ...group(wording("page-chats"), chatNames(chats).map((told, at) => [`chat:${chats[at].id}`, told])),
         ...group(wording("page-characters"), cards.map((card) => [`card:${card.id}`, cardTitle(card.title)])),
       ];
       // The first is chosen to begin with, as a required select has it.
@@ -58,7 +59,7 @@ function addAnywhere(home: HTMLElement, run: (action: () => Promise<void>) => Pr
         fields,
         async () => {
           const [kind, id] = pick.value.split(":");
-          const to = kind === "chat" ? wording("documents-the-chat") : cardTitle(cards.find((card) => card.id === Number(id))!.title);
+          const to = kind === "chat" ? wording("documents-the-chat") : cardTitle(cards.find((card) => card.id === Number(id))?.title ?? "");
           const made = await (kind === "chat" ? addChatDocument : addCardDocument)(Number(id), file);
           box.close();
           announce(wording("library-actions-document-added", { name: made.name, to }));
@@ -72,16 +73,19 @@ function addAnywhere(home: HTMLElement, run: (action: () => Promise<void>) => Pr
 }
 
 /** What the chat or the character a document is for is called in its row. */
-const ownerName = (document: DocumentView) => (document.chat_id === null ? document.owner_name : chatTitle(document.owner_name));
+const ownerName = (document: DocumentView, chats: Map<number, string>) =>
+  document.chat_id === null ? document.owner_name : (chats.get(document.chat_id) ?? chatTitle(document.owner_name));
 
 export function documentsView(): View {
   const list = el("ul", { className: "rows-plain" });
   const unread = el("p", { className: "meta m0", hidden: true }, wording("documents-found-by-meaning-once"), " ", el("a", { href: "#/settings" }, wording("documents-set-up-search")));
   const notice = noticeBox();
   let all: DocumentView[] = [];
+  /** What the chats are called as the rail says them, where the chats were read. */
+  let chats = new Map<number, string>();
   const draw = () => {
     const words = asked.q.toLowerCase().split(/\s+/).filter(Boolean);
-    const found = all.filter((document) => words.every((word) => `${document.name} ${ownerName(document)}`.toLowerCase().includes(word)));
+    const found = all.filter((document) => words.every((word) => `${document.name} ${ownerName(document, chats)}`.toLowerCase().includes(word)));
     list.replaceChildren(...found.map(row));
     if (found.length) return;
     list.append(all.length ? emptyLine(wording("documents-no-document-found")) : emptyLine(wording("documents-no-documents-yet-a"), [{ label: wording("library-actions-add-document"), go: () => addAnywhere(node, attempt, load) }]));
@@ -90,8 +94,10 @@ export function documentsView(): View {
   const add = el("button", { type: "button", className: "btn btn-quiet", onclick: () => addAnywhere(node, attempt, load) }, icon("plus", 16), wording("library-actions-add-document"));
   const node: HTMLElement = el("section", { className: "main main-list knowledge" }, el("header", { className: "pbar" }, pageTitle(wording("page-documents")), el("div", { className: "flex ai-c g-8" }, add)), el("div", { className: "flex g-12" }, search), el("p", { className: "meta m0" }, wording("documents-what-they-are")), notice, unread, list);
   const attempt = oneAtATime(notice);
-  const load = latest(notice, listDocuments, (documents) => {
+  // The chats' names only tell chats of one name apart: without them a row says the chat's title.
+  const load = latest(notice, () => Promise.all([listDocuments(), listChats().catch(() => [])]), ([documents, found]) => {
     all = documents;
+    chats = new Map(chatNames(found).map((told, at) => [found[at].id, told]));
     draw();
     getSearchModel().then(
       (model) => (unread.hidden = !all.length || model.state === "ready"),
@@ -112,8 +118,8 @@ export function documentsView(): View {
       });
     const owner =
       document.chat_id === null
-        ? [wording("documents-for-the-character"), el("a", { href: `#/library/${document.card_id}` }, ownerName(document))]
-        : [wording("documents-for-the-chat"), el("a", { href: `#/chats/${document.chat_id}` }, ownerName(document))];
+        ? [wording("documents-for-the-character"), el("a", { href: `#/library/${document.card_id}` }, ownerName(document, chats))]
+        : [wording("documents-for-the-chat"), el("a", { href: `#/chats/${document.chat_id}` }, ownerName(document, chats))];
     return el(
       "li",
       { className: "item row item-roomy ai-s document-row" },

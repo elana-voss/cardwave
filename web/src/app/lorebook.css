@@ -1,0 +1,98 @@
+/* The lorebook editor's own rules (board LorebookEditor): the entries' panel, an entry's form and keywords. Read after
+   app.css and before app/narrow.css. */
+/* A lorebook's editor (board LorebookEditor): the entry beside the panel of its entries, as high as the window,
+   the entry in view marked in the list; from 960 px down list and entry are screens of their own (`.at-entry`). */
+.lorebook {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.crumbs .here {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lore-entries {
+  background: var(--page);
+}
+.entry-heads {
+  padding: 0 var(--s12);
+}
+.rows-plain > .entry-line {
+  border-radius: var(--r-xl);
+}
+.entry-line:has([aria-current]) {
+  background: var(--accent-soft);
+}
+.entry-link[aria-current] > .entry-label {
+  font-weight: 600;
+}
+.entry-form .fld > .seg {
+  align-self: stretch;
+}
+.entry-form .seg > .btn {
+  flex: 1;
+}
+.entry-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+.entry-name > .in-place {
+  width: 100%;
+  font: inherit;
+}
+/* A field of keywords: each a pill, and behind them the place to type the next. */
+.keys {
+  height: auto;
+  padding: var(--s6) var(--s8);
+  cursor: text;
+}
+.keys > input {
+  min-width: 140px;
+  padding: 0 var(--s4);
+  background: none;
+}
+.key-off {
+  display: flex;
+}
+.lore-change {
+  padding: var(--s6) var(--s8);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+}
+.lore-bar > input {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 960px) {
+  .lorebook {
+    flex-direction: column;
+  }
+  .lorebook:not(.at-entry) > .main {
+    flex: none;
+    overflow: visible;
+  }
+  .lorebook:not(.at-entry) .entry-form,
+  .lorebook.at-entry > .lore-entries {
+    display: none;
+  }
+  .lore-entries {
+    flex: 1;
+    min-width: 0;
+    padding: var(--s8) var(--s16);
+    border-left: 0;
+  }
+  /* The list is a screen of its own here, not the side panel's sheet. */
+  .lorebook > .lore-entries {
+    position: static;
+    width: auto;
+    box-shadow: none;
+    animation: none;
+  }
+  .lorebook:not(.at-entry) .entry-line:has([aria-current]):not(:hover) {
+    background: none;
+  }
+  .lorebook:not(.at-entry) .entry-link[aria-current] > .entry-label {
+    font-weight: 500;
+  }
+}

@@ -34,6 +34,9 @@ const MAX_VARIABLES: usize = 1000;
 const MAX_REPEAT: i64 = 100;
 const MAX_DICE: i64 = 100;
 const MAX_FACES: i64 = u32::MAX as i64;
+/// Limits the macros one render evaluates, so variables that read each other
+/// many times over end: past it the rest of a text is left as it is.
+const MAX_EVALUATIONS: usize = 100_000;
 
 fn compile(pattern: &str) -> Regex {
     // Every pattern given is a fixed one of this file, run by its tests.
@@ -78,7 +81,13 @@ pub fn render(text: &str, ctx: &mut MacroContext<'_>) -> String {
         return text.to_string();
     }
     let rng = ctx.seed.map(StdRng::seed_from_u64);
-    Engine { ctx, picks: 0, rng }.render(text, 0, 0)
+    Engine {
+        ctx,
+        picks: 0,
+        rng,
+        evaluated: 0,
+    }
+    .render(text, 0, 0)
 }
 
 struct Engine<'e, 'a> {
@@ -87,6 +96,8 @@ struct Engine<'e, 'a> {
     picks: usize,
     /// The seeded draws (`MacroContext::seed`); none: the thread's.
     rng: Option<StdRng>,
+    /// Macros met so far in this render (`MAX_EVALUATIONS`).
+    evaluated: usize,
 }
 
 impl Engine<'_, '_> {
@@ -131,6 +142,11 @@ impl Engine<'_, '_> {
         let mut i = 0;
         while let Some(open) = text[i..].find("{{").map(|p| p + i) {
             out.push_str(&text[i..open]);
+            self.evaluated += 1;
+            if self.evaluated > MAX_EVALUATIONS {
+                out.push_str(&text[open..]);
+                return out;
+            }
             let Some(close) = matching_close(text.as_bytes(), open) else {
                 // Unbalanced: the rest is left as it is.
                 out.push_str(&text[open..]);

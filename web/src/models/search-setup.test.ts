@@ -28,14 +28,14 @@ describe("the search model", () => {
 
   test("while it downloads both say how far in whole hundredths, and the dialog cancels it", () => {
     const downloading = model("downloading", { done: 634_553_760 * 0.649 });
-    expect(lineSays(downloading)).toEqual({ says: "bge-m3 · downloading 64%", action: "Change" });
+    expect(lineSays(downloading)).toEqual({ says: "Finds characters by what they are about · downloading 64%", action: "Change" });
     expect(dialogSays(downloading)).toEqual({ state: "64%", action: "Cancel" });
   });
 
   test("ready, it says how many cards it has yet to read, and the dialog removes it", () => {
-    expect(lineSays(model("ready", { left: 12 }))).toEqual({ says: "bge-m3 · This computer · reading characters, 12 left", action: "Change" });
+    expect(lineSays(model("ready", { left: 12 }))).toEqual({ says: "Finds characters by what they are about · This computer · reading characters, 12 left", action: "Change" });
     expect(dialogSays(model("ready", { left: 12 }))).toEqual({ state: "Reading characters · 12 left", action: "Remove" });
-    expect(lineSays(model("ready"))).toEqual({ says: "bge-m3 · This computer", action: "Change" });
+    expect(lineSays(model("ready"))).toEqual({ says: "Finds characters by what they are about · This computer", action: "Change" });
     expect(dialogSays(model("ready"))).toEqual({ state: "Ready", action: "Remove" });
   });
 });

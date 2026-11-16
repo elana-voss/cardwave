@@ -67,6 +67,7 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
     /** The stretches said, heard one after another so their words keep their order. */
     let heard = Promise.resolve();
     let wrote = false;
+    let failed = false;
     const send = (said: Float32Array<ArrayBuffer>) => {
       heard = heard
         .then(() => resampled(said, rate, RATE))
@@ -77,7 +78,10 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
           put(text);
           wrote = true;
         })
-        .catch((error: unknown) => announce(wording("dictate-dictation-failed", { reason: reason(error) })));
+        .catch((error: unknown) => {
+          failed = true;
+          announce(wording("dictate-dictation-failed", { reason: reason(error) }));
+        });
     };
     taker.onaudioprocess = (event) => {
       const said = pauses.add(event.inputBuffer.getChannelData(0));
@@ -100,7 +104,7 @@ export function dictateButton(field: HTMLTextAreaElement): { node: HTMLButtonEle
       button.disabled = true;
       label(wording("dictate-writing-what-was-said"));
       void heard.then(() => {
-        if (!wrote && button.isConnected) announce(wording("dictate-nothing-was-heard"));
+        if (!wrote && !failed && button.isConnected) announce(wording("dictate-nothing-was-heard"));
         reset();
         // The model may have been removed meanwhile.
         read();

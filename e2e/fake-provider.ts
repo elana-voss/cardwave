@@ -3,7 +3,8 @@
 // the hosts the server asks when it looks for a provider's API.
 //
 // `startFakeProvider`: `models` says what its list of models is and `listed` notes the askings; a reply repeats
-// the user's last message, unless a test says what it is (`next`) or that it calls a tool (`calls`). The
+// the user's last message, unless a test says what it is (`next`), that it calls a tool (`calls`), that it fails
+// (`fail`, a status with the provider's message) or that its connection drops after the first piece (`cuts`). The
 // memory's helper (`HELPER`, crates/cw-chat/src/memory/hybrid.rs) is answered apart, without taking a scripted reply or
 // being noted in `asked`, with the reply `remembers` gives, else one that finds nothing; the picker of a chat's
 // mode (`PICKER`) with the mode `picks` names, else none; the companion's animator (`ANIMATOR`) with the moves
@@ -27,6 +28,8 @@ interface Scripted {
   step?: () => Promise<void>;
   /** Called when the server hangs up before the reply is through. */
   hungUp?: () => void;
+  /** Drop the connection after the first piece, without saying the reply is done. */
+  cut?: boolean;
 }
 
 /** A reply that waits after its first piece. */
@@ -44,6 +47,8 @@ export interface FakeProvider {
   url: string;
   /** The requests for a reply received, oldest first. */
   asked: { key: string | undefined; body: any }[];
+  /** The newest chat reply's prompt, its messages as one JSON text: the chat's titler, also in `asked`, left out. */
+  lastPrompt(): string;
   /** What the pictures were asked for with, oldest first. */
   pictured: { model: string; prompt: string }[];
   /** From now on every picture asked for is this file. */
@@ -60,6 +65,8 @@ export interface FakeProvider {
   calls(name: string, args: unknown): void;
   /** The next request fails with this status and reason. */
   fail(status: number, reason: string): void;
+  /** The next reply sends its first piece, then the connection drops. */
+  cuts(first: string): void;
   /** What the memory's helper answers every block with from now on: a PRESENT line, then FACTS and EVENTS rows. */
   remembers(reply: string): void;
   /** The mode the picker of a chat's mode answers with from now on. */
@@ -183,6 +190,7 @@ export async function startFakeProvider(): Promise<FakeProvider> {
     }
     const [first, ...rest] = reply.pieces;
     res.write(event(first));
+    if (reply.cut) return void setTimeout(() => res.destroy(), 50);
     for (const text of rest) {
       await reply.step?.();
       res.write(event(text));
@@ -194,6 +202,7 @@ export async function startFakeProvider(): Promise<FakeProvider> {
   return {
     url: `http://127.0.0.1:${(server.address() as AddressInfo).port}/v1`,
     asked,
+    lastPrompt: () => JSON.stringify(asked.findLast(({ body }) => !String(body.messages[0]?.content ?? "").startsWith("You title a chat"))?.body.messages ?? []),
     listed,
     pictured,
     paints: (file) => void (painted = file.toString("base64")),
@@ -226,6 +235,7 @@ export async function startFakeProvider(): Promise<FakeProvider> {
       return { next, release, hungUp: () => hungUp };
     },
     fail: (status, reason) => void script.push({ pieces: [reason], status }),
+    cuts: (first) => void script.push({ pieces: [first], cut: true }),
     remembers: (reply) => void (remembered = reply),
     picks: (mode) => void (picked = mode),
     animated,

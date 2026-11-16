@@ -1,8 +1,10 @@
 // A figure's still (`stillOf`): drawn once, from the front, as it stands at the start of its idle clip, when it is
 // added from a file ("Add a 3D figure"), and kept with it on the server as a PNG with a see-through ground.
 //
-// Traps: a page has few WebGL drawings at once, so the one used here is let go of at once (`forceContextLoss`).
-import { AnimationMixer, Box3, DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+// Traps: drawn by drawer.ts's renderer, WebGPU or WebGL 2; the picture is read in the task that drew it, as
+// neither keeps the frame after, and the renderer is let go of at once (`letGoOf`), as a page has few at a time.
+import { AnimationMixer, Box3, PerspectiveCamera, Scene, Vector3 } from "three";
+import { drawer, letGoOf, lit } from "./drawer";
 import { clipsFor, type Model } from "./load";
 
 /** The still's side, in pixels. */
@@ -14,10 +16,8 @@ export async function stillOf(model: Model): Promise<string> {
   if (idle) new AnimationMixer(model.root).clipAction(idle).play().getMixer().update(0);
   model.vrm?.update(0);
   const scene = new Scene();
-  scene.add(new HemisphereLight(0xffffff, 0x444444, 2.5));
-  const sun = new DirectionalLight(0xffffff, 2);
-  sun.position.set(3, 10, 5);
-  scene.add(sun, model.root);
+  lit(scene);
+  scene.add(model.root);
   model.root.updateMatrixWorld(true);
   const box = new Box3().setFromObject(model.root, true);
   const size = box.getSize(new Vector3());
@@ -31,14 +31,13 @@ export async function stillOf(model: Model): Promise<string> {
   camera.lookAt(middle);
   camera.updateProjectionMatrix();
   const canvas = document.createElement("canvas");
-  const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  const { renderer, ready } = drawer(canvas);
   try {
-    renderer.setClearColor(0x000000, 0);
     renderer.setSize(SIDE, SIDE, false);
+    await ready;
     renderer.render(scene, camera);
     return canvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "");
   } finally {
-    renderer.dispose();
-    renderer.forceContextLoss();
+    letGoOf(renderer);
   }
 }

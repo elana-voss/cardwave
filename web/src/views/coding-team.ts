@@ -1,8 +1,8 @@
-// Settings › Tools › "Coding team" (board "Coding team, settings"), at `#/settings/tools/coding`: the team (Quick,
+// Settings › Advanced › "Tools for the AI" › "Coding team" (board "Coding team, settings"), at `#/settings/tools/coding`: the team (Quick,
 // Balanced, Thorough, Custom) with the line that says what it is, the roles' models (Planner, Workers, Auditor,
 // each "Change" opening the model picker of the stored address, with Custom's count of workers and when its
 // auditor checks, each the app's select field), and the newest five tasks, each a link to its page. The team
-// has no permissions of its own: it goes by Settings › Tools. A model left unset is the chat model's for the planner and the auditor, the background model's for
+// has no permissions of its own: it goes by "Tools for the AI". A model left unset is the chat model's for the planner and the auditor, the background model's for
 // the workers (`roleModels`). Every change is the whole team, stored at once (`changeSettings`); one made in another
 // window shows at once (the event `settings`).
 import { wording } from "../language/language";
@@ -12,7 +12,7 @@ import type { CodingTeam } from "../api/generated/CodingTeam";
 import type { ProviderView } from "../api/generated/ProviderView";
 import type { TaskLine } from "../api/generated/TaskLine";
 import { shape, stateWord, teamSays, teams, verdictText } from "../chat/coding";
-import { el, group, noticeBox, oneAtATime, segmented, selectField, type View } from "../dom";
+import { crumbs, el, group, noticeBox, oneAtATime, segmented, selectField, type View } from "../dom";
 import { day } from "../format";
 import { icon } from "../icons";
 import { models } from "../models/provider-form";
@@ -44,7 +44,7 @@ export function codingTeamView(): View {
   const node = el(
     "section",
     { className: "main g-24 coding-team" },
-    el("header", { className: "page-head" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-coding-team")))),
+    el("header", { className: "page-head" }, crumbs([wording("page-settings"), "#/settings"], [wording("page-advanced"), "#/settings/advanced"], wording("page-coding-team"))),
     groups,
   );
   let team: CodingTeam | null = null;

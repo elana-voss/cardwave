@@ -1,7 +1,8 @@
 // Runs the desktop app for a test: built fresh, on a scratch folder with a
 // throwaway database key, and driven through tauri-driver (WebDriver).
 //
-// It is the only way a test starts the desktop app, on a scratch folder given in `CARDWAVE_DATA_DIR`. `npm
+// It is the only way a test starts the desktop app (this folder's debug build, or a given program such as the
+// installed one), on a scratch folder given in `CARDWAVE_DATA_DIR`, which `restart` keeps with its key. `npm
 // run test:desktop` needs `tauri-driver` and an `msedgedriver` of the same version as the installed WebView2,
 // which updates itself: compare `msedgedriver --version` with `reg query
 // "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /v pv`; a
@@ -55,6 +56,13 @@ export async function until<T>(what: string, ask: () => Promise<T | null | undef
   throw new Error(`waited ${ms} ms for ${what}${last ? `: ${last}` : ""}`);
 }
 
+/** What the app is started as: its program, else this folder's debug build (built first); and, for a restart, its folder and key. */
+export interface Start {
+  exe?: string;
+  scratch?: string;
+  key?: string;
+}
+
 /** The running app: its window, and the scratch folder all of it is kept in. */
 export class Desktop {
   readonly scratch: string;
@@ -62,39 +70,46 @@ export class Desktop {
   readonly data: string;
   /** Where the window saves files. */
   readonly downloads: string;
+  private readonly exe: string;
+  private readonly key: string;
   private readonly driver: ChildProcess;
   private readonly session: string;
 
-  private constructor(scratch: string, driver: ChildProcess, session: string) {
+  private constructor(exe: string, scratch: string, key: string, driver: ChildProcess, session: string) {
+    this.exe = exe;
     this.scratch = scratch;
+    this.key = key;
     this.driver = driver;
     this.session = session;
     this.data = join(scratch, "data");
     this.downloads = join(scratch, "downloads");
   }
 
-  /** Builds the UI and the app, and starts the app on a new scratch folder. */
-  static async start(): Promise<Desktop> {
-    for (const [command, args] of [
-      ["npm", ["--prefix", "web", "run", "build"]],
-      ["cargo", ["build", "-p", "cardwave-desktop"]],
-    ] as const) {
+  /** Starts the app (`given.exe`, else the UI and the app built first) on a new scratch folder, or on `given.scratch` with its `key`. */
+  static async start(given: Start = {}): Promise<Desktop> {
+    for (const [command, args] of given.exe
+      ? []
+      : ([
+          ["npm", ["--prefix", "web", "run", "build"]],
+          ["cargo", ["build", "-p", "cardwave-desktop"]],
+        ] as const)) {
       const built = spawnSync(command, args, { cwd: root, stdio: "inherit", shell: command === "npm" });
       if (built.status !== 0) throw new Error(`${command} ${args.join(" ")} failed`);
     }
-    const exe = join(process.env.CARGO_TARGET_DIR ?? join(root, "target"), "debug", "cardwave.exe");
+    const exe = given.exe ?? join(process.env.CARGO_TARGET_DIR ?? join(root, "target"), "debug", "cardwave.exe");
     // A driver left over from a run that was cut short would answer in place of
     // the new one, with that run's folder and key.
     if (await call("GET", "/status").then(() => true, () => false)) {
       throw new Error(`port ${PORT} is in use: end the tauri-driver of an earlier run first`);
     }
 
-    const scratch = join(tmpdir(), `cardwave-desktop-test-${process.pid}`);
-    rmSync(scratch, { recursive: true, force: true });
+    const scratch = given.scratch ?? join(tmpdir(), `cardwave-desktop-test-${process.pid}`);
+    if (!given.scratch) rmSync(scratch, { recursive: true, force: true });
     mkdirSync(join(scratch, "downloads"), { recursive: true });
     // The app takes its folder and key from here, and so never opens the user's
     // own data. Should it ever look there all the same, this key does not fit.
-    const env = { ...process.env, CARDWAVE_DATA_DIR: scratch, CARDWAVE_DB_KEY: randomBytes(32).toString("hex"), CARDWAVE_USER: "local" };
+    const key = given.key ?? randomBytes(32).toString("hex");
+    const env = { ...process.env, CARDWAVE_DATA_DIR: scratch, CARDWAVE_DB_KEY: key, CARDWAVE_USER: "local" };
     const driver = spawn("tauri-driver", ["--port", String(PORT), "--native-port", String(NATIVE_PORT)], { env, stdio: ["ignore", "inherit", "inherit"] });
     let failed: Error | undefined;
     driver.on("error", (error) => (failed = new Error(`cannot start tauri-driver (is it installed and on PATH?): ${error.message}`)));
@@ -107,7 +122,7 @@ export class Desktop {
       });
       const capabilities = { alwaysMatch: { browserName: "wry", "tauri:options": { application: exe } } };
       const { sessionId } = await call<{ sessionId: string }>("POST", "/session", { capabilities });
-      const desktop = new Desktop(scratch, driver, sessionId);
+      const desktop = new Desktop(exe, scratch, key, driver, sessionId);
       // Files are saved without asking, into the scratch folder and not the user's Downloads.
       await desktop.send("POST", "/ms/cdp/execute", {
         cmd: "Browser.setDownloadBehavior",
@@ -124,23 +139,42 @@ export class Desktop {
     return call<T>(method, `/session/${this.session}${path}`, body);
   }
 
-  /** Closes the app and removes its scratch folder. */
-  async close(): Promise<void> {
+  /** Closes the app and removes its scratch folder, unless it is `kept`. */
+  async close(kept = false): Promise<void> {
+    // The session may be gone with its window already; the driver is ended either way.
     await this.send("DELETE", "").catch(() => {});
-    stop(this.driver, this.scratch);
+    stop(this.driver, kept ? undefined : this.scratch);
   }
 
-  /** The first element that matches, once there is one. */
-  find(css: string): Promise<Element> {
-    return until(css, async () => (await this.send<Record<string, string>>("POST", "/element", { using: "css selector", value: css }))[ELEMENT]);
+  /** Closes the app and starts it again on the same folder and key, as the user opens it again. */
+  async restart(): Promise<Desktop> {
+    await this.close(true);
+    return Desktop.start({ exe: this.exe, scratch: this.scratch, key: this.key });
   }
 
-  /** The first element of this kind with exactly this text, once there is one. */
+  /**
+   * The first shown element that matches, once there is one; with `hidden`, the first at all (a file field, which
+   * the page never shows). A screen keeps parts it does not show (first run's steps, a switch's other side, the
+   * narrow window's bar) with the same texts and addresses; a click on one of those is "not interactable", so the
+   * first shown one is taken, as Playwright's getByRole does.
+   */
+  find(css: string, hidden = false): Promise<Element> {
+    return until(css, () => this.shown({ using: "css selector", value: css }, hidden));
+  }
+
+  /** The first shown element of this kind with exactly this text, once there is one (`find` says why shown). */
   findText(tag: string, text: string): Promise<Element> {
     // XPath has no escapes: a text with a double quote in it is put together from its parts.
     const quoted = text.includes('"') ? `concat(${text.split('"').map((part) => `"${part}"`).join(`, '"', `)})` : `"${text}"`;
     const value = `//${tag}[normalize-space()=${quoted}]`;
-    return until(`${tag} “${text}”`, async () => (await this.send<Record<string, string>>("POST", "/element", { using: "xpath", value }))[ELEMENT]);
+    return until(`${tag} “${text}”`, () => this.shown({ using: "xpath", value }));
+  }
+
+  /** The first element the query finds that is shown, or with `hidden` the first at all. */
+  private async shown(query: { using: string; value: string }, hidden = false): Promise<Element | undefined> {
+    const all = await this.send<Record<string, string>[]>("POST", "/elements", query);
+    for (const one of all) if (hidden || (await this.send<boolean>("GET", `/element/${one[ELEMENT]}/displayed`))) return one[ELEMENT];
+    return undefined;
   }
 
   text(element: Element): Promise<string> {
@@ -203,8 +237,8 @@ export class Desktop {
   }
 }
 
-/** Ends tauri-driver with the driver and app it started, then removes the scratch folder. */
-function stop(driver: ChildProcess, scratch: string): void {
+/** Ends tauri-driver with the driver and app it started, then removes the scratch folder, where one is named. */
+function stop(driver: ChildProcess, scratch?: string): void {
   if (driver.pid) spawnSync("taskkill", ["/pid", String(driver.pid), "/T", "/F"], { stdio: "ignore" });
-  if (existsSync(scratch)) rmSync(scratch, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
+  if (scratch && existsSync(scratch)) rmSync(scratch, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
 }

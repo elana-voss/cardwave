@@ -38,6 +38,8 @@ test("a text's tag says its modes, and a change of the card's modes is made in i
   } as unknown as CardEdit;
   renameMode(edit, "roleplay", " Story ");
   expect([edit.modes, scene.modes, both.modes, greeting.modes, edit.characters[0].depth_prompts[0].modes]).toEqual([["Story", "Assistant"], ["Story"], ["Story", "Assistant"], ["Story"], ["Story"]]);
+  // The server is told what was renamed, for the texts the page does not hold (another language's).
+  expect(edit.renamed).toEqual([["roleplay", "Story"]]);
   firstMode(edit, "assistant");
   expect(edit.modes).toEqual(["Assistant", "Story"]);
   removeMode(edit, "Story");

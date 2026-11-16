@@ -88,9 +88,8 @@ impl Storage for Db {
         let mut voices: Vec<CharacterVoice> = rows
             .into_iter()
             .map(|(card_id, names, title, voice)| {
-                let names: Vec<String> = names
-                    .and_then(|names| serde_json::from_str(&names).ok())
-                    .unwrap_or_default();
+                let names: Vec<String> =
+                    crate::json::or_none(names.as_deref(), "a card's names").unwrap_or_default();
                 CharacterVoice {
                     card_id,
                     name: names.into_iter().next().unwrap_or_else(|| title.clone()),

@@ -9,15 +9,6 @@ use common::server::start;
 use cw_library::generator::{self, GeneratorPicks};
 use serde_json::{Value, json};
 
-/// The picks of a woman in her thirties, quite shy, somewhat playful, a rival.
-fn picks(name: &str) -> Value {
-    json!({
-        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
-        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
-        "relationship": "Rival", "name": name, "creator": "local",
-    })
-}
-
 /// A server whose chat model is a stand-in answering `answer`, and whose
 /// background model is `small-1`.
 async fn model(answer: &str) -> (common::server::Server, Api) {
@@ -37,7 +28,7 @@ const ANSWER: &str = r#"Here it is: {"greeting": "*{{char}} smirks.* You again, 
 
 #[test]
 fn the_picks_are_composed_into_the_cards_texts() {
-    let picks: GeneratorPicks = serde_json::from_value(picks("Mara")).unwrap();
+    let picks: GeneratorPicks = serde_json::from_value(common::generator_picks("Mara")).unwrap();
     let never = |_: usize| -> usize { unreachable!("every look is picked") };
     assert_eq!(
         generator::description(&picks.looks(never)),
@@ -93,7 +84,9 @@ fn each_look_left_any_is_picked_and_the_others_kept() {
 #[tokio::test]
 async fn the_chat_model_writes_the_greeting_and_examples_and_the_card_is_made() {
     let (server, api) = model(ANSWER).await;
-    let (status, made) = server.post("/api/generator", picks("Mara Vell")).await;
+    let (status, made) = server
+        .post("/api/generator", common::generator_picks("Mara Vell"))
+        .await;
     assert_eq!(status, 201, "{made}");
     assert_eq!(made["title"], "Mara Vell");
 
@@ -135,7 +128,9 @@ async fn the_chat_model_writes_the_greeting_and_examples_and_the_card_is_made() 
 #[tokio::test]
 async fn an_answer_without_examples_makes_no_card() {
     let (server, _api) = model(r#"{"greeting": "Hello, {{user}}.", "examples": []}"#).await;
-    let (status, answer) = server.post("/api/generator", picks("Nobody Made")).await;
+    let (status, answer) = server
+        .post("/api/generator", common::generator_picks("Nobody Made"))
+        .await;
     assert_eq!(status, 400, "{answer}");
     assert!(
         answer.to_string().contains("no example messages"),
@@ -148,10 +143,17 @@ async fn an_answer_without_examples_makes_no_card() {
 #[tokio::test]
 async fn without_a_name_or_a_provider_nothing_is_asked() {
     let (server, api) = model(ANSWER).await;
-    let (status, _) = server.post("/api/generator", picks("  ")).await;
+    let (status, _) = server
+        .post("/api/generator", common::generator_picks("  "))
+        .await;
     assert_eq!(status, 400);
     assert!(api.asked().is_empty());
 
     let bare = start().await;
-    assert_eq!(bare.post("/api/generator", picks("Mara")).await.0, 424);
+    assert_eq!(
+        bare.post("/api/generator", common::generator_picks("Mara"))
+            .await
+            .0,
+        424
+    );
 }

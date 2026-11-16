@@ -33,8 +33,18 @@ use crate::{assistant, chats, memory};
 mod live;
 pub use live::{AppScreen, ChatShown, CompanionAct, CompanionFigure, CompanionState, Point, Said};
 
-/// The animator's question; a test's stand-in for the provider tells it by its first words.
+/// The animator's question, its `{clips}` the names of `Clip::ALL` (`animator`); a test's stand-in for the provider
+/// tells it by its first words.
 pub const ANIMATE: &str = include_str!("companion/animate.txt");
+/// `ANIMATE` with the clips' names, each once.
+fn animator() -> String {
+    let names: Vec<String> = Clip::ALL
+        .iter()
+        .filter_map(|clip| serde_json::to_value(clip).ok()?.as_str().map(str::to_owned))
+        .collect();
+    ANIMATE.replace("{clips}", &names.join(", "))
+}
+
 /// The newest messages the animator reads.
 const NEWEST: usize = 4;
 /// The longest a message is shown to it, in characters.
@@ -197,35 +207,126 @@ pub enum Edge {
     Right,
 }
 
-/// The clips the figure has (tools/companion_assets.py); a figure without one
-/// plays the nearest it has.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
-#[serde(rename_all = "snake_case")]
-#[ts(export)]
-pub enum Clip {
+/// Writes `Clip` and `Clip::ALL` from one list of its variants.
+macro_rules! clips {
+    ($($clip:ident,)*) => {
+        /// The clips the companion plays by name (tools/companion_assets.py:
+        /// the owner's 100); a figure without one plays none.
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+        #[serde(rename_all = "snake_case")]
+        #[ts(export)]
+        pub enum Clip {
+            $($clip,)*
+        }
+
+        impl Clip {
+            /// Every clip, in the order the animator is told them.
+            pub const ALL: &[Clip] = &[$(Clip::$clip,)*];
+        }
+    };
+}
+
+clips! {
+    Acknowledging,
+    Agreeing,
+    Angry,
+    ArmStretching,
+    Bashful,
+    BeingCocky,
+    Bellydancing,
+    BlowAKiss,
+    Bored,
+    BracedHangShimmy,
+    BreathingIdle,
+    CanCan,
+    Cheering,
+    ChickenDance,
+    Clapping,
+    ClimbingDownWall,
+    ClimbingUpWall,
+    Crying,
+    Dancing,
+    Defeat,
+    Disappointed,
+    DismissingGesture,
+    Excited,
+    FallLanding,
+    FallLoop,
+    FallingDown,
+    FallingIdle,
+    FreehangClimb,
+    FreehangDrop,
+    GettingUp,
+    HandRaising,
+    HangingIdle,
+    Happy,
+    HappyIdle,
+    HappyWalk,
+    HardLanding,
+    HeadNodYes,
+    HipHopDancing,
     Idle,
-    IdleShift,
-    Stretch,
-    Thinking,
-    Listening,
-    Talking,
-    Walk,
-    SitDown,
-    Sitting,
-    StandUp,
-    Lying,
-    GetUp,
-    Wave,
-    Nod,
-    No,
+    JoyfulJump,
     Jump,
-    Dance,
-    Hanging,
-    Climbing,
-    Startled,
-    Falling,
-    Shaken,
-    Landing,
+    Laughing,
+    LayingIdle,
+    LayingSleeping,
+    Leaning,
+    LookAround,
+    Looking,
+    LookingAround,
+    MacarenaDance,
+    NervouslyLookAround,
+    NeutralIdle,
+    No,
+    OneShoulderLean,
+    PointingGesture,
+    Pouting,
+    QuickFormalBow,
+    QuickInformalBow,
+    Reacting,
+    RelievedSigh,
+    RunForward,
+    SadIdle,
+    SadWalk,
+    ScratchIdle,
+    SeatedIdle,
+    ShakeFist,
+    ShakingHeadNo,
+    Shrugging,
+    Shuffling,
+    SillyDancing,
+    SittingIdle,
+    SleepingIdle,
+    SnakeHipHopDance,
+    SneakWalk,
+    StandToSit,
+    StandUp,
+    StandardIdle,
+    StandingGreeting,
+    StandingThumbsUp,
+    StandingUp,
+    StartWalking,
+    StopWalking,
+    StumbleBackwards,
+    Surprised,
+    Talking,
+    TellingASecret,
+    Terrified,
+    Thankful,
+    Thinking,
+    ThoughtfulHeadNod,
+    TwistDance,
+    VictoryIdle,
+    Waking,
+    WalkBackwards,
+    Walking,
+    WaveHipHopDance,
+    Waving,
+    WeightShift,
+    WhateverGesture,
+    Yawn,
+    YmcaDance,
 }
 
 /// The feelings the figure shows (`Move::React`).
@@ -241,6 +342,10 @@ pub enum Feeling {
     Agree,
     Disagree,
     Puzzled,
+    Afraid,
+    Playful,
+    Bashful,
+    Tired,
 }
 
 /// The question to the animator about the companion's card and the chat
@@ -357,12 +462,17 @@ fn remembered(
         let mode = assistant::mode_of(&document, chat);
         let remembering =
             assistant::remembering(db, card_id, &companion.character, mode.as_deref())?;
-        let Some((owner, mode)) = remembering.owner(chat.id) else {
+        let Some((owner, mode)) = remembering.owner(chat) else {
             return Ok(String::new());
         };
         let mut read = memory::read_chat(db, user, chat, None)?;
-        if read.said.is_empty() && !matches!(owner, memory::Owner::Chat(_)) {
-            for other in listed.iter().filter(|other| other.id != chat.id) {
+        if read.said.is_empty() && !matches!(owner, memory::Owner::Chat(..)) {
+            let same_persona = |other: &&chats::Chat| other.persona_id == chat.persona_id;
+            for other in listed
+                .iter()
+                .filter(|other| other.id != chat.id)
+                .filter(same_persona)
+            {
                 let other = memory::read_chat(db, user, other, None)?;
                 if !other.said.is_empty() {
                     read = other;
@@ -507,7 +617,7 @@ pub async fn plan(
     plan: &CompanionPlan,
 ) -> anyhow::Result<Vec<Move>> {
     let prompt = [
-        PromptMessage::new(Role::System, ANIMATE),
+        PromptMessage::new(Role::System, animator()),
         PromptMessage::new(Role::User, question),
     ];
     let text = answer(http, provider, &prompt).await?;
@@ -561,5 +671,28 @@ pub fn held(step: Move, width: f64, height: f64) -> Move {
             text: text.trim().chars().take(SAY_LIMIT).collect(),
         },
         other => other,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_animator_is_told_every_clip_once() {
+        let told = animator();
+        assert!(!told.contains("{clips}"));
+        let list = told
+            .split("one of: ")
+            .nth(1)
+            .unwrap()
+            .split(';')
+            .next()
+            .unwrap();
+        let names: Vec<&str> = list.split(", ").collect();
+        assert_eq!(names.len(), 100);
+        for (clip, name) in Clip::ALL.iter().zip(names) {
+            assert_eq!(serde_json::to_value(clip).unwrap(), name);
+        }
     }
 }

@@ -37,6 +37,16 @@ names: Array<string>,
  */
 tags: Array<string>, 
 /**
+ * What a line of the library shows as its tags: the user's own and the file's, each once, without the
+ * classifier's terms, which stay for search and By need.
+ */
+own_tags: Array<string>, 
+/**
+ * The content level the classifier gave ("sfw", "suggestive", "nsfw", "nsfw-extreme"); empty until the
+ * card is described.
+ */
+rating: string, 
+/**
  * The card's logline once it is described, until then the start of the
  * first greeting, as plain text.
  */

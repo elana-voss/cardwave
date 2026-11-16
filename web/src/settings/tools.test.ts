@@ -1,4 +1,4 @@
-// The lines of the settings' group Tools.
+// The lines of the settings' group Tools (Web) and of Advanced's "Tools for the AI" (the rest).
 import { expect, test } from "vitest";
 import { toolLines, writtenSays } from "./tools";
 
@@ -6,19 +6,18 @@ const none = { web: false, files: false, ask_writes: true, commands: false, ask_
 
 test("files and commands are this computer's account's, need a folder, and ask while they are on", () => {
   const labels = (lines: { label: string }[]) => lines.map(({ label }) => label);
-  expect(labels(toolLines(none, false, true))).toEqual(["Web", "Image generation", "Cardwave", "Dice"]);
-  const bare = toolLines(none, true, false);
+  expect(labels(toolLines(none, true, true, "web"))).toEqual(["Web"]);
+  expect(labels(toolLines(none, false, true, "ai"))).toEqual(["Image generation", "Cardwave", "Dice"]);
+  const bare = toolLines(none, true, false, "ai");
   expect(bare.map(({ label, says, off }) => [label, says, off])).toEqual([
-    ["Web", "Search and read web pages", false],
     ["Files", "Choose a folder first", true],
     ["Commands", "Choose a folder first", true],
     ["Image generation", "Set up the image model first", true],
     ["Cardwave", "Use and change your characters, chats and settings; each change asked first", false],
     ["Dice", "Lets the AI roll dice; Cardwave rolls them, so the result is fair.", false],
   ]);
-  const on = toolLines({ ...none, files: true, commands: true, folder: "D:\Shared" }, true, true);
+  const on = toolLines({ ...none, files: true, commands: true, folder: "D:\Shared" }, true, true, "ai");
   expect(on.map(({ label, says, off }) => [label, says, off])).toEqual([
-    ["Web", "Search and read web pages", false],
     ["Files", "D:\Shared only", false],
     ["Ask before writing", "Each file is shown to you before it is written", false],
     ["Commands", "Run in D:\Shared, shut off from the rest of the computer and the internet", false],

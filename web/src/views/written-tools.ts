@@ -1,9 +1,9 @@
-// Settings › Tools › "Tools the AI wrote" (code mode, board "Tools the AI wrote"): the switch "Ask before a
+// Settings › Advanced › "Tools for the AI" › "Tools the AI wrote" (code mode, board "Tools the AI wrote"): the switch "Ask before a
 // new tool runs" (the setting `ask_new_tools`, which has a tool shown in the chat before it is kept), then a row
 // per tool the model wrote, the newest first: a box with the code drawing, its name in words (`spoken`), what it does and
 // where and when it was made (`about`), its switch and "…", always shown (View code, Delete with Undo).
 //
-// At `#/settings/tools/written`, with the path "Settings / Tools the AI wrote". A press on a row (its name is
+// At `#/settings/tools/written`, with the path "Settings / Advanced / Tools the AI wrote". A press on a row (its name is
 // the button that reaches over it, `.row-link`) or "View code" opens the panel from the right (`sheet`), the row filled meanwhile: what it
 // does, where it was made and how often it ran (`used`), its code, and "Switch off" (or on) and Delete. A switch
 // cannot be pressed while its change is on its way. A tool made in a chat meanwhile shows when the page is opened
@@ -11,7 +11,7 @@
 import { wording } from "../language/language";
 import { changeSettings, deleteWrittenTool, getSettings, listWrittenTools, restoreWrittenTool, switchWrittenTool } from "../api/client";
 import type { WrittenTool } from "../api/generated/WrittenTool";
-import { announce, el, item, noticeBox, oneAtATime, switchBox, type View } from "../dom";
+import { announce, crumbs, el, item, noticeBox, oneAtATime, switchBox, type View } from "../dom";
 import { chatTitle } from "../chat-title";
 import { menu, sheet } from "../dialogs";
 import { day, spoken } from "../format";
@@ -83,7 +83,7 @@ export function writtenToolsView(): View {
   const node = el(
     "section",
     { className: "main g-24" },
-    el("header", { className: "page-head" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-written-tools")))),
+    el("header", { className: "page-head" }, crumbs([wording("page-settings"), "#/settings"], [wording("page-advanced"), "#/settings/advanced"], wording("page-written-tools"))),
     el(
       "div",
       { className: "page-col g-20" },

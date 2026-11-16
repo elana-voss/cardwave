@@ -25,14 +25,14 @@ describe("a plan of the animator's", () => {
     const body = new Body(AREA, 500, AREA.height);
     const plan = new Plan([
       { do: "walk", x: 350 },
-      { do: "play", clip: "wave" },
+      { do: "play", clip: "waving" },
       { do: "wait", ms: 1000 },
       { do: "climb", side: "left", height: 0.4 },
       { do: "let_go" },
     ]);
     expect(run(plan, body, 0.9)).toEqual([]);
     expect(body.motion.kind).toBe("walk");
-    expect(run(plan, body, 0.3)).toEqual(["wave"]);
+    expect(run(plan, body, 0.3)).toEqual(["waving"]);
     expect(body.x).toBe(350);
     run(plan, body, 1.5);
     // Still waiting: no climb yet.
@@ -46,8 +46,8 @@ describe("a plan of the animator's", () => {
 
   it("leaves out walking and climbing while the figure sits still, and plays the rest", () => {
     const body = new Body(AREA, 500, AREA.height);
-    const plan = new Plan([{ do: "walk", x: 100 }, { do: "climb", side: "right", height: 1 }, { do: "play", clip: "nod" }]);
-    expect(run(plan, body, 2, true)).toEqual(["nod"]);
+    const plan = new Plan([{ do: "walk", x: 100 }, { do: "climb", side: "right", height: 1 }, { do: "play", clip: "head_nod_yes" }]);
+    expect(run(plan, body, 2, true)).toEqual(["head_nod_yes"]);
     expect(body.x).toBe(500);
     expect(plan.done).toBe(true);
   });

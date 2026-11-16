@@ -33,6 +33,14 @@ export const choosing = (touch = TOUCH.matches) =>
 
 const cameFrom = (): Record<CardPicture["source"], string> => ({ imported: wording("importing-imported"), file: wording("card-picture-from-a-file"), made: wording("card-picture-made") });
 
+/** The card has just been made while its picture is drawn: "Make a picture" opens to a click, without drawing the page anew. */
+export function pictureMade(hero: ParentNode): void {
+  for (const button of hero.querySelectorAll<HTMLButtonElement>(".make-wait")) {
+    button.disabled = false;
+    button.removeAttribute("title");
+  }
+}
+
 /** The card's picture, with what changes it. */
 export function heroPicture(c: Card): HTMLElement {
   const card = c.detail?.card;
@@ -46,10 +54,10 @@ export function heroPicture(c: Card): HTMLElement {
   const made = c.id !== null;
   // Grey until the card is made, and why.
   const waits = made ? undefined : wording("card-picture-name-first");
-  const make = el("button", { type: "button", className: "rbtn", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
+  const make = el("button", { type: "button", className: "rbtn make-wait", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
   // A card not made yet has had no other picture; a made one offers them once it is known to have had one.
   const earlier = made && el("button", { type: "button", className: "rbtn", hidden: true, onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
-  const blankMake = el("button", { type: "button", className: "btn btn-secondary on-box", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
+  const blankMake = el("button", { type: "button", className: "btn btn-secondary on-box make-wait", disabled: !made, title: waits, onclick: () => void makeDialog(c) }, icon("picture", 16), wording("card-picture-make-a-picture"));
   // A card made that shows none may have had pictures: they are brought back as from a picture (Claude).
   const blankEarlier = made && el("button", { type: "button", className: "btn btn-secondary on-box", hidden: true, onclick: () => void earlierDialog(c) }, icon("clock", 16), wording("card-picture-earlier-pictures"));
   node.append(

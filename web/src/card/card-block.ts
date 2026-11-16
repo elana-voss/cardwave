@@ -50,6 +50,8 @@ export interface CardPage<T = CardEdit> {
   context?(): CardContext;
   /** The names `{{char}}` and `{{user}}` read as; none, they show as written. */
   names?(): Names;
+  /** A text's tooltip while not written in ("Click to edit", `InPlace.hint`): the card page's alone. */
+  hint?(): string;
 }
 
 /** What a text's AI tool asks of the server, alone as within the whole card's tools (card-tools.ts), so the two agree. */
@@ -183,6 +185,7 @@ export function textBlock<T = CardEdit>(page: CardPage<T>, spec: BlockSpec<T>): 
   const start = inPlace(content, {
     label: spec.label,
     multiline: true,
+    hint: page.hint?.(),
     value: b.now,
     show: b.show,
     input: spec.input,

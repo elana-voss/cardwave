@@ -11,7 +11,6 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
 
-use cw_core::{Code, Fail};
 use sha2::{Digest, Sha256};
 
 /// What the sessions need of the database, which `cw_store::sessions` gives.
@@ -41,11 +40,7 @@ pub fn key(token: &str) -> Vec<u8> {
 
 /// Eight bytes of chance in hex.
 fn chance() -> anyhow::Result<String> {
-    let mut bytes = [0u8; 8];
-    getrandom::fill(&mut bytes).map_err(|e| {
-        anyhow::anyhow!(Fail::said(Code::Internal, format!("no random source: {e}")))
-    })?;
-    Ok(bytes.iter().map(|b| format!("{b:02x}")).collect())
+    cw_key::random_hex(8)
 }
 
 impl Sessions {
@@ -77,11 +72,7 @@ impl Sessions {
 
     /// A new session of `user`: its token.
     pub fn start(&self, db: &dyn Storage, user: i64) -> anyhow::Result<String> {
-        let mut bytes = [0u8; 32];
-        getrandom::fill(&mut bytes).map_err(|e| {
-            anyhow::anyhow!(Fail::said(Code::Internal, format!("no random source: {e}")))
-        })?;
-        let token: String = bytes.iter().map(|b| format!("{b:02x}")).collect();
+        let token = cw_key::random_hex(32)?;
         let key = key(&token);
         db.add_session(&key, user)?;
         self.held().insert(key, user);
@@ -118,8 +109,9 @@ impl Sessions {
     /// Ends every session, of all accounts, and keeps this server's mark: a
     /// restored backup's sessions and mark are not this server's.
     pub fn end_every(&self, db: &dyn Storage) -> anyhow::Result<()> {
-        db.remove_every_session()?;
+        // Ended in memory first, which every request asks, whatever the database comes to.
         self.held().clear();
+        db.remove_every_session()?;
         let mark = self.cookie.trim_start_matches("cardwave_");
         db.set_server_mark(mark)
     }

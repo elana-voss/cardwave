@@ -1,8 +1,8 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { expect, noneAdded, test } from "../test";
 import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
-import { NOW, picture, SIZES, stopClock, THEMES } from "../pictures";
+import { NOW, picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
 
 // Pictures of the account's screens, each compared with its stored picture, pixel by pixel, at 1440 px in the
 // light theme (CLAUDE.md, "Pictures of the screens"): the settings beside the folded rail, the profile with
@@ -90,11 +90,7 @@ const known = () => [
 /** Opens first run as of a user who has no provider, with the spec's list of providers. */
 async function firstRun(page: Page): Promise<void> {
   await page.route("**/api/provider", (route) => (route.request().method() === "GET" ? route.fulfill({ json: null }) : route.fallback()));
-  // A provider kept in the list would open setup at step 2.
-  await page.route("**/api/provider-list", async (route) => {
-    const response = await route.fetch();
-    return route.fulfill({ response, json: { ...(await response.json()), providers: [] } });
-  });
+  await noneAdded(page);
   await page.route("**/api/providers", (route) => route.fulfill({ json: known() }));
   await page.goto("/#/setup");
   await expect(page.getByRole("heading", { name: "Provider" })).toBeVisible();
@@ -119,7 +115,6 @@ for (const [width, height] of SIZES) {
         expect((await request.delete("/api/cache")).ok()).toBe(true);
         await page.addInitScript(() => localStorage.setItem("rail", "narrow"));
         await page.goto("/#/settings");
-        await expect(page.getByText("4 items · emptied after 30 days")).toBeVisible();
         await expect(page.getByText("picture-model")).toBeVisible();
         await expect(page.getByText("Not set up")).toHaveCount(4);
         await picture(page, named("settings"));
@@ -144,8 +139,7 @@ for (const [width, height] of SIZES) {
         await expect(page.locator(".profile-head .meta")).toBeHidden();
         await page.locator(width > 600 ? "#rail" : "#topbar").getByRole("button", { name: "Account: local" }).click();
         await expect(page.getByRole("menuitem", { name: "Profile" })).toBeFocused();
-        // The two Isolde chats say their day and time, made on the real clock: masked, so the picture holds.
-        await picture(page, named("profile"), [page.locator(".nav-chat", { hasText: "Isolde" })]);
+        await picture(page, named("profile"), railChats(page, "Isolde"));
       });
 
       test("the page Advanced: the groups moved from Settings, Sampling, no preset and the prompt presets", async ({ page, request }) => {

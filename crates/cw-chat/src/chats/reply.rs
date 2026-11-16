@@ -15,7 +15,7 @@ use anyhow::ensure;
 use chrono::{DateTime, FixedOffset, Local};
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
-use cw_prompt::builder::{self, PromptRequest};
+use cw_prompt::builder::{self, LeftOut, PromptRequest};
 use cw_prompt::{ChatMessage, PromptMessage, Role, Variables};
 use cw_provider::{self as provider, Provider, Sampling};
 
@@ -103,23 +103,27 @@ pub fn continue_prompt(
     Ok(whole(built)?.messages)
 }
 
-/// Refuses a prompt that left out the character (the system message) as it
-/// is longer than the chat model reads: a reply without it would be no
-/// longer the character's, and nothing would tell the user why.
+/// Refuses a prompt that left out the character (the system message), the
+/// instruction asked with it or the newest message as it is longer than the
+/// chat model reads: a reply without it would be no longer the character's
+/// or to the point, and nothing would tell the user why.
 fn whole(built: builder::BuiltPrompt) -> anyhow::Result<builder::BuiltPrompt> {
-    if let Some(tokens) = built.system_left_out {
-        let needed = tokens + built.breakdown.reserved_reply;
-        let context = built.breakdown.context_size;
-        return Err(Fail::said(
-            Code::TooBig,
-            format!("the character is longer than the chat model reads (about {needed} tokens of {context})"),
-        )
-        .with("what", "card_for_chat")
-        .with("needed", needed.to_string())
-        .with("context", context.to_string())
-        .into());
-    }
-    Ok(built)
+    let (what, said, needed) = match built.left_out {
+        None => return Ok(built),
+        Some(LeftOut::System(needed) | LeftOut::Injected(needed)) => {
+            ("card_for_chat", "the character", needed)
+        }
+        Some(LeftOut::Newest(needed)) => ("message_for_chat", "the message", needed),
+    };
+    let context = built.breakdown.context_size;
+    Err(Fail::said(
+        Code::TooBig,
+        format!("{said} is longer than the chat model reads (about {needed} tokens of {context})"),
+    )
+    .with("what", what)
+    .with("needed", needed.to_string())
+    .with("context", context.to_string())
+    .into())
 }
 
 /// How long a pause is: a user's message written this long after the one

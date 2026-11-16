@@ -9,6 +9,7 @@
 //! let in by an entry in the folder's access list that stays there (Windows
 //! shows it as an unknown account). A command ends when `stopped` is set.
 //! Trap: cmd's `dir` and `vol` read the drive's root and are refused; a refused one says `LISTING`.
+//! cmd runs only a command's first line, so one of several lines is refused.
 //! Elsewhere than on Windows the shell tool is not offered (`AVAILABLE`).
 //!
 //! The coding team's commands reach more (`Reach`): the folders of the
@@ -103,6 +104,11 @@ pub fn run_with(
     stopped: &AtomicBool,
     reach: Reach,
 ) -> anyhow::Result<Ran> {
+    // cmd ends a command at its first line break and runs only that line.
+    anyhow::ensure!(
+        !command.contains(['\n', '\r']),
+        "a command must be one line: cmd runs only its first; join the commands with && on one line"
+    );
     let mut ran = crate::tools::sandbox::windows::run(folder, command, time, stopped, reach)?;
     let reads_drive = command
         .split(|c: char| !c.is_ascii_alphanumeric())
@@ -136,7 +142,7 @@ mod windows {
     use std::path::{Path, PathBuf};
     use std::ptr::{null, null_mut};
     use std::sync::atomic::{AtomicBool, Ordering};
-    use std::sync::{Mutex, OnceLock, mpsc};
+    use std::sync::{Arc, Mutex, OnceLock, mpsc};
     use std::time::{Duration, Instant};
 
     use anyhow::{Context, bail, ensure};
@@ -144,6 +150,7 @@ mod windows {
         ERROR_ALREADY_EXISTS, HANDLE, HANDLE_FLAG_INHERIT, LocalFree, SetHandleInformation,
         WAIT_TIMEOUT,
     };
+    use windows_sys::Win32::Globalization::{CP_OEMCP, MultiByteToWideChar};
     use windows_sys::Win32::Security::Authorization::{
         ConvertSidToStringSidW, ConvertStringSidToSidW,
     };
@@ -861,21 +868,19 @@ mod windows {
     fn wait(
         child: &OwnedHandle,
         job: &OwnedHandle,
-        mut reader: PipeReader,
+        reader: PipeReader,
         time: Duration,
         stopped: &AtomicBool,
     ) -> Ran {
         // The output comes in pieces, read on a thread of its own. Another
         // program the server starts meanwhile may hold the pipe open, so its
         // end is waited for only a moment once the command's processes are gone.
-        let (pieces, read) = mpsc::channel();
+        let kept = Arc::new(Mutex::new(Vec::new()));
+        let (done, read) = mpsc::channel::<()>();
+        let reading = Arc::clone(&kept);
         std::thread::spawn(move || {
-            let mut piece = [0u8; 8192];
-            while let Ok(count) = reader.read(&mut piece) {
-                if count == 0 || pieces.send(piece[..count].to_vec()).is_err() {
-                    break;
-                }
-            }
+            keep(reader, &reading);
+            drop(done);
         });
         let until = Instant::now() + time;
         // SAFETY: the handles are the process's and its job's, alive here.
@@ -894,15 +899,57 @@ mod windows {
             TerminateJobObject(job.as_raw_handle() as HANDLE, 1);
             ended.then_some(code)
         };
-        let last = Instant::now() + LAST_OUTPUT;
-        let mut output = Vec::new();
-        while let Ok(piece) = read.recv_timeout(last.saturating_duration_since(Instant::now())) {
-            let room = OUTPUT_LIMIT - output.len();
-            output.extend_from_slice(&piece[..piece.len().min(room)]);
-        }
+        // Ignored: the reading ended (the sender dropped) or its time ran out;
+        // either way the output is what was read by then.
+        let _ = read.recv_timeout(LAST_OUTPUT);
+        let output = std::mem::take(&mut *cw_core::lock(&kept));
         Ran {
-            output: String::from_utf8_lossy(&output).into_owned(),
+            output: text(&output),
             code,
+        }
+    }
+
+    /// Reads `reader` to its end into `kept`, keeping its first
+    /// `OUTPUT_LIMIT` bytes and throwing the rest away, so a command that
+    /// prints without end costs the server no memory.
+    pub(super) fn keep(mut reader: impl Read, kept: &Mutex<Vec<u8>>) {
+        let mut piece = [0u8; 8192];
+        while let Ok(count) = reader.read(&mut piece) {
+            if count == 0 {
+                break;
+            }
+            let mut kept = cw_core::lock(kept);
+            let room = OUTPUT_LIMIT - kept.len();
+            kept.extend_from_slice(&piece[..count.min(room)]);
+        }
+    }
+
+    /// A command's output as text: UTF-8 where it is (cut at its end or not),
+    /// else in the OEM code page, which cmd writes a pipe in (chcp in the
+    /// command changes it only for the programs it starts).
+    fn text(output: &[u8]) -> String {
+        match std::str::from_utf8(output) {
+            Ok(text) => text.to_string(),
+            Err(cut) if cut.error_len().is_none() => String::from_utf8_lossy(output).into_owned(),
+            Err(_) => {
+                let length = i32::try_from(output.len()).unwrap_or(i32::MAX);
+                let mut wide = vec![0u16; output.len()];
+                // SAFETY: both buffers live through the call, with their lengths.
+                let written = unsafe {
+                    MultiByteToWideChar(
+                        CP_OEMCP,
+                        0,
+                        output.as_ptr(),
+                        length,
+                        wide.as_mut_ptr(),
+                        length,
+                    )
+                };
+                match written {
+                    0 => String::from_utf8_lossy(output).into_owned(),
+                    count => String::from_utf16_lossy(&wide[..count as usize]),
+                }
+            }
         }
     }
 
@@ -939,60 +986,4 @@ mod windows {
 }
 
 #[cfg(all(test, windows))]
-mod tests {
-    use crate::tools::sandbox::windows::{copied_for_test as copied, resolve};
-    use std::cell::Cell;
-    use std::collections::BTreeMap;
-    use std::path::{Path, PathBuf};
-
-    /// A `PATH` folder found empty is not remembered: it is looked at again, so
-    /// a program installed into it while the server runs is found without a
-    /// restart; a folder found with programs is remembered and not looked at anew.
-    #[test]
-    fn a_path_folder_found_empty_is_not_remembered() {
-        let data = Path::new(r"C:\data");
-        let mut known = BTreeMap::new();
-        let empty = PathBuf::from(r"C:\empty");
-        let full = PathBuf::from(r"C:\full");
-        let has_tool = Cell::new(false);
-        let full_looks = Cell::new(0);
-        let mut look = |folder: &Path| -> Option<(PathBuf, Vec<(String, String)>)> {
-            if folder == full {
-                full_looks.set(full_looks.get() + 1);
-                return Some((folder.to_path_buf(), Vec::new()));
-            }
-            (folder == empty && has_tool.get()).then(|| (folder.to_path_buf(), Vec::new()))
-        };
-        let folders = || [empty.clone(), full.clone()].into_iter();
-
-        // The empty folder holds no programs: not in the PATH, and not remembered.
-        let (path, _) = resolve(folders(), data, &mut known, &mut look);
-        assert_eq!(path, full.display().to_string());
-
-        // A program installed into it is found at once, without a restart.
-        has_tool.set(true);
-        let (path, _) = resolve(folders(), data, &mut known, &mut look);
-        assert_eq!(path, format!("{};{}", empty.display(), full.display()));
-
-        // The full folder was looked at once only: it was remembered.
-        assert_eq!(full_looks.get(), 1);
-    }
-
-    /// A program updated inside a subfolder of its folder is copied anew,
-    /// though the folder's own files are as they were.
-    #[test]
-    fn a_folder_of_programs_is_copied_anew_when_its_tree_changes() {
-        let folder = std::env::temp_dir().join(format!("cardwave-copy-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&folder);
-        std::fs::create_dir_all(folder.join("lib")).unwrap();
-        std::fs::write(folder.join("tool.exe"), "").unwrap();
-        std::fs::write(folder.join("lib/part.js"), "one").unwrap();
-        let copy = copied(&folder).unwrap();
-        std::fs::write(folder.join("lib/part.js"), "one, two").unwrap();
-        assert_eq!(copied(&folder).unwrap(), copy);
-        let part = std::fs::read_to_string(copy.join("lib/part.js")).unwrap();
-        let _ = std::fs::remove_dir_all(&folder);
-        let _ = std::fs::remove_dir_all(&copy);
-        assert_eq!(part, "one, two");
-    }
-}
+mod tests;

@@ -2,7 +2,7 @@
 //! that answers the askings in turn, and the stand-in's answers.
 //!
 //! `classified` is what the classifier answers of the sample card, `written` what
-//! the writer does, `done` waits until nothing waits to be described.
+//! the writer does, `done` waits until nothing waits to be described, `titled` until a card's title is the one given.
 
 use std::time::Duration;
 
@@ -95,6 +95,18 @@ pub async fn row(server: &Server, id: i64) -> Value {
         .iter()
         .find(|card| card["id"] == id);
     row.expect("the card is not listed").clone()
+}
+
+/// Waits until `id`'s title is `title`.
+pub async fn titled(server: &Server, id: i64, title: &str) {
+    until(|| async {
+        let row = row(server, id).await;
+        match row["title"] == title {
+            true => Ok(()),
+            false => Err(format!("not titled {title}: {row}")),
+        }
+    })
+    .await
 }
 
 /// The needs asker's answer of `needs`.

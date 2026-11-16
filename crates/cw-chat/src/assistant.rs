@@ -347,12 +347,13 @@ pub enum Remembering {
 }
 
 impl Remembering {
-    /// Whose memory it is in the chat `chat_id`, in which mode; none where it does not remember.
-    pub fn owner(self, chat_id: i64) -> Option<(crate::memory::Owner, crate::memory::Mode)> {
+    /// Whose memory it is in `chat` (with its persona now), in which mode; none where it does not remember.
+    pub fn owner(self, chat: &Chat) -> Option<(crate::memory::Owner, crate::memory::Mode)> {
         use crate::memory::{Mode, Owner};
+        let persona = chat.persona_id;
         match self {
-            Self::Roleplay => Some((Owner::Chat(chat_id), Mode::Roleplay)),
-            Self::Personal(personal, mode) => Some((Owner::Character(personal), mode)),
+            Self::Roleplay => Some((Owner::Chat(chat.id, persona), Mode::Roleplay)),
+            Self::Personal(personal, mode) => Some((Owner::Character(personal, persona), mode)),
             Self::Off => None,
         }
     }

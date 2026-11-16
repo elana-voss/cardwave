@@ -6,10 +6,10 @@
 mod common;
 
 use common::memory::{
-    Fake, chat, fill, memories, memory_of, passes, remembered, reply, say, setup,
+    Fake, card_in_modes, chat, chat_of, fill, memories, memory_of, passes, remembered, reply, say,
+    setup,
 };
 use common::server::{Server, start};
-use cw_ccv4::png;
 use reqwest::Method;
 use serde_json::{Value, json};
 
@@ -34,13 +34,7 @@ async fn a_character_renamed_in_its_card_keeps_what_it_knows() {
     reply(&server, &fake, &mut socket, &chat, json!({})).await;
     remembered(&mut socket).await;
 
-    let (_, view) = server.get(&chat).await;
-    let card = view["characters"][0]["card_id"].clone();
-    let path = format!("/api/cards/{card}/edit");
-    let (_, mut form) = server.get(&path).await;
-    form["characters"][0]["name"] = json!("Mirabel");
-    let (status, saved) = server.put(&path, form).await;
-    assert_eq!(status, 200, "{saved}");
+    rename_mira(&server, &chat, "Mirabel").await;
 
     assert_eq!(texts(&server).await, [json!("Mirabel lives in Saltmere")]);
     assert_eq!(memories(&server).await[0]["known_to"], json!(["mirabel"]));
@@ -165,24 +159,10 @@ async fn a_character_with_a_memory_of_two_chats_is_renamed_in_it_once() {
     let fake = Fake::start().await;
     setup(&server, &fake).await;
     // The sample card with the assistant's mode, in which the character's one memory reads both chats.
-    let mut card = common::container();
-    let modes = "[meta-info]
-modes = [\"Roleplay\", \"Assistant\"]
-";
-    card.toml[0].1 = card.toml[0].1.replacen(
-        "[meta-info]
-",
-        modes,
-        1,
-    );
-    let (_, card) = server.upload_whole(png::write(&card).unwrap()).await;
+    let card = card_in_modes(&server, &["Roleplay", "Assistant"]).await;
     let mut chats = Vec::new();
     for _ in 0..2 {
-        let new =
-            json!({ "characters": [{ "version_id": card["version_id"], "character": "mira" }] });
-        let (status, view) = server.post("/api/chats", new).await;
-        assert_eq!(status, 201, "{view}");
-        chats.push(format!("/api/chats/{}", view["chat"]["id"]));
+        chats.push(chat_of(&server, &[(&card, "mira")]).await);
     }
     let [first, second] = [&chats[0], &chats[1]];
     let mut socket = server.listen().await;

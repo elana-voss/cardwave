@@ -5,11 +5,12 @@
 // `setup_downloads`), search first, each with a bar and at its right its percent, "Waiting", or "Done" with the
 // tick; a failed one says why in red, with "Retry" in its percent's place. One downloads at a time, in the lines'
 // order (`next`); after a failure nothing starts until "Retry"; a download the server refused to start counts as
-// failed (`refused`), and so does a start it took that left it absent (`tried`). `setup_downloads` brings a start
-// back to these bars until "Open Cardwave", which opens the app at any time and is kept in the browser (`OPENED`; `firstRunLeft`); the step then goes on downloading outside
-// the screen (`following`, fed the server's events by main.ts through `downloadsHeard`), and so does a start after
-// it while the list holds any (`followDownloads`): one notice when all are there, which empties the list, and one
-// that stays with "Try again" when one fails. `read` asks the server for both states anew.
+// failed (`refused`), and so does a start it took that left it absent (`tried`). That is `downloader`, without DOM;
+// the step draws its lines. `setup_downloads` brings a start back to these bars until "Open Cardwave", which opens
+// the app at any time and is kept in the browser (`OPENED`; `firstRunLeft`); the downloader then goes on outside the
+// screen (`following`; `follower`, fed the server's events by main.ts through `downloadsHeard`), and so does one
+// made at a start after it while the list holds any (`followDownloads`): one notice when all are there, which
+// empties the list, and one that stays with "Try again" when one fails. `read` asks the server for both states anew.
 import { wording } from "../language/language";
 import { voiceAbout, voiceLine } from "../voice/voice-setup";
 import { errorWords, failedWords } from "../language/errors";
@@ -31,7 +32,7 @@ type Model = VoiceModel | SearchModel;
 type Shown = { state: Model["state"]; done: number; size: number; failure: string | null };
 type Kind = SetupDownload;
 
-/** The step that goes on downloading after "Open Cardwave", reading anew when told; none while nothing is left. */
+/** The downloader that goes on after "Open Cardwave", reading anew when told; none while nothing is left. */
 let follower: (() => void) | null = null;
 
 /** Kept in the browser once "Open Cardwave" left first run with its downloads still going on. */
@@ -54,7 +55,7 @@ export function followsAtStart(settings: Pick<Settings, "setup_downloads">, hash
 
 /** At a start after "Open Cardwave" with first run's downloads not through: goes on downloading and tells how it ended. */
 export function followDownloads(): void {
-  downloadsStep(() => {}).follow();
+  downloader({ inView: () => false, drawn: () => {}, wrong: () => {} }).follow();
 }
 
 /** Tells the downloads that go on after first run what the server did. */
@@ -136,8 +137,13 @@ function downloadLine(label: string, retrying: string, retry: () => void) {
   return { node, show };
 }
 
-/** Makes the step; `open` opens the app once the downloads are through; `cards`, whether a folder of cards waits for it. */
-export function downloadsStep(open: () => void, cards: () => boolean = () => false): { node: HTMLElement; read(): void; follow(): void } {
+/** What the screen that shows the downloads gives the downloader: whether it is in view, so that downloads start
+ * (else only once followed), what to draw after each read, and where a failed read says why. */
+type Screen = { inView(): boolean; drawn(): void; wrong(error: unknown): void };
+
+/** The downloads first run chose, without a screen: reads both states, starts the next one (`next`), and once
+ * followed tells how they ended (`tell`). */
+function downloader(screen: Screen) {
   let voice: VoiceModel | null = null;
   let search: SearchModel | null = null;
   let voiceName = "";
@@ -151,9 +157,10 @@ export function downloadsStep(open: () => void, cards: () => boolean = () => fal
   const tried: Record<Kind, boolean> = { voice: false, search: false };
   /** The first read asked after the last start answered: one asked before may tell the state before that start. */
   let fresh = 0;
-  // The shared place for why, which takes no room while it says nothing (no gap of its own under the lines).
-  const failed = noticeBox();
-  const later = el("p", { className: "hint", hidden: true }, wording("setup-cards-later"));
+  /** Opened before all were there: it goes on downloading and tells how it ended. */
+  let following = false;
+  /** The download whose failure the notice told, until "Try again". */
+  let warned: Kind | null = null;
   const asks: Record<Kind, () => Promise<unknown>> = { voice: downloadVoice, search: downloadSearchModel };
   const start = (kind: Kind) => {
     starting = true;
@@ -173,58 +180,23 @@ export function downloadsStep(open: () => void, cards: () => boolean = () => fal
     size: model.size,
     failure: (model.state === "absent" && (refused[kind] ?? failedWords(model.failure) ?? (tried[kind] && !starting ? errorWords(500, null) : null))) || failedWords(model.failure),
   });
-  const voiceLine = downloadLine(wording("setup-voice"), wording("setup-try-voice-again"), () => start("voice"));
-  const searchLine = downloadLine(wording("setup-search"), wording("setup-try-search-again"), () => start("search"));
-  const openButton = el("button", { type: "button", className: "btn btn-primary btn-lg" }, wording("setup-open"));
-  /** Opened before all were there: the step goes on downloading and tells how it ended. */
-  let following = false;
-  /** The download whose failure the notice told, until "Try again". */
-  let warned: Kind | null = null;
-  openButton.onclick = () => {
-    const through = !!voice && !!search && chosen.every((kind) => (kind === "voice" ? voice : search)!.state === "ready");
-    if (!through) {
-      remember(OPENED, "1");
-      open();
-      return follow();
-    }
-    void changeSettings({ setup_downloads: [] }).then(open, (error) => failed.replaceChildren(failure(reason(error))));
-  };
-  /** Goes on downloading outside the screen and tells how it ended. */
-  const follow = () => {
-    following = true;
-    follower = read;
-    read();
-  };
-  const node = el("div", { className: "setup-step flex f-col g-28", hidden: true }, el("div", { className: "group" }, searchLine.node, voiceLine.node), later, failed, el("div", { className: "setup-actions flex ai-c g-10 wrap" }, openButton));
-
+  const shown = (kind: Kind) => seen(kind === "voice" ? voice! : search!, kind);
   /** Starts the first download that is not there, unless one runs, is being asked for, or failed. */
   const next = () => {
-    if (!voice || !search || starting || !((node.isConnected && !node.hidden) || following)) return;
-    const downloads: [Shown, Kind][] = chosen.map((kind) => [kind === "voice" ? seen(voice!, kind) : seen(search!, kind), kind]);
-    const first = downloads.find(([model]) => model.state !== "ready");
+    if (!voice || !search || starting || !(screen.inView() || following)) return;
+    const first = chosen.map((kind) => [shown(kind), kind] as const).find(([model]) => model.state !== "ready");
     if (!first || first[0].state === "downloading" || first[0].failure) return;
     start(first[1]);
   };
-  const draw = () => {
-    later.hidden = !cards();
-    if (!voice || !search) return;
-    searchLine.show(seen(search, "search"), `${search.name} · ${bytes(search.size)}`, null);
-    voiceLine.show(seen(voice, "voice"), `${voiceName} · ${bytes(voice.size)}`, chosen.includes("search") ? search : null);
-    voiceLine.node.hidden = !chosen.includes("voice");
-    searchLine.node.hidden = !chosen.includes("search");
-  };
   /** After "Open Cardwave": one notice when all are there, one that stays with "Try again" when one failed. */
   const tell = () => {
-    const downloads = chosen.map((kind) => [kind, seen(kind === "voice" ? voice! : search!, kind)] as const);
+    const downloads = chosen.map((kind) => [kind, shown(kind)] as const);
     const broken = downloads.find(([, model]) => model.state !== "downloading" && model.state !== "ready" && model.failure);
     if (broken) {
       const [kind, model] = broken;
       if (warned === kind) return;
       warned = kind;
-      const again = async () => {
-        warned = null;
-        start(kind);
-      };
+      const again = async () => void ((warned = null), start(kind));
       announce(kind === "voice" ? wording("setup-voice-failed", { why: model.failure! }) : wording("setup-search-failed", { why: model.failure! }), again, "stays", wording("setup-try-again"));
     } else if (downloads.every(([, model]) => model.state === "ready")) {
       following = false;
@@ -247,13 +219,52 @@ export function downloadsStep(open: () => void, cards: () => boolean = () => fal
         chosen = (["search", "voice"] as const).filter((kind) => settings.setup_downloads.includes(kind));
         const named = v.voices.find((one) => one.id === settings.voice) ?? v.voices[0];
         voiceName = named ? wording("setup-voice-named", { name: named.name, language: voiceAbout(named) }) : wording("setup-voice-model");
-        draw();
+        screen.drawn();
         next();
         if (following) tell();
       },
-      (error) => void (mine >= fresh && order.take(mine) && failed.replaceChildren(failure(reason(error)))),
+      (error) => void (mine >= fresh && order.take(mine) && screen.wrong(error)),
     );
     return mine;
   };
-  return { node, read, follow };
+  /** Goes on downloading outside the screen and tells how it ended. */
+  const follow = () => {
+    following = true;
+    follower = read;
+    read();
+  };
+  /** `now`: the models read (`null` before the first read), the voice's name, the downloads chosen; `through`: whether every one chosen is there. */
+  const now = () => ({ voice, search, voiceName, chosen });
+  const through = () => !!voice && !!search && chosen.every((kind) => (kind === "voice" ? voice : search)!.state === "ready");
+  return { read, start, follow, shown, now, through };
+}
+
+/** Makes the step; `open` opens the app once the downloads are through; `cards`, whether a folder of cards waits for it. */
+export function downloadsStep(open: () => void, cards: () => boolean = () => false): { node: HTMLElement; read(): void; follow(): void } {
+  // The shared place for why, which takes no room while it says nothing (no gap of its own under the lines).
+  const failed = noticeBox();
+  const later = el("p", { className: "hint", hidden: true }, wording("setup-cards-later"));
+  const voiceLine = downloadLine(wording("setup-voice"), wording("setup-try-voice-again"), () => downloads.start("voice"));
+  const searchLine = downloadLine(wording("setup-search"), wording("setup-try-search-again"), () => downloads.start("search"));
+  const openButton = el("button", { type: "button", className: "btn btn-primary btn-lg" }, wording("setup-open"));
+  const node = el("div", { className: "setup-step flex f-col g-28", hidden: true }, el("div", { className: "group" }, searchLine.node, voiceLine.node), later, failed, el("div", { className: "setup-actions flex ai-c g-10 wrap" }, openButton));
+  const draw = () => {
+    later.hidden = !cards();
+    const { voice, search, voiceName, chosen } = downloads.now();
+    if (!voice || !search) return;
+    searchLine.show(downloads.shown("search"), `${wording("search-model-name")} · ${bytes(search.size)}`, null);
+    voiceLine.show(downloads.shown("voice"), `${voiceName} · ${bytes(voice.size)}`, chosen.includes("search") ? search : null);
+    voiceLine.node.hidden = !chosen.includes("voice");
+    searchLine.node.hidden = !chosen.includes("search");
+  };
+  const downloads = downloader({ inView: () => node.isConnected && !node.hidden, drawn: draw, wrong: (error) => failed.replaceChildren(failure(reason(error))) });
+  openButton.onclick = () => {
+    if (!downloads.through()) {
+      remember(OPENED, "1");
+      open();
+      return downloads.follow();
+    }
+    void changeSettings({ setup_downloads: [] }).then(open, (error) => failed.replaceChildren(failure(reason(error))));
+  };
+  return { node, read: downloads.read, follow: downloads.follow };
 }

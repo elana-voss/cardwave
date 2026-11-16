@@ -71,7 +71,10 @@ error-not-found = 그런 { $what ->
     [voice] 음성이
    *[other] 것이
 } 없어요. 삭제되었을 수 있어요.
-error-chat-busy = 이 채팅에서 답장을 쓰는 중이에요. 먼저 멈추세요.
+error-chat-busy = { $what ->
+    [coding_task] 이 채팅의 코딩 작업이 실행 중이에요. 먼저 멈추세요.
+   *[other] 이 채팅에서 답장을 쓰는 중이에요. 먼저 멈추세요.
+}
 error-no-provider = { $what ->
     [chat_model] 아직 고른 채팅 모델이 없어요. 설정 › 모델에서 고르세요.
    *[other] 아직 설정한 제공자가 없어요. 설정 › 제공자에서 추가하세요.
@@ -101,7 +104,7 @@ error-drive-root-for-model = 드라이브의 루트는 AI에게 주기에는 담
 error-data-folder = 그 폴더는 Cardwave 자체의 데이터를 담고 있거나 그 안에 있어요. 다른 폴더를 선택하세요.
 error-commands-windows-only = 명령은 Windows에서만 실행돼요.
 error-recycle-bin-windows-only = 파일은 Windows에서만 Windows 휴지통으로 옮겨져요.
-error-files-tool-off = 먼저 설정 › 도구에서 파일을 켜세요: 팀이 이 도구로 작업 폴더를 읽고 써요.
+error-files-tool-off = 먼저 설정 › 고급 › AI용 도구에서 파일을 켜세요: 팀이 이 도구로 작업 폴더를 읽고 써요.
 
 ## Pictures, replies and voices
 
@@ -204,6 +207,7 @@ error-in-trash = { $what ->
     [persona_to_use] “{ $name }” 페르소나가 휴지통에 있어요. 사용하려면 복원하세요.
    *[other] 휴지통에 있어요. 먼저 복원하세요.
 }
+-card-unreadable = 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
 error-not-readable = { $what ->
     [damaged_key] 키가 손상되었어요.
     [json] 올바른 JSON 파일이 아니에요.
@@ -217,7 +221,7 @@ error-not-readable = { $what ->
     [backup_key] 이 백업이 손상되었어요: 키를 읽을 수 없어요.
     [base64] base64가 아니에요.
     [base64_file] { $name } 파일이 base64가 아니에요.
-    [card_defined_twice] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] 카드 속 파일 이름을 사용할 수 없어요.
     [card_reference] 카드의 어떤 부분도 가리키지 않아요.
     [ccv4_version] 이 카드는 더 새로운 Cardwave에서 만들어졌어요. 열려면 Cardwave를 업데이트하세요.
@@ -232,7 +236,7 @@ error-not-readable = { $what ->
     [figure_still] 피규어의 정지 이미지가 최대 4 MB의 PNG가 아니에요.
     [figure_type] 3D 피규어는 VRM, GLB, FBX 파일이에요.
     [folder_read] 폴더를 읽을 수 없어요.
-    [format_version] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
+    [format_version] { -card-unreadable }
     [image_model_answer] 이미지 모델의 응답을 읽을 수 없어요.
     [image_model_picture] 이미지 모델의 이미지를 읽을 수 없어요.
     [key_characters] 키에 쓸 수 없는 문자가 들어 있어요. 제공자 사이트에서 다시 복사하세요.
@@ -262,15 +266,15 @@ error-not-readable = { $what ->
     [recording_short] 녹음이 너무 짧아요: 최소 { $shortest }초가 필요해요.
     [recording_silent] 녹음에 소리가 없어요.
     [recording_wav] 녹음이 WAV 파일이 아니에요.
-    [sillytavern_base64] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] 카드가 비어 있어요.
     [sillytavern_file] 이 파일의 SillyTavern 카드를 읽을 수 없어요.
-    [sillytavern_json] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
-    [sillytavern_object] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] 이 PNG의 SillyTavern 카드를 읽을 수 없어요.
-    [spec_version] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
-    [spec_version_form] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
-    [toml] 이 파일은 Cardwave가 읽을 수 있는 캐릭터 카드가 아니에요. 원래 앱에서 다시 내보내세요.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] Word 파일을 읽을 수 없어요.
     [word_text] Word 파일에 텍스트가 없어요.
     [workflow] “{ $name }” 워크플로를 읽을 수 없어요.
@@ -285,6 +289,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] 캐릭터가 보조 모델에게 너무 길어요. 더 많이 읽는 보조 모델을 고르세요.
     [card_for_chat] 캐릭터가 채팅 모델에게 너무 길어서 캐릭터답게 말할 수 없어요. 더 많이 읽는 채팅 모델을 고르거나 캐릭터를 줄이세요.
+    [message_for_chat] 메시지가 채팅 모델에게 너무 길어요. 줄이거나, 함께 보내는 사진을 줄이거나, 더 많이 읽는 채팅 모델을 고르세요.
     [card_file] 파일이 { $most } MB보다 커요.
     [checkpoint_folder] 폴더가 너무 커서 단계마다 그 전에 사본을 남길 수 없어요.
     [expression_pack_size] { $name }의 이미지가 너무 커요.
@@ -388,21 +393,22 @@ error-not-possible = { $what ->
     [voice_runtime] 소리 내어 읽기에 필요한 Microsoft 구성 요소가 없어요. microsoft.com에서 Visual C++ 재배포 가능 패키지를 설치한 뒤 Cardwave를 다시 시작하세요.
     [workflow_no_text] “{ $name }” 워크플로에 이미지 설명을 넣을 텍스트 필드가 없어요.
     [workflow_use] “{ $name }” 워크플로를 사용할 수 없어요.
-    [written_tools_full] 도구는 최대 { $most_tools }개까지 둘 수 있어요. 먼저 설정 › AI가 만든 도구에서 하나를 삭제하세요.
+    [written_tools_full] 도구는 최대 { $most_tools }개까지 둘 수 있어요. 먼저 설정 › 고급 › AI가 만든 도구에서 하나를 삭제하세요.
     [delete_not_in_trash] 휴지통에 있는 것만 영구 삭제할 수 있어요. 먼저 휴지통으로 옮기세요.
    *[other] 그 작업은 할 수 없어요.
 }
+-helper-unusable = 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
 error-model-answer = { $what ->
     [no_greeting] AI가 인사말을 쓰지 않았어요.
-    [background_answer] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
-    [background_text] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] AI의 응답이 캐릭터의 글이 아니었어요.
-    [classification] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [classification] { -helper-unusable }
     [example_messages] AI가 예시 메시지를 쓰지 않았어요.
     [no_example_message] AI가 내용 없는 예시 메시지를 썼어요.
     [json] AI의 응답이 요청한 형식이 아니었어요.
-    [keywords] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
-    [logline] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] AI 제공자가 채팅 답장을 보내지 않았어요.
     [no_fitting_answer] AI가 세 번 시도하는 동안 쓸 만한 응답을 주지 않았어요.
     [no_picture] 이미지 모델이 이미지 없이 응답했어요.
@@ -413,17 +419,17 @@ error-model-answer = { $what ->
     [picture_field] 보조 모델이 이미지 설명을 넣을 필드를 찾지 못했어요.
     [picture_server_no_picture] 이미지 서버가 이미지 없이 응답했어요.
     [picture_words] 보조 모델이 이미지 설명을 쓰지 않았어요.
-    [rating] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [rating] { -helper-unusable }
     [reply_broke_off] 답장이 중간에 끊겼어요.
-    [needs] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [needs] { -helper-unusable }
     [rounds] 팀이 { $rounds }라운드 안에 작업을 끝내지 못했어요.
     [search_left_out] 검색 모델이 텍스트 하나를 빠뜨렸어요.
     [search_model] 검색 모델의 응답을 읽을 수 없어요.
     [search_tokens] 검색 모델의 토큰을 읽을 수 없어요.
-    [title] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [title] { -helper-unusable }
     [too_many_tools] AI가 도구를 너무 많이 호출했어요.
-    [worker_mode] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
-    [worker_texts] 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] AI 제공자의 보고: { $reason }
    *[other] AI의 응답을 쓸 수 없어요.
 }

@@ -244,6 +244,7 @@ character-translate-card = Terjemahkan karakter…
 character-discard-card = Buang karakter
 character-card-menu = Menu karakter
 character-title = Judul
+character-click-to-edit = Klik untuk mengubah
 character-name-the-card = Beri nama karakter
 character-summary = Ringkasan satu baris untuk pustaka
 character-this-card-is-in = Karakter ini ada di Sampah.{ " " }

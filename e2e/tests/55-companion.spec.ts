@@ -8,7 +8,7 @@ import { picture, stopClock } from "../pictures";
 // stand-in `api`, `moves`) asked what the figure does, as is a throw once the figure stands again (told what the hand did), its standing idle (the page's clock run on) and a reply in its chat sent from elsewhere; the
 // companion's interface (`/api/companion/act` and `/state`), each step's state read back; its right-click menu, "Hide until tomorrow" kept in the
 // settings; the figure's size set in Settings, which the figure takes at once; that only the app's window, not a browser's page, tells it the screen in view; and that the app's window in a browser has neither "Make companion" nor the settings' line, which
-// the desktop app's own test (e2e/desktop/companion.test.ts) drives in the real window. The picture (1440 px, light) is of the compact chat with the menu open; the figure is drawn by WebGL, which no
+// the desktop app's own test (e2e/desktop/companion.test.ts) drives in the real window. The picture (1440 px, light) is of the compact chat with the menu open; the figure is drawn by WebGPU or WebGL 2, which no
 // picture holds still, so it is hidden for it.
 
 let api: FakeProvider;
@@ -38,7 +38,7 @@ async function open(page: Page): Promise<void> {
 
 test("a double-click opens the compact chat with the companion, and its reply has the animator asked what the figure does", async ({ page, request }) => {
   await companion(request);
-  api.moves([{ do: "play", clip: "wave" }]);
+  api.moves([{ do: "play", clip: "waving" }]);
   await open(page);
   await page.locator("canvas.companion-figure").dblclick();
   const chat = page.getByRole("dialog", { name: "Chat with your companion" });
@@ -76,8 +76,8 @@ test("the companion does what it is told through its interface, and its state sa
   await expect.poll(state).toMatchObject({ x, saying: "Over here!" });
   expect((await act([{ do: "react", feeling: "happy" }])).feeling).toBe("happy");
   expect((await act([{ do: "look", x: 10, y: 20 }])).looking).toEqual({ x: 10, y: 20 });
-  await act([{ do: "play", clip: "dance", ms: 3000 }]);
-  await expect.poll(async () => (await state()).clip).toBe("dance");
+  await act([{ do: "play", clip: "dancing", ms: 3000 }]);
+  await expect.poll(async () => (await state()).clip).toBe("dancing");
 
   // Cardwave's window says which screen it shows; a browser's page does not (the app's window stood in for).
   const route = async () => (await (await request.get("/api/companion/state")).json()).app?.route;
@@ -108,7 +108,7 @@ test("the AI steers the figure while it stands idle, and after a reply in the co
   await expect(page.locator(".companion-say")).toHaveText("Hm, old maps.");
 
   // A reply in its chat, sent from elsewhere (Cardwave's window): asked again, told what was said.
-  api.moves([{ do: "play", clip: "nod" }]);
+  api.moves([{ do: "play", clip: "head_nod_yes" }]);
   const shown = await (await request.get(`/api/cards/${card}`)).json();
   const characters = [{ version_id: shown.card.version_id, character: shown.characters[0].id }];
   const { id } = (await (await request.post("/api/chats", { data: { characters } })).json()).chat;

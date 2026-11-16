@@ -29,7 +29,7 @@ export function makeVoiceDialog(home: HTMLElement, rate: number, made: () => voi
   /** The recording or file as it is sent, and its length. */
   let taken: { file: Blob; seconds: number } | null = null;
   /** What stops the microphone while it records. */
-  let stopRecording: (() => void) | null = null;
+  let stopRecording: ((drop?: boolean) => void) | null = null;
   let playing: HTMLAudioElement | null = null;
 
   const idle = () => {
@@ -85,18 +85,21 @@ export function makeVoiceDialog(home: HTMLElement, rate: number, made: () => voi
       filled.style.width = `${Math.min(100, (seconds * 100) / LONGEST)}%`;
       if (seconds >= LONGEST) end();
     }, 200);
-    const end = () => {
+    /** A recording ended for a file chosen meanwhile is not taken. */
+    let dropped = false;
+    const end = (drop = false) => {
+      dropped = drop;
       clearInterval(tick);
       stopRecording = null;
       if (recorder.state !== "inactive") recorder.stop();
       for (const track of stream.getTracks()) track.stop();
     };
     stopRecording = end;
-    stop.onclick = end;
+    stop.onclick = () => end();
     recorder.ondataavailable = (event) => pieces.push(event.data);
     recorder.onstop = () =>
       void attempt(async () => {
-        if (!box.isConnected) return;
+        if (dropped || !box.isConnected) return;
         make.disabled = !taken;
         take(await toWav(new Blob(pieces, { type: recorder.mimeType }), rate));
       });
@@ -116,6 +119,13 @@ export function makeVoiceDialog(home: HTMLElement, rate: number, made: () => voi
     const chosen = file.files?.[0];
     file.value = "";
     if (!chosen) return;
+    // A recording that runs is ended and left: the file takes its place.
+    if (stopRecording) {
+      stopRecording(true);
+      make.disabled = !taken;
+      if (taken) recorded(taken);
+      else idle();
+    }
     void attempt(async () => {
       let sound;
       try {

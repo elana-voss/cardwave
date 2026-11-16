@@ -369,6 +369,10 @@ prompt = ["name.one", "description.one", "LOREBOOK", "CHAT-HISTORY"]
     assert_eq!(entry("lorebook.sea-de"), copy);
     let text = document.lookup(&copy).unwrap().get("text").unwrap();
     assert_eq!(text.as_str(), Some("Die Asta sank hier 1911."));
+    // The name both languages share is not copied, so a rename reaches both.
+    let prompt = document.character("one-de").unwrap().get("prompt").unwrap();
+    assert_eq!(prompt.as_array().unwrap()[0].as_str(), Some("name.one"));
+    assert!(document.lookup("name.one-de").is_none());
 }
 
 #[tokio::test]

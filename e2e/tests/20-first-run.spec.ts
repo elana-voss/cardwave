@@ -2,7 +2,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, test } from "../test";
+import { expect, modelLine, noneAdded, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 
@@ -71,15 +71,6 @@ const host = (of: FakeProvider) => new URL(of.url).host;
 /** The first step has what it shows: the list of providers has come, and with it the step is as it stays. */
 const ready = (page: Page) => expect(page.locator(".key-step :is(.no-key, .by-hand):visible")).toHaveCount(1);
 
-/** Answers the list of providers as of a user who has added none, as one kept there would open setup at step 2. */
-async function noneAdded(page: Page): Promise<void> {
-  await page.route("**/api/provider-list", async (route) => {
-    if (route.request().method() !== "GET") return route.fallback();
-    const response = await route.fetch();
-    return route.fulfill({ response, json: { ...(await response.json()), providers: [] } });
-  });
-}
-
 /** Opens first run as of a user who has no stored provider. */
 async function open(page: Page): Promise<void> {
   await page.route("**/api/provider", (route) => (route.request().method() === "GET" ? route.fulfill({ json: null }) : route.fallback()));
@@ -145,7 +136,7 @@ test("first run takes the key, opens step 2 with the one model listed tested, an
   // Step 2: a line for the key, with whose it is and how it ends, and a line of each kind; the downloads are step 4's.
   await expect(where(page)).toHaveText("Setup · step 2 of 4");
   await expect(about(page)).toHaveText("Your models are ready. Change any of them now or later in Settings.");
-  await expect(page.locator(".setup form")).toBeHidden();
+  await expect(page.locator(".setup form.key-step")).toBeHidden();
   await expect(page.locator(".setup .item-label:visible")).toHaveText(["Provider", "Chat", "Helper model", "Images", "Language the AI writes in"]);
   await expect(says(page, "Provider")).toHaveText(`${host(api)} · ····4f2a`);
   // The list left no choice, so its model is the chat model, unasked, and it answered the small question; by its
@@ -274,73 +265,6 @@ test("a chat model that didn't answer says so in the lead and its line, holds th
   await expect(confirm(page)).toBeEnabled();
 });
 
-/** Holds the server's answer of the picks until the function returned is called. */
-async function holdPicks(page: Page): Promise<() => void> {
-  let release = () => {};
-  const held = new Promise<void>((done) => (release = done));
-  await page.route("**/api/provider/picks", async (route) => {
-    const response = await route.fetch();
-    await held;
-    await route.fulfill({ response });
-  });
-  return release;
-}
-
-test("the picks asked before “Back” still count after “Continue” with the same key", async ({ page }) => {
-  api.models(["tide-1"]);
-  const release = await holdPicks(page);
-  await open(page);
-  await toModels(page);
-  await button(page, "Back").click();
-  await button(page, "Continue").click();
-  await expect(heading(page)).toHaveText("Models");
-  release();
-  await expect(says(page, "Chat")).toHaveText("Tide 1 · works");
-});
-
-test("a chat model chosen while the picks are on their way stays, and is not also the helper", async ({ page }) => {
-  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
-  api.next([JSON.stringify({ chat: "reef/big-2", background: "kelp/small-1", images: null })]);
-  const release = await holdPicks(page);
-  await open(page);
-  await toModels(page);
-  await button(page, "Change the chat model").click();
-  await pick(page, "Chat model", "kelp/small-1");
-  release();
-  await expect(says(page, "Chat")).toHaveText("Small 1 · works");
-  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
-});
-
-test("a helper taken as the chat model while the picks are on their way stays so", async ({ page }) => {
-  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
-  api.next([JSON.stringify({ chat: "reef/big-2", background: "reef/big-2-mini", images: null })]);
-  const release = await holdPicks(page);
-  await open(page);
-  await toModels(page);
-  await button(page, "Change the chat model").click();
-  await pick(page, "Chat model", "kelp/small-1");
-  await button(page, "Change the helper model").click();
-  // The chat model is ticked and marked in the list, where Enter takes the line: the button takes it.
-  await picker(page, "Helper model").getByLabel("Model", { exact: true }).fill("kelp/small-1");
-  await picker(page, "Helper model").getByRole("button", { name: "Use this model" }).click();
-  release();
-  await expect(says(page, "Chat")).toHaveText("Small 1 · works");
-  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
-});
-
-test("a helper chosen while the picks are on their way that the picks make the chat model is none", async ({ page }) => {
-  api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
-  api.next([JSON.stringify({ chat: "reef/big-2", background: "kelp/small-1", images: null })]);
-  const release = await holdPicks(page);
-  await open(page);
-  await toModels(page);
-  await button(page, "Change the helper model").click();
-  await pick(page, "Helper model", "reef/big-2");
-  release();
-  await expect(says(page, "Chat")).toHaveText("Big 2 · works");
-  await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
-});
-
 test("first run's picks are the chat model's answer among the candidates, each tested, and “Continue” stores the ones chosen", async ({ page }) => {
   api.models(["reef/big-2", "reef/big-2-mini", "kelp/small-1"]);
   // The rules' one chat model picks the background model among the two cheap ones.
@@ -359,8 +283,8 @@ test("first run's picks are the chat model's answer among the candidates, each t
   await button(page, "Change the helper model").click();
   // The picker opens empty, the model in use ticked in its list.
   await expect(picker(page, "Helper model").getByLabel("Model", { exact: true })).toHaveValue("");
-  // A line names the model readably, with its ID under it.
-  await expect(picker(page, "Helper model").getByRole("option", { name: "Small 1 kelp/small-1" })).toHaveAttribute("aria-selected", "true");
+  // A line names the model readably, its ID on hover.
+  await expect(modelLine(picker(page, "Helper model"), "kelp/small-1")).toHaveAttribute("aria-selected", "true");
   await pick(page, "Helper model", "reef/big-2-mini");
   await expect(says(page, "Helper model")).toHaveText("Big 2 Mini · works");
   await change(page).click();

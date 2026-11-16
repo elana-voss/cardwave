@@ -7,7 +7,9 @@
 //! `fn routes` has routes gets `$OUT_DIR/route_tools/<file>.rs`, which it
 //! includes, a `route_tools()` of each route's method, path, handler's doc and
 //! the types its handler takes (`Json<…>` the body, `Query<…>` the query,
-//! `Path<…>` the path's parts); `api.rs`'s also gathers all. A handler that
+//! `Path<…>` the path's parts); `api.rs`'s also gathers all, and names those
+//! whose handler takes `Owner` (`OWNER_ROUTES`, which mcp.rs's test holds to
+//! `the_users_alone`). A handler that
 //! takes what a tool cannot give (`UNREACHABLE`), or that is not a function of
 //! the file, is no tool. Traps: a file that gains routes needs the `include!`
 //! line; a handler's types need `ts_rs::TS`.
@@ -179,8 +181,11 @@ fn doc(attrs: &[syn::Attribute]) -> String {
 }
 
 /// The Rust code of one route's `Route`, or none where it is no tool.
-fn route(found: &Found, handler: &syn::ItemFn) -> Option<String> {
+/// The route's line of `route_tools`, and whether its handler takes `Owner`
+/// (this computer's account alone).
+fn route(found: &Found, handler: &syn::ItemFn) -> Option<(String, bool)> {
     let (mut body, mut query, mut path_types) = ("None".to_string(), "None".to_string(), None);
+    let mut owner = false;
     for input in &handler.sig.inputs {
         let syn::FnArg::Typed(typed) = input else {
             continue;
@@ -196,6 +201,7 @@ fn route(found: &Found, handler: &syn::ItemFn) -> Option<String> {
         };
         match (name.as_str(), inner) {
             (raw, _) if UNREACHABLE.contains(&raw) => return None,
+            ("Owner", _) => owner = true,
             ("Json", Some(ty)) => body = typed_of(ty),
             ("Option", Some(ty)) => {
                 if let Some(("Json", Some(ty))) = outer(ty).as_ref().map(|(n, t)| (n.as_str(), *t))
@@ -224,18 +230,20 @@ fn route(found: &Found, handler: &syn::ItemFn) -> Option<String> {
             )
         })
         .collect();
-    Some(format!(
+    let line = format!(
         "        cw_coding::tools::app::Route {{ name: {:?}, method: {:?}, path: {:?}, doc: {:?}, params: &[{}], query: {query}, body: {body} }},\n",
         tool_name(&found.method, &found.path),
         found.method,
         found.path,
         doc(&handler.attrs),
         params.join(", "),
-    ))
+    );
+    Some((line, owner))
 }
 
-/// The routes of the file `source` as tools, or none where it has no routes.
-fn tools_of(source: &str) -> Option<String> {
+/// The routes of the file `source` as tools and the names of those that take
+/// `Owner`, or none where it has no routes.
+fn tools_of(source: &str) -> Option<(String, Vec<String>)> {
     let file = syn::parse_file(source).expect("an API file parses");
     let mut routes = Routes::default();
     // Those of `fn routes` alone, which `api::routes` merges: not the gate's.
@@ -258,15 +266,19 @@ fn tools_of(source: &str) -> Option<String> {
         })
         .collect();
     let mut code = String::from("vec![\n");
+    let mut owners = Vec::new();
     for found in &routes.found {
         if let Some(handler) = handlers.get(&found.handler)
-            && let Some(line) = route(found, handler)
+            && let Some((line, owner)) = route(found, handler)
         {
             code.push_str(&line);
+            if owner {
+                owners.push(tool_name(&found.method, &found.path));
+            }
         }
     }
     code.push_str("    ]");
-    Some(code)
+    Some((code, owners))
 }
 
 fn route_tools() {
@@ -274,6 +286,7 @@ fn route_tools() {
     std::fs::create_dir_all(&out).expect("the build's folder can be written");
     let read = |path: &Path| std::fs::read_to_string(path).expect("an API file reads");
     let mut modules = Vec::new();
+    let mut owners = Vec::new();
     let mut files: Vec<_> = std::fs::read_dir("src/api")
         .expect("src/api is there")
         .filter_map(|entry| entry.ok().map(|entry| entry.path()))
@@ -286,7 +299,8 @@ fn route_tools() {
             .expect("a file has a name")
             .to_string_lossy()
             .to_string();
-        if let Some(code) = tools_of(&read(&path)) {
+        if let Some((code, owned)) = tools_of(&read(&path)) {
+            owners.extend(owned);
             let text = format!(
                 "/// This file's routes as tools; written by build.rs.\npub(super) fn route_tools() -> Vec<cw_coding::tools::app::Route> {{\n    {code}\n}}\n"
             );
@@ -294,7 +308,9 @@ fn route_tools() {
             modules.push(module);
         }
     }
-    let own = tools_of(&read(Path::new("src/api.rs"))).unwrap_or_else(|| "vec![]".into());
+    let (own, owned) =
+        tools_of(&read(Path::new("src/api.rs"))).unwrap_or_else(|| ("vec![]".into(), vec![]));
+    owners.extend(owned);
     let mut all = format!(
         "/// Every route of the API as a tool; written by build.rs.\npub(crate) fn route_tools() -> Vec<cw_coding::tools::app::Route> {{\n    let mut all = {own};\n"
     );
@@ -303,5 +319,9 @@ fn route_tools() {
         let _ = writeln!(all, "    all.extend({module}::route_tools());");
     }
     all.push_str("    all\n}\n");
+    let _ = write!(
+        all,
+        "\n/// The routes as tools whose handler takes `Owner`; written by build.rs.\n#[cfg(test)]\npub(crate) const OWNER_ROUTES: &[&str] = &{owners:?};\n"
+    );
     std::fs::write(out.join("api.rs"), all).expect("written");
 }

@@ -1,3 +1,16 @@
+# 0.2.0
+
+Cardwave di ponselmu, dan banyak perbaikan.
+
+- Buka Cardwave dari mana saja: dengan Tailscale, Akun › Berbagi menampilkan alamat untuk membukanya di ponsel atau komputer lain, dan setiap layar pas di ponsel.
+- Kenangan milik sebuah karakter dan personamu: mengganti persona sebuah chat memulai kenangan baru, dan saat kembali, kenangan lama ditemukan lagi.
+- Pendamping lebih banyak bergerak: jauh lebih banyak gerakan, dipilih menurut suasana hatinya, dan empat perasaan baru: takut, jenaka, malu, dan lelah.
+- Figur 3D digambar dengan WebGPU jika komputermu mendukungnya.
+- Cadangan bisa dipulihkan langsung saat pertama kali dimulai, dan cadangan yang dipulihkan tetap memakai kata sandinya.
+- Pengaturan lebih rapi: alat AI pindah ke Lanjutan, dan tab bisa dimatikan di Pengaturan › Tampilan.
+- Teks karakter menampilkan "Klik untuk mengubah" saat kamu menunjuknya, dan ikon di bilah tugas memenuhi kotaknya.
+- Banyak perbaikan dari penelusuran seluruh aplikasi.
+
 # 0.1.3
 
 Perbaikan kecil.

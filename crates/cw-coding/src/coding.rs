@@ -1,7 +1,7 @@
 //! The coding team (Foreman's, in Rust): a task given to it in a chat is
 //! planned by the planner, built step by step by its workers and checked by
 //! its auditor (`run`); the team and its models are the account's settings
-//! (`settings::CodingTeam`), its tools' permissions its Settings › Tools
+//! (`settings::CodingTeam`), its tools' permissions its Tools for the AI
 //! (`settings::Permissions::of`).
 //!
 //! Here the tasks as kept: a task's card is a message of the chat's character
@@ -262,14 +262,17 @@ pub fn start(
     folder: &str,
     crew: &Crew,
 ) -> anyhow::Result<i64> {
-    // Two tasks in one folder would take each other's changes for their own.
-    let same = |other: &str| {
-        let real = |path: &str| {
-            std::fs::canonicalize(path)
-                .ok()
-                .map(|path| path.to_string_lossy().to_lowercase())
-        };
-        real(other).is_some() && real(other) == real(folder)
+    // Two tasks in one folder, or one inside the other's, would take each
+    // other's changes for their own.
+    let real = |path: &str| {
+        std::fs::canonicalize(path)
+            .ok()
+            .map(|path| std::path::PathBuf::from(path.to_string_lossy().to_lowercase()))
+    };
+    let mine = real(folder);
+    let same = |other: &str| match (real(other), &mine) {
+        (Some(other), Some(mine)) => other.starts_with(mine) || mine.starts_with(&other),
+        _ => false,
     };
     let running = db.running_folders()?;
     ensure!(

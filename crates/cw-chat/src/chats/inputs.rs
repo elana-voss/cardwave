@@ -23,7 +23,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::prompt_presets;
 
-use crate::chats::{Chat, LoreSource, get, lore_off, participants, path_to, persona_of};
+use crate::chats::{
+    Chat, LoreSource, Participant, get, lore_off, participants, path_to, persona_of,
+};
 
 /// What the prompt builder needs for the next reply in a chat.
 pub struct PromptInputs {
@@ -92,14 +94,7 @@ pub fn prompt_inputs_after(
     if participants.is_empty() && speaker.is_none() {
         return plain_inputs(db, user, chat_id, after);
     }
-    let participant = match speaker {
-        Some(id) => participants.iter().find(|p| p.id == id),
-        None => participants.iter().min_by_key(|p| p.id),
-    }
-    .context(
-        Fail::said(Code::NotPossible, "the chat has no such character")
-            .with("what", "chat_character"),
-    )?;
+    let participant = speaker_of(&participants, speaker)?;
 
     let card_id =
         cards::card_of(db, user, participant.version_id)?.ok_or(NotFound("card version"))?;
@@ -156,13 +151,7 @@ pub fn prompt_inputs_after(
         after_chat(&mut character, ONLY_AS);
     }
 
-    let (persona_name, persona_description) = match persona_of(db, user, chat)? {
-        Some(persona) => (persona.name, persona.description),
-        None => (
-            cw_library::settings::user_stand_in(db, user)?.to_string(),
-            String::new(),
-        ),
-    };
+    let (persona_name, persona_description) = persona_texts(db, user, chat)?;
     let (messages, times) = chat_messages(db, chat_id, after, &names)?;
     let snapshot = snapshot_at(db, chat_id, after)?;
     let others = participants
@@ -190,6 +179,34 @@ pub fn prompt_inputs_after(
     })
 }
 
+/// The participant who speaks next: `speaker`, else the one who joined first.
+fn speaker_of(participants: &[Participant], speaker: Option<i64>) -> anyhow::Result<&Participant> {
+    match speaker {
+        Some(id) => participants.iter().find(|p| p.id == id),
+        None => participants.iter().min_by_key(|p| p.id),
+    }
+    .context(
+        Fail::said(Code::NotPossible, "the chat has no such character")
+            .with("what", "chat_character"),
+    )
+}
+
+/// The name and description the user goes by in `chat`: its persona's, else
+/// the user's stand-in name and no description.
+fn persona_texts(
+    db: &dyn crate::chats::Storage,
+    user: i64,
+    chat: &Chat,
+) -> anyhow::Result<(String, String)> {
+    Ok(match persona_of(db, user, chat)? {
+        Some(persona) => (persona.name, persona.description),
+        None => (
+            cw_library::settings::user_stand_in(db, user)?.to_string(),
+            String::new(),
+        ),
+    })
+}
+
 /// The character `id` of `document` as the reply is written: its texts in
 /// `language` where the card has them (`Document::in_language`), and whether
 /// they are in another, which the AI is then told to reply in. A card whose
@@ -208,12 +225,18 @@ fn snapshot_at(db: &dyn Storage, chat_id: i64, after: Option<i64>) -> anyhow::Re
         Some(head) => db.state_above(head)?,
         None => None,
     };
+    // If the message is a greeting, there is what its own macros set (and the
+    // greetings' before it): laid over what a build above it left, as a
+    // greeting after another keeps it only on itself.
+    let opening = opening_of(db, chat_id, after)?;
     Ok(match stored {
-        Some(text) => serde_json::from_str(&text)?,
-        // No reply was built on the way to the message. If it is a greeting,
-        // there is what its own macros set.
+        Some(text) => {
+            let mut snapshot: Snapshot = serde_json::from_str(&text)?;
+            snapshot.variables.extend(opening);
+            snapshot
+        }
         None => Snapshot {
-            variables: opening_of(db, chat_id, after)?,
+            variables: opening,
             ..Default::default()
         },
     })

@@ -3,6 +3,220 @@
    `.msg` (`.me` the user's) of `.msg-head`, `.bubble-row` (the bubble and its `.tools`) and `.acts`; Plain
    (`data-chat="plain"` on the root) lays the same markup out as the board ChatPlain's `.pm`. */
 
+/* A coding task (board "Coding task"): its goal, the steps beside the checkpoints and the files changed; a step's
+   mark is blue while it runs and once done, red where it failed; a step's output and a diff scroll within. */
+.task-title h1 {
+  font-size: 22px;
+}
+.task-state-word {
+  font-weight: 600;
+}
+.task-state-word.running {
+  color: var(--accent);
+}
+.task-state-word.failed,
+.task-step.failed .task-step-icon {
+  color: var(--danger);
+}
+.task-steps {
+  flex: 1 1 480px;
+}
+.task-side {
+  flex: 0 1 300px;
+  min-width: 260px;
+}
+button.task-step,
+button.task-file {
+  width: 100%;
+}
+button.task-step {
+  padding: var(--s10) var(--s4);
+  border-top: 1px solid var(--rule);
+}
+.task-step-icon {
+  display: flex;
+  margin-top: var(--s2);
+  color: var(--grey);
+}
+.task-step:is(.running, .done) .task-step-icon {
+  color: var(--accent);
+}
+.task-verdict {
+  margin-top: var(--s20);
+  padding: var(--s14) var(--s16);
+}
+.task-file .item-text {
+  font-size: var(--fs-small);
+}
+:is(.task-step-open, .task-diff, .task-verdict) pre {
+  margin: 0;
+  max-height: 480px;
+  overflow: auto;
+}
+/* The message field (board Chat): who replies over it, then what waits attached, as tiles with their × at the
+   corner (its growth and focus ring are the design system's). Its menus open upward, 12 px over it, from their button's left edge. While a call is asked about it waits,
+   dimmed, but for Stop; while the model writes the message, its words are grey. A notice stands over it. */
+.chat-wrap {
+  anchor-name: --message-field;
+}
+.chat-dock:not(:has(> :not([hidden]))) {
+  display: none;
+}
+.composer.drafting textarea {
+  color: var(--grey);
+}
+.composer .btn-quiet:hover:enabled {
+  background: var(--fill-hover);
+}
+.composer .dictate.recording {
+  color: var(--recording);
+}
+.chat-wrap .menu > .pop {
+  top: auto;
+  right: auto;
+  bottom: calc(100% + var(--s12));
+  left: 0;
+}
+.chat-wrap.waiting .composer > :not(.send),
+.chat-wrap.waiting .replier {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.replier,
+.replier > .menu,
+.replier .btn {
+  max-width: 100%;
+}
+.replier .btn {
+  min-height: 32px;
+  padding: 0 var(--s10);
+}
+.replier .btn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.waiting-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s8);
+  margin: 0 0 var(--s8) var(--s8);
+}
+.waiting-tile {
+  position: relative;
+}
+.attached-picture.small {
+  display: block;
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--r-md);
+}
+.attached-file.small {
+  min-height: 48px;
+  padding: 0 var(--s10);
+  border-radius: var(--r-md);
+}
+.waiting-tile > .remove {
+  position: absolute;
+  top: calc(-1 * var(--s8));
+  right: calc(-1 * var(--s8));
+  width: 22px;
+  min-height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-menu);
+}
+
+/* The chat's side panel (board Chat): it scrolls by itself; its name and × show only where it lies over the chat,
+   as a sheet (under 960 px) over what is anchored `--panel-over` (the messages), else its screen's whole height:
+   the bar over it and the message field under it stay in reach. A line of "Tools" sets its switches in. Reply length is a range over the board's
+   track and dots: its knob the board's, the blue up to it (`--at`), greyed where it is not sent. */
+.side-panel .item-text {
+  overflow-wrap: anywhere;
+}
+/* The heading beside "Add lorebook" is the size of the panel's other headings, not a box's. */
+.side-panel .gh .panel-label {
+  font-size: var(--fs-small);
+}
+.panel-close {
+  display: none;
+  align-items: center;
+  gap: var(--s8);
+  margin: calc(-1 * var(--s16)) calc(-1 * var(--s16)) 0;
+  padding: var(--s10) var(--s12);
+  border-bottom: 1px solid var(--rule);
+}
+.item.sub-item {
+  padding-left: var(--s28);
+}
+.reply-length {
+  flex: none;
+  width: 76px;
+  text-align: right;
+}
+.steps .steps-row {
+  box-sizing: border-box;
+  padding: 0 calc(var(--s10) / 2);
+}
+/* Centred on the track, not stretched over .steps: on a phone cardwave.css makes a slider 44 px high. */
+.steps input {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+}
+.steps input::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+  appearance: none;
+}
+.steps input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.steps:has(input:disabled),
+.reply-length:disabled {
+  opacity: 0.45;
+}
+.portrait {
+  width: 100%;
+  border-radius: var(--r-xl);
+}
+@media (max-width: 960px) {
+  :has(> .side-panel) {
+    position: relative;
+  }
+  .side-panel {
+    position: absolute;
+    top: anchor(--panel-over top, 0);
+    right: 0;
+    bottom: anchor(--panel-over bottom, 0);
+    z-index: 1;
+    width: min(300px, 100%);
+    box-shadow: var(--shadow-sheet);
+    animation: sheet 0.18s ease-out;
+  }
+  .panel-close {
+    display: flex;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-panel {
+    animation: none;
+  }
+}
+
 /* The account's picture fills its round, where it has one in place of its letter; the AI of a chat without a
    character is a robot head in the grey round. */
 .initial > img {
@@ -24,7 +238,7 @@
   font-weight: 400;
 }
 
-/* The messages scroll under the bar; a narrow window's side panel lies over them (app.css). */
+/* The messages scroll under the bar; a narrow window's side panel lies over them (chat.css, narrow.css). */
 .chat-scroller {
   anchor-name: --panel-over;
   min-height: 0;

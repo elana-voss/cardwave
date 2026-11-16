@@ -23,9 +23,9 @@ import { wording } from "../language/language";
 export function lineSays(model: SearchModel, firstRun = false): { says: string; action: string } {
   if (model.state === "absent" && firstRun) return { says: wording("models-download-recommended", { name: model.name, size: bytes(model.size) }), action: wording("password-change") };
   if (model.state === "absent") return { says: wording("providers-not-set-up"), action: wording("downloaded-set-up") };
-  if (model.state === "downloading") return { says: wording("models-downloading", { name: model.name, percent: String(percent(model)) }), action: wording("password-change") };
+  if (model.state === "downloading") return { says: wording("models-downloading", { name: wording("search-model-name"), percent: String(percent(model)) }), action: wording("password-change") };
   const reading = model.left > 0 ? wording("search-setup-reading-cards-left", { left: model.left }) : "";
-  return { says: wording("models-on-this-computer", { name: model.name, reading }), action: wording("password-change") };
+  return { says: wording("models-on-this-computer", { name: wording("search-model-name"), reading }), action: wording("password-change") };
 }
 
 /** What the dialog says of the model's state at the line's right, and its one button. */
@@ -73,7 +73,7 @@ export function searchLine(
     shown = modelDialog(
       home(),
       wording("label-settings-search"),
-      wording("search-setup-on-this-computer-download", { name: now.name, bytes: bytes(now.size) }),
+      wording("search-setup-on-this-computer-download", { name: wording("search-model-name"), bytes: bytes(now.size) }),
       wording("search-setup-the-librarys-search-then"),
       now,
       dialogSays,

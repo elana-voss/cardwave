@@ -37,9 +37,13 @@ pub(crate) fn http_status(code: Code) -> StatusCode {
 }
 
 /// What only this computer's account may do, asked by another: its action,
-/// such as "use its files". The API answers 403.
+/// such as "use_its_files" (a Fluent name of en.errors.ftl), by which the page
+/// picks its words; the sentence, which a model's tool, an MCP program and the
+/// log read, says it in English ("use its files"). The API answers 403.
 pub(crate) fn owner_only(action: &'static str) -> Fail {
-    Fail::new(Code::OwnerOnly).with("action", action)
+    let words = action.replace('_', " ");
+    let sentence = Code::OwnerOnly.sentence().replace("{action}", &words);
+    Fail::said(Code::OwnerOnly, sentence).with("action", action)
 }
 
 /// A failed request, answered with its code (see the head).
@@ -162,5 +166,18 @@ mod tests {
             (body.code, body.error.as_str()),
             (Code::Internal, "the server failed to handle the request")
         );
+    }
+
+    /// The page picks its words by the action's name; whatever reads the
+    /// sentence (a model's tool, an MCP program, the log) reads English.
+    #[test]
+    fn the_refusal_for_another_account_says_its_action_in_words() {
+        let body = body_of(&owner_only("use_its_files").into(), Code::Internal);
+        assert_eq!(
+            body.error,
+            "Only this computer's account can use its files."
+        );
+        let action = body.details.get("action").map(ToString::to_string);
+        assert_eq!(action.as_deref(), Some("use_its_files"));
     }
 }

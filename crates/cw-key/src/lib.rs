@@ -8,12 +8,32 @@
 //! is another, so that no test touches the installed app's entry), so it is
 //! never on disk beside the database. While a
 //! password is on (`password.rs`), the store holds nothing: `keep` and `forget`
-//! put it back and take it out.
+//! put it back and take it out. Every random value of the server is drawn
+//! here ([`random`], [`random_hex`]), the one crate naming `getrandom`.
 
 use std::fmt;
 use std::path::Path;
 
 use anyhow::{Context, bail};
+use cw_core::{Code, Fail};
+
+/// Fills `bytes` with chance from the operating system; without a source,
+/// an internal failure that says so.
+pub fn random(bytes: &mut [u8]) -> anyhow::Result<()> {
+    getrandom::fill(bytes)
+        .map_err(|e| anyhow::anyhow!(Fail::said(Code::Internal, format!("no random source: {e}"))))
+}
+
+/// `len` random bytes in hex: a token, a key or a mark.
+pub fn random_hex(len: usize) -> anyhow::Result<String> {
+    let mut bytes = vec![0u8; len];
+    random(&mut bytes)?;
+    Ok(hex(&bytes))
+}
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
 
 /// The database file's name in a data folder, which the key is kept for.
 pub const FILE_NAME: &str = "cardwave.db";
@@ -29,7 +49,7 @@ pub struct DbKey([u8; 32]);
 impl DbKey {
     pub fn generate() -> anyhow::Result<Self> {
         let mut bytes = [0u8; 32];
-        getrandom::fill(&mut bytes).map_err(|e| anyhow::anyhow!("no random source: {e}"))?;
+        random(&mut bytes)?;
         Ok(Self(bytes))
     }
 
@@ -48,7 +68,7 @@ impl DbKey {
     }
 
     pub fn to_hex(&self) -> String {
-        self.0.iter().map(|b| format!("{b:02x}")).collect()
+        hex(&self.0)
     }
 
     pub fn from_bytes(bytes: [u8; 32]) -> Self {
@@ -189,5 +209,16 @@ mod store {
 
     pub fn forget(_service: &str, _data_dir: &Path) -> anyhow::Result<()> {
         bail!(NONE)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn random_hex_is_two_digits_a_byte_and_new_each_time() {
+        let one = super::random_hex(8).unwrap();
+        assert_eq!(one.len(), 16);
+        assert!(one.bytes().all(|b| b.is_ascii_hexdigit()));
+        assert_ne!(one, super::random_hex(8).unwrap());
     }
 }

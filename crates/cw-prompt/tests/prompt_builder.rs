@@ -812,3 +812,26 @@ fn history_macros_run_once_in_order_and_draw_the_same_on_every_build() {
         "{said} drawn anew"
     );
 }
+
+#[test]
+fn a_newest_message_or_an_instruction_that_does_not_fit_is_told() {
+    use cw_prompt::builder::LeftOut;
+    let card = Character::default();
+    // 100 tokens, 10 kept for the reply: a newest message of 95 does not fit.
+    let long = "x".repeat(95);
+    let prompt = run(&request(&card, 100), &mut chat(&["Hi", "Hello", &long]));
+    assert_eq!(prompt.left_out, Some(LeftOut::Newest(105)));
+    let fits = run(&request(&card, 100), &mut chat(&["Hi", "Hello", "Go on"]));
+    assert_eq!(fits.left_out, None);
+
+    let card = Character {
+        post_history_instructions: "y".repeat(20),
+        ..Default::default()
+    };
+    let req = PromptRequest {
+        injected_message: Some((Role::User, "Write for me, at some length.")),
+        ..request(&card, 100)
+    };
+    let prompt = run(&req, &mut chat(&["Hi"]));
+    assert!(matches!(prompt.left_out, Some(LeftOut::Injected(_))));
+}

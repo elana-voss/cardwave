@@ -119,6 +119,7 @@ search-keys = Pesquisar no Cardwave (Ctrl+K)
 label-settings-theme = Tema
 label-settings-chat-layout = Layout do chat
 label-settings-web-pictures = Mostrar imagens de outros sites
+label-settings-tabs = Abas
 label-settings-app-language = Idioma do aplicativo
 label-settings-language = Idioma em que a IA escreve
 label-settings-providers = Provedores
@@ -136,7 +137,6 @@ label-settings-dice = Dados
 label-settings-folder = Pasta
 label-settings-written = Ferramentas que a IA escreveu
 label-settings-coding = Equipe de programação
-label-settings-trash = Lixeira
 label-settings-backup = Backup
 label-settings-restore = Restaurar
 label-settings-cards-folder = Pasta de fichas
@@ -174,18 +174,12 @@ settings-appearance = Aparência
 settings-theme-about = Segue o sistema, a menos que você escolha um
 settings-layout-about = Mensagens em balões ou como texto simples
 settings-web-pictures-about = Esses sites podem ver quando você abre o chat.
+settings-tabs-about = Manter várias páginas abertas na barra de título
 settings-language = Idioma
 settings-data = Dados
-settings-trash-about = { $count ->
-    [one] { $count } item
-    [many] { $count } itens
-   *[other] { $count } itens
-  } · esvaziada após { $days } dias
-settings-open-trash = Abrir a Lixeira
-settings-open = Abrir
 settings-version = Versão { $version } · licenças
 settings-licences = Licenças
-settings-advanced-about = Modelo auxiliar, biblioteca, exportação, chat sem personagem, amostragem, presets, seu próprio CSS
+settings-advanced-about = Modelo auxiliar, biblioteca, ferramentas para a IA, exportação, chat sem personagem, amostragem, presets, seu próprio CSS
 settings-setup-about = Provedores, modelos e voz, passo a passo
 settings-providers-about = Endereços e chaves dos serviços que executam os modelos
 settings-this-computer = este computador
@@ -231,7 +225,7 @@ backup-back-up = Salvar backup
 backup-no-file = Nenhum arquivo escolhido
 backup-choose-file = Escolher arquivo
 backup-its-password = A senha do backup
-backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito. A senha definida aqui continua como está. As outras contas também são substituídas.
+backup-restoring = Restaurar substitui tudo no Cardwave: chats, personagens, personas, lorebooks, memórias e configurações. Isso não pode ser desfeito. As outras contas também são substituídas.
 backup-restored = O backup foi restaurado: tudo no Cardwave está como quando o backup foi feito. Os outros dispositivos entram de novo.
 backup-file = Arquivo
 backup-restore-title = Restaurar um backup
@@ -269,7 +263,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = Deixar apps de IA deste computador usar o Cardwave
-mcp-ask = Programas deste computador, como o Claude Desktop, podem ler seus personagens e chats, escrever nos seus chats e usar as ferramentas ligadas em Configurações › Ferramentas. O que o Cardwave perguntaria a você antes, eles não podem fazer.
+mcp-ask = Programas deste computador, como o Claude Desktop, podem ler seus personagens e chats, escrever nos seus chats e usar as ferramentas ligadas em Configurações. O que o Cardwave perguntaria a você antes, eles não podem fazer.
 mcp-switch-on = Ativar
 mcp-about = Como o Claude Desktop, via MCP: usam seus personagens, chats e ferramentas
 mcp-copy-address = Copiar o endereço MCP
@@ -405,6 +399,7 @@ tools-change = Trocar
 tools-choose = Escolher
 tools-none-chosen = Nenhuma escolhida
 tools-title = Ferramentas
+tools-for-ai = Ferramentas para a IA
 tools-ask-new = { $name } quer usar uma nova ferramenta: { $what }
 tools-ask-write = { $name } quer gravar “{ $what }” na sua pasta:
 tools-ask-read = { $name } quer ler na sua pasta:
@@ -466,6 +461,9 @@ providers-choose-folder = Escolher uma pasta de modelos
 providers-change = Trocar
 providers-not-set-up = Não configurado
 providers-folder-not-set-up = Executa modelos de uma pasta neste computador · não configurado
+providers-this-computer-runs = Prontos para usar: { $models }
+providers-this-computer-none = Ainda sem modelo: baixe abaixo um que caiba
+providers-details = Detalhes
 providers-menu = Menu do provedor: editar, remover
 providers-remove = Remover
 providers-removed = Provedor “{ $name }” removido.
@@ -475,6 +473,7 @@ providers-remove-key = Remover a chave
 providers-key-removed = A chave é removida quando você salvar
 providers-edit = Editar provedor
 providers-keep-key = Deixe vazio para manter a chave salva.
+providers-new-address-key = Um novo endereço precisa da chave digitada de novo: uma chave nunca vai para outro servidor.
 providers-saved = Provedor “{ $name }” salvo.
 providers-added = Provedor “{ $name }” adicionado.
 providers-add = Adicionar provedor
@@ -550,11 +549,7 @@ advanced-not-described = { $count ->
    *[other] { $count } personagens ainda não descritos
   }
 advanced-describe-cards = Descrever personagens
-advanced-describe-cost = Cerca de { $low } a { $high } tokens para { $count ->
-    [one] { $count } personagem
-    [many] { $count } personagens
-   *[other] { $count } personagens
-  }
+advanced-describe-cost = Fichas a ler: { $count }
 advanced-failed = { $count ->
     [one] { $count } falhou
     [many] { $count } falharam
@@ -562,7 +557,7 @@ advanced-failed = { $count ->
   }: { $failure }. Toque em Descrever personagens para tentar de novo.
 advanced-describe-again = Descrever todas de novo
 advanced-describe-again-stop = Parar
-advanced-describe-again-about = Com o modelo auxiliar, reescreve a descrição de uma linha, o resumo e as tags de cada personagem e aquilo pelo que "Por necessidade" o encontra, cerca de 11.000 a 12.000 tokens cada. O que você editou continua. Os provedores cobram por tokens.
+advanced-describe-again-about = Com o modelo auxiliar, lê de novo cada ficha e reescreve a descrição de uma linha, o resumo e as tags de cada personagem e aquilo pelo que "Por necessidade" o encontra. O que você editou continua.
 advanced-no-characters = Nenhum personagem para descrever
 advanced-describe-again-far = { $done } de { $all } descritos de novo
 advanced-describe-again-stopped = Parado em { $done } de { $all } descritos de novo
@@ -839,6 +834,8 @@ server-switch-on = Ativar
 server-network-about = Celulares e outros computadores abrem o Cardwave em um navegador
 server-other-devices = Outros dispositivos
 server-inside = Só dispositivos desta rede o alcançam, a menos que você configure seu roteador para deixar outros entrarem.
+server-anywhere = De qualquer lugar
+server-tailscale = Para abri-lo de qualquer lugar, instale o app gratuito Tailscale (tailscale.com) neste computador e no seu celular, e entre nos dois.
 server-add-account = Adicionar conta
 server-owner = Este computador · pode adicionar e remover contas
 server-more-of = Mais: { $name }

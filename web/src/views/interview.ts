@@ -78,7 +78,7 @@ export function interviewView(): View {
   let sending: AbortController | null = null;
   let topics: InterviewText[] = [];
   let reading: Reading | null = null;
-  const holder = el("div", { className: "flex f-col g-22" });
+  const holder = el("div", { className: "flex f-col interview-gap" });
   let writing = false;
   let problem: Problem | null = null;
   let tried: OtherModel | null = null;
@@ -227,7 +227,7 @@ export function interviewView(): View {
     }
     if (writing) {
       const stop = () => sending?.abort();
-      holder.replaceChildren(greyed("faded flex f-col g-22", listOf(state), closedOrOpen(state)), writingRow(stop));
+      holder.replaceChildren(greyed("faded flex f-col interview-gap", listOf(state), closedOrOpen(state)), writingRow(stop));
       return;
     }
     const foot =

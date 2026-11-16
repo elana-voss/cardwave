@@ -10,8 +10,10 @@
 //! read by the Worker model, a failed one stays for the next pass; then the
 //! missing vectors are made, without the reply's time limit, and other chats of
 //! a shared memory whose blocks were let go are read again. `recall`, before a
-//! reply, never fails it; a memory that does not read leaves the rest: the note
-//! (by words alone without vectors), lorebook entries by meaning, documents
+//! reply, asks the chat's one memory, which its pass writes, whoever speaks
+//! (`chat_remembering`); it never fails the reply; a memory that does not read
+//! leaves the rest: the note (by words alone without vectors), lorebook entries
+//! by meaning, documents
 //! (those attached to the message answered whole, the rest by meaning).
 
 use std::collections::HashSet;
@@ -20,7 +22,7 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::routing::{get, patch, post};
 use axum::{Json, Router};
-use cw_chat::assistant::{self, Remembering};
+use cw_chat::assistant;
 use cw_chat::attachments;
 use cw_chat::chats::{self, Chat, PromptInputs};
 use cw_chat::documents;
@@ -88,6 +90,8 @@ async fn restore(
 ) -> ApiResult<Json<MemoryView>> {
     let view = state.run(move |db| memory::restore(db, user, &id)).await?;
     told(&state, user, view.chat_id);
+    // Its vector, let go while it was deleted.
+    remember(&state, user, view.chat_id);
     Ok(Json(view))
 }
 
@@ -140,7 +144,7 @@ fn worker(db: &cw_store::Db, user: i64, chat_id: i64) -> anyhow::Result<Option<W
     let Some(chat) = chats::get(db, user, chat_id)? else {
         return Ok(None);
     };
-    let owner = assistant::chat_remembering(db, user, &chat)?.owner(chat.id);
+    let owner = assistant::chat_remembering(db, user, &chat)?.owner(&chat);
     let provider = provider::for_work(db, user)?;
     Ok(owner.zip(provider).map(|(owner, mut provider)| {
         provider.sampling.temperature = Some(TEMPERATURE);
@@ -318,19 +322,16 @@ pub(super) async fn recall(
 ) -> Recalled {
     let taken = chat.clone();
     let card_id = inputs.card_id;
-    let (character, mode) = (inputs.character_id.clone(), inputs.mode.clone());
     let read = state
         .work(move |db| {
-            let remembering = match card_id {
-                Some(card_id) => assistant::remembering(db, card_id, &character, mode.as_deref())?,
-                None => Remembering::Off,
-            };
+            // The chat's one memory, which its pass writes, whoever speaks.
+            let remembering = assistant::chat_remembering(db, user, &taken)?;
             let read = memory::read_chat(db, user, &taken, last)?;
             let newest: Vec<String> = read.said[read.said.len().saturating_sub(MEANT)..]
                 .iter()
                 .map(|(said, _)| said.line())
                 .collect();
-            let to_render = || match remembering.owner(taken.id) {
+            let to_render = || match remembering.owner(&taken) {
                 Some((owner, mode)) => {
                     match memory::to_render(db, user, &read, (&owner, mode), speaker)? {
                         Some(to_render) => {
@@ -352,7 +353,7 @@ pub(super) async fn recall(
                     Vec::new()
                 });
             let attached = last.map_or(Ok(Vec::new()), |last| {
-                attachments::Storage::message_documents(db, user, last)
+                attachments::of_message(db, user, last)
             });
             let attached = attached.unwrap_or_else(|failure| {
                 tracing::error!(
@@ -422,9 +423,6 @@ async fn note(
     }
 }
 
-/// A document attached to the message answered: its ID, name and text.
-type Attached = (i64, String, String);
-
 /// Gives `recalled` the lorebook entries used by meaning that the `newest`
 /// messages are about and the documents (`documents::given`, of at most
 /// `budget` tokens): those `attached` to the message answered, whatever the
@@ -434,7 +432,7 @@ async fn by_meaning(
     user: i64,
     inputs: &PromptInputs,
     newest: &str,
-    (attached, pieces, budget): (&[Attached], Vec<cw_search::Piece>, usize),
+    (attached, pieces, budget): (&[documents::Attached], Vec<cw_search::Piece>, usize),
     recalled: &mut Recalled,
 ) {
     let entries: Vec<(String, String)> = inputs

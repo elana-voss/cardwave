@@ -1,9 +1,11 @@
 // The menus and the windows over the page: `menu`, `menuOn`, `opener`, `contextMenu` and `menuAt` (one at a point), a line of one a
 // `MenuItem`, with `step` and `within` for the arrow keys and the window's edge; `dialog`, `formDialog` with "Save"
-// or the word it is given, `folderDialog`, `sheet`, and `askFirst`, the question in a line's place (`askUnder`: under a list's line).
+// or the word it is given, `folderDialog`, `sheet`, and `askFirst`, the question in a line's place (`askUnder`: under a list's line;
+// `menuDeleting`: a line's "…" whose last line asks so).
 //
 // Traps: a menu that would be cut off places itself in the window (`float`) and closes when the window changes
-// its size or what its button stands in scrolls; a dialog stands in its screen and goes with it.
+// its size or what its button stands in scrolls; every other menu is kept inside the window as it opens and as the
+// window changes its size (`fit`); a dialog stands in its screen and goes with it.
 import { icon, type IconName } from "./icons";
 import { type Child, closeButton, el, noticeBox, oneAtATime } from "./dom";
 import { wording } from "./language/language";
@@ -51,6 +53,8 @@ export interface MenuItem {
   sub?: string;
   /** The line is not shown, as what it does is not there for the user. */
   hidden?: boolean;
+  /** The language the label is in where it is not the app's (a language named in its own words). */
+  lang?: string;
 }
 
 /**
@@ -80,6 +84,7 @@ function menuItems(items: MenuItem[], shut: (back: boolean) => void): { list: HT
       ...(item.sub !== undefined ? [el("span", { className: "l1" }, item.label, mark), el("span", { className: "sub" })] : [item.label, mark]),
     );
     if (choice) line.ariaChecked = String(item.chosen);
+    if (item.lang) line.lang = item.lang;
     // The line's name is its label; the grey line under it describes it.
     if (item.sub !== undefined) line.ariaLabel = item.label;
     return line;
@@ -176,6 +181,15 @@ export function menuOn(button: HTMLButtonElement, items: MenuItem[], float: bool
     if (back) button.focus();
   });
   const { node, open } = opener(button, list, (shut) => {
+    if (!float) {
+      fit(list, true);
+      // It stays open as the window changes its size: kept inside it, the page moved to show it again.
+      const refit = () => {
+        fit(list, true);
+        list.scrollIntoView({ block: "nearest" });
+      };
+      window.addEventListener("resize", refit, { signal: shut });
+    }
     if (float) {
       const at = button.getBoundingClientRect();
       place(list, float === "end" ? at.right - list.getBoundingClientRect().width : at.left, at.bottom + MENU_GAP);
@@ -197,9 +211,33 @@ export function menuOn(button: HTMLButtonElement, items: MenuItem[], float: bool
   return node;
 }
 
+/** The button of a `menu`, named `label`. */
+const menuButton = (label: string, shape: IconName = "more", size?: number) =>
+  el("button", { type: "button", className: "quiet icon btn btn-quiet btn-icon", ariaLabel: label }, icon(shape, size));
+
 /** A button named `label` that opens a list of actions under it: a "more" button, unless it is given another `shape` and `size`. */
 export function menu(label: string, items: MenuItem[], shape: IconName = "more", size?: number): HTMLElement {
-  return menuOn(el("button", { type: "button", className: "quiet icon btn btn-quiet btn-icon", ariaLabel: label }, icon(shape, size)), items);
+  return menuOn(menuButton(label, shape, size), items);
+}
+
+/** What a line's "…" asks before it deletes: the words of its line, the question, the word that says yes, and what yes does. */
+export interface Deleting {
+  label: string;
+  question: () => string;
+  yes: string;
+  action: () => void;
+}
+
+/**
+ * A list line's "…" (`menu`, named `label`) with `items` and, last, apart from them, the red line that deletes, which asks
+ * first under the line (`askUnder`): the tools hidden meanwhile are what the "…" stands in, and Cancel gives the
+ * focus back to its button.
+ */
+export function menuDeleting(label: string, items: MenuItem[], deleting: Deleting): HTMLElement {
+  const button = menuButton(label);
+  const ask = () => askUnder(node.parentElement!, button, deleting.question(), deleting.yes, deleting.action);
+  const node: HTMLElement = menuOn(button, [...items, { label: deleting.label, shape: "trash", danger: true, apart: items.length > 0, action: ask }]);
+  return node;
 }
 
 /**
@@ -329,8 +367,29 @@ const MENU_EDGE = 4;
 /** Where something `size` long that would begin `at` begins, so that all of it is inside a window with `room`. */
 export const within = (at: number, size: number, room: number) => Math.max(MENU_EDGE, Math.min(at, room - size - MENU_EDGE));
 
+/**
+ * Keeps a menu inside the window: never higher than the window, its lines scrolling in it (a long list, as the
+ * languages); one `under` its button, which stands from its button's right edge, moved in from the window's left.
+ */
+function fit(list: HTMLElement, under: boolean): void {
+  // Only one too high scrolls: scrolling clips what stands past the lines, as the focus ring of the first.
+  list.style.maxHeight = "";
+  list.style.overflowY = "";
+  if (list.getBoundingClientRect().height > innerHeight - 2 * MENU_EDGE) {
+    const style = getComputedStyle(list);
+    const padding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+    list.style.maxHeight = `${innerHeight - 2 * MENU_EDGE - padding}px`;
+    list.style.overflowY = "auto";
+  }
+  if (!under) return;
+  list.style.right = "";
+  const { left } = list.getBoundingClientRect();
+  if (left < MENU_EDGE) list.style.right = `${left - MENU_EDGE}px`;
+}
+
 /** Puts a menu that stands in the window by itself where its corner is at `left` and `top`, or as near as leaves all of it inside the window. */
 function place(list: HTMLElement, left: number, top: number): void {
+  fit(list, false);
   const { width, height } = list.getBoundingClientRect();
   list.style.left = `${within(left, width, innerWidth)}px`;
   list.style.top = `${within(top, height, innerHeight)}px`;

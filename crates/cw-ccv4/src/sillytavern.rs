@@ -872,7 +872,23 @@ impl<'a> Entry<'a> {
             lore.insert(key.to_string(), value);
         };
         let (entry, find) = (self.fields, |key: &str| self.find(key));
-        let secondary = strings(entry.get("secondary_keys"));
+        let mut keywords = keywords;
+        let mut secondary = strings(entry.get("secondary_keys"));
+        // In SillyTavern a key written as /pattern/flags is a regular expression,
+        // whatever `use_regex` says (it writes true on every entry of a card).
+        // Here the setting holds for all keys of an entry, so the plain keys
+        // beside such a one are made patterns that match just their text; an
+        // entry that says false keeps its keys as they are.
+        let patterns = flag(find("use_regex")) != Some(false)
+            && keywords.iter().chain(&secondary).any(|key| is_pattern(key));
+        if patterns {
+            for key in keywords.iter_mut().chain(secondary.iter_mut()) {
+                if !is_pattern(key) {
+                    *key = fancy_regex::escape(key).into_owned();
+                }
+            }
+            set("use-regex", true.into());
+        }
         set("keywords", list(keywords));
         let selective = flag(entry.get("selective")) == Some(true) && !secondary.is_empty();
         if !secondary.is_empty() {
@@ -891,7 +907,6 @@ impl<'a> Entry<'a> {
             }
         }
         for (key, source) in [
-            ("use-regex", "use_regex"),
             ("case-sensitive", "case_sensitive"),
             ("match-whole-words", "match_whole_words"),
             ("ignore-budget", "ignore_budget"),
@@ -962,4 +977,12 @@ impl<'a> Entry<'a> {
             lore.insert("character-filter".to_string(), Value::Table(filter));
         }
     }
+}
+
+/// Whether a key has JavaScript's `/pattern/flags` form.
+fn is_pattern(key: &str) -> bool {
+    key.starts_with('/')
+        && key.rfind('/').is_some_and(|end| {
+            end > 1 && key[end + 1..].bytes().all(|flag| flag.is_ascii_lowercase())
+        })
 }

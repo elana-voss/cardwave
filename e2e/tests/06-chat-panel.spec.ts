@@ -228,8 +228,8 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
 test("a chat's lorebooks are switches, and one switched off stays out of the replies", async ({ page, request }) => {
   const chat = await start(request, "wren");
   await open(page, chat);
-  // Code mode's among them.
-  await expect(panel(page).getByRole("switch")).toHaveCount(4);
+  // Code mode's among them; "Let the AI write tools" shows only in a chat without a character.
+  await expect(panel(page).getByRole("switch")).toHaveCount(3);
   await expect(lorebookLines(page)).toHaveText(["The Fen", "Trade"]);
   await expect(lorebook(page, "The Fen")).toBeChecked();
   await expect(lorebook(page, "Trade")).toBeChecked();

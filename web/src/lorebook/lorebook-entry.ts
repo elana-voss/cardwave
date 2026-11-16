@@ -15,11 +15,10 @@ import type { SelectiveLogic } from "../api/generated/SelectiveLogic";
 import type { Trigger } from "../api/generated/Trigger";
 import { textBlock, type CardPage } from "../card/card-block";
 import { inPlace } from "../in-place";
-import { announce, el, failure, NARROW, reason, segmented, switchBox } from "../dom";
+import { announce, el, failure, moreOpener, NARROW, reason, segmented, switchBox } from "../dom";
 import { menu } from "../dialogs";
 import { count, field } from "../edit-form";
 import { keys, NEW, said } from "./entry";
-import { icon } from "../icons";
 import { proposalBox, type Proposal } from "./lore-tools";
 import { MAX_NAME } from "./lorebook-dialog";
 import { wording } from "../language/language";
@@ -233,6 +232,8 @@ function drawNew(b: Book): void {
       await b.reload();
       announce(wording("lorebook-entry-entry-added"));
       place(b, added.reference);
+      // The name's field is gone with its column (a Tab from it left for the list's button): typing goes on in "Used when".
+      b.column.querySelector<HTMLElement>("[role=group] button[aria-pressed=true]")?.focus();
     }).then((done) => {
       adding = done;
       if (done || !heading.isConnected) return;
@@ -305,16 +306,7 @@ function morePart(b: Book, entry: EditEntry, put: (change: EntryChange) => void)
     flag(wording("lorebook-entry-case-sensitive"), entry.case_sensitive, (case_sensitive) => put({ case_sensitive })),
     flag(wording("lorebook-entry-whole-words"), entry.whole_words, (whole_words) => put({ whole_words })),
   );
-  const opener = el("button", { type: "button", className: "textbtn as-s" }, icon(b.more ? "up" : "down", 14), wording("lorebook-entry-more-settings"));
-  opener.setAttribute("aria-expanded", String(b.more));
-  opener.setAttribute("aria-controls", rest.id);
-  opener.onclick = () => {
-    b.more = !b.more;
-    rest.hidden = !b.more;
-    opener.setAttribute("aria-expanded", String(b.more));
-    opener.firstElementChild?.replaceWith(icon(b.more ? "up" : "down", 14));
-  };
-  return [opener, rest];
+  return [moreOpener(wording("lorebook-entry-more-settings"), rest, b.more, (open) => (b.more = open)), rest];
 }
 
 /** Takes an entry out of the lorebook, and says so with the way back. */

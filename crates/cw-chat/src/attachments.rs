@@ -24,7 +24,7 @@ use cw_core::{Code, Fail};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::documents::{self, DocumentView, Owner};
+use crate::documents::{self, Attached, DocumentView, Owner};
 use cw_core::NotFound;
 
 /// A message's attachment, as the chat shows it: a picture as a tile, a
@@ -61,13 +61,9 @@ pub trait Storage {
     fn take_attachments(&self, chat_id: i64, message_id: i64, ids: &[i64]) -> anyhow::Result<()>;
     /// The pictures attached to the messages `ids`, each with its message, the first first.
     fn message_pictures(&self, ids: &[i64]) -> anyhow::Result<Vec<(i64, Vec<u8>)>>;
-    /// The documents attached to the user's message, out of the Trash: each
-    /// its ID, name and text, the first first.
-    fn message_documents(
-        &self,
-        user: i64,
-        message_id: i64,
-    ) -> anyhow::Result<Vec<(i64, String, String)>>;
+    /// The documents attached to the user's message, out of the Trash, the
+    /// first first.
+    fn message_documents(&self, user: i64, message_id: i64) -> anyhow::Result<Vec<Attached>>;
     /// The attachments waiting in the user's chat, the first first.
     fn waiting(&self, user: i64, chat_id: i64) -> anyhow::Result<Vec<Attachment>>;
 }
@@ -163,6 +159,12 @@ pub fn attach_document(
         picture: false,
     };
     Ok((attached, document))
+}
+
+/// The documents attached to the user's message `message_id`, out of the
+/// Trash, the first first.
+pub fn of_message(db: &dyn Storage, user: i64, message_id: i64) -> anyhow::Result<Vec<Attached>> {
+    db.message_documents(user, message_id)
 }
 
 /// A picture attached by the user, with its type.

@@ -1,12 +1,12 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { expect, modelLine, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
 // The account's group "Models": a line to Settings › Providers, then Chat and Images, and Settings › Advanced's
 // "Helper model" with Helper, each its model and provider with "Change", which opens the model picker of that kind (the models of every provider, grouped
 // under the provider's name), stores the model taken at once and tests it. The test stores the provider it
 // starts from itself (`store`), at the stand-ins `api` and `other`; no test asks a provider. A stand-in does not
-// say what kind its models are, so its heading says "· not known whether it can do this" and all its models are listed.
+// say what kind its models are, so each of its models has a quiet mark saying it is not known whether it can do this, and all are listed.
 
 let api: FakeProvider;
 /** Another address, with models of its own. */
@@ -34,10 +34,11 @@ const picker = (page: Page, title = "Chat model") => page.getByRole("dialog", { 
 const search = (page: Page, title?: string) => picker(page, title).getByLabel("Model", { exact: true });
 /** The picker's lines: a provider's model by its ID (grey under its readable name), this computer's by its words. */
 const offered = (page: Page, title?: string) =>
-  picker(page, title).getByRole("option").evaluateAll((lines) => lines.map((line) => line.querySelector(".opt-id")?.textContent ?? line.textContent));
+  picker(page, title).getByRole("option").evaluateAll((lines) => lines.map((line) => (line as HTMLElement).title || line.textContent));
+/** A provider's model in the picker, by its ID (the line's title; its name is the readable one). */
+const model = (page: Page, id: string, title?: string) => modelLine(picker(page, title), id);
 const use = (page: Page) => button(page, "Use this model");
 const rest = (page: Page) => page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-const host = (at: FakeProvider) => new URL(at.url).host;
 /** What a provider on this computer the user did not name is called. */
 const HERE = "A program on this computer";
 
@@ -69,7 +70,7 @@ test("the settings begin with the chat model that is stored, and “Change” st
   await expect(group(page).locator(".item-label")).toHaveText(["Providers", "Chat", "Images", "Voice", "Search", "Dictation"]);
   await expect(page.locator(".settings-group").last().locator(".item-label").first()).toHaveText("Advanced");
   await page.getByRole("link", { name: /^Advanced/ }).click();
-  await expect(page.locator(".settings-group h2")).toHaveText(["Helper model", "Chat without a character", "Library", "Data", "Model presets", "Prompt presets"]);
+  await expect(page.locator(".settings-group h2")).toHaveText(["Helper model", "Chat without a character", "Library", "Tools for the AI", "Data", "Model presets", "Prompt presets"]);
   await expect(line(page, "Helper model")).toBeVisible();
   await page.goBack();
   await expect(says(page)).toHaveText(`tide-1 · ${HERE}`);
@@ -82,14 +83,14 @@ test("the settings begin with the chat model that is stored, and “Change” st
   // "Change" opens the picker of the kind, with the search focused, and asks each provider for its models, with its key.
   await change(page).click();
   await expect(search(page)).toBeFocused();
-  await expect(picker(page).locator(".kind-group")).toHaveText([`${HERE} · ${host(api)} · not known whether it can do this`]);
+  await expect(picker(page).locator(".kind-group")).toHaveText([HERE]);
   await expect.poll(() => offered(page)).toEqual(["Reef-1", "tide-1", "tide-2"]);
   expect(api.listed.slice(listed)).toContainEqual({ path: "/v1/models", key: `Bearer ${KEY}` });
-  await expect(picker(page).getByRole("option", { name: "tide-1" })).toHaveAttribute("aria-selected", "true");
+  await expect(model(page, "tide-1")).toHaveAttribute("aria-selected", "true");
   // What is typed narrows the list; a line taken, "Use this model" stores it at once and tests it.
   await search(page).fill("reef");
   expect(await offered(page)).toEqual(["Reef-1"]);
-  await picker(page).getByRole("option", { name: "Reef-1" }).click();
+  await model(page, "Reef-1").click();
   await use(page).click();
   await expect(page.locator("dialog")).toHaveCount(0);
   await expect(says(page)).toHaveText(`Reef-1 · ${HERE} · test passed`);
@@ -98,7 +99,7 @@ test("the settings begin with the chat model that is stored, and “Change” st
 
   // Left by "Cancel" or Escape, the picker stores nothing and asks nothing.
   await change(page).click();
-  await picker(page).getByRole("option", { name: "tide-2" }).click();
+  await model(page, "tide-2").click();
   await button(page, "Cancel").click();
   await change(page).click();
   await page.keyboard.press("Escape");
@@ -123,7 +124,7 @@ test("the settings begin with the chat model that is stored, and “Change” st
   await open(page);
   await expect(line(page).locator(".item-wrong")).toHaveText("Your provider no longer offers this model: choose another.");
   await change(page).click();
-  await picker(page).getByRole("option", { name: "Reef-1" }).click();
+  await model(page, "Reef-1").click();
   await use(page).click();
   await expect(says(page)).toHaveText(`Reef-1 · ${HERE} · test passed`);
   await expect(line(page).locator(".item-wrong")).toHaveText("");
@@ -141,9 +142,9 @@ test("the background model's line says the chat model does that work until one i
   // Every provider's models, under its name.
   const background = "Helper model";
   await change(page, "helper").click();
-  await expect(picker(page, background).locator(".kind-group")).toHaveText([`${HERE} · ${host(api)} · not known whether it can do this`, `${HERE} · ${host(other)} · not known whether it can do this`]);
+  await expect(picker(page, background).locator(".kind-group")).toHaveText([HERE, HERE]);
   await expect.poll(() => offered(page, background)).toEqual(["tide-1", "tide-1-mini", "tide-2", "duo", "solo"]);
-  await picker(page, background).getByRole("option", { name: "tide-1-mini" }).click();
+  await model(page, "tide-1-mini", background).click();
   await use(page).click();
   await expect(says(page, "Helper model")).toHaveText(`tide-1-mini · ${HERE} · test passed`);
   expect(api.asked.slice(asked).map((question) => question.body.model)).toEqual(["tide-1-mini"]);
@@ -151,7 +152,7 @@ test("the background model's line says the chat model does that work until one i
   // The chat model taken at the other provider moves Chat there; the background model stays where it is.
   await open(page);
   await change(page).click();
-  await picker(page).getByRole("option", { name: "solo" }).click();
+  await model(page, "solo").click();
   await use(page).click();
   await expect(says(page)).toHaveText(`solo · ${HERE} · test passed`);
   await open(page, true);
@@ -160,7 +161,7 @@ test("the background model's line says the chat model does that work until one i
 
   // The chat model picked as the background model is none: the chat model does that work again.
   await change(page, "helper").click();
-  await picker(page, background).getByRole("option", { name: "solo" }).click();
+  await model(page, "solo", background).click();
   await use(page).click();
   await expect(says(page, "Helper model")).toHaveText("Same as the chat model");
   expect((await stored(request)).worker_model).toBeNull();
@@ -175,7 +176,7 @@ test("the lines Search and Voice open the picker of their kind too, whose “Thi
   await button(page, "Set up search").click();
   await expect(picker(page, "Search model").locator(".kind-group").first()).toHaveText("This computer");
   await expect.poll(() => offered(page, "Search model")).toContain("tide-2");
-  await picker(page, "Search model").getByRole("option", { name: "tide-2" }).click();
+  await model(page, "tide-2", "Search model").click();
   await use(page).click();
   await expect(says(page, "Search")).toHaveText(`tide-2 · ${HERE}`);
   // Taken back to this computer, the download's dialog opens.
@@ -188,7 +189,7 @@ test("the lines Search and Voice open the picker of their kind too, whose “Thi
 
   // A provider's voice model leads to the page Voices, which lists that provider's voices; the stand-in lists none.
   await button(page, "Set up voice").click();
-  await picker(page, "Voice model").getByRole("option", { name: "tide-1" }).click();
+  await model(page, "tide-1", "Voice model").click();
   await use(page).click();
   await expect(page).toHaveURL(/#\/settings\/voices$/);
   await expect(page.getByText("The provider lists no voices")).toBeVisible();

@@ -12,7 +12,7 @@
 import { language, wording } from "../language/language";
 import { getLicenses, getShippedVoices, getStatus, getWhatsNew, type Library, type Licensed, type Licenses } from "../api/client";
 import type { VoiceChoice } from "../api/generated/VoiceChoice";
-import { announce, el, failure, group, reason, searchField, type View } from "../dom";
+import { announce, crumbs, el, failure, group, reason, searchField, type View } from "../dom";
 import { sheet } from "../dialogs";
 import { clause, day } from "../format";
 import { desktop } from "../desktop";
@@ -70,7 +70,7 @@ export function versions(text: string): Version[] {
 
 /** The link to the community's Discord server, under the version; it opens outside the app. */
 export function community(): HTMLAnchorElement {
-  return el("a", { href: "https://discord.gg/C62KZVg6J", target: "_blank", rel: "noopener noreferrer" }, wording("about-community"));
+  return el("a", { className: "reach", href: "https://discord.gg/C62KZVg6J", target: "_blank", rel: "noopener noreferrer" }, wording("about-community"));
 }
 
 export function aboutView(): View {
@@ -78,7 +78,7 @@ export function aboutView(): View {
   const said = el("span", { className: "meta" });
   const groups = el("div", { className: "page-col" });
   node.append(
-    el("header", { className: "page-head" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-about")))),
+    el("header", { className: "page-head" }, crumbs([wording("page-settings"), "#/settings"], wording("page-about"))),
     groups,
   );
   groups.append(el("div", { className: "about-head flex ai-c g-14" }, el("img", { src: logo, alt: "" }), el("div", { className: "flex f-col" }, el("span", { className: "fs-title bold" }, wording("app-name")), said, community())));

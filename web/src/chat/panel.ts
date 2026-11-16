@@ -30,7 +30,7 @@ import type { PromptPreset } from "../api/generated/PromptPreset";
 import type { ChangePersonality } from "../api/generated/ChangePersonality";
 import type { Personality } from "../api/generated/Personality";
 import type { Tool } from "../api/generated/Tool";
-import { toolNames } from "../card/modes";
+import { forWork, toolNames } from "../card/modes";
 import { messageExpression } from "../api/client";
 import { closeButton, el, lineButton, selectField, switchBox } from "../dom";
 import { isArt } from "../art";
@@ -376,13 +376,14 @@ function promptPart(actions: PanelActions): Part {
 }
 
 /**
- * Whether the chat's Reply length is sent with a reply, and what its line says: not where the model thinks, which
+ * Whether the chat's Reply length is sent with a reply, and what its line says (nothing where it is sent; no tokens
+ * are named, the steps are words alone, Claude, 2026-11-15): not where the model thinks, which
  * wins, nor where a tool is offered (one besides Code mode's, `tools`, as the server tells, or Code mode).
  */
 export function replyLengthNote(thinks: boolean, tools: boolean, codeMode: boolean): { used: boolean; says: string } {
   if (thinks) return { used: false, says: wording("panel-not-used-this-model") };
   if (tools || codeMode) return { used: false, says: wording("panel-not-used-while-a") };
-  return { used: true, says: wording("panel-tokens-per-reply") };
+  return { used: true, says: "" };
 }
 
 /** Reply length's five named steps and their tokens, as the old Cardwave had them (the owner, 2026-10-22). */
@@ -398,7 +399,7 @@ export function replyStep(tokens: number): number {
 }
 
 /**
- * "Reply length", a slider of `replySteps()` whose line says the step ("Medium · 350"), with its note; `onStep` gets
+ * "Reply length", a slider of `replySteps()` whose line says the step by name ("Medium"), with its note; `onStep` gets
  * the tokens of a step let go (or an arrow key pressed). `atStep` draws it at the step nearest some tokens, `noted`
  * says whether the length is used, greyed with its step kept where not, and whether it can be moved.
  */
@@ -414,7 +415,7 @@ function lengthSlider(onStep: (tokens: number) => void) {
   /** Draws the slider at the step nearest `tokens`: its knob, the blue up to it, and the step's words. */
   const atStep = (tokens: number) => {
     const at = replyStep(tokens);
-    const says = `${replySteps()[at][0]} · ${replySteps()[at][1]}`;
+    const says = replySteps()[at][0];
     length.value = String(at);
     dots.forEach((dot, place) => dot.classList.toggle("past", place < at));
     length.setAttribute("aria-valuetext", (stepSays.textContent = says));
@@ -499,13 +500,14 @@ function replyPart(actions: PanelActions): Part {
   };
   const line = (control: HTMLInputElement, label: string, says: string | HTMLElement) =>
     el("div", { className: "item item-side" }, el("label", { className: "item-text", htmlFor: control.id }, el("span", { className: "item-label" }, label), typeof says === "string" ? el("span", { className: "meta" }, says) : says), control);
+  const codeLine = line(code, toolNames().code, wording("panel-small-tools-then-kept"));
   const ofSeveral = [line(pause, wording("panel-pause-between-replies"), wording("panel-seconds-when-they-reply")), line(replies, wording("panel-replies-in-a-row"), wording("panel-by-themselves-then-they"))];
   const node = part(
     el(
       "div",
       { className: "group" },
       slider.node,
-      line(code, toolNames().code, wording("panel-small-tools-then-kept")), ...ofSeveral),
+      codeLine, ...ofSeveral),
   );
   return {
     node,
@@ -518,6 +520,8 @@ function replyPart(actions: PanelActions): Part {
       // As the fields, the slider being moved is not drawn back.
       if (!slider.moving()) slider.atStep(now.reply_length);
       code.checked = now.code_mode;
+      // Only a chat for work offers it (Claude, 2026-11-15); one switched on stays, to be switched off.
+      codeLine.hidden = !forWork(view) && !now.code_mode;
       for (const one of ofSeveral) one.hidden = view.characters.length < 2 || !talking;
       code.disabled = pause.disabled = replies.disabled = locked;
       limit = { thinks: view.thinks, tools: view.tools, locked };

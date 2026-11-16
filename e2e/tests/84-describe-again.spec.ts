@@ -61,7 +61,7 @@ test("with no characters there is nothing to describe; one that could not be des
 
   first = await importCard(request, "Pell Marsh");
   await page.reload();
-  await expect(line(page).locator(".meta").last()).toContainText("about 11,000 to 12,000 tokens each");
+  await expect(line(page).locator(".meta").last()).toContainText("reads every card again");
   api.fail(500, "no");
   api.next([NEEDS]);
   await press(page).click();

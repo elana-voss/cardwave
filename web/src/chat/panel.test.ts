@@ -54,7 +54,7 @@ test("Reply length shows the step nearest its tokens, the five steps of the old 
 });
 
 test("Reply length is used where the model does not think and no tool is on, and says why not where it is not", () => {
-  expect(replyLengthNote(false, false, false)).toEqual({ used: true, says: "Tokens per reply" });
+  expect(replyLengthNote(false, false, false)).toEqual({ used: true, says: "" });
   expect(replyLengthNote(false, true, false)).toEqual({ used: false, says: "Not used while the AI uses tools" });
   expect(replyLengthNote(false, false, true)).toEqual({ used: false, says: "Not used while the AI uses tools" });
   // Thinking wins where both hold.

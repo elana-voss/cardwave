@@ -10,7 +10,6 @@ doctest = false
 
 [dependencies]
 flate2.workspace = true
-getrandom.workspace = true
 futures-util.workspace = true
 image.workspace = true
 percent-encoding.workspace = true
@@ -23,6 +22,7 @@ serde_json.workspace = true
 serde.workspace = true
 tokio.workspace = true
 cw-core.workspace = true
+cw-key.workspace = true
 cw-platform.workspace = true
 cw-prompt.workspace = true
 cw-modelfiles.workspace = true

@@ -1,3 +1,16 @@
+# 0.2.0
+
+Cardwave en tu teléfono y muchas correcciones.
+
+- Abre Cardwave desde cualquier lugar: con Tailscale, Cuenta › Compartir muestra la dirección para abrirlo en tu teléfono o en otro ordenador, y cada pantalla cabe en un teléfono.
+- Los recuerdos pertenecen a un personaje y a tu persona: cambiar la persona de un chat empieza recuerdos nuevos, y al volver encuentras los anteriores.
+- El acompañante se mueve más: muchos más movimientos, elegidos según su ánimo, y cuatro sentimientos más: asustado, juguetón, tímido y cansado.
+- Las figuras 3D se dibujan con WebGPU donde tu ordenador lo admite.
+- Puedes restaurar una copia de seguridad ya en el primer inicio, y una copia restaurada conserva su contraseña.
+- Ajustes más ordenados: las herramientas de la IA pasaron a Avanzado, y las pestañas se pueden desactivar en Ajustes › Apariencia.
+- Los textos de un personaje muestran «Haz clic para editar» al señalarlos, y el icono de la barra de tareas llena su cuadro.
+- Muchas correcciones halladas en una revisión de toda la aplicación.
+
 # 0.1.3
 
 Pequeñas correcciones.

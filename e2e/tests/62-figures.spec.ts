@@ -118,17 +118,20 @@ test("a mode has its own figure, and the companion shows the figure of its chat'
   await page.goto("/companion.html");
   await ownFile;
   const figure = page.locator("canvas.companion-figure");
-  // Drawn: some pixel of the canvas is the figure's.
+  // Drawn: some pixel of the canvas on screen is not its corner's. (Its picture is read from the screen, as the
+  // renderer keeps no frame after the task that drew it.)
   await expect
-    .poll(() =>
-      figure.evaluate((canvas: HTMLCanvasElement) => {
-        const copy = document.createElement("canvas");
-        [copy.width, copy.height] = [canvas.width, canvas.height];
-        const drawn = copy.getContext("2d")!;
-        drawn.drawImage(canvas, 0, 0);
-        return drawn.getImageData(0, 0, copy.width, copy.height).data.some((value, at) => at % 4 === 3 && value > 16);
-      }),
-    )
+    .poll(async () => {
+      const shot = `data:image/png;base64,${(await figure.screenshot()).toString("base64")}`;
+      return page.evaluate(async (source) => {
+        const image = Object.assign(new Image(), { src: source });
+        await image.decode();
+        const drawn = Object.assign(document.createElement("canvas"), { width: image.width, height: image.height }).getContext("2d")!;
+        drawn.drawImage(image, 0, 0);
+        const data = drawn.getImageData(0, 0, image.width, image.height).data;
+        return data.some((value, at) => Math.abs(value - data[at % 4]!) > 16);
+      }, shot);
+    })
     .toBe(true);
 
   // Set to Assistant, the next reply has the companion show the mode's own.

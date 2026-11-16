@@ -2,10 +2,12 @@
 // kind's line says, the models each provider offers (`catalogs`, asked once per provider and page, `forget` lets
 // them go), and the model picker of one kind (`pickKind`, board "Model picker · one kind"): a dialog named by
 // the kind ("Images model") with the search field "Model", the hint, and the list as part of it, the models of
-// that kind of every provider under the provider's name (`.kind-group`), the one in use ticked and light blue
-// (`.opt.on`), "Use this model" and Cancel. A model whose kind neither its provider nor models.dev says is under
-// every kind, and its provider has "type unknown" after its name (`OfferedModel.said`); one whose list did not come, or of which
-// none of the kind came, says why, with "Retry"; where no provider has one, the list says so.Taking a model of another provider moves the kind there
+// that kind of every provider under the provider's name alone (`.kind-group`; an unnamed local server's address
+// on hover), a model by its readable name, its ID on hover, the one in use ticked and light blue (`.opt.on`),
+// "Use this model" and Cancel. A model whose kind neither its provider nor models.dev says is under every kind,
+// with a quiet mark (`.opt-mark`, "Not known whether it can do this"; `OfferedModel.said`); a provider whose list
+// did not come, or of which none of the kind came, says why, with "Retry"; where no provider has one, the list
+// says so. Taking a model of another provider moves the kind there
 // (`pickModel` of api/client.ts). Search and Voice have first the group "This computer" with its downloaded
 // model (`ProvidersView.own`, as the server names it), which takes the kind back from its provider (`unpickKind`).
 import { pickModel, providerModels, unpickKind } from "../api/client";
@@ -14,7 +16,7 @@ import type { EntryView } from "../api/generated/EntryView";
 import type { Kind } from "../api/generated/Kind";
 import type { OfferedModel } from "../api/generated/OfferedModel";
 import type { ProvidersView } from "../api/generated/ProvidersView";
-import { el, failure, reason, told } from "../dom";
+import { el, failure, newest, reason, told } from "../dom";
 import { dialog } from "../dialogs";
 import { icon } from "../icons";
 import { field, modelCount, modelName } from "./provider-form";
@@ -59,14 +61,14 @@ export interface Catalogs {
 export function catalogs(changed: () => void): Catalogs {
   const known = new Map<number, Listed>();
   const listening = new Set<() => void>();
-  /** The asking whose answer counts, per provider. */
-  const asking = new Map<number, object>();
+  /** The askings per provider: the last one's answer counts. */
+  const asking = new Map<number, ReturnType<typeof newest>>();
   function ask(id: number): void {
-    const mine = {};
-    asking.set(id, mine);
+    const order = asking.get(id) ?? asking.set(id, newest()).get(id)!;
+    const mine = order.ask();
     known.set(id, "asking");
     const came = (listed: Listed) => {
-      if (asking.get(id) !== mine) return;
+      if (!order.last(mine)) return;
       known.set(id, listed);
       changed();
       for (const show of listening) show();
@@ -84,7 +86,8 @@ export function catalogs(changed: () => void): Catalogs {
     ask,
     forget() {
       known.clear();
-      asking.clear();
+      // An asking on its way is dropped, not only forgotten: its answer would count again.
+      for (const order of asking.values()) order.drop();
     },
     listen(show) {
       listening.add(show);
@@ -162,15 +165,8 @@ export function pickKind(home: HTMLElement, kind: Kind, view: ProvidersView, lis
     // This computer's folder holds chat models alone: no group, and no failed list, under another kind.
     if (provider.folder !== null && kind !== "chat" && kind !== "background") return [];
     const listed = lists.of(provider.id);
-    const known = typeof listed === "object" && "models" in listed && offeredFor(kind, listed).some((model) => !model.said);
-    const address = addressOf(provider);
-    const head = el(
-      "div",
-      { className: "kind-group ogh" },
-      providerName(provider.name),
-      address !== null && el("span", { className: "meta" }, wording("kinds-address", { address })),
-      known && el("span", { className: "meta" }, wording("kinds-type-unknown")),
-    );
+    // The provider's name alone; a server on this computer the user did not name tells its address on hover.
+    const head = el("div", { className: "kind-group ogh", title: addressOf(provider) ?? "" }, providerName(provider.name));
     if (listed === "asking") return [head, el("p", { className: "meta kind-note" }, wording("kinds-asking-the-provider"))];
     const failed = (error: string) => {
       const again = el("button", { type: "button", className: "link textbtn" }, wording("setup-try-again"));
@@ -185,14 +181,18 @@ export function pickKind(home: HTMLElement, kind: Kind, view: ProvidersView, lis
     if (!models.length && listed.failed && !typed) return failed(failureWords(listed.failed));
     // A provider with none of the kind is left out: under its name "none" read as a search that failed.
     if (!models.length) return [];
-    return [head, ...models.map((model) => option(provider.id, model.id, named(model), true))];
+    return [head, ...models.map((model) => option(provider.id, model.id, named(model), !model.said))];
   }
-  /** A model's line, ticked where it is the one chosen. */
-  function option(provider: number | null, id: string, label: string, withId = false): HTMLElement {
+  /**
+   * A model's line, ticked where it is the one chosen: its readable name, its ID on hover, as first run's picker shows it; `unsure`, a
+   * model whose kind nobody said, has a quiet mark that says so.
+   */
+  function option(provider: number | null, id: string, label: string, unsure = false): HTMLElement {
     const on = chosen?.provider === provider && chosen.model === id;
-    // A provider's model by its readable name, its ID in grey under it, as first run's picker shows it.
-    const words = withId ? el("span", { className: "flex f-col g-2" }, label, el("span", { className: "opt-id" }, id)) : el("span", null, label);
-    const line = el("button", { type: "button", role: "option", className: `opt${withId ? " two" : ""}${on ? " on" : ""}`, ariaSelected: String(on) }, words, on && icon("check", 16));
+    const unknown = wording("kinds-type-unknown");
+    const mark = unsure && el("span", { className: "opt-mark", role: "img", ariaLabel: unknown, title: unknown }, icon("info", 14));
+    const words = el("span", { className: "flex ai-c g-6" }, label, mark);
+    const line = el("button", { type: "button", role: "option", className: `opt${on ? " on" : ""}`, ariaSelected: String(on), title: id }, words, on && icon("check", 16));
     line.onclick = () => {
       chosen = { provider, model: id };
       draw();

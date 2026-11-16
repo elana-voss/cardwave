@@ -11,7 +11,7 @@ use anyhow::{Context, bail};
 use cw_core::{Code, Fail};
 use serde_json::Value as Json;
 
-use crate::sillytavern::{Card, Object, flag, slug_or, string, strings};
+use crate::sillytavern::{Card, Object, flag, slug_or, string};
 
 /// A lorebook file as CCV4.
 pub struct Lorebook {
@@ -155,37 +155,5 @@ fn renamed(mut entry: Object) -> Object {
     {
         filter.entry("is_exclude").or_insert(exclude);
     }
-    // In SillyTavern a key written as /pattern/flags is a regular expression,
-    // with no setting that says so. Here the setting holds for all keys of an
-    // entry, so the plain keys beside such a one are made patterns that match
-    // just their text.
-    if entry.get("use_regex").is_none_or(Json::is_null) {
-        let lists = ["keys", "secondary_keys"];
-        if lists
-            .iter()
-            .any(|list| strings(entry.get(*list)).iter().any(|key| is_pattern(key)))
-        {
-            for list in lists {
-                let keys = strings(entry.get(list)).into_iter();
-                let keys = keys.map(|key| {
-                    if is_pattern(&key) {
-                        key
-                    } else {
-                        fancy_regex::escape(&key).into_owned()
-                    }
-                });
-                entry.insert(list.to_string(), keys.map(Json::String).collect());
-            }
-            entry.insert("use_regex".to_string(), true.into());
-        }
-    }
     entry
-}
-
-/// Whether a key has JavaScript's `/pattern/flags` form.
-fn is_pattern(key: &str) -> bool {
-    key.starts_with('/')
-        && key.rfind('/').is_some_and(|end| {
-            end > 1 && key[end + 1..].bytes().all(|flag| flag.is_ascii_lowercase())
-        })
 }

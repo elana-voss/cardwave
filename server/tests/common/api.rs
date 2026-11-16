@@ -7,7 +7,11 @@
 //! stream. `Api::start_each` answers each asking as the next of a list says,
 //! and every one after the list as its last (`describe.rs`), `Api::start_routed`
 //! each by its path (`picks.rs`); `Says::bytes`
-//! answers a picture (`images.rs`).
+//! answers a picture (`images.rs`). `held` answers wait until the test calls
+//! `Api::release`, so it acts while a piece of work is under way without a
+//! clock; `until_asked` waits for the `n`th asking, `stays_asked` asserts no more follow.
+//! A held answer never released within `HELD` is answered 504 and fails the
+//! test when its `Api` is dropped, naming the path: no test waits unbounded.
 
 use std::convert::Infallible;
 use std::sync::{Arc, Mutex};
@@ -19,12 +23,16 @@ use axum::http::{HeaderMap, Method, StatusCode, Uri, header};
 use axum::response::IntoResponse;
 use futures_util::{StreamExt, stream};
 use tokio::net::TcpListener;
-use tokio::time::sleep;
+use tokio::sync::watch;
+use tokio::time::{sleep, timeout};
 
 pub const JSON: &str = "application/json";
 
 /// How long after the first piece of an answer the second comes: long enough to be read by itself.
 const PAUSE: Duration = Duration::from_millis(300);
+
+/// How long `stays_asked` watches for an asking that should not come.
+const QUIET: Duration = Duration::from_millis(300);
 
 /// How the stand-in answers.
 #[derive(Clone)]
@@ -42,6 +50,13 @@ pub struct Says {
     pub onward: Option<String>,
     /// Bytes sent in `body`'s place, for a picture.
     pub bytes: Option<Vec<u8>>,
+    /// Whether the answer waits until the test calls `Api::release`.
+    pub held: bool,
+}
+
+/// `says`, held until the test calls `Api::release`.
+pub fn held(says: Says) -> Says {
+    Says { held: true, ..says }
 }
 
 pub fn says(status: u16, kind: &'static str, body: &str) -> Says {
@@ -54,6 +69,7 @@ pub fn says(status: u16, kind: &'static str, body: &str) -> Says {
         endless: false,
         onward: None,
         bytes: None,
+        held: false,
     }
 }
 
@@ -78,7 +94,14 @@ pub struct Api {
     /// Its address up to the version part.
     pub url: String,
     asked: Arc<Mutex<Vec<Asked>>>,
+    /// Open once the test released the held answers.
+    released: Arc<watch::Sender<bool>>,
+    /// The path of the first held answer that was never released.
+    stuck: Arc<Mutex<Option<String>>>,
 }
+
+/// How long a held answer waits for `Api::release`.
+const HELD: Duration = Duration::from_secs(3 * super::server::WAIT.as_secs());
 
 impl Api {
     pub async fn start(says: Says) -> Self {
@@ -105,8 +128,14 @@ impl Api {
     async fn serve(pick: impl Fn(&str, usize) -> Says + Clone + Send + Sync + 'static) -> Self {
         let asked = Arc::new(Mutex::new(Vec::new()));
         let log = asked.clone();
+        let released = Arc::new(watch::Sender::new(false));
+        let gate = released.clone();
+        let stuck = Arc::new(Mutex::new(None));
+        let noted = stuck.clone();
         let answer = move |method: Method, uri: Uri, headers: HeaderMap, body: String| {
             let pick = pick.clone();
+            let mut open = gate.subscribe();
+            let noted = noted.clone();
             async move {
                 let said = |name| {
                     let value: Option<&header::HeaderValue> = headers.get(name);
@@ -130,6 +159,14 @@ impl Api {
                     });
                     says
                 };
+                // The inner result fails only once the stand-in is gone, when the answer no longer matters.
+                if says.held && timeout(HELD, open.wait_for(|open| *open)).await.is_err() {
+                    eprintln!(
+                        "the held answer to {uri} was not released within {HELD:?}; answered 504"
+                    );
+                    noted.lock().unwrap().get_or_insert(uri.to_string());
+                    return StatusCode::GATEWAY_TIMEOUT.into_response();
+                }
                 sleep(says.after).await;
                 let first = says.bytes.unwrap_or_else(|| says.body.into_bytes());
                 let body = stream::once(async move { Ok::<_, Infallible>(first) });
@@ -153,11 +190,41 @@ impl Api {
         let url = format!("http://{}/v1", listener.local_addr().unwrap());
         let app = Router::new().fallback(answer);
         tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
-        Self { url, asked }
+        Self {
+            url,
+            asked,
+            released,
+            stuck,
+        }
     }
 
     pub fn asked(&self) -> Vec<Asked> {
         self.asked.lock().unwrap().clone()
+    }
+
+    /// The `count`th asking, waited for.
+    pub async fn until_asked(&self, count: usize) -> Asked {
+        super::server::until(|| async {
+            match self.asked().get(count - 1) {
+                Some(asked) => Ok(asked.clone()),
+                None => Err(format!("asked {} times, not {count}", self.asked().len())),
+            }
+        })
+        .await
+    }
+
+    /// That no asking follows the `count`th: waits for it, then asserts the count over a grace. HTTP shows no
+    /// worker's end, so absence has no signal; the stand-in answers at once, so a worker that asks again would
+    /// within the grace.
+    pub async fn stays_asked(&self, count: usize) {
+        self.until_asked(count).await;
+        sleep(QUIET).await;
+        assert_eq!(self.asked().len(), count, "asked again");
+    }
+
+    /// Lets the held answers go, those waiting and those to come.
+    pub fn release(&self) {
+        self.released.send_replace(true);
     }
 
     /// The key the last asking came with.
@@ -167,5 +234,16 @@ impl Api {
             .expect("the API was not asked")
             .key
             .clone()
+    }
+}
+
+impl Drop for Api {
+    fn drop(&mut self) {
+        let stuck = self.stuck.lock().unwrap().take();
+        if let Some(path) = stuck
+            && !std::thread::panicking()
+        {
+            panic!("the held answer to {path} was not released within {HELD:?}");
+        }
     }
 }

@@ -36,7 +36,7 @@ import { readOwnCss, showOwnCss } from "../settings/own-css";
 import { readAppLanguage } from "../settings/app-language";
 import { Clicks, Reactions } from "./react";
 import { followComputer, wording } from "../language/language";
-import { el } from "../dom";
+import { el, reason } from "../dom";
 
 /** The least time between two frames, in ms (a little less than a thirtieth of a second, as frames come late). */
 const FRAME_MS = 30;
@@ -194,7 +194,13 @@ async function start(): Promise<void> {
 
   /** Keeps the day it shows again, and starts the page anew, which shows nothing until then. */
   async function hide(): Promise<void> {
-    await changeCompanion({ hidden_until: dayOf(1) });
+    try {
+      await changeCompanion({ hidden_until: dayOf(1) });
+    } catch (error) {
+      // Not hidden: the figure says why.
+      live.say(reason(error));
+      return;
+    }
     location.reload();
   }
 

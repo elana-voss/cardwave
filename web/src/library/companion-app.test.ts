@@ -7,6 +7,7 @@ const server = {
 };
 vi.mock("../api/client", () => ({
   getSettings: () => server.settings(),
+  getCard: () => Promise.resolve({ characters: [{ name: "Mira" }], card: { title: "Mira" } }),
   changeCompanion: (change: unknown) => server.change(change),
 }));
 vi.mock("../desktop", () => ({ inDesktop: () => true, desktop: () => Promise.reject(new Error("refused")) }));
@@ -44,5 +45,18 @@ describe("the companion's size", () => {
     answer({ companion: { card_id: 3, starts: true, hidden_until: null, size: 21 } });
     await new Promise((done) => setTimeout(done, 10));
     expect(slider.value).toBe("45");
+  });
+});
+
+describe("the companion's line in Settings", () => {
+  it("tells whether a companion exists, which its figure and size follow", async () => {
+    const { companionLine } = await import("./companion-app");
+    const told: boolean[] = [];
+    server.settings = () => Promise.resolve({ companion: { card_id: null, starts: false, hidden_until: null, size: 21 } });
+    const line = companionLine((exists) => told.push(exists))!;
+    await vi.waitFor(() => expect(told).toEqual([false]));
+    server.settings = () => Promise.resolve({ companion: { card_id: 3, starts: true, hidden_until: null, size: 21 } });
+    line.read();
+    await vi.waitFor(() => expect(told).toEqual([false, true]));
   });
 });

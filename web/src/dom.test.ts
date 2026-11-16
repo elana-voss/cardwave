@@ -2,9 +2,9 @@
 // does with them, and how it looks, is the browser tests' (e2e/tests).
 //
 // Tested here: `announce` fading, `copyText` without a clipboard, `told` and `reason`, `oneAtATime`, `latest`, `coalesced`, `suggest`,
-// `selectField`, `savedChoice` and `atMost`.
+// `selectField`, `savedChoice`, `atMost` and `moreOpener` opening on a wrong field.
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { aboutChoice, announce, atMost, clearNotice, coalesced, copyText, el, latest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
+import { aboutChoice, announce, atMost, clearNotice, coalesced, copyText, crumbs, el, latest, moreOpener, newest, oneAtATime, reason, savedChoice, selectField, suggest, toast, told } from "./dom";
 
 afterEach(() => document.body.replaceChildren());
 
@@ -175,6 +175,18 @@ describe("latest", () => {
     older.fail(new Error("too late to matter"));
     await early;
     expect(notice.querySelector('[role="alert"]')).toBeNull();
+  });
+});
+
+describe("newest", () => {
+  test("last counts only the reading sent last, and none after drop", () => {
+    const order = newest();
+    const first = order.ask();
+    const second = order.ask();
+    expect(order.last(first)).toBe(false);
+    expect(order.last(second)).toBe(true);
+    order.drop();
+    expect(order.last(second)).toBe(false);
   });
 });
 
@@ -357,6 +369,14 @@ describe("suggest", () => {
     press("Enter");
     expect(input.value).toBe("reef-1");
   });
+
+  test("after a line is taken in a list inside the window, Enter is the form's, not the value in use's line", () => {
+    const { input, list, press } = field(MODELS, true, "reef-1");
+    list.querySelector<HTMLElement>('[data-value="tide-1"]')?.click();
+    expect(input.value).toBe("tide-1");
+    expect(press("Enter")).toBe(false);
+    expect(input.value).toBe("tide-1");
+  });
 });
 
 describe("selectField", () => {
@@ -381,6 +401,15 @@ describe("selectField", () => {
     // A line that cannot be picked changes nothing.
     lines(select.node)[2].click();
     expect([select.value, took]).toEqual(["b", ["b"]]);
+  });
+
+  test("a choice in another language (a language in its own words) is marked so, in its line and in the field", () => {
+    const select = selectField([{ value: "en", label: "English", lang: "en" }, { value: "de", label: "Deutsch", lang: "de" }], "en", () => {});
+    document.body.append(select.node);
+    expect(lines(select.node).map((line) => line.lang)).toEqual(["en", "de"]);
+    expect(select.field.querySelector("[lang]")?.getAttribute("lang") ?? select.field.lang).toBe("en");
+    lines(select.node)[1].click();
+    expect(select.field.querySelector("[lang]")?.getAttribute("lang") ?? select.field.lang).toBe("de");
   });
 
   test("without a choice made it shows its placeholder, and other choices offered are its menu then", () => {
@@ -465,4 +494,25 @@ describe("aboutChoice", () => {
     expect(aboutChoice(false, "Follows the system unless you pick one")).toBe("Follows the system unless you pick one");
     expect(aboutChoice(true, "Follows the system unless you pick one")).toBe("Chosen by you");
   });
+});
+
+describe("moreOpener", () => {
+  test("a field it hides that the browser finds wrong on Save opens it, so its message can show", () => {
+    const field = el("input", { type: "number", min: "0", step: "1", value: "-5" });
+    const more = el("div", { id: "more" }, field);
+    const toggled = vi.fn();
+    const opener = moreOpener("More settings", more, false, toggled);
+    const form = el("form", {}, opener, more);
+    document.body.append(form);
+    expect(more.hidden).toBe(true);
+    form.checkValidity();
+    expect(more.hidden).toBe(false);
+    expect(opener.getAttribute("aria-expanded")).toBe("true");
+    expect(toggled).toHaveBeenCalledWith(true);
+  });
+});
+
+test("crumbs: the pages over this one as links, \"/\" between, this one in bold or its own node", () => {
+  const path = crumbs(["Settings", "#/settings"], el("span", null, "Own"), "Here");
+  expect([path.className, path.innerHTML]).toEqual(["crumbs", '<a href="#/settings">Settings</a>/<span>Own</span>/<b>Here</b>']);
 });

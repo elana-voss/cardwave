@@ -6,15 +6,18 @@
 // moment to where it goes or looks (`turned`), shows a feeling on its face and opens a VRM's mouth as loud as the
 // voice is heard (`showFace`, `mouthOf`): a figure without mouth shapes moves no lips.
 //
-// Traps: the canvas keeps what it drew (`preserveDrawingBuffer`), as `opaqueAt` reads a pixel of it to say whether
-// the cursor is on the figure, which is what lets a click through everywhere else (the desktop's cursor poll).
-// Until the model has come, nothing is drawn and no pixel is the figure's. A figure replaced is let go of
+// Traps: drawn by figures/drawer.ts's renderer, WebGPU or WebGL 2, which keeps no frame after the task that drew it:
+// each frame is copied to a 2D canvas (`kept`), whose pixel `opaqueAt` reads to say whether the cursor is on the
+// figure, which is what lets a click through everywhere else (the desktop's cursor poll). Until the renderer has
+// started and the model has come, nothing is drawn and no pixel is the figure's. A figure replaced is let go of
 // (`letGo`), and one whose load a later change overtook is never shown (`newest`).
-import { AnimationMixer, Box3, type AnimationClip, type Bone, DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer, type Mesh, type Object3D } from "three";
+import { AnimationMixer, Box3, type AnimationClip, type Bone, PerspectiveCamera, Scene, Vector3, type Mesh, type Object3D } from "three";
+import type { WebGPURenderer } from "three/webgpu";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { type VRM, VRMUtils } from "@pixiv/three-vrm";
 import type { Clip } from "../api/generated/Clip";
 import type { Feeling } from "../api/generated/Feeling";
+import { drawer, lit } from "../figures/drawer";
 import { clipsFor, type FigureKind, loadFigure } from "../figures/load";
 import { FILL, SIZE, type State } from "./body";
 import { CARRIED, type ClipTable, Clips, ROBOT } from "./clips";
@@ -34,6 +37,10 @@ const FACES: Record<Feeling, { vrm: string; robot: string | null; weight: number
   agree: { vrm: "happy", robot: null, weight: 0.5 },
   disagree: { vrm: "angry", robot: "Angry", weight: 0.4 },
   puzzled: { vrm: "surprised", robot: "Surprised", weight: 0.4 },
+  afraid: { vrm: "surprised", robot: "Surprised", weight: 1 },
+  playful: { vrm: "happy", robot: null, weight: 0.7 },
+  bashful: { vrm: "happy", robot: null, weight: 0.4 },
+  tired: { vrm: "sad", robot: "Sad", weight: 0.4 },
 };
 
 /** How far the head turns up or down to where it looks, at most (radians). */
@@ -114,7 +121,11 @@ export function letGo(model: Object3D, mixer: AnimationMixer): void {
 
 export class Figure {
   readonly canvas: HTMLCanvasElement;
-  private readonly renderer: WebGLRenderer;
+  private readonly renderer: WebGPURenderer;
+  /** The renderer started, before which nothing is drawn. */
+  private readonly started: Promise<void>;
+  /** The last frame drawn, which `opaqueAt` reads. */
+  private readonly kept: CanvasRenderingContext2D;
   private readonly scene = new Scene();
   private readonly camera = new PerspectiveCamera(30, SIZE.width / SIZE.height, 0.1, 100);
   private model: Object3D | null = null;
@@ -138,14 +149,12 @@ export class Figure {
   constructor(source: FigureSource | null) {
     this.canvas = document.createElement("canvas");
     this.canvas.className = "companion-figure";
-    this.renderer = new WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true });
-    this.renderer.setClearColor(0x000000, 0);
+    ({ renderer: this.renderer, ready: this.started } = drawer(this.canvas));
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(SIZE.width, SIZE.height);
-    this.scene.add(new HemisphereLight(0xffffff, 0x444444, 2.5));
-    const sun = new DirectionalLight(0xffffff, 2);
-    sun.position.set(3, 10, 5);
-    this.scene.add(sun);
+    // A canvas of its own has no other kind of drawing yet, so it gives a 2D one.
+    this.kept = document.createElement("canvas").getContext("2d")!;
+    lit(this.scene);
     this.ready = this.change(source);
   }
 
@@ -156,7 +165,7 @@ export class Figure {
 
   /** Shows the figure of `source` in place of the one shown, else the robot. */
   async change(source: FigureSource | null): Promise<void> {
-    const placed = await this.load(source);
+    const [placed] = await Promise.all([this.load(source), this.started]);
     if (placed) this.place(placed);
   }
 
@@ -218,14 +227,16 @@ export class Figure {
     return this.clips?.play(clip, ms) ?? 0;
   }
 
-  /** Whether it plays a clip between two poses, standing up or getting up, before it can go anywhere. */
+  /** Whether it plays a clip between two poses, standing up or getting up, or its landing, before it can go
+   * anywhere. */
   get rising(): boolean {
     return this.clips?.between ?? false;
   }
 
-  /** The model's clip that plays now, by its name in the model. */
+  /** The model's clip that plays now, by its name in the model, without the version (`dancing_2` is `dancing`):
+   * the name the AI plays it by. */
   get clip(): string | null {
-    return this.clips?.current ?? null;
+    return this.clips?.current?.replace(/_\d+$/, "") ?? null;
   }
 
   /** Turns the figure by `yaw` and its head by `pitch` (radians; 0, 0: at the user), but while it walks or climbs. */
@@ -237,6 +248,7 @@ export class Figure {
   /** Shows `feeling` on the face, or none. */
   feel(feeling: Feeling | null): void {
     this.feeling = feeling;
+    if (feeling) this.clips?.feel(feeling);
   }
 
   /** Moves the clips on by `dt` seconds, turns the figure to where it is to face, opens its mouth as loud as the
@@ -256,15 +268,22 @@ export class Figure {
     // A VRM's normalized bones, which the clips move, to the bones it draws.
     this.vrm?.update(dt);
     this.renderer.render(this.scene, this.camera);
+    this.keep();
+  }
+
+  /** Copies the frame just drawn to `kept`, which keeps it until the next. */
+  private keep(): void {
+    const { width, height } = this.canvas;
+    const copy = this.kept.canvas;
+    if (copy.width !== width || copy.height !== height) Object.assign(copy, { width, height });
+    else this.kept.clearRect(0, 0, width, height);
+    this.kept.drawImage(this.canvas, 0, 0);
   }
 
   /** Whether the pixel at `x`, `y` of the canvas (CSS pixels) is the figure's and not see-through. */
   opaqueAt(x: number, y: number): boolean {
     if (!this.model || x < 0 || y < 0 || x >= SIZE.width || y >= SIZE.height) return false;
-    const gl = this.renderer.getContext();
     const ratio = this.renderer.getPixelRatio();
-    const pixel = new Uint8Array(4);
-    gl.readPixels(Math.floor(x * ratio), Math.floor((SIZE.height - y) * ratio) - 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
-    return pixel[3]! > 16;
+    return this.kept.getImageData(Math.floor(x * ratio), Math.floor(y * ratio), 1, 1).data[3]! > 16;
   }
 }

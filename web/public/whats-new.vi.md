@@ -1,3 +1,16 @@
+# 0.2.0
+
+Cardwave trên điện thoại của bạn, và nhiều bản sửa lỗi.
+
+- Mở Cardwave từ bất cứ đâu: với Tailscale, Tài khoản › Chia sẻ hiển thị địa chỉ để mở nó trên điện thoại hoặc máy tính khác, và mọi màn hình đều vừa với điện thoại.
+- Ký ức thuộc về một nhân vật và persona của bạn: đổi persona của một cuộc trò chuyện sẽ bắt đầu ký ức mới, và đổi lại sẽ tìm thấy ký ức cũ.
+- Người bạn đồng hành cử động nhiều hơn: thêm rất nhiều động tác, chọn theo tâm trạng, và bốn cảm xúc mới: sợ hãi, tinh nghịch, ngượng ngùng và mệt mỏi.
+- Hình 3D được vẽ bằng WebGPU nếu máy tính của bạn hỗ trợ.
+- Có thể khôi phục bản sao lưu ngay khi khởi động lần đầu, và bản sao lưu đã khôi phục giữ nguyên mật khẩu của nó.
+- Cài đặt gọn gàng hơn: công cụ của AI đã chuyển sang Nâng cao, và có thể tắt các thẻ trong Cài đặt › Giao diện.
+- Văn bản của nhân vật hiện "Nhấp để sửa" khi bạn trỏ vào, và biểu tượng trên thanh tác vụ lấp đầy ô của nó.
+- Nhiều bản sửa lỗi tìm được khi rà soát toàn bộ ứng dụng.
+
 # 0.1.3
 
 Các sửa lỗi nhỏ.

@@ -115,7 +115,14 @@ pub fn write(data_dir: &Path, sealed: &Sealed, name: &str) -> anyhow::Result<()>
         name: name.to_string(),
     };
     let beside = data_dir.join(format!("{FILE_NAME}.new"));
-    std::fs::write(&beside, serde_json::to_vec_pretty(&file)?).context(Fail::said(
+    // Forced to disk before the rename: this file holds the only copy of the database key.
+    let written = (|| -> std::io::Result<()> {
+        use std::io::Write;
+        let mut out = std::fs::File::create(&beside)?;
+        out.write_all(&serde_json::to_vec_pretty(&file)?)?;
+        out.sync_all()
+    })();
+    written.context(Fail::said(
         Code::Internal,
         "cannot write the password's file",
     ))?;
@@ -169,12 +176,8 @@ pub fn seal(key: &DbKey, password: &str) -> anyhow::Result<Sealed> {
     );
     let mut salt = [0u8; 16];
     let mut nonce = [0u8; 12];
-    getrandom::fill(&mut salt).map_err(|e| {
-        anyhow::anyhow!(Fail::said(Code::Internal, format!("no random source: {e}")))
-    })?;
-    getrandom::fill(&mut nonce).map_err(|e| {
-        anyhow::anyhow!(Fail::said(Code::Internal, format!("no random source: {e}")))
-    })?;
+    cw_key::random(&mut salt)?;
+    cw_key::random(&mut nonce)?;
     let cost = (MEMORY, PASSES, LANES);
     let stretched = stretch(password, &salt, cost)?;
     let sealed = ChaCha20Poly1305::new(Key::from_slice(&stretched))
@@ -309,8 +312,9 @@ impl Tries {
             // Those not tried for a while are let go, so the map stays small.
             tried.retain(|_, (_, last)| last.elapsed() < WAIT * 10);
             let (wrong, last) = tried.entry(key).or_insert((0, Instant::now()));
-            if *wrong >= FREE && last.elapsed() < WAIT {
-                let seconds = (WAIT - last.elapsed()).as_secs().max(1);
+            let waited = last.elapsed();
+            if *wrong >= FREE && waited < WAIT {
+                let seconds = WAIT.saturating_sub(waited).as_secs().max(1);
                 return Err(Fail::new(Code::TooManyTries)
                     .with("seconds", seconds)
                     .into());

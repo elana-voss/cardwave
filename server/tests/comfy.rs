@@ -101,6 +101,22 @@ fn a_workflow_cardwave_cannot_send_says_why() {
     assert!(error.to_string().contains("“KSampler”"), "{error}");
 }
 
+#[test]
+fn a_workflow_whose_links_or_subgraphs_loop_is_refused_not_walked_forever() {
+    let info = fixture("object_info.json");
+    // Two reroutes feeding each other, one of them the sampler's source.
+    let mut saved = fixture("saved.json");
+    saved["links"][1] = json!([2, 10, 0, 10, 0, "CLIP"]);
+    let error = graph::prompt_of(&saved, &info).unwrap_err();
+    assert!(error.to_string().contains("circle"), "{error}");
+    // A subgraph whose definition holds a node of its own type.
+    let mut saved = fixture("saved.json");
+    let own = saved["definitions"]["subgraphs"][0]["id"].clone();
+    saved["definitions"]["subgraphs"][0]["nodes"][0]["type"] = own;
+    let error = graph::prompt_of(&saved, &info).unwrap_err();
+    assert!(error.to_string().contains("hold themselves"), "{error}");
+}
+
 #[tokio::test]
 async fn a_saved_workflow_is_picked_and_makes_the_chats_pictures() {
     let saved = fixture("saved.json").to_string();

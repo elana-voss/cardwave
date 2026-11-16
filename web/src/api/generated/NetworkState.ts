@@ -9,4 +9,9 @@ export type NetworkState = { on: boolean,
  * Where another device opens Cardwave, while it reaches it; none where
  * this computer's address in the network is not found.
  */
-address: string | null, };
+address: string | null, 
+/**
+ * Where a device signed in to the same Tailscale opens Cardwave from
+ * anywhere, while it reaches it; none where Tailscale is not up here.
+ */
+anywhere: string | null, };

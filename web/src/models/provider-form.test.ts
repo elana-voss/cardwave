@@ -2,7 +2,7 @@
 // it, and what a failed model test says.
 import { expect, test, vi } from "vitest";
 import { testModel } from "../api/client";
-import { modelName, modelTest, offering } from "./provider-form";
+import { counted, modelName, modelTest, offering } from "./provider-form";
 
 vi.mock("../api/client", async (real) => ({ ...(await real<object>()), testModel: vi.fn() }));
 
@@ -45,4 +45,8 @@ test("a model of This computer given up on as too slow names no key or address e
   check.giveUp("It took too long");
   expect(check.failed()).toMatch(/download/);
   expect(check.failed()).not.toMatch(/key|address/);
+});
+
+test("an empty list of image models says no model makes pictures, not that the provider lists none", () => {
+  expect(counted({ models: [], more: false }, "", "No picture models")).toBe("No picture models");
 });

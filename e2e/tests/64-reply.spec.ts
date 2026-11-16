@@ -2,7 +2,7 @@ import type { APIRequestContext } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
-// How a chat's replies are written: the side panel's box with Reply length and Code mode, kept for the chat and
+// How a chat's replies are written: the side panel's box with Reply length and Code mode (only in a chat for work), kept for the chat and
 // used from the next reply (Code mode offers the model `make_tool`, and greys Reply length, not sent then), and
 // the model's thinking, shown while it thinks as one grey line with its newest sentence, Send being Stop meanwhile, and gone with the reply's first
 // word, never kept with the reply. The stand-in `api` thinks in a `<think>` part, held after its first piece.
@@ -32,29 +32,38 @@ test("the side panel sets the chat's reply length and Let the AI write tools", a
   // A slider of five named steps, a new chat at Medium; an arrow key moves one step.
   const length = page.getByRole("slider", { name: "Reply length" });
   const step = page.locator(".reply-steps .step-says");
-  await expect(step).toHaveText("Medium · 350");
-  await expect(length).toHaveAttribute("aria-valuetext", "Medium · 350");
+  // The steps are named without their tokens (Claude, 2026-11-15).
+  await expect(step).toHaveText("Medium");
+  await expect(length).toHaveAttribute("aria-valuetext", "Medium");
   const kept = page.waitForResponse((answer) => answer.url().endsWith("/reply"));
   await length.press("ArrowRight");
   await kept;
-  await expect(step).toHaveText("Long · 750");
+  await expect(step).toHaveText("Long");
   await expect.poll(async () => (await (await request.get(`/api/chats/${id}`)).json()).chat.reply_length).toBe(750);
-
+  // A roleplay offers no tools to write; a chat without a character does (Claude, 2026-11-15).
   const code = page.getByRole("switch", { name: "Let the AI write tools" });
+  await expect(code).toBeHidden();
+  const plain = await request.post("/api/chats", { data: { characters: [] } });
+  expect(plain.status(), await plain.text()).toBe(201);
+  await page.goto(`/#/chats/${(await plain.json()).chat.id}`);
+  await length.press("ArrowRight");
+  await expect(step).toHaveText("Long");
+
   const note = page.locator("label[for=chat-reply-length] .meta");
-  await expect(note).toHaveText("Tokens per reply");
+  await expect(note).toHaveText("");
   await expect(code).not.toBeChecked();
   await code.click();
   await expect(code).toBeChecked();
   // A tool is on: the length is not sent, and its slider is greyed with its step kept.
   await expect(note).toHaveText("Not used while the AI uses tools");
   await expect(length).toBeDisabled();
-  await expect(step).toHaveText("Long · 750");
+  await expect(step).toHaveText("Long");
   api.next(["Ready."]);
   await page.getByLabel("Message", { exact: true }).fill("Can you count words?");
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.locator("article.message").last()).toContainText("Ready.");
-  const offered = api.asked.at(-1)!.body.tools.map((tool: { function: { name: string } }) => tool.function.name);
+  // A chat without a character may ask the model for its title after the reply: the reply's call is the one with tools.
+  const offered = api.asked.findLast((call) => call.body.tools)!.body.tools.map((tool: { function: { name: string } }) => tool.function.name);
   expect(offered).toContain("make_tool");
 });
 

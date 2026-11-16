@@ -31,7 +31,7 @@ use cw_chat::chats::{self, BUSY, Chat, Message, MessageView, NewMessage, turn};
 use cw_chat::images;
 use cw_coding::tools::{Done, REFUSED, ToolAsk, Toolbox, WrittenRun, dice};
 use cw_core::NotFound;
-use cw_core::{Code, Fail};
+use cw_core::{Code, ErrorBody, Fail};
 use cw_core::{Events, PageEvent};
 use cw_library::settings;
 use cw_prompt::{PromptMessage, Role};
@@ -48,6 +48,7 @@ use tokio::time::Instant;
 use ts_rs::TS;
 
 use super::ApiError;
+use super::events::EndTo;
 use super::{Api, ApiResult, Caller, ReplyEvent, User, memory};
 use crate::AppState;
 use stream::{Pushed, take_words};
@@ -151,10 +152,17 @@ struct Writer {
     user: i64,
     chat_id: i64,
     stop: Arc<Notify>,
+    /// Who waits for its end (`events::reply_end`): the program that asked for it.
+    waiter: Option<oneshot::Sender<Option<ErrorBody>>>,
 }
 
 impl Writer {
-    fn list(state: &AppState, user: i64, chat_id: i64) -> Result<Self, Fail> {
+    fn list(
+        state: &AppState,
+        user: i64,
+        chat_id: i64,
+        waiter: Option<oneshot::Sender<Option<ErrorBody>>>,
+    ) -> Result<Self, Fail> {
         let stop = Arc::new(Notify::new());
         state.unless_restoring(|| match state.replies().entry((user, chat_id)) {
             Entry::Occupied(_) => Err(BUSY),
@@ -168,7 +176,16 @@ impl Writer {
             user,
             chat_id,
             stop,
+            waiter,
         })
+    }
+
+    /// Hands the reply's end to who waits for it, then frees the chat.
+    fn end(mut self, error: Option<ErrorBody>) {
+        if let Some(waiter) = self.waiter.take() {
+            // A waiter that gave up is no fault.
+            let _ = waiter.send(error);
+        }
     }
 }
 
@@ -184,17 +201,19 @@ async fn generate(
     State(state): State<AppState>,
     Extension(api): Extension<Api>,
     caller: Caller,
+    end_to: Option<Extension<EndTo>>,
     Path(chat_id): Path<i64>,
     Json(new): Json<Generate>,
 ) -> ApiResult<(StatusCode, Json<MessageView>)> {
     let user = caller.user;
+    let waiter = end_to.and_then(|Extension(end_to)| end_to.take());
     // The reply's events wait until this request is answered or given up, so
     // that a page knows of the message before it hears how it went.
     let (_answered, answered) = oneshot::channel::<()>();
     // On a task of its own: a page that hangs up in the middle of the request
     // must not leave behind a message that nobody writes.
     let started = tokio::spawn(async move {
-        let writer = Writer::list(&state, user, chat_id)?;
+        let writer = Writer::list(&state, user, chat_id, waiter)?;
         // Another version of a reply, or more of it, answers what the reply before answered: in its mode.
         if new.regenerate != Some(true) && new.go_on != Some(true) {
             pick_mode(&state, user, chat_id).await;
@@ -594,13 +613,17 @@ async fn write_reply(writer: Writer, mut job: Job) {
         _ => None,
     };
     let pictures = matches!(kept, Some(Ok(())));
-    // The chat is free for its next reply before the pages hear of the end.
-    drop(writer);
     let mut error = failure.map(|failure| ApiError::from(failure).body());
     if let Some(Err(failure)) = kept {
         tracing::error!("pictures could not be kept: {failure:#}");
         error.get_or_insert_with(|| Fail::new(Code::Internal).into());
     }
+    if let Err(failure) = &ended {
+        tracing::error!("a reply could not be saved: {failure:#}");
+        error.get_or_insert_with(|| Fail::new(Code::Internal).into());
+    }
+    // The chat is free for its next reply before the pages hear of the end.
+    writer.end(error.clone());
     let message = match ended {
         // A reply that ended with words is the end of a turn, which memory reads.
         Ok(Some(message)) if error.is_none() => {
@@ -611,11 +634,7 @@ async fn write_reply(writer: Writer, mut job: Job) {
         Ok(_) if pictures => None,
         Ok(message) => message,
         // The message is still incomplete, which keeps the chat busy until a stop ends it.
-        Err(failure) => {
-            tracing::error!("a reply could not be saved: {failure:#}");
-            error.get_or_insert_with(|| Fail::new(Code::Internal).into());
-            None
-        }
+        Err(_) => None,
     };
     // A task is offered by a reply that went through.
     let offered = offered.filter(|_| error.is_none());

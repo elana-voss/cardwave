@@ -129,6 +129,7 @@ search-keys = Cardwave 검색 (Ctrl+K)
 label-settings-theme = 테마
 label-settings-chat-layout = 채팅 레이아웃
 label-settings-web-pictures = 다른 웹사이트의 이미지 표시
+label-settings-tabs = 탭
 label-settings-app-language = 앱 언어
 label-settings-language = AI가 쓰는 언어
 label-settings-providers = 제공자
@@ -146,7 +147,6 @@ label-settings-dice = 주사위
 label-settings-folder = 폴더
 label-settings-written = AI가 만든 도구
 label-settings-coding = 코딩 팀
-label-settings-trash = 휴지통
 label-settings-backup = 백업
 label-settings-restore = 복원
 label-settings-cards-folder = 카드 폴더
@@ -184,16 +184,12 @@ settings-appearance = 모양
 settings-theme-about = 직접 고르지 않으면 시스템을 따라요
 settings-layout-about = 메시지를 말풍선으로, 또는 일반 텍스트로
 settings-web-pictures-about = 채팅을 열면 그 웹사이트들이 알 수 있어요.
+settings-tabs-about = 제목 표시줄에 여러 페이지를 열어 둡니다
 settings-language = 언어
 settings-data = 데이터
-settings-trash-about = { $count ->
-   *[other] 항목 { $count }개
-  } · { $days }일 후 비움
-settings-open-trash = 휴지통 열기
-settings-open = 열기
 settings-version = 버전 { $version } · 라이선스
 settings-licences = 라이선스
-settings-advanced-about = 보조 모델, 라이브러리, 내보내기, 캐릭터 없는 채팅, 샘플링, 프리셋, 사용자 CSS
+settings-advanced-about = 보조 모델, 라이브러리, AI용 도구, 내보내기, 캐릭터 없는 채팅, 샘플링, 프리셋, 사용자 CSS
 settings-setup-about = 제공자, 모델, 음성을 단계별로
 settings-providers-about = 모델을 실행하는 서비스의 주소와 키
 settings-this-computer = 이 컴퓨터
@@ -239,7 +235,7 @@ backup-back-up = 백업 저장
 backup-no-file = 선택한 파일 없음
 backup-choose-file = 파일 선택
 backup-its-password = 백업의 비밀번호
-backup-restoring = 복원하면 Cardwave의 모든 것이 바뀌어요: 채팅, 캐릭터, 페르소나, 로어북, 기억, 설정. 되돌릴 수 없어요. 여기서 정한 비밀번호는 그대로 유지돼요. 다른 계정도 바뀌어요.
+backup-restoring = 복원하면 Cardwave의 모든 것이 바뀌어요: 채팅, 캐릭터, 페르소나, 로어북, 기억, 설정. 되돌릴 수 없어요. 다른 계정도 바뀌어요.
 backup-restored = 백업을 복원했어요: Cardwave의 모든 것이 백업했을 때로 돌아갔어요. 다른 기기는 다시 로그인해요.
 backup-file = 파일
 backup-restore-title = 백업 복원
@@ -277,7 +273,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = 이 컴퓨터의 AI 앱이 Cardwave를 쓰게 하기
-mcp-ask = 이 컴퓨터의 프로그램(예: Claude Desktop)은 캐릭터와 채팅을 읽고, 채팅에 쓰고, 설정 › 도구에서 켠 도구를 쓸 수 있습니다. Cardwave가 먼저 물어볼 일은 그 프로그램들이 할 수 없습니다.
+mcp-ask = 이 컴퓨터의 프로그램(예: Claude Desktop)은 캐릭터와 채팅을 읽고, 채팅에 쓰고, 설정에서 켠 도구를 쓸 수 있습니다. Cardwave가 먼저 물어볼 일은 그 프로그램들이 할 수 없습니다.
 mcp-switch-on = 켜기
 mcp-about = Claude Desktop 등, MCP를 통해: 캐릭터, 채팅, 도구를 사용합니다
 mcp-copy-address = MCP 주소 복사
@@ -403,6 +399,7 @@ tools-change = 변경
 tools-choose = 선택
 tools-none-chosen = 선택 안 함
 tools-title = 도구
+tools-for-ai = AI용 도구
 tools-ask-new = { $name }이(가) 새 도구를 쓰려고 해요: { $what }
 tools-ask-write = { $name }이(가) 폴더에 “{ $what }”을(를) 쓰려고 해요:
 tools-ask-read = { $name }이(가) 폴더에서 읽으려고 해요:
@@ -464,6 +461,9 @@ providers-choose-folder = 모델 폴더 선택
 providers-change = 변경
 providers-not-set-up = 설정 안 됨
 providers-folder-not-set-up = 이 컴퓨터의 폴더에 있는 모델을 실행해요 · 설정 안 됨
+providers-this-computer-runs = 실행 준비됨: { $models }
+providers-this-computer-none = 아직 모델이 없습니다. 아래에서 맞는 모델을 내려받으세요
+providers-details = 세부 정보
 providers-menu = 제공자 메뉴: 편집, 제거
 providers-remove = 제거
 providers-removed = “{ $name }” 제공자를 제거했어요.
@@ -473,6 +473,7 @@ providers-remove-key = 키 제거
 providers-key-removed = 저장하면 키가 제거돼요
 providers-edit = 제공자 편집
 providers-keep-key = 저장된 키를 유지하려면 비워 두세요.
+providers-new-address-key = 새 주소에는 키를 다시 입력해야 해요. 키는 다른 서버로 보내지 않아요.
 providers-saved = “{ $name }” 제공자를 저장했어요.
 providers-added = “{ $name }” 제공자를 추가했어요.
 providers-add = 제공자 추가
@@ -546,15 +547,13 @@ advanced-not-described = { $count ->
    *[other] 캐릭터 { $count }명
   } 아직 설명 안 됨
 advanced-describe-cards = 캐릭터 설명하기
-advanced-describe-cost = { $count ->
-   *[other] 캐릭터 { $count }명
-  }에 약 { $low }~{ $high } 토큰
+advanced-describe-cost = 읽을 카드: { $count }
 advanced-failed = { $count ->
    *[other] { $count }개 실패
   }: { $failure }. 다시 시도하려면 캐릭터 설명하기를 누르세요.
 advanced-describe-again = 모두 다시 설명하기
 advanced-describe-again-stop = 중지
-advanced-describe-again-about = 도우미 모델로 모든 캐릭터의 한 줄 설명, 요약, 태그, '필요별'이 찾는 기준을 다시 씁니다. 캐릭터당 약 11,000~12,000 토큰. 직접 편집한 내용은 그대로 남습니다. 토큰은 제공자가 요금을 매기는 단위입니다.
+advanced-describe-again-about = 도우미 모델로 모든 카드를 다시 읽고 모든 캐릭터의 한 줄 설명, 요약, 태그, '필요별'이 찾는 기준을 다시 씁니다. 직접 편집한 내용은 그대로 남습니다.
 advanced-no-characters = 설명할 캐릭터가 없어요
 advanced-describe-again-far = { $all }개 중 { $done }개 다시 설명함
 advanced-describe-again-stopped = { $all }개 중 { $done }개 다시 설명하고 멈춤
@@ -807,6 +806,8 @@ server-switch-on = 켜기
 server-network-about = 휴대폰과 다른 컴퓨터가 브라우저에서 Cardwave를 열어요
 server-other-devices = 다른 기기
 server-inside = 라우터에서 외부 접속을 허용하지 않는 한 이 네트워크의 기기만 접속할 수 있습니다.
+server-anywhere = 어디서나
+server-tailscale = 어디서나 열려면 이 컴퓨터와 휴대폰에 무료 앱 Tailscale(tailscale.com)을 설치하고 둘 다 로그인하세요.
 server-add-account = 계정 추가
 server-owner = 이 컴퓨터 · 계정을 추가하고 삭제할 수 있음
 server-more-of = 더 보기: { $name }

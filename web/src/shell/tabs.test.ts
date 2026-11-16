@@ -4,7 +4,7 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { el, titled, type View } from "../dom";
 import { remember, remembered } from "../storage";
-import { fit, pageOf, samePage, START, TAB_LEAST, TAB_SLOT, TAB_WIDE, Tabs, type Tab } from "./tabs";
+import { fit, pageOf, samePage, setTabsOn, START, TAB_LEAST, TAB_SLOT, TAB_WIDE, Tabs, type Tab } from "./tabs";
 
 /** The addresses screens were made for, in order. */
 let made: string[] = [];
@@ -134,4 +134,54 @@ test("an address asked for at the start is shown in the tab in view, or in the t
   again.restore("tabs", "#/library");
   expect(addresses(again)).toEqual(["#/library", "#/generator"]);
   expect(again.now().address).toBe("#/library");
+});
+
+test("the keys and Ctrl+click of the tabs do nothing before the tabs are restored: the locked start screen stays", () => {
+  const tabs = tabsOf();
+  const link = el("a", { href: "#/settings" }, "Settings");
+  document.body.append(link);
+  link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, ctrlKey: true }));
+  // Tabs of earlier tests still listen on the document; only this one's list is looked at.
+  expect(addresses(tabs)).toEqual([START]);
+  tabs.restore("tabs.mine", "");
+  link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, ctrlKey: true }));
+  expect(addresses(tabs)).toEqual([START, "#/settings"]);
+});
+
+test("tabs switched off keep the tab in view alone, open a page in it, and come back switched on", () => {
+  const tabs = tabsOf();
+  tabs.restore("tabs", "");
+  tabs.open("#/library/personas");
+  tabs.open("#/settings");
+  setTabsOn(false);
+  expect(addresses(tabs)).toEqual(["#/settings"]);
+  expect(document.body.hasAttribute("data-tabs-off")).toBe(true);
+  tabs.open("#/generator");
+  tabs.newTab();
+  expect(addresses(tabs)).toEqual([START]);
+  const again = tabsOf();
+  again.restore("tabs", "");
+  expect(addresses(again)).toEqual([START]);
+  setTabsOn(true);
+  expect(document.body.hasAttribute("data-tabs-off")).toBe(false);
+  tabs.open("#/generator");
+  expect(addresses(tabs)).toEqual([START, "#/generator"]);
+});
+
+test("tabs switched off: a Ctrl+click on a link opens it in place, never in the browser; another window's switch is followed", () => {
+  const tabs = tabsOf();
+  tabs.restore("tabs", "");
+  tabs.open("#/settings");
+  setTabsOn(false);
+  const link = Object.assign(document.createElement("a"), { href: "#/generator" });
+  document.body.append(link);
+  const click = new MouseEvent("click", { bubbles: true, cancelable: true, ctrlKey: true, button: 0 });
+  link.dispatchEvent(click);
+  link.remove();
+  expect(click.defaultPrevented).toBe(true);
+  expect(addresses(tabs)).toEqual(["#/generator"]);
+  // Switched on in another window: the storage event tells this one.
+  localStorage.setItem("tabs-on", "on");
+  window.dispatchEvent(new StorageEvent("storage", { key: "tabs-on", newValue: "on" }));
+  expect(document.body.hasAttribute("data-tabs-off")).toBe(false);
 });

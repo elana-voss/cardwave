@@ -30,6 +30,8 @@ export function modeLabel(chat: Chat, modes: string[]): string {
   return byHand ? mode : wording("modes-automatic", { mode });
 }
 
+/** A chat for work, not roleplay: one without a character or in the Assistant mode ("Start a coding task", "Let the AI write tools"). */
+export const forWork = (view: { chat: Chat; modes: string[]; characters: unknown[] }) => view.characters.length === 0 || sameMode(modeInUse(view.chat, view.modes) ?? "", "assistant");
 /** Whether a character in the mode goes by its personality: in Assistant and Companion. */
 export const isPersonal = (mode: string | null) => mode !== null && (sameMode(mode, "assistant") || sameMode(mode, "companion"));
 
@@ -77,10 +79,15 @@ const texts = (edit: CardEdit): EditText[] =>
     ...one.depth_prompts,
   ]);
 
-/** Renames a mode of the card, in the card and in every text used in it. */
+/**
+ * Renames a mode of the card, in the card and in every text used in it; the edit tells the server too, which
+ * renames it in the texts the page does not hold (another language's). A mode taken off needs no word: the
+ * server takes off every mode of the card that is gone and not renamed.
+ */
 export function renameMode(edit: CardEdit, mode: string, to: string): void {
   const name = (one: string) => (sameMode(one, mode) ? to.trim() : one);
   edit.modes = (edit.modes ?? []).map(name);
+  edit.renamed = [...(edit.renamed ?? []), [mode, to.trim()]];
   for (const part of texts(edit)) if (part.modes) part.modes = part.modes.map(name);
 }
 

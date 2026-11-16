@@ -13,6 +13,7 @@ use cw_coding::tools::web::{TEXT_LIMIT, cut};
 use serde_json::Value;
 use tower::ServiceExt;
 
+use super::events::EndTo;
 use super::{Api, Caller};
 
 /// The most bytes of an answer that are read.
@@ -42,20 +43,21 @@ pub(crate) async fn call(
 ) -> Result<String, String> {
     let (method, uri, body) = app::request_of(route, arguments)?;
     let method = Method::from_bytes(method.as_bytes()).map_err(|e| e.to_string())?;
-    let answer = request(api, caller, method, &uri, body).await?;
+    let answer = request(api, caller, method, &uri, body, None).await?;
     Ok(cut(&answer, TEXT_LIMIT))
 }
 
 /// Asks `api`, the API without its sign-in, with `method` at `uri` and the
 /// JSON `body`, as `caller`: the answer as text (a file says its size), or its
 /// status and what it said went wrong. The request carries `api`, for a reply
-/// it starts.
+/// it starts, and `end_to`, where that reply hands its end.
 pub(crate) async fn request(
     api: &Api,
     caller: &Caller,
     method: Method,
     uri: &str,
     body: Option<String>,
+    end_to: Option<EndTo>,
 ) -> Result<String, String> {
     let body = body.map_or_else(Body::empty, Body::from);
     let mut request = Request::builder()
@@ -66,6 +68,9 @@ pub(crate) async fn request(
         .map_err(|e| e.to_string())?;
     request.extensions_mut().insert(caller.clone());
     request.extensions_mut().insert(api.clone());
+    if let Some(end_to) = end_to {
+        request.extensions_mut().insert(end_to);
+    }
     // Another device's, as the routes that read it from the request see it too.
     if caller.remote {
         request.extensions_mut().insert(crate::Remote);

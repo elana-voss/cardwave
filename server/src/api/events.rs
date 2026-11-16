@@ -5,15 +5,15 @@
 //! ends, when another device's no longer reaches the server, when the app is
 //! locked again, or when its page is too slow to keep up.
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::extract::{Query, State};
 use axum::response::Response;
 use cw_chat::chats::MessageView;
-use cw_core::{ErrorBody, Events, PageEvent};
+use cw_core::{Detail, ErrorBody, Events, PageEvent};
 use serde::{Deserialize, Serialize};
-use tokio::sync::{broadcast, watch};
+use tokio::sync::{broadcast, oneshot, watch};
 use ts_rs::TS;
 
 use super::{Caller, Page, mark, version};
@@ -79,6 +79,40 @@ pub(crate) struct Pushed {
     user: Option<i64>,
     from: Option<Arc<str>>,
     event: Arc<str>,
+}
+
+/// The end of a reply that a program waits for (`reply_end`), handed by its
+/// writer before the chat is free (generate.rs `Writer::end`).
+pub(crate) struct ReplyEnd(oneshot::Receiver<Option<ErrorBody>>);
+
+/// Where a reply's writer hands its end: an extension of the program's own
+/// `POST generate`, so that no other reply in the chat takes or replaces it.
+#[derive(Clone)]
+pub(crate) struct EndTo(Arc<Mutex<Option<oneshot::Sender<Option<ErrorBody>>>>>);
+
+impl EndTo {
+    /// The waiter, to the first who takes it.
+    pub(crate) fn take(&self) -> Option<oneshot::Sender<Option<ErrorBody>>> {
+        cw_core::lock(&self.0).take()
+    }
+}
+
+/// A waiter for the end of the reply that the request carrying `EndTo` starts.
+pub(crate) fn reply_end() -> (EndTo, ReplyEnd) {
+    let (sender, ended) = oneshot::channel();
+    (EndTo(Arc::new(Mutex::new(Some(sender)))), ReplyEnd(ended))
+}
+
+impl ReplyEnd {
+    /// Why the reply failed, in the provider's words where it gave some; none
+    /// where it went through, or where it ended without handing its end.
+    pub(crate) fn failure(mut self) -> Option<String> {
+        let error = self.0.try_recv().ok().flatten()?;
+        Some(match error.details.get("reason") {
+            Some(Detail::Text(reason)) => format!("{}: {reason}", error.error),
+            _ => error.error,
+        })
+    }
 }
 
 impl AppState {

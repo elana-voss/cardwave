@@ -291,6 +291,8 @@ test("the chat's menu renames it, and starts a new chat with these characters an
 
 test("the characters reply by themselves with the pause and count the side panel sets, and not again when their chat is opened anew", async ({ page, request }) => {
   const chat = await start(request);
+  // The page's clock flows, and is run past a pause at once at the end.
+  await page.clock.install();
   const set = await request.put(`/api/chats/${chat}/talk`, { data: { talk_pause: 4, talk_replies: 3 } });
   expect(set.status(), await set.text()).toBe(200);
   await open(page, chat);
@@ -310,23 +312,27 @@ test("the characters reply by themselves with the pause and count the side panel
   // Set while they reply, in the pause after the first (4 s, so that a loaded machine is in it).
   await number("Replies in a row", "talk_replies", 2);
   await expect(page.getByText(/of 2 replies/)).toBeVisible();
-  await number("Pause between replies", "talk_pause", 1);
+  await number("Pause between replies", "talk_pause", 3);
   await replied(page, 3);
   await expect(page.getByText("The characters stopped after 2 replies.")).toBeVisible();
   await expect(messages(page)).toHaveCount(3);
 
-  // Going on, they wait 1 s after a reply; the chat left and opened again does not go on by itself.
+  // Going on, they wait 3 s after a reply, which the chat is left in; opened again it does not go on by itself.
+  // (With 1 s, a loaded machine left it after the pause, when the next reply was already asked for.)
   await expect(page.getByLabel("Pause between replies")).toBeHidden();
   await button(page, "Go on").click();
   // While they reply by themselves a message has Copy alone, so the reply is waited for by its count.
   await expect(messages(page)).toHaveCount(4);
   await page.goto("/#/chats");
   await open(page, chat);
-  await page.waitForTimeout(1500);
-  await expect(messages(page)).toHaveCount(4);
+  const asked = provider.asked.length;
+  // A pause left running would end within 3 s: the clock is run past it.
+  await page.clock.runFor(3500);
   await expect(page.getByText(/keep replying by themselves:/)).toBeHidden();
-  // The user's next message is answered as always, by one reply.
+  // The user's next message is answered as always, by one reply: the provider asked once, by it alone.
   await say(page, "Quiet now.");
-  await page.waitForTimeout(500);
   await expect(messages(page)).toHaveCount(6);
+  // No stray reply came between the reopening and the user's message.
+  await expect(messages(page).nth(4)).toContainText("Quiet now.");
+  expect(provider.asked.length).toBe(asked + 1);
 });

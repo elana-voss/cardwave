@@ -8,7 +8,7 @@ import type { Attachment } from "../api/generated/Attachment";
 import type { ChatCharacter } from "../api/generated/ChatCharacter";
 import type { MessageView } from "../api/generated/MessageView";
 import { attachmentUrl, avatarUrl, makeAgain, pictureUrl } from "../api/client";
-import { isArt } from "../art";
+import { pictureOr } from "../art";
 import { el } from "../dom";
 import { dialog, menuOn, type MenuItem } from "../dialogs";
 import { saveFrom } from "../storage";
@@ -123,11 +123,5 @@ export const attachedTo = (message: MessageView): HTMLElement | null =>
  */
 export function avatar(character: ChatCharacter, size = "ava", named = false): HTMLElement {
   const title = named ? character.name : "";
-  const shown = el("img", { className: `${size} avatar`, src: avatarUrl(character), alt: "", title });
-  const none = () => shown.replaceWith(el("span", { className: `${size} avatar bg-fill`, title }));
-  shown.onload = () => {
-    if (!isArt(shown)) none();
-  };
-  shown.onerror = none;
-  return shown;
+  return pictureOr(el("img", { className: `${size} avatar`, src: avatarUrl(character), alt: "", title }), () => el("span", { className: `${size} avatar bg-fill`, title }));
 }

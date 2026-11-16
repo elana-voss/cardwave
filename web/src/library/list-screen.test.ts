@@ -2,10 +2,12 @@
 // so every language says its own word for chats, lorebooks, personas and characters. And listScreen's reading:
 // a list that could not be read says which, with Try again, and its search and switch stay usable, so a
 // search that fails can be changed; a list read anew that brings another item under a resting mouse takes no
-// press until it moves.
+// press until it moves; its failure of Cardwave itself says no more than that. readList tells, beside its words,
+// whether the section holds nothing at all, which the screens offer its first item for.
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { ApiError } from "../api/client";
 import { keyed, listScreen, readList } from "./list-screen";
 
 describe("listScreen", () => {
@@ -89,7 +91,24 @@ function sources(dir: string): string[] {
   });
 }
 
+describe("listScreen's failure", () => {
+  it("of Cardwave itself says only that the list could not be read; another adds its reason", async () => {
+    const said = async (error: Error) => {
+      const screen = listScreen({ title: "", kind: "", search: "", placeholder: "", unread: "Couldn't load.", asked: { q: "", show: "all" }, read: () => Promise.reject(error), show: () => {} });
+      await screen.load();
+      return screen.notice.querySelector('[role="alert"]')?.textContent;
+    };
+    expect(await said(new ApiError(500, null))).toBe("Couldn't load.");
+    expect(await said(new Error("Offline."))).toBe("Couldn't load. Offline.");
+  });
+});
+
 describe("readList", () => {
+  it("tells a section that holds nothing apart from one narrowed to nothing", async () => {
+    const none = async (having: string) => (await readList(async () => [], "cards", { q: "", show: "all" }, "No cards yet.", having))[2];
+    expect([await none(""), await none(" with the tag “sea”")]).toEqual([true, false]);
+  });
+
   it("an empty section without an archive is read once and says it holds nothing", async () => {
     const asked: string[] = [];
     const [found, said] = await readList(async ({ show }) => (asked.push(show), []), "personas", { q: "", show: "all" }, "No personas yet.", "", false);

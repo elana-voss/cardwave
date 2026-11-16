@@ -17,7 +17,7 @@ import type { ListModels } from "../api/generated/ListModels";
 import type { NamedModels } from "../api/generated/NamedModels";
 import type { ProviderView } from "../api/generated/ProviderView";
 import type { TestModel } from "../api/generated/TestModel";
-import { el, failure, reason, suggest, told } from "../dom";
+import { el, failure, newest, reason, suggest, told } from "../dom";
 import { clause } from "../format";
 import { dialog } from "../dialogs";
 import { icon } from "../icons";
@@ -63,8 +63,8 @@ export const askingWords = () => (wording("provider-form-asking-the-provider-for
  * What the model picker says under its list: how many models the address lists, and how many of them have what
  * was `typed` into its field, if anything was.
  */
-export function counted(list: ListedModels, typed: string): string {
-  if (!list.models.length) return wording("provider-form-the-provider-lists-no");
+export function counted(list: ListedModels, typed: string, none = wording("provider-form-the-provider-lists-no")): string {
+  if (!list.models.length) return none;
   const part = typed.trim();
   const have = part ? wording("provider-form-have", { count: offering(() => list.models, Infinity)(part).length, part }) : "";
   return wording("provider-form-or-type-the-models", { listedCount: listedCount(list), have });
@@ -154,8 +154,8 @@ export interface ModelTest {
 /** Makes the test of a screen's chat model. `changed` is told when a test begins and when its answer has come; `passed` is what stands behind the model's name then. */
 export function modelTest(changed: () => void, passed = wording("provider-form-test-passed")): ModelTest {
   let tested: "no" | "asking" | "passed" | { failed: string; own?: boolean } = "no";
-  /** The test whose answer counts. */
-  let testing: object | null = null;
+  /** The tests asked: the last one's answer counts. */
+  const testing = newest();
   /** Whether the last test asked is of This computer's model, for `giveUp`'s words too. */
   let ownModel = false;
   return {
@@ -169,12 +169,12 @@ export function modelTest(changed: () => void, passed = wording("provider-form-t
     passed: () => tested === "passed",
     giveUp(why) {
       if (tested !== "asking") return;
-      testing = null;
+      testing.drop();
       tested = { failed: why, own: ownModel };
       changed();
     },
     ask(whom, own = false) {
-      const mine = (testing = {});
+      const mine = testing.ask();
       ownModel = own;
       tested = "asking";
       changed();
@@ -184,13 +184,13 @@ export function modelTest(changed: () => void, passed = wording("provider-form-t
           (error) => ({ failed: told(error), own }),
         )
         .then((outcome) => {
-          if (mine !== testing) return;
+          if (!testing.last(mine)) return;
           tested = outcome;
           changed();
         });
     },
     forget() {
-      testing = null;
+      testing.drop();
       tested = "no";
     },
   };
@@ -216,7 +216,8 @@ export interface Models {
  * Makes the models of a screen's address and their picker, a window in `home`: a field that offers the models the
  * address lists, and takes an ID typed as well. `whom` says which address is asked, with which key, `changed` is
  * told whenever what is known of the list is something else, and `choose` is given the model taken, where `pick`
- * names no other. `lister` asks for the list: the provider's models, or its image models (images-setup.ts).
+ * names no other. `lister` asks for the list: the provider's models, or its image models (images-setup.ts), and
+ * `none` is what the picker says when that list is empty.
  */
 export function models<A = ListModels>(
   home: HTMLElement,
@@ -224,21 +225,22 @@ export function models<A = ListModels>(
   changed: () => void,
   choose: (id: string) => void = () => {},
   lister: (asked: A) => Promise<NamedModels> = listModels as (asked: A) => Promise<NamedModels>,
+  none?: string,
 ): Models {
   /** The models the address listed, why none came, or that they are on their way; `null` while it was not asked. */
   let listed: NamedModels | { failed: string } | "asking" | null = null;
-  /** The asking whose answer counts. */
-  let asking: object | null = null;
+  /** The askings: the last one's answer counts. */
+  const asking = newest();
   /** Tells the model picker, while it is open, that the list of models has changed. */
   let picker: (() => void) | null = null;
   const got = () => (listed && typeof listed === "object" && "models" in listed ? listed : null);
   const failed = () => (listed && typeof listed === "object" && "failed" in listed ? listed.failed : "");
 
   function ask(): void {
-    const mine = (asking = {});
+    const mine = asking.ask();
     /** Takes what the asking has come to, unless a later one counts by now. */
     const came = (now: NonNullable<typeof listed>) => {
-      if (mine !== asking) return;
+      if (!asking.last(mine)) return;
       listed = now;
       picker?.();
       changed();
@@ -253,7 +255,7 @@ export function models<A = ListModels>(
     asking: () => listed === "asking",
     ask,
     forget() {
-      asking = null;
+      asking.drop();
       listed = null;
     },
     pick(model, title = wording("kinds-chat-model"), take = choose) {
@@ -288,7 +290,7 @@ export function models<A = ListModels>(
         if (listed === "asking") return void hint.replaceChildren(wording("kinds-asking-the-provider"));
         const list = got();
         // The model the field opened with, or one taken from the list, narrows nothing and is counted in nothing.
-        if (list) return void hint.replaceChildren(counted(list, offered.typed()));
+        if (list) return void hint.replaceChildren(counted(list, offered.typed(), none));
         if (!failed()) return;
         // Why no list came, with the way to ask again: the model's ID can be typed all the same.
         const again = el("button", { type: "button", className: "textbtn" }, wording("setup-try-again"));

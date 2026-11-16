@@ -1,7 +1,9 @@
 /* The window's frame (index.html, boards RailWide, RailCollapsed, TabsBar, NarrowLibrary): the title bar fixed on
    top (`--top` high, none in a browser without the rail), the rail wide or folded (`data-rail="narrow"` on the
    body), in a narrow window the bar in the rail's place and the rail as a drawer (`data-drawer`), the screen in
-   `#view`, the notice. The rail's own parts are the design system's; here only how the frame holds them. */
+   `#view`, the notice; the body is the window's height, or the visual viewport's while iOS Safari's keyboard is
+   open (`--page-height`, shell/keyboard.ts). The rail's own parts are the design system's; here only how the frame
+   holds them. */
 .sp .initial {
   width: 24px;
   height: 24px;
@@ -9,7 +11,7 @@
 }
 body {
   --top: 36px;
-  height: 100vh;
+  height: var(--page-height, 100vh);
   box-sizing: border-box;
   padding-top: var(--top);
   display: flex;
@@ -38,6 +40,11 @@ body[data-bare] #titlebar > :not(.name, .tab-drag, .wc),
   display: none;
 }
 body[data-bare]:not([data-desktop]) #titlebar {
+  display: none;
+}
+/* The tabs switched off (Settings › Appearance): the bar keeps the view menu and the magnifier. */
+body[data-tabs-off] #titlebar > :is(.tabs, .tab-plus),
+body[data-tabs-off] .wtabs > .all-tabs {
   display: none;
 }
 #titlebar > .name {
@@ -220,4 +227,22 @@ button.rail-ic {
 /* The notice at the window's foot (`toast` of dom.ts), there only while it says something. */
 #toast:empty {
   display: none;
+}
+/* The search panel (the design system's 440 px, hung from the top bar's last button) stays inside a narrow window. */
+.sp {
+  max-width: calc(100vw - 2 * var(--s8));
+}
+/* The notice is centred without halving the room it may take (`left: 50%` alone leaves it half the window), and
+   its words wrap inside it. */
+#toast {
+  left: var(--s16);
+  right: var(--s16);
+  width: fit-content;
+  max-width: calc(100vw - 2 * var(--s16));
+  margin-inline: auto;
+  transform: none;
+}
+#toast > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

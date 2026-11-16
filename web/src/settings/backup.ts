@@ -4,15 +4,17 @@
 // locks it (`show`), with "Back up"; and "Restore". A backup always has a password (the owner): where none is on,
 // "Back up" asks for one first (`backupDialog`). It has the browser save the file as the server sends it, never held
 // in the page (a backup holds everything), and says where to, where that is known, or why the server made none.
-// "Restore" opens `restoreDialog`: the file picked, and the password the
-// backup was made with, asked once the server says that it needs one (401). What the backup holds then takes the
-// place of all the app holds, and the server tells every page, which starts anew (`restored` in main.ts).
+// "Restore" opens `restoreDialog` of `restoreParts`, which first run's restore screen shares: the file picked, and
+// the password the backup was made with, asked once the server says that it needs one (401). What the backup holds
+// then takes the place of all the app holds, and the server tells every page, which starts anew (`restored` in
+// main.ts); a backup made while Cardwave asked for its password on opening brings that lock back.
 import { wording } from "../language/language";
 import { ApiError, restoreBackup, saveBackup } from "../api/client";
 import { announce, el, fileField } from "../dom";
 import { formDialog } from "../dialogs";
 import { field } from "./password";
 import { LABELS } from "../setting-labels";
+import { keepOverReload, takeKept } from "../storage";
 
 /** Has the browser save a backup, sealed by `password` where none is on, and says where to. */
 function keep(password?: string): void {
@@ -46,8 +48,12 @@ export function backupDialog(home: HTMLElement): HTMLDialogElement {
   return box;
 }
 
-/** Opens the dialog that restores a backup, in `home`. */
-export function restoreDialog(home: HTMLElement): HTMLDialogElement {
+/**
+ * The parts that restore a backup, the Restore dialog's and first run's (setup/restore-step.ts): "File" with "Choose
+ * file" and the name chosen, and the field of the backup's password, shown once the server says it needs one (401).
+ * `restore` sends the file; the server then tells every page, which starts anew with what the backup held.
+ */
+export function restoreParts(): { fields: HTMLElement[]; restore: () => Promise<void> } {
   let file: File | null = null;
   const chosen = el("span", { className: "meta chosen-file minw0 ellipsis" }, wording("backup-no-file"));
   const choose = el("button", { type: "button", className: "btn btn-secondary" }, wording("backup-choose-file"));
@@ -58,28 +64,33 @@ export function restoreDialog(home: HTMLElement): HTMLDialogElement {
   choose.onclick = () => picker.click();
   const password = el("input", { id: "backup-password", className: "field", type: "password", autocomplete: "off" });
   const asking = el("div", { className: "fld", hidden: true }, el("label", { htmlFor: password.id }, wording("backup-its-password")), password);
-  const fields = [
-    el("p", { className: "dialog-says hint c-ink" }, wording("backup-restoring")),
-    el("div", { className: "fld" }, el("span", { className: "field-name label" }, wording("backup-file")), el("div", { className: "find flex ai-c g-8" }, choose, chosen), picker),
-    asking,
-  ];
+  const fields = [el("div", { className: "fld" }, el("span", { className: "field-name label" }, wording("backup-file")), el("div", { className: "find flex ai-c g-8" }, choose, chosen), picker), asking];
+  const restore = async () => {
+    if (!file) throw new Error(wording("backup-choose-first"));
+    try {
+      await restoreBackup(file, asking.hidden ? undefined : password.value);
+    } catch (error) {
+      // A backup made with a password is asked for it.
+      if (error instanceof ApiError && error.status === 401) {
+        asking.hidden = false;
+        password.focus();
+      }
+      throw error;
+    }
+  };
+  return { fields, restore };
+}
+
+/** Opens the dialog that restores a backup, in `home`. */
+export function restoreDialog(home: HTMLElement): HTMLDialogElement {
+  const parts = restoreParts();
+  const says = el("p", { className: "dialog-says hint c-ink" }, wording("backup-restoring"));
   const box = formDialog(
     home,
     wording("backup-restore-title"),
-    fields,
+    [says, ...parts.fields],
     async () => {
-      if (!file) throw new Error(wording("backup-choose-first"));
-      try {
-        await restoreBackup(file, asking.hidden ? undefined : password.value);
-      } catch (error) {
-        // A backup made with a password is asked for it.
-        if (error instanceof ApiError && error.status === 401) {
-          asking.hidden = false;
-          password.focus();
-        }
-        throw error;
-      }
-      // The server tells every page, this one too, which starts anew with what the backup held.
+      await parts.restore();
       box.close();
     },
     wording("backup-restore"),
@@ -114,11 +125,10 @@ export function backupLine(home: () => HTMLElement): { nodes: HTMLElement[]; sho
 const RESTORED = "cardwave.restored";
 
 /** The server said a backup was restored: the page, about to load anew, tells it once it is there (`tellRestored`). */
-export const restoredHeard = () => sessionStorage.setItem(RESTORED, "1");
+export const restoredHeard = () => keepOverReload(RESTORED, "1");
 
 /** Says, once, after the reload, that a backup was restored and what that changed. */
 export function tellRestored(): void {
-  if (sessionStorage.getItem(RESTORED) === null) return;
-  sessionStorage.removeItem(RESTORED);
+  if (takeKept(RESTORED) === null) return;
   announce(wording("backup-restored"), undefined, true);
 }

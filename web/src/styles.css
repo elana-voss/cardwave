@@ -1,10 +1,14 @@
 /* The app's stylesheet, read in this order, which is the cascade's: the font; cardwave.css, the design system's
    parts, tokens and Compact's sizes (its file, not edited here); app.css, the app's own
-   rules over them; app/narrow.css, the narrow window's over those; then an area's own rules, a file per area in app/; last app/looks.css, the five looks of the theme menu. Every colour and size is a token of cardwave.css (a colour holds its light and dark
+   rules over them; app/library.css, lorebook.css and trash.css, whose rules app/narrow.css, the narrow window's, overrides; then an area's own rules, a file per area in app/; last app/looks.css, the five looks of the theme menu. Every colour and size is a token of cardwave.css (a colour holds its light and dark
    value); app.css's head says how its rules are written. */
 @import "@fontsource-variable/geist/wght.css";
 @import "./cardwave.css";
 @import "./app.css";
+@import "./app/fields.css";
+@import "./app/library.css";
+@import "./app/lorebook.css";
+@import "./app/trash.css";
 @import "./app/narrow.css";
 @import "./app/chat.css";
 @import "./app/setup.css";

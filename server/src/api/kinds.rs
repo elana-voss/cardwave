@@ -179,7 +179,7 @@ async fn folder(
     Json(asked): Json<SetFolder>,
 ) -> ApiResult<Json<ProvidersView>> {
     if user != state.local_user() {
-        Err(owner_only("choose its models"))?;
+        Err(owner_only("choose_its_models"))?;
     }
     let work = move |db: &Db| kinds::keep_folder(db, user, &asked.folder);
     kept(&state, user, &page, None, work).await

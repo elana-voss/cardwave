@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { expect, modelLine, test } from "../test";
 import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -132,7 +132,7 @@ test("the provider is added on the page Providers, its model made the chat model
   await page.goto("/#/settings");
   await button(page, "Change the chat model").click();
   const picker = page.getByRole("dialog", { name: "Chat model" });
-  await picker.getByRole("option", { name: "test-model" }).click();
+  await modelLine(picker, "test-model").click();
   await picker.getByRole("button", { name: "Use this model", exact: true }).click();
   await expect(picker).toBeHidden();
   await page.goto("/#/settings/providers");

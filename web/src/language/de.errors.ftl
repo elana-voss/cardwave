@@ -72,7 +72,10 @@ error-not-found = { $what ->
     [voice] Diese Stimme gibt es nicht.
    *[other] Das gibt es nicht.
 } Vielleicht wurde das gelöscht.
-error-chat-busy = In diesem Chat wird gerade eine Antwort geschrieben; halte sie zuerst an.
+error-chat-busy = { $what ->
+    [coding_task] In diesem Chat läuft gerade eine Programmieraufgabe; halte sie zuerst an.
+   *[other] In diesem Chat wird gerade eine Antwort geschrieben; halte sie zuerst an.
+}
 error-no-provider = { $what ->
     [chat_model] Es ist noch kein Chatmodell gewählt. Wähle eines unter Einstellungen › Modelle.
    *[other] Es ist noch kein Anbieter eingerichtet. Füge einen unter Einstellungen › Anbieter hinzu.
@@ -102,7 +105,7 @@ error-drive-root-for-model = Das Stammverzeichnis eines Laufwerks enthält zu vi
 error-data-folder = Dieser Ordner enthält Cardwaves eigene Daten oder liegt darin; wähle einen anderen.
 error-commands-windows-only = Befehle werden nur unter Windows ausgeführt.
 error-recycle-bin-windows-only = Dateien werden nur unter Windows in den Windows-Papierkorb verschoben.
-error-files-tool-off = Schalte zuerst Dateien unter Einstellungen › Werkzeuge ein: Damit liest und schreibt das Team den Ordner der Aufgabe.
+error-files-tool-off = Schalte zuerst Dateien unter Einstellungen › Erweitert › Werkzeuge für die KI ein: Damit liest und schreibt das Team den Ordner der Aufgabe.
 
 ## Bilder, Antworten und Stimmen
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] Die Persona „{ $name }“ liegt im Papierkorb; stell sie wieder her, um sie zu verwenden.
    *[other] Das liegt im Papierkorb; stell es zuerst wieder her.
 }
+-card-unreadable = Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
 error-not-readable = { $what ->
     [damaged_key] Sein Schlüssel ist beschädigt.
     [json] Die Datei ist kein gültiges JSON.
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] Diese Sicherung ist beschädigt: Ihr Schlüssel lässt sich nicht lesen.
     [base64] Das ist kein Base64.
     [base64_file] { $name } ist kein Base64.
-    [card_defined_twice] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] Ein Dateiname in der Karte lässt sich nicht verwenden.
     [card_reference] Das bezeichnet keinen Teil der Karte.
     [ccv4_version] Diese Karte stammt aus einem neueren Cardwave. Aktualisiere Cardwave, um sie zu öffnen.
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] Das Standbild der Figur ist kein PNG mit höchstens 4 MB.
     [figure_type] Eine 3D-Figur ist eine VRM-, GLB- oder FBX-Datei.
     [folder_read] Der Ordner lässt sich nicht lesen.
-    [format_version] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
+    [format_version] { -card-unreadable }
     [image_model_answer] Die Antwort des Bildmodells lässt sich nicht lesen.
     [image_model_picture] Das Bild des Bildmodells lässt sich nicht lesen.
     [key_characters] Der Schlüssel enthält Zeichen, die ein Schlüssel nicht haben kann. Kopiere ihn noch einmal von der Seite des Anbieters.
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] Die Aufnahme ist zu kurz: Es werden mindestens { $shortest } Sekunden gebraucht.
     [recording_silent] Die Aufnahme hat keinen Ton.
     [recording_wav] Die Aufnahme ist keine WAV-Datei.
-    [sillytavern_base64] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] Die Karte ist leer.
     [sillytavern_file] Die SillyTavern-Karte in dieser Datei lässt sich nicht lesen.
-    [sillytavern_json] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
-    [sillytavern_object] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] Die SillyTavern-Karte in diesem PNG lässt sich nicht lesen.
-    [spec_version] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
-    [spec_version_form] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
-    [toml] Diese Datei ist keine Charakterkarte, die Cardwave lesen kann. Exportiere sie noch einmal aus der App, aus der sie stammt.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] Die Word-Datei lässt sich nicht lesen.
     [word_text] Die Word-Datei hat keinen Text.
     [workflow] Der Workflow „{ $name }“ lässt sich nicht lesen.
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] Der Charakter ist zu lang für das Hilfsmodell; wähle ein Hilfsmodell, das mehr liest.
     [card_for_chat] Der Charakter ist zu lang für das Chatmodell und wäre so nicht er selbst; wähle ein Chatmodell, das mehr liest, oder kürze den Charakter.
+    [message_for_chat] Die Nachricht ist zu lang für das Chatmodell; kürze sie, schicke weniger Bilder mit oder wähle ein Chatmodell, das mehr liest.
     [card_file] Die Datei ist größer als { $most } MB.
     [checkpoint_folder] Der Ordner ist zu groß, um vor jedem Schritt Kopien davon zu behalten.
     [expression_pack_size] Die Bilder von { $name } sind zu groß.
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] Zum Vorlesen fehlt ein Teil von Microsoft: Installiere das Visual C++ Redistributable von microsoft.com und starte Cardwave dann neu.
     [workflow_no_text] Der Workflow „{ $name }“ hat kein Textfeld für die Worte des Bilds.
     [workflow_use] Der Workflow „{ $name }“ lässt sich nicht verwenden.
-    [written_tools_full] Du kannst höchstens { $most_tools } Werkzeuge behalten; lösche zuerst eines unter Einstellungen › Werkzeuge der KI.
+    [written_tools_full] Du kannst höchstens { $most_tools } Werkzeuge behalten; lösche zuerst eines unter Einstellungen › Erweitert › Werkzeuge der KI.
     [delete_not_in_trash] Nur was im Papierkorb liegt, lässt sich endgültig löschen; leg es zuerst dorthin.
    *[other] Das geht nicht.
 }
+-helper-unusable = Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
 error-model-answer = { $what ->
     [no_greeting] Die KI hat keine Begrüßung geschrieben.
-    [background_answer] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
-    [background_text] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] Die Antwort der KI waren nicht die Texte des Charakters.
-    [classification] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [classification] { -helper-unusable }
     [example_messages] Die KI hat keine Beispielnachrichten geschrieben.
     [no_example_message] Die KI hat eine Beispielnachricht ohne ihren Text geschrieben.
     [json] Die Antwort der KI hatte nicht die verlangte Form.
-    [keywords] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
-    [logline] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] Der Anbieter der KI hat keine Chat-Antwort gesendet.
     [no_fitting_answer] Die KI hat in drei Versuchen keine brauchbare Antwort gegeben.
     [no_picture] Das Bildmodell hat ohne Bild geantwortet.
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] Das Hilfsmodell hat kein Feld für die Worte des Bilds gefunden.
     [picture_server_no_picture] Der Bildserver hat ohne Bild geantwortet.
     [picture_words] Das Hilfsmodell hat keine Worte für das Bild geschrieben.
-    [rating] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [rating] { -helper-unusable }
     [reply_broke_off] Die Antwort ist abgebrochen.
-    [needs] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [needs] { -helper-unusable }
     [rounds] Das Team hat seine Arbeit nicht in { $rounds } Runden beendet.
     [search_left_out] Das Suchmodell hat einen Text ausgelassen.
     [search_model] Die Antwort des Suchmodells lässt sich nicht lesen.
     [search_tokens] Die Tokens des Suchmodells lassen sich nicht lesen.
-    [title] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [title] { -helper-unusable }
     [too_many_tools] Die KI hat zu viele Werkzeuge aufgerufen.
-    [worker_mode] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
-    [worker_texts] Die Antwort des Hilfsmodells ließ sich nicht verwenden. Versuch es noch einmal oder wähle ein anderes Hilfsmodell.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] Der Anbieter der KI meldete: { $reason }
    *[other] Die Antwort der KI lässt sich nicht verwenden.
 }

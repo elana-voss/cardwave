@@ -122,6 +122,7 @@ search-keys = Tìm trong Cardwave (Ctrl+K)
 label-settings-theme = Chủ đề
 label-settings-chat-layout = Bố cục trò chuyện
 label-settings-web-pictures = Hiện hình ảnh từ trang web khác
+label-settings-tabs = Thẻ
 label-settings-app-language = Ngôn ngữ của ứng dụng
 label-settings-language = Ngôn ngữ AI dùng để viết
 label-settings-providers = Nhà cung cấp
@@ -139,7 +140,6 @@ label-settings-dice = Xúc xắc
 label-settings-folder = Thư mục
 label-settings-written = Công cụ do AI viết
 label-settings-coding = Nhóm lập trình
-label-settings-trash = Thùng rác
 label-settings-backup = Sao lưu
 label-settings-restore = Khôi phục
 label-settings-cards-folder = Thư mục thẻ
@@ -177,16 +177,12 @@ settings-appearance = Giao diện
 settings-theme-about = Theo hệ thống, trừ khi bạn chọn một chủ đề
 settings-layout-about = Tin nhắn dạng bong bóng hoặc dạng văn bản thường
 settings-web-pictures-about = Các trang web đó có thể biết khi bạn mở cuộc trò chuyện.
+settings-tabs-about = Giữ nhiều trang mở trên thanh tiêu đề
 settings-language = Ngôn ngữ
 settings-data = Dữ liệu
-settings-trash-about = { $count ->
-   *[other] { $count } mục
-  } · được dọn sau { $days } ngày
-settings-open-trash = Mở Thùng rác
-settings-open = Mở
 settings-version = Phiên bản { $version } · giấy phép
 settings-licences = Giấy phép
-settings-advanced-about = Mô hình phụ trợ, thư viện, xuất, trò chuyện không có nhân vật, lấy mẫu, cấu hình mẫu, CSS của riêng bạn
+settings-advanced-about = Mô hình phụ trợ, thư viện, công cụ cho AI, xuất, trò chuyện không có nhân vật, lấy mẫu, cấu hình mẫu, CSS của riêng bạn
 settings-setup-about = Nhà cung cấp, mô hình và giọng nói, từng bước một
 settings-providers-about = Địa chỉ và khóa của các dịch vụ chạy mô hình
 settings-this-computer = máy tính này
@@ -232,7 +228,7 @@ backup-back-up = Lưu bản sao lưu
 backup-no-file = Chưa chọn tệp
 backup-choose-file = Chọn tệp
 backup-its-password = Mật khẩu của bản sao lưu
-backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác. Mật khẩu đặt ở đây vẫn giữ nguyên. Các tài khoản khác cũng bị thay thế.
+backup-restoring = Khôi phục sẽ thay thế mọi thứ trong Cardwave: các cuộc trò chuyện, nhân vật, persona, sổ bối cảnh, ký ức và cài đặt. Không thể hoàn tác. Các tài khoản khác cũng bị thay thế.
 backup-restored = Đã khôi phục bản sao lưu: mọi thứ trong Cardwave như lúc tạo bản sao lưu. Các thiết bị khác đăng nhập lại.
 backup-file = Tệp
 backup-restore-title = Khôi phục bản sao lưu
@@ -270,7 +266,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = Cho ứng dụng AI trên máy tính này dùng Cardwave
-mcp-ask = Các chương trình trên máy tính này, như Claude Desktop, có thể đọc nhân vật và cuộc trò chuyện của bạn, viết trong cuộc trò chuyện và dùng các công cụ đã bật trong Cài đặt › Công cụ. Những gì Cardwave sẽ hỏi bạn trước, chúng không làm được.
+mcp-ask = Các chương trình trên máy tính này, như Claude Desktop, có thể đọc nhân vật và cuộc trò chuyện của bạn, viết trong cuộc trò chuyện và dùng các công cụ đã bật trong Cài đặt. Những gì Cardwave sẽ hỏi bạn trước, chúng không làm được.
 mcp-switch-on = Bật
 mcp-about = Như Claude Desktop, qua MCP: chúng dùng nhân vật, cuộc trò chuyện và công cụ của bạn
 mcp-copy-address = Sao chép địa chỉ MCP
@@ -396,6 +392,7 @@ tools-change = Đổi
 tools-choose = Chọn
 tools-none-chosen = Chưa chọn
 tools-title = Công cụ
+tools-for-ai = Công cụ cho AI
 tools-ask-new = { $name } muốn dùng một công cụ mới: { $what }
 tools-ask-write = { $name } muốn ghi “{ $what }” vào thư mục của bạn:
 tools-ask-read = { $name } muốn đọc trong thư mục của bạn:
@@ -457,6 +454,9 @@ providers-choose-folder = Chọn thư mục mô hình
 providers-change = Đổi
 providers-not-set-up = Chưa thiết lập
 providers-folder-not-set-up = Chạy mô hình từ một thư mục trên máy tính này · chưa thiết lập
+providers-this-computer-runs = Sẵn sàng chạy: { $models }
+providers-this-computer-none = Chưa có mô hình: tải một mô hình phù hợp ở dưới
+providers-details = Chi tiết
 providers-menu = Menu nhà cung cấp: sửa, gỡ
 providers-remove = Gỡ
 providers-removed = Đã gỡ nhà cung cấp “{ $name }”.
@@ -466,6 +466,7 @@ providers-remove-key = Gỡ khóa
 providers-key-removed = Khóa sẽ được gỡ khi bạn lưu
 providers-edit = Sửa nhà cung cấp
 providers-keep-key = Để trống để giữ khóa đã lưu.
+providers-new-address-key = Địa chỉ mới cần nhập lại khóa: khóa không bao giờ được gửi đến máy chủ khác.
 providers-saved = Đã lưu nhà cung cấp “{ $name }”.
 providers-added = Đã thêm nhà cung cấp “{ $name }”.
 providers-add = Thêm nhà cung cấp
@@ -539,15 +540,13 @@ advanced-not-described = { $count ->
    *[other] { $count } nhân vật
   } chưa được mô tả
 advanced-describe-cards = Mô tả nhân vật
-advanced-describe-cost = Khoảng { $low } đến { $high } token cho { $count ->
-   *[other] { $count } nhân vật
-  }
+advanced-describe-cost = Thẻ cần đọc: { $count }
 advanced-failed = { $count ->
    *[other] { $count } thẻ thất bại
   }: { $failure }. Nhấn Mô tả nhân vật để thử lại.
 advanced-describe-again = Mô tả lại tất cả
 advanced-describe-again-stop = Dừng
-advanced-describe-again-about = Dùng mô hình trợ giúp viết lại mô tả một dòng, tóm tắt, thẻ của mọi nhân vật và những gì "Theo nhu cầu" dùng để tìm họ, khoảng 11.000 đến 12.000 token mỗi nhân vật. Những gì bạn tự sửa vẫn giữ nguyên. Nhà cung cấp tính phí theo token.
+advanced-describe-again-about = Dùng mô hình trợ giúp đọc lại mọi thẻ và viết lại mô tả một dòng, tóm tắt, thẻ của mọi nhân vật và những gì "Theo nhu cầu" dùng để tìm họ. Những gì bạn tự sửa vẫn giữ nguyên.
 advanced-no-characters = Không có nhân vật nào để mô tả
 advanced-describe-again-far = Đã mô tả lại { $done } trên { $all }
 advanced-describe-again-stopped = Đã dừng khi mô tả lại { $done } trên { $all }
@@ -800,6 +799,8 @@ server-switch-on = Bật
 server-network-about = Điện thoại và các máy tính khác mở Cardwave trong trình duyệt
 server-other-devices = Thiết bị khác
 server-inside = Chỉ thiết bị trong mạng này truy cập được, trừ khi bạn đặt bộ định tuyến cho người khác vào.
+server-anywhere = Từ bất cứ đâu
+server-tailscale = Để mở từ bất cứ đâu, hãy cài ứng dụng miễn phí Tailscale (tailscale.com) trên máy tính này và điện thoại của bạn, rồi đăng nhập trên cả hai.
 server-add-account = Thêm tài khoản
 server-owner = Máy tính này · có thể thêm và xóa tài khoản
 server-more-of = Thêm: { $name }

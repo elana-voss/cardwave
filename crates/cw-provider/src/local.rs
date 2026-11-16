@@ -177,6 +177,10 @@ pub fn asked(request: &Request) -> bool {
     request.url().host_str() == Some(HOST)
 }
 
+/// How long a chat model's file may take to load: far more than the search model's, which is small, since
+/// a file of many GB comes from the disk for the first time.
+const LOAD_LIMIT: Duration = Duration::from_secs(900);
+
 /// The models of `folder`, by their files' names, in order: every GGUF file
 /// but a vision model's projector and the later parts of a split model.
 pub fn models(folder: &Path) -> anyhow::Result<Vec<String>> {
@@ -309,7 +313,7 @@ async fn load(http: &Client, file: &Path) -> anyhow::Result<(String, String, Use
         Fail::said(Code::NotPossible, "local models are not set up")
             .with("what", "no_local_models"),
     )?;
-    let running = Running::launch(http, &setup.runner, file, &setup.log, CHAT).await?;
+    let running = Running::launch(http, &setup.runner, file, &setup.log, CHAT, LOAD_LIMIT).await?;
     let users = Arc::new(Users {
         reading: AtomicUsize::new(0),
         last: StdMutex::new(Instant::now()),
@@ -380,16 +384,22 @@ pub async fn idle_for(idle: Duration) -> Option<PathBuf> {
     loaded.as_ref().map(|now| now.file.clone())
 }
 
-/// `response`, whose body holds `using` until it is read or dropped.
+/// `response`, whose body holds `using` until it is read to its end or dropped.
 fn held(response: Response, using: Use) -> Response {
     let mut answer = ResponseBuilder::new().status(response.status());
     for (name, value) in response.headers() {
         answer = answer.header(name, value);
     }
-    let body = response.bytes_stream().map(move |piece| {
-        let _held = &using;
-        piece
-    });
+    // Let go after the last piece, not only when the response is dropped: a reader keeps its response
+    // while a tool runs, and another model waits for this one meanwhile.
+    let body = response
+        .bytes_stream()
+        .map(Some)
+        .chain(futures_util::stream::once(async move {
+            drop(using);
+            None
+        }))
+        .filter_map(std::future::ready);
     // The status and headers are those of an answer.
     Response::from(answer.body(Body::wrap_stream(body)).expect("an answer"))
 }
@@ -438,6 +448,20 @@ mod tests {
             ),
             None
         );
+    }
+
+    #[tokio::test]
+    async fn a_read_answer_lets_go_of_the_model_before_its_response_is_dropped() {
+        let users = Arc::new(Users {
+            reading: AtomicUsize::new(0),
+            last: StdMutex::new(Instant::now()),
+        });
+        let using = Use::of(&users);
+        let response = Response::from(ResponseBuilder::new().body("piece").expect("an answer"));
+        let mut answer = held(response, using).bytes_stream();
+        assert_eq!(users.reading.load(Ordering::SeqCst), 1);
+        while answer.next().await.is_some() {}
+        assert_eq!(users.reading.load(Ordering::SeqCst), 0);
     }
 
     #[test]

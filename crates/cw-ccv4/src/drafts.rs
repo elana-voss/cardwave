@@ -516,10 +516,13 @@ fn drafts_of<'a>(file: &'a mut DocumentMut, reference: &str) -> Option<&'a mut A
         .entry(reference)
         .or_insert_with(|| Item::Table(toml_edit::Table::new()))
         .as_table_like_mut()?;
-    revision
+    let drafts = revision
         .entry("drafts")
-        .or_insert_with(|| Item::Value(toml_edit::Value::Array(Array::new())))
-        .as_array_mut()
+        .or_insert_with(|| Item::Value(toml_edit::Value::Array(Array::new())));
+    // TOML's other form of the same list (`[[revision."…".drafts]]`, as the
+    // `toml` crate writes it) is made the inline one the drafts are added to.
+    drafts.make_value();
+    drafts.as_array_mut()
 }
 
 /// The history of a card alone, as one `user/` file: every revision it has,
@@ -534,4 +537,19 @@ pub fn only_history(document: &Document) -> anyhow::Result<Option<(String, Strin
     let mut file = Table::new();
     file.insert("revision".into(), Value::Table(revisions.clone()));
     Ok(Some((FILE.to_string(), toml::to_string(&file)?)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn drafts_written_as_a_list_of_tables_can_be_added_to() {
+        let mut file: DocumentMut = "[[revision.\"character.a\".drafts]]\ntext = \"Old\"\n"
+            .parse()
+            .unwrap();
+        let drafts = drafts_of(&mut file, "character.a").expect("no list of drafts");
+        drafts.push(toml_edit::InlineTable::new());
+        assert_eq!(drafts.len(), 2);
+    }
 }

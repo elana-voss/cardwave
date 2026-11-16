@@ -64,10 +64,12 @@ test("Describe characters describes every character not described yet, for the l
   await expect(described.locator(".meta").first()).toHaveText("Every character is described");
   await expect(page.getByRole("button", { name: "Describe characters" })).toBeDisabled();
 
-  // The row: the title written, the classifier's terms as tags, the logline in place of the greeting.
+  // The row: the title written, the content level as a word of its own, the classifier's terms not shown (the card has
+  // no tags of its own), the logline in place of the greeting.
   await page.goto("/#/library");
   const row = page.locator(".card-row", { hasText: "The Marsh Neighbor" });
-  await expect(row.locator(".tags")).toHaveText("neighbor · comfort · grump · For everyone");
+  await expect(row.locator(".row-head")).toContainText("For everyone");
+  await expect(row.locator(".tags")).toHaveCount(0);
   await expect(row.locator(".excerpt")).toHaveText(LOGLINE);
 
   // The page: the summary, the content level as a chip, the tags without it, and the facts.

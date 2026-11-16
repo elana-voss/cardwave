@@ -72,7 +72,10 @@ error-not-found = 没有这个{ $what ->
     [voice] 语音
    *[other] 东西
 }。它可能已被删除。
-error-chat-busy = 这个聊天正在撰写回复；请先停止它。
+error-chat-busy = { $what ->
+    [coding_task] 这个聊天的编程任务正在运行；请先停止它。
+   *[other] 这个聊天正在撰写回复；请先停止它。
+}
 error-no-provider = { $what ->
     [chat_model] 还没有选择聊天模型。请在 设置 › 模型 中选择一个。
    *[other] 还没有设置服务商。请在“设置 › 服务商”中添加一个。
@@ -102,7 +105,7 @@ error-drive-root-for-model = 驱动器的根目录内容太多，无法交给 AI
 error-data-folder = 这个文件夹存放着 Cardwave 自己的数据，或者位于其中；请选择其他文件夹。
 error-commands-windows-only = 只有在 Windows 上才能运行命令。
 error-recycle-bin-windows-only = 只有在 Windows 上才能把文件移到 Windows 回收站。
-error-files-tool-off = 请先在“设置 › 工具”中开启“文件”：团队用它读写任务的文件夹。
+error-files-tool-off = 请先在“设置 › 高级 › AI 的工具”中开启“文件”：团队用它读写任务的文件夹。
 
 ## Pictures, replies and voices
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] 人设“{ $name }”在废纸篓中；恢复后才能使用。
    *[other] 它在废纸篓中；请先恢复它。
 }
+-card-unreadable = 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
 error-not-readable = { $what ->
     [damaged_key] 它的密钥已损坏。
     [json] 这个文件不是有效的 JSON。
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] 这个备份已损坏：无法读取它的密钥。
     [base64] 这不是 base64。
     [base64_file] { $name } 不是 base64。
-    [card_defined_twice] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] 角色卡中的某个文件名无法使用。
     [card_reference] 这没有指向角色卡的任何部分。
     [ccv4_version] 这张卡由更新版本的 Cardwave 制作。请更新 Cardwave 后再打开。
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] 3D 形象的静态图不是 4 MB 以内的 PNG。
     [figure_type] 3D 形象须为 VRM、GLB 或 FBX 文件。
     [folder_read] 无法读取这个文件夹。
-    [format_version] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
+    [format_version] { -card-unreadable }
     [image_model_answer] 无法读取图像模型的回答。
     [image_model_picture] 无法读取图像模型的图片。
     [key_characters] 密钥中含有密钥不能有的字符。请从服务商网站重新复制。
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] 录音太短：至少需要 { $shortest } 秒。
     [recording_silent] 这段录音没有声音。
     [recording_wav] 这段录音不是 WAV 文件。
-    [sillytavern_base64] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] 这张角色卡是空的。
     [sillytavern_file] 无法读取这个文件中的 SillyTavern 角色卡。
-    [sillytavern_json] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
-    [sillytavern_object] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] 无法读取这个 PNG 中的 SillyTavern 角色卡。
-    [spec_version] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
-    [spec_version_form] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
-    [toml] 这个文件不是 Cardwave 能读取的角色卡。请从它原来的应用重新导出。
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] 无法读取这个 Word 文件。
     [word_text] 这个 Word 文件中没有文字。
     [workflow] 无法读取工作流“{ $name }”。
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] 角色太长，辅助模型读不完；请选择能读取更多内容的辅助模型。
     [card_for_chat] 角色太长，聊天模型读不完，角色就不再是自己；请选择能读取更多内容的聊天模型，或缩短角色。
+    [message_for_chat] 消息太长，聊天模型读不完；请缩短它、少附几张图片，或选择能读取更多内容的聊天模型。
     [card_file] 文件大于 { $most } MB。
     [checkpoint_folder] 文件夹太大，无法在每一步之前保留副本。
     [expression_pack_size] { $name } 的图片太大了。
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] 朗读缺少一个 Microsoft 组件：请从 microsoft.com 安装 Visual C++ Redistributable，然后重新启动 Cardwave。
     [workflow_no_text] 工作流“{ $name }”中没有用于图片描述的文字字段。
     [workflow_use] 无法使用工作流“{ $name }”。
-    [written_tools_full] 最多只能保留 { $most_tools } 个工具；请先在“设置 › AI 编写的工具”中删除一个。
+    [written_tools_full] 最多只能保留 { $most_tools } 个工具；请先在“设置 › 高级 › AI 编写的工具”中删除一个。
     [delete_not_in_trash] 只有废纸篓中的内容才能永久删除；请先把它移到废纸篓。
    *[other] 无法这样做。
 }
+-helper-unusable = 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
 error-model-answer = { $what ->
     [no_greeting] AI 没有写开场白。
-    [background_answer] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
-    [background_text] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] AI 的回答不是角色的文字。
-    [classification] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [classification] { -helper-unusable }
     [example_messages] AI 没有写示例消息。
     [no_example_message] AI 写了一条没有内容的示例消息。
     [json] AI 的回答不是所要求的格式。
-    [keywords] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
-    [logline] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] AI 的服务商没有发来聊天回复。
     [no_fitting_answer] AI 试了三次都没有给出可用的回答。
     [no_picture] 图像模型的回答中没有图片。
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] 辅助模型没有找到用于图片描述的字段。
     [picture_server_no_picture] 图片服务器的回答中没有图片。
     [picture_words] 辅助模型没有为图片写描述。
-    [rating] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [rating] { -helper-unusable }
     [reply_broke_off] 回复中断了。
-    [needs] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [needs] { -helper-unusable }
     [rounds] 团队在 { $rounds } 轮内没有完成工作。
     [search_left_out] 搜索模型漏掉了一段文字。
     [search_model] 无法读取搜索模型的回答。
     [search_tokens] 无法读取搜索模型的 token。
-    [title] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [title] { -helper-unusable }
     [too_many_tools] AI 调用的工具太多了。
-    [worker_mode] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
-    [worker_texts] 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] AI 的服务商报告：{ $reason }
    *[other] AI 的回答无法使用。
 }

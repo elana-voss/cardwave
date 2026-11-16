@@ -56,7 +56,7 @@ async fn voicing() -> (Embedder, Server) {
 }
 
 async fn speak(server: &Server, body: Value) -> u16 {
-    reqwest::Client::new()
+    common::server::client()
         .post(format!("http://{}/api/voice/speak", server.addr))
         .json(&body)
         .send()

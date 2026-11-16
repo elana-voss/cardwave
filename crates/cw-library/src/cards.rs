@@ -60,7 +60,7 @@ const IN_LIBRARY: &str = "card_in_library";
 
 /// Whether `failure` is an import of a card the library has already ([`in_library`]).
 pub(crate) fn is_in_library(failure: &anyhow::Error) -> bool {
-    cw_core::coded(failure).is_some_and(|fail| fail.details.get("what") == Some(&IN_LIBRARY.into()))
+    cw_core::failed_as(failure, IN_LIBRARY).is_some()
 }
 
 /// The user's lists of files of a folder of cards, each by its path, size and time written, so one unchanged
@@ -85,11 +85,7 @@ const NOT_A_CARD: &str = "no_card";
 
 /// Whether `error` is [`not_a_card`]'s.
 pub(crate) fn is_not_a_card(error: &anyhow::Error) -> bool {
-    cw_core::coded(error).is_some_and(|fail| {
-        fail.details
-            .get("what")
-            .is_some_and(|what| what.to_string() == NOT_A_CARD)
-    })
+    cw_core::failed_as(error, NOT_A_CARD).is_some()
 }
 
 #[derive(Clone, Debug, Serialize, TS)]
@@ -131,6 +127,12 @@ pub struct CardSummary {
     /// The classifier's terms, the user's own tags and the file's once the
     /// card is described, each once; until then the file's.
     pub tags: Vec<String>,
+    /// What a line of the library shows as its tags: the user's own and the file's, each once, without the
+    /// classifier's terms, which stay for search and By need.
+    pub own_tags: Vec<String>,
+    /// The content level the classifier gave ("sfw", "suggestive", "nsfw", "nsfw-extreme"); empty until the
+    /// card is described.
+    pub rating: String,
     /// The card's logline once it is described, until then the start of the
     /// first greeting, as plain text.
     pub excerpt: String,

@@ -25,6 +25,13 @@ creator: string,
  */
 modes?: Array<string>, 
 /**
+ * The card's modes this edit renames, each (from, to), in order: made in
+ * every text of the card, also those the edit does not show. A mode of
+ * the card that is gone from `modes` and not renamed is removed from them
+ * all. Not shown, only read from an edit.
+ */
+renamed?: Array<[string, string]>, 
+/**
  * An edit changes the characters it names and leaves the others as they are.
  */
 characters: Array<EditCharacter>, 

@@ -7,7 +7,7 @@ resolver = "3"
 members = ["server", "desktop", "crates/cw-core", "crates/cw-platform", "crates/cw-faces", "crates/cw-whisper", "crates/cw-prompt", "crates/cw-ccv4", "crates/cw-key", "crates/cw-accounts", "crates/cw-modelfiles", "crates/cw-provider", "crates/cw-search", "crates/cw-voice", "crates/cw-dictation", "crates/cw-library", "crates/cw-coding", "crates/cw-chat", "crates/cw-find", "crates/cw-store"]
 
 [workspace.package]
-version = "0.1.3"
+version = "0.2.0"
 edition = "2024"
 license = "UNLICENSED"
 publish = false
@@ -60,7 +60,7 @@ anyhow = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 # SQLCipher with its own OpenSSL: a cold build needs a native Perl on Windows (see CLAUDE.md).
-rusqlite = { version = "0.40.2", features = ["bundled-sqlcipher-vendored-openssl", "backup"] }
+rusqlite = { version = "0.42.0", features = ["bundled-sqlcipher-vendored-openssl", "backup"] }
 sqlite-vec = "0.1.9"
 getrandom = "0.3"
 regex = "1"
@@ -95,7 +95,7 @@ keyring ={ version = "3", features = ["windows-native", "apple-native"] }
 windows = { version = "0.62", features = ["AI_MachineLearning", "Foundation", "Foundation_Collections", "Graphics", "Storage", "Storage_Streams", "Win32_Foundation", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common", "Win32_System_WinRT"] }
 windows-collections = "0.3"
 windows-future = "0.3"
-windows-sys = { version = "0.61", features = ["Win32_System_JobObjects", "Win32_Security_Isolation", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Storage_FileSystem", "Win32_System_Com", "Win32_System_SystemInformation", "Win32_System_LibraryLoader", "Win32_UI_Shell", "Win32_Foundation"] }
+windows-sys = { version = "0.61", features = ["Win32_System_JobObjects", "Win32_Security_Isolation", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Storage_FileSystem", "Win32_System_Com", "Win32_System_SystemInformation", "Win32_System_LibraryLoader", "Win32_UI_Shell", "Win32_Foundation", "Win32_Globalization"] }
 # Documents of a chat or a character: the text of a PDF, and of a Word file (a zip of XML).
 lopdf = { version = "0.45", default-features = false }
 zip = { version = "9", default-features = false, features = ["deflate-flate2"] }

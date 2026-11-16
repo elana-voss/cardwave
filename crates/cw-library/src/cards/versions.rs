@@ -225,15 +225,12 @@ pub(super) fn use_picture(
     })
 }
 
-/// Runs `once` again, up to five times in all, while it fails as [`Late`].
 /// Whether `error` is a change of a version of a card that is not its newest by now.
 fn is_late(error: &anyhow::Error) -> bool {
-    let detail = Some(&cw_core::Detail::from("card_version"));
-    error
-        .downcast_ref::<Fail>()
-        .is_some_and(|fail| fail.code == Code::Changed && fail.details.get("what") == detail)
+    cw_core::failed_as(error, "card_version").is_some_and(|fail| fail.code == Code::Changed)
 }
 
+/// Runs `once` again, up to five times in all, while it fails as [`Late`].
 fn retried<T>(mut once: impl FnMut() -> anyhow::Result<T>) -> anyhow::Result<T> {
     let mut tries = 0;
     loop {

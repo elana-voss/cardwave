@@ -245,6 +245,7 @@ character-translate-card = Dịch nhân vật…
 character-discard-card = Bỏ nhân vật
 character-card-menu = Menu nhân vật
 character-title = Tiêu đề
+character-click-to-edit = Nhấp để sửa
 character-name-the-card = Đặt tên cho nhân vật
 character-summary = Tóm tắt một dòng cho thư viện
 character-this-card-is-in = Nhân vật này đang ở trong Thùng rác.{ " " }

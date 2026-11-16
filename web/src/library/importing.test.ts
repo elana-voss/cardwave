@@ -64,3 +64,21 @@ test("one card imported alone: its notice offers Open, which leads to its page",
   await new Promise((wait) => setTimeout(wait, 0));
   expect(location.hash).toBe("#/library/c1");
 });
+
+test("files imported after a folder's import with failed files leave the lines of those files", async () => {
+  document.body.replaceChildren();
+  const page = document.createElement("div");
+  const notice = document.createElement("div");
+  notice.id = "toast";
+  document.body.append(page, notice);
+  vi.mocked(getCardFolderImport).mockResolvedValue(state({ running: false, found: 2, imported: 1, failed: [{ name: "bad.png", reason: { code: "file_not_imported", error: "no card in it", details: {} } }] }));
+  await followFolderImport();
+  const failed = () => document.querySelectorAll("#importing .import-mark.failed").length;
+  expect(failed()).toBe(1);
+  const field = fileImport("card", ".png", page, async (file) => ({ title: file.name, warnings: [] }), () => {});
+  Object.defineProperty(field, "files", { value: [new File(["a"], "one.png")] });
+  field.dispatchEvent(new Event("change"));
+  await new Promise((wait) => setTimeout(wait, 10));
+  expect(failed()).toBe(1);
+  expect((document.querySelector("#importing") as HTMLElement).hidden).toBe(false);
+});

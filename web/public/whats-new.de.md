@@ -1,3 +1,16 @@
+# 0.2.0
+
+Cardwave auf dem Handy und viele Korrekturen.
+
+- Cardwave von überall öffnen: Mit Tailscale zeigt Konto › Freigabe die Adresse, unter der es sich auf dem Handy oder einem anderen Computer öffnet, und jeder Bildschirm passt auf ein Handy.
+- Erinnerungen gehören zu einer Figur und deiner Persona: Wechselt ein Chat die Persona, beginnen neue Erinnerungen, und beim Zurückwechseln sind die alten wieder da.
+- Der Begleiter bewegt sich mehr: viel mehr Bewegungen, nach seiner Stimmung gewählt, und vier weitere Gefühle: ängstlich, verspielt, schüchtern und müde.
+- 3D-Figuren werden mit WebGPU gezeichnet, wo dein Computer es kann.
+- Eine Sicherung lässt sich gleich beim ersten Start wiederherstellen, und eine wiederhergestellte Sicherung behält ihr Passwort.
+- Aufgeräumtere Einstellungen: Die Werkzeuge der KI stehen jetzt unter Erweitert, und die Tabs lassen sich unter Einstellungen › Darstellung ausschalten.
+- Die Texte einer Figur zeigen „Zum Bearbeiten klicken“, wenn du auf sie zeigst, und das Symbol in der Taskleiste füllt sein Feld.
+- Viele Korrekturen aus einer Suche durch die ganze App.
+
 # 0.1.3
 
 Kleine Korrekturen.

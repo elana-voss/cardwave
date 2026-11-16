@@ -14,13 +14,13 @@
 // under them; in first run This computer's line first (`own`, setup/this-computer.ts). On another device (`elsewhere` of
 // account.ts) its words name the computer Cardwave runs on instead. The step hands on whom
 // the next one asks (`Asked`) through `go`, and sends the key nowhere itself.
-// Gone through again, it begins with what is stored (`fill`). First run's way elsewhere (`elsewhere`) stands beside Continue, but not
+// Gone through again, it begins with what is stored (`fill`). First run's way elsewhere (`otherWay`) stands beside Continue, but not
 // while the provider is set by hand, whose switch has "Enter address".
 import { wording } from "../language/language";
 import { findProvider, getProviders, listModels } from "../api/client";
 import type { KnownProvider } from "../api/generated/KnownProvider";
 import type { ProviderView } from "../api/generated/ProviderView";
-import { atMost, el, failure, item, latest, pill, reason, segmented } from "../dom";
+import { atMost, el, failure, item, latest, newest, pill, reason, segmented } from "../dom";
 import { icon } from "../icons";
 import { field, keyStored, listed as onList, plain } from "../models/provider-form";
 import { comma } from "../format";
@@ -93,13 +93,14 @@ interface Step extends Parts {
   mode: Mode;
   /** Of several providers whose keys begin alike, the one chosen. */
   chosen: KnownProvider | null;
-  /** Whether the servers on this computer are shown, and the asking for them whose answer counts. */
-  asking: object | null;
+  /** Whether the servers on this computer are shown, and the askings for them (the last one's answer counts). */
+  asking: boolean;
+  servings: ReturnType<typeof newest>;
   /** The website the server was last asked about, and the asking. */
   website: string;
   search: () => Promise<void>;
   /** The way elsewhere beside Continue, where there is one: not there while the provider is set by hand, whose switch has "Enter address". */
-  elsewhere?: HTMLElement;
+  otherWay?: HTMLElement;
   /** The line of This computer's models among the servers on this computer, where there is one. */
   own?: () => Promise<HTMLElement | null>;
 }
@@ -158,21 +159,22 @@ function parts() {
  * told when the list of providers has come, by which an address has a name. `own` makes This computer's line,
  * which goes on with the address it is given.
  */
-export function keyStep(go: (asked: Asked) => void, listed: () => void = () => {}, own?: (use: (base_url: string) => void) => Promise<HTMLElement | null>, elsewhere?: HTMLElement): KeyStep {
+export function keyStep(go: (asked: Asked) => void, listed: () => void = () => {}, own?: (use: (base_url: string) => void) => Promise<HTMLElement | null>, otherWay?: HTMLElement): KeyStep {
   const made = parts();
-  if (elsewhere) made.next.after(elsewhere);
+  if (otherWay) made.next.after(otherWay);
   const k: Step = {
     ...made,
     go,
     own: own && (() => own((base_url) => go({ base_url, key: { api_key: "" }, own: true })).catch(() => null)),
-    elsewhere,
+    otherWay,
     providers: [],
     ready: false,
     manual: false,
     aside: [],
     mode: "find",
     chosen: null,
-    asking: null,
+    asking: false,
+    servings: newest(),
     website: "",
     search: latest(
       made.found,
@@ -205,7 +207,8 @@ function fill(k: Step, stored: Stored | null): void {
   k.key.value = "";
   k.key.placeholder = keyStored(stored) || wording("setup-key-placeholder");
   k.chosen = null;
-  k.asking = null;
+  k.asking = false;
+  k.servings.drop();
   k.aside = [];
   k.found.replaceChildren();
   k.query.value = "";
@@ -277,7 +280,8 @@ function setMode(k: Step, now: Mode): void {
 function enter(k: Step): void {
   k.manual = true;
   // The servers on this computer were not it: their list goes.
-  k.asking = null;
+  k.asking = false;
+  k.servings.drop();
   setMode(k, "address");
   show(k);
   k.address.focus();
@@ -314,7 +318,7 @@ function show(k: Step): void {
   );
   // "Find by name" goes on by "Use this", Continue greyed meanwhile; elsewhere Continue does, once it is known where to.
   k.next.disabled = hand ? k.mode === "find" : fits.length > 1 ? !k.chosen : fits.length < 1;
-  if (k.elsewhere) k.elsewhere.hidden = hand;
+  if (k.otherWay) k.otherWay.hidden = hand;
   // Without a key the way to a server on this computer is there, whatever else is.
   k.noKey.hidden = !k.ready || (hand && typed(k) !== "");
   k.servers.hidden = k.noKey.hidden || !k.asking;
@@ -354,7 +358,8 @@ function noServer(own: boolean, names: string): string {
 
 /** The servers on this computer that the list knows are asked for their models, without a key: one that answers is there. */
 async function askServers(k: Step): Promise<void> {
-  const mine = (k.asking = {});
+  k.asking = true;
+  const mine = k.servings.ask();
   k.servers.replaceChildren(el("p", { className: "meta m0" }, elsewhere ? wording("setup-looking-servers-there") : wording("setup-looking-servers")));
   show(k);
   const here = k.providers.filter((provider) => provider.local);
@@ -369,7 +374,7 @@ async function askServers(k: Step): Promise<void> {
     ),
     k.own?.() ?? null,
   ]);
-  if (mine !== k.asking) return;
+  if (!k.servings.last(mine)) return;
   const there = here.filter((_, at) => answers[at]);
   // A server on this computer is used without a key: the one in the field is another provider's, if there is one.
   // Another server, which is not on the list, has its address entered.

@@ -167,11 +167,12 @@ pub async fn described(
         } else {
             format!(": {reason}")
         };
-        let said = match (status.as_u16(), key.is_empty()) {
-            (401 | 403, false) => "did not take the key",
-            (401 | 403, true) => "asks for a key",
+        // What it said, as the code the UI picks its words by and as the sentence of `error`.
+        let (said, sentence) = match (status.as_u16(), key.is_empty()) {
+            (401 | 403, false) => ("did_not_take_the_key", "did not take the key"),
+            (401 | 403, true) => ("asks_for_a_key", "asks for a key"),
             // An API may have none (Gemini's has not), so this is no wrong address by itself.
-            (404, _) => "has no list of models at this address",
+            (404, _) => ("no_list", "has no list of models at this address"),
             _ => bail!(
                 Fail::said(
                     Code::Answered,
@@ -185,7 +186,7 @@ pub async fn described(
         bail!(
             Fail::said(
                 Code::Answered,
-                format!("the model's server {said} ({status}){reason}")
+                format!("the model's server {sentence} ({status}){reason}")
             )
             .with("whose", "model_server")
             .with("said", said.to_string())

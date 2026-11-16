@@ -1,4 +1,4 @@
-"""Every English text of the UI as one table, for a usability review (milestone 129 of docs/cardwave-rewrite.md).
+"""Every English text of the UI as one table, for a usability review (milestone 129 (its ticket in docs/tickets/)).
 
   python tools/words.py [OUT]     writes OUT (default .checklists/ux/words.md) and prints a few counts
 

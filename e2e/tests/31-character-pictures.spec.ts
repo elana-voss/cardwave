@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { chooseView, expect, test } from "../test";
 import { ccv4File, pictureFile } from "../card";
-import { NOW, picture, SIZES, stopClock, storeModel, THEMES } from "../pictures";
+import { NOW, picture, railChats, SIZES, stopClock, storeModel, THEMES } from "../pictures";
 
 // Pictures of a card's screens, each compared with its stored picture, pixel by pixel, at 1440 px in the
 // light theme (CLAUDE.md, "Pictures of the screens"): the card's page with its menu open, a text's earlier
@@ -140,9 +140,15 @@ async function dated(page: Page): Promise<void> {
   );
 }
 
-// The rail's Guinivere chats say their day and time, made on the real clock: masked, so the pictures hold.
-const chats = (page: Page) => [page.locator(".nav-chat", { hasText: "Guinivere" })];
+const chats = (page: Page) => railChats(page, "Guinivere");
 const field = (page: Page, name: string) => page.getByRole("textbox", { name, exact: true });
+
+/** Opens `address` and waits for the server's first `hello`, after which the page is not drawn again by it. */
+async function goHeard(page: Page, address: string): Promise<void> {
+  const heard = page.waitForEvent("websocket").then((socket) => socket.waitForEvent("framereceived", (frame) => String(frame.payload).includes('"hello"')));
+  await page.goto(address);
+  await heard;
+}
 
 /**
  * Opens a page of `protector` and waits for its box and for its picture, after which nothing on it moves. The
@@ -150,9 +156,7 @@ const field = (page: Page, name: string) => page.getByRole("textbox", { name, ex
  * closes a menu opened before it: in a whole run it came late once, so `open` waits for it and for that reading.
  */
 async function open(page: Page, address: string): Promise<void> {
-  const heard = page.waitForEvent("websocket").then((socket) => socket.waitForEvent("framereceived", (frame) => String(frame.payload).includes('"hello"')));
-  await page.goto(address);
-  await heard;
+  await goHeard(page, address);
   await page.waitForLoadState("networkidle");
   await expect(page.locator(".part").last()).toBeVisible();
   await expect.poll(() => page.locator(".hero-picture img").evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
@@ -223,10 +227,13 @@ for (const [width, height] of SIZES) {
       });
 
       test("a new card: the empty page with its title written and its first message being written", async ({ page }) => {
-        await page.goto("/#/library/new");
+        // The message is written once the card is made and drawn so: clicked before, it lay lower and the page scrolled to it (seen in a whole run).
+        await goHeard(page, "/#/library/new");
         await field(page, "Title").fill("The Lighthouse Keeper");
+        await expect(page.locator(".pbar .saved")).toHaveText("Saved");
         await page.locator(".tb-body").first().click();
         await field(page, "First message").fill("*The lamp turns above you.* \"You came on the last boat.\"");
+        await expect(chats(page)[0]).toHaveCount(5);
         await away(page);
         await picture(page, named("new-card"), chats(page));
       });

@@ -1,4 +1,4 @@
-"""Moves modules of web/src (milestone 96i of docs/cardwave-rewrite.md) and rewrites every path that names them.
+"""Moves modules of web/src (milestone 96i (its ticket in docs/tickets/)) and rewrites every path that names them.
 
   python tools/web_move.py OLD NEW [OLD NEW …]   paths below web/src, with .ts (chat/title.ts title.ts)
 

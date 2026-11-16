@@ -5,7 +5,8 @@
 // during the downloads keeps it): it is stored, and its cards are imported with the import panel, when setup
 // ends (`openApp` in models-step.ts, which `forget`s it), so the downloads of step 4 come first and the watch
 // takes nothing before. With a folder, "Import from this folder" takes it and "Skip" goes on without; without
-// one, "Skip" alone; "Back" is quiet, set apart from them. "Change" opens the picker in the folder shown.
+// one, "Skip" alone; "Back" is quiet, set apart from them. "Change" opens the picker in the folder shown. From its
+// showing until setup ends the browser holds that it was reached (`cardsReached`), so a start comes back to it.
 import { wording } from "../language/language";
 import { getOfferedCardFolder } from "../api/client";
 import { el } from "../dom";
@@ -14,6 +15,11 @@ import { remember, remembered } from "../storage";
 
 /** Where the browser holds the folder taken until setup ends. */
 const FOLDER = "setup-cards-folder";
+/** Held in the browser from the step's showing until setup ends: a start before then comes back to it. */
+const REACHED = "setup-cards-reached";
+
+/** Whether first run showed this step and has not ended since. */
+export const cardsReached = (): boolean => remembered(REACHED) === "1";
 
 export function cardsStep(home: () => HTMLElement, attempt: (action: () => Promise<void>) => Promise<boolean>) {
   let folder = remembered(FOLDER) || null;
@@ -46,6 +52,7 @@ export function cardsStep(home: () => HTMLElement, attempt: (action: () => Promi
   show();
   /** Shows the folder the server offers, where none is held yet; a failure to ask leaves the line without. */
   const offer = async () => {
+    remember(REACHED, "1");
     if (folder) return;
     folder = await getOfferedCardFolder().catch(() => null);
     show();
@@ -62,6 +69,7 @@ export function cardsStep(home: () => HTMLElement, attempt: (action: () => Promi
   const forget = () => {
     folder = taken = null;
     remember(FOLDER, "");
+    remember(REACHED, "");
   };
   return { node, go, skip, backButton, offer, take, chosen, forget, focus: () => line.button.focus() };
 }

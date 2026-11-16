@@ -77,19 +77,44 @@ pub(crate) fn splitlines(text: &str) -> Vec<&str> {
     out
 }
 
-/// The words BM25 counts: runs of `[a-z0-9]` of the lower-cased text, less the stop words.
+/// Whether `c` is of a writing with spaces between its words: not Chinese,
+/// Japanese, nor Korean's syllables (which bind their particles).
+pub(crate) fn spaced(c: char) -> bool {
+    !matches!(c, '\u{1100}'..='\u{11FF}' | '\u{3040}'..='\u{30FF}' | '\u{3400}'..='\u{9FFF}'
+        | '\u{AC00}'..='\u{D7AF}' | '\u{F900}'..='\u{FAFF}')
+}
+
+/// Whether `c` is a letter of a word: pmbench's `[a-z0-9]`, and a letter of a
+/// script other than Latin, so a chat in Cyrillic, Greek or Japanese is found
+/// by its words while a Latin text splits exactly as the benchmark's did.
+fn lettered(c: char) -> bool {
+    c.is_ascii_lowercase()
+        || c.is_ascii_digit()
+        || (c.is_alphabetic()
+            && !matches!(c, '\0'..='\u{24F}' | '\u{1E00}'..='\u{1EFF}' | '\u{2C60}'..='\u{2C7F}'
+                | '\u{A720}'..='\u{A7FF}'))
+}
+
+/// The words BM25 counts: runs of `lettered` signs of the lower-cased text,
+/// each sign of a writing without spaces alone, less the stop words.
 pub fn words(text: &str) -> Vec<String> {
     let lower = text.to_lowercase();
     let mut out = Vec::new();
     let mut word = String::new();
+    let end = |word: &mut String, out: &mut Vec<String>| {
+        if !word.is_empty() && !STOP_WORDS.contains(&word.as_str()) {
+            out.push(word.clone());
+        }
+        word.clear();
+    };
     for c in lower.chars().chain(std::iter::once(' ')) {
-        if c.is_ascii_lowercase() || c.is_ascii_digit() {
+        if !lettered(c) {
+            end(&mut word, &mut out);
+        } else if spaced(c) {
             word.push(c);
-        } else if !word.is_empty() {
-            if !STOP_WORDS.contains(&word.as_str()) {
-                out.push(word.clone());
-            }
-            word.clear();
+        } else {
+            end(&mut word, &mut out);
+            out.push(c.to_string());
         }
     }
     out
@@ -269,5 +294,13 @@ mod tests {
         assert!(splitlines("").is_empty());
         assert_eq!(collapse(" a \x1c b\t"), "a b");
         assert_eq!(words("Café, the 2 cats"), ["caf", "2", "cats"]);
+    }
+
+    #[test]
+    fn a_text_in_another_script_has_words() {
+        assert_eq!(words("Анна любит море."), ["анна", "любит", "море"]);
+        assert_eq!(words("海が好き"), ["海", "が", "好", "き"]);
+        let found = relevance(&["Анна любит море".into(), "Кот спит".into()], "море");
+        assert!(found[0] > 0.0 && found[1] == 0.0, "{found:?}");
     }
 }

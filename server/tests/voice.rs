@@ -48,7 +48,7 @@ async fn ready(server: &Server) {
 
 /// What a reading of `body` answers: its status, and its bytes.
 async fn speak(server: &Server, body: Value) -> (u16, Vec<u8>) {
-    let answer = reqwest::Client::new()
+    let answer = common::server::client()
         .post(format!("http://{}/api/voice/speak", server.addr))
         .json(&body)
         .send()
@@ -142,7 +142,7 @@ async fn a_text_is_read_aloud_once_the_voice_is_there_in_the_voice_asked_for() {
     let (status, _) = speak(&server, json!({ "text": "  " })).await;
     assert_eq!(status, 400);
     // A failure after the first sound breaks the answer off; one before it is the answer.
-    let answer = reqwest::Client::new()
+    let answer = common::server::client()
         .post(format!("http://{}/api/voice/speak", server.addr))
         .json(&json!({ "text": "one FAIL" }))
         .send()
@@ -292,7 +292,7 @@ fn language<'a>(state: &'a Value, id: &str) -> &'a Value {
 
 /// What a reading of `text` answers: its status, its language, and how many samples.
 async fn read(server: &Server, text: &str) -> (u16, String, usize) {
-    let answer = reqwest::Client::new()
+    let answer = common::server::client()
         .post(format!("http://{}/api/voice/speak", server.addr))
         .json(&json!({ "text": text }))
         .send()

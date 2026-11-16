@@ -114,7 +114,7 @@ async fn unlock(
 /// Locks the app until the password is given again.
 async fn close(State(state): State<AppState>, caller: Caller) -> ApiResult<StatusCode> {
     if caller.user != state.local_user() {
-        Err(owner_only("lock Cardwave"))?;
+        Err(owner_only("lock_Cardwave"))?;
     }
     if !password::is_on(&state.data_dir) {
         Err(Fail::new(Code::NoPasswordToLock))?;
@@ -166,11 +166,7 @@ fn set(
     let Some((sealed, name)) = password::read(dir)? else {
         let new = new.ok_or(Fail::new(Code::NoPasswordOn))?;
         let name = users::account(&inner.db, user)?.name;
-        password::write(dir, &password::seal(&inner.key, new)?, &name)?;
-        if let Err(failure) = inner.place.forget(dir) {
-            password::remove(dir)?;
-            return Err(failure);
-        }
+        put_on(state, new, &name)?;
         return Ok(true);
     };
     let current = current.ok_or(Fail::new(Code::CurrentPasswordNeeded))?;
@@ -179,7 +175,7 @@ fn set(
         .attempt(None, from.ip(), || password::unseal(&sealed, current))?;
     match new {
         Some(new) => {
-            password::write(dir, &password::seal(&inner.key, new)?, &name)?;
+            put_on(state, new, &name)?;
             Ok(true)
         }
         None => {
@@ -188,6 +184,21 @@ fn set(
             Ok(false)
         }
     }
+}
+
+/// Has Cardwave ask for `new` on opening, the account called `name` on the
+/// start screen: switched on, the key leaves the place it was kept in; on
+/// already, the password changes. Under `guarded`, which the caller holds.
+pub(super) fn put_on(state: &AppState, new: &str, name: &str) -> anyhow::Result<()> {
+    let inner = &state.0;
+    let dir = &inner.data_dir;
+    let was_on = password::is_on(dir);
+    password::write(dir, &password::seal(&inner.key, new)?, name)?;
+    if !was_on && let Err(failure) = inner.place.forget(dir) {
+        password::remove(dir)?;
+        return Err(failure);
+    }
+    Ok(())
 }
 
 /// Changes the password of `user`, another account than this computer's,

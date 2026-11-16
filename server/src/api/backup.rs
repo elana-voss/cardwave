@@ -6,8 +6,12 @@
 //! without one); where one is on, that one does. `POST /api/backup` takes one as
 //! the body, its password in `x-cardwave-password`, percent-encoded (401 missing
 //! or wrong), and replaces all the server holds: every page is told
-//! (`restored`) and starts anew. Not while a reply is written, cards are
-//! described, a memory pass or the search model reads. Both are this computer's
+//! (`restored`) and starts anew. A backup made while Cardwave asked for its
+//! password on opening brings that lock back, with the password sent (`put_on`
+//! of password.rs; where it cannot, the restore fails, to be tried again); one made
+//! without leaves the lock here as it is. Not while any work is under way
+//! (`AppState::busy`, a reply, a description, a memory pass, the search model's
+//! reading and the rest). Both are this computer's
 //! account's alone; a restore signs every page out and listens on the home
 //! network as the backup says.
 //!
@@ -44,10 +48,7 @@ const UPLOAD: &str = "restore.upload";
 
 /// A mark of chance for a file of one request.
 fn mark() -> anyhow::Result<String> {
-    let mut mark = [0u8; 8];
-    getrandom::fill(&mut mark)
-        .map_err(|e| Fail::new(Code::Internal).with("reason", e.to_string()))?;
-    Ok(mark.iter().map(|b| format!("{b:02x}")).collect())
+    cw_key::random_hex(8)
 }
 
 pub(super) fn routes() -> Router<AppState> {
@@ -73,17 +74,17 @@ async fn save(
 ) -> ApiResult<Response> {
     let (head, file) = tokio::task::spawn_blocking(move || -> anyhow::Result<_> {
         let inner = &state.0;
-        let sealed = match password::read(&inner.data_dir)? {
-            Some((sealed, _)) => sealed,
+        let (sealed, locked) = match password::read(&inner.data_dir)? {
+            Some((sealed, _)) => (sealed, true),
             None => {
                 let password = asked.password.unwrap_or_default();
                 ensure!(!password.is_empty(), Fail::new(Code::BackupNeedsPassword));
-                password::seal(&inner.key, &password)?
+                (password::seal(&inner.key, &password)?, false)
             }
         };
         let path = inner.data_dir.join(format!("backup-{}.db", mark()?));
         let live = inner.data_dir.join(cw_key::FILE_NAME);
-        let made = backup::snapshot(&live, &inner.key, sealed, &path);
+        let made = backup::snapshot(&live, &inner.key, sealed, locked, &path);
         let opened = made.and_then(|head| Ok((head, std::fs::File::open(&path)?)));
         // Gone once it is sent; where it could not be removed, it stays in the data folder.
         let _ = std::fs::remove_file(&path);
@@ -166,34 +167,42 @@ fn put_back(
 ) -> anyhow::Result<()> {
     let inner = &state.0;
     let _held = cw_core::lock(&inner.guarded);
-    ensure!(
-        state.replies().is_empty()
-            && state.describing().is_empty()
-            && state.remembering().is_empty()
-            && state.coding().is_empty()
-            && state.titles.is_empty()
-            && !state.is_at_work()
-            && !state.search.is_reading(),
-        Fail::new(Code::RestoreBusy)
-    );
-    backup::restore(&inner.db, &inner.key, upload, password, &inner.data_dir)?;
+    ensure!(!state.busy(None), Fail::new(Code::RestoreBusy));
+    let locked = backup::restore(&inner.db, &inner.key, upload, password, &inner.data_dir)?;
     inner.restores.fetch_add(1, Ordering::SeqCst);
+    // The lock comes back at once with the password the backup was just opened by, so a stop
+    // after this leaves the data behind it; its name is put right below.
+    let lock = match (locked, password) {
+        (true, Some(password)) => super::password::put_on(state, password, &inner.account_name),
+        _ => Ok(()),
+    };
     // At once, so a later failure leaves no switch of the data before.
     state.web_pictures().clear();
-    // As at a start: a reply that was being written when the backup was made is ended, and so on.
-    crate::tidy(&inner.db, true)?;
-    let local = users::local(&inner.db, &inner.account_name)?;
-    inner.local_user.store(local, Ordering::Relaxed);
-    password::rename(&inner.data_dir, &users::account(&inner.db, local)?.name)?;
+    // The data is the backup's now: each step that makes the server match it
+    // runs whatever another comes to, and the restore is answered as done.
     // The backup's sessions are not this server's pages.
-    state.sessions.end_every(&inner.db)?;
+    let ended = state.sessions.end_every(&inner.db);
+    // As at a start: a reply that was being written when the backup was made is ended, and so on.
+    let tidied = crate::tidy(&inner.db, true);
+    // No account where the backup's cannot be read (0 is none's number).
+    let local = users::local(&inner.db, &inner.account_name);
+    inner
+        .local_user
+        .store(*local.as_ref().unwrap_or(&0), Ordering::Relaxed);
+    let renamed = local.and_then(|local| {
+        password::rename(&inner.data_dir, &users::account(&inner.db, local)?.name)
+    });
+    for failure in [ended, tidied, renamed].into_iter().filter_map(Result::err) {
+        tracing::error!("after a restore: {failure:#}");
+    }
     // The backup is restored whatever its listener comes to.
     if let Some(gate) = state.gate()
         && let Err(failure) = cw_accounts::users::reached(&inner.db).and_then(|on| gate.listen(on))
     {
         tracing::warn!("{failure:#}");
     }
-    Ok(())
+    // A lock that did not come back is said, never left open unsaid: the restore is tried again.
+    lock
 }
 
 // This file's routes as tools (`tools::app`), which build.rs lists.

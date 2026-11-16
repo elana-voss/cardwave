@@ -1,4 +1,4 @@
-//! Cardwave's own API as tools ("Cardwave" in Settings › Tools): one tool per
+//! Cardwave's own API as tools ("Cardwave" in Tools for the AI): one tool per
 //! route, listed at build from the routes and their handlers' types (build.rs,
 //! the server's `api::app_tools::tool_routes`, passed in as `routes`), so every
 //! feature is also a tool. A model's server

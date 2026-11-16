@@ -72,7 +72,10 @@ error-not-found = その{ $what ->
     [voice] 音声
    *[other] もの
 }はありません。削除された可能性があります。
-error-chat-busy = このチャットでは返信を作成中です。先に停止してください。
+error-chat-busy = { $what ->
+    [coding_task] このチャットのコーディングタスクが実行中です。先に停止してください。
+   *[other] このチャットでは返信を作成中です。先に停止してください。
+}
 error-no-provider = { $what ->
     [chat_model] チャットモデルがまだ選ばれていません。設定 › モデルで選んでください。
    *[other] プロバイダーがまだ設定されていません。設定 › プロバイダーで追加してください。
@@ -102,7 +105,7 @@ error-drive-root-for-model = ドライブのルートはAIに渡すには中身�
 error-data-folder = そのフォルダーはCardwave自身のデータを含むか、その中にあります。別のフォルダーを選んでください。
 error-commands-windows-only = コマンドはWindowsでのみ実行されます。
 error-recycle-bin-windows-only = ファイルをWindowsのごみ箱に移せるのはWindowsだけです。
-error-files-tool-off = 先に設定 › ツールで「ファイル」をオンにしてください。チームはそれでタスクのフォルダーを読み書きします。
+error-files-tool-off = 先に設定 › 詳細設定 › AIのツールで「ファイル」をオンにしてください。チームはそれでタスクのフォルダーを読み書きします。
 
 ## Pictures, replies and voices
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] ペルソナ「{ $name }」はゴミ箱にあります。使うには復元してください。
    *[other] それはゴミ箱にあります。先に復元してください。
 }
+-card-unreadable = このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
 error-not-readable = { $what ->
     [damaged_key] キーが壊れています。
     [json] このファイルは有効なJSONではありません。
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] このバックアップは壊れています：キーを読み取れません。
     [base64] それはbase64ではありません。
     [base64_file] { $name }はbase64ではありません。
-    [card_defined_twice] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] カード内のファイル名を使えません。
     [card_reference] それはカードのどの部分も指していません。
     [ccv4_version] このカードは新しい Cardwave で作られています。開くには Cardwave を更新してください。
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] フィギュアの静止画が、4 MB以下のPNGではありません。
     [figure_type] 3DフィギュアはVRM、GLB、FBXのいずれかのファイルです。
     [folder_read] フォルダーを読み取れません。
-    [format_version] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
+    [format_version] { -card-unreadable }
     [image_model_answer] 画像モデルの応答を読み取れません。
     [image_model_picture] 画像モデルの画像を読み取れません。
     [key_characters] キーにキーで使えない文字が含まれています。プロバイダーのサイトからもう一度コピーしてください。
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] 録音が短すぎます：{ $shortest }秒以上必要です。
     [recording_silent] 録音に音がありません。
     [recording_wav] 録音がWAVファイルではありません。
-    [sillytavern_base64] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] カードが空です。
     [sillytavern_file] このファイルのSillyTavernカードを読み取れません。
-    [sillytavern_json] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
-    [sillytavern_object] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] このPNGのSillyTavernカードを読み取れません。
-    [spec_version] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
-    [spec_version_form] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
-    [toml] このファイルは Cardwave が読めるキャラクターカードではありません。元のアプリからもう一度書き出してください。
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] Wordファイルを読み取れません。
     [word_text] Wordファイルにテキストがありません。
     [workflow] ワークフロー「{ $name }」を読み取れません。
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] キャラクターがヘルパーモデルには長すぎます。もっと多く読めるヘルパーモデルを選んでください。
     [card_for_chat] キャラクターがチャットモデルには長すぎて、そのままではキャラクターらしく話せません。もっと多く読めるチャットモデルを選ぶか、キャラクターを短くしてください。
+    [message_for_chat] メッセージがチャットモデルには長すぎます。短くするか、添える画像を減らすか、もっと多く読めるチャットモデルを選んでください。
     [card_file] ファイルが{ $most } MBを超えています。
     [checkpoint_folder] フォルダーが大きすぎて、各ステップの前にコピーを残せません。
     [expression_pack_size] { $name }の画像が大きすぎます。
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] 読み上げに必要なMicrosoftの部品がありません。microsoft.com から Visual C++ 再頒布可能パッケージをインストールし、Cardwaveを再起動してください。
     [workflow_no_text] ワークフロー「{ $name }」に、画像の言葉を入れるテキスト欄がありません。
     [workflow_use] ワークフロー「{ $name }」は使えません。
-    [written_tools_full] ツールは最大 { $most_tools } 個までです。先に 設定 › AIが書いたツール で一つ削除してください。
+    [written_tools_full] ツールは最大 { $most_tools } 個までです。先に 設定 › 詳細設定 › AIが書いたツール で一つ削除してください。
     [delete_not_in_trash] 完全に削除できるのはゴミ箱にあるものだけです。先にゴミ箱に移してください。
    *[other] それはできません。
 }
+-helper-unusable = 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
 error-model-answer = { $what ->
     [no_greeting] AIは挨拶を書きませんでした。
-    [background_answer] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
-    [background_text] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] AIの応答はキャラクターのテキストではありませんでした。
-    [classification] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [classification] { -helper-unusable }
     [example_messages] AIは例文のメッセージを書きませんでした。
     [no_example_message] AIはテキストのない例文のメッセージを書きました。
     [json] AIの応答は求めた形式ではありませんでした。
-    [keywords] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
-    [logline] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] AIのプロバイダーがチャットの返信を送りませんでした。
     [no_fitting_answer] AIは3回試しても使える応答を返しませんでした。
     [no_picture] 画像モデルが画像なしで応答しました。
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] ヘルパーモデルは画像の言葉を入れる欄を見つけられませんでした。
     [picture_server_no_picture] 画像サーバーが画像なしで応答しました。
     [picture_words] ヘルパーモデルは画像の言葉を書きませんでした。
-    [rating] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [rating] { -helper-unusable }
     [reply_broke_off] 返信が途中で切れました。
-    [needs] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [needs] { -helper-unusable }
     [rounds] チームは{ $rounds }ラウンドで作業を終えませんでした。
     [search_left_out] 検索モデルがテキストをひとつ抜かしました。
     [search_model] 検索モデルの応答を読み取れません。
     [search_tokens] 検索モデルのトークンを読み取れません。
-    [title] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [title] { -helper-unusable }
     [too_many_tools] AIがツールを呼び出しすぎました。
-    [worker_mode] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
-    [worker_texts] 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] AIのプロバイダーからの報告：{ $reason }
    *[other] AIの応答を使えません。
 }

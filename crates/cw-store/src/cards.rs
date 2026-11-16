@@ -32,7 +32,8 @@ const SUMMARY: &str = "select c.id, c.title, c.favorite, c.archived, c.trashed_a
          join chat_characters p on p.chat_id = t.id
          join card_versions pv on pv.id = p.version_id
          where pv.card_id = c.id and t.trashed_at is null and not t.archived
-         order by t.updated_at desc, t.id desc limit 1)
+         order by t.updated_at desc, t.id desc limit 1),
+        case when json_valid(d.facets) then json_extract(d.facets, '$.rating') end
      from cards c join card_versions v on v.card_id = c.id left join card_index i on i.card_id = c.id
      left join card_descriptions d on d.card_id = c.id
      left join picture_faces f on f.blob_id = v.image_id
@@ -41,9 +42,7 @@ const SUMMARY: &str = "select c.id, c.title, c.favorite, c.archived, c.trashed_a
 fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
     let list = |column: usize| -> rusqlite::Result<Vec<String>> {
         let json: Option<String> = row.get(column)?;
-        Ok(json
-            .and_then(|json| serde_json::from_str(&json).ok())
-            .unwrap_or_default())
+        Ok(crate::json::or_none(json.as_deref(), "a card's names or tags").unwrap_or_default())
     };
     let state: Option<String> = row.get(12)?;
     let described = state.as_deref() == Some("described");
@@ -51,20 +50,23 @@ fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
         let text: Option<String> = if described { row.get(column)? } else { None };
         Ok(text.unwrap_or_default())
     };
-    let (tags, excerpt) = if described {
-        // The terms, the user's own tags, then the file's (the owner: "keep
-        // them"), each once.
-        let mut tags = list(13)?;
-        tags.extend(list(15)?);
-        tags.extend(list(9)?);
-        let tags = each_once(&tags)
+    let once = |tags: Vec<String>| -> Vec<String> {
+        each_once(&tags)
             .into_iter()
             .map(|(_, tag)| tag.to_string())
-            .collect();
-        (tags, row.get(14)?)
+            .collect()
+    };
+    let (tags, own_tags, excerpt) = if described {
+        // The terms, the user's own tags, then the file's (the owner: "keep
+        // them"), each once; the line shows the user's and the file's alone.
+        let mut own = list(15)?;
+        own.extend(list(9)?);
+        let mut tags = list(13)?;
+        tags.extend(own.iter().cloned());
+        (once(tags), once(own), row.get(14)?)
     } else {
         let excerpt: Option<String> = row.get(10)?;
-        (list(9)?, excerpt.unwrap_or_default())
+        (list(9)?, list(9)?, excerpt.unwrap_or_default())
     };
     Ok(CardSummary {
         id: row.get(0)?,
@@ -77,6 +79,8 @@ fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
         created_at: row.get(7)?,
         names: list(8)?,
         tags,
+        own_tags,
+        rating: of_description(21)?,
         excerpt,
         last_chat_at: row.get(11)?,
         last_chat_title: row.get(20)?,
@@ -84,10 +88,11 @@ fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
         poster: Some(Poster {
             tagline: of_description(16)?,
             mood: Mood::read(&of_description(17)?),
-            faces: row
-                .get::<_, Option<String>>(18)?
-                .and_then(|json| serde_json::from_str(&json).ok())
-                .unwrap_or_default(),
+            faces: crate::json::or_none(
+                row.get::<_, Option<String>>(18)?.as_deref(),
+                "a picture's faces",
+            )
+            .unwrap_or_default(),
             design: row
                 .get::<_, Option<String>>(19)?
                 .as_deref()

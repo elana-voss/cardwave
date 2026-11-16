@@ -143,3 +143,68 @@ fn a_backup_from_a_newer_cardwave_is_told_as_newer() {
         Some("backup_newer")
     );
 }
+
+#[test]
+fn undo_of_a_deleted_written_tool_keeps_the_account_limit() {
+    use cw_coding::tools::written::{MOST_TOOLS, NewTool, Storage};
+    let scratch = Scratch::new();
+    let db = Db::open(&scratch.db(), &DbKey::generate().unwrap()).unwrap();
+    let user = db
+        .with(|c| {
+            c.execute("insert into users (name, created_at) values ('u', 0)", [])?;
+            Ok::<_, rusqlite::Error>(c.last_insert_rowid())
+        })
+        .unwrap();
+    let tool = |n: usize| NewTool {
+        name: format!("tool_{n}"),
+        description: String::new(),
+        parameters: serde_json::json!({}),
+        code: String::new(),
+    };
+    let first = db.add_written_tool(user, None, &tool(0)).unwrap().unwrap();
+    for n in 1..MOST_TOOLS {
+        db.add_written_tool(user, None, &tool(n)).unwrap().unwrap();
+    }
+    db.delete_written_tool(user, first).unwrap();
+    db.add_written_tool(user, None, &tool(MOST_TOOLS))
+        .unwrap()
+        .unwrap();
+    assert!(db.restore_written_tool(user, first).unwrap().is_err());
+}
+
+/// A restore while another connection holds the write lock is refused as busy
+/// after the busy timeout, never retried without end, and the data stays.
+#[test]
+fn a_restore_while_the_database_is_busy_is_refused_as_busy() {
+    let theirs = Scratch::new();
+    let key = DbKey::generate().unwrap();
+    drop(Db::open(&theirs.db(), &key).unwrap());
+    let mut file = format!("Cardwave backup 1\n{{\"key\":\"{}\"}}\n", key.to_hex()).into_bytes();
+    file.extend(std::fs::read(theirs.db()).unwrap());
+    let backup = theirs.0.join("backup");
+    std::fs::write(&backup, file).unwrap();
+
+    let ours = Scratch::new();
+    let our_key = DbKey::generate().unwrap();
+    let db = Db::open(&ours.db(), &our_key).unwrap();
+    db.with(|c| c.execute("insert into meta values ('mark', 'kept')", []))
+        .unwrap();
+    let holder = Db::open(&ours.db(), &our_key).unwrap();
+    holder.with(|c| c.execute_batch("begin immediate")).unwrap();
+
+    let refused = cw_store::backup::restore(&db, &our_key, &backup, None, &ours.0).unwrap_err();
+    let fail = refused.downcast_ref::<cw_core::Fail>().expect("a Fail");
+    assert_eq!(
+        fail.details.get("what").map(ToString::to_string).as_deref(),
+        Some("database_busy")
+    );
+    holder.with(|c| c.execute_batch("rollback")).unwrap();
+    let mark: String = db
+        .with(|c| {
+            c.query_row("select value from meta where key = 'mark'", [], |r| {
+                r.get(0)
+            })
+        })
+        .unwrap();
+    assert_eq!(mark, "kept");
+}

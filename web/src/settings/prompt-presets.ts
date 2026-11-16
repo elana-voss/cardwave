@@ -13,7 +13,7 @@ import { deletePromptPreset, duplicateDefaultPrompt, duplicatePromptPreset, list
 import type { PromptPreset } from "../api/generated/PromptPreset";
 import type { PromptTexts } from "../api/generated/PromptTexts";
 import { announce, el, item, latest, noticeBox, oneAtATime } from "../dom";
-import { askUnder, menu } from "../dialogs";
+import { menu, menuDeleting } from "../dialogs";
 import { icon } from "../icons";
 
 /** The address of a prompt preset's editor; `new` for one not made yet. */
@@ -97,24 +97,22 @@ export function promptPresetsGroup(): { node: HTMLElement; read(): Promise<void>
   }
 
   function row(preset: PromptPreset): HTMLElement {
-    const more = menu(wording("common-more"), [
-      { label: wording("common-edit"), shape: "edit", action: () => (location.hash = editorOf(preset.id)) },
-      { label: wording("common-duplicate"), shape: "copy", action: () => copy(() => duplicatePromptPreset(preset.id)) },
-      { label: wording("common-delete"), shape: "trash", danger: true, apart: true, action: () => ask() },
-    ]);
-    const { line: node, tools } = line(preset.name, preset.in_use, about(preset), String(preset.id), more, preset.id);
-
-    /** Asks under the line whether the preset is to be deleted, which cannot be taken back. */
-    function ask(): void {
-      const remove = () =>
-        void attempt(async () => {
-          await deletePromptPreset(preset.id);
-          await after(null);
-          say(wording("preset-deleted", { name: preset.name }));
-        });
-      askUnder(tools, more.querySelector("button")!, wording("preset-delete-ask"), wording("common-delete"), remove);
-    }
-    return node;
+    /** Deletes the preset, once asked under the line, which cannot be taken back. */
+    const remove = () =>
+      void attempt(async () => {
+        await deletePromptPreset(preset.id);
+        await after(null);
+        say(wording("preset-deleted", { name: preset.name }));
+      });
+    const more = menuDeleting(
+      wording("common-more"),
+      [
+        { label: wording("common-edit"), shape: "edit", action: () => (location.hash = editorOf(preset.id)) },
+        { label: wording("common-duplicate"), shape: "copy", action: () => copy(() => duplicatePromptPreset(preset.id)) },
+      ],
+      { label: wording("common-delete"), question: () => wording("preset-delete-ask"), yes: wording("common-delete"), action: remove },
+    );
+    return line(preset.name, preset.in_use, about(preset), String(preset.id), more, preset.id).line;
   }
 
   return { node, read };

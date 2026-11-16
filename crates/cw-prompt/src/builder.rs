@@ -119,9 +119,20 @@ pub struct BuiltPrompt {
     /// The lorebook entries in the prompt, by their key in the chat's sticky
     /// and cooldown state, in the order they stand there.
     pub lore: Vec<String>,
-    /// The tokens of the system message (the character, the persona, the
-    /// tools), where it did not fit and was left out.
-    pub system_left_out: Option<usize>,
+    /// What the prompt cannot go without and left out as it did not fit.
+    pub left_out: Option<LeftOut>,
+}
+
+/// A part of the prompt it cannot go without that did not fit, with the
+/// tokens the prompt would need with it, the reply's room included.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LeftOut {
+    /// The system message: the character, the persona, the tools.
+    System(usize),
+    /// The newest message sent.
+    Newest(usize),
+    /// The instruction given with the request (`injected_message`).
+    Injected(usize),
 }
 
 /// Builds the prompt for the next reply in `chat`. Macros may write `chat`'s and
@@ -153,7 +164,7 @@ pub fn build(
         memory: None,
         injected: None,
         history_cut: false,
-        system_left_out: None,
+        left_out: None,
     };
     builder.build_static();
     // The newest message's room, kept while what is recalled for it is added.
@@ -173,7 +184,7 @@ pub fn build(
             segments: builder.segments,
         },
         lore,
-        system_left_out: builder.system_left_out,
+        left_out: builder.left_out,
     }
 }
 
@@ -199,7 +210,8 @@ struct Builder<'r, 'a> {
     injected: Option<PromptMessage>,
     /// Older messages of the chat were left out of the history.
     history_cut: bool,
-    system_left_out: Option<usize>,
+    /// The first part left out that the prompt cannot go without.
+    left_out: Option<LeftOut>,
 }
 
 /// Appends `<tag>` / content / `</tag>`, each on its own line.
@@ -323,7 +335,7 @@ impl Builder<'_, '_> {
                     .push(PromptMessage::new(Role::System, content));
             } else {
                 self.segments.truncate(recorded);
-                self.system_left_out = Some(tokens);
+                self.left_out = Some(LeftOut::System(self.used + tokens));
             }
         }
         self.build_later();
@@ -477,6 +489,9 @@ impl Builder<'_, '_> {
             let content = self.expand(text, "injected");
             if self.record(SegmentKind::Injected, &content) {
                 self.injected = Some(PromptMessage::new(role, content));
+            } else {
+                let needed = self.used + self.count(&content);
+                self.left_out.get_or_insert(LeftOut::Injected(needed));
             }
         }
     }
@@ -657,6 +672,10 @@ impl Builder<'_, '_> {
             // A message's count is of its words; its pictures cost the context besides.
             tokens += pictures.len() * crate::PICTURE_TOKENS;
             if !self.fits(tokens) {
+                if taken.is_empty() {
+                    self.left_out
+                        .get_or_insert(LeftOut::Newest(self.used + tokens));
+                }
                 full = Some(i);
                 break;
             }

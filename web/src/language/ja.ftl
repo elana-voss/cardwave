@@ -127,6 +127,7 @@ search-keys = Cardwaveを検索（Ctrl+K）
 label-settings-theme = テーマ
 label-settings-chat-layout = チャットのレイアウト
 label-settings-web-pictures = 他のウェブサイトの画像を表示
+label-settings-tabs = タブ
 label-settings-app-language = アプリの言語
 label-settings-language = AIが書く言語
 label-settings-providers = プロバイダー
@@ -144,7 +145,6 @@ label-settings-dice = サイコロ
 label-settings-folder = フォルダー
 label-settings-written = AIが書いたツール
 label-settings-coding = コーディングチーム
-label-settings-trash = ゴミ箱
 label-settings-backup = バックアップ
 label-settings-restore = 復元
 label-settings-cards-folder = カードのフォルダー
@@ -182,16 +182,12 @@ settings-appearance = 外観
 settings-theme-about = 選ばない場合はシステムに合わせます
 settings-layout-about = メッセージを吹き出しで、またはプレーンテキストで表示
 settings-web-pictures-about = チャットを開いたことが、それらのウェブサイトに知られます。
+settings-tabs-about = タイトルバーで複数のページを開いたままにします
 settings-language = 言語
 settings-data = データ
-settings-trash-about = { $count ->
-   *[other] { $count }件
-  }・{ $days }日後に削除
-settings-open-trash = ゴミ箱を開く
-settings-open = 開く
 settings-version = バージョン{ $version }・ライセンス
 settings-licences = ライセンス
-settings-advanced-about = ヘルパーモデル、ライブラリ、エクスポート、キャラクターなしのチャット、サンプリング、プリセット、自分のCSS
+settings-advanced-about = ヘルパーモデル、ライブラリ、AIのツール、エクスポート、キャラクターなしのチャット、サンプリング、プリセット、自分のCSS
 settings-setup-about = プロバイダー、モデル、音声を順番に設定
 settings-providers-about = モデルを動かすサービスのアドレスとキー
 settings-this-computer = このコンピューター
@@ -237,7 +233,7 @@ backup-back-up = バックアップを保存
 backup-no-file = ファイルが選択されていません
 backup-choose-file = ファイルを選択
 backup-its-password = バックアップのパスワード
-backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。ここで設定したパスワードはそのまま残ります。 ほかのアカウントも置き換わります。
+backup-restoring = 復元すると、Cardwaveの中身（チャット、キャラクター、ペルソナ、ロアブック、記憶、設定）がすべて置き換えられます。元に戻せません。ほかのアカウントも置き換わります。
 backup-restored = バックアップを復元しました：Cardwaveのすべてがバックアップ作成時の状態に戻りました。ほかのデバイスはもう一度サインインします。
 backup-file = ファイル
 backup-restore-title = バックアップを復元
@@ -275,7 +271,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = このコンピューターの AI アプリに Cardwave を使わせる
-mcp-ask = このコンピューターのプログラム（Claude Desktop など）は、キャラクターとチャットを読み、チャットに書き込み、設定 › ツールでオンにしたツールを使えます。Cardwave が先にあなたに尋ねることは、それらにはできません。
+mcp-ask = このコンピューターのプログラム（Claude Desktop など）は、キャラクターとチャットを読み、チャットに書き込み、設定でオンにしたツールを使えます。Cardwave が先にあなたに尋ねることは、それらにはできません。
 mcp-switch-on = オンにする
 mcp-about = Claude Desktop など、MCP 経由で：キャラクター、チャット、ツールを使います
 mcp-copy-address = MCPのアドレスをコピー
@@ -401,6 +397,7 @@ tools-change = 変更
 tools-choose = 選択
 tools-none-chosen = 未選択
 tools-title = ツール
+tools-for-ai = AIのツール
 tools-ask-new = { $name }が新しいツールを使おうとしています：{ $what }
 tools-ask-write = { $name }がフォルダーに「{ $what }」を書き込もうとしています：
 tools-ask-read = { $name }がフォルダーの中を読もうとしています：
@@ -462,6 +459,9 @@ providers-choose-folder = モデルのフォルダーを選択
 providers-change = 変更
 providers-not-set-up = 未設定
 providers-folder-not-set-up = このコンピューターのフォルダーにあるモデルを動かします・未設定
+providers-this-computer-runs = すぐ使えるモデル：{ $models }
+providers-this-computer-none = まだモデルがありません。下から合うものをダウンロードしてください
+providers-details = 詳細
 providers-menu = プロバイダーのメニュー：編集、削除
 providers-remove = 削除
 providers-removed = プロバイダー「{ $name }」を削除しました。
@@ -471,6 +471,7 @@ providers-remove-key = キーを削除
 providers-key-removed = 保存するとキーが削除されます
 providers-edit = プロバイダーを編集
 providers-keep-key = 保存済みのキーを残すには空欄のままにしてください。
+providers-new-address-key = 新しいアドレスには、キーをもう一度入力してください。キーが別のサーバーに送られることはありません。
 providers-saved = プロバイダー「{ $name }」を保存しました。
 providers-added = プロバイダー「{ $name }」を追加しました。
 providers-add = プロバイダーを追加
@@ -544,15 +545,13 @@ advanced-not-described = { $count ->
    *[other] { $count }人のキャラクター
   }にまだ説明がありません
 advanced-describe-cards = キャラクターに説明をつける
-advanced-describe-cost = { $count ->
-   *[other] { $count } 人のキャラクター
-  }で約 { $low }〜{ $high } トークン
+advanced-describe-cost = 読み込むカード：{ $count }
 advanced-failed = { $count ->
    *[other] { $count }件が失敗
   }：{ $failure }。もう一度試すには「キャラクターに説明をつける」を押してください。
 advanced-describe-again = すべて説明し直す
 advanced-describe-again-stop = 停止
-advanced-describe-again-about = ヘルパーモデルで各キャラクターの一行説明、要約、タグ、「ニーズ別」で見つけるための内容を書き直します。1 人あたり約 11,000〜12,000 トークン。自分で編集した部分はそのまま残ります。 トークンはプロバイダーの課金単位です。
+advanced-describe-again-about = ヘルパーモデルですべてのカードを読み直し、各キャラクターの一行説明、要約、タグ、「ニーズ別」で見つけるための内容を書き直します。自分で編集した部分はそのまま残ります。
 advanced-no-characters = 説明するキャラクターがありません
 advanced-describe-again-far = { $all }件中{ $done }件を説明し直しました
 advanced-describe-again-stopped = { $all }件中{ $done }件を説明し直したところで止めました
@@ -805,6 +804,8 @@ server-switch-on = オンにする
 server-network-about = スマートフォンや他のコンピューターから、ブラウザーでCardwaveを開きます
 server-other-devices = 他のデバイス
 server-inside = ルーターで外部からの接続を許可しない限り、このネットワーク内の機器だけが接続できます。
+server-anywhere = どこからでも
+server-tailscale = どこからでも開くには、このコンピューターとスマートフォンに無料アプリ Tailscale (tailscale.com) をインストールし、両方でサインインしてください。
 server-add-account = アカウントを追加
 server-owner = このコンピューター・アカウントを追加・削除できます
 server-more-of = その他：{ $name }

@@ -9,6 +9,7 @@
 // `characterWays`, the ways to a character while the library has none (the library's and New chat's);
 // `lastSeen`, when something last happened to a row's item, at the row's right, which hands a press on to
 // the row's link; `keyed`, which names the item a row shows, for the resting mouse.
+import { isInternal } from "../api/client";
 import type { Show } from "../api/generated/Show";
 import { el, failure, latest, noticeBox, oneAtATime, reason, searchField, segmented } from "../dom";
 import { ago, moment } from "../format";
@@ -74,11 +75,14 @@ export function listTools(label: string, placeholder: string, asked: Asked, load
   return { node, showAll };
 }
 
+/** A list read: what was found, what the list says when that is nothing, and whether the section holds nothing at all. */
+export type ListRead<T> = [found: T[], said: string, nothing: boolean];
+
 /**
  * Reads a section's list as it was asked for, with `list`. Answers with what
  * was found and, when that is nothing, with what the empty list says: that
  * nothing matches, that all of the section's `many` are archived, or `none`
- * when the section holds nothing at all. A list that `list` narrows further
+ * when the section holds nothing at all, which its third part tells. A list that `list` narrows further
  * says how in `having` (" with the tag “sea”"), for what the empty list says. A section
  * without an archive (`archive` false: personas) is never asked for its archived.
  */
@@ -89,16 +93,16 @@ export async function readList<T>(
   none: string,
   having = "",
   archive = true,
-): Promise<[T[], string]> {
+): Promise<ListRead<T>> {
   const { show } = asked;
   const q = asked.q.trim();
   const found = await list({ q, show });
-  if (found.length) return [found, ""];
-  if (q) return [found, wording("list-screen-none-match", { many, having, q })];
-  if (show === "favorites") return [found, having ? wording("list-screen-no-favorites-having", { having }) : wording("list-screen-no-favorites")];
-  if (show === "archived") return [found, wording("list-screen-none-archived", { many, having })];
-  if (archive && (await list({ q: "", show: "archived" })).length) return [found, wording("list-screen-all-archived", { many, having })];
-  return [found, having ? wording("list-screen-none-having", { many, having }) : none];
+  if (found.length) return [found, "", false];
+  if (q) return [found, wording("list-screen-none-match", { many, having, q }), false];
+  if (show === "favorites") return [found, having ? wording("list-screen-no-favorites-having", { having }) : wording("list-screen-no-favorites"), false];
+  if (show === "archived") return [found, wording("list-screen-none-archived", { many, having }), false];
+  if (archive && (await list({ q: "", show: "archived" })).length) return [found, wording("list-screen-all-archived", { many, having }), false];
+  return having ? [found, wording("list-screen-none-having", { many, having }), false] : [found, none, true];
 }
 
 /**
@@ -180,8 +184,7 @@ export function listScreen<A>(made: {
   const bar = el("header", { className: "pbar" }, pageTitle(made.title));
   const node = el("section", { className: `main main-list ${made.kind}` }, bar, tools.node, notice, list);
   const said = (error: unknown) => {
-    const why = reason(error);
-    const words = why === wording("error-internal") ? made.unread : `${made.unread} ${why}`;
+    const words = isInternal(error) ? made.unread : `${made.unread} ${reason(error)}`;
     const again = el("button", { type: "button", className: "btn btn-secondary", onclick: () => void load() }, wording("setup-try-again"));
     return el("div", { className: "flex f-col ai-start g-8" }, failure(words), again);
   };

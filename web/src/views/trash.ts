@@ -26,7 +26,7 @@ import {
   getTrash,
 } from "../api/client";
 import type { TrashItem } from "../api/generated/TrashItem";
-import { announce, el, noticeBox, oneAtATime, type View } from "../dom";
+import { announce, crumbs, el, noticeBox, oneAtATime, type View } from "../dom";
 import { chatTitle } from "../chat-title";
 import { askFirst } from "../dialogs";
 import { DAY_MS, comma, daysLeft, moment } from "../format";
@@ -91,7 +91,7 @@ export function trashView(): View {
     el(
       "header",
       { className: "page-head" },
-      el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-trash"))),
+      crumbs([wording("page-settings"), "#/settings"], wording("page-trash")),
       all,
     ),
     el("div", { className: "trash w100 flex f-col g-12" }, none, about, notice, list),

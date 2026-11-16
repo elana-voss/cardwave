@@ -117,6 +117,13 @@ pub struct CardEdit {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[ts(as = "Option<Vec<String>>", optional)]
     pub modes: Vec<String>,
+    /// The card's modes this edit renames, each (from, to), in order: made in
+    /// every text of the card, also those the edit does not show. A mode of
+    /// the card that is gone from `modes` and not renamed is removed from them
+    /// all. Not shown, only read from an edit.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(as = "Option<Vec<(String, String)>>", optional)]
+    pub renamed: Vec<(String, String)>,
     /// An edit changes the characters it names and leaves the others as they are.
     pub characters: Vec<EditCharacter>,
     /// The card's languages, its first language first (`languages::shown`).
@@ -340,6 +347,7 @@ impl CardEdit {
             tags: tidy(&document.tags()),
             creator: document.creator().unwrap_or("").to_string(),
             modes: document.modes(),
+            renamed: Vec::new(),
             characters: characters
                 .iter()
                 .filter_map(|id| character(document, id))

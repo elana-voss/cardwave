@@ -15,6 +15,7 @@ const memory = (change: Partial<MemoryView>): MemoryView => ({
   world: false,
   known_to: null,
   names: ["Noor", "Hesper", "Sam"],
+  persona: null,
   ...change,
 });
 
@@ -23,6 +24,13 @@ test("a row tells who know a memory by name, the user as you, its kind and state
   expect(about(memory({ status: "temporary", until: "day 14", known_to: ["sam", "noor"] }))).toBe("Known by Noor and you");
   expect(about(memory({ status: "done", world: true, known_to: [] }))).toBe("Known by nobody");
   expect(about(memory({ kind: "event", status: null, known_to: ["hesper"] }))).toBe("Known by Hesper");
+});
+
+test("a persona's memory ends its known-by line with the persona's name, not you", () => {
+  const bea = { persona: "Bea", names: ["Noor", "Hesper", "Bea"] };
+  expect(about(memory({ ...bea }))).toBe("Known by Noor, Hesper, and Bea");
+  expect(about(memory({ ...bea, known_to: ["bea", "noor"] }))).toBe("Known by Noor and Bea");
+  expect(about(memory({ ...bea, known_to: ["hesper"] }))).toBe("Known by Hesper");
 });
 
 test("an event's cause and result read as one sentence, a part left as ? left out", () => {

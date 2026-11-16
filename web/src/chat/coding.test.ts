@@ -95,6 +95,7 @@ test("a worker's step says its known first verb as it runs and once done, else a
   expect(step("Fix the parser", "running")).toBe("Fixes the parser");
   expect(step("Add a test", "done")).toBe("Added a test");
   expect(step("Update the docs", "done")).toBe("Updated the docs");
+  expect(step("Format the output", "done")).toBe("Formatted the output");
   expect(step("Write the tests", "failed")).toBe("Write the tests");
   expect(step("Tests for the export", "done")).toBe("Tests for the export");
 });

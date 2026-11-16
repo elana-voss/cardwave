@@ -638,3 +638,21 @@ fn a_card_cannot_fill_the_memory_with_macros() {
         ("2", false)
     );
 }
+
+#[test]
+fn variables_that_read_each_other_many_times_over_end_the_rendering() {
+    // Each variable reads the one below twice: the top one would evaluate 2^18 macros.
+    let mut local = vars(&[("v0", "")]);
+    for n in 1..18 {
+        local.insert(
+            format!("v{n}"),
+            format!("{{{{.v{0}}}}}{{{{.v{0}}}}}", n - 1),
+        );
+    }
+    let out = with_local("{{.v17}}{{char}}", &mut local);
+    assert!(
+        out.ends_with("{{char}}"),
+        "{}",
+        &out[out.len().saturating_sub(40)..]
+    );
+}

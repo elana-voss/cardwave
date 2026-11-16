@@ -16,14 +16,11 @@ struct Programs {
 
 fn programs(conn: &Connection) -> rusqlite::Result<Programs> {
     let kept = meta(conn, "mcp_programs")?;
-    Ok(kept
-        .and_then(|kept| serde_json::from_str(&kept).ok())
-        .unwrap_or_default())
+    Ok(crate::json::or_none(kept.as_deref(), "the MCP programs").unwrap_or_default())
 }
 
 fn keep(conn: &Connection, programs: &Programs) -> rusqlite::Result<()> {
-    let text = serde_json::to_string(programs).unwrap_or_default();
-    set_meta(conn, "mcp_programs", &text)
+    set_meta(conn, "mcp_programs", &crate::json::to(programs)?)
 }
 
 fn account_is(conn: &Connection, id: i64) -> rusqlite::Result<bool> {

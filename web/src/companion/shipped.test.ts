@@ -9,7 +9,7 @@ import woman from "../figures/woman.glb";
 import man from "../figures/man.glb";
 
 // The shipped clips (tools/companion_assets.py) on the shipped figures and on a user's own (e2e/figures, VRoid's
-// names): the files are handed to three.js through its cache, as a test has no server; the figures' pictures are
+// names): the files are handed to three.js through its cache (keyed `file:<url>`), as a test has no server; the figures' pictures are
 // dropped, as nothing here draws them.
 
 /** The GLB `bytes` without its pictures. */
@@ -36,10 +36,10 @@ const file = (...path: string[]) => readFileSync(join(process.cwd(), ...path));
 
 beforeAll(() => {
   Cache.enabled = true;
-  Cache.add(carrier, withoutPictures(file("src", "figures", "animations.glb")));
-  Cache.add(woman, withoutPictures(file("src", "figures", "woman.glb")));
-  Cache.add(man, withoutPictures(file("src", "figures", "man.glb")));
-  Cache.add("own.vrm", withoutPictures(file("..", "e2e", "figures", "mannequin.vrm")));
+  Cache.add(`file:${carrier}`, withoutPictures(file("src", "figures", "animations.glb")));
+  Cache.add(`file:${woman}`, withoutPictures(file("src", "figures", "woman.glb")));
+  Cache.add(`file:${man}`, withoutPictures(file("src", "figures", "man.glb")));
+  Cache.add("file:own.vrm", withoutPictures(file("..", "e2e", "figures", "mannequin.vrm")));
 });
 afterAll(() => {
   Cache.clear();
@@ -47,7 +47,7 @@ afterAll(() => {
 });
 
 /** Every clip the companion plays: each state's, and each it is told to play. */
-const PLAYED = [...new Set([...Object.values(CARRIED.states).map((state) => state.clip), ...Object.values(CARRIED.clips)])];
+const PLAYED = Object.keys(CARRIED.moods ?? {});
 
 const turns = (bones: Object3D[]) => bones.map((bone) => bone.quaternion.clone());
 

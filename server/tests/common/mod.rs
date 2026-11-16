@@ -12,7 +12,7 @@
 //! `import_whole` (over HTTP `Server::upload_whole`) keeps them all, as a card
 //! imported before that has them, for chats with several characters of one card.
 //! `lore` has the lorebook tests' world-info files and chats; `user`, `reply`
-//! and `writing` are messages to store.
+//! and `writing` are messages to store; `generator_picks` the character generator's.
 #![allow(dead_code)]
 
 pub mod api;
@@ -361,6 +361,15 @@ pub fn card_copy() -> Vec<u8> {
 /// is no exact copy of another.
 pub fn unique(toml: &str) -> String {
     format!("{toml}\n# copy {}\n", NEXT.fetch_add(1, Ordering::Relaxed))
+}
+
+/// The character generator's picks of a woman in her thirties, quite shy, somewhat playful, a rival.
+pub fn generator_picks(name: &str) -> Json {
+    serde_json::json!({
+        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
+        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
+        "relationship": "Rival", "name": name, "creator": "local",
+    })
 }
 
 /// A message of the user, complete.

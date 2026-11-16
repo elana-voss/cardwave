@@ -11,7 +11,6 @@ use cw_core::now_ms;
 use cw_provider::kinds::{self, Entry, Kind, Picked, Thinking, Workflow};
 use cw_provider::presets::{self, Named, Used};
 use cw_provider::{Provider, Sampling, Storage, Stored};
-use rusqlite::types::Type;
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
 use crate::Db;
@@ -19,8 +18,7 @@ use crate::Db;
 /// Reads JSON of the values for a reply from column `at` of `row`.
 fn sampling_at(row: &Row<'_>, at: usize) -> rusqlite::Result<Sampling> {
     let values: String = row.get(at)?;
-    serde_json::from_str(&values)
-        .map_err(|error| rusqlite::Error::FromSqlConversionFailure(at, Type::Text, Box::new(error)))
+    crate::json::of(&values, at)
 }
 
 /// Reads one from five columns of `row`, the first of them `at`: the

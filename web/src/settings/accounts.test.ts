@@ -1,11 +1,13 @@
 // What accounts.ts does without a browser: the menu "Switch account", and the sign-in screen's way to an account.
 import { beforeEach, expect, test, vi } from "vitest";
 import { setElsewhere } from "../account";
-import { signInScreen, switchItems, watchAccounts } from "./accounts";
-import { listAccounts, signIn } from "../api/client";
+import { signInScreen, signOutItem, switchItems, watchAccounts } from "./accounts";
+import { listAccounts, signIn, signOut } from "../api/client";
+import { announce } from "../dom";
 import type { AccountLine } from "../api/generated/AccountLine";
 
-vi.mock("../api/client", async (actual) => ({ ...(await actual<typeof import("../api/client")>()), signIn: vi.fn(), listAccounts: vi.fn(() => new Promise(() => {})) }));
+vi.mock("../api/client", async (actual) => ({ ...(await actual<typeof import("../api/client")>()), signIn: vi.fn(), signOut: vi.fn(), listAccounts: vi.fn(() => new Promise(() => {})) }));
+vi.mock("../dom", async (original) => ({ ...(await original<typeof import("../dom")>()), announce: vi.fn() }));
 
 const OWNER: AccountLine = { id: 1, name: "local", local: true, current: true, password: false };
 const ADA: AccountLine = { id: 2, name: "Ada", local: false, current: false, password: true };
@@ -81,4 +83,12 @@ test("where the accounts could not be read, the next who watches asks again", as
   watchAccounts(second);
   await settled();
   expect(second).toHaveBeenCalledWith([OWNER, ADA]);
+});
+
+test("a sign-out that fails says why and leaves the page as it is", async () => {
+  vi.mocked(signOut).mockRejectedValueOnce(new Error("the server is not there"));
+  signOutItem(false).action();
+  await settled();
+  expect(announce).toHaveBeenCalledWith("the server is not there");
+  expect(location.replace).not.toHaveBeenCalled();
 });

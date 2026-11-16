@@ -244,6 +244,7 @@ character-translate-card = Перевести персонажа…
 character-discard-card = Не сохранять персонажа
 character-card-menu = Меню персонажа
 character-title = Название
+character-click-to-edit = Нажмите, чтобы изменить
 character-name-the-card = Назовите персонажа
 character-summary = Краткое описание в одну строку для библиотеки
 character-this-card-is-in = Этот персонаж в Корзине.{ " " }

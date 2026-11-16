@@ -6,8 +6,9 @@
 // whose switch has the server try the forms of turning it off; a provider no kind is at says "Not used · [n]
 // models"; a ComfyUI has the line "Workflow" (`workflowChoices`), the background model finding
 // where the words go, which under a saved workflow says that it uses its own models and size (`workflowNote`). This computer's account has first the box "This computer" (`.group.this-computer`, no
-// `.provider`): the memory and the folder of its GGUF models, or "Not set up", with "Choose"/"Change" (dialogs.ts's
-// dialog "Folder"), no Edit or Remove, no "Not used"; under its kind lines the models that fit (fit-models.ts).
+// `.provider`): what runs (`runsLine`), or "Not set up" with "Set up" (dialogs.ts's dialog "Folder"), no Edit or
+// Remove, no "Not used"; under its kind lines the models that fit (fit-models.ts), then "Details" (144), behind
+// which stand the memory and the folder with "Change" and the folder's own files; `Page.details` keeps it open.
 // The event `provider` and the server heard again read the page anew, `local_models` that list; the lists of
 // models are asked once per page, and again after an Edit, a folder or a model downloaded or removed. Each part of a box is a function of
 // the page's shared state (`Page`), which `providersView` makes.
@@ -20,9 +21,9 @@ import type { Kind } from "../api/generated/Kind";
 import type { PickedView } from "../api/generated/PickedView";
 import type { ProvidersView } from "../api/generated/ProvidersView";
 import type { ServerEvent } from "../api/generated/ServerEvent";
-import { announce, el, failure, item, latest, noticeBox, oneAtATime, reason, selectField, switchBox, type Choice, type View } from "../dom";
-import { askUnder, dialog, folderDialog, formDialog, menu } from "../dialogs";
-import { fitLines, memoryLine, onlySteps, stepOn } from "../models/fit-models";
+import { announce, crumbs, el, failure, item, latest, moreOpener, noticeBox, oneAtATime, reason, selectField, switchBox, type Choice, type View } from "../dom";
+import { dialog, folderDialog, formDialog, menuDeleting } from "../dialogs";
+import { fitLines, memoryLine, onlySteps, resize, runsLine, stepOn } from "../models/fit-models";
 import { icon } from "../icons";
 import { type Catalogs, catalogs, countOf, local, modelKinds, providerName, thinks } from "../models/kinds";
 import { field, keyStored, plain } from "../models/provider-form";
@@ -78,6 +79,8 @@ interface Page {
   finding: number | null;
   /** This computer's models that fit, once its folder is chosen. */
   fit: FitView | null;
+  /** Whether This computer's "Details" is open. */
+  details: boolean;
   lists: Catalogs;
   attempt: ReturnType<typeof oneAtATime>;
   say: typeof announce;
@@ -163,48 +166,67 @@ function ownBox(page: Page, provider: EntryView | undefined): HTMLElement {
       await page.readFit();
       page.say(wording("providers-folder-saved"));
     });
-  const button = el("button", { type: "button", className: "btn btn-secondary on-box", ariaLabel: folder ? wording("providers-change-folder") : wording("providers-choose-folder"), onclick: choose }, folder ? wording("providers-change") : wording("downloaded-set-up"));
-  const where = folder === null ? wording("providers-folder-not-set-up") : page.fit ? memoryLine(page.fit.memory, folder) : folder;
-  const head = item(el("span", { className: "item-label semi" }, LABELS.providers.thisComputer), where, el("div", { className: "provider-tools lv" }, button));
+  const button = (label: string, named: string) => el("button", { type: "button", className: "btn btn-secondary on-box", ariaLabel: named, onclick: choose }, label);
+  const where = folder === null ? wording("providers-folder-not-set-up") : page.fit ? runsLine(page.fit) : "";
+  const tools = el("div", { className: "provider-tools lv" }, folder === null ? button(wording("downloaded-set-up"), wording("providers-choose-folder")) : "");
+  const head = item(el("span", { className: "item-label semi" }, LABELS.providers.thisComputer), where, tools);
   head.classList.add("provider-head", "item-line");
   const kinds = provider ? pickedAt(page.view!, provider.id) : [];
   const lines = kinds.flatMap((each) => kindLines(page, provider!, each));
-  if (provider && page.fit) lines.push(...fitLines(page, page.fit, provider, page.view!.kinds));
   const node = el("div", { className: "group this-computer" }, head, ...lines);
   if (provider) node.dataset.provider = String(provider.id);
+  if (!provider || folder === null) return node;
+  const fit = page.fit && fitLines(page, page.fit, provider, page.view!.kinds, page.details);
+  // Behind "Details": the memory and the folder, with "Change", and the folder's own files.
+  const memory = item(wording("label-settings-folder"), memoryLine(page.fit?.memory ?? null, folder), button(wording("providers-change"), wording("providers-change-folder")));
+  const behind = [memory, ...(fit?.behind ?? [])];
+  behind.forEach((line, n) => {
+    line.classList.add("item-sub");
+    line.id = `this-computer-details-${n}`;
+  });
+  const toggled = (open: boolean) => {
+    page.details = open;
+    if (page.fit) resize(node, page.fit, provider, page.view!.kinds, open);
+  };
+  const opener = el("div", { className: "item item-sub" }, moreOpener(wording("providers-details"), behind, page.details, toggled));
+  node.append(...(fit?.shown ?? []), opener, ...behind);
   return node;
 }
 
 /** A provider's box. */
 function box(page: Page, provider: EntryView): HTMLElement {
-  const more = menu(wording("providers-menu"), [
-    { label: wording("common-edit"), shape: "edit", action: () => edit(page, provider) },
-    { label: wording("providers-remove"), shape: "trash", danger: true, apart: true, action: () => ask() },
-  ]);
+  const remove = () =>
+    void page.attempt(async () => {
+      await removeProvider(provider.id);
+      await page.read();
+      page.say(wording("providers-removed", { name: providerName(provider.name) }));
+    });
+  // Asked on a line of its own under the name, the menu hidden, with the models of each kind at it.
+  const question = () => (picked.length ? wording("providers-remove-with-models") : wording("providers-remove-ask"));
+  const more = menuDeleting(wording("providers-menu"), [{ label: wording("common-edit"), shape: "edit", action: () => edit(page, provider) }], {
+    label: wording("providers-remove"),
+    question,
+    yes: wording("providers-remove"),
+    action: remove,
+  });
   const tools = el("div", { className: "provider-tools lv" }, more);
   const head = item(el("span", { className: "item-label semi" }, providerName(provider.name)), el("span", { className: "meta" }, whereOf(provider)), tools);
   head.classList.add("provider-head", "item-line");
   const { picked, lines } = linesOf(page, provider);
   const node = el("div", { className: "group provider" }, head, ...lines);
   node.dataset.provider = String(provider.id);
-
-  /** Asks on a line of its own under the name, the menu hidden, whether the provider is to be removed, with the models of each kind at it. */
-  function ask(): void {
-    const remove = () =>
-      void page.attempt(async () => {
-        await removeProvider(provider.id);
-        await page.read();
-        page.say(wording("providers-removed", { name: providerName(provider.name) }));
-      });
-    askUnder(tools, more.querySelector("button")!, picked.length ? wording("providers-remove-with-models") : wording("providers-remove-ask"), wording("providers-remove"), remove);
-  }
   return node;
 }
 
 /** Edit: the provider's address and key; the key's field says the key stored, and "Remove key" takes it off. */
+/** What stands under an edited provider's key: it stays while the address does, and a new address asks for it anew (the server drops it). */
+export const keyHint = (provider: EntryView, address: string) => (provider.has_key && plain(address) !== provider.base_url ? wording("providers-new-address-key") : wording("providers-keep-key"));
+
 function edit(page: Page, provider: EntryView): void {
   const address = el("input", { name: "base_url", className: "field", value: provider.base_url, required: true, autocomplete: "off" });
   const key = el("input", { name: "api_key", className: "field f-grow", type: "password", autocomplete: "off", placeholder: keyStored(provider) });
+  const hint = el("small", { className: "hint" }, keyHint(provider, address.value));
+  address.oninput = () => hint.replaceChildren(keyHint(provider, address.value));
   let removing = false;
   const drop = el("button", { type: "button", className: "btn btn-secondary", hidden: !provider.has_key }, wording("providers-remove-key"));
   drop.onclick = () => {
@@ -213,7 +235,7 @@ function edit(page: Page, provider: EntryView): void {
     key.placeholder = wording("providers-key-removed");
     drop.hidden = true;
   };
-  const asked = formDialog(page.node, wording("providers-edit"), [field(wording("setup-address"), address), field(wording("setup-api-key"), key, wording("providers-keep-key"), drop)], async () => {
+  const asked = formDialog(page.node, wording("providers-edit"), [field(wording("setup-address"), address), field(wording("setup-api-key"), key, hint, drop)], async () => {
     const typed = key.value.trim();
     await changeProviderEntry(provider.id, { base_url: plain(address.value), ...(typed ? { api_key: typed } : removing ? { api_key: "" } : {}) });
     asked.close();
@@ -257,7 +279,7 @@ export function providersView(): View {
   const node = el(
     "section",
     { className: "main main-form providers" },
-    el("header", { className: "pbar" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-providers")))),
+    el("header", { className: "pbar" }, crumbs([wording("page-settings"), "#/settings"], wording("page-providers"))),
     el("div", { className: "page-col mt-12" }, el("p", { className: "hint" }, wording("providers-about")), notice, boxes, el("div", null, add)),
   );
   const draw = (): void => {
@@ -273,6 +295,7 @@ export function providersView(): View {
     turning: null,
     finding: null,
     fit: null,
+    details: false,
     lists: catalogs(() => draw()),
     attempt: oneAtATime(notice),
     say: (...said) => {
@@ -288,7 +311,7 @@ export function providersView(): View {
       if (own && page.fit && there(page.fit) !== there(now)) page.lists.ask(own.id);
       const steps = page.fit !== null && onlySteps(page.fit, now);
       page.fit = now;
-      if (steps) stepOn(boxes, now);
+      if (steps) stepOn(boxes, now, page.details);
       else draw();
     },
     draw,

@@ -15,7 +15,7 @@ use std::time::Duration;
 
 use anyhow::{Context, bail, ensure};
 use cw_core::{Code, Fail};
-use cw_platform::http::{Client, Url};
+use cw_platform::http::{Client, StatusCode, Url};
 use cw_prompt::{PromptMessage, Role};
 use cw_provider::Http;
 use cw_provider::images::{LIST_LIMIT, at};
@@ -257,6 +257,28 @@ fn reseed(prompt: &mut Value, seeds: &[(String, String, u64)]) {
     }
 }
 
+/// ComfyUI's answer to the queued picture: the status first, so a refusal
+/// whose body is no JSON (a proxy's page) is still told by its status.
+fn queued_answer(status: StatusCode, body: &str) -> anyhow::Result<Value> {
+    let parsed = serde_json::from_str::<Value>(body);
+    ensure!(
+        status.is_success(),
+        Fail::said(
+            Code::Answered,
+            match &parsed {
+                Ok(answer) => format!("ComfyUI answered {status}: {}", refused(answer)),
+                Err(_) => format!("ComfyUI answered {status}"),
+            }
+        )
+        .with("whose", "comfyui")
+        .with("status", status.to_string())
+    );
+    parsed.context(
+        Fail::said(Code::NotReadable, "ComfyUI's answer cannot be read")
+            .with("what", "comfyui_answer"),
+    )
+}
+
 /// A picture of `words` made by the ComfyUI of `whom`.
 pub async fn make(
     http: &Client,
@@ -277,19 +299,11 @@ pub async fn make(
                 Fail::said(Code::Unreachable, "ComfyUI cannot be reached").with("whose", "comfyui"),
             )?;
     let status = queued.status();
-    let queued: Value = queued.json().await.context(
+    let body = queued.text().await.context(
         Fail::said(Code::NotReadable, "ComfyUI's answer cannot be read")
             .with("what", "comfyui_answer"),
     )?;
-    ensure!(
-        status.is_success(),
-        Fail::said(
-            Code::Answered,
-            format!("ComfyUI answered {status}: {}", refused(&queued))
-        )
-        .with("whose", "comfyui")
-        .with("status", status.to_string())
-    );
+    let queued = queued_answer(status, &body)?;
     let id = queued["prompt_id"]
         .as_str()
         .context(
@@ -381,6 +395,17 @@ mod tests {
             "Prompt outputs failed validation; node 2 CLIPLoaderGGUF: Value not in list: clip_name: 'a.gguf' not in ['b.gguf']"
         );
         assert_eq!(refused(&json!({})), "the workflow was not taken");
+    }
+
+    #[test]
+    fn a_refusal_that_is_no_json_is_told_by_its_status() {
+        let status = StatusCode::UNAUTHORIZED;
+        let said = queued_answer(status, "<html>no</html>")
+            .unwrap_err()
+            .to_string();
+        assert!(said.contains("401"), "{said}");
+        let ok = queued_answer(StatusCode::OK, "{\"prompt_id\":\"a\"}").unwrap();
+        assert_eq!(ok["prompt_id"], "a");
     }
 
     #[test]

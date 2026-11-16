@@ -2,7 +2,7 @@
 // as "Lorebook settings" with the lorebook's own numbers and, of one of the library, "Use in every chat", and `newLorebook`, the window "New lorebook" (without
 // the numbers), which the list of lorebooks and Create open.
 import { createLorebook } from "../api/client";
-import { atMost, el, switchBox } from "../dom";
+import { atMost, el, moreOpener, switchBox } from "../dom";
 import { formDialog } from "../dialogs";
 import { NEW } from "./entry";
 import { wording } from "../language/language";
@@ -32,6 +32,12 @@ export function aboutDialog(
   const number = (id: string, value: number | null) => el("input", { id, type: "number", min: "0", step: "1", className: "field number", value: value ? String(value) : "" });
   const depth = number("lorebook-scan-depth", numbers?.scan_depth ?? null);
   const budget = number("lorebook-token-budget", numbers?.token_budget ?? null);
+  // The token limit stands behind "More settings", open where one is set (Claude, 2026-11-15).
+  const more = el(
+    "div",
+    { className: "flex f-col g-20", id: "lorebook-more" },
+    el("div", { className: "fld" }, el("label", { htmlFor: budget.id }, wording("lorebook-dialog-token-limit")), budget, el("p", { className: "meta" }, wording("lorebook-dialog-the-most-tokens-its"))),
+  );
   const everywhere = switchBox({ id: "lorebook-everywhere", checked: numbers?.everywhere ?? false });
   const fields = [
     el("div", { className: "fld" }, el("label", { htmlFor: called.id }, wording("common-name")), called),
@@ -39,7 +45,8 @@ export function aboutDialog(
     ...(numbers
       ? [
           el("div", { className: "fld" }, el("label", { htmlFor: depth.id }, wording("lorebook-dialog-messages-searched")), depth, el("p", { className: "meta" }, wording("lorebook-dialog-how-many-of-the"))),
-          el("div", { className: "fld" }, el("label", { htmlFor: budget.id }, wording("lorebook-dialog-token-limit")), budget, el("p", { className: "meta" }, wording("lorebook-dialog-the-most-tokens-its"))),
+          moreOpener(wording("lorebook-entry-more-settings"), more, Boolean(numbers.token_budget)),
+          more,
         ]
       : []),
     ...(numbers?.everywhere !== undefined

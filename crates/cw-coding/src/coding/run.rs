@@ -33,7 +33,7 @@ use crate::coding::snapshot::Snapshot;
 use crate::coding::{Crew, Progress, Verdict};
 use crate::ports::{AppActions, Storage};
 use crate::tools::sandbox::{self, Reach};
-use crate::tools::{AskKind, REFUSED, ToolAsk, files, tool};
+use crate::tools::{AskKind, REFUSED, ToolAsk, files, tool, unreadable};
 
 /// The most rounds of a role's questions to its model.
 const ROUNDS: usize = 30;
@@ -364,74 +364,14 @@ impl Ctx {
     /// Runs a tool's call, asking the user first where the team says so.
     /// What went wrong is the model's to read, as the call's result.
     async fn call(&self, role: &Role, call: &Call) -> anyhow::Result<String> {
+        if let Some(why) = unreadable(call) {
+            return Ok(format!("Failed: {why}"));
+        }
+        // Read above: what fails here is "", a call without arguments.
         let arguments: Value = serde_json::from_str(&call.arguments).unwrap_or_default();
-        let argument = |name: &str| arguments[name].as_str().unwrap_or_default().to_string();
         let permit = self.permit(&call.name);
-        let (kind, what, detail, doing) = match call.name.as_str() {
-            "list_files" => {
-                let path = argument("path");
-                (
-                    AskKind::Read,
-                    path.clone(),
-                    String::new(),
-                    (StepTool::ListFiles, path),
-                )
-            }
-            "read_file" => {
-                let path = argument("path");
-                (
-                    AskKind::Read,
-                    path.clone(),
-                    String::new(),
-                    (StepTool::ReadFile, path),
-                )
-            }
-            "write_file" => {
-                let path = argument("path");
-                (
-                    AskKind::Write,
-                    path.clone(),
-                    argument("content"),
-                    (StepTool::WriteFile, path),
-                )
-            }
-            "run_command" => {
-                let command = argument("command");
-                (
-                    AskKind::Command,
-                    command.clone(),
-                    String::new(),
-                    (StepTool::RunCommand, command),
-                )
-            }
-            "install_packages" => {
-                let command = argument("command");
-                (
-                    AskKind::Install,
-                    command.clone(),
-                    String::new(),
-                    (StepTool::InstallPackages, command),
-                )
-            }
-            "web_search" => {
-                let query = argument("query");
-                (
-                    AskKind::Web,
-                    query.clone(),
-                    String::new(),
-                    (StepTool::WebSearch, query),
-                )
-            }
-            "read_web_page" => {
-                let url = argument("url");
-                (
-                    AskKind::Web,
-                    url.clone(),
-                    String::new(),
-                    (StepTool::ReadWebPage, url),
-                )
-            }
-            _ => return Ok("Failed: there is no such tool".into()),
+        let Some((kind, what, detail, doing)) = asked(&call.name, &arguments) else {
+            return Ok("Failed: there is no such tool".into());
         };
         if permit == Permit::Never {
             return Ok("Failed: there is no such tool".into());
@@ -488,16 +428,22 @@ impl Ctx {
                 let command = argument("command");
                 let stopped = Arc::new(AtomicBool::new(false));
                 let flag = stopped.clone();
-                let ran = tokio::task::spawn_blocking(move || {
+                let mut running = tokio::task::spawn_blocking(move || {
                     sandbox::run_with(&folder, &command, COMMAND_TIME, &flag, reach)
                 });
                 let ran = tokio::select! {
-                    _ = self.stop.cancelled() => {
-                        stopped.store(true, Ordering::Relaxed);
-                        bail!(Stopped)
-                    }
-                    ran = ran => ran?,
+                    _ = self.stop.cancelled() => None,
+                    ran = &mut running => Some(ran),
                 };
+                let Some(ran) = ran else {
+                    stopped.store(true, Ordering::Relaxed);
+                    // The command ends at once, then the step's folder is
+                    // read: what it wrote till then is in the checkpoint.
+                    // Ignored: what it ran to does not matter once stopped.
+                    let _ = running.await;
+                    bail!(Stopped)
+                };
+                let ran = ran?;
                 ran.map(|ran| match ran.code {
                     Some(code) => format!("Exit code {code}.\n{}", ran.output),
                     None => format!(
@@ -551,6 +497,29 @@ impl Ctx {
         }
         brief
     }
+}
+
+/// What the tool call `name` with `arguments` asks: the kind of ask, what it is
+/// called on, its detail (a file's content) and the step it shows. None where
+/// the team has no such tool.
+fn asked(name: &str, arguments: &Value) -> Option<(AskKind, String, String, (StepTool, String))> {
+    let (kind, tool, key) = match name {
+        "list_files" => (AskKind::Read, StepTool::ListFiles, "path"),
+        "read_file" => (AskKind::Read, StepTool::ReadFile, "path"),
+        "write_file" => (AskKind::Write, StepTool::WriteFile, "path"),
+        "run_command" => (AskKind::Command, StepTool::RunCommand, "command"),
+        "install_packages" => (AskKind::Install, StepTool::InstallPackages, "command"),
+        "web_search" => (AskKind::Web, StepTool::WebSearch, "query"),
+        "read_web_page" => (AskKind::Web, StepTool::ReadWebPage, "url"),
+        _ => return None,
+    };
+    let argument = |name: &str| arguments[name].as_str().unwrap_or_default().to_string();
+    let target = argument(key);
+    let detail = match name {
+        "write_file" => argument("content"),
+        _ => String::new(),
+    };
+    Some((kind, target.clone(), detail, (tool, target)))
 }
 
 /// The plan: its steps and the command of the tests.
@@ -738,8 +707,16 @@ async fn build(
         ));
     }
     let worked = ctx.work(&role, WORKER, task).await;
-    // What the step changed is its checkpoint, also where it failed or was stopped.
-    let after = ctx.snapshot().await?;
+    // What the step changed is its checkpoint, also where it failed or was
+    // stopped; a folder unreadable now keeps none, and the worker's own
+    // failure is told before that one.
+    let after = match ctx.snapshot().await {
+        Ok(after) => after,
+        Err(unread) => {
+            worked?;
+            return Err(unread);
+        }
+    };
     let changes = now.into_changes(&after);
     let (added, removed) = changes.iter().fold((0, 0), |(added, removed), change| {
         let (more, less, _) =

@@ -6,3 +6,7 @@
   min-height: calc(4lh + var(--s20));
   resize: none;
 }
+/* The read-back's column: the list, the private line and the button, 22 px apart as the thread above. */
+.interview-gap {
+  gap: var(--s22);
+}

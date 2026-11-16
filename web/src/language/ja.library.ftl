@@ -246,6 +246,7 @@ character-translate-card = キャラクターを翻訳…
 character-discard-card = キャラクターを破棄
 character-card-menu = キャラクターのメニュー
 character-title = タイトル
+character-click-to-edit = クリックして編集
 character-name-the-card = キャラクターに名前をつける
 character-summary = ライブラリ用の一行の要約
 character-this-card-is-in = このキャラクターはゴミ箱にあります。

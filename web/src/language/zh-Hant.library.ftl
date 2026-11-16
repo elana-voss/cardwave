@@ -244,6 +244,7 @@ character-translate-card = 翻譯角色……
 character-discard-card = 捨棄角色
 character-card-menu = 角色選單
 character-title = 標題
+character-click-to-edit = 點擊編輯
 character-name-the-card = 為角色命名
 character-summary = 用於資料庫的一行摘要
 character-this-card-is-in = 這個角色在垃圾桶中。

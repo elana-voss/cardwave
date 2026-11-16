@@ -121,6 +121,18 @@ export async function pickFrom(field: Locator, label: string): Promise<void> {
   await field.locator("xpath=..").getByRole("menuitemradio", { name: label, exact: true }).click();
 }
 
+/** Answers the list of providers as of a user who has added none, as one kept there would open first run at step 2; other than reading it goes through. */
+export async function noneAdded(page: Page): Promise<void> {
+  await page.route("**/api/provider-list", async (route) => {
+    if (route.request().method() !== "GET") return route.fallback();
+    const response = await route.fetch();
+    return route.fulfill({ response, json: { ...(await response.json()), providers: [] } });
+  });
+}
+
+/** A model's line in a model picker `scope`, by its ID: the line's title (its name is the readable one, the ID shows on hover). */
+export const modelLine = (scope: Locator, id: string) => scope.locator(`[role="option"][title="${id}"]`);
+
 /** The line `name` of the view menu (the eye) of the bar shown, the title bar's or at 600 px the narrow bar's; opens the menu. */
 export async function viewLine(page: Page, name: string): Promise<Locator> {
   await page.locator("button[aria-label=View]:visible").click();
@@ -183,7 +195,8 @@ export const test = base.extend<{ restartServer: () => Promise<void> }, { server
     },
     { scope: "worker" },
   ],
-  baseURL: async ({ servers }, use, info) => use(await servers.at(info.file)),
+  // The spec file is the title path's first: `info.file` is where the test is written, sweep.ts for every sweep spec.
+  baseURL: async ({ servers }, use, info) => use(await servers.at(info.titlePath[0])),
   // Closes the file's server and opens it again on the same data, as when the app is closed and opened.
   restartServer: async ({ servers }, use) => use(() => servers.restart()),
 });

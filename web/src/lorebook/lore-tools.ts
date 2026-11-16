@@ -100,6 +100,7 @@ async function run(b: Book, one: (ReturnType<typeof tools>)[number], given: stri
   try {
     answered = await rewriteLore({ tool: one.tool, given: given || undefined, entries: entries.map(asText) }, AbortSignal.any([stopping.signal, b.leaving.signal]));
   } catch (error) {
+    running.delete(b);
     drawBar(b);
     if (!stopping.signal.aborted && !b.leaving.signal.aborted) b.notice.replaceChildren(failure(reason(error)));
     return;
@@ -126,12 +127,16 @@ async function run(b: Book, one: (ReturnType<typeof tools>)[number], given: stri
 async function keep(b: Book, reference: string): Promise<void> {
   const proposal = b.proposed.get(reference);
   const entry = b.book?.entries.find((one) => one.reference === reference);
+  if (!proposal || !entry) return void b.proposed.delete(reference);
+  // Deleted only once saved: a refused save leaves the change to be kept again.
+  await saveEntry(b, reference, changeOf(entry, proposal.text), proposal.made);
   b.proposed.delete(reference);
-  if (proposal && entry) await saveEntry(b, reference, changeOf(entry, proposal.text), proposal.made);
 }
 
 /** The bar over the entry: how many changes wait, with Keep all and Undo all; hidden while none do. */
 export function drawBar(b: Book): void {
+  // While a tool runs the bar is its working line, which `run` replaces when done.
+  if (running.has(b)) return;
   const waiting = b.proposed.size;
   b.bar.hidden = waiting === 0;
   if (waiting === 0) return void b.bar.replaceChildren();

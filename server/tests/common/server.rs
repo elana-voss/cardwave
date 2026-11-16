@@ -12,8 +12,9 @@
 //! A test may open the database a second time (`Db::open` on
 //! `server.options()`) to plant what the API cannot. `Device` is a browser
 //! that keeps its cookie, at the home network's address (`phone`) or the
-//! server's; `device` signs one in to a new account. `until` polls a probe
-//! until it holds, failing after `WAIT`.
+//! server's; `device` signs one in to a new account. `restore` sends a backup back. `until` polls a probe
+//! until it holds, failing after `WAIT`; `client` is the only HTTP client of
+//! the tests, its requests bounded, as is the server's stop.
 
 use std::future::Future;
 use std::path::PathBuf;
@@ -29,6 +30,7 @@ use cw_provider::embedder::Setup;
 use cw_provider::fit::Offered;
 use cw_voice as voice;
 use futures_util::StreamExt;
+use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 use reqwest::Method;
 use serde_json::{Value, json};
 use tokio::net::TcpStream;
@@ -55,6 +57,17 @@ where
         }
         sleep(Duration::from_millis(20)).await;
     }
+}
+
+/// A client whose request fails past six `WAIT`s, naming its address, so no
+/// request of a test waits unbounded. Every test asks through it.
+pub fn client() -> reqwest::Client {
+    client_with(reqwest::Client::builder())
+}
+
+/// `client`'s bound on a client built as `builder` says.
+pub fn client_with(builder: reqwest::ClientBuilder) -> reqwest::Client {
+    builder.timeout(WAIT * 6).build().unwrap()
 }
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
@@ -88,8 +101,8 @@ pub struct Server {
 
 impl Drop for Server {
     fn drop(&mut self) {
-        // The folder can only go once the server has closed the database.
-        self.halt();
+        // The folder can only go once the server has closed the database; a server left keeps it.
+        let _stopped = self.halt();
         if self.dir.as_os_str().is_empty() {
             return;
         }
@@ -282,7 +295,11 @@ impl Server {
     /// Stops the server and starts it again on the same data folder, as when
     /// the app is closed and opened. Sockets to it have to be closed first.
     pub async fn restart(mut self) -> Server {
-        self.halt();
+        // A server left running would write into the next one's data.
+        assert!(
+            self.halt(),
+            "the server did not stop within {WAIT:?} to be restarted"
+        );
         // What still holds the old server (a task ending under a full run's
         // load) holds its lock: the new one would not tidy as the first.
         let lock = std::fs::File::options()
@@ -315,11 +332,25 @@ impl Server {
         .await
     }
 
-    fn halt(&mut self) {
+    /// Stops the server; false when it did not stop within `WAIT`.
+    fn halt(&mut self) -> bool {
         drop(self.stop.take());
-        if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
+        // The stop waits on requests in flight, which may wait on a stand-in in the test's own runtime,
+        // which this wait blocks: past `WAIT` the thread is left, said.
+        let Some(thread) = self.thread.take() else {
+            return true;
+        };
+        let end = std::time::Instant::now() + WAIT;
+        while !thread.is_finished() && std::time::Instant::now() < end {
+            std::thread::sleep(Duration::from_millis(20));
         }
+        let stopped = thread.is_finished();
+        match stopped {
+            // A panic in the server's thread has failed its request already.
+            true => drop(thread.join()),
+            false => eprintln!("the server did not stop within {WAIT:?}; its thread is left"),
+        }
+        stopped
     }
 
     /// Opens the event socket, as a page does.
@@ -348,7 +379,7 @@ impl Server {
         path: &str,
         body: Value,
     ) -> (u16, Value) {
-        let request = reqwest::Client::new()
+        let request = client()
             .request(method, format!("http://{}{path}", self.addr))
             .header("x-cardwave-page", page)
             .json(&body);
@@ -357,8 +388,7 @@ impl Server {
 
     /// Sends a request and returns the answer's status and JSON body (`Null` when it has none).
     pub async fn call(&self, method: Method, path: &str, body: Option<Value>) -> (u16, Value) {
-        let mut request =
-            reqwest::Client::new().request(method, format!("http://{}{path}", self.addr));
+        let mut request = client().request(method, format!("http://{}{path}", self.addr));
         if let Some(body) = body {
             request = request.json(&body);
         }
@@ -430,7 +460,7 @@ impl Server {
     /// Uploads a file as the request body.
     pub async fn upload(&self, path: &str, file: Vec<u8>) -> (u16, Value) {
         answer(
-            reqwest::Client::new()
+            client()
                 .post(format!("http://{}{path}", self.addr))
                 .body(file)
                 .send()
@@ -483,7 +513,7 @@ impl Server {
     /// The answer to "Back up", sent with `password` where it is given, as the page's form sends it.
     pub async fn save_backup(&self, password: Option<&str>) -> reqwest::Response {
         let form: Vec<_> = password.map(|p| ("password", p)).into_iter().collect();
-        reqwest::Client::new()
+        client()
             .post(format!("http://{}/api/backup/save", self.addr))
             .form(&form)
             .send()
@@ -491,8 +521,27 @@ impl Server {
             .unwrap()
     }
 
+    /// Restores `file`, with `password` where it is given, as the page sends it: percent-encoded, as a
+    /// header holds ASCII alone.
+    pub async fn restore(
+        &self,
+        file: impl Into<reqwest::Body>,
+        password: Option<&str>,
+    ) -> (u16, Value) {
+        let mut request = client()
+            .post(format!("http://{}/api/backup", self.addr))
+            .body(file);
+        if let Some(password) = password {
+            let sent = utf8_percent_encode(password, NON_ALPHANUMERIC).to_string();
+            request = request.header("x-cardwave-password", sent);
+        }
+        answer(request.send().await.unwrap()).await
+    }
+
     pub async fn download(&self, path: &str) -> (reqwest::header::HeaderMap, Vec<u8>) {
-        let response = reqwest::get(format!("http://{}{path}", self.addr))
+        let response = client()
+            .get(format!("http://{}{path}", self.addr))
+            .send()
             .await
             .unwrap();
         assert_eq!(response.status(), 200, "{path}");
@@ -518,7 +567,7 @@ impl Device {
     }
 
     pub async fn call(&mut self, method: Method, path: &str, body: Option<Value>) -> (u16, Value) {
-        let mut request = reqwest::Client::new().request(method, format!("{}{path}", self.base));
+        let mut request = client().request(method, format!("{}{path}", self.base));
         if let Some(cookie) = &self.cookie {
             request = request.header("cookie", cookie);
         }

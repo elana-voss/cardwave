@@ -169,7 +169,12 @@ describe("the companion's body handled by the hand", () => {
     while (body.motion.kind !== "rest") body.step(0.03);
     expect(body.gettingUp).toBe(true);
     expect(stateOf(body, "talking", false)).toBe("landing");
+    // Its landing's clip plays on: it lands until that has played.
+    body.rising = true;
     run(body, 1.3);
+    expect(body.gettingUp).toBe(true);
+    body.rising = false;
+    run(body, 0.1);
     expect(body.gettingUp).toBe(false);
     expect(stateOf(body, null, false, true)).toBe("sitting");
     body.startle();

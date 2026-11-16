@@ -1,18 +1,10 @@
 /* The app's own rules over the design system's parts (cardwave.css, read before this file): what no part of it
    holds, written with its tokens. A size the boards draw inline is a rule here, never a `style=` in the
    TypeScript, so a user's own CSS can change it. An area's own rules are in app/<area>.css. */
-/* Light's and Dark's colours where the design system's fall under 4.5:1 for small words (WCAG AA): the faint grey
-   in Dark, the blue words on the pale blue round in Light, the white words on the blue in both. A look of
-   app/looks.css keeps its own colours: it sets these tokens itself, read later at the same weight, and the
-   buttons' blue is changed only without a look. */
-:root {
-  --faint: light-dark(#a3a3a3, #858588);
-  --accent-ink: light-dark(#006fc6, #9cceff);
-}
-:root:is(:not([data-theme]), [data-theme="light"], [data-theme="dark"]) :is(.btn-primary, .send) {
-  --accent: light-dark(#0078d6, #3178c6);
-  --accent-hover: light-dark(#006bc4, #2d6eb6);
-}
+/* Words in the accent colour (links, text buttons) at contrast 4.5 in light, by the design's colour for accent words:
+   its --accent is 3.9 on white (Claude). */
+a, .textbtn { color: light-dark(var(--accent-ink), var(--accent)); }
+
 /* An icon is drawn in lines of the words' colour. */
 svg {
   flex: none;
@@ -42,11 +34,6 @@ input[type="search"]::-webkit-search-cancel-button:hover {
 /* What is hidden stays hidden, also where a part sets how it is shown. */
 [hidden] {
   display: none !important;
-}
-
-/* A screen's main area scrolls by itself, under the tab bar. */
-.main {
-  overflow: auto;
 }
 
 /* The profile's letter, as large as the board AccountProfile draws it. */
@@ -82,22 +69,8 @@ input[type="search"]::-webkit-search-cancel-button:hover {
   flex-basis: 100%;
 }
 
-/* A dialog (`dialog` of dialogs.ts, a `<dialog>`, over the page's `::backdrop`): as wide as most boards draw it; its
-   name is a heading in the head's words. Centred without a transform, which would hold a menu that places itself
-   in the window (a picker's) inside the dialog's clipped box. */
-dialog.dialog {
-  width: 420px;
-  right: 0;
-  left: 0;
-  margin-inline: auto;
-  transform: none;
-}
-/* A picture a model made, opened whole: as wide as it is shown, the whole of it within the window; its height
-   leaves the dialog's room (100vh less 2 * 64 px) for the head, the foot and the body's foot padding (280 px). */
-dialog.dialog.picture-dialog {
-  width: fit-content;
-  max-width: calc(100vw - 2 * var(--s16));
-}
+/* A picture a model made, opened whole (`.picture-dialog`, as wide as it is shown): its height leaves the dialog's
+   room (100vh less 2 * 64 px) for the head, the foot and the body's foot padding (280 px). */
 .picture-whole > img {
   display: block;
   max-width: 100%;
@@ -148,38 +121,37 @@ form.editor {
   border-top: 1px solid var(--rule);
 }
 /* A slider between two words (.sl): each word next to the track, and the track not filled, as its knob in the
-   middle means neither word (the browser fills a range up to the knob in the accent colour); the knob is .steps'. */
+   middle means neither word (the browser fills a range up to the knob in the accent colour); the knob is .steps'.
+   Its height is :where'd, so the phone block's 44 px reach (cardwave.css) holds over it. */
 .sl span:first-child {
   text-align: right;
 }
 .sl span:last-child {
   text-align: left;
 }
-.sl input[type="range"] {
+:where(.sl) input[type="range"] {
+  --track: 4px;
+  --knob: 18px;
   appearance: none;
   height: 18px;
   margin: 0;
   background: transparent;
 }
 .sl input[type="range"]::-webkit-slider-runnable-track {
-  height: 4px;
+  height: var(--track);
   border-radius: 2px;
   background: var(--line);
 }
 .sl input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  width: 18px;
-  height: 18px;
-  margin-top: -7px;
+  width: var(--knob);
+  height: var(--knob);
+  margin-top: calc((var(--track) - var(--knob)) / 2);
   border-radius: 50%;
   background: var(--surface);
   border: 2px solid var(--accent);
   box-sizing: border-box;
   box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
-}
-:is(.dlg-head, .chat-bar, .sheet-head, .bhead, .import-head) > :is(h1, h2) {
-  margin: 0;
-  font: inherit;
 }
 
 /* A switch group standing in a settings group of its own (Coding team's Team) is as wide as its pills, as the
@@ -279,20 +251,6 @@ a.tab {
   margin: 0 0 var(--s2);
 }
 
-/* The Trash: the column, and what can be done with an item in a place as wide in every row, so the buttons line up;
-   "Delete forever" ends where the row's words may. */
-.trash {
-  max-width: 920px;
-}
-.trash .side-acts {
-  width: 400px;
-}
-.trash .left {
-  margin-right: var(--s8);
-}
-.trash .side-acts > .btn-danger {
-  padding: 0 0 0 var(--s14);
-}
 
 /* Advanced (board Advanced): the sampling's fields in columns of at least 240 px under its name; what the AI is told
    in a chat without a character, its field under its name; the own CSS's dialog, 820 px. */
@@ -411,14 +369,10 @@ button.task-file,
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
 }
-/* A model's line: its readable name, its ID in grey under it (first run's step 2, Fable's design). */
-.kind-list .opt.two {
-  padding: var(--s8) var(--s12);
-}
-.opt-id {
-  font-size: var(--fs-caption);
+/* A model's line: its readable name, its ID on hover; a model whose kind nobody said has a quiet grey mark. */
+.opt-mark {
   color: var(--grey);
-  word-break: break-all;
+  display: inline-flex;
 }
 .kind-hint {
   margin-top: calc(-1 * var(--s4));
@@ -433,56 +387,6 @@ button.task-file,
   opacity: 1;
 }
 
-/* A coding task (board "Coding task"): its goal, the steps beside the checkpoints and the files changed; a step's
-   mark is blue while it runs and once done, red where it failed; a step's output and a diff scroll within. */
-.task-title h1 {
-  font-size: 22px;
-}
-.task-state-word {
-  font-weight: 600;
-}
-.task-state-word.running {
-  color: var(--accent);
-}
-.task-state-word.failed,
-.task-step.failed .task-step-icon {
-  color: var(--danger);
-}
-.task-steps {
-  flex: 1 1 480px;
-}
-.task-side {
-  flex: 0 1 300px;
-  min-width: 260px;
-}
-button.task-step,
-button.task-file {
-  width: 100%;
-}
-button.task-step {
-  padding: var(--s10) var(--s4);
-  border-top: 1px solid var(--rule);
-}
-.task-step-icon {
-  display: flex;
-  margin-top: var(--s2);
-  color: var(--grey);
-}
-.task-step:is(.running, .done) .task-step-icon {
-  color: var(--accent);
-}
-.task-verdict {
-  margin-top: var(--s20);
-  padding: var(--s14) var(--s16);
-}
-.task-file .item-text {
-  font-size: var(--fs-small);
-}
-:is(.task-step-open, .task-diff, .task-verdict) pre {
-  margin: 0;
-  max-height: 480px;
-  overflow: auto;
-}
 
 /* The character generator's picks stand in a fieldset, which greys them all while the card is written. */
 .gen-picks {
@@ -517,39 +421,6 @@ button.task-step {
   font-weight: 600;
 }
 
-/* The library's lists (boards Library, ChatsList, Lorebooks, Personas): a row's title is its link and reaches over
-   the row, and what stands at the row's right lies over that. A favorite's star is filled and blue; the order and
-   filter's button is blue while a choice is made behind it, and its panel's parts stand 22 px apart. */
-.row-link::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r-2xl);
-}
-.star {
-  color: var(--faint);
-}
-.star[aria-pressed="true"] {
-  color: var(--accent);
-}
-.star[aria-pressed="true"] svg {
-  fill: currentColor;
-}
-/* A library row's star (design.md "List rows") stands where it is a favourite, else only while the row is pointed
-   at or focused, or worked by touch: always there it reads as a rating. */
-.library .rows-plain .item:not(:hover, :focus-within) .star:not([aria-pressed="true"]) {
-  opacity: 0;
-}
-@media (hover: none) {
-  .library .rows-plain .item .star:not([aria-pressed="true"]) {
-    opacity: 1;
-  }
-}
-/* A list read anew that brought another item under a resting pointer (library/list-screen.ts): its items take no
-   hover or press until the pointer moves, so a row that moved there is not opened by a click meant for the one before. */
-.still > li {
-  pointer-events: none;
-}
 /* An icon button that is on (a filter set, a panel shown, reading aloud) is marked so, as a pressed button; a star is marked by its own colour. */
 .btn-icon.on,
 .btn-icon:not(.star)[aria-pressed="true"] {
@@ -561,42 +432,6 @@ button.task-step {
   padding-block: var(--s18);
 }
 
-/* Discovery (board Discovery): the entries take turns, the picture left and right, 1,040 px wide at most; the
-   title large, the logline 16 px. */
-.discovery {
-  width: 100%;
-  max-width: 1040px;
-  margin: var(--s32) auto 0;
-  padding: 0;
-  list-style: none;
-}
-.discovery > li:nth-child(even) > .entry {
-  flex-direction: row-reverse;
-}
-@container (max-width: 719px) {
-  .discovery > li + li {
-    margin-top: var(--s40);
-  }
-}
-.entry {
-  color: var(--ink);
-  text-decoration: none;
-}
-/* Pointed at or in focus, an entry's picture grows as a Gallery tile's does: all of it can be pressed. */
-.entry .art img {
-  transition: transform 0.25s ease-out;
-}
-.entry:is(:hover, :focus-visible) .art img {
-  transform: scale(1.03);
-}
-.etext .short-rule {
-  margin: var(--s4) 0;
-}
-.logline {
-  max-width: 440px;
-  font-size: var(--fs-lead);
-  line-height: 1.65;
-}
 
 /* A persona's form in its row begins where the rows' words do; its round is 48 px. Nothing in a section yet: the
    fresh start's two lists, centred, 48 px apart (board FirstStart). */
@@ -775,301 +610,7 @@ dialog.dialog.expressions-dialog {
   visibility: visible;
 }
 
-/* A lorebook's editor (board LorebookEditor): the entry beside the panel of its entries, as high as the window,
-   the entry in view marked in the list; from 960 px down list and entry are screens of their own (`.at-entry`). */
-.lorebook {
-  flex: 1;
-  min-height: 0;
-}
-.crumbs .here {
-  color: var(--ink);
-  font-weight: 600;
-}
-.lore-entries {
-  background: var(--page);
-}
-.entry-heads {
-  padding: 0 var(--s12);
-}
-.rows-plain > .entry-line {
-  border-radius: var(--r-xl);
-}
-.entry-line:has([aria-current]) {
-  background: var(--accent-soft);
-}
-.entry-link[aria-current] > .entry-label {
-  font-weight: 600;
-}
-.entry-form .fld > .seg {
-  align-self: stretch;
-}
-.entry-form .seg > .btn {
-  flex: 1;
-}
-.entry-name {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  cursor: text;
-}
-.entry-name > .in-place {
-  width: 100%;
-  font: inherit;
-}
-/* A field of keywords: each a pill, and behind them the place to type the next. */
-.keys {
-  height: auto;
-  padding: var(--s6) var(--s8);
-  cursor: text;
-}
-.keys > input {
-  min-width: 140px;
-  padding: 0 var(--s4);
-  background: none;
-}
-.key-off {
-  display: flex;
-}
-.lore-change {
-  padding: var(--s6) var(--s8);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-md);
-}
-.lore-bar > input {
-  flex: 1;
-  min-width: 0;
-}
-@media (max-width: 960px) {
-  .lorebook {
-    flex-direction: column;
-  }
-  .lorebook:not(.at-entry) > .main {
-    flex: none;
-    overflow: visible;
-  }
-  .lorebook:not(.at-entry) .entry-form,
-  .lorebook.at-entry > .lore-entries {
-    display: none;
-  }
-  .lore-entries {
-    flex: 1;
-    min-width: 0;
-    padding: var(--s8) var(--s16);
-    border-left: 0;
-  }
-  /* The list is a screen of its own here, not the side panel's sheet. */
-  .lorebook > .lore-entries {
-    position: static;
-    width: auto;
-    box-shadow: none;
-    animation: none;
-  }
-  .lorebook:not(.at-entry) .entry-line:has([aria-current]):not(:hover) {
-    background: none;
-  }
-  .lorebook:not(.at-entry) .entry-link[aria-current] > .entry-label {
-    font-weight: 500;
-  }
-}
 
-/* The message field (board Chat): who replies over it, then what waits attached, as tiles with their × at the
-   corner; the text grows with its words to eight lines; the ring of a field in focus is around the whole field.
-   Its menus open upward, 12 px over it, from their button's left edge. While a call is asked about it waits,
-   dimmed, but for Stop; while the model writes the message, its words are grey. A notice stands over it. */
-.chat-wrap {
-  anchor-name: --message-field;
-}
-.chat-dock:not(:has(> :not([hidden]))) {
-  display: none;
-}
-.composer {
-  --send-size: 40px;
-  cursor: text;
-}
-[data-density="compact"] .composer {
-  --send-size: 32px;
-}
-/* The send circle and a line of text share their height, so the pill's end cap stays round about the circle. */
-.composer .send {
-  width: var(--send-size);
-  height: var(--send-size);
-}
-.composer:has(textarea:focus) {
-  box-shadow: inset 0 0 0 2px var(--accent);
-}
-.composer textarea {
-  min-width: 0;
-  padding-block: calc((var(--send-size) - 1lh) / 2);
-  max-height: calc(8 * 1.5em + 18px);
-  field-sizing: content;
-}
-.composer.drafting textarea {
-  color: var(--grey);
-}
-.composer .btn-quiet:hover:enabled {
-  background: var(--fill-hover);
-}
-.composer .dictate.recording {
-  color: var(--recording);
-}
-.chat-wrap .menu > .pop {
-  top: auto;
-  right: auto;
-  bottom: calc(100% + var(--s12));
-  left: 0;
-}
-.chat-wrap.waiting .composer > :not(.send),
-.chat-wrap.waiting .replier {
-  opacity: 0.5;
-  pointer-events: none;
-}
-.replier,
-.replier > .menu,
-.replier .btn {
-  max-width: 100%;
-}
-.replier .btn {
-  min-height: 32px;
-  padding: 0 var(--s10);
-}
-.replier .btn > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.waiting-attachments {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s8);
-  margin: 0 0 var(--s8) var(--s8);
-}
-.waiting-tile {
-  position: relative;
-}
-.attached-picture.small {
-  display: block;
-  width: 64px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: var(--r-md);
-}
-.attached-file.small {
-  min-height: 48px;
-  padding: 0 var(--s10);
-  border-radius: var(--r-md);
-}
-.waiting-tile > .remove {
-  position: absolute;
-  top: calc(-1 * var(--s8));
-  right: calc(-1 * var(--s8));
-  width: 22px;
-  min-height: 22px;
-  border-radius: 50%;
-  background: var(--surface);
-  box-shadow: var(--shadow-menu);
-}
-
-/* The chat's side panel (board Chat): it scrolls by itself; its name and × show only where it lies over the chat,
-   as a sheet (under 960 px) over what is anchored `--panel-over` (the messages), else its screen's whole height:
-   the bar over it and the message field under it stay in reach. A line of "Tools" sets its switches in. Reply length is a range over the board's
-   track and dots: its knob the board's, the blue up to it (`--at`), greyed where it is not sent. */
-.side-panel {
-  overflow: auto;
-}
-.side-panel .item-text {
-  overflow-wrap: anywhere;
-}
-.side-panel .select-field,
-.side-panel .selectbtn {
-  width: 100%;
-}
-/* The heading beside "Add lorebook" is the size of the panel's other headings, not a box's. */
-.side-panel .gh .panel-label {
-  font-size: var(--fs-small);
-}
-.panel-close {
-  display: none;
-  align-items: center;
-  gap: var(--s8);
-  margin: calc(-1 * var(--s16)) calc(-1 * var(--s16)) 0;
-  padding: var(--s10) var(--s12);
-  border-bottom: 1px solid var(--rule);
-}
-.item.sub-item {
-  padding-left: var(--s28);
-}
-.reply-length {
-  flex: none;
-  width: 76px;
-  text-align: right;
-}
-.steps .trk,
-.steps .fil {
-  left: 9px;
-}
-.steps .trk {
-  right: 9px;
-}
-.steps .fil {
-  width: calc((100% - 18px) * var(--at, 0));
-}
-.steps .steps-row {
-  box-sizing: border-box;
-  padding: 0 calc(var(--s10) / 2);
-}
-.steps input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: none;
-  appearance: none;
-  cursor: pointer;
-}
-.steps input::-webkit-slider-thumb {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  background: var(--surface);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
-  appearance: none;
-}
-.steps input:focus-visible::-webkit-slider-thumb {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.steps:has(input:disabled),
-.reply-length:disabled {
-  opacity: 0.45;
-}
-.portrait {
-  width: 100%;
-  border-radius: var(--r-xl);
-}
-@media (max-width: 960px) {
-  :has(> .side-panel) {
-    position: relative;
-  }
-  .side-panel {
-    position: absolute;
-    top: anchor(--panel-over top, 0);
-    right: 0;
-    bottom: anchor(--panel-over bottom, 0);
-    z-index: 1;
-    width: min(300px, 100%);
-    box-shadow: var(--shadow-sheet);
-    animation: sheet 0.18s ease-out;
-  }
-  .panel-close {
-    display: flex;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .side-panel {
-    animation: none;
-  }
-}
 
 /* The import's panel at the window's bottom right (board Import): its head, the bar, and its files' lines, the
    mark of each in the colour of its state. */
@@ -1141,7 +682,12 @@ dialog.dialog.expressions-dialog {
   overflow: auto;
 }
 
-/* A card without art keeps its picture's room in a list line as a plain grey box (`cover` of library-actions.ts). */
-.cover-blank {
-  background: var(--fill);
+
+/* A switch group too long for its place (the lorebook entry's logic, a card's languages, the Coding team's Team in
+   Spanish) wraps its buttons onto a second row instead of running past the edge; one that fits stays one row. */
+.seg {
+  flex-wrap: wrap;
+  max-width: 100%;
 }
+
+

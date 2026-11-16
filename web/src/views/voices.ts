@@ -37,7 +37,7 @@ import type { Settings } from "../api/generated/Settings";
 import type { VoiceChoice } from "../api/generated/VoiceChoice";
 import type { VoiceLanguage } from "../api/generated/VoiceLanguage";
 import type { VoiceModel } from "../api/generated/VoiceModel";
-import { el, failure, item, latest, noticeBox, oneAtATime, selectField, type View } from "../dom";
+import { crumbs, el, failure, item, latest, noticeBox, oneAtATime, selectField, type View } from "../dom";
 import { askFirst, formDialog, menu } from "../dialogs";
 import { bytes, decimal } from "../format";
 import { actionWord, failedIn, modelBox, percent } from "../models/downloaded";
@@ -261,7 +261,7 @@ export function voicesView(): View {
   const node = el(
     "section",
     { className: "main main-form voices" },
-    el("header", { className: "pbar" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-voices")))),
+    el("header", { className: "pbar" }, crumbs([wording("page-settings"), "#/settings"], wording("page-voices"))),
     el("div", { className: "page-col mt-12" }, notice, modelGroup.node, voices.node, characters.node, languages.node),
   );
   let shown = false;

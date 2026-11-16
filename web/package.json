@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@fluent/syntax": "^0.19.0",
-    "@types/three": "^0.170.0",
+    "@types/three": "~0.180.0",
     "happy-dom": "^21.0.1",
     "stylelint": "^16.26.1",
     "typescript": "^5.9.3",
@@ -39,6 +39,6 @@
     "@fontsource/racing-sans-one": "^5.3.0",
     "@fontsource/yellowtail": "^5.3.0",
     "@pixiv/three-vrm": "^3.5.5",
-    "three": "^0.170.0"
+    "three": "~0.180.0"
   }
 }

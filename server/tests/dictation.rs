@@ -130,46 +130,49 @@ async fn the_model_loaded_ahead_hears_the_first_recording_at_once() {
     let files = Embedder::start().await;
     let loading = Duration::from_millis(800);
     let setup = Setup::stand_in(files.file(), "Hi.", Duration::ZERO).loading(loading);
-    let server = start_dictating(setup).await;
+    let server = start_dictating(setup.clone()).await;
     server.post("/api/dictation/download", json!({})).await;
     until(&server, "ready").await;
-    // As the microphone is pressed: answered at once, the model loading meanwhile.
-    let start = Instant::now();
+    // As the microphone is pressed: answered before the model has loaded, which it does meanwhile.
     let (status, _) = server.post("/api/dictation/load", json!({})).await;
     assert_eq!(status, 204);
-    assert!(start.elapsed() < loading, "{:?}", start.elapsed());
-    sleep(Duration::from_millis(1_200)).await;
-    let start = Instant::now();
+    assert_eq!(setup.loaded(), 0, "answered only once the model had loaded");
+    common::server::until(|| async {
+        match setup.loaded() {
+            1 => Ok(()),
+            _ => Err("the model was not loaded ahead".to_string()),
+        }
+    })
+    .await;
+    // The recording is heard by the model loaded ahead, not one loaded for it.
     let (status, _) = server.upload("/api/dictation/hear", wav()).await;
     assert_eq!(status, 200);
-    assert!(
-        start.elapsed() < Duration::from_millis(400),
-        "{:?}",
-        start.elapsed()
-    );
+    assert_eq!((setup.loaded(), setup.heard()), (1, 1));
 }
 
 #[tokio::test]
 async fn a_hearing_the_page_gave_up_keeps_the_model_for_the_next() {
-    let (server, _files) = dictating_slowly("Hi.", Duration::from_millis(800)).await;
+    let files = Embedder::start().await;
+    let setup = Setup::stand_in(files.file(), "Hi.", Duration::from_millis(800));
+    let server = Arc::new(start_dictating(setup.clone()).await);
     server.post("/api/dictation/download", json!({})).await;
     until(&server, "ready").await;
-    let server = Arc::new(server);
-    let start = Instant::now();
     let given_up = {
         let server = server.clone();
         tokio::spawn(async move { server.upload("/api/dictation/hear", wav()).await })
     };
-    sleep(Duration::from_millis(200)).await;
+    common::server::until(|| async {
+        match setup.heard() {
+            1 => Ok(()),
+            _ => Err("the first recording is not being heard".to_string()),
+        }
+    })
+    .await;
     given_up.abort();
     let (status, _) = server.upload("/api/dictation/hear", wav()).await;
     assert_eq!(status, 200);
-    // Heard after the first ended (800 ms), not by a second model beside it.
-    assert!(
-        start.elapsed() >= Duration::from_millis(1_500),
-        "{:?}",
-        start.elapsed()
-    );
+    // Heard by the one model, once the first was heard, not by a second model beside it.
+    assert_eq!((setup.loaded(), setup.heard()), (1, 2));
 }
 
 #[test]

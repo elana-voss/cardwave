@@ -81,10 +81,15 @@ impl Document {
             return Vec::new();
         };
         let mut seen = HashSet::new();
+        // The prompt names the name too, which both languages share.
+        let name = character.get("name-char").and_then(Value::as_str);
+        let is_name = |item: &&str| {
+            Some(*item) == name || split_reference(item).is_some_and(|(kind, _)| kind == "name")
+        };
         TEXT_KEYS
             .iter()
             .flat_map(|key| named(character.get(*key)))
-            .filter(|item| !is_placeholder(item) && self.lookup(item).is_some())
+            .filter(|item| !is_placeholder(item) && !is_name(item) && self.lookup(item).is_some())
             .filter(|item| seen.insert(*item))
             .collect()
     }
@@ -408,6 +413,49 @@ fn written(
         .collect()
 }
 
+/// The card's `files` parsed, each to be edited.
+fn opened(files: &[(String, String)]) -> anyhow::Result<Vec<DocumentMut>> {
+    let mut open = Vec::new();
+    for (file, text) in files {
+        let parsed = text.parse::<DocumentMut>();
+        open.push(parsed.with_context(|| {
+            Fail::said(Code::NotReadable, format!("{file} is not valid TOML"))
+                .with("what", "toml")
+                .with("file", file.to_string())
+        })?);
+    }
+    Ok(open)
+}
+
+/// The index in `open` of the file holding the character `id`.
+fn home_of(open: &[DocumentMut], id: &str) -> anyhow::Result<usize> {
+    open.iter()
+        .position(|file| file.get("character").and_then(|all| all.get(id)).is_some())
+        .with_context(|| {
+            Fail::said(
+                Code::NotPossible,
+                format!("the character {id} cannot be changed in this card"),
+            )
+            .with("what", "character_change")
+            .with("id", id.to_string())
+        })
+}
+
+/// Sets the card's last change to `now` (milliseconds) where it says anything
+/// of itself (its `meta-info`); the index of that file, where it has one.
+fn dated(open: &mut [DocumentMut], now: i64) -> anyhow::Result<Option<usize>> {
+    if let Some(at) = open.iter().position(|file| file.get("meta-info").is_some())
+        && let Some(meta) = open[at]
+            .get_mut("meta-info")
+            .and_then(Item::as_table_like_mut)
+    {
+        let modified: toml_edit::Datetime = crate::written_date(now)?.parse()?;
+        crate::edit::set(meta, "modified", modified);
+        return Ok(Some(at));
+    }
+    Ok(None)
+}
+
 /// The card's files with the translation `translation` in them, made at
 /// `now` (milliseconds): its first character in the new language beside the
 /// one it has. Refused: a language the app does not know, or one the card is
@@ -440,26 +488,8 @@ pub fn add(
             .with("what", "card_language")
             .with("name", name.to_string())
     );
-    let mut open = Vec::new();
-    for (file, text) in files {
-        let parsed = text.parse::<DocumentMut>();
-        open.push(parsed.with_context(|| {
-            Fail::said(Code::NotReadable, format!("{file} is not valid TOML"))
-                .with("what", "toml")
-                .with("file", file.to_string())
-        })?);
-    }
-    let home = open
-        .iter()
-        .position(|file| file.get("character").and_then(|all| all.get(id)).is_some())
-        .with_context(|| {
-            Fail::said(
-                Code::NotPossible,
-                format!("the character {id} cannot be changed in this card"),
-            )
-            .with("what", "character_change")
-            .with("id", id.to_string())
-        })?;
+    let mut open = opened(files)?;
+    let home = home_of(&open, id)?;
 
     let mut copies = Copies {
         document: &document,
@@ -496,16 +526,7 @@ pub fn add(
     put(&mut open[home], copies.blocks)?;
 
     let mut changed = vec![home];
-    // The card says when it was last changed where it says anything of itself.
-    if let Some(at) = open.iter().position(|file| file.get("meta-info").is_some())
-        && let Some(meta) = open[at]
-            .get_mut("meta-info")
-            .and_then(Item::as_table_like_mut)
-    {
-        let modified: toml_edit::Datetime = crate::written_date(now)?.parse()?;
-        crate::edit::set(meta, "modified", modified);
-        changed.push(at);
-    }
+    changed.extend(dated(&mut open, now)?);
     let files = written(files, &open, &changed);
     let document = Document::parse(&files)?;
     ensure!(

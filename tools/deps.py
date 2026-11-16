@@ -1,4 +1,4 @@
-"""The packages' graph (milestone 96 of docs/cardwave-rewrite.md): which module names which, which crate
+"""The packages' graph (milestone 96 (its ticket in docs/tickets/)): which module names which, which crate
 which, every use the crates' order forbids, and who names an item.
 
   python tools/deps.py                 the module graph of server/src and the crate graph
@@ -42,6 +42,7 @@ WRAPS = {
     "rusqlite": ["cw-store"],
     "sqlite-vec": ["cw-store"],
     "axum": ["cardwave-server"],
+    "getrandom": ["cw-key"],
 }
 def metadata():
     out = subprocess.run(["cargo", "metadata", "--no-deps", "--format-version", "1", "--offline"],

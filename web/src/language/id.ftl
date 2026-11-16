@@ -120,6 +120,7 @@ search-keys = Cari di Cardwave (Ctrl+K)
 label-settings-theme = Tema
 label-settings-chat-layout = Tata letak chat
 label-settings-web-pictures = Tampilkan gambar dari situs web lain
+label-settings-tabs = Tab
 label-settings-app-language = Bahasa aplikasi
 label-settings-language = Bahasa tulisan AI
 label-settings-providers = Penyedia
@@ -137,7 +138,6 @@ label-settings-dice = Dadu
 label-settings-folder = Folder
 label-settings-written = Alat buatan AI
 label-settings-coding = Tim pemrograman
-label-settings-trash = Sampah
 label-settings-backup = Cadangan
 label-settings-restore = Pulihkan
 label-settings-cards-folder = Folder kartu
@@ -175,16 +175,12 @@ settings-appearance = Tampilan
 settings-theme-about = Mengikuti sistem kecuali kamu memilih satu
 settings-layout-about = Pesan sebagai gelembung, atau sebagai teks polos
 settings-web-pictures-about = Situs web itu dapat melihat kapan kamu membuka chat.
+settings-tabs-about = Biarkan beberapa halaman terbuka di bilah judul
 settings-language = Bahasa
 settings-data = Data
-settings-trash-about = { $count ->
-   *[other] { $count } item
-  } · dikosongkan setelah { $days } hari
-settings-open-trash = Buka Sampah
-settings-open = Buka
 settings-version = Versi { $version } · lisensi
 settings-licences = Lisensi
-settings-advanced-about = Model pembantu, pustaka, ekspor, chat tanpa karakter, sampling, preset, CSS-mu sendiri
+settings-advanced-about = Model pembantu, pustaka, alat untuk AI, ekspor, chat tanpa karakter, sampling, preset, CSS-mu sendiri
 settings-setup-about = Penyedia, model, dan suara, langkah demi langkah
 settings-providers-about = Alamat dan kunci layanan yang menjalankan model
 settings-this-computer = komputer ini
@@ -230,7 +226,7 @@ backup-back-up = Simpan cadangan
 backup-no-file = Belum ada berkas yang dipilih
 backup-choose-file = Pilih berkas
 backup-its-password = Kata sandi cadangan
-backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan. Kata sandi di sini tetap seperti sekarang. Akun lain juga ikut diganti.
+backup-restoring = Memulihkan akan mengganti semua yang ada di Cardwave: chat, karakter, persona, lorebook, memori, dan pengaturan. Ini tidak dapat dibatalkan. Akun lain juga ikut diganti.
 backup-restored = Cadangan dipulihkan: semua di Cardwave kembali seperti saat cadangan dibuat. Perangkat lain masuk lagi.
 backup-file = Berkas
 backup-restore-title = Pulihkan cadangan
@@ -268,7 +264,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = Izinkan aplikasi AI di komputer ini memakai Cardwave
-mcp-ask = Program di komputer ini, seperti Claude Desktop, bisa membaca karakter dan obrolanmu, menulis di obrolanmu, dan memakai alat yang dinyalakan di Pengaturan › Alat. Apa yang akan Cardwave tanyakan dulu kepadamu tidak bisa mereka lakukan.
+mcp-ask = Program di komputer ini, seperti Claude Desktop, bisa membaca karakter dan obrolanmu, menulis di obrolanmu, dan memakai alat yang dinyalakan di Pengaturan. Apa yang akan Cardwave tanyakan dulu kepadamu tidak bisa mereka lakukan.
 mcp-switch-on = Nyalakan
 mcp-about = Seperti Claude Desktop, lewat MCP: memakai karakter, obrolan, dan alat Anda
 mcp-copy-address = Salin alamat MCP
@@ -394,6 +390,7 @@ tools-change = Ganti
 tools-choose = Pilih
 tools-none-chosen = Belum dipilih
 tools-title = Alat
+tools-for-ai = Alat untuk AI
 tools-ask-new = { $name } ingin memakai alat baru: { $what }
 tools-ask-write = { $name } ingin menulis “{ $what }” di foldermu:
 tools-ask-read = { $name } ingin membaca di foldermu:
@@ -455,6 +452,9 @@ providers-choose-folder = Pilih folder model
 providers-change = Ganti
 providers-not-set-up = Belum disiapkan
 providers-folder-not-set-up = Menjalankan model dari folder di komputer ini · belum disiapkan
+providers-this-computer-runs = Siap dijalankan: { $models }
+providers-this-computer-none = Belum ada model: unduh yang cocok di bawah
+providers-details = Rincian
 providers-menu = Menu penyedia: sunting, hapus
 providers-remove = Hapus
 providers-removed = Penyedia “{ $name }” dihapus.
@@ -464,6 +464,7 @@ providers-remove-key = Hapus kunci
 providers-key-removed = Kunci dihapus saat kamu menyimpan
 providers-edit = Sunting penyedia
 providers-keep-key = Biarkan kosong untuk mempertahankan kunci yang tersimpan.
+providers-new-address-key = Alamat baru perlu kunci yang diketik lagi: kunci tidak pernah dikirim ke server lain.
 providers-saved = Penyedia “{ $name }” disimpan.
 providers-added = Penyedia “{ $name }” ditambahkan.
 providers-add = Tambah penyedia
@@ -537,15 +538,13 @@ advanced-not-described = { $count ->
    *[other] { $count } karakter
   } belum dideskripsikan
 advanced-describe-cards = Deskripsikan karakter
-advanced-describe-cost = Sekitar { $low } hingga { $high } token untuk { $count ->
-   *[other] { $count } karakter
-  }
+advanced-describe-cost = Kartu yang akan dibaca: { $count }
 advanced-failed = { $count ->
    *[other] { $count } gagal
   }: { $failure }. Tekan Deskripsikan karakter untuk mencoba lagi.
 advanced-describe-again = Deskripsikan semua lagi
 advanced-describe-again-stop = Hentikan
-advanced-describe-again-about = Dengan model pembantu, menulis ulang deskripsi satu baris, ringkasan, dan tag setiap karakter, serta hal yang dipakai "Menurut kebutuhan" untuk menemukannya, sekitar 11.000 sampai 12.000 token per karakter. Yang Anda sunting sendiri tetap. Penyedia menagih per token.
+advanced-describe-again-about = Dengan model pembantu, membaca ulang setiap kartu dan menulis ulang deskripsi satu baris, ringkasan, dan tag setiap karakter, serta hal yang dipakai "Menurut kebutuhan" untuk menemukannya. Yang Anda sunting sendiri tetap.
 advanced-no-characters = Tidak ada karakter untuk dideskripsikan
 advanced-describe-again-far = { $done } dari { $all } sudah dideskripsikan lagi
 advanced-describe-again-stopped = Dihentikan pada { $done } dari { $all } yang dideskripsikan lagi
@@ -800,6 +799,8 @@ server-switch-on = Nyalakan
 server-network-about = Ponsel dan komputer lain membuka Cardwave di browser
 server-other-devices = Perangkat lain
 server-inside = Hanya perangkat di jaringan ini yang bisa menjangkaunya, kecuali Anda mengatur router agar yang lain bisa masuk.
+server-anywhere = Dari mana saja
+server-tailscale = Untuk membukanya dari mana saja, pasang aplikasi gratis Tailscale (tailscale.com) di komputer ini dan ponsel Anda, lalu masuk di keduanya.
 server-add-account = Tambah akun
 server-owner = Komputer ini · dapat menambah dan menghapus akun
 server-more-of = Lainnya: { $name }

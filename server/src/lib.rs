@@ -341,18 +341,28 @@ impl AppState {
         unless_restoring(&self.0.restores, &self.guarded, then)
     }
 
-    /// Whether any piece of work marked by [`AppState::at_work`] is under way.
-    fn is_at_work(&self) -> bool {
-        !cw_core::lock(&self.0.at_work).is_empty()
-    }
-
-    /// Whether a piece of `user`'s work marked by [`AppState::at_work`] is under way.
-    fn user_at_work(&self, user: i64) -> bool {
-        cw_core::lock(&self.0.at_work).contains_key(&user)
+    /// Whether work on the data is under way: `user`'s, or with `None` anyone's, the search's reading of
+    /// the cards too (it is no one user's). Every registry of work under way is asked here, so a restore
+    /// and an account's delete wait for the same.
+    fn busy(&self, user: Option<i64>) -> bool {
+        let Some(id) = user else {
+            return !(self.replies().is_empty()
+                && self.describing().is_empty()
+                && self.remembering().is_empty()
+                && self.coding().is_empty()
+                && self.titles.is_empty()
+                && cw_core::lock(&self.0.at_work).is_empty()
+                && !self.search.is_reading());
+        };
+        self.replies().keys().any(|(user, _)| *user == id)
+            || self.describing().contains_key(&id)
+            || self.remembering().values().any(|user| *user == id)
+            || self.coding().values().any(|task| task.user() == id)
+            || self.titles.for_user(id)
+            || cw_core::lock(&self.0.at_work).contains_key(&id)
     }
 }
 
-/// A piece of a user's work on the data under way ([`AppState::at_work`]).
 /// Does `then` under `guarded` (held while a backup is restored), unless a restore ended since `restores` was
 /// `begun`: the work's ids would be the old data's.
 fn unless_restored<T>(
@@ -377,6 +387,7 @@ fn unless_restoring<T>(
     unless_restored(restores, guarded, restores.load(Ordering::SeqCst), then)
 }
 
+/// A piece of a user's work on the data under way ([`AppState::at_work`]).
 struct AtWork(AppState, i64);
 
 impl Drop for AtWork {
@@ -619,22 +630,7 @@ fn open(
     let local_user = cw_accounts::users::local(&db, &opts.account_name)?;
     let sessions = cw_accounts::sessions::Sessions::load(&db)?;
     let reached = cw_accounts::users::reached(&db)?;
-    // Not when another server is running on the same data folder: its replies
-    // are still written, its pages still offer what was deleted, and a backup
-    // of its may be on its way.
-    let alone = File::options()
-        .write(true)
-        .create(true)
-        .truncate(false)
-        .open(opts.data_dir.join(LOCK_FILE))?;
-    let alone_now = match alone.try_lock() {
-        Ok(()) => true,
-        Err(TryLockError::WouldBlock) => {
-            tracing::warn!("another server is using this data folder");
-            false
-        }
-        Err(TryLockError::Error(failure)) => return Err(failure.into()),
-    };
+    let (alone, alone_now) = lock_data(&opts.data_dir)?;
     tidy(&db, alone_now)?;
     if alone_now {
         cw_store::backup::remove_left(&opts.data_dir);
@@ -702,6 +698,33 @@ fn open(
         runtime.spawn(async move { faces::look(&looked_by) });
     }
     watch_card_folder(&runtime, Arc::downgrade(&state.0), watch_every);
+    Ok((app_router(state, opts.web_dir.as_deref()), reached))
+}
+
+/// The lock file of `data_dir` and whether this server holds it alone. Not
+/// alone when another server is running on the same data folder: its replies
+/// are still written, its pages still offer what was deleted, and a backup
+/// of its may be on its way.
+fn lock_data(data_dir: &Path) -> anyhow::Result<(File, bool)> {
+    let alone = File::options()
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(data_dir.join(LOCK_FILE))?;
+    let alone_now = match alone.try_lock() {
+        Ok(()) => true,
+        Err(TryLockError::WouldBlock) => {
+            tracing::warn!("another server is using this data folder");
+            false
+        }
+        Err(TryLockError::Error(failure)) => return Err(failure.into()),
+    };
+    Ok((alone, alone_now))
+}
+
+/// The app's routes on `state`: the API and the socket, and the web UI of
+/// `web` where it is served.
+fn app_router(state: AppState, web: Option<&Path>) -> Router {
     let read_after = || middleware::from_fn_with_state(state.clone(), api::find::read_after);
     let in_process = api::Api(api::routes().layer(read_after()).with_state(state.clone()));
     let mut app = api::routes()
@@ -710,11 +733,10 @@ fn open(
         .layer(middleware::from_fn_with_state(state.clone(), api::who))
         .layer(middleware::from_fn(own_pages_only))
         .with_state(state.clone());
-    if let Some(web) = &opts.web_dir {
+    if let Some(web) = web {
         app = app.fallback_service(web_files(web));
     }
-    let app = app.layer(middleware::from_fn_with_state(state, api::page_policy));
-    Ok((app, reached))
+    app.layer(middleware::from_fn_with_state(state, api::page_policy))
 }
 
 /// What a start does for the data: the library's index and the chats' names
@@ -745,7 +767,7 @@ pub(crate) fn tidy(db: &cw_store::Db, alone: bool) -> anyhow::Result<()> {
         cw_coding::tools::written::purge_deleted(db)?;
         cw_search::Index::forget_unused_vectors(db)?;
         cw_library::describe::forget_unfinished(db)?;
-        cw_provider::Storage::forget_replaced_providers(db, None)?;
+        cw_provider::kinds::forget_replaced(db, None)?;
     }
     Ok(())
 }

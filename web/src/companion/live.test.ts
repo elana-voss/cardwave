@@ -64,10 +64,10 @@ describe("the companion told to move", () => {
 
 describe("the companion told to play a clip", () => {
   it("plays it for the time asked, and says which", () => {
-    const { figure, run, state } = told([{ do: "play", clip: "wave", ms: 2000 }]);
+    const { figure, run, state } = told([{ do: "play", clip: "waving", ms: 2000 }]);
     run(0.1);
-    expect(figure.played).toEqual([["wave", 2000]]);
-    expect(state()).toMatchObject({ clip: "wave", steps: [{ do: "play", clip: "wave", ms: 2000 }] });
+    expect(figure.played).toEqual([["waving", 2000]]);
+    expect(state()).toMatchObject({ clip: "waving", steps: [{ do: "play", clip: "waving", ms: 2000 }] });
     run(2);
     expect(state().steps).toEqual([]);
   });
@@ -98,7 +98,7 @@ describe("the companion told to react", () => {
   it("shows the feeling on its face and plays its clip, for a time", () => {
     const { figure, run, state } = told([{ do: "react", feeling: "happy" }]);
     run(0.1);
-    expect(figure.played).toEqual([["jump", undefined]]);
+    expect(figure.played).toEqual([["joyful_jump", undefined]]);
     expect(figure.feeling).toBe("happy");
     expect(state().feeling).toBe("happy");
     run(3);

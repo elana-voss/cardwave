@@ -1,0 +1,89 @@
+/* The library's own rules (boards Library, ChatsList, Lorebooks, Personas, Discovery): a row's link, star and hover
+   actions, Discovery's entries, a card's blank cover. Read after app.css and before app/narrow.css, which overrides a
+   rule of it in a narrow window. */
+/* The library's lists (boards Library, ChatsList, Lorebooks, Personas): a row's title is its link and reaches over
+   the row, and what stands at the row's right lies over that. A favorite's star is filled and blue; the order and
+   filter's button is blue while a choice is made behind it, and its panel's parts stand 22 px apart. */
+.row-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-2xl);
+}
+.star {
+  color: var(--faint);
+}
+.star[aria-pressed="true"] {
+  color: var(--accent);
+}
+.star[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+/* A library row's star (design.md "List rows") stands where it is a favourite, else only while the row is pointed
+   at or focused, or worked by touch: always there it reads as a rating. */
+.library .rows-plain .item:not(:hover, :focus-within) .star:not([aria-pressed="true"]) {
+  opacity: 0;
+}
+@media (hover: none) {
+  .library .rows-plain .item .star:not([aria-pressed="true"]) {
+    opacity: 1;
+  }
+}
+/* A list read anew that brought another item under a resting pointer (library/list-screen.ts): its items take no
+   hover or press until the pointer moves, so a row that moved there is not opened by a click meant for the one before. */
+.still > li {
+  pointer-events: none;
+}
+/* Discovery (board Discovery): the entries take turns, the picture left and right, 1,040 px wide at most; the
+   title large, the logline 16 px. */
+.discovery {
+  width: 100%;
+  max-width: 1040px;
+  margin: var(--s32) auto 0;
+  padding: 0;
+  list-style: none;
+}
+.discovery > li:nth-child(even) > .entry {
+  flex-direction: row-reverse;
+}
+@container (max-width: 719px) {
+  .discovery > li + li {
+    margin-top: var(--s40);
+  }
+}
+/* Pointed at or in focus, an entry's picture grows as a Gallery tile's does: all of it can be pressed. */
+.entry .art img {
+  transition: transform 0.25s ease-out;
+}
+.entry:is(:hover, :focus-visible) .art img {
+  transform: scale(1.03);
+}
+.etext .short-rule {
+  margin: var(--s4) 0;
+}
+.logline {
+  max-width: 440px;
+  font-size: var(--fs-lead);
+  line-height: 1.65;
+}
+/* A card without art keeps its picture's room in a list line as a plain grey box (`cover` of library-actions.ts). */
+.cover-blank {
+  background: var(--fill);
+}
+/* Between a phone and a wide window: a library row's hover actions lie over the end of its words instead of keeping
+   their 136 px, and a line of two buttons puts them under its words (from 600 px down app/narrow.css does too). */
+@media (max-width: 1100px) {
+  .card-row .reveal {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .group > .item:has(> .btn:not([hidden]) ~ .btn:not([hidden])) {
+    flex-wrap: wrap;
+    row-gap: var(--s10);
+  }
+  .group > .item:has(> .btn:not([hidden]) ~ .btn:not([hidden])) > .item-text {
+    flex-basis: 100%;
+  }
+}

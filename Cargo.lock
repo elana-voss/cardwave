@@ -630,7 +630,7 @@ dependencies = [
 
 [[package]]
 name = "cardwave-desktop"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cardwave-server",
@@ -648,7 +648,7 @@ dependencies = [
 
 [[package]]
 name = "cardwave-server"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -674,7 +674,6 @@ dependencies = [
  "cw-voice",
  "dirs",
  "futures-util",
- "getrandom 0.3.4",
  "image",
  "keyring",
  "percent-encoding",
@@ -1076,7 +1075,7 @@ checksum = "914a755b7c2d4af2bdcff7ce1739e2db9a1b81a9b07123d8015786ae03c0980d"
 
 [[package]]
 name = "cw-accounts"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1084,7 +1083,6 @@ dependencies = [
  "chacha20poly1305",
  "cw-core",
  "cw-key",
- "getrandom 0.3.4",
  "image",
  "serde",
  "serde_json",
@@ -1093,7 +1091,7 @@ dependencies = [
 
 [[package]]
 name = "cw-ccv4"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1112,7 +1110,7 @@ dependencies = [
 
 [[package]]
 name = "cw-chat"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1144,7 +1142,7 @@ dependencies = [
 
 [[package]]
 name = "cw-coding"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1169,7 +1167,7 @@ dependencies = [
 
 [[package]]
 name = "cw-core"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1183,7 +1181,7 @@ dependencies = [
 
 [[package]]
 name = "cw-dictation"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1193,7 +1191,7 @@ dependencies = [
 
 [[package]]
 name = "cw-faces"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "image",
@@ -1206,7 +1204,7 @@ dependencies = [
 
 [[package]]
 name = "cw-find"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-ccv4",
@@ -1226,16 +1224,17 @@ dependencies = [
 
 [[package]]
 name = "cw-key"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
+ "cw-core",
  "getrandom 0.3.4",
  "keyring",
 ]
 
 [[package]]
 name = "cw-library"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1264,7 +1263,7 @@ dependencies = [
 
 [[package]]
 name = "cw-modelfiles"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1280,7 +1279,7 @@ dependencies = [
 
 [[package]]
 name = "cw-platform"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1294,7 +1293,7 @@ dependencies = [
 
 [[package]]
 name = "cw-prompt"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "cw-core",
@@ -1308,17 +1307,17 @@ dependencies = [
 
 [[package]]
 name = "cw-provider"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
  "cw-core",
+ "cw-key",
  "cw-modelfiles",
  "cw-platform",
  "cw-prompt",
  "flate2",
  "futures-util",
- "getrandom 0.3.4",
  "image",
  "percent-encoding",
  "serde",
@@ -1331,7 +1330,7 @@ dependencies = [
 
 [[package]]
 name = "cw-search"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-ccv4",
@@ -1343,7 +1342,7 @@ dependencies = [
 
 [[package]]
 name = "cw-store"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-accounts",
@@ -1368,7 +1367,7 @@ dependencies = [
 
 [[package]]
 name = "cw-voice"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1385,7 +1384,7 @@ dependencies = [
 
 [[package]]
 name = "cw-whisper"
-version = "0.1.3"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -2329,15 +2328,6 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.16.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
-dependencies = [
- "foldhash 0.2.0",
-]
-
-[[package]]
-name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
@@ -3103,13 +3093,14 @@ dependencies = [
 
 [[package]]
 name = "libsqlite3-sys"
-version = "0.38.2"
+version = "0.40.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1d20bef17f513b9b3004532233187769cd072d790971f4e4da0e346eb6401e8"
+checksum = "b06e69070b7e12262b0cd90832f0a7396f142a2b330181255562decf9f0c6215"
 dependencies = [
  "cc",
  "openssl-sys",
  "pkg-config",
+ "sqlcipher-src",
  "vcpkg",
 ]
 
@@ -4531,19 +4522,18 @@ dependencies = [
 
 [[package]]
 name = "rsqlite-vfs"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c51c9ae4df8a7fba42103df5c621fa3c37eccf3a3c650879e90fc48b11cc192c"
+checksum = "353b74f9810d5b085b6c42c9d86a5f0fdb795553235cdd48753b32e3809d18a7"
 dependencies = [
- "hashbrown 0.16.1",
  "thiserror 2.0.21",
 ]
 
 [[package]]
 name = "rusqlite"
-version = "0.40.2"
+version = "0.42.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23f2a97da3e3873c73cb2a2e71b35c40ff95e0b1eefa8d72d8499a6928c3b5b3"
+checksum = "a4edff0039f148731aee2fd80f76dbfeb12d204ab3d1c544838d34e02151049b"
 dependencies = [
  "bitflags 2.13.2",
  "fallible-iterator",
@@ -4571,9 +4561,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "1.1.5"
+version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d"
+checksum = "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa"
 dependencies = [
  "bitflags 2.13.2",
  "errno",
@@ -5177,6 +5167,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sqlcipher-src"
+version = "420.0.0+sqlcipher-4.20.0-sqlite-3.54.1-libtomcrypt-1.18.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd6b5280ed2593d07b2816ec531821c15c306903bcca224716f1fbcc2bbfedfe"
+
+[[package]]
 name = "sqlite-vec"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5187,14 +5183,13 @@ dependencies = [
 
 [[package]]
 name = "sqlite-wasm-rs"
-version = "0.5.5"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc3efc0da82635d7e1ced0053bbbfa8c7ab9645d0bf36ceb4f7127bb85315d75"
+checksum = "a6cd504cecbfe7eef649988840f9a6cb768d11085efec138f8e99f160632d867"
 dependencies = [
  "cc",
- "js-sys",
  "rsqlite-vfs",
- "wasm-bindgen",
+ "sqlcipher-src",
 ]
 
 [[package]]

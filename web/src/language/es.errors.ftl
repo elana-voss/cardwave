@@ -72,7 +72,10 @@ error-not-found = No existe { $what ->
     [voice] esa voz
    *[other] cosa
 }. Puede que se haya eliminado.
-error-chat-busy = Se está escribiendo una respuesta en este chat; detenla primero.
+error-chat-busy = { $what ->
+    [coding_task] Hay una tarea de programación de este chat en marcha; detenla primero.
+   *[other] Se está escribiendo una respuesta en este chat; detenla primero.
+}
 error-no-provider = { $what ->
     [chat_model] Aún no has elegido un modelo de chat. Elige uno en Ajustes › Modelos.
    *[other] Aún no hay ningún proveedor configurado. Añade uno en Ajustes › Proveedores.
@@ -102,7 +105,7 @@ error-drive-root-for-model = La raíz de una unidad contiene demasiado para dár
 error-data-folder = Esa carpeta contiene los datos propios de Cardwave, o está dentro de ellos; elige otra.
 error-commands-windows-only = Los comandos solo se ejecutan en Windows.
 error-recycle-bin-windows-only = Los archivos solo se mueven a la Papelera de reciclaje en Windows.
-error-files-tool-off = Activa primero Archivos en Ajustes › Herramientas: con ella el equipo de programación lee y escribe la carpeta de la tarea.
+error-files-tool-off = Activa primero Archivos en Ajustes › Avanzado › Herramientas para la IA: con ella el equipo de programación lee y escribe la carpeta de la tarea.
 
 ## Pictures, replies and voices
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] La persona “{ $name }” está en la Papelera; restáurala para usarla.
    *[other] Eso está en la Papelera; restáuralo primero.
 }
+-card-unreadable = Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
 error-not-readable = { $what ->
     [damaged_key] Su clave está dañada.
     [json] El archivo no es un JSON válido.
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] Esta copia de seguridad está dañada: su clave no se puede leer.
     [base64] Eso no es base64.
     [base64_file] { $name } no es base64.
-    [card_defined_twice] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] Un nombre de archivo de la tarjeta no se puede usar.
     [card_reference] Eso no nombra ninguna parte de la tarjeta.
     [ccv4_version] Esta tarjeta se hizo con un Cardwave más nuevo. Actualiza Cardwave para abrirla.
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] La imagen fija de la figura no es un PNG de como máximo 4 MB.
     [figure_type] Una figura 3D es un archivo VRM, GLB o FBX.
     [folder_read] No se puede leer la carpeta.
-    [format_version] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
+    [format_version] { -card-unreadable }
     [image_model_answer] No se puede leer la respuesta del modelo de imágenes.
     [image_model_picture] No se puede leer la imagen del modelo de imágenes.
     [key_characters] La clave tiene caracteres que una clave no puede tener. Cópiala de nuevo desde el sitio del proveedor.
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] La grabación es demasiado corta: hacen falta al menos { $shortest } segundos.
     [recording_silent] La grabación no tiene sonido.
     [recording_wav] La grabación no es un archivo WAV.
-    [sillytavern_base64] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] La tarjeta está vacía.
     [sillytavern_file] No se puede leer la tarjeta de SillyTavern de este archivo.
-    [sillytavern_json] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
-    [sillytavern_object] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] No se puede leer la tarjeta de SillyTavern de este PNG.
-    [spec_version] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
-    [spec_version_form] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
-    [toml] Este archivo no es una tarjeta de personaje que Cardwave pueda leer. Vuelve a exportarlo desde la app de la que viene.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] No se puede leer el archivo de Word.
     [word_text] El archivo de Word no tiene texto.
     [workflow] No se puede leer el flujo de trabajo “{ $name }”.
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] El personaje es demasiado largo para el modelo auxiliar; elige un modelo auxiliar que lea más.
     [card_for_chat] El personaje es demasiado largo para el modelo de chat y no sería él mismo; elige un modelo de chat que lea más o acorta el personaje.
+    [message_for_chat] El mensaje es demasiado largo para el modelo de chat; acórtalo, envía menos imágenes con él o elige un modelo de chat que lea más.
     [card_file] El archivo supera los { $most } MB.
     [checkpoint_folder] La carpeta es demasiado grande para guardar copias antes de cada paso.
     [expression_pack_size] Las imágenes de { $name } son demasiado grandes.
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] Para leer en voz alta falta una pieza de Microsoft: instala el Visual C++ Redistributable desde microsoft.com y reinicia Cardwave.
     [workflow_no_text] El flujo de trabajo “{ $name }” no tiene ningún campo de texto para las palabras de la imagen.
     [workflow_use] No se puede usar el flujo de trabajo “{ $name }”.
-    [written_tools_full] Puedes guardar { $most_tools } herramientas como máximo; borra primero una en Ajustes › Herramientas que escribió la IA.
+    [written_tools_full] Puedes guardar { $most_tools } herramientas como máximo; borra primero una en Ajustes › Avanzado › Herramientas que escribió la IA.
     [delete_not_in_trash] Solo se puede borrar para siempre lo que está en la Papelera; muévelo allí primero.
    *[other] No se puede hacer.
 }
+-helper-unusable = No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
 error-model-answer = { $what ->
     [no_greeting] La IA no escribió ningún saludo.
-    [background_answer] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
-    [background_text] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] La respuesta de la IA no eran los textos del personaje.
-    [classification] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [classification] { -helper-unusable }
     [example_messages] La IA no escribió mensajes de ejemplo.
     [no_example_message] La IA escribió un mensaje de ejemplo sin su texto.
     [json] La respuesta de la IA no tenía la forma pedida.
-    [keywords] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
-    [logline] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] El proveedor de la IA no envió ninguna respuesta de chat.
     [no_fitting_answer] La IA no dio ninguna respuesta útil en tres intentos.
     [no_picture] El modelo de imágenes respondió sin imagen.
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] El modelo auxiliar no encontró ningún campo para las palabras de la imagen.
     [picture_server_no_picture] El servidor de imágenes respondió sin imagen.
     [picture_words] El modelo auxiliar no escribió palabras para la imagen.
-    [rating] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [rating] { -helper-unusable }
     [reply_broke_off] La respuesta se interrumpió.
-    [needs] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [needs] { -helper-unusable }
     [rounds] El equipo de programación no terminó su trabajo en { $rounds } rondas.
     [search_left_out] El modelo de búsqueda omitió un texto.
     [search_model] No se puede leer la respuesta del modelo de búsqueda.
     [search_tokens] No se pueden leer los tokens del modelo de búsqueda.
-    [title] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [title] { -helper-unusable }
     [too_many_tools] La IA llamó a demasiadas herramientas.
-    [worker_mode] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
-    [worker_texts] No se pudo usar la respuesta del modelo auxiliar. Inténtalo de nuevo o elige otro modelo auxiliar.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] El proveedor de la IA informó: { $reason }
    *[other] La respuesta de la IA no se puede usar.
 }

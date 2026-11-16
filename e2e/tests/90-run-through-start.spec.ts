@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, test } from "../test";
+import { expect, modelLine, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 
@@ -77,7 +77,7 @@ test("a provider is added in Settings and its model made the chat model", async 
   await page.getByRole("navigation", { name: "Where you are" }).getByRole("link", { name: "Settings", exact: true }).click();
   await button(page, "Change the chat model").click();
   const picker = page.getByRole("dialog", { name: "Chat model" });
-  await picker.getByRole("option", { name: "tide-1" }).click();
+  await modelLine(picker, "tide-1").click();
   await picker.getByRole("button", { name: "Use this model", exact: true }).click();
   await expect(picker).toBeHidden();
   await expect(says(page, "Chat")).toHaveText("tide-1 · A program on this computer · test passed");

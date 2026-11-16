@@ -1,4 +1,4 @@
-"""The layers of the web interface (milestone 96i of docs/cardwave-rewrite.md): which area of web/src imports which.
+"""The layers of the web interface (milestone 96i (its ticket in docs/tickets/)): which area of web/src imports which.
 
   python tools/web_layers.py           the check `webimports` (tools/check.sh): prints each import LAYERS
                                        forbids, by file and line, and fails on any

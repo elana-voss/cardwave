@@ -253,7 +253,12 @@ pub(super) fn index_of(title: &str, document: Option<&Document>) -> CardIndex {
         brings = lorebooks::brings(document);
         let characters = document.characters();
         for id in characters.iter().take(MAX_LISTED) {
-            let name = short(document.character_name(id));
+            // A name equal to the title is kept whole: cut, it would differ
+            // from the title and be shown again under it as "as …".
+            let name = match document.character_name(id) {
+                name if name == title => name,
+                name => short(name),
+            };
             search.push(short(document.character_label(id)));
             if !names.contains(&name) {
                 names.push(name);

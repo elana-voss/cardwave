@@ -44,7 +44,7 @@ describe("Search Cardwave's hits", () => {
     expect(grouped(hits).map(([heading, of]) => [heading, of.length])).toEqual([
       ["Characters", 1],
       ["Personas", 1],
-      ["Pages", 2],
+      ["Pages", 1],
     ]);
   });
 });

@@ -117,6 +117,7 @@ search-keys = Cardwave durchsuchen (Strg+K)
 label-settings-theme = Erscheinungsbild
 label-settings-chat-layout = Chat-Layout
 label-settings-web-pictures = Bilder von anderen Websites zeigen
+label-settings-tabs = Tabs
 label-settings-app-language = Sprache der App
 label-settings-language = Sprache, in der die KI schreibt
 label-settings-providers = Anbieter
@@ -134,7 +135,6 @@ label-settings-dice = Würfel
 label-settings-folder = Ordner
 label-settings-written = Werkzeuge der KI
 label-settings-coding = Programmierteam
-label-settings-trash = Papierkorb
 label-settings-backup = Sicherung
 label-settings-restore = Wiederherstellen
 label-settings-cards-folder = Kartenordner
@@ -172,17 +172,12 @@ settings-appearance = Darstellung
 settings-theme-about = Folgt dem System, außer du wählst eines
 settings-layout-about = Nachrichten als Sprechblasen oder als schlichter Text
 settings-web-pictures-about = Diese Websites können sehen, wann du den Chat öffnest.
+settings-tabs-about = Mehrere Seiten in der Titelleiste offen halten
 settings-language = Sprache
 settings-data = Daten
-settings-trash-about = { $count ->
-    [one] 1 Element
-   *[other] { $count } Elemente
-  } · geleert nach { $days } Tagen
-settings-open-trash = Papierkorb öffnen
-settings-open = Öffnen
 settings-version = Version { $version } · Lizenzen
 settings-licences = Lizenzen
-settings-advanced-about = Hilfsmodell, Bibliothek, Export, Chat ohne Charakter, Sampling, Presets, dein eigenes CSS
+settings-advanced-about = Hilfsmodell, Bibliothek, Werkzeuge für die KI, Export, Chat ohne Charakter, Sampling, Presets, dein eigenes CSS
 settings-setup-about = Anbieter, Modelle und Stimme, Schritt für Schritt
 settings-providers-about = Adressen und Schlüssel der Dienste, die die Modelle ausführen
 settings-this-computer = dieser Computer
@@ -228,7 +223,7 @@ backup-back-up = Sicherung speichern
 backup-no-file = Keine Datei gewählt
 backup-choose-file = Datei wählen
 backup-its-password = Das Passwort der Sicherung
-backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen. Das hier gesetzte Passwort bleibt, wie es ist. Auch die anderen Konten werden ersetzt.
+backup-restoring = Wiederherstellen ersetzt alles in Cardwave: Chats, Charaktere, Personas, Lorebooks, Erinnerungen und Einstellungen. Das lässt sich nicht rückgängig machen. Auch die anderen Konten werden ersetzt.
 backup-restored = Die Sicherung wurde wiederhergestellt: Alles in Cardwave ist so, wie es beim Sichern war. Andere Geräte melden sich neu an.
 backup-file = Datei
 backup-restore-title = Eine Sicherung wiederherstellen
@@ -266,7 +261,7 @@ companion-size-value = { $size } %
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = KI-Apps auf diesem Computer Cardwave nutzen lassen
-mcp-ask = Programme auf diesem Computer, etwa Claude Desktop, können deine Figuren und Chats lesen, in deinen Chats schreiben und die in Einstellungen › Werkzeuge eingeschalteten Werkzeuge nutzen. Was Cardwave dich zuerst fragen würde, können sie nicht tun.
+mcp-ask = Programme auf diesem Computer, etwa Claude Desktop, können deine Figuren und Chats lesen, in deinen Chats schreiben und die in Einstellungen eingeschalteten Werkzeuge nutzen. Was Cardwave dich zuerst fragen würde, können sie nicht tun.
 mcp-switch-on = Einschalten
 mcp-about = Etwa Claude Desktop, über MCP: Sie nutzen deine Charaktere, Chats und Werkzeuge
 mcp-copy-address = MCP-Adresse kopieren
@@ -397,6 +392,7 @@ tools-change = Ändern
 tools-choose = Wählen
 tools-none-chosen = Keiner gewählt
 tools-title = Werkzeuge
+tools-for-ai = Werkzeuge für die KI
 tools-ask-new = { $name } möchte ein neues Werkzeug verwenden: { $what }
 tools-ask-write = { $name } möchte „{ $what }“ in deinen Ordner schreiben:
 tools-ask-read = { $name } möchte in deinem Ordner lesen:
@@ -458,6 +454,9 @@ providers-choose-folder = Einen Ordner mit Modellen wählen
 providers-change = Ändern
 providers-not-set-up = Nicht eingerichtet
 providers-folder-not-set-up = Führt Modelle aus einem Ordner auf diesem Computer aus · nicht eingerichtet
+providers-this-computer-runs = Bereit: { $models }
+providers-this-computer-none = Noch kein Modell: Lade unten eines herunter, das passt
+providers-details = Details
 providers-menu = Menü des Anbieters: bearbeiten, entfernen
 providers-remove = Entfernen
 providers-removed = Anbieter „{ $name }“ entfernt.
@@ -467,6 +466,7 @@ providers-remove-key = Schlüssel entfernen
 providers-key-removed = Der Schlüssel wird beim Speichern entfernt
 providers-edit = Anbieter bearbeiten
 providers-keep-key = Leer lassen, um den gespeicherten Schlüssel zu behalten.
+providers-new-address-key = Eine neue Adresse braucht den Schlüssel noch einmal: Ein Schlüssel geht nie an einen anderen Server.
 providers-saved = Anbieter „{ $name }“ gespeichert.
 providers-added = Anbieter „{ $name }“ hinzugefügt.
 providers-add = Anbieter hinzufügen
@@ -541,17 +541,14 @@ advanced-not-described = { $count ->
    *[other] { $count } Charaktere
   } noch nicht beschrieben
 advanced-describe-cards = Charaktere beschreiben
-advanced-describe-cost = Etwa { $low } bis { $high } Tokens für { $count ->
-    [one] 1 Charakter
-   *[other] { $count } Charaktere
-  }
+advanced-describe-cost = Zu lesende Karten: { $count }
 advanced-failed = { $count ->
     [one] 1 fehlgeschlagen
    *[other] { $count } fehlgeschlagen
   }: { $failure }. Tippe auf „Charaktere beschreiben“, um es erneut zu versuchen.
 advanced-describe-again = Alle neu beschreiben
 advanced-describe-again-stop = Stoppen
-advanced-describe-again-about = Schreibt mit dem Hilfsmodell die Kurzbeschreibung, Zusammenfassung und Schlagwörter jeder Figur neu und das, wonach „Nach Bedürfnis“ sie findet, etwa 11.000 bis 12.000 Tokens je Figur. Was du selbst bearbeitet hast, bleibt. Nach Tokens rechnen Anbieter ab.
+advanced-describe-again-about = Liest mit dem Hilfsmodell jede Karte neu und schreibt die Kurzbeschreibung, Zusammenfassung und Schlagwörter jeder Figur neu und das, wonach „Nach Bedürfnis“ sie findet. Was du selbst bearbeitet hast, bleibt.
 advanced-no-characters = Keine Charaktere zu beschreiben
 advanced-describe-again-far = { $done } von { $all } neu beschrieben
 advanced-describe-again-stopped = Angehalten bei { $done } von { $all } neu beschrieben
@@ -816,6 +813,8 @@ server-switch-on = Einschalten
 server-network-about = Handys und andere Computer öffnen Cardwave in einem Browser
 server-other-devices = Andere Geräte
 server-inside = Nur Geräte in diesem Netzwerk erreichen es, außer du richtest deinen Router dafür ein, andere hereinzulassen.
+server-anywhere = Von überall
+server-tailscale = Um es von überall zu öffnen, installiere die kostenlose App Tailscale (tailscale.com) auf diesem Computer und deinem Handy und melde dich bei beiden an.
 server-add-account = Konto hinzufügen
 server-owner = Dieser Computer · kann Konten hinzufügen und entfernen
 server-more-of = Mehr: { $name }

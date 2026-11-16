@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { expect, modelLine, test } from "../test";
 import { PICTURE, startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider, setImages } from "../stored";
 
@@ -39,8 +39,9 @@ test("the image model is picked from the provider's image models, and a picture 
   await expect(line(page).locator(".meta")).toHaveText("Not set up");
   await page.getByRole("button", { name: "Set up the image model" }).click();
   const kind = picker(page, "Images model");
-  await expect(kind.getByRole("option").locator(".opt-id")).toHaveText(["dall-e-3", "gpt-image-1", "tide-1"]);
-  await kind.getByRole("option", { name: "gpt-image-1" }).click();
+  await expect(kind.getByRole("option")).toHaveCount(3);
+  expect(await kind.getByRole("option").evaluateAll((lines) => lines.map((line) => (line as HTMLElement).title))).toEqual(["dall-e-3", "gpt-image-1", "tide-1"]);
+  await modelLine(kind, "gpt-image-1").click();
   await kind.getByRole("button", { name: "Use this model" }).click();
   await expect(line(page).locator(".meta")).toHaveText("gpt-image-1 · A program on this computer");
 

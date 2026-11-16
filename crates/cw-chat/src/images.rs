@@ -176,11 +176,22 @@ pub fn asked_of(inputs: &PromptInputs, words: Option<&str>) -> Vec<PromptMessage
             if !newest.is_empty() {
                 asked.push_str("Recent chat history:\n");
                 for message in newest {
-                    let who = match message.role {
-                        Role::User => user_name,
-                        _ => char_name,
-                    };
-                    asked.push_str(&format!("{who}: {}\n", message.content));
+                    // Another character's message already begins with its name
+                    // (`chats::prompt_inputs`); the narrator's is narration.
+                    let named = inputs
+                        .others
+                        .iter()
+                        .any(|name| message.content.starts_with(&format!("{name}: ")));
+                    match message.role {
+                        Role::User => {
+                            asked.push_str(&format!("{user_name}: {}\n", message.content));
+                        }
+                        Role::System => {
+                            asked.push_str(&format!("(Narration: {})\n", message.content));
+                        }
+                        _ if named => asked.push_str(&format!("{}\n", message.content)),
+                        _ => asked.push_str(&format!("{char_name}: {}\n", message.content)),
+                    }
                 }
                 asked.push('\n');
             }
@@ -463,7 +474,42 @@ mod tests {
     use std::io::{Read, Write};
     use std::net::TcpListener;
 
+    use cw_prompt::{Character, ChatMessage, ChatState};
+
     use super::*;
+
+    #[test]
+    fn the_scene_names_each_message_by_its_speaker() {
+        let said = |role, text: &str| ChatMessage::new("1", role, text);
+        let inputs = PromptInputs {
+            character: Character {
+                name: "Ann".into(),
+                ..Character::default()
+            },
+            state: ChatState {
+                persona_name: "Me".into(),
+                messages: vec![
+                    said(Role::User, "hi"),
+                    said(Role::Assistant, "Bo: hello"),
+                    said(Role::System, "Night falls."),
+                    said(Role::Assistant, "good evening"),
+                ],
+                ..Default::default()
+            },
+            card_id: None,
+            character_id: String::new(),
+            mode: None,
+            library: vec![],
+            others: vec!["Bo".into()],
+            times: vec![],
+        };
+        let asked = asked_of(&inputs, None);
+        let text = &asked[0].content;
+        assert!(
+            text.contains("Me: hi\nBo: hello\n(Narration: Night falls.)\nAnn: good evening\n"),
+            "{text}"
+        );
+    }
 
     #[tokio::test]
     async fn the_address_of_a_picture_is_asked_with_the_bare_name() {

@@ -8,7 +8,9 @@
 //! of `own.toml` may say how the provider's keys begin (`keys`), by which
 //! first run knows whose key was pasted. `at` is the list's provider at an
 //! address, by which a preset says whose it is. `app_name.toml`, apart from the
-//! list as the script would lose it, is `app_name`'s.
+//! list as the script would lose it, is `app_name`'s. What the app knows of a
+//! provider by its host (its own API, where it tells whether it takes a key) is
+//! a field of its `own.toml` entry, read by `own_api` and `key_check`.
 
 use std::sync::LazyLock;
 
@@ -36,6 +38,33 @@ pub struct KnownProvider {
     #[serde(skip)]
     #[ts(skip)]
     host: String,
+    #[serde(skip)]
+    #[ts(skip)]
+    own_api: Option<OwnApi>,
+    #[serde(skip)]
+    #[ts(skip)]
+    key_check: Option<KeyCheck>,
+}
+
+/// A provider's API where it is more than OpenAI's (`own.toml`'s `own_api`).
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum OwnApi {
+    /// OpenRouter's: pictures at `/images`, and its list says each model's kinds.
+    OpenRouter,
+    /// NanoGPT's: a list with details, picture models listed apart, a subscription.
+    NanoGpt,
+}
+
+/// Where a provider whose list of models comes to anyone tells whether it takes a key (`own.toml`'s
+/// `key_check`).
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct KeyCheck {
+    pub url: String,
+    /// Whether it is asked by POST.
+    #[serde(default)]
+    pub post: bool,
 }
 
 #[derive(Deserialize)]
@@ -51,6 +80,8 @@ struct Entry {
     base_url: String,
     website: Option<String>,
     keys: Option<Vec<String>>,
+    own_api: Option<OwnApi>,
+    key_check: Option<KeyCheck>,
 }
 
 static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
@@ -77,6 +108,8 @@ static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
                 base_url: entry.base_url,
                 website: entry.website,
                 host,
+                own_api: entry.own_api,
+                key_check: entry.key_check,
             }
         })
         .collect();
@@ -121,4 +154,26 @@ pub(crate) fn of_website(host: &str) -> Option<&'static KnownProvider> {
         .iter()
         .find(named)
         .or_else(|| all().iter().find(|provider| under(&provider.host, host)))
+}
+
+/// The providers of the list whose API's host is that of `base_url`, or a host above it (the three servers on
+/// this machine share theirs).
+fn of_host(base_url: &str) -> impl Iterator<Item = &'static KnownProvider> {
+    let host = Url::parse(base_url)
+        .ok()
+        .and_then(|url| url.host_str().map(str::to_string));
+    all().iter().filter(move |provider| {
+        host.as_deref()
+            .is_some_and(|host| under(host, &provider.host))
+    })
+}
+
+/// The API of the provider at `base_url`, where it is more than OpenAI's.
+pub fn own_api(base_url: &str) -> Option<OwnApi> {
+    of_host(base_url).find_map(|provider| provider.own_api)
+}
+
+/// Where the provider at `base_url` tells whether it takes a key, where its list of models comes to anyone.
+pub(crate) fn key_check(base_url: &str) -> Option<&'static KeyCheck> {
+    of_host(base_url).find_map(|provider| provider.key_check.as_ref())
 }

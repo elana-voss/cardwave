@@ -5,25 +5,20 @@
 //! take its place: its state is the JSON it writes.
 //!
 //! A memory (`Owner`) is a roleplay chat's own, or a character's in a personal
-//! mode (assistant, companion), shared by all its chats. Its state is kept
-//! after each block (`cw_store::memory`); a block is told by its chat, number and
-//! `chain` (its messages and all before them), so a block whose messages
-//! changed (an edit, another swipe, a deletion, its chat deleted) and every
-//! later one are let go and read again (`next_block`), and a reply reads the
-//! state that holds on its branch and, of a shared memory, in its other chats
-//! as they are now (`to_render`, `holding_all`), without what chats in the
-//! Trash told it. Days (companion, assistant) are calendar days, day 1 the memory's
-//! first. When a pass runs is `api/memory.rs`. Knowledge › Memories: `list`;
-//! what Search Cardwave finds of a memory, its entries as they hold on the chat in
-//! view, is written anew after each block and change (`index`, `find.rs`).
-//! The user without a persona is kept as a mark, read as today's stand-in (`USER_MARK`).
+//! mode shared by its chats with the same persona (the owner, 2026-11-14: switching
+//! the persona makes a new pool; switching back finds the old one, untouched).
+//! Its state is kept after each block (`cw_store::memory`); a block is told by
+//! its chat, number and `chain` (its messages and all before), so a changed block
+//! and every later one are let go and read again (`next_block`); a reply reads the
+//! state that holds on its branch and in the other chats still with the memory
+//! (`to_render`, `holding_all`; one moved to another persona holds as read),
+//! without what chats in the Trash told it. Days are calendar days, day 1 the
+//! memory's first. Passes: `api/memory.rs`; Knowledge › Memories: `views.rs`;
+//! Search Cardwave's entries: `index`, `find.rs`. No persona is `USER_MARK`.
 
 use std::collections::HashMap;
 
-use anyhow::ensure;
 use chrono::Datelike;
-use cw_core::NotFound;
-use cw_core::{Code, Fail};
 use cw_prompt::Role;
 use futures_util::future::BoxFuture;
 use serde::{Deserialize, Serialize};
@@ -37,9 +32,14 @@ mod held;
 pub mod hybrid;
 pub mod text;
 mod vectors;
+mod views;
 
 pub use held::{Casts, casts, follow_casts, rename_in, rename_persona};
 pub use vectors::{keep_vectors, kept_vectors, unembedded};
+use views::current;
+#[cfg(test)]
+use views::known_of;
+pub use views::{ChangeMemory, MemoryView, change, delete, list, restore, view};
 
 /// The messages a block holds.
 pub const BLOCK: usize = 20;
@@ -54,10 +54,19 @@ pub(crate) type Personal = (i64, String);
 /// Whose memory it is.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Owner {
-    /// A roleplay chat's own.
-    Chat(i64),
-    /// A character's in a personal mode, shared by its chats.
-    Character(Personal),
+    /// A roleplay chat's own with a persona (none: without).
+    Chat(i64, Option<i64>),
+    /// A character's in a personal mode with a persona, shared by the chats that have it.
+    Character(Personal, Option<i64>),
+}
+
+impl Owner {
+    /// The persona the memory is with, none for the user without one.
+    pub fn persona(&self) -> Option<i64> {
+        match self {
+            Self::Chat(_, persona) | Self::Character(_, persona) => *persona,
+        }
+    }
 }
 
 /// The kind of chat a block is of: it words the helper's prompt, who may know
@@ -227,10 +236,7 @@ fn read_form(state: &str, name: &str) -> anyhow::Result<String> {
 /// `text` with each whole word `from` written `to`. Writing without spaces
 /// between words (Chinese, Japanese, Korean's particles) has no word edge.
 pub(crate) fn word_renamed(text: &str, from: &str, to: &str) -> String {
-    fn spaced(c: char) -> bool {
-        !matches!(c, '\u{1100}'..='\u{11FF}' | '\u{3040}'..='\u{30FF}' | '\u{3400}'..='\u{9FFF}'
-            | '\u{AC00}'..='\u{D7AF}' | '\u{F900}'..='\u{FAFF}')
-    }
+    use text::spaced;
     let edge = |near: Option<char>, end: Option<char>| match (near, end) {
         (Some(near), Some(end)) => near.is_alphanumeric() && spaced(near) && spaced(end),
         _ => false,
@@ -374,6 +380,26 @@ fn user_name(db: &dyn crate::chats::Storage, user: i64, chat: &Chat) -> anyhow::
     })
 }
 
+/// The name of the persona `owner` is with; none for the user without one.
+fn persona_name(
+    db: &dyn crate::chats::Storage,
+    user: i64,
+    owner: &Owner,
+) -> anyhow::Result<Option<String>> {
+    Ok(match owner.persona() {
+        Some(id) => cw_library::personas::get(db, user, id)?.map(|persona| persona.name),
+        None => None,
+    })
+}
+
+/// The name the user has in the memory of `owner`: its persona's, else the stand-in.
+fn owner_name(db: &dyn crate::chats::Storage, user: i64, owner: &Owner) -> anyhow::Result<String> {
+    Ok(match persona_name(db, user, owner)? {
+        Some(name) => name,
+        None => cw_library::settings::user_stand_in(db, user)?.to_string(),
+    })
+}
+
 /// Whether the memory reads `message`: a finished one with words.
 fn is_read(message: &Message) -> bool {
     message.complete && !message.content.trim().is_empty()
@@ -447,12 +473,15 @@ fn holding(blocks: &[Kept], reads: &[&ChatRead]) -> usize {
         .unwrap_or(blocks.len())
 }
 
-/// The chats of `blocks` but `but`, each read down to its head: a memory
-/// shared by chats holds a block only while its own chat still holds it.
+/// The chats of `blocks` but `but` that are still with the memory of `owner`,
+/// each read down to its head: a memory shared by chats holds a block only
+/// while its own chat still holds it. A chat now with another memory (another
+/// persona, a mode or personality that does not share it) changes this one no
+/// more, so its blocks hold as they were read.
 fn others(
     db: &dyn crate::chats::Storage,
     user: i64,
-    blocks: &[Kept],
+    (blocks, owner): (&[Kept], &Owner),
     but: Option<i64>,
 ) -> anyhow::Result<Vec<ChatRead>> {
     let mut ids: Vec<i64> = blocks
@@ -464,21 +493,26 @@ fn others(
     ids.dedup();
     let mut reads = Vec::new();
     for id in ids {
-        if let Some(chat) = chats::get(db, user, id)? {
+        let Some(chat) = chats::get(db, user, id)? else {
+            continue;
+        };
+        let now = crate::assistant::chat_remembering(db, user, &chat)?.owner(&chat);
+        if now.is_some_and(|(now, _)| now == *owner) {
             reads.push(read_chat(db, user, &chat, None)?);
         }
     }
     Ok(reads)
 }
 
-/// How many of `blocks` hold for `read` and the other chats they are of.
+/// How many of `blocks`, the memory of `owner`'s, hold for `read` and the
+/// other chats they are of.
 fn holding_all(
     db: &dyn crate::chats::Storage,
     user: i64,
-    blocks: &[Kept],
+    (blocks, owner): (&[Kept], &Owner),
     read: Option<&ChatRead>,
 ) -> anyhow::Result<usize> {
-    let others = others(db, user, blocks, read.map(|read| read.chat_id))?;
+    let others = others(db, user, (blocks, owner), read.map(|read| read.chat_id))?;
     let reads: Vec<&ChatRead> = read.into_iter().chain(&others).collect();
     Ok(holding(blocks, &reads))
 }
@@ -510,7 +544,7 @@ pub fn next_block(
         return Ok(None);
     };
     let mut blocks = db.memory_blocks(store)?;
-    let holds = holding_all(db, user, &blocks, Some(&read))?;
+    let holds = holding_all(db, user, (&blocks, owner), Some(&read))?;
     let mut again = Vec::new();
     if holds < blocks.len() {
         db.forget_memory_blocks(store, blocks[holds].id)?;
@@ -593,7 +627,7 @@ pub fn index(db: &dyn crate::chats::Storage, user: i64, store: i64) -> anyhow::R
         return Ok(());
     };
     let mut texts = Vec::new();
-    for view in views(db, user, store, &owner, true)? {
+    for view in views::views(db, user, store, &owner, true)? {
         // As Knowledge › Memories tells it: the user, the last of the names, as "you".
         let known = match &view.known_to {
             Some(known) => {
@@ -646,7 +680,7 @@ pub fn to_render(
         return Ok(None);
     };
     let blocks = db.memory_blocks(store)?;
-    let holds = holding_all(db, user, &blocks, Some(read))?;
+    let holds = holding_all(db, user, (&blocks, owner), Some(read))?;
     let (Some(kept), Some((newest, ms))) =
         (holds.checked_sub(1).map(|at| &blocks[at]), read.said.last())
     else {
@@ -680,278 +714,6 @@ pub fn to_render(
             budget: BUDGET,
         },
     }))
-}
-
-/// A memory as Knowledge › Memories shows it.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, TS)]
-#[ts(export)]
-pub struct MemoryView {
-    /// Its memory's number and its own, as `<memory>.<entry>`.
-    pub id: String,
-    /// The chat it was read from, its title and its first character's name.
-    pub chat_id: i64,
-    pub chat_title: String,
-    pub character: String,
-    /// When the message it was read from was written (ms); none where that
-    /// message is no longer on the chat's branch in view.
-    pub said_at: Option<i64>,
-    pub kind: Kind,
-    pub text: String,
-    /// A fact's status: current, open (a promise, task or plan), temporary
-    /// (holds until `until`) or done (no longer holds); none of an event.
-    pub status: Option<String>,
-    pub until: String,
-    /// Of the place, its customs, prices or history, which every character knows.
-    pub world: bool,
-    /// Who know it, lower-case; none where everyone does.
-    pub(crate) known_to: Option<Vec<String>>,
-    /// Who may know it: the chat's characters, then the user.
-    pub names: Vec<String>,
-}
-
-/// A change of a memory; what is left out stays.
-#[derive(Deserialize, TS)]
-#[ts(export, optional_fields)]
-pub struct ChangeMemory {
-    pub text: Option<String>,
-    /// Who of `names` know it.
-    pub(crate) known_to: Option<Vec<String>>,
-}
-
-/// The state of `store` that holds now: on the chat's branch in view for a
-/// chat's own, on each chat's branch in view for a character's.
-fn current(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    store: i64,
-    owner: &Owner,
-) -> anyhow::Result<Option<String>> {
-    let read = match owner {
-        Owner::Chat(chat_id) => match chats::get(db, user, *chat_id)? {
-            Some(chat) => Some(read_chat(db, user, &chat, None)?),
-            None => return Ok(None),
-        },
-        Owner::Character(_) => None,
-    };
-    let blocks = db.memory_blocks(store)?;
-    match holding_all(db, user, &blocks, read.as_ref())?.checked_sub(1) {
-        Some(at) => Ok(Some(read_form(
-            &db.memory_state(blocks[at].id)?,
-            stand_in(db, user)?,
-        )?)),
-        None => Ok(None),
-    }
-}
-
-/// A chat as its memory's entries show it: the chat, its cast's names and the
-/// user's, and when each message it read was written (`said_moments`).
-type Shown = (Chat, Vec<String>, Vec<i64>);
-
-/// The entries of `store` as Knowledge › Memories shows them; those of chats in the Trash left out but
-/// `trashed_too`.
-fn views(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    store: i64,
-    owner: &Owner,
-    trashed_too: bool,
-) -> anyhow::Result<Vec<MemoryView>> {
-    let Some(state) = current(db, user, store, owner)? else {
-        return Ok(Vec::new());
-    };
-    let mut chats: HashMap<i64, Option<Shown>> = HashMap::new();
-    let mut out = Vec::new();
-    for entry in system().entries(&state)? {
-        let Some(chat_id) = entry.chat else { continue };
-        if let std::collections::hash_map::Entry::Vacant(slot) = chats.entry(chat_id) {
-            let found =
-                match chats::get(db, user, chat_id)?.filter(|chat| trashed_too || !chat.trashed) {
-                    Some(chat) => {
-                        let mut names: Vec<String> = db
-                            .chat_cast(chat_id)?
-                            .into_iter()
-                            .map(|(_, name)| name)
-                            .collect();
-                        names.push(user_name(db, user, &chat)?);
-                        let said = said_moments(db, &chat)?;
-                        Some((chat, names, said))
-                    }
-                    None => None,
-                };
-            slot.insert(found);
-        }
-        let Some(Some((chat, names, said))) = chats.get(&chat_id) else {
-            continue;
-        };
-        out.push(MemoryView {
-            id: format!("{store}.{}", entry.id),
-            chat_id,
-            chat_title: chat.title.clone(),
-            character: names.first().cloned().unwrap_or_default(),
-            said_at: usize::try_from(entry.n - 1)
-                .ok()
-                .and_then(|at| said.get(at).copied()),
-            kind: entry.kind,
-            text: entry.text,
-            status: entry.status,
-            until: entry.until,
-            world: entry.world,
-            known_to: entry.known_to,
-            names: names.clone(),
-        });
-    }
-    Ok(out)
-}
-
-/// When each message `read_chat` numbers was written, the first at 0.
-fn said_moments(db: &dyn crate::chats::Storage, chat: &Chat) -> anyhow::Result<Vec<i64>> {
-    Ok(chats::path_to(db, chat.id, chat.head_id)?
-        .iter()
-        .filter(|m| is_read(m))
-        .map(|m| m.created_at)
-        .collect())
-}
-
-/// Everything the user's characters remember, the newest first: the memory
-/// whose block was read last first, in it the entry set last first.
-pub fn list(db: &dyn crate::chats::Storage, user: i64) -> anyhow::Result<Vec<MemoryView>> {
-    let mut all = Vec::new();
-    for (store, owner) in db.memory_stores(user)? {
-        let last = db.memory_blocks(store)?.last().map(|b| b.id);
-        let mut views: Vec<(u64, MemoryView)> = views(db, user, store, &owner, false)?
-            .into_iter()
-            .map(|view| (entry_of(&view.id), view))
-            .collect();
-        views.sort_by_key(|(entry, _)| std::cmp::Reverse(*entry));
-        all.push((last, views));
-    }
-    all.sort_by_key(|(last, _)| std::cmp::Reverse(*last));
-    Ok(all
-        .into_iter()
-        .flat_map(|(_, views)| views.into_iter().map(|(_, view)| view))
-        .collect())
-}
-
-/// The entry number of a view's ID `<memory>.<entry>`, which grows as entries are set.
-fn entry_of(id: &str) -> u64 {
-    // Every ID is made by `views` so; 0 is never reached.
-    id.split_once('.')
-        .and_then(|(_, entry)| entry.parse().ok())
-        .unwrap_or(0)
-}
-
-/// The memory and entry numbers of a view's ID, of a memory of the user's.
-fn ids(db: &dyn Storage, user: i64, id: &str) -> anyhow::Result<(i64, u64, Owner)> {
-    let parsed = id
-        .split_once('.')
-        .and_then(|(store, entry)| Some((store.parse().ok()?, entry.parse().ok()?)));
-    let (store, entry) = parsed.ok_or(NotFound("memory"))?;
-    let owner = db.memory_owner(user, store)?.ok_or(NotFound("memory"))?;
-    Ok((store, entry, owner))
-}
-
-/// One memory of the user's, as Knowledge › Memories shows it.
-pub fn view(db: &dyn crate::chats::Storage, user: i64, id: &str) -> anyhow::Result<MemoryView> {
-    let (store, _, owner) = ids(db, user, id)?;
-    let found = views(db, user, store, &owner, false)?
-        .into_iter()
-        .find(|v| v.id == id);
-    Ok(found.ok_or(NotFound("memory"))?)
-}
-
-/// Changes the entry `id` in every state of its memory that has it. Answers whether one had it.
-fn change_all(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    id: &str,
-    change: &Change,
-) -> anyhow::Result<()> {
-    let (store, entry, _) = ids(db, user, id)?;
-    let mut last = None;
-    let name = stand_in(db, user)?;
-    for (block, state) in db.memory_states(store)? {
-        if let Some(changed) = system().change(&read_form(&state, name)?, entry, change)? {
-            let changed = kept_form(&changed, name)?;
-            db.set_memory_state(block, &changed)?;
-            last = Some((state, changed));
-        }
-    }
-    let (before, after) = last.ok_or(NotFound("memory"))?;
-    changes::note(db, store, entry, (&before, &after), change)?;
-    index(db, user, store)
-}
-
-/// Changes a memory's text, or who know it: only the names it may have count.
-pub fn change(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    id: &str,
-    change: &ChangeMemory,
-) -> anyhow::Result<MemoryView> {
-    let had = view(db, user, id)?;
-    let text = match &change.text {
-        Some(text) => {
-            let text = cw_ccv4::one_line(text);
-            ensure!(
-                !text.is_empty(),
-                Fail::said(Code::Needed, "a memory needs a text").with("what", "memory_text")
-            );
-            ensure!(
-                text.chars().count() <= TEXT_LIMIT,
-                Fail::said(
-                    Code::TooLong,
-                    format!("a memory has {TEXT_LIMIT} characters at most")
-                )
-                .with("what", "memory_text")
-                .with("text_limit", TEXT_LIMIT)
-            );
-            Some(text)
-        }
-        None => None,
-    };
-    let known_to = change
-        .known_to
-        .as_ref()
-        .map(|names| known_of(&had.names, names));
-    let change = Change {
-        text,
-        known_to,
-        deleted: None,
-    };
-    change_all(db, user, id, &change)?;
-    view(db, user, id)
-}
-
-/// Who of `may` (a memory's names) are among `asked`, lower-case, each once.
-fn known_of(may: &[String], asked: &[String]) -> Vec<String> {
-    let mut picked: Vec<String> = Vec::new();
-    for name in may.iter().map(|n| n.to_lowercase()) {
-        if asked.iter().any(|a| a.to_lowercase() == name) && !picked.contains(&name) {
-            picked.push(name);
-        }
-    }
-    picked
-}
-
-/// Deletes a memory, which its Undo puts back until the server starts again.
-pub fn delete(db: &dyn crate::chats::Storage, user: i64, id: &str) -> anyhow::Result<MemoryView> {
-    let had = view(db, user, id)?;
-    let deleted = Change {
-        deleted: Some(true),
-        ..Default::default()
-    };
-    change_all(db, user, id, &deleted)?;
-    Ok(had)
-}
-
-/// Puts back a memory that was deleted.
-pub fn restore(db: &dyn crate::chats::Storage, user: i64, id: &str) -> anyhow::Result<MemoryView> {
-    let back = Change {
-        deleted: Some(false),
-        ..Default::default()
-    };
-    change_all(db, user, id, &back)?;
-    view(db, user, id)
 }
 
 /// The memory of `owner`, where it has one.

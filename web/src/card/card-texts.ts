@@ -12,7 +12,7 @@ import { inPlace } from "../in-place";
 import { firstName } from "./card-languages";
 import { modeTagOf } from "./card-modes";
 import { place } from "./card-tools";
-import { after, inMode, person, save, SHOWN, textKinds, type Card, type Kind } from "./card-page";
+import { after, inMode, redrawIdle, person, save, SHOWN, textKinds, type Card, type Kind } from "./card-page";
 import { announce, el } from "../dom";
 import { icon, type IconName } from "../icons";
 import { beginChat } from "../library/library-actions";
@@ -101,7 +101,7 @@ export function firstMessage(c: Card, one: EditCharacter): HTMLElement {
     // A greeting added is one of the others now.
     saved: () => {
       c.typed = null;
-      void after(c, () => c.render());
+      void after(c, () => redrawIdle(c));
     },
   });
 }
@@ -142,7 +142,7 @@ function texts(c: Card, one: EditCharacter, kind: Kind | "depth_prompts", name: 
       clamp: true,
       head: [modeTagOf(c, kind, at, label)],
       // A text written where the kind had none in view is one of the card's now, with its tag.
-      saved: at === all.length ? () => void after(c, () => c.render()) : undefined,
+      saved: at === all.length ? () => void after(c, () => redrawIdle(c)) : undefined,
       write: (card, text) => {
         const list: EditText[] = card.characters[SHOWN][kind];
         const own = list[at];
@@ -181,6 +181,7 @@ function talkativeness(c: Card, one: EditCharacter): HTMLElement {
   const talk = () => person(c)?.talkativeness ?? one.talkativeness;
   inPlace(content, {
     label: wording("card-texts-talkativeness-in-percent-from"),
+    hint: wording("character-click-to-edit"),
     value: () => String(percent(held ?? talk())),
     show: () => [el("div", { className: "md" }, el("p", null, wording("card-texts-talkativeness-said", { percent: percent(held ?? talk()) })))],
     editing: (on) => section.classList.toggle("is-edit", on),

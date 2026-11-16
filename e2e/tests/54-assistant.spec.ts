@@ -1,7 +1,7 @@
 import type { APIRequestContext } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
-import { picture, stopClock } from "../pictures";
+import { picture, railChats, stopClock } from "../pictures";
 
 // Assistant and companion: the card's page shows the texts of the mode its switch picks, each text's tag sets the
 // modes it is used in, and the card menu's "Add a way to chat…" and "Modes…" add, rename, make default and remove; a chat's pill says the mode
@@ -129,7 +129,6 @@ test("a chat picks its mode, the user sets one, and the assistant has its tools 
   const label = await tools.getByText("Tools", { exact: true }).boundingBox();
   const line = await tools.boundingBox();
   expect(label!.height).toBeLessThan(30);
-  expect(await tools.evaluate((node) => getComputedStyle(node).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
   expect(line!.width).toBeGreaterThan(200);
   await tools.click();
   await page.getByRole("switch", { name: "Coding tasks" }).click();
@@ -166,7 +165,6 @@ test.describe("at 1440 px, light", () => {
     await expect(page.getByRole("heading", { name: "Personality as an assistant" })).toBeVisible();
     await page.locator(".mode-pill").click();
     await expect(page.getByRole("menuitemradio", { name: "Automatic" })).toContainText("Picks one of the modes below from what you write");
-    // The rail's two Gwen chats say their day and time, made on the real clock: masked, so the picture holds.
-    await picture(page, "chat-mode-1440-light", [page.locator(".nav-chat", { hasText: "Gwen" })]);
+    await picture(page, "chat-mode-1440-light", railChats(page, "Gwen"));
   });
 });

@@ -8,8 +8,6 @@
 //! Trap: `toml` writes a list of tables as `[[…]]`, while a revision's drafts
 //! are an inline list (`drafts.rs`): `inline_drafts` makes them so again.
 
-use std::collections::HashSet;
-
 use anyhow::{Context, ensure};
 use cw_core::{Code, Fail};
 use toml::{Table, Value};
@@ -65,17 +63,7 @@ fn inline_drafts(toml: &str) -> anyhow::Result<String> {
 pub fn take_out(files: &[(String, String)], book: &str) -> anyhow::Result<Rewritten> {
     let mut open = Open::of(files, book)?;
     let id = open.id.clone();
-    let others: HashSet<String> = open
-        .document
-        .ids("lorebook")
-        .into_iter()
-        .filter(|other| *other != id)
-        .flat_map(|other| {
-            let listed = open.document.lookup(&format!("lorebook.{other}"));
-            strings(listed.and_then(|other| other.get("entries")))
-        })
-        .map(str::to_string)
-        .collect();
+    let others = open.listed_elsewhere();
     for entry in open.listed.clone() {
         if let Some(("lore", entry_id)) = split_reference(&entry)
             && !others.contains(&entry)
@@ -165,63 +153,13 @@ pub fn put_in(
         )
         .with("what", "lorebook_same_name")
     );
-    let mut blocks = Table::new();
-    let block = from
-        .lookup(book)
-        .context(Fail::said(Code::NotReadable, "this is no lorebook").with("what", "no_lorebook"))?
-        .clone();
-    blocks.insert(
-        "lorebook".into(),
-        Value::Table(Table::from_iter([(id.to_string(), Value::Table(block))])),
-    );
-    let lore: Table = entries
-        .iter()
-        .filter_map(|entry| {
-            Some((
-                split_reference(entry)?.1.to_string(),
-                Value::Table(from.lookup(entry)?.clone()),
-            ))
-        })
-        .collect();
-    blocks.insert("lore".into(), Value::Table(lore));
-    let blocks: DocumentMut = toml::to_string(&blocks)?.parse()?;
+    let blocks = book_blocks(from, book, id, &entries)?;
     let mut written = files.to_vec();
-    let home = files.iter().position(|(_, text)| {
-        let file: Option<DocumentMut> = text.parse().ok();
-        file.is_some_and(|file| {
-            file.get("character")
-                .and_then(|all| all.get(&character))
-                .is_some()
-        })
-    });
-    let home = home.context(
-        Fail::said(Code::NotPossible, "the card's character cannot be changed")
-            .with("what", "card_character_change"),
-    )?;
+    let home = home_of(files, &character)?;
     let owned: Vec<String> = entries.iter().map(|entry| entry.to_string()).collect();
     drafts::adopt(&mut written, from, &owned)?;
     let mut file: DocumentMut = files[home].1.parse()?;
-    for kind in ["lorebook", "lore"] {
-        let Some(added) = blocks.get(kind).and_then(Item::as_table_like) else {
-            continue;
-        };
-        let into = file.entry(kind).or_insert_with(|| {
-            let mut table = toml_edit::Table::new();
-            table.set_implicit(true);
-            Item::Table(table)
-        });
-        let into = into.as_table_like_mut().context(
-            Fail::said(Code::NotPossible, "the card takes no lorebook")
-                .with("what", "card_takes_no_lorebook"),
-        )?;
-        for (key, item) in added.iter() {
-            let mut table = item.clone().into_table().ok().context(
-                Fail::said(Code::NotReadable, "this is no lorebook").with("what", "no_lorebook"),
-            )?;
-            unplace(&mut table);
-            into.insert(key, Item::Table(table));
-        }
-    }
+    add_blocks(&mut file, &blocks)?;
     let had = document
         .character(&character)
         .and_then(|one| one.get("lorebooks"));
@@ -257,4 +195,77 @@ pub fn put_in(
         files: written,
         document,
     })
+}
+
+/// The blocks `put_in` adds: the lorebook `book` of `from` under its `id` and
+/// its `entries`, as a TOML document of `[lorebook]` and `[lore]`.
+fn book_blocks(
+    from: &Document,
+    book: &str,
+    id: &str,
+    entries: &[&str],
+) -> anyhow::Result<DocumentMut> {
+    let mut blocks = Table::new();
+    let block = from
+        .lookup(book)
+        .context(Fail::said(Code::NotReadable, "this is no lorebook").with("what", "no_lorebook"))?
+        .clone();
+    blocks.insert(
+        "lorebook".into(),
+        Value::Table(Table::from_iter([(id.to_string(), Value::Table(block))])),
+    );
+    let lore: Table = entries
+        .iter()
+        .filter_map(|entry| {
+            Some((
+                split_reference(entry)?.1.to_string(),
+                Value::Table(from.lookup(entry)?.clone()),
+            ))
+        })
+        .collect();
+    blocks.insert("lore".into(), Value::Table(lore));
+    Ok(toml::to_string(&blocks)?.parse()?)
+}
+
+/// The index in `files` of the file holding the block of `character`.
+fn home_of(files: &[(String, String)], character: &str) -> anyhow::Result<usize> {
+    let home = files.iter().position(|(_, text)| {
+        let file: Option<DocumentMut> = text.parse().ok();
+        file.is_some_and(|file| {
+            file.get("character")
+                .and_then(|all| all.get(character))
+                .is_some()
+        })
+    });
+    home.context(
+        Fail::said(Code::NotPossible, "the card's character cannot be changed")
+            .with("what", "card_character_change"),
+    )
+}
+
+/// Adds the `[lorebook]` and `[lore]` blocks of `blocks` to `file`, each
+/// without its place.
+fn add_blocks(file: &mut DocumentMut, blocks: &DocumentMut) -> anyhow::Result<()> {
+    for kind in ["lorebook", "lore"] {
+        let Some(added) = blocks.get(kind).and_then(Item::as_table_like) else {
+            continue;
+        };
+        let into = file.entry(kind).or_insert_with(|| {
+            let mut table = toml_edit::Table::new();
+            table.set_implicit(true);
+            Item::Table(table)
+        });
+        let into = into.as_table_like_mut().context(
+            Fail::said(Code::NotPossible, "the card takes no lorebook")
+                .with("what", "card_takes_no_lorebook"),
+        )?;
+        for (key, item) in added.iter() {
+            let mut table = item.clone().into_table().ok().context(
+                Fail::said(Code::NotReadable, "this is no lorebook").with("what", "no_lorebook"),
+            )?;
+            unplace(&mut table);
+            into.insert(key, Item::Table(table));
+        }
+    }
+    Ok(())
 }

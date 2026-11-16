@@ -1,12 +1,13 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
+import { setProvider } from "../stored";
 import { expect, test } from "../test";
 
 // The password, from Profile, and the backup, from Settings › Data: a password switched on is asked for by the
 // start screen when the app opens again (`restartServer`), and by "Lock" in the account's menu, and switched off
 // with the current one; a backup saved,
 // with a password asked for where none is on, is restored with it in the place of all the app holds, and the page
-// starts anew with it.
+// starts anew with it; at first run, step 1's "Restore a backup" does the same, and Cardwave opens with its data.
 //
 // The file's tests run one after the other on its server, and each leaves it without a password.
 
@@ -121,6 +122,42 @@ test("a backup saved with the password asked for is restored with it in the plac
   await anew;
   await expect(line(page, "Backup")).toBeVisible();
   expect(await personas(request)).toEqual(["Wanderer"]);
+});
+
+test("at first run, this computer's account restores a backup from step 1's foot, and Cardwave opens with its data, setup not shown again", async ({ page, request }) => {
+  const save = async (password: string) => {
+    const saved = await request.post("/api/backup/save", { form: { password } });
+    expect(saved.status()).toBe(200);
+    return saved.body();
+  };
+  // A backup of this state, without a provider, brings first run back once restored.
+  const bare = await save("bare tide");
+  expect((await setProvider(request, { base_url: "http://127.0.0.1:9/v1", model: "tide-1" })).status()).toBe(200);
+  expect((await request.post("/api/personas", { data: { name: "Voyager", description: "" } })).status()).toBe(201);
+  const file = await save("harbour lights");
+  const back = await request.post("/api/backup", { data: bare, headers: { "content-type": "application/octet-stream", "x-cardwave-password": "bare%20tide" } });
+  expect(back.status()).toBe(204);
+
+  await page.goto("/");
+  await expect(page).toHaveURL(/#\/setup/);
+  await page.getByRole("button", { name: "Restore a backup", exact: true }).click();
+  const form = page.locator(".restore-step");
+  // The focus goes into the screen that opens, and "Back" gives it back to the button that opened it.
+  await expect(form.getByRole("button", { name: "Choose file" })).toBeFocused();
+  await form.getByRole("button", { name: "Back", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Restore a backup", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "Restore a backup", exact: true }).click();
+  await form.locator("input[type=file]").setInputFiles({ name: "backup.cwbackup", mimeType: "application/octet-stream", buffer: file });
+  await expect(form).toContainText("backup.cwbackup");
+  await form.getByRole("button", { name: "Restore backup" }).click();
+  await expect(form).toContainText("This backup needs its password.");
+  await page.getByLabel("The backup’s password").fill("harbour lights");
+  const anew = page.waitForEvent("load");
+  await form.getByRole("button", { name: "Restore backup" }).click();
+  await anew;
+  await expect(page.locator("#toast span")).toContainText("The backup was restored");
+  await expect(page).not.toHaveURL(/#\/setup/);
+  expect(await personas(request)).toContain("Voyager");
 });
 
 test("a line's button grows with a longer language's words: German's restore button holds its label", async ({ page, request }) => {

@@ -183,17 +183,12 @@ async fn load(State(state): State<AppState>, User(_): User) -> axum::http::Statu
 /// Hears `samples` by the model, loaded if it is not; the model is let go
 /// `IDLE` after the last hearing.
 async fn hear_in(state: AppState, samples: Vec<f32>) -> anyhow::Result<String> {
-    use_model(state, Some(samples))
-        .await?
-        .unwrap_or_else(|| Ok(String::new()))
+    Ok(use_model(state, Some(samples)).await?.unwrap_or_default())
 }
 
 /// The model loaded if it is not, and `samples` heard by it where given;
 /// the model is let go `IDLE` after this, unless it is used again meanwhile.
-async fn use_model(
-    state: AppState,
-    samples: Option<Vec<f32>>,
-) -> anyhow::Result<Option<anyhow::Result<String>>> {
+async fn use_model(state: AppState, samples: Option<Vec<f32>>) -> anyhow::Result<Option<String>> {
     let dictation = &state.dictation;
     let mut running = dictation.running.lock().await;
     // Checked under the lock, as a removal may have taken it first.
@@ -227,7 +222,8 @@ async fn use_model(
             drop(running.take());
         }
     });
-    Ok(text)
+    // Kept apart until here, so a failed hearing still keeps the model.
+    text.transpose()
 }
 
 // This file's routes as tools (`tools::app`), which build.rs lists.

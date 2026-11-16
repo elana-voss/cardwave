@@ -40,12 +40,14 @@ fn lorebook(row: &Row<'_>) -> rusqlite::Result<Lorebook> {
         name: row.get(1)?,
         description: row.get(2)?,
         entries: row.get(3)?,
-        entry_names: serde_json::from_str(&names).unwrap_or_default(),
+        entry_names: crate::json::or_none(Some(&names), "a lorebook's entry names")
+            .unwrap_or_default(),
         favorite: row.get(5)?,
         archived: row.get(6)?,
         trashed: row.get(7)?,
         everywhere: row.get(8)?,
-        used_by: serde_json::from_str(&row.get::<_, String>(9)?).unwrap_or_default(),
+        // `json_group_array` writes it: one that does not parse is a fault of this crate.
+        used_by: crate::json::of(&row.get::<_, String>(9)?, 9)?,
         chats: row.get(10)?,
         card: None,
     })

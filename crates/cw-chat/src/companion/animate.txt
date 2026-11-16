@@ -4,11 +4,11 @@ The screen is measured in pixels from its top left corner; the floor is its bott
 {"do": "walk", "x": 800} walks along the floor to x.
 {"do": "climb", "side": "left", "height": 0.5} walks to the left or right edge of the screen and climbs it to a share of the screen's height (0 the floor, 1 the top).
 {"do": "let_go"} lets go of the edge it climbed, and it falls to the floor.
-{"do": "play", "clip": "wave"} plays a clip once: wave, nod, no (a shake of the head), jump, dance, stretch, idle_shift, thinking or startled; with "ms": 4000 it plays over and over that long (also sitting or lying), at most 10000 ms.
-{"do": "react", "feeling": "happy"} shows a feeling: happy, excited, surprised, sad, angry, agree, disagree or puzzled.
+{"do": "play", "clip": "waving"} plays a clip once, one of: {clips}; with "ms": 4000 it plays over and over that long, at most 10000 ms.
+{"do": "react", "feeling": "happy"} shows a feeling: happy, excited, surprised, sad, angry, agree, disagree, puzzled, afraid, playful, bashful or tired.
 {"do": "look", "x": 300, "y": 200} looks at a point of the screen; {"do": "look"} looks at the user.
 {"do": "say", "text": "Hi!"} says a short message in a bubble above the figure.
 {"do": "wait", "ms": 1000} stands still for a while, at most 10000 ms.
 
 Use at most six steps, and none when nothing fits. Answer with one JSON object and nothing else:
-{"steps": [{"do": "play", "clip": "wave"}, {"do": "walk", "x": 640}]}
+{"steps": [{"do": "play", "clip": "waving"}, {"do": "walk", "x": 640}]}

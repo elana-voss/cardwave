@@ -1,5 +1,5 @@
 //! The tools the model wrote (code mode, `tools::written`) over HTTP, for
-//! Settings › Tools › "Tools the AI wrote": `GET /api/tools/written` lists
+//! Settings › Advanced › "Tools the AI wrote": `GET /api/tools/written` lists
 //! the account's, `PATCH /api/tools/written/{id}` switches one on or off,
 //! `DELETE` deletes it and `POST …/restore` puts it back (Undo). Each change
 //! tells the user's other pages (`PageEvent::WrittenTools`).

@@ -1,6 +1,7 @@
 // The chat screen's state, which its parts in this folder share, and what they all do with it: read the chat
 // (`load`), run one action at a time (`act`), tell what went wrong (`failed`, `tell`), put a message into the view
-// (`show`), ask for a reply (`reply`) and read anew whether Reply length is used (`toolsNow`). The screen
+// (`show`), ask for a reply (`reply`), read anew whether Reply length is used (`toolsNow`) and keep the thread at its
+// end when the page shrinks, as an open keyboard does (`keepEnd`). The screen
 // (views/chat.ts) makes it (`newScreen`) and sets `render` and `onEvent`; the parts draw only from it.
 //
 // Traps: events that come while the chat is read wait (`held`) and apply to what was read; `ended` keeps a late
@@ -151,6 +152,23 @@ export const busy = (s: Screen) => newest(s)?.complete === false;
 export const idle = (s: Screen) => !busy(s) && !s.talk && !s.drafting;
 export const atBottom = (s: Screen) => s.scroller.scrollHeight - s.scroller.scrollTop - s.scroller.clientHeight < 40;
 export const toBottom = (s: Screen) => s.scroller.scrollTo(0, s.scroller.scrollHeight);
+/**
+ * While the thread shows its end, it goes on showing it when it grows shorter: an open keyboard shrinks the page
+ * (the board "Phone, 390 px: a chat with the keyboard open"). Returns what stops it.
+ */
+export function keepEnd(s: Screen): () => void {
+  let end = atBottom(s);
+  const read = () => (end = atBottom(s));
+  s.scroller.addEventListener("scroll", read, { passive: true });
+  const sized = new ResizeObserver(() => {
+    if (end) toBottom(s);
+  });
+  sized.observe(s.scroller);
+  return () => {
+    sized.disconnect();
+    s.scroller.removeEventListener("scroll", read);
+  };
+}
 
 /** Reads the chat from the server. */
 export function load(s: Screen): Promise<void> {

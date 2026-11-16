@@ -9,7 +9,7 @@
 // change of the account goes to account.ts, which is also told to ask again when the server is heard after a
 // drop (`heard`). Where the server waits for the password, `start` shows the start screen (password.ts) and
 // nothing else, without the rail and the event socket; the app starts anew once it is given, and when the server
-// says that a backup was restored (`restored`). Where the page is to sign in (another device's, or one whose
+// says that a backup was restored (`restored`; first run then starts anew as at an opening). Where the page is to sign in (another device's, or one whose
 // session ended: `GET /api/sign-in`), `start` shows the sign-in screen (accounts.ts) so too. In the desktop app
 // the companion's window opens with the app where the settings say so (companion-app.ts) and is told, by the app's own
 // window alone (`appWindow`), the tab in view's address and name, and `#/companion`, which
@@ -18,7 +18,8 @@
 // user's own CSS (own-css.ts) is shown before the first screen and read anew when the settings change elsewhere.
 // The UI's words are in the app's language: the one the settings name, read at start and when they change
 // (app-language.ts), else the computer's where the app has it (language.ts); when it changes, the tabs make
-// their screens anew (`relanguage`), once they are restored.
+// their screens anew (`relanguage`), once they are restored. A phone's keyboard is followed from the start
+// (shell/keyboard.ts).
 import { reread, setElsewhere, take } from "./account";
 import { signInScreen } from "./settings/accounts";
 import { companionApp, connectEvents, getLock, getProvider, getSettings, getSignIn, startedSignedIn, unlock } from "./api/client";
@@ -31,10 +32,13 @@ import { pickCompanion, startCompanion } from "./library/companion-app";
 import { readOwnCss } from "./settings/own-css";
 import { readAppLanguage } from "./settings/app-language";
 import { watchUpdates } from "./settings/update";
+import { cardsReached } from "./setup/cards-step";
 import { downloadsHeard, firstRunLeft, followDownloads, followsAtStart } from "./setup/downloads-step";
+import { followKeyboard } from "./shell/keyboard";
 import { makeRail } from "./shell/rail";
 import { Tabs, type Tab } from "./shell/tabs";
 import { makeTitleBar } from "./shell/titlebar";
+import { remember, remembered } from "./storage";
 import { showChatLayout } from "./theme";
 import { advancedView } from "./views/advanced";
 import { cssReferenceView } from "./views/css-reference";
@@ -182,7 +186,7 @@ async function start(): Promise<void> {
   if (lock?.locked) {
     chrome(false);
     // A device signed in to another account cannot open the app: its password is this computer's account's.
-    const other = localStorage.getItem(OTHER_ACCOUNT) === "1";
+    const other = remembered(OTHER_ACCOUNT) === "1";
     main.replaceChildren(other ? lockedElsewhere() : startScreen(lock.name, (password) => unlock(password).then(() => location.reload())));
     // Unlocked elsewhere (on the computer, or another page), the page goes on by itself.
     untilUnlocked(getLock, () => location.reload());
@@ -198,7 +202,7 @@ async function start(): Promise<void> {
   startedSignedIn();
   tellRestored();
   const current = signing?.accounts.find((one) => one.current);
-  if (current) localStorage.setItem(OTHER_ACCOUNT, current.local ? "0" : "1");
+  if (current) remember(OTHER_ACCOUNT, current.local ? "0" : "1");
   // The first screen is drawn with the user's own CSS, unless the server does not say within `START_WAIT`.
   const settings = getSettings();
   // The switch of pictures from the web as the page's policy was given (narration.ts).
@@ -216,7 +220,8 @@ async function start(): Promise<void> {
     const provider = await Promise.race([getProvider().catch(() => undefined), late]);
     // First run's downloads not through yet come back to its last step; after "Open Cardwave" they go on outside it.
     const left = provider ? await Promise.race([settings.then((read) => read, () => undefined), late]) : undefined;
-    const downloads = !!left && firstRunLeft(left);
+    // A start before first run ended, once it reached the folder of cards, comes back to it (models-step.ts `startStep`).
+    const downloads = (!!left && firstRunLeft(left)) || (!!provider && cardsReached());
     if ((provider === null || downloads) && unasked()) history.replaceState(null, "", "#/setup");
   }
   // After "Open Cardwave" the downloads left go on at every start, one at a page's address (a reload) too.
@@ -247,6 +252,7 @@ function go(): void {
   tabs.go(location.hash);
   if (!location.hash.startsWith("#/setup")) before = location.hash;
 }
+followKeyboard();
 void start();
 
 /** Has the server tell a screen what happens, and that it listens again after a drop. */
@@ -267,6 +273,8 @@ function listen(): void {
     // All the app holds is the backup's now.
     if (event.type === "restored") {
       restoredHeard();
+      // First run starts anew as at an opening: the backup's provider, if it has one, opens the app.
+      if (location.hash.startsWith("#/setup")) history.replaceState(null, "", location.pathname);
       location.reload();
     }
     if (event.type === "settings") {

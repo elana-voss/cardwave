@@ -88,7 +88,8 @@ impl Watch {
             EventKind::Create(_) | EventKind::Modify(ModifyKind::Name(_))
         );
         for path in event.paths {
-            if path.is_dir() {
+            // A link is no folder here: the walk leaves links out (`folder::card_files`).
+            if std::fs::symlink_metadata(&path).is_ok_and(|meta| meta.is_dir()) {
                 if !came_in {
                     continue;
                 }
@@ -208,6 +209,30 @@ mod tests {
         watch.take_event(gone);
         assert_eq!(watch.pending.len(), 1);
         std::fs::remove_dir_all(&folder).unwrap();
+    }
+
+    #[test]
+    fn a_link_made_in_the_folder_is_left_out_as_the_walk_leaves_it() {
+        let folder =
+            std::env::temp_dir().join(format!("cardwave-watch-link-{}", std::process::id()));
+        let outside = folder.with_extension("outside");
+        std::fs::create_dir_all(&folder).unwrap();
+        std::fs::create_dir_all(&outside).unwrap();
+        std::fs::write(outside.join("card.png"), b"one").unwrap();
+        let link = folder.join("linked");
+        #[cfg(windows)]
+        let linked = std::os::windows::fs::symlink_dir(&outside, &link);
+        #[cfg(unix)]
+        let linked = std::os::unix::fs::symlink(&outside, &link);
+        if linked.is_ok() {
+            let mut watch = Watch::default();
+            let made = Event::new(EventKind::Create(CreateKind::Folder)).add_path(link.clone());
+            watch.take_event(made);
+            assert!(watch.pending.is_empty());
+            assert!(folder::stamp(&link).is_none());
+        }
+        let _ = std::fs::remove_dir_all(&folder);
+        std::fs::remove_dir_all(&outside).unwrap();
     }
 
     /// Looks at `folder` until `wanted` is taken, every 50 ms.

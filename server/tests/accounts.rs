@@ -8,7 +8,7 @@
 
 mod common;
 
-use common::api::{Api, JSON, Says, says};
+use common::api::{Api, JSON, held, says};
 use common::model::{Model, SLOW_TITLE, next_event, stream, text_piece};
 use common::server::{Device, Server, WAIT, event, phone, start};
 use reqwest::Method;
@@ -264,19 +264,28 @@ async fn a_restored_backup_signs_every_page_out() {
     assert_eq!(phone.sign_in(ada, Some("tide pool")).await, 204);
     let mut socket = phone.listen().await.unwrap();
     let file = server.save_backup(Some("x")).await.bytes().await.unwrap();
-    let restored = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .header("x-cardwave-password", "x")
-        .body(file)
-        .send()
-        .await
-        .unwrap();
-    assert_eq!(restored.status(), 204);
+    assert_eq!(server.restore(file, Some("x")).await.0, 204);
     // The page hears it, though its session ended, and starts anew.
     assert_eq!(event(&mut socket).await["type"], "restored");
     assert_eq!(phone.get("/api/account").await, (401, json!("sign in")));
     // The backup said the home network reaches the server, so it still does.
     assert_eq!(phone.sign_in(ada, Some("tide pool")).await, 204);
+}
+
+/// A step after the copy fails (here the password's file cannot be read): the
+/// data is the backup's all the same, so every page is still signed out and told.
+#[tokio::test]
+async fn a_restore_failing_after_the_copy_signs_every_page_out_still() {
+    let server = start().await;
+    let ada = add(&server, "Ada", "tide pool").await;
+    let mut phone = phone(&server).await;
+    assert_eq!(phone.sign_in(ada, Some("tide pool")).await, 204);
+    let mut socket = phone.listen().await.unwrap();
+    let file = server.save_backup(Some("x")).await.bytes().await.unwrap();
+    std::fs::create_dir(server.options().data_dir.join("password.json")).unwrap();
+    assert_eq!(server.restore(file, Some("x")).await.0, 204);
+    assert_eq!(event(&mut socket).await["type"], "restored");
+    assert_eq!(phone.get("/api/account").await, (401, json!("sign in")));
 }
 
 #[tokio::test]
@@ -290,6 +299,8 @@ async fn the_home_network_reaches_the_server_until_it_is_switched_off() {
     let server = server.restart().await;
     let (_, network) = server.get("/api/network").await;
     assert_eq!(network["on"], true);
+    // No Tailscale on the test machine: no address from anywhere.
+    assert_eq!(network["anywhere"], Value::Null);
     let mut phone = Device {
         base: network["address"]
             .as_str()
@@ -305,7 +316,10 @@ async fn the_home_network_reaches_the_server_until_it_is_switched_off() {
     let (status, off) = server.put("/api/network", json!({ "on": false })).await;
     assert_eq!(
         (status, off),
-        (200, json!({ "on": false, "address": null }))
+        (
+            200,
+            json!({ "on": false, "address": null, "anywhere": null })
+        )
     );
     // The socket of the other device ends, and nothing answers there.
     let ended = tokio::time::timeout(WAIT, futures_util::StreamExt::next(&mut socket)).await;
@@ -313,7 +327,10 @@ async fn the_home_network_reaches_the_server_until_it_is_switched_off() {
         matches!(ended, Ok(None | Some(Err(_)) | Some(Ok(Message::Close(_))))),
         "{ended:?}"
     );
-    let refused = reqwest::get(format!("{}/api/status", phone.base)).await;
+    let refused = common::server::client()
+        .get(format!("{}/api/status", phone.base))
+        .send()
+        .await;
     assert!(refused.is_err());
 }
 
@@ -321,7 +338,7 @@ async fn the_home_network_reaches_the_server_until_it_is_switched_off() {
 async fn an_account_has_a_picture_of_its_own() {
     let server = start().await;
     let mut socket = server.listen().await;
-    let sent = reqwest::Client::new()
+    let sent = common::server::client()
         .put(format!("http://{}/api/account/picture", server.addr))
         .body(common::picture())
         .send()
@@ -337,7 +354,7 @@ async fn an_account_has_a_picture_of_its_own() {
     let made = image::load_from_memory(&picture).unwrap();
     assert_eq!((made.width(), made.height()), (128, 128));
     // A file that is no picture is refused.
-    let refused = reqwest::Client::new()
+    let refused = common::server::client()
         .put(format!("http://{}/api/account/picture", server.addr))
         .body("no picture")
         .send()
@@ -349,7 +366,7 @@ async fn an_account_has_a_picture_of_its_own() {
     image::RgbaImage::new(5000, 1)
         .write_to(&mut wide, image::ImageFormat::Png)
         .unwrap();
-    let refused = reqwest::Client::new()
+    let refused = common::server::client()
         .put(format!("http://{}/api/account/picture", server.addr))
         .body(wide.into_inner())
         .send()
@@ -365,17 +382,13 @@ async fn an_account_has_a_picture_of_its_own() {
 }
 
 /// An account is not deleted while a piece of its work is under way: the character generator's card would
-/// go into an account that is gone. Its chat model takes seconds to answer.
+/// go into an account that is gone. Its chat model answers once the test lets it.
 #[tokio::test]
 async fn an_account_is_not_deleted_while_its_work_is_under_way() {
     let card =
         r#"{"greeting": "*{{char}} smirks.*", "examples": [{"user": "Hi.", "char": "Hm."}]}"#;
     let words = json!({ "choices": [{ "message": { "content": card } }] });
-    let slow = Says {
-        after: std::time::Duration::from_secs(3),
-        ..says(200, JSON, &words.to_string())
-    };
-    let api = Api::start(slow).await;
+    let api = Api::start(held(says(200, JSON, &words.to_string()))).await;
     let server = start().await;
     let ada = add(&server, "Ada", "tide pool").await;
     let mut phone = phone(&server).await;
@@ -385,13 +398,9 @@ async fn an_account_is_not_deleted_while_its_work_is_under_way() {
         .call(Method::PUT, "/api/provider", Some(provider))
         .await;
     assert_eq!(set.0, 200, "{}", set.1);
-    let picks = json!({
-        "gender": "Woman", "being": "Human", "age": "30s", "build": "Athletic", "hair": "Long", "hair_colour": "Red",
-        "shy_outgoing": 20, "gentle_harsh": 55, "serious_playful": 70, "cautious_bold": 95,
-        "relationship": "Rival", "name": "Mara", "creator": "local",
-    });
+    let picks = common::generator_picks("Mara");
     let making = tokio::spawn(async move { phone.post("/api/generator", picks).await.0 });
-    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+    api.until_asked(1).await;
 
     let (status, said) = server
         .call(Method::DELETE, &format!("/api/accounts/{ada}"), None)
@@ -401,6 +410,7 @@ async fn an_account_is_not_deleted_while_its_work_is_under_way() {
         (400, Some("account_busy")),
         "{said}"
     );
+    api.release();
     assert_eq!(making.await.unwrap(), 201);
 }
 

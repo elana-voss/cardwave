@@ -147,7 +147,7 @@ codes! {
     PictureWordsTooLong, "what the picture shows is longer than {most} characters";
     PictureNeedsWords, "a picture is made of words";
     GoalMissing, "say what the team is to do";
-    FilesToolOff, "switch on Files in Settings › Tools first: the team reads and writes the task's folder with it";
+    FilesToolOff, "switch on Files in Settings › Advanced › Tools for the AI first: the team reads and writes the task's folder with it";
     DictationNotSetUp, "dictation is not set up: Settings › Models › Dictation";
     DirectionWithoutGoOn, "a direction is given only with a reply continued";
     AgainOrGoOn, "a reply is either written again or continued";
@@ -238,6 +238,11 @@ impl Fail {
         }
     }
 
+    /// Whether the detail `name` is the text `value`.
+    pub fn has(&self, name: &str, value: &str) -> bool {
+        matches!(self.details.get(name), Some(Detail::Text(text)) if text == value)
+    }
+
     /// The failure with the detail `name`.
     pub fn with(mut self, name: &str, value: impl Into<Detail>) -> Self {
         self.details.insert(name.to_string(), value.into());
@@ -315,9 +320,22 @@ pub fn coded(error: &anyhow::Error) -> Option<Fail> {
     })
 }
 
-/// The body a failure is told with, an answer's or one a status keeps (a
-/// download's, a task's): one of the server's own is `internal`, logged, and
-/// tells nothing more; one with no code is `fallback`, its `error` what it says.
+/// The failure in `error`'s chain, outer or inner, whose `what` is `what`: how a caller tells one failure
+/// it handles apart from the rest, by its marker, never by its text.
+pub fn failed_as(error: &anyhow::Error, what: &str) -> Option<Fail> {
+    let is = |fail: &&Fail| fail.has("what", what);
+    error
+        .downcast_ref::<Fail>()
+        .filter(is)
+        .or_else(|| {
+            error
+                .chain()
+                .filter_map(|e| e.downcast_ref::<Fail>())
+                .find(is)
+        })
+        .cloned()
+}
+
 /// `error` marked as the server's own failure (`Code::Internal`), which [`told`] knows by that code alone; one
 /// marked so already is left as it is.
 pub fn as_internal(error: anyhow::Error) -> anyhow::Error {
@@ -327,6 +345,9 @@ pub fn as_internal(error: anyhow::Error) -> anyhow::Error {
     }
 }
 
+/// The body a failure is told with, an answer's or one a status keeps (a
+/// download's, a task's): one of the server's own is `internal`, logged, and
+/// tells nothing more; one with no code is `fallback`, its `error` what it says.
 pub fn told(error: &anyhow::Error, fallback: Code) -> ErrorBody {
     let coded = coded(error);
     if coded.as_ref().is_some_and(|f| f.code == Code::Internal) {
@@ -349,6 +370,21 @@ mod tests {
     fn a_detail_the_sentence_does_not_name_is_kept_in_its_text() {
         let fail = Fail::new(Code::Internal).with("reason", "no random source");
         assert!(fail.to_string().contains("no random source"), "{fail}");
+    }
+
+    #[test]
+    fn a_failure_is_told_by_its_what_under_another_failure_too() {
+        let inner = anyhow::Error::new(Fail::new(Code::Changed).with("what", "card_version"));
+        let error = inner.context(Fail::new(Code::Internal).with("what", "outer"));
+        assert_eq!(
+            failed_as(&error, "card_version").map(|f| f.code),
+            Some(Code::Changed)
+        );
+        assert_eq!(
+            failed_as(&error, "outer").map(|f| f.code),
+            Some(Code::Internal)
+        );
+        assert!(failed_as(&error, "other").is_none());
     }
 
     #[test]

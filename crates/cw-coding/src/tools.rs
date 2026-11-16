@@ -27,6 +27,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use crate::tools::web::Web;
 use cw_library::settings::Tools;
 use cw_provider::Call;
 use cw_provider::images::{Picture, Whom};
@@ -393,108 +394,47 @@ impl Toolbox {
 
     /// Runs `call`. What went wrong is told to the model, as its result.
     pub async fn run(&self, app: &Arc<dyn AppActions>, call: &Call) -> Done {
-        let (web, http) = (app.web(), app.http());
-        let text = |result: anyhow::Result<String>| Done {
-            failed: result.is_err(),
-            text: result.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
-            picture: None,
-        };
+        let web = app.web();
         if let Some(why) = unreadable(call) {
-            return text(Err(anyhow::anyhow!(why)));
+            return told(Err(anyhow::anyhow!(why)));
         }
         let folder = self.folder.clone().unwrap_or_default();
         match call.name.as_str() {
-            crate::tools::dice::NAME if self.tools.dice => text(crate::tools::dice::roll(
+            crate::tools::dice::NAME if self.tools.dice => told(crate::tools::dice::roll(
                 &call.arguments,
                 crate::tools::dice::throw,
             )),
-            "web_search" if self.tools.web => text(web.search(&call.argument("query")).await),
-            "read_web_page" if self.tools.web => {
-                let address = call.argument("url").trim().to_string();
-                text(web.page(&address).await.map(|page| {
-                    // One page however its address is spelled: as the browser writes it.
-                    let address =
-                        cw_platform::http::Url::parse(&address).map_or(address, String::from);
-                    self.note(Read::Web {
-                        title: page.title,
-                        address,
-                    });
-                    page.text
-                }))
-            }
+            "web_search" if self.tools.web => told(web.search(&call.argument("query")).await),
+            "read_web_page" if self.tools.web => told(self.read_page(web, call).await),
             "list_files" if self.files() => {
-                text(crate::tools::files::list(&folder, &call.argument("path")))
+                told(crate::tools::files::list(&folder, &call.argument("path")))
             }
             "read_file" if self.files() => {
                 let path = call.argument("path").trim().to_string();
-                text(
+                told(
                     crate::tools::files::read(&folder, &path)
                         .inspect(|_| self.note(Read::File { path })),
                 )
             }
-            "write_file" if self.files() => text(crate::tools::files::write(
+            "write_file" if self.files() => told(crate::tools::files::write(
                 &folder,
                 &call.argument("path"),
                 &call.argument("content"),
             )),
             "run_command" if self.commands() => {
-                let command = call.argument("command");
-                // A reply stopped lets this go, and so ends the command.
-                let stop = Stop::default();
-                let stopped = stop.0.clone();
-                let ran = tokio::task::spawn_blocking(move || {
-                    crate::tools::sandbox::run(&folder, &command, COMMAND_TIME, &stopped)
-                })
-                .await;
-                drop(stop);
-                text(match ran {
-                    Ok(Ok(ran)) => Ok(match ran.code {
-                        Some(code) => format!("Exit code {code}.\n{}", ran.output),
-                        None => format!(
-                            "Stopped after {} s.\n{}",
-                            COMMAND_TIME.as_secs(),
-                            ran.output
-                        ),
-                    }),
-                    Ok(Err(failure)) => Err(failure),
-                    Err(_) => Err(anyhow::anyhow!("the command failed")),
-                })
+                told(run_command(folder, call.argument("command")).await)
             }
-            "make_picture" => match &self.pictures {
-                Some(whom) => {
-                    let words = call.argument("description");
-                    let chat = app.chat();
-                    match chat.picture(http, whom, &words).await {
-                        Ok(picture) => Done {
-                            text: "The picture was made and is shown after your message.".into(),
-                            picture: Some((words, picture)),
-                            failed: false,
-                        },
-                        Err(failure) => text(Err(failure)),
-                    }
-                }
-                None => text(Err(anyhow::anyhow!("there is no such tool"))),
-            },
-            crate::tools::written::MAKE if self.code => text(self.make(app, call).await),
-            crate::tools::app::CALL if self.tools.app => text(
-                match (
-                    crate::tools::app::asked(self.routes, &call.arguments),
-                    &self.ask_app,
-                ) {
-                    (Ok((route, arguments)), Some(ask)) => ask(route, arguments).await,
-                    (Err(failure), _) => Err(failure),
-                    (Ok(_), None) => Err("Cardwave's tools are not offered here".into()),
-                }
-                .map_err(|failure| anyhow::anyhow!(failure)),
-            ),
-            crate::tools::app::HELP if self.tools.app => text(
+            "make_picture" => self.make_picture(app, call).await,
+            crate::tools::written::MAKE if self.code => told(self.make(app, call).await),
+            crate::tools::app::CALL if self.tools.app => told(self.ask_app(call).await),
+            crate::tools::app::HELP if self.tools.app => told(
                 crate::tools::app::named(self.routes, &call.argument("tool"))
                     .map(crate::tools::app::Route::help)
                     .ok_or_else(|| anyhow::anyhow!("Cardwave has no such tool")),
             ),
             START_CODING if self.coding => {
                 let goal = call.argument("goal").trim().to_string();
-                text(match goal.is_empty() {
+                told(match goal.is_empty() {
                     true => Err(anyhow::anyhow!("say what the team is to do")),
                     false => {
                         *cw_core::lock(&self.task) = Some(goal);
@@ -503,10 +443,54 @@ impl Toolbox {
                 })
             }
             _ => match self.start_written(app, call) {
-                Some(running) => text(self.unasked(app, running).await),
-                None => text(Err(anyhow::anyhow!("there is no such tool"))),
+                Some(running) => told(self.unasked(app, running).await),
+                None => told(Err(anyhow::anyhow!("there is no such tool"))),
             },
         }
+    }
+
+    /// The text of the web page `call` names, kept among [`Self::reads`].
+    async fn read_page(&self, web: &Web, call: &Call) -> anyhow::Result<String> {
+        let address = call.argument("url").trim().to_string();
+        web.page(&address).await.map(|page| {
+            // One page however its address is spelled: as the browser writes it.
+            let address = cw_platform::http::Url::parse(&address).map_or(address, String::from);
+            self.note(Read::Web {
+                title: page.title,
+                address,
+            });
+            page.text
+        })
+    }
+
+    /// Makes the picture `call` describes, where pictures are offered.
+    async fn make_picture(&self, app: &Arc<dyn AppActions>, call: &Call) -> Done {
+        let Some(whom) = &self.pictures else {
+            return told(Err(anyhow::anyhow!("there is no such tool")));
+        };
+        let words = call.argument("description");
+        let chat = app.chat();
+        match chat.picture(app.http(), whom, &words).await {
+            Ok(picture) => Done {
+                text: "The picture was made and is shown after your message.".into(),
+                picture: Some((words, picture)),
+                failed: false,
+            },
+            Err(failure) => told(Err(failure)),
+        }
+    }
+
+    /// Asks Cardwave's own route `call` names, where Cardwave's tools are offered.
+    async fn ask_app(&self, call: &Call) -> anyhow::Result<String> {
+        match (
+            crate::tools::app::asked(self.routes, &call.arguments),
+            &self.ask_app,
+        ) {
+            (Ok((route, arguments)), Some(ask)) => ask(route, arguments).await,
+            (Err(failure), _) => Err(failure),
+            (Ok(_), None) => Err("Cardwave's tools are not offered here".into()),
+        }
+        .map_err(|failure| anyhow::anyhow!(failure))
     }
 
     /// Starts the written tool `call` calls, where it is offered.
@@ -558,7 +542,7 @@ impl Toolbox {
 /// Why `call`'s arguments cannot be read, where they are not a JSON object (cut
 /// short by the provider, a stray quote): the model is told so and may call
 /// again. None at all ("") is no fault: a tool without arguments.
-fn unreadable(call: &Call) -> Option<String> {
+pub(crate) fn unreadable(call: &Call) -> Option<String> {
     let arguments = call.arguments.trim();
     let read = serde_json::from_str::<serde_json::Map<String, Value>>(arguments);
     match read {
@@ -610,6 +594,39 @@ struct Stop(Arc<AtomicBool>);
 impl Drop for Stop {
     fn drop(&mut self) {
         self.0.store(true, Ordering::Relaxed);
+    }
+}
+
+/// A tool's `result` as the model is told it: a failure as "Failed: …".
+fn told(result: anyhow::Result<String>) -> Done {
+    Done {
+        failed: result.is_err(),
+        text: result.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
+        picture: None,
+    }
+}
+
+/// Runs `command` in `folder`'s sandbox, at most [`COMMAND_TIME`].
+async fn run_command(folder: PathBuf, command: String) -> anyhow::Result<String> {
+    // A reply stopped lets this go, and so ends the command.
+    let stop = Stop::default();
+    let stopped = stop.0.clone();
+    let ran = tokio::task::spawn_blocking(move || {
+        crate::tools::sandbox::run(&folder, &command, COMMAND_TIME, &stopped)
+    })
+    .await;
+    drop(stop);
+    match ran {
+        Ok(Ok(ran)) => Ok(match ran.code {
+            Some(code) => format!("Exit code {code}.\n{}", ran.output),
+            None => format!(
+                "Stopped after {} s.\n{}",
+                COMMAND_TIME.as_secs(),
+                ran.output
+            ),
+        }),
+        Ok(Err(failure)) => Err(failure),
+        Err(_) => Err(anyhow::anyhow!("the command failed")),
     }
 }
 

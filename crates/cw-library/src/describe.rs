@@ -365,7 +365,22 @@ pub fn facts(document: &Document, id: &str) -> Facts {
 }
 
 /// Words after `{{user}}` that end in -s or -ed and say what is, not what the user does.
-const NOT_DONE: &[&str] = &["was", "has", "does", "his", "this", "is", "as", "us"];
+const NOT_DONE: &[&str] = &[
+    "was",
+    "has",
+    "does",
+    "his",
+    "its",
+    "this",
+    "yes",
+    "across",
+    "always",
+    "perhaps",
+    "unless",
+    "towards",
+    "besides",
+    "sometimes",
+];
 
 fn speaks_for_user(greeting: &str) -> bool {
     let lower = greeting.to_lowercase();
@@ -875,6 +890,20 @@ pub(crate) fn own_after(own: &[String], before: &[String], after: &[String]) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_greeting_speaks_for_the_user_only_where_a_verb_follows_the_macro() {
+        assert!(speaks_for_user("{{user}} nods and sits."));
+        assert!(speaks_for_user("{{user}} walks in."));
+        for greeting in [
+            "She spots {{user}} across the room.",
+            "{{user}} always sat here.",
+            "{{user}} perhaps knows.",
+            "Unless {{user}} unless the rain stops.",
+        ] {
+            assert!(!speaks_for_user(greeting), "{greeting}");
+        }
+    }
 
     /// Every group of the vocabulary has its place in the classifier's prompt, and no place is left unfilled.
     #[test]

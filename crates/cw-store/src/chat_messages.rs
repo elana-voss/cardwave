@@ -14,8 +14,8 @@ use cw_core::{NotFound, now_ms};
 use cw_prompt::Role;
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
-use crate::Db;
 use crate::chats::{chat_of, writing};
+use crate::{Db, json};
 
 fn role_name(role: Role) -> &'static str {
     match role {
@@ -49,13 +49,7 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
     let swipes: String = row.get(8)?;
     let lore: Option<String> = row.get(9)?;
     // What cannot be read is shown as none: the chat opens all the same.
-    let lore = lore.and_then(|lore| {
-        serde_json::from_str(&lore)
-            .inspect_err(|error| {
-                tracing::warn!("a reply's lorebook entries cannot be read: {error}")
-            })
-            .ok()
-    });
+    let lore = json::or_none(lore.as_deref(), "a reply's lorebook entries");
     let memories: String = row.get(10)?;
     let message = message(row)?;
     let used: Option<i64> = row.get(12)?;
@@ -72,32 +66,31 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
         message,
         swipes: swipes.split(',').filter_map(|id| id.parse().ok()).collect(),
         lore: lore.unwrap_or_default(),
-        memories: serde_json::from_str(&memories).unwrap_or_default(),
+        memories: json::or_none(Some(&memories), "a reply's memories").unwrap_or_default(),
         picture: row.get(11)?,
         task_id: row.get(14)?,
         model: row.get(15)?,
-        sent: json_column(row, 16, "parts' tokens")?,
-        reads: json_column(row, 17, "pages and files read")?.unwrap_or_default(),
-        attachments: json_column(row, 18, "attachments")?.unwrap_or_default(),
+        sent: json::or_none(
+            row.get::<_, Option<String>>(16)?.as_deref(),
+            "a reply's parts' tokens",
+        ),
+        reads: json::or_none(
+            row.get::<_, Option<String>>(17)?.as_deref(),
+            "a reply's pages and files read",
+        )
+        .unwrap_or_default(),
+        attachments: json::or_none(
+            row.get::<_, Option<String>>(18)?.as_deref(),
+            "a reply's attachments",
+        )
+        .unwrap_or_default(),
         provider: row.get(19)?,
-        times: json_column(row, 20, "times")?,
+        times: json::or_none(
+            row.get::<_, Option<String>>(20)?.as_deref(),
+            "a reply's times",
+        ),
         broke_off: row.get(21)?,
     })
-}
-
-/// The JSON in column `at`, where there is any. What cannot be read is
-/// taken as none, so that the chat opens all the same.
-fn json_column<T: serde::de::DeserializeOwned>(
-    row: &Row<'_>,
-    at: usize,
-    what: &str,
-) -> rusqlite::Result<Option<T>> {
-    let text: Option<String> = row.get(at)?;
-    Ok(text.and_then(|text| {
-        serde_json::from_str(&text)
-            .inspect_err(|error| tracing::warn!("a reply's {what} cannot be read: {error}"))
-            .ok()
-    }))
 }
 
 /// Adds a message below `parent` and makes it the chat's head. `state` is a
@@ -297,15 +290,9 @@ impl Storage for Db {
                 return Ok(());
             };
             // Those read before the reply was continued, where they can be read, come first.
-            let mut all: Vec<Read> = before
-                .and_then(|text| {
-                    serde_json::from_str(&text)
-                        .inspect_err(|error| {
-                            tracing::warn!("a reply's pages and files read cannot be read: {error}")
-                        })
-                        .ok()
-                })
-                .unwrap_or_default();
+            let mut all: Vec<Read> =
+                json::or_none(before.as_deref(), "a reply's pages and files read")
+                    .unwrap_or_default();
             all.extend(
                 reads
                     .iter()

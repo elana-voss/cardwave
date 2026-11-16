@@ -3,6 +3,7 @@
 //! chat, waiting while it has no message.
 
 use cw_chat::attachments::{Attachment, Storage};
+use cw_chat::documents::Attached;
 use cw_core::now_ms;
 use rusqlite::{OptionalExtension, params};
 
@@ -87,17 +88,19 @@ impl Storage for Db {
         })?)
     }
 
-    fn message_documents(
-        &self,
-        user: i64,
-        message_id: i64,
-    ) -> anyhow::Result<Vec<(i64, String, String)>> {
+    fn message_documents(&self, user: i64, message_id: i64) -> anyhow::Result<Vec<Attached>> {
         Ok(self.with(|conn| {
             conn.prepare(
                 "select d.id, d.name, d.text from attachments a join documents d on d.id = a.document_id
                  where a.message_id = ?1 and a.user_id = ?2 and d.deleted = 0 order by a.id",
             )?
-            .query_map(params![message_id, user], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
+            .query_map(params![message_id, user], |r| {
+                Ok(Attached {
+                    id: r.get(0)?,
+                    name: r.get(1)?,
+                    text: r.get(2)?,
+                })
+            })?
             .collect()
         })?)
     }

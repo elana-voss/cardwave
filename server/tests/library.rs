@@ -584,6 +584,15 @@ fn a_card_cannot_flood_the_list_with_names_and_tags() {
 }
 
 #[tokio::test]
+async fn a_long_name_equal_to_the_title_is_kept_whole() {
+    let server = start().await;
+    let long = "Captain Bartholomew Featherstonehaugh-Wolfeschlegelsteinhausen the Third";
+    add(&server, card(long, long, &[])).await;
+    let (_, list) = server.get("/api/cards").await;
+    assert_eq!(list[0]["names"], json!([long]));
+}
+
+#[tokio::test]
 async fn a_cards_page_is_given_no_more_of_its_tags_than_the_list() {
     let server = start().await;
     let endless = "t".repeat(10_000);

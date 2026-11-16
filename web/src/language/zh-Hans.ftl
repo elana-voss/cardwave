@@ -126,6 +126,7 @@ search-keys = 搜索 Cardwave（Ctrl+K）
 label-settings-theme = 主题
 label-settings-chat-layout = 聊天布局
 label-settings-web-pictures = 显示其他网站的图片
+label-settings-tabs = 标签页
 label-settings-app-language = 应用语言
 label-settings-language = AI 写作的语言
 label-settings-providers = 服务商
@@ -143,7 +144,6 @@ label-settings-dice = 骰子
 label-settings-folder = 文件夹
 label-settings-written = AI 编写的工具
 label-settings-coding = 编程团队
-label-settings-trash = 废纸篓
 label-settings-backup = 备份
 label-settings-restore = 恢复
 label-settings-cards-folder = 角色卡文件夹
@@ -181,16 +181,12 @@ settings-appearance = 外观
 settings-theme-about = 跟随系统，除非你选择一个
 settings-layout-about = 消息显示为气泡或纯文本
 settings-web-pictures-about = 你打开聊天时，这些网站能知道。
+settings-tabs-about = 在标题栏中同时打开多个页面
 settings-language = 语言
 settings-data = 数据
-settings-trash-about = { $count ->
-   *[other] { $count } 项
-  } · { $days } 天后清空
-settings-open-trash = 打开废纸篓
-settings-open = 打开
 settings-version = 版本 { $version } · 许可证
 settings-licences = 许可证
-settings-advanced-about = 辅助模型、资料库、导出、不带角色的聊天、采样、预设、自定义 CSS
+settings-advanced-about = 辅助模型、资料库、AI 的工具、导出、不带角色的聊天、采样、预设、自定义 CSS
 settings-setup-about = 服务商、模型和语音，一步一步来
 settings-providers-about = 运行模型的服务的地址和密钥
 settings-this-computer = 这台电脑
@@ -236,7 +232,7 @@ backup-back-up = 保存备份
 backup-no-file = 未选择文件
 backup-choose-file = 选择文件
 backup-its-password = 备份的密码
-backup-restoring = 恢复会替换 Cardwave 中的所有内容：聊天、角色、人设、世界书、记忆和设置。此操作无法撤销。这里设置的密码保持不变。 其他账户也会被替换。
+backup-restoring = 恢复会替换 Cardwave 中的所有内容：聊天、角色、人设、世界书、记忆和设置。此操作无法撤销。其他账户也会被替换。
 backup-restored = 备份已恢复：Cardwave 中的一切都回到了备份时的样子。其他设备需要重新登录。
 backup-file = 文件
 backup-restore-title = 恢复备份
@@ -274,7 +270,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = 让这台电脑上的 AI 应用使用 Cardwave
-mcp-ask = 这台电脑上的程序（例如 Claude Desktop）可以读取你的角色和聊天、在你的聊天中写入，并使用在设置 › 工具中打开的工具。Cardwave 会先问你的事，它们做不了。
+mcp-ask = 这台电脑上的程序（例如 Claude Desktop）可以读取你的角色和聊天、在你的聊天中写入，并使用在设置中打开的工具。Cardwave 会先问你的事，它们做不了。
 mcp-switch-on = 打开
 mcp-about = 例如 Claude Desktop，通过 MCP：它们会使用你的角色、聊天和工具
 mcp-copy-address = 复制 MCP 地址
@@ -400,6 +396,7 @@ tools-change = 更改
 tools-choose = 选择
 tools-none-chosen = 未选择
 tools-title = 工具
+tools-for-ai = AI 的工具
 tools-ask-new = { $name } 想使用一个新工具：{ $what }
 tools-ask-write = { $name } 想在你的文件夹中写入“{ $what }”：
 tools-ask-read = { $name } 想读取你的文件夹：
@@ -461,6 +458,9 @@ providers-choose-folder = 选择模型文件夹
 providers-change = 更改
 providers-not-set-up = 未设置
 providers-folder-not-set-up = 运行这台电脑上某个文件夹里的模型 · 未设置
+providers-this-computer-runs = 可以运行：{ $models }
+providers-this-computer-none = 还没有模型：在下面下载一个合适的
+providers-details = 详情
 providers-menu = 服务商菜单：编辑、移除
 providers-remove = 移除
 providers-removed = 已移除服务商“{ $name }”。
@@ -470,6 +470,7 @@ providers-remove-key = 移除密钥
 providers-key-removed = 保存时将移除密钥
 providers-edit = 编辑服务商
 providers-keep-key = 留空则保留已保存的密钥。
+providers-new-address-key = 新地址需要重新输入密钥：密钥绝不会发送到别的服务器。
 providers-saved = 已保存服务商“{ $name }”。
 providers-added = 已添加服务商“{ $name }”。
 providers-add = 添加服务商
@@ -543,15 +544,13 @@ advanced-not-described = { $count ->
    *[other] { $count } 个角色
   }尚未描述
 advanced-describe-cards = 描述角色
-advanced-describe-cost = { $count ->
-   *[other] { $count } 个角色
-  }约需 { $low } 至 { $high } 个 token
+advanced-describe-cost = 待读取的角色卡：{ $count }
 advanced-failed = { $count ->
    *[other] { $count } 个失败
   }：{ $failure }。按“描述角色”再试一次。
 advanced-describe-again = 全部重新描述
 advanced-describe-again-stop = 停止
-advanced-describe-again-about = 用辅助模型重写每个角色的一句话描述、摘要、标签，以及“按需求”用来找到它的内容，每个约 11,000 到 12,000 个 token。你自己编辑过的内容保留。 提供方按 token 计费。
+advanced-describe-again-about = 用辅助模型重新读取每张角色卡，并重写每个角色的一句话描述、摘要、标签，以及“按需求”用来找到它的内容。你自己编辑过的内容保留。
 advanced-no-characters = 没有要描述的角色
 advanced-describe-again-far = 已重新描述 { $done } 个，共 { $all } 个
 advanced-describe-again-stopped = 已停止：已重新描述 { $done } 个，共 { $all } 个
@@ -804,6 +803,8 @@ server-switch-on = 打开
 server-network-about = 手机和其他电脑在浏览器中打开 Cardwave
 server-other-devices = 其他设备
 server-inside = 只有这个网络中的设备能访问，除非你在路由器上设置允许外部访问。
+server-anywhere = 任何地方
+server-tailscale = 要从任何地方打开，请在这台电脑和你的手机上安装免费应用 Tailscale（tailscale.com），并在两者上登录。
 server-add-account = 添加账户
 server-owner = 这台电脑 · 可添加和删除账户
 server-more-of = 更多：{ $name }

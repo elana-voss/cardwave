@@ -6,7 +6,7 @@
 // left out, so the page never goes stale; css-reference.test.ts checks that every class name and every name a
 // snippet uses is in styles.css. The dialog "Your own CSS" opens it in a window of its own.
 import { wording } from "../language/language";
-import { copyText, el, group, noticeBox, oneAtATime, searchField, type View } from "../dom";
+import { copyText, crumbs, el, group, noticeBox, oneAtATime, searchField, type View } from "../dom";
 import { isOwnCss } from "../settings/own-css";
 
 /** A variable with its value in the light theme and in the dark one, which are the same where it has one. */
@@ -118,7 +118,7 @@ export function cssReferenceView(): View {
     el(
       "header",
       { className: "pbar" },
-      el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("a", { href: "#/settings/advanced" }, wording("page-advanced")), "/", el("b", null, wording("page-css"))),
+      crumbs([wording("page-settings"), "#/settings"], [wording("page-advanced"), "#/settings/advanced"], wording("page-css")),
     ),
     el(
       "div",

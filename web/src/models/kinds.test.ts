@@ -38,7 +38,7 @@ describe("the kinds of model", () => {
     pickKind(document.body, "search", view, lists, (now) => (taken = now));
     const list = [...document.querySelectorAll(".kind-list")].at(-1)!;
     const options = () => [...list.querySelectorAll("[role=option]")].map((one) => [one.textContent, one.ariaSelected]);
-    expect(options()).toEqual([["bge-m3 · on this computer", "false"], ["Embed 1embed-1", "true"]]);
+    expect(options()).toEqual([["bge-m3 · on this computer", "false"], ["Embed 1", "true"]]);
     (list.querySelector("[role=option]") as HTMLElement).click();
     list.closest("form")!.requestSubmit();
     await vi.waitFor(() => expect(taken).toEqual({ ...view, kinds: [] }));
@@ -73,9 +73,22 @@ describe("the kinds of model", () => {
     expect(list.textContent).toContain("The provider's models could not be listed.");
     expect([...list.querySelectorAll("button")].map((one) => one.textContent)).toEqual(["Try again"]);
     pickKind(document.body, "images", view, lists, () => {});
-    // A provider's model by its readable name, its ID in grey under it.
-    const line = [...document.querySelectorAll(".kind-list")].at(-1)!.querySelector("[role=option]")!;
-    expect([line.firstElementChild!.firstChild!.textContent, line.querySelector(".opt-id")!.textContent]).toEqual(["Paint 1", "paint-1"]);
+    // A provider's model by its readable name, its ID on hover alone.
+    const line = [...document.querySelectorAll(".kind-list")].at(-1)!.querySelector<HTMLElement>("[role=option]")!;
+    expect([line.textContent, line.title]).toEqual(["Paint 1", "paint-1"]);
+  });
+
+  it("marks quietly a model whose provider does not say whether it can do the kind, and only that one", () => {
+    const view: ProvidersView = {
+      providers: [{ id: 5, name: "OpenRouter", own_name: null, base_url: "https://openrouter.ai/api/v1", has_key: true, key_end: "4f2a", workflow: null, folder: null }],
+      kinds: [],
+      own: [],
+    };
+    const listed = { models: [model("tide-1", true, false), model("tide-2", true, false, false)], more: false, failed: null, workflows: null };
+    const lists: Catalogs = { of: () => listed, ask: () => {}, forget: () => {}, listen: () => () => {} };
+    pickKind(document.body, "chat", view, lists, () => {});
+    const options = [...[...document.querySelectorAll(".kind-list")].at(-1)!.querySelectorAll<HTMLElement>("[role=option]")];
+    expect(options.map((one) => one.querySelector<HTMLElement>(".opt-mark")?.title ?? null)).toEqual([null, "Not known whether it can do this"]);
   });
 
   it("leaves out a provider that offers none of the kind, as long as nothing is typed", () => {

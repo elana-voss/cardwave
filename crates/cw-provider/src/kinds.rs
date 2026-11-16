@@ -379,6 +379,11 @@ pub fn set_gone(
     db.set_gone(user, kind, model, gone)
 }
 
+/// Lets go of the providers that presets took the place of: `user`'s, or everyone's.
+pub fn forget_replaced(db: &dyn crate::Storage, user: Option<i64>) -> anyhow::Result<()> {
+    db.forget_replaced_providers(user)
+}
+
 /// The account's values for a reply.
 pub fn sampling(db: &dyn Storage, user: i64) -> anyhow::Result<Sampling> {
     db.sampling(user)

@@ -33,9 +33,7 @@ fn persona(row: &Row<'_>) -> rusqlite::Result<Persona> {
         trashed: row.get(3)?,
         is_default: row.get(4)?,
         picture: picture_address(row.get(0)?, row.get(5)?),
-        lorebooks: serde_json::from_str(&row.get::<_, String>(6)?).map_err(|error| {
-            rusqlite::Error::FromSqlConversionFailure(6, rusqlite::types::Type::Text, error.into())
-        })?,
+        lorebooks: crate::json::of(&row.get::<_, String>(6)?, 6)?,
     })
 }
 

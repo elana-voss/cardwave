@@ -1,5 +1,5 @@
 //! The memories as SQLite keeps them (`memory::Storage`): a memory
-//! (`memory_stores`) is a chat's or a card's character's, with its day 1; its
+//! (`memory_stores`) is a chat's or a card's character's with a persona (or none), with its day 1; its
 //! state after each block read (`memory_blocks`, in the order read, the
 //! `autoincrement` ID never reused), told by its chat, number and chain, with
 //! the texts it saved and the message whose end had it read; and the vectors
@@ -23,13 +23,18 @@ impl Storage for Db {
         Ok(self.with(|conn| {
             let pair = |r: &rusqlite::Row<'_>| Ok((r.get(0)?, r.get(1)?));
             let found = match owner {
-                Owner::Chat(chat) => conn
-                    .query_row("select id, day_one from memory_stores where chat_id = ?1", [chat], pair)
-                    .optional()?,
-                Owner::Character((card, character)) => conn
+                Owner::Chat(chat, persona) => conn
                     .query_row(
-                        "select id, day_one from memory_stores where card_id = ?1 and character = ?2",
-                        params![card, character],
+                        "select id, day_one from memory_stores where chat_id = ?1 and persona_id is ?2",
+                        params![chat, persona],
+                        pair,
+                    )
+                    .optional()?,
+                Owner::Character((card, character), persona) => conn
+                    .query_row(
+                        "select id, day_one from memory_stores
+                         where card_id = ?1 and character = ?2 and persona_id is ?3",
+                        params![card, character, persona],
                         pair,
                     )
                     .optional()?,
@@ -38,14 +43,15 @@ impl Storage for Db {
                 return Ok(found);
             }
             let made = match owner {
-                Owner::Chat(chat) => conn.execute(
-                    "insert into memory_stores (user_id, chat_id) select user_id, id from chats where id = ?1",
-                    [chat],
+                Owner::Chat(chat, persona) => conn.execute(
+                    "insert into memory_stores (user_id, chat_id, persona_id)
+                     select user_id, id, ?2 from chats where id = ?1",
+                    params![chat, persona],
                 )?,
-                Owner::Character((card, character)) => conn.execute(
-                    "insert into memory_stores (user_id, card_id, character)
-                     select user_id, id, ?2 from cards where id = ?1",
-                    params![card, character],
+                Owner::Character((card, character), persona) => conn.execute(
+                    "insert into memory_stores (user_id, card_id, character, persona_id)
+                     select user_id, id, ?2, ?3 from cards where id = ?1",
+                    params![card, character, persona],
                 )?,
             };
             Ok((made == 1).then(|| (conn.last_insert_rowid(), None)))
@@ -173,10 +179,13 @@ impl Storage for Db {
     fn memory_stores(&self, user: i64) -> anyhow::Result<Vec<(i64, Owner)>> {
         let rows: Vec<(i64, Option<Owner>)> = self.with(|conn| {
             let mut query = conn.prepare_cached(
-                "select id, chat_id, card_id, character from memory_stores where user_id = ?1 order by id",
+                "select id, chat_id, card_id, character, persona_id from memory_stores
+                 where user_id = ?1 order by id",
             )?;
             query
-                .query_map([user], |r| Ok((r.get(0)?, owner(r.get(1)?, r.get(2)?, r.get(3)?))))?
+                .query_map([user], |r| {
+                    Ok((r.get(0)?, owner(r.get(1)?, r.get(2)?, r.get(3)?, r.get(4)?)))
+                })?
                 .collect::<rusqlite::Result<_>>()
         })?;
         Ok(rows
@@ -188,9 +197,9 @@ impl Storage for Db {
     fn memory_owner(&self, user: i64, store: i64) -> anyhow::Result<Option<Owner>> {
         let found = self.with(|conn| {
             conn.query_row(
-                "select chat_id, card_id, character from memory_stores where id = ?1 and user_id = ?2",
+                "select chat_id, card_id, character, persona_id from memory_stores where id = ?1 and user_id = ?2",
                 [store, user],
-                |r| Ok(owner(r.get(0)?, r.get(1)?, r.get(2)?)),
+                |r| Ok(owner(r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
             )
             .optional()
         })?;
@@ -286,10 +295,15 @@ impl Storage for Db {
 }
 
 /// A memory's owner by its columns.
-fn owner(chat: Option<i64>, card: Option<i64>, character: Option<String>) -> Option<Owner> {
+fn owner(
+    chat: Option<i64>,
+    card: Option<i64>,
+    character: Option<String>,
+    persona: Option<i64>,
+) -> Option<Owner> {
     match (chat, card, character) {
-        (Some(chat), _, _) => Some(Owner::Chat(chat)),
-        (None, Some(card), Some(character)) => Some(Owner::Character((card, character))),
+        (Some(chat), _, _) => Some(Owner::Chat(chat, persona)),
+        (None, Some(card), Some(character)) => Some(Owner::Character((card, character), persona)),
         _ => None,
     }
 }

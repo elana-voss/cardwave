@@ -15,7 +15,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use axum::http::{StatusCode, header};
+use axum::http::{Method, StatusCode, header};
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
@@ -25,6 +25,10 @@ use cw_coding::coding::snapshot::{FILE_LIMIT, Snapshot};
 use cw_coding::tools::{REFUSED, sandbox};
 use serde_json::{Value, json};
 use tokio::net::TcpListener;
+
+/// How long a team command may take to start: on GitHub's runner its large `PATH` (the programs' grant or copy)
+/// makes the start take tens of seconds where here it takes one.
+const COMMAND_START: Duration = Duration::from_secs(120);
 
 const ROLES: [(&str, &str); 3] = [
     ("You are the planner", "planner"),
@@ -79,11 +83,16 @@ impl Team {
 
 /// A stream that calls `name` with `arguments`.
 fn calls(name: &str, arguments: Value) -> String {
-    let piece = json!({ "choices": [{ "delta": { "tool_calls": [{ "index": 0, "id": "call_1", "type": "function", "function": { "name": name, "arguments": arguments.to_string() } }] } }] });
+    calls_with(name, &arguments.to_string())
+}
+
+/// A stream that calls `name` with `arguments` as written, JSON or not.
+fn calls_with(name: &str, arguments: &str) -> String {
+    let piece = json!({ "choices": [{ "delta": { "tool_calls": [{ "index": 0, "id": "call_1", "type": "function", "function": { "name": name, "arguments": arguments } }] } }] });
     format!("data: {piece}\n\ndata: [DONE]\n\n")
 }
 
-/// Switches on Settings › Tools for `folder`, which the team goes by: Files,
+/// Switches on Tools for the AI for `folder`, which the team goes by: Files,
 /// asking before a write where `ask_writes`, and Commands, asking first,
 /// where the sandbox runs them.
 async fn tools_on(server: &Server, folder: &Folder, ask_writes: bool) {
@@ -301,6 +310,25 @@ async fn a_step_that_changed_no_line_says_only_its_files() {
 }
 
 #[tokio::test]
+async fn a_call_cut_short_is_not_run_and_the_worker_is_told_why() {
+    let server = start().await;
+    let folder = Folder::new("cut");
+    let team = Team::start(vec![
+        ("planner", vec![calls("plan", json!({ "steps": ["Write b.txt"], "test_command": "" }))]),
+        ("worker", vec![calls_with("write_file", r#"{"path": "b.txt", "content": "hel"#), report("Tried.")]),
+        ("auditor", vec![calls("verdict", json!({ "passed": true, "tests_passed": 0, "tests_total": 0, "failures": [], "notes": "" }))]),
+    ])
+    .await;
+    tools_on(&server, &folder, false).await;
+    let chat = chat_at(&server, &team).await;
+    let task = start_task(&server, &chat, &folder, None).await;
+    ended(&server, &task).await;
+    let told = team.asked("worker")[1]["messages"].to_string();
+    assert!(told.contains("not valid JSON"), "{told}");
+    assert_eq!(read(&folder, "b.txt"), None);
+}
+
+#[tokio::test]
 async fn a_failed_verdict_is_fixed_once_and_checked_again() {
     let server = start().await;
     let folder = Folder::new("fix");
@@ -476,6 +504,19 @@ async fn a_call_that_asks_waits_for_the_user_and_a_stop_keeps_the_checkpoint() {
             let again = json!({ "goal": "Again", "folder": folder.path() });
             let (status, refused) = server.post(&format!("{chat}/tasks"), again).await;
             assert_eq!(status, 400, "{refused}");
+            // Nor in a folder inside it.
+            std::fs::create_dir(folder.0.join("app")).unwrap();
+            let inside = json!({ "goal": "Again", "folder": folder.0.join("app") });
+            let (status, refused) = server.post(&format!("{chat}/tasks"), inside).await;
+            assert_eq!(status, 400, "{refused}");
+            // Its chat is not deleted for good while it runs, alone or with the Trash.
+            let trashed = |trashed: bool| json!({ "trashed": trashed });
+            assert_eq!(server.patch(&chat, trashed(true)).await.0, 200);
+            let (status, refused) = server.call(Method::DELETE, &chat, None).await;
+            assert_eq!(status, 409);
+            assert_eq!(refused["details"]["what"], "coding_task");
+            assert_eq!(server.call(Method::DELETE, "/api/trash", None).await.0, 204);
+            assert_eq!(server.patch(&chat, trashed(false)).await.0, 200);
         }
         assert_eq!(asking["ask"]["kind"], "write");
         assert_eq!(asking["ask"]["detail"], if allow { "yes" } else { "no" });
@@ -523,6 +564,112 @@ async fn a_call_that_asks_waits_for_the_user_and_a_stop_keeps_the_checkpoint() {
     assert!(team.asked("auditor").is_empty());
 }
 
+/// A folder the step left unreadable keeps no checkpoint, yet the step ends
+/// failed, and the worker's own failure is the task's.
+#[cfg(windows)]
+#[tokio::test]
+async fn a_step_whose_folder_cannot_be_read_after_it_tells_the_workers_failure() {
+    let server = start().await;
+    let folder = Folder::new("unread");
+    let team = Team::start(vec![
+        (
+            "planner",
+            vec![calls("plan", json!({ "steps": ["Write e.txt"] }))],
+        ),
+        (
+            "worker",
+            vec![
+                calls("write_file", json!({ "path": "e.txt", "content": "e" })),
+                "!the worker's model refused".into(),
+            ],
+        ),
+    ])
+    .await;
+    tools_on(&server, &folder, true).await;
+    let chat = chat_at(&server, &team).await;
+    let task = start_task(&server, &chat, &folder, Some("quick")).await;
+    task_when(&server, &task, |task| !task["ask"].is_null()).await;
+    let locked = folder.0.join("locked");
+    std::fs::create_dir(&locked).unwrap();
+    // Everyone may not list it, until the guard's drop, so a failed assert leaves no locked folder behind.
+    let _locked = Denied::new(&locked);
+    let answer = json!({ "allow": false });
+    assert_eq!(server.post(&format!("{task}/answer"), answer).await.0, 204);
+    let failed = ended(&server, &task).await;
+    assert_eq!(failed["error"]["code"], "provider_refused", "{failed:#}");
+    assert_eq!(failed["steps"][1]["state"], "failed", "{failed:#}");
+}
+
+/// A folder Everyone may not list (icacls deny) while it lives; its drop takes the deny away.
+#[cfg(windows)]
+struct Denied(std::path::PathBuf);
+
+#[cfg(windows)]
+impl Denied {
+    fn new(folder: &std::path::Path) -> Self {
+        Self::icacls(folder, &["/deny", "*S-1-1-0:(RD)"]);
+        Self(folder.to_path_buf())
+    }
+
+    fn icacls(folder: &std::path::Path, change: &[&str]) {
+        let done = std::process::Command::new("icacls")
+            .arg(folder)
+            .args(change)
+            .output()
+            .unwrap();
+        assert!(done.status.success(), "{done:?}");
+    }
+}
+
+#[cfg(windows)]
+impl Drop for Denied {
+    fn drop(&mut self) {
+        // Not asserted: a panic in a drop during a failed test's unwinding would abort.
+        let _ = std::process::Command::new("icacls")
+            .arg(&self.0)
+            .args(["/remove:d", "*S-1-1-0"])
+            .output();
+    }
+}
+
+/// A task stopped while its command writes keeps all the command wrote in
+/// its checkpoint: Undo leaves none of it.
+#[cfg(windows)]
+#[tokio::test]
+async fn a_task_stopped_while_its_command_writes_undoes_all_it_wrote() {
+    let server = start().await;
+    let folder = Folder::new("stopped-command");
+    let writes = "for /l %i in (1,1,100000) do @echo %i> f%i.txt";
+    let team = Team::start(vec![
+        (
+            "planner",
+            vec![calls("plan", json!({ "steps": ["Write files"] }))],
+        ),
+        (
+            "worker",
+            vec![calls("run_command", json!({ "command": writes }))],
+        ),
+    ])
+    .await;
+    tools_on(&server, &folder, false).await;
+    let chat = chat_at(&server, &team).await;
+    let task = start_task(&server, &chat, &folder, Some("quick")).await;
+    task_when(&server, &task, |task| !task["ask"].is_null()).await;
+    let answer = json!({ "allow": true });
+    assert_eq!(server.post(&format!("{task}/answer"), answer).await.0, 204);
+    let mut waited = Duration::ZERO;
+    while read(&folder, "f10.txt").is_none() {
+        assert!(waited < COMMAND_START, "the command wrote nothing");
+        tokio::time::sleep(Duration::from_millis(20)).await;
+        waited += Duration::from_millis(20);
+    }
+    assert_eq!(server.post(&format!("{task}/stop"), json!({})).await.0, 204);
+    assert_eq!(ended(&server, &task).await["state"], "stopped");
+    assert_eq!(server.post(&format!("{task}/undo"), json!({})).await.0, 200);
+    let left = std::fs::read_dir(&folder.0).unwrap().count();
+    assert_eq!(left, 0, "files the command wrote are left");
+}
+
 #[tokio::test]
 async fn a_provider_that_refuses_a_role_fails_the_task_with_its_refusal() {
     let server = start().await;
@@ -560,7 +707,7 @@ async fn a_task_is_this_computers_accounts_alone_in_a_folder_the_tools_may_use()
     assert_eq!(server.post(&tasks, new(" ", folder.path())).await.0, 400);
     let data = server.dir.display().to_string();
     assert_eq!(server.post(&tasks, new("Go", data)).await.0, 400);
-    // The team goes by Settings › Tools: without Files it has no way to the folder.
+    // The team goes by Tools for the AI: without Files it has no way to the folder.
     let off = json!({ "tools": { "files": false, "commands": false } });
     assert_eq!(server.patch("/api/settings", off).await.0, 200);
     let (status, refused) = server.post(&tasks, new("Go", folder.path())).await;
@@ -568,7 +715,7 @@ async fn a_task_is_this_computers_accounts_alone_in_a_folder_the_tools_may_use()
     assert!(
         refused
             .to_string()
-            .contains("switch on Files in Settings › Tools first"),
+            .contains("switch on Files in Settings › Advanced › Tools for the AI first"),
         "{refused}"
     );
     tools_on(&server, &folder, false).await;
@@ -601,6 +748,7 @@ fn a_snapshot_leaves_out_packages_builds_and_big_files() {
         // A folder of that name without its marker is the project's own.
         ("src/target/d.rs", 3),
         ("big.bin", FILE_LIMIT as usize + 1),
+        ("grown.json", 3),
     ] {
         let path = folder.0.join(path);
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
@@ -608,11 +756,16 @@ fn a_snapshot_leaves_out_packages_builds_and_big_files() {
     }
     let before = Snapshot::read(&folder.0).unwrap();
     assert_eq!(
-        before.0.keys().collect::<Vec<_>>(),
-        ["src/a.rs", "src/target/d.rs"]
+        before.files.keys().collect::<Vec<_>>(),
+        ["grown.json", "src/a.rs", "src/target/d.rs"]
     );
     std::fs::write(folder.0.join("src/a.rs"), "y").unwrap();
     std::fs::write(folder.0.join("new.txt"), "z").unwrap();
+    // A file too big before is no file added when it shrinks: Undo would delete it.
+    std::fs::write(folder.0.join("big.bin"), "small").unwrap();
+    // A file that grows too big is a change still, which Undo writes back.
+    let grown = vec![b'x'; FILE_LIMIT as usize + 1];
+    std::fs::write(folder.0.join("grown.json"), grown).unwrap();
     // A file another program holds locked is not read, and no change of it counted.
     #[cfg(windows)]
     let _locked = {
@@ -625,11 +778,16 @@ fn a_snapshot_leaves_out_packages_builds_and_big_files() {
     };
     let after = Snapshot::read(&folder.0).unwrap();
     #[cfg(windows)]
-    assert!(after.1.contains("src/target/d.rs"), "{:?}", after.1);
+    assert!(
+        after.unread.contains("src/target/d.rs"),
+        "{:?}",
+        after.unread
+    );
     let changes = before.changes(&after);
     let paths: Vec<&str> = changes.iter().map(|change| change.path.as_str()).collect();
-    assert_eq!(paths, ["new.txt", "src/a.rs"]);
-    assert_eq!(changes[0].before, None);
+    assert_eq!(paths, ["grown.json", "new.txt", "src/a.rs"]);
+    assert_eq!(changes[0].before.as_deref(), Some(&b"xxx"[..]));
+    assert_eq!(changes[1].before, None);
 }
 
 #[test]
@@ -711,8 +869,14 @@ fn a_teams_command_runs_node_and_npm_where_they_are_installed_and_reads_no_other
             programs: true,
             data: data.0.clone(),
         };
-        let time = Duration::from_secs(120);
-        sandbox::run_with(&folder.0, command, time, &AtomicBool::new(false), reach).unwrap()
+        sandbox::run_with(
+            &folder.0,
+            command,
+            COMMAND_START,
+            &AtomicBool::new(false),
+            reach,
+        )
+        .unwrap()
     };
     let secret = run(&format!(r#"type "{}\secret.txt""#, other.path()));
     assert!(!secret.output.contains("kept"), "{}", secret.output);

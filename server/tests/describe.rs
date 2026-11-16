@@ -13,9 +13,8 @@ use std::time::Duration;
 
 use common::api::{Api, JSON, Says, says};
 use common::describing::*;
-use common::server::{Server, WAIT, event, start};
+use common::server::{Server, event, start};
 use serde_json::{Value, json};
-use tokio::time::{Instant, sleep};
 
 #[tokio::test]
 async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
@@ -87,6 +86,9 @@ async fn describe_cards_gives_each_card_its_tags_logline_title_and_summary() {
             "sea"
         ])
     );
+    // Its line shows the file's tags alone, and the content level apart.
+    assert_eq!(card["own_tags"], json!(["sea", "mystery"]));
+    assert_eq!(card["rating"], "suggestive");
     assert_eq!(
         card["excerpt"],
         "A storm strands you in the lighthouse its keeper never leaves."
@@ -261,6 +263,29 @@ async fn with_the_switch_on_each_card_imported_is_described() {
     // The card imported before the switch was on waits for "Describe cards".
     let (_, progress) = server.get("/api/describe").await;
     assert_eq!(progress["left"], 1, "{progress}");
+}
+
+/// A result that cannot be kept (here a failure, as on a full disk) ends the
+/// worker, which would else ask the model for the same card again and again.
+#[tokio::test]
+async fn a_result_that_cannot_be_kept_ends_the_describing() {
+    let failed = says(500, JSON, r#"{"error":{"message":"out of credit"}}"#);
+    let (server, api) = model(vec![failed]).await;
+    import(&server).await;
+    let options = server.options();
+    let db = cw_store::Db::open(
+        &options.data_dir.join(cw_key::FILE_NAME),
+        options.key.given().unwrap(),
+    )
+    .unwrap();
+    let full = "create trigger full_a before update on card_descriptions when new.state = 'failed'
+            begin select raise(abort, 'database or disk is full'); end;
+        create trigger full_b before insert on card_descriptions when new.state = 'failed'
+            begin select raise(abort, 'database or disk is full'); end;";
+    db.with(|c| c.execute_batch(full)).unwrap();
+
+    server.post("/api/describe", json!({})).await;
+    api.stays_asked(1).await;
 }
 
 #[tokio::test]
@@ -615,9 +640,8 @@ async fn a_second_server_on_the_same_data_does_not_queue_cards_described_before_
     drop(db);
     let before = needs_of(&server, id).await["state"].clone();
     let second = cardwave_server::router(options).unwrap();
-    sleep(Duration::from_millis(500)).await;
+    api.stays_asked(3).await;
     assert_eq!(needs_of(&server, id).await["state"], before);
-    assert_eq!(api.asked().len(), 3);
     drop(second);
 }
 
@@ -635,11 +659,7 @@ async fn cards_described_before_the_list_are_queued_at_a_start() {
         .unwrap();
     drop(db);
     let server = server.restart().await;
-    let end = Instant::now() + WAIT;
-    while needs_of(&server, id).await["state"] != "found" {
-        assert!(Instant::now() < end, "not asked after the start");
-        sleep(Duration::from_millis(50)).await;
-    }
+    needs_become(&server, id, "found").await;
 }
 
 #[tokio::test]
@@ -714,8 +734,7 @@ async fn changing_the_helper_model_reads_nothing_again() {
     let (server, api, id) = described_with(finds("sex")).await;
     let provider = json!({ "base_url": api.url, "model": "small-1", "worker_model": "small-2" });
     assert_eq!(server.put("/api/provider", provider).await.0, 200);
-    sleep(Duration::from_millis(200)).await;
-    assert_eq!(api.asked().len(), 3);
+    api.stays_asked(3).await;
     assert_eq!(needs_of(&server, id).await["needs"][0]["need"], "sex");
 }
 
@@ -739,11 +758,7 @@ async fn stop_drops_the_cards_that_wait_to_be_described_and_lets_the_one_in_hand
     assert_eq!(status, 200, "{stopped}");
     // Only the card in hand is left to finish.
     assert_eq!(stopped["waiting"], 1, "{stopped}");
-    let end = Instant::now() + WAIT;
-    while row(&server, first).await["title"] != "First" {
-        assert!(Instant::now() < end, "the card in hand finishes");
-        sleep(Duration::from_millis(20)).await;
-    }
+    titled(&server, first, "First").await;
     let progress = done(&server).await;
     assert_eq!(
         (&progress["left"], &progress["waiting"]),
@@ -778,18 +793,12 @@ async fn stop_keeps_the_card_in_hand_not_the_oldest_that_waits() {
         .call(reqwest::Method::DELETE, "/api/describe", None)
         .await;
     assert_eq!(status, 200, "{stopped}");
-    let end = Instant::now() + WAIT;
-    while api.asked().len() < 6 {
-        assert!(Instant::now() < end, "the card in hand finishes");
-        sleep(Duration::from_millis(20)).await;
-    }
-    sleep(Duration::from_millis(500)).await;
+    api.stays_asked(6).await;
     assert_ne!(
         row(&server, second).await["title"],
         "Second",
         "the card that waited was stopped"
     );
-    assert_eq!(api.asked().len(), 6);
 }
 
 #[tokio::test]
@@ -802,11 +811,7 @@ async fn stop_keeps_the_card_in_hand_after_more_cards_were_queued_during_its_run
     let (server, api) = model(answers).await;
     let first = import(&server).await;
     server.post("/api/describe", json!({})).await;
-    let end = Instant::now() + WAIT;
-    while api.asked().is_empty() {
-        assert!(Instant::now() < end, "the worker takes the card");
-        sleep(Duration::from_millis(20)).await;
-    }
+    api.until_asked(1).await;
     // Queued while the first is in hand: the worker is started again and must keep its card.
     import(&server).await;
     server.post("/api/describe", json!({})).await;
@@ -815,11 +820,7 @@ async fn stop_keeps_the_card_in_hand_after_more_cards_were_queued_during_its_run
         .await;
     assert_eq!(status, 200, "{stopped}");
     assert_eq!(stopped["waiting"], 1, "{stopped}");
-    let end = Instant::now() + WAIT;
-    while row(&server, first).await["title"] != "First" {
-        assert!(Instant::now() < end, "the card in hand finishes");
-        sleep(Duration::from_millis(20)).await;
-    }
+    titled(&server, first, "First").await;
 }
 
 #[tokio::test]

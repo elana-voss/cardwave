@@ -107,7 +107,8 @@ export class Body {
   shaking = false;
   /** Whether it bounced off the floor since it was last let go. */
   bounced = false;
-  /** Whether the figure gets to its feet (figure.ts), meanwhile it walks and climbs nowhere. */
+  /** Whether the figure gets to its feet or lands (figure.ts), meanwhile it walks and climbs nowhere and a landing
+   * lasts on. */
   rising = false;
   /** What happened since the hand last took it, in order, each stage once in a row. */
   happened: Handling[] = [];
@@ -224,6 +225,7 @@ export class Body {
   /** Moves the body on by `dt` seconds. */
   step(dt: number): void {
     dt = Math.min(dt, LONGEST_TICK);
+    if (this.gettingUp && this.rising) this.until.landing = Math.max(this.until.landing, this.clock + 2 * dt);
     this.clock += dt;
     const floor = this.area.height;
     const motion = this.motion;

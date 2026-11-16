@@ -15,6 +15,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 use crate::kinds::Workflow;
+use crate::list::{self, OwnApi};
 use crate::models::{self, Limits, ListedModels};
 use crate::{facts, keyed, send};
 
@@ -57,31 +58,22 @@ pub enum ImageApi {
     Automatic1111,
 }
 
-/// Whether the address is NanoGPT's by its host, which lists its image models apart.
+/// Whether the address is NanoGPT's by its host (`own.toml`'s `own_api`), which lists its image models apart.
 pub(crate) fn is_nanogpt(base_url: &str) -> bool {
-    Url::parse(base_url).is_ok_and(|url| {
-        url.host_str()
-            .is_some_and(|host| host == "nano-gpt.com" || host.ends_with(".nano-gpt.com"))
-    })
+    list::own_api(base_url) == Some(OwnApi::NanoGpt)
 }
 
-/// Whether the address is OpenRouter's by its host.
+/// Whether the address is OpenRouter's by its host (`own.toml`'s `own_api`).
 pub fn is_openrouter(base_url: &str) -> bool {
-    Url::parse(base_url).is_ok_and(|url| {
-        url.host_str()
-            .is_some_and(|host| host == "openrouter.ai" || host.ends_with(".openrouter.ai"))
-    })
+    list::own_api(base_url) == Some(OwnApi::OpenRouter)
 }
 
 /// The API of a cloud provider known by its host, which is never a ComfyUI or a Forge: asked so at each
 /// picture, it would add two round trips (each up to `PROBE_LIMIT`) before the picture is asked for.
 fn by_host(base_url: &str) -> Option<ImageApi> {
-    if is_openrouter(base_url) {
-        Some(ImageApi::OpenRouter)
-    } else if is_nanogpt(base_url) {
-        Some(ImageApi::OpenAi)
-    } else {
-        None
+    match list::own_api(base_url)? {
+        OwnApi::OpenRouter => Some(ImageApi::OpenRouter),
+        OwnApi::NanoGpt => Some(ImageApi::OpenAi),
     }
 }
 

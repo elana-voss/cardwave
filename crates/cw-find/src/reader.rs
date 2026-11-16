@@ -10,13 +10,14 @@
 //! started for the first that needs it; steps are pushed as `search`. The
 //! answers use this computer's model only where it runs, never wait for its
 //! start, and a reply waits `REPLY_LIMIT` at most (a memory pass as long as it
-//! takes). A model that fails or hangs is not asked for `RETRY` (this
+//! takes; the entries' vectors are kept as each is made, and one too slow
+//! for all of them has not failed). A model that fails or hangs is not asked for `RETRY` (this
 //! computer's is stopped), a provider's until its entry or a kind changes
 //! (`provider_changed`); a card it cannot read (`TextRefused`) is kept without.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::{Duration, Instant};
 
@@ -330,15 +331,21 @@ pub async fn near(state: &dyn Host, user: i64, query: &str) -> Option<Arc<Vec<f3
 }
 
 /// What the model is given at most to answer a reply's question, beside
-/// the reply's own: one that hangs is held back as one that failed.
+/// the reply's own: one that hangs is held back as one that failed, but not
+/// one that was too slow for all of it after `finished` counted some done.
 async fn in_time<T>(
     search: &Search,
     stamp: &str,
     work: impl Future<Output = anyhow::Result<T>>,
+    finished: Option<&AtomicUsize>,
 ) -> Option<T> {
     let failure = match tokio::time::timeout(REPLY_LIMIT, work).await {
         Ok(Ok(done)) => return Some(done),
         Ok(Err(failure)) => failure,
+        Err(_) if finished.is_some_and(|done| done.load(Ordering::Relaxed) > 0) => {
+            tracing::info!("the search model {stamp} read part of a reply's texts in time");
+            return None;
+        }
         Err(_) => anyhow::anyhow!(
             Fail::said(Code::TimedOut, "the search model did not answer in time")
                 .with("whose", "search_model")
@@ -362,7 +369,7 @@ pub async fn newest_vector(state: &dyn Host, user: i64, text: &str) -> Option<Ve
         let mut vectors = reader.embed(&search.http, &Vec::from_iter(last)).await?;
         anyhow::Ok(vectors.pop())
     };
-    in_time(search, &reader.stamp(), read)
+    in_time(search, &reader.stamp(), read, None)
         .await
         .flatten()
         .filter(|vector| !vector.is_empty())
@@ -403,34 +410,53 @@ pub async fn vectors(state: &dyn Host, user: i64, texts: Vec<String>) -> Option<
         return kept.into_iter().collect();
     }
     let reader = reader?;
+    // Each text is kept as soon as its last piece is read, so a reply that
+    // cannot wait for all leaves the next one less to ask.
+    let finished = AtomicUsize::new(0);
     let read = async {
         let mut pieces = Vec::new();
+        // Where the pieces of each missing text end in `pieces`.
+        let mut ends = Vec::new();
         for &at in &missing {
             for piece in reader.chunks(&search.http, &texts[at]).await? {
                 pieces.push((at, piece));
             }
+            ends.push(pieces.len());
         }
         let mut made: Vec<(usize, Vec<u8>)> = missing.iter().map(|&at| (at, Vec::new())).collect();
-        for batch in pieces.chunks(BATCH) {
+        let mut next = 0;
+        let mut keep = async |made: &[(usize, Vec<u8>)], read_to: usize| {
+            let first = next;
+            while next < ends.len() && ends[next] <= read_to {
+                next += 1;
+            }
+            let new: Vec<(Vec<u8>, Vec<u8>)> = made[first..next]
+                .iter()
+                .map(|(at, bytes)| (hashes[*at].clone(), bytes.clone()))
+                .collect();
+            if new.is_empty() {
+                return;
+            }
+            finished.fetch_add(new.len(), Ordering::Relaxed);
+            if let Err(failure) = work(state, move |db| db.keep_vectors(&new)).await {
+                tracing::error!("the vectors cannot be kept: {failure:#}");
+            }
+        };
+        for (number, batch) in pieces.chunks(BATCH).enumerate() {
             let only: Vec<String> = batch.iter().map(|(_, piece)| piece.clone()).collect();
             let read = reader.embed(&search.http, &only).await?;
             for ((at, _), vector) in batch.iter().zip(read) {
                 let place = missing.iter().position(|m| m == at).unwrap_or_default();
                 made[place].1.extend(embedder::to_bytes(&vector));
             }
+            keep(&made, number * BATCH + batch.len()).await;
         }
+        keep(&made, pieces.len()).await;
         anyhow::Ok(made)
     };
-    let made = in_time(search, &stamp, read).await?;
-    let new: Vec<(Vec<u8>, Vec<u8>)> = made
-        .into_iter()
-        .map(|(at, bytes)| {
-            kept[at] = Some(bytes.clone());
-            (hashes[at].clone(), bytes)
-        })
-        .collect();
-    if let Err(failure) = work(state, move |db| db.keep_vectors(&new)).await {
-        tracing::error!("the vectors cannot be kept: {failure:#}");
+    let made = in_time(search, &stamp, read, Some(&finished)).await?;
+    for (at, bytes) in made {
+        kept[at] = Some(bytes);
     }
     kept.into_iter().collect()
 }
@@ -469,7 +495,7 @@ pub async fn memory_vectors(
         anyhow::Ok(made)
     };
     let made = match hurried {
-        true => in_time(search, &stamp, read).await?,
+        true => in_time(search, &stamp, read, None).await?,
         false => match read.await {
             Ok(made) => made,
             Err(failure) => {

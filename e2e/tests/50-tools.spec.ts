@@ -5,7 +5,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
-// Tools: the settings' group Tools, whose Files waits for a folder chosen in its dialog, and a file the character
+// Tools: Settings › Advanced's group "Tools for the AI", whose Files waits for a folder chosen in its dialog, and a file the character
 // writes in a chat, which waits over the message field until the user allows it, as a card Cardwave's own
 // tools make in a chat without a character does. The folder is one of the test's
 // own in the system's temporary folder; the stand-in `api` is the model, which calls the tool (`calls`).
@@ -36,11 +36,11 @@ async function chat(request: APIRequestContext): Promise<number> {
 }
 
 test("files are switched on once a folder is chosen, and then ask before writing", async ({ page, request }) => {
-  await page.goto("/#/settings");
+  await page.goto("/#/settings/advanced");
   await expect(line(page, "Files").locator(".meta")).toHaveText("Choose a folder first");
   await expect(line(page, "Files").getByRole("switch")).toBeDisabled();
-  await line(page, "Web").getByRole("switch").check();
-  await expect(line(page, "Web").getByRole("switch")).toBeEnabled();
+  await line(page, "Dice").getByRole("switch").check();
+  await expect(line(page, "Dice").getByRole("switch")).toBeEnabled();
 
   await page.getByRole("button", { name: "Change folder" }).click();
   await page.getByRole("dialog", { name: "Folder" }).getByLabel("Folder on this computer").fill(folder);
@@ -52,7 +52,7 @@ test("files are switched on once a folder is chosen, and then ask before writing
   await expect(line(page, "Ask before writing").getByRole("switch")).toBeChecked();
 
   const { tools } = await (await request.get("/api/settings")).json();
-  expect(tools).toMatchObject({ web: true, files: true, ask_writes: true, folder });
+  expect(tools).toMatchObject({ dice: true, files: true, ask_writes: true, folder });
 });
 
 test("a file the character writes waits until the user allows it", async ({ page, request }) => {

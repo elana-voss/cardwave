@@ -123,7 +123,7 @@ fn tools_checked(
         .iter()
         .any(|set| set.is_some());
     if !owner && (disk || new.is_some()) {
-        Err(owner_only("use its files"))?;
+        Err(owner_only("use_its_files"))?;
     }
     let folder = new.as_ref().or(folder.as_ref());
     let switched_on = *files == Some(true) || *commands == Some(true);
@@ -144,7 +144,7 @@ fn tools_checked(
 /// there is none.
 fn card_folder_checked(change: &ChangeCardFolder, owner: bool) -> anyhow::Result<()> {
     if !owner {
-        Err(owner_only("use its folders"))?;
+        Err(owner_only("use_its_folders"))?;
     }
     if let Some(folder) = &change.folder {
         // Walked every few seconds, a whole drive would never let the computer rest.

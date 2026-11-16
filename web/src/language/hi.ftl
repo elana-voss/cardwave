@@ -127,6 +127,7 @@ search-keys = Cardwave में खोजें (Ctrl+K)
 label-settings-theme = थीम
 label-settings-chat-layout = चैट लेआउट
 label-settings-web-pictures = दूसरी वेबसाइटों की तस्वीरें दिखाएँ
+label-settings-tabs = टैब
 label-settings-app-language = ऐप की भाषा
 label-settings-language = AI किस भाषा में लिखे
 label-settings-providers = प्रोवाइडर
@@ -144,7 +145,6 @@ label-settings-dice = पासे
 label-settings-folder = फ़ोल्डर
 label-settings-written = AI के लिखे टूल
 label-settings-coding = कोडिंग टीम
-label-settings-trash = ट्रैश
 label-settings-backup = बैकअप
 label-settings-restore = रीस्टोर
 label-settings-cards-folder = कार्ड फ़ोल्डर
@@ -182,17 +182,12 @@ settings-appearance = दिखावट
 settings-theme-about = सिस्टम के अनुसार, जब तक आप कोई और न चुनें
 settings-layout-about = मैसेज बबल में, या सादे टेक्स्ट में
 settings-web-pictures-about = चैट खोलने पर वे वेबसाइटें यह देख सकती हैं।
+settings-tabs-about = शीर्षक पट्टी में कई पेज खुले रखें
 settings-language = भाषा
 settings-data = डेटा
-settings-trash-about = { $count ->
-    [one] { $count } आइटम
-   *[other] { $count } आइटम
-  } · { $days } दिन बाद खाली किया जाता है
-settings-open-trash = ट्रैश खोलें
-settings-open = खोलें
 settings-version = वर्ज़न { $version } · लाइसेंस
 settings-licences = लाइसेंस
-settings-advanced-about = हेल्पर मॉडल, लाइब्रेरी, एक्सपोर्ट, बिना किरदार की चैट, सैंपलिंग, प्रीसेट, आपका अपना CSS
+settings-advanced-about = हेल्पर मॉडल, लाइब्रेरी, AI के लिए टूल, एक्सपोर्ट, बिना किरदार की चैट, सैंपलिंग, प्रीसेट, आपका अपना CSS
 settings-setup-about = प्रोवाइडर, मॉडल और आवाज़, एक-एक कदम करके
 settings-providers-about = मॉडल चलाने वाली सेवाओं के पते और कुंजियाँ
 settings-this-computer = यह कंप्यूटर
@@ -238,7 +233,7 @@ backup-back-up = बैकअप सहेजें
 backup-no-file = कोई फ़ाइल नहीं चुनी गई
 backup-choose-file = फ़ाइल चुनें
 backup-its-password = बैकअप का पासवर्ड
-backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता। यहाँ का पासवर्ड जैसा है वैसा ही रहता है। दूसरे खाते भी बदल जाते हैं।
+backup-restoring = रीस्टोर करने पर Cardwave की हर चीज़ बदल जाती है: चैट, किरदार, पर्सोना, लोरबुक, यादें और सेटिंग्स। इसे पलटा नहीं जा सकता। दूसरे खाते भी बदल जाते हैं।
 backup-restored = बैकअप रीस्टोर हो गया: Cardwave में सब कुछ वैसा है जैसा बैकअप बनाते समय था। दूसरे डिवाइस फिर से साइन इन करेंगे।
 backup-file = फ़ाइल
 backup-restore-title = बैकअप रीस्टोर करें
@@ -276,7 +271,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = इस कंप्यूटर के AI ऐप को Cardwave इस्तेमाल करने दें
-mcp-ask = इस कंप्यूटर के प्रोग्राम, जैसे Claude Desktop, आपके किरदार और चैट पढ़ सकते हैं, आपकी चैट में लिख सकते हैं और सेटिंग्स › टूल में चालू टूल इस्तेमाल कर सकते हैं। जो Cardwave आपसे पहले पूछता, वह वे नहीं कर सकते।
+mcp-ask = इस कंप्यूटर के प्रोग्राम, जैसे Claude Desktop, आपके किरदार और चैट पढ़ सकते हैं, आपकी चैट में लिख सकते हैं और सेटिंग्स में चालू टूल इस्तेमाल कर सकते हैं। जो Cardwave आपसे पहले पूछता, वह वे नहीं कर सकते।
 mcp-switch-on = चालू करें
 mcp-about = जैसे Claude Desktop, MCP के ज़रिए: ये आपके किरदार, चैट और टूल इस्तेमाल करते हैं
 mcp-copy-address = MCP पता कॉपी करें
@@ -407,6 +402,7 @@ tools-change = बदलें
 tools-choose = चुनें
 tools-none-chosen = कुछ नहीं चुना गया
 tools-title = टूल
+tools-for-ai = AI के लिए टूल
 tools-ask-new = { $name } को एक नया टूल इस्तेमाल करना है: { $what }
 tools-ask-write = { $name } को आपके फ़ोल्डर में “{ $what }” लिखना है:
 tools-ask-read = { $name } को आपके फ़ोल्डर में पढ़ना है:
@@ -468,6 +464,9 @@ providers-choose-folder = मॉडलों का फ़ोल्डर चु
 providers-change = बदलें
 providers-not-set-up = सेट नहीं है
 providers-folder-not-set-up = इस कंप्यूटर के एक फ़ोल्डर से मॉडल चलाता है · सेट नहीं है
+providers-this-computer-runs = चलाने के लिए तैयार: { $models }
+providers-this-computer-none = अभी कोई मॉडल नहीं: नीचे से कोई फ़िट होने वाला डाउनलोड करें
+providers-details = ब्योरा
 providers-menu = प्रोवाइडर मेन्यू: एडिट करें, हटाएँ
 providers-remove = हटाएँ
 providers-removed = प्रोवाइडर “{ $name }” हटाया गया।
@@ -477,6 +476,7 @@ providers-remove-key = कुंजी हटाएँ
 providers-key-removed = सेव करने पर कुंजी हट जाती है
 providers-edit = प्रोवाइडर एडिट करें
 providers-keep-key = सेव की हुई कुंजी रखने के लिए खाली छोड़ें।
+providers-new-address-key = नए पते के लिए कुंजी दोबारा टाइप करनी होगी: कुंजी कभी किसी दूसरे सर्वर पर नहीं जाती।
 providers-saved = प्रोवाइडर “{ $name }” सेव किया गया।
 providers-added = प्रोवाइडर “{ $name }” जोड़ा गया।
 providers-add = प्रोवाइडर जोड़ें
@@ -551,17 +551,14 @@ advanced-not-described = { $count ->
    *[other] { $count } किरदार
   } का विवरण अभी नहीं लिखा गया
 advanced-describe-cards = किरदारों का विवरण लिखें
-advanced-describe-cost = { $count ->
-    [one] { $count } कैरेक्टर
-   *[other] { $count } कैरेक्टर
-  } के लिए लगभग { $low } से { $high } टोकन
+advanced-describe-cost = पढ़े जाने वाले कार्ड: { $count }
 advanced-failed = { $count ->
     [one] { $count } विफल
    *[other] { $count } विफल
   }: { $failure }। फिर से कोशिश करने के लिए किरदारों का विवरण लिखें दबाएँ।
 advanced-describe-again = सबका विवरण फिर से लिखें
 advanced-describe-again-stop = रोकें
-advanced-describe-again-about = हेल्पर मॉडल से हर किरदार का एक-पंक्ति विवरण, सारांश, टैग और वह सब फिर से लिखता है जिससे "ज़रूरत के हिसाब से" उसे ढूँढता है, हर एक पर लगभग 11,000 से 12,000 टोकन। जो आपने खुद बदला, वह बना रहता है। प्रदाता टोकन के हिसाब से शुल्क लेते हैं।
+advanced-describe-again-about = हेल्पर मॉडल से हर कार्ड फिर से पढ़ता है और हर किरदार का एक-पंक्ति विवरण, सारांश, टैग और वह सब फिर से लिखता है जिससे "ज़रूरत के हिसाब से" उसे ढूँढता है। जो आपने खुद बदला, वह बना रहता है।
 advanced-no-characters = विवरण लिखने के लिए कोई किरदार नहीं
 advanced-describe-again-far = { $all } में से { $done } का विवरण फिर से लिखा गया
 advanced-describe-again-stopped = { $all } में से { $done } का विवरण फिर से लिखने के बाद रोका गया
@@ -826,6 +823,8 @@ server-switch-on = चालू करें
 server-network-about = फ़ोन और दूसरे कंप्यूटर Cardwave को ब्राउज़र में खोलते हैं
 server-other-devices = दूसरे डिवाइस
 server-inside = केवल इस नेटवर्क के डिवाइस इसे खोल सकते हैं, जब तक आप अपने राउटर को दूसरों के लिए सेट न करें।
+server-anywhere = कहीं से भी
+server-tailscale = इसे कहीं से भी खोलने के लिए, इस कंप्यूटर और अपने फ़ोन पर मुफ़्त ऐप Tailscale (tailscale.com) इंस्टॉल करें और दोनों पर साइन इन करें।
 server-add-account = अकाउंट जोड़ें
 server-owner = यह कंप्यूटर · खाते जोड़ और हटा सकता है
 server-more-of = और: { $name }

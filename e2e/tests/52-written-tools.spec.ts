@@ -4,7 +4,7 @@ import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { NOW, picture, stopClock } from "../pictures";
 
 // Code mode: the model writes a tool in a chat, which waits over the message field with its code until the user
-// allows it, and calls it; Settings › Tools › "Tools the AI wrote" lists it, its panel shows its code and how
+// allows it, and calls it; Settings › Advanced › "Tools the AI wrote" lists it, its panel shows its code and how
 // often it ran, and it is switched off and deleted there, with Undo. The stand-in `api` is the model (`calls`).
 // The picture of the page (`written-tools`, 1440 px, light) is of three tools the page is answered with by
 // `page.route`, as a tool's day is the server's and would change the picture from day to day; the panel is open.
@@ -34,7 +34,7 @@ async function chat(request: APIRequestContext): Promise<number> {
 const CODE = "export default function word_count({ text }) {\n  return text.trim().split(/\\s+/).filter(Boolean).length;\n}";
 const TOOL = { name: "word_count", description: "Counts the words of a text.", parameters: { type: "object", properties: { text: { type: "string" } } }, code: CODE };
 
-test("a tool the model writes is allowed in the chat, called, and listed under Settings › Tools", async ({ page, request }) => {
+test("a tool the model writes is allowed in the chat, called, and listed under Settings › Advanced", async ({ page, request }) => {
   const id = await chat(request);
   await page.goto(`/#/chats/${id}`);
   api.calls("make_tool", TOOL);
@@ -50,7 +50,7 @@ test("a tool the model writes is allowed in the chat, called, and listed under S
   await expect(page.locator("article.message").last()).toContainText("It has four words.");
   expect(api.asked.at(-1)!.body.messages.at(-1).content).toBe("4");
 
-  await page.goto("/#/settings");
+  await page.goto("/#/settings/advanced");
   const link = page.getByRole("link", { name: /Tools the AI wrote/ });
   await expect(link).toContainText("1 tool · ask before a new one runs");
   await link.click();

@@ -244,6 +244,7 @@ character-translate-card = Translate the character…
 character-discard-card = Discard character
 character-card-menu = Character menu
 character-title = Title
+character-click-to-edit = Click to edit
 character-name-the-card = Name the character
 character-summary = One-line summary for the library
 character-this-card-is-in = This character is in the Trash.{ " " }

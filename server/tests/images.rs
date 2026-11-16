@@ -256,7 +256,7 @@ async fn a_comfyui_that_fails_says_why_and_is_asked_with_the_key() {
         model: "sdxl.safetensors".into(),
         workflow: None,
     };
-    let error = images::make(&reqwest::Client::new(), &whom, "lighthouse")
+    let error = images::make(&common::server::client(), &whom, "lighthouse")
         .await
         .unwrap_err();
     assert_eq!(error.to_string(), "ComfyUI: out of memory");
@@ -276,7 +276,7 @@ async fn a_picture_at_an_address_that_is_no_web_sites_is_not_fetched() {
         model: "dall-e-3".into(),
         workflow: None,
     };
-    let client = reqwest::Client::new();
+    let client = common::server::client();
     let error = images::make_with(
         &client,
         cw_provider::images::ImageApi::OpenAi,
@@ -324,7 +324,7 @@ async fn openrouter_is_asked_at_its_images_api() {
         workflow: None,
     };
     let picture = images::make_with(
-        &reqwest::Client::new(),
+        &common::server::client(),
         cw_provider::images::ImageApi::OpenRouter,
         &whom,
         "lighthouse",

@@ -2,11 +2,8 @@ import type { APIRequestContext, Page, Request } from "@playwright/test";
 import { expect, test } from "../test";
 import { ccv4File, pictureFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
-import { picture, SIZES, stopClock, THEMES } from "../pictures";
+import { picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
 import { setProvider, setImages } from "../stored";
-
-/** The rail's two Guinivere chats say their day and time, made on the real clock: masked, so the pictures hold. */
-const twins = (page: Page) => [page.locator(".nav-chat", { hasText: "Guinivere" })];
 
 // Pictures of the chat's screens, each compared with its stored picture, pixel by pixel, at 1440 px in the
 // light theme (CLAUDE.md, "Pictures of the screens"): a chat as bubbles with a message's menu open, and with
@@ -188,7 +185,7 @@ for (const [width, height] of SIZES) {
         await expect(messages(page).last().locator(".count")).toHaveText("2 / 3");
         await messages(page).last().getByRole("button", { name: "Message options" }).click();
         await page.getByRole("menuitem", { name: "Copy" }).hover();
-        await picture(page, named("chat"), twins(page));
+        await picture(page, named("chat"), railChats(page, "Guinivere"));
       });
 
       test("the menu of the message field's \"+\" open, with words in the field", async ({ page }) => {
@@ -196,14 +193,14 @@ for (const [width, height] of SIZES) {
         await page.getByLabel("Message", { exact: true }).fill("i want see lamp");
         await button(page, "Attach, or let the AI write").click();
         await page.getByRole("menuitem", { name: "Write for me" }).hover();
-        await picture(page, named("tools"), twins(page));
+        await picture(page, named("tools"), railChats(page, "Guinivere"));
       });
 
       test("a picture the image model made, a portrait, in its message's bubble", async ({ page }) => {
         await open(page, painted, 2);
         await expect.poll(() => page.locator("img.picture").evaluate((shown: HTMLImageElement) => shown.complete && shown.naturalWidth)).toBe(832);
         await away(page);
-        await picture(page, named("painted"), twins(page));
+        await picture(page, named("painted"), railChats(page, "Guinivere"));
       });
 
       test("a chat of several characters: who it is with, Generate reply, the menu of who replies open, and the panel's characters", async ({ page }) => {
@@ -211,7 +208,7 @@ for (const [width, height] of SIZES) {
         await button(page, /^Who replies/).click();
         await expect(page.getByRole("menuitemradio", { name: "Whoever is named replies" })).toBeFocused();
         await away(page);
-        await picture(page, named("group"), twins(page));
+        await picture(page, named("group"), railChats(page, "Guinivere"));
       });
 
       if (width <= 600) {
@@ -225,7 +222,7 @@ for (const [width, height] of SIZES) {
         await expect(window.locator(".card-row")).toHaveCount(6);
         await expect.poll(() => window.locator("img.cover").evaluateAll((all: HTMLImageElement[]) => all.every((one) => one.complete))).toBe(true);
         await away(page);
-        await picture(page, named("adding"), twins(page));
+        await picture(page, named("adding"), railChats(page, "Guinivere"));
       });
 
       test("the list of chats in another order than its own, which its button says: a favorite, a chat of several pointed at, and one whose card has no art", async ({ page }) => {
@@ -240,7 +237,7 @@ for (const [width, height] of SIZES) {
         // The card without art has the chat's drawing in its picture's place.
         await expect(page.locator(".card-row span.cover")).toHaveCount(1);
         await page.locator(".card-row").nth(2).hover();
-        await picture(page, named("chats"), twins(page));
+        await picture(page, named("chats"), railChats(page, "Guinivere"));
       });
 
     });

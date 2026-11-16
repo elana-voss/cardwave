@@ -174,6 +174,8 @@ function open(home: HTMLElement, as: Picking, cast: Member[], take?: (pick: Char
   const taken: CharacterPick[] = [];
   let cards: CardSummary[] = [];
   let none: string | null = null;
+  /** Whether the library holds no card at all, which the ways to a character are offered for. */
+  let nothing = false;
   const members = (): Member[] => [...cast, ...taken.map((pick) => ({ card_id: pick.cardId, character: pick.character }))];
   /** The character of each card read: of a card from before, a chat may have another of its characters. */
   const firsts = new Map<number, string>();
@@ -232,7 +234,7 @@ function open(home: HTMLElement, as: Picking, cast: Member[], take?: (pick: Char
   /** Draws the lines of the cards read last, and the foot. */
   function draw(): void {
     // An empty library has the ways to a character beside its words.
-    const ways = none === noCards() ? (as.ways ?? []).map((way) => el("button", { type: "button", className: "btn btn-secondary btn-short", onclick: () => (box.close(), way.go()) }, way.label)) : [];
+    const ways = nothing ? (as.ways ?? []).map((way) => el("button", { type: "button", className: "btn btn-secondary btn-short", onclick: () => (box.close(), way.go()) }, way.label)) : [];
     list.replaceChildren(...cards.map(row), ...(none ? [el("li", { className: "row meta empty flex ai-c g-8 wrap" }, el("span", { className: "f-grow" }, none), ...ways)] : []));
     foot.hidden = !gathering();
     pills.replaceChildren(
@@ -249,8 +251,8 @@ function open(home: HTMLElement, as: Picking, cast: Member[], take?: (pick: Char
       await Promise.all(unread.map(async (cardId) => firsts.set(cardId, (await getCard(cardId)).characters[0]?.id ?? "")));
       return read;
     },
-    ([found, empty]) => {
-      [cards, none] = [found, empty];
+    ([found, empty, bare]) => {
+      [cards, none, nothing] = [found, empty, bare];
       draw();
     },
   );

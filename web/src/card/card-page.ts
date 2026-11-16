@@ -24,6 +24,7 @@ import type { Translating } from "./card-languages";
 import { el, oneAtATime, reason } from "../dom";
 import { remembered } from "../storage";
 import { sameMode, usedIn } from "./modes";
+import { pictureMade } from "./card-picture";
 import { wording } from "../language/language";
 
 /** The card's one character (a card from before may have more): the one its page shows. */
@@ -171,6 +172,7 @@ export function newCard(given: number | null, parts: Pick<Card, "node" | "body" 
       gone: leaving.signal,
       opened: new Set(),
       short: () => c.details,
+      hint: () => wording("character-click-to-edit"),
       names: () => ({ char: person(c)?.name || c.detail?.card.names[0] || "", user: c.you }),
       restoreGreeting: async (text) => {
         await save(c, (card) => card.characters[SHOWN].greetings.push({ reference: null, text }), "restored");
@@ -231,6 +233,12 @@ export const person = (c: Card) => c.edit.characters[SHOWN] as EditCharacter | u
 export const modes = (c: Card) => c.edit.modes ?? [];
 export const inMode = (c: Card) => modes(c).find((one) => sameMode(one, c.mode ?? "")) ?? modes(c)[0] ?? null;
 
+/** Draws the page anew, or only its state where a text is being written in it: a redraw would take the field away. */
+export function redrawIdle(c: Card): void {
+  if (c.body.querySelector(".in-place")) c.drawState();
+  else c.render();
+}
+
 /** Runs `step` after the saves that wait. */
 export function after(c: Card, step: () => Promise<void> | void): Promise<void> {
   c.queue = c.queue.then(step).catch(async (error: unknown) => {
@@ -258,6 +266,8 @@ export async function save(c: Card, change: (card: CardEdit) => void, made?: str
       if (c.id !== null && c.savedLine) c.savedLine.textContent = wording("character-saved");
     } finally {
       c.waiting--;
+      // A rename is told once: the next save of the same edit must not make it again.
+      delete c.edit.renamed;
     }
     c.notice.replaceChildren();
     if (!c.waiting && c.id !== null) await refresh(c);
@@ -294,6 +304,7 @@ async function make(c: Card): Promise<void> {
   );
   c.pending = null;
   c.id = made.card_id;
+  pictureMade(c.node);
   // The page stays as it is, under the card's address; a save after this one is of the card as made.
   history.replaceState(null, "", `#/library/${c.id}`);
   c.edit = await getCardEdit(c.id);

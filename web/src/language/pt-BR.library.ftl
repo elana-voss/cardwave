@@ -244,6 +244,7 @@ character-translate-card = Traduzir o personagem…
 character-discard-card = Descartar personagem
 character-card-menu = Menu do personagem
 character-title = Título
+character-click-to-edit = Clique para editar
 character-name-the-card = Dê um nome ao personagem
 character-summary = Resumo de uma linha para a biblioteca
 character-this-card-is-in = Este personagem está na Lixeira.{ " " }

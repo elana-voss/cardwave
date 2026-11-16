@@ -82,6 +82,15 @@ function filter(asked = { sort: "recent", tags: [] as string[] }) {
   };
 }
 
+test("a content level among the tags is a pill in words, and pressing it chooses the server's term", async () => {
+  const panel = filter();
+  panel.open();
+  await panel.asking().answer([tag("nsfw-extreme"), tag("sea")]);
+  expect(panel.shown()).toEqual(["For adults, extreme", "sea"]);
+  panel.pill("For adults, extreme").click();
+  expect(panel.asking().tags).toEqual(["nsfw-extreme"]);
+});
+
 test("the button says whether tags are chosen, and how many", () => {
   const none = filter().button;
   expect(none.ariaLabel).toBe("Sort and filter");

@@ -15,5 +15,5 @@ mod mutex;
 pub use clock::now_ms;
 pub use copy::{COPY_WORD, copy_name};
 pub use events::{Events, PageEvent};
-pub use fail::{Code, Detail, ErrorBody, Fail, NotFound, as_internal, coded, told};
+pub use fail::{Code, Detail, ErrorBody, Fail, NotFound, as_internal, coded, failed_as, told};
 pub use mutex::lock;

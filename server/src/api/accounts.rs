@@ -13,9 +13,11 @@
 //! (`PUT` renames it), `/api/account/picture` its picture.
 //! `/api/network` (this computer's account alone) says and sets whether other
 //! devices reach the server (`users::reached`) and the address they open, found
-//! by the way out to the internet (`this_computer`).
+//! by cw-platform's `net` (`this_computer`), and the Tailscale address a device
+//! opens from anywhere where Tailscale is up (`in_tailscale`). An account's
+//! delete waits for its work under way (`AppState::busy`).
 
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::net::{IpAddr, SocketAddr};
 
 use axum::body::Bytes;
 use axum::extract::{DefaultBodyLimit, FromRequestParts, Path, State};
@@ -152,6 +154,9 @@ pub(crate) struct NetworkState {
     /// Where another device opens Cardwave, while it reaches it; none where
     /// this computer's address in the network is not found.
     pub address: Option<String>,
+    /// Where a device signed in to the same Tailscale opens Cardwave from
+    /// anywhere, while it reaches it; none where Tailscale is not up here.
+    pub anywhere: Option<String>,
 }
 
 /// Other devices reach the server, or no longer.
@@ -348,13 +353,7 @@ async fn delete(
             // Held to the delete, so no work the check would find begins in between.
             let _held = cw_core::lock(&held.guarded);
             // What would write into an account that is gone.
-            let busy = held.replies().keys().any(|(user, _)| *user == id)
-                || held.describing().contains_key(&id)
-                || held.remembering().values().any(|user| *user == id)
-                || held.coding().values().any(|task| task.user() == id)
-                || held.titles.for_user(id)
-                || held.user_at_work(id);
-            anyhow::ensure!(!busy, Fail::new(Code::AccountBusy));
+            anyhow::ensure!(!held.busy(Some(id)), Fail::new(Code::AccountBusy));
             users::delete(db, id)?;
             // After the account, so that no session begins between the two.
             held.sessions.end_all(db, id, None)
@@ -399,27 +398,40 @@ async fn remove_picture(
     picture_set(state, user, None).await
 }
 
-/// This computer's address in the home network: the one the way out to the
-/// internet leaves by. No packet is sent: a UDP socket only picks its way
-/// when it is connected.
-fn this_computer() -> Option<IpAddr> {
-    let probe = std::net::UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)).ok()?;
-    probe.connect((Ipv4Addr::new(192, 0, 2, 1), 9)).ok()?;
-    Some(probe.local_addr().ok()?.ip()).filter(|ip| !ip.is_unspecified())
-}
-
 /// The state of the home network's listener at `at`.
 fn network_state(at: Option<SocketAddr>) -> NetworkState {
+    network_state_by(
+        at,
+        cw_platform::net::this_computer,
+        cw_platform::net::in_tailscale,
+    )
+}
+
+/// The same, with this computer's address in the home network and in Tailscale as `home` and `tailscale` find
+/// them, asked only where the listener is on every address.
+fn network_state_by(
+    at: Option<SocketAddr>,
+    home: impl Fn() -> Option<IpAddr>,
+    tailscale: impl Fn() -> Option<IpAddr>,
+) -> NetworkState {
     let address = at.and_then(|at| {
         let host = match at.ip().is_unspecified() {
-            true => this_computer()?,
+            true => home()?,
             false => at.ip(),
         };
         Some(format!("http://{}/", SocketAddr::new(host, at.port())))
     });
+    // Shown by number: the origin guard lets in no MagicDNS name.
+    let anywhere = at.filter(|at| at.ip().is_unspecified()).and_then(|at| {
+        Some(format!(
+            "http://{}/",
+            SocketAddr::new(tailscale()?, at.port())
+        ))
+    });
     NetworkState {
         on: at.is_some(),
         address,
+        anywhere,
     }
 }
 
@@ -487,3 +499,32 @@ async fn rename_account(
 
 // This file's routes as tools (`tools::app`), which build.rs lists.
 include!(concat!(env!("OUT_DIR"), "/route_tools/accounts.rs"));
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A listener on every address is reached from anywhere at this computer's Tailscale address, by number; one
+    /// on a single address, or with no Tailscale up, is not.
+    #[test]
+    fn the_address_from_anywhere_is_the_tailscale_one_with_the_listeners_port() {
+        let ip = |text: &str| Some(text.parse::<IpAddr>().unwrap());
+        let every: SocketAddr = "0.0.0.0:8477".parse().unwrap();
+        let state = network_state_by(Some(every), || ip("192.168.1.20"), || ip("100.64.0.7"));
+        assert_eq!(state.address.as_deref(), Some("http://192.168.1.20:8477/"));
+        assert_eq!(state.anywhere.as_deref(), Some("http://100.64.0.7:8477/"));
+        let one: SocketAddr = "192.168.1.20:8477".parse().unwrap();
+        assert_eq!(
+            network_state_by(Some(one), || None, || ip("100.64.0.7")).anywhere,
+            None
+        );
+        assert_eq!(
+            network_state_by(Some(every), || ip("192.168.1.20"), || None).anywhere,
+            None
+        );
+        assert_eq!(
+            network_state_by(None, || ip("192.168.1.20"), || ip("100.64.0.7")).anywhere,
+            None
+        );
+    }
+}

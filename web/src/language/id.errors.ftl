@@ -72,7 +72,10 @@ error-not-found = Tidak ada { $what ->
     [voice] suara
    *[other] yang
 } seperti itu. Mungkin sudah dihapus.
-error-chat-busy = Balasan sedang ditulis di chat ini; hentikan dulu.
+error-chat-busy = { $what ->
+    [coding_task] Tugas coding dari chat ini sedang berjalan; hentikan dulu.
+   *[other] Balasan sedang ditulis di chat ini; hentikan dulu.
+}
 error-no-provider = { $what ->
     [chat_model] Belum ada model chat yang dipilih. Pilih satu di Pengaturan › Model.
    *[other] Belum ada penyedia yang disiapkan. Tambahkan satu di Pengaturan › Penyedia.
@@ -102,7 +105,7 @@ error-drive-root-for-model = Akar sebuah drive berisi terlalu banyak untuk diber
 error-data-folder = Folder itu berisi data Cardwave sendiri, atau ada di dalamnya; pilih yang lain.
 error-commands-windows-only = Perintah hanya dijalankan di Windows.
 error-recycle-bin-windows-only = Berkas dipindahkan ke Keranjang Sampah hanya di Windows.
-error-files-tool-off = Nyalakan Berkas di Pengaturan › Alat dulu: tim membaca dan menulis folder tugas dengannya.
+error-files-tool-off = Nyalakan Berkas di Pengaturan › Lanjutan › Alat untuk AI dulu: tim membaca dan menulis folder tugas dengannya.
 
 ## Gambar, balasan, dan suara
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] Persona “{ $name }” ada di Sampah; pulihkan untuk memakainya.
    *[other] Itu ada di Sampah; pulihkan dulu.
 }
+-card-unreadable = File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
 error-not-readable = { $what ->
     [damaged_key] Kuncinya rusak.
     [json] Berkas ini bukan JSON yang sah.
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] Cadangan ini rusak: kuncinya tidak dapat dibaca.
     [base64] Itu bukan base64.
     [base64_file] { $name } bukan base64.
-    [card_defined_twice] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] Sebuah nama berkas di dalam kartu tidak dapat dipakai.
     [card_reference] Itu tidak menunjuk bagian mana pun dari kartu.
     [ccv4_version] Kartu ini dibuat oleh Cardwave yang lebih baru. Perbarui Cardwave untuk membukanya.
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] Gambar diam figur bukan PNG berukuran paling besar 4 MB.
     [figure_type] Figur 3D berupa berkas VRM, GLB, atau FBX.
     [folder_read] Folder tidak dapat dibaca.
-    [format_version] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
+    [format_version] { -card-unreadable }
     [image_model_answer] Jawaban model gambar tidak dapat dibaca.
     [image_model_picture] Gambar dari model gambar tidak dapat dibaca.
     [key_characters] Kunci berisi karakter yang tidak boleh ada di kunci. Salin lagi dari situs penyedia.
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] Rekaman terlalu pendek: diperlukan minimal { $shortest } detik.
     [recording_silent] Rekaman tidak bersuara.
     [recording_wav] Rekaman ini bukan berkas WAV.
-    [sillytavern_base64] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] Kartu kosong.
     [sillytavern_file] Kartu SillyTavern di berkas ini tidak dapat dibaca.
-    [sillytavern_json] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
-    [sillytavern_object] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] Kartu SillyTavern di PNG ini tidak dapat dibaca.
-    [spec_version] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
-    [spec_version_form] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
-    [toml] File ini bukan kartu karakter yang dapat dibaca Cardwave. Ekspor lagi dari aplikasi asalnya.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] Berkas Word tidak dapat dibaca.
     [word_text] Berkas Word tidak berisi teks.
     [workflow] Workflow “{ $name }” tidak dapat dibaca.
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] Karakter terlalu panjang untuk model pembantu; pilih model pembantu yang membaca lebih banyak.
     [card_for_chat] Karakter terlalu panjang untuk model chat, sehingga ia tidak akan menjadi dirinya sendiri; pilih model chat yang membaca lebih banyak, atau persingkat karakternya.
+    [message_for_chat] Pesan terlalu panjang untuk model chat; persingkat, kirim lebih sedikit gambar bersamanya, atau pilih model chat yang membaca lebih banyak.
     [card_file] Berkas lebih besar dari { $most } MB.
     [checkpoint_folder] Folder terlalu besar untuk disalin sebelum setiap langkah.
     [expression_pack_size] Gambar-gambar { $name } terlalu besar.
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] Membaca keras butuh komponen Microsoft yang tidak ada: pasang Visual C++ Redistributable dari microsoft.com, lalu mulai ulang Cardwave.
     [workflow_no_text] Workflow “{ $name }” tidak punya kolom teks untuk kata-kata gambar.
     [workflow_use] Workflow “{ $name }” tidak dapat dipakai.
-    [written_tools_full] Kamu bisa menyimpan paling banyak { $most_tools } alat; hapus dulu satu di Pengaturan › Alat buatan AI.
+    [written_tools_full] Kamu bisa menyimpan paling banyak { $most_tools } alat; hapus dulu satu di Pengaturan › Lanjutan › Alat buatan AI.
     [delete_not_in_trash] Hanya yang ada di Sampah dapat dihapus selamanya; pindahkan ke sana dulu.
    *[other] Itu tidak dapat dilakukan.
 }
+-helper-unusable = Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
 error-model-answer = { $what ->
     [no_greeting] AI tidak menulis sapaan.
-    [background_answer] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
-    [background_text] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] Jawaban AI bukan teks-teks karakter.
-    [classification] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [classification] { -helper-unusable }
     [example_messages] AI tidak menulis contoh pesan.
     [no_example_message] AI menulis contoh pesan tanpa teksnya.
     [json] Jawaban AI tidak dalam bentuk yang diminta.
-    [keywords] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
-    [logline] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] Penyedia AI tidak mengirim balasan chat.
     [no_fitting_answer] AI tidak memberi jawaban yang dapat dipakai dalam tiga percobaan.
     [no_picture] Model gambar menjawab tanpa gambar.
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] Model pembantu tidak menemukan kolom untuk kata-kata gambar.
     [picture_server_no_picture] Server gambar menjawab tanpa gambar.
     [picture_words] Model pembantu tidak menulis kata-kata untuk gambar.
-    [rating] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [rating] { -helper-unusable }
     [reply_broke_off] Balasan terputus.
-    [needs] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [needs] { -helper-unusable }
     [rounds] Tim tidak menyelesaikan pekerjaannya dalam { $rounds } putaran.
     [search_left_out] Model pencarian melewatkan sebuah teks.
     [search_model] Jawaban model pencarian tidak dapat dibaca.
     [search_tokens] Token model pencarian tidak dapat dibaca.
-    [title] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [title] { -helper-unusable }
     [too_many_tools] AI memanggil terlalu banyak alat.
-    [worker_mode] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
-    [worker_texts] Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] Penyedia AI melaporkan: { $reason }
    *[other] Jawaban AI tidak dapat dipakai.
 }

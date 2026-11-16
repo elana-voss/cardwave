@@ -35,8 +35,14 @@ pub const MODEL: &str = "bge-m3";
 /// The most tokens of a text the model is given at once: its context of 512
 /// less room for its own marks, as Cardwave cuts.
 pub(crate) const CHUNK_TOKENS: usize = 480;
-/// How long the model may take to be ready after its start.
+/// How long the search model may take to be ready after its start.
 const START_LIMIT: Duration = Duration::from_secs(120);
+
+/// Whether a failed start on the graphics card is tried again on the processor alone: not a time-out, which
+/// says nothing of the card.
+fn retry_on_cpu(failure: &anyhow::Error) -> bool {
+    !cw_core::coded(failure).is_some_and(|fail| fail.code == Code::TimedOut)
+}
 
 /// Where the search model comes from and what runs it.
 #[derive(Clone, Debug)]
@@ -72,9 +78,7 @@ impl Setup {
 
 /// A key of 32 random bytes in hex, for one start of `llama-server`.
 fn new_key() -> anyhow::Result<String> {
-    let mut bytes = [0u8; 32];
-    getrandom::fill(&mut bytes).map_err(|e| anyhow::anyhow!("no random source: {e}"))?;
-    Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())
+    cw_key::random_hex(32)
 }
 
 /// Where the model's file is kept in the data folder.
@@ -117,19 +121,20 @@ impl Running {
         model: &Path,
         log: &Path,
     ) -> anyhow::Result<Self> {
-        Self::launch(http, &setup.runner, model, log, EMBEDDING).await
+        Self::launch(http, &setup.runner, model, log, EMBEDDING, START_LIMIT).await
     }
 
     /// Starts `llama-server` with the model's file `model` and `args` as
     /// `runner` says, on the graphics card, else on the processor alone, and
-    /// waits until it is ready; a stand-in is only named. Local models run so
-    /// too (`local`).
+    /// waits until it is ready, at most `limit`; a stand-in is only named.
+    /// Local models run so too (`local`).
     pub(crate) async fn launch(
         http: &Client,
         runner: &Runner,
         model: &Path,
         log: &Path,
         args: &[&str],
+        limit: Duration,
     ) -> anyhow::Result<Self> {
         let folder = match runner {
             Runner::At(url) => {
@@ -141,15 +146,16 @@ impl Running {
             }
             Runner::LlamaServer(folder) => folder,
         };
-        match Self::run(http, folder, model, log, args, false).await {
+        match Self::run(http, folder, model, log, args, limit, false).await {
             Ok(running) => Ok(running),
-            Err(failure) => {
+            Err(failure) if retry_on_cpu(&failure) => {
                 tracing::warn!(
                     "{} did not start on the graphics card: {failure:#}",
                     model.display()
                 );
-                Self::run(http, folder, model, log, args, true).await
+                Self::run(http, folder, model, log, args, limit, true).await
             }
+            Err(failure) => Err(failure),
         }
     }
 
@@ -171,6 +177,7 @@ impl Running {
         model: &Path,
         log: &Path,
         args: &[&str],
+        limit: Duration,
         cpu: bool,
     ) -> anyhow::Result<Self> {
         let port = std::net::TcpListener::bind("127.0.0.1:0")?
@@ -187,7 +194,15 @@ impl Running {
             .args(["--api-key", &key])
             .stdin(Stdio::null())
             .stdout(Stdio::null())
-            .stderr(std::fs::File::create(log)?)
+            .stderr(
+                // The second run adds to what the first wrote, which its failure points to.
+                std::fs::OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .append(cpu)
+                    .truncate(!cpu)
+                    .open(log)?,
+            )
             .kill_on_drop(true);
         if cpu {
             command.args(["--device", "none"]);
@@ -223,7 +238,7 @@ impl Running {
                 break;
             }
             ensure!(
-                started.elapsed() < START_LIMIT,
+                started.elapsed() < limit,
                 Fail::said(Code::TimedOut, "llama-server was not ready in time")
                     .with("whose", "llama_server")
             );
@@ -513,13 +528,28 @@ mod tests {
         (url, served)
     }
 
+    #[test]
+    fn a_time_out_is_not_tried_again_on_the_processor() {
+        let timed_out = anyhow::Error::new(Fail::said(Code::TimedOut, "not ready"));
+        let ended = anyhow::Error::new(Fail::said(Code::NotPossible, "ended"));
+        assert!(!retry_on_cpu(&timed_out));
+        assert!(retry_on_cpu(&ended));
+    }
+
     #[tokio::test]
     async fn every_request_sends_the_key_it_was_started_with() {
         let (url, served) = one_request();
         let http = Client::new();
-        let running = Running::launch(&http, &Runner::At(url), Path::new("m"), Path::new("l"), &[])
-            .await
-            .expect("the stand-in");
+        let running = Running::launch(
+            &http,
+            &Runner::At(url),
+            Path::new("m"),
+            Path::new("l"),
+            &[],
+            START_LIMIT,
+        )
+        .await
+        .expect("the stand-in");
         assert_eq!(running.tokens(&http, "hello").await.expect("tokens"), 2);
         let request = served.join().expect("the server");
         let header = format!("authorization: {}", running.authorization()).to_lowercase();

@@ -142,7 +142,9 @@ impl Storage for Db {
             query
                 .query_map(params_from_iter(values), |r| {
                     let list = |at: usize| -> rusqlite::Result<Vec<String>> {
-                        Ok(serde_json::from_str(&r.get::<_, String>(at)?).unwrap_or_default())
+                        let kept: String = r.get(at)?;
+                        Ok(crate::json::or_none(Some(&kept), "a card's names or tags")
+                            .unwrap_or_default())
                     };
                     Ok(CardRow {
                         id: r.get(0)?,

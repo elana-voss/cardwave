@@ -5,9 +5,9 @@
 // `passwordDialog`, a form dialog whose fields `asked` turns into what the server is asked; the red box says what
 // a forgotten password means. Of another account than this computer's (`other`) the line is that account's own
 // password, which signs it in, and has "Change" alone. `startScreen` is what main.ts shows in the app's place
-// while the server waits for the password, and accounts.ts where a page signs in: the logo, "Back" where one was
-// picked of several, the account's letter and name, the field and "Open" (or "Sign in"), which gives the password
-// to `take`, and under it what a forgotten password means; a wrong one is said under the field, and the wait after
+// while the server waits for the password, and accounts.ts where a page signs in: the logo, the account's letter and
+// name, the field and "Open" (or "Sign in"), which gives the password to `take` (on a phone under the field), under
+// it what a forgotten password means, and "Back" last where one was picked of several; a wrong one is said under the field, and the wait after
 // too many counts down there and clears itself. `passwordIs`
 // says whether this computer's account has one on (main.ts at the start, the dialog at a change), and
 // `watchPassword` passes it on to the account's menu, whose "Lock" goes by it.
@@ -124,8 +124,9 @@ export function startForgotten(): { own: string; other: string } {
 
 /**
  * The start screen of the account called `name`: `take` is given the password, and fails where it is not taken.
- * `action` is its button's word, `forgotten` what stands under the field, and `back`, where given, a "Back" over the
- * account.
+ * `action` is its button's word, `forgotten` what stands under the field, and `back`, where given, a "Back" under
+ * all of it (never between the logo and the account). The field and its button are a `.field-row`: on a phone the
+ * button stands under the field, as wide.
  */
 export function startScreen(
   name: string | null,
@@ -134,7 +135,7 @@ export function startScreen(
 ): HTMLElement {
   const input = el("input", { id: "start-password", className: "field f-grow minw0", type: "password", required: true, autocomplete: "current-password", ariaLabel: wording("password-password"), placeholder: wording("password-password") });
   const wrong = noticeBox();
-  const form = el("form", { className: "start-form flex f-col g-8" }, el("div", { className: "flex g-8" }, input, el("button", { type: "submit", className: "btn btn-primary" }, action)), wrong);
+  const form = el("form", { className: "start-form flex f-col g-8" }, el("div", { className: "field-row flex g-8" }, input, el("button", { type: "submit", className: "btn btn-primary" }, action)), wrong);
   const run = oneAtATime(wrong);
   let wait = 0;
   let ticking: ReturnType<typeof setInterval> | undefined;
@@ -170,11 +171,11 @@ export function startScreen(
       "div",
       { className: "start-column flex f-col ai-c g-20" },
       el("img", { src: logo, alt: wording("app-name"), className: "start-logo" }),
-      back && el("button", { type: "button", className: "textbtn", onclick: back }, wording("password-back")),
       el("span", { className: "initial", ariaHidden: "true" }, initialOf(called)),
       el("h1", null, called),
       form,
       el("p", { className: "hint start-says" }, forgotten),
+      back && el("button", { type: "button", className: "textbtn", onclick: back }, wording("password-back")),
     ),
   );
   queueMicrotask(() => input.focus());

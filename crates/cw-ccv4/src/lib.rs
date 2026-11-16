@@ -464,6 +464,22 @@ impl Document {
             .cloned()
     }
 
+    /// Every block that names modes, of every language, as references.
+    pub(crate) fn moded_blocks(&self) -> Vec<String> {
+        let mut found = Vec::new();
+        for (kind, elements) in self.root.iter().filter(|(kind, _)| *kind != "revision") {
+            let Some(elements) = elements.as_table() else {
+                continue;
+            };
+            for (id, block) in elements {
+                if block.get("modes").is_some() {
+                    found.push(format!("{kind}.{id}"));
+                }
+            }
+        }
+        found
+    }
+
     /// The modes the block `reference` is used in (its `modes`); none where it
     /// is used in all.
     pub(crate) fn block_modes(&self, reference: &str) -> Vec<String> {

@@ -111,7 +111,7 @@ function chatsPart(c: Card): HTMLElement | null {
     el(
       "li",
       { className: "bline row" },
-      el("span", { className: "f-grow flex ai-c g-10" }, el("a", { className: "ink-link", href: `#/chats/${chat.id}` }, chatTitle(chat.title)), el("span", { className: "meta", title: moment(chat.updated_at) }, wording("card-box-chat-ago", { ago: ago(chat.updated_at) }))),
+      el("span", { className: "f-grow flex ai-c g-10" }, el("a", { className: "ink-link reach", href: `#/chats/${chat.id}` }, chatTitle(chat.title)), el("span", { className: "meta", title: moment(chat.updated_at) }, wording("card-box-chat-ago", { ago: ago(chat.updated_at) }))),
       lineButton(wording("card-box-move-chat-to-trash"), wording("card-box-move-to-trash"), "trash", () => trash(chat)),
     ),
   );

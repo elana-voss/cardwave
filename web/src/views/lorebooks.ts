@@ -50,13 +50,13 @@ export function lorebooksView(): View {
     unread: wording("lorebooks-couldnt-load"),
     asked,
     read: () => readList(listLorebooks, wording("list-screen-lorebooks"), asked, noLorebooks()),
-    show: ([found, none]) => {
+    show: ([found, none, nothing]) => {
       list.replaceChildren(...found.map((lorebook) => keyed(row(lorebook), lorebook.id)));
       const offers = [
         { label: wording("create-new-lorebook"), go: () => newLorebook(node) },
         { label: wording("create-import-lorebook"), go: () => file.click() },
       ];
-      if (none) list.append(emptyLine(none, none === noLorebooks() ? offers : []));
+      if (none) list.append(emptyLine(none, nothing ? offers : []));
     },
   });
   const file = fileImport("lorebook", ".json,application/json", node, addLorebook, (first) => {

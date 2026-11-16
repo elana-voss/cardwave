@@ -1,5 +1,5 @@
 //! The desktop app: starts the Cardwave server in-process on a free local port
-//! (none free: a message box, `no_free_port`) and opens a window on it, just
+//! (it cannot start: a message box, `cannot_start`) and opens a window on it, just
 //! another browser client; logs in the data folder's `logs` (`open_logs`). A
 //! second start brings the open window up and ends (not on a test's scratch folder).
 //!
@@ -97,50 +97,85 @@ fn main() -> tauri::Result<()> {
                 eprintln!("the logs could not be started: {failure}");
             }
             let logs = logs::folder(&data_dir);
-            let web_dir = web_dir(app.handle())?;
-            let runtime = tokio::runtime::Runtime::new()?;
-            let listener = runtime
-                .block_on(bind_local(DEFAULT_PORTS))
-                .inspect_err(|_| no_free_port())?;
-            let url = format!("http://{}/", listener.local_addr()?);
-            // The home network's listener starts on this runtime, where the database says so.
-            let inside = runtime.enter();
-            // `llama-server` comes with the app, filled in by `tools/llama.py`.
-            let llama = app.path().resource_dir()?.join("llama");
-            let mut options = Options::product(data_dir, Some(web_dir), llama)?;
-            // A test's scratch folder has its own Documents, so the user's is never imported.
-            if let Some(dir) = &scratch {
-                options.documents = Some(dir.join("Documents"));
-            }
-            let server = router(options)?;
-            drop(inside);
-            std::thread::spawn(move || {
-                if let Err(e) = runtime.block_on(serve(listener, server, std::future::pending())) {
-                    eprintln!("Cardwave server stopped: {e}");
-                }
-            });
-            allow_pages(app.handle(), &url)?;
-            app.manage(Shell { url, scratch, logs });
-            main_window(app.handle(), "")?;
-            let handle = app.handle().clone();
-            std::thread::spawn(move || follow_cursor(&handle));
+            start(app, data_dir, scratch.clone(), logs.clone())
+                .inspect_err(|failure| tell(&cannot_start(failure, &logs)))?;
             Ok(())
         })
         .run(tauri::generate_context!())
 }
 
-/// Tells the user, in a system message box, that the app cannot start while
-/// other programs hold all its ports; the app ends after it. English: the
-/// shell has no texts of its own in the app's languages.
-fn no_free_port() {
+/// Starts the server on `data_dir` and opens the app's window on it.
+fn start(
+    app: &tauri::App,
+    data_dir: PathBuf,
+    scratch: Option<PathBuf>,
+    logs: PathBuf,
+) -> anyhow::Result<()> {
+    let web_dir = web_dir(app.handle())?;
+    let runtime = tokio::runtime::Runtime::new()?;
+    let listener = runtime
+        .block_on(bind_local(DEFAULT_PORTS))
+        .map_err(|_| NoFreePort)?;
+    let url = format!("http://{}/", listener.local_addr()?);
+    // The home network's listener starts on this runtime, where the database says so.
+    let inside = runtime.enter();
+    // `llama-server` comes with the app, filled in by `tools/llama.py`.
+    let llama = app.path().resource_dir()?.join("llama");
+    let mut options = Options::product(data_dir, Some(web_dir), llama)?;
+    // A test's scratch folder has its own Documents, so the user's is never imported.
+    if let Some(dir) = &scratch {
+        options.documents = Some(dir.join("Documents"));
+    }
+    let server = router(options)?;
+    drop(inside);
+    std::thread::spawn(move || {
+        if let Err(e) = runtime.block_on(serve(listener, server, std::future::pending())) {
+            eprintln!("Cardwave server stopped: {e}");
+        }
+    });
+    allow_pages(app.handle(), &url)?;
+    app.manage(Shell { url, scratch, logs });
+    main_window(app.handle(), "")?;
+    let handle = app.handle().clone();
+    std::thread::spawn(move || follow_cursor(&handle));
+    Ok(())
+}
+
+/// Tells the user `text` in a system message box; the app ends after it.
+/// English: the shell has no texts of its own in the app's languages.
+fn tell(text: &str) {
     rfd::MessageDialog::new()
         .set_level(rfd::MessageLevel::Error)
         .set_title("Cardwave")
-        .set_description(NO_FREE_PORT)
+        .set_description(text)
         .set_buttons(rfd::MessageButtons::Ok)
         // Its answer can only be the one button.
         .show();
 }
+
+/// Why the app could not start, for the user: other programs hold all its
+/// ports (`NoFreePort`), else what failed and the folder of the logs.
+fn cannot_start(failure: &anyhow::Error, logs: &Path) -> String {
+    if failure.is::<NoFreePort>() {
+        return NO_FREE_PORT.into();
+    }
+    format!(
+        "Cardwave could not start: {failure:#}. What happened is written in the logs in {}.",
+        logs.display()
+    )
+}
+
+/// Every port the app may use is held by another program.
+#[derive(Debug)]
+struct NoFreePort;
+
+impl std::fmt::Display for NoFreePort {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("no free port")
+    }
+}
+
+impl std::error::Error for NoFreePort {}
 
 const NO_FREE_PORT: &str = "Cardwave could not start because the ports it uses are in use by \
     other programs. Close some programs or restart your computer, then start Cardwave again.";
@@ -567,6 +602,15 @@ mod tests {
             script,
             r#"if (location.origin === "http://127.0.0.1:8477") window.cardwaveDesktop = {"downloads":null,"logs":"C:/logs","window":"main"};"#
         );
+    }
+
+    #[test]
+    fn a_start_that_failed_says_why_and_where_the_logs_are() {
+        let logs = Path::new("C:/data/logs");
+        let failure = anyhow::anyhow!("the database could not be opened");
+        let text = cannot_start(&failure, logs);
+        assert!(text.contains("the database could not be opened") && text.contains("C:/data/logs"));
+        assert_eq!(cannot_start(&NoFreePort.into(), logs), NO_FREE_PORT);
     }
 
     #[test]

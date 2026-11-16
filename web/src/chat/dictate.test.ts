@@ -2,6 +2,7 @@
 // while it records (stand-ins for the microphone, the page's sound, the server and the WAV), and where the words dictated go into the message field.
 import { beforeEach, expect, test, vi } from "vitest";
 import { getDictation, hear, loadDictation } from "../api/client";
+import { announce } from "../dom";
 import { dictateButton, inserted } from "./dictate";
 
 vi.mock("../api/client", () => ({ getDictation: vi.fn(), hear: vi.fn(), loadDictation: vi.fn(async () => {}) }));
@@ -134,4 +135,17 @@ test("a tab left while dictating ends it, and what was said still goes into the 
   expect(stopped).toHaveBeenCalled();
   expect(field.value).toBe("Hello.");
   expect(button.title).toBe("Dictate");
+});
+
+test("a hearing that failed says why and is not followed by \"Nothing was heard\"", async () => {
+  vi.mocked(announce).mockClear();
+  vi.mocked(hear).mockRejectedValueOnce(new Error("the model did not load"));
+  const { button } = await microphone();
+  button.click();
+  await settled();
+  sounds[0].play(0.2, 1);
+  button.click();
+  await settled();
+  await settled();
+  expect(vi.mocked(announce).mock.calls.map(([text]) => text)).toEqual(["Dictation failed: The model did not load. Try again."]);
 });

@@ -12,7 +12,9 @@
 // page made anew at a start is drawn as its answers come, so its scroll is put back by each part's key for a
 // while, until the user moves it (`putBack`); a screen reads the address as it is made, so it is made after the
 // address is set (`draw`). When the language changes, every tab's screen is made anew, with its scroll and what
-// the user typed kept (`relanguage`, typed.ts).
+// the user typed kept (`relanguage`, typed.ts). The tabs can be switched off in Settings › Appearance (`setTabsOn`,
+// the owner, 2026-11-15, on at first): then one tab, what would open a new one shows it in that tab, and the
+// title bar has no tabs, "+" or "All tabs" (`data-tabs-off` on the body, shell.css).
 import { type View } from "../dom";
 import { remember, remembered } from "../storage";
 import { inDesktop } from "../desktop";
@@ -28,6 +30,18 @@ export const TAB_LEAST = 140;
 export const TAB_SLOT = 5;
 /** How long after a scroll stops it is kept, in milliseconds. */
 const KEEP_MS = 300;
+/** Where the choice of tabs on or off is kept in the browser, and the event on the document that tells of a change. */
+const TABS_ON = "tabs-on";
+const TABS_CHANGED = "tabs-on";
+
+/** Are the tabs on: on until switched off. */
+export const tabsOn = (): boolean => remembered(TABS_ON) !== "off";
+
+/** Switches the tabs on or off, kept for the next start; the tabs of this window follow at once. */
+export function setTabsOn(on: boolean): void {
+  remember(TABS_ON, on ? "on" : "off");
+  document.dispatchEvent(new Event(TABS_CHANGED));
+}
 
 /** A part's scroll in a tab's page: the part by its key (`keyOf`), how far down and how far right. */
 type Scroll = [key: string, top: number, left: number];
@@ -137,12 +151,21 @@ export class Tabs {
     watchTyping();
     if (alone) return;
     listen(this);
+    this.follow();
+    document.addEventListener(TABS_CHANGED, () => this.follow());
+    // Switched in another window of this browser.
+    window.addEventListener("storage", (event) => event.key === TABS_ON && this.follow());
     // A scroll is kept a moment after it stops, for the next start.
     let later = 0;
     document.addEventListener("scroll", () => {
       clearTimeout(later);
       later = window.setTimeout(() => this.keep(), KEEP_MS);
     }, true);
+  }
+
+  /** Are the tabs restored: the locked and sign-in screens and first seconds of a start have none to act on. */
+  restored(): boolean {
+    return this.kept !== null;
   }
 
   /** The tab in view. */
@@ -181,6 +204,7 @@ export class Tabs {
 
   /** Shows `address` in a new tab; the tab that holds it, where one does, as it is where it is the page it shows. */
   open(address: string): void {
+    if (!tabsOn()) return this.go(address);
     const holder = this.holding(address);
     if (holder?.address === address) return this.show(holder);
     if (holder) return this.go(address);
@@ -189,6 +213,7 @@ export class Tabs {
 
   /** A new tab on the start view. */
   newTab(): void {
+    if (!tabsOn()) return this.go(START);
     this.add(tabOf(START));
   }
 
@@ -265,6 +290,17 @@ export class Tabs {
     if (!given.length) return;
     this.list.splice(0, this.list.length, ...given.map((one) => tabOf(one.address, one)));
     this.shown = this.list[Math.min(Math.max(0, read.now ?? 0), this.list.length - 1)];
+    if (!tabsOn()) this.list.splice(0, this.list.length, this.shown);
+  }
+
+  /** Follows the tabs switched on or off: off, the tab in view is the only one, and the bar shows none. */
+  private follow(): void {
+    const on = tabsOn();
+    document.body.toggleAttribute("data-tabs-off", !on);
+    if (on || this.list.length === 1) return;
+    for (const t of this.list) if (t !== this.shown) drop(t);
+    this.list.splice(0, this.list.length, this.shown);
+    this.told();
   }
 
   private add(tab: Tab): void {
@@ -362,11 +398,14 @@ function listen(tabs: Tabs): void {
     event.stopPropagation();
     tabs.open(link.getAttribute("href")!);
   };
-  document.addEventListener("click", (event) => catching(event, event.button === 0 && (event.ctrlKey || event.metaKey)), true);
-  document.addEventListener("auxclick", (event) => catching(event, event.button === 1), true);
-  document.addEventListener("mousedown", (event) => event.button === 1 && linkOf(event) && event.preventDefault(), true);
+  // Caught with the tabs off too, so the link opens in place (tabs.open goes there), never in a browser's tab.
+  const ready = () => tabs.restored();
+  const on = () => ready() && tabsOn();
+  document.addEventListener("click", (event) => catching(event, event.button === 0 && (event.ctrlKey || event.metaKey) && ready()), true);
+  document.addEventListener("auxclick", (event) => catching(event, event.button === 1 && ready()), true);
+  document.addEventListener("mousedown", (event) => event.button === 1 && linkOf(event) && ready() && event.preventDefault(), true);
   document.addEventListener("keydown", (event) => {
-    if (!inDesktop() || !event.ctrlKey || event.altKey || event.metaKey) return;
+    if (!on() || !inDesktop() || !event.ctrlKey || event.altKey || event.metaKey) return;
     const key = event.key.toLowerCase();
     if (key === "tab") tabs.step(event.shiftKey ? -1 : 1);
     else if (key === "t" && !event.shiftKey) tabs.newTab();

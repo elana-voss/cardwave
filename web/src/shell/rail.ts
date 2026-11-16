@@ -22,8 +22,7 @@ import { createMenu } from "./create";
 import { searchButton } from "./search-panel";
 import { viewButton } from "./view-menu";
 import { announce, el, escapeFree, reason, SMALL, type View } from "../dom";
-import { chatName } from "../chat-title";
-import { dayAt, dayMonth } from "../format";
+import { chatNames } from "../chat-title";
 import { menuOn, type MenuItem } from "../dialogs";
 import { remember, remembered } from "../storage";
 import { desktop, inDesktop } from "../desktop";
@@ -233,17 +232,9 @@ function latestChats(mark: () => void) {
   function drawChats(): void {
     lines.clear();
     const chats = known.slice(0, showing);
-    const names = chats.map(chatName);
-    // Lines of one name say the day of each, and the time where another of that name falls on the same day.
-    const days = chats.map((chat) => dayMonth(chat.updated_at));
-    const told = (at: number) => {
-      const twins = names.flatMap((name, other) => (other !== at && name === names[at] ? [other] : []));
-      if (twins.length === 0) return names[at];
-      const when = twins.some((other) => days[other] === days[at]) ? dayAt(chats[at].updated_at) : days[at];
-      return `${names[at]} · ${when}`;
-    };
+    const names = chatNames(chats);
     chats.forEach((chat, at) => {
-      const name = told(at);
+      const name = names[at];
       lines.set(chat.id, el("a", { className: "nav-chat", href: `#/chats/${chat.id}`, title: name }, name));
     });
     list.replaceChildren(...lines.values());

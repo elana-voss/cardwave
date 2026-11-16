@@ -1,5 +1,5 @@
 // The line "Language of the app" (Settings' group Language; first run's step 1 its field alone): the app's field of the languages
-// the app has files for, each in its own words (language.ts `appLanguages`), at the language in use. A language
+// the app has files for, each in its own words and marked so by `lang` (language.ts `appLanguages`), at the language in use. A language
 // taken is stored (the server's `app_language`, which "Language the AI writes in" follows until changed itself)
 // and taken at once; the page follows the choice at its start and when the settings change (`readAppLanguage`).
 // `notice` says why it was not stored.
@@ -25,7 +25,7 @@ export function appLanguageLine(): { node: HTMLElement; field: HTMLElement; noti
       },
     );
   };
-  const options = appLanguages().map((one) => ({ value: one.code, label: one.name }));
+  const options = appLanguages().map((one) => ({ value: one.code, label: one.name, lang: one.code }));
   const field = selectField(options, language(), take, { ariaLabel: LABELS.settings.appLanguage, wide: true });
   // The grey line says the computer's language is followed until one is chosen, then that the user chose it.
   const about = el("span", { className: "meta" }, wording("language-line-taken-from-this-computer"));

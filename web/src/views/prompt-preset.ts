@@ -8,7 +8,7 @@
 import { wording } from "../language/language";
 import { changePromptPreset, createPromptPreset, listPromptPresets } from "../api/client";
 import type { EditPromptPreset } from "../api/generated/EditPromptPreset";
-import { announce, atMost, el, noticeBox, oneAtATime, titled, type View } from "../dom";
+import { announce, atMost, crumbs, el, noticeBox, oneAtATime, titled, type View } from "../dom";
 import { count, field, line } from "../edit-form";
 import { refusedName } from "../settings/prompt-presets";
 
@@ -27,7 +27,7 @@ export function promptPresetView(id: number | null): View {
   const node = el(
     "section",
     { className: "main g-24 rel" },
-    el("header", { className: "page-head" }, el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("a", { href: ADVANCED }, wording("page-advanced")), "/", here)),
+    el("header", { className: "page-head" }, crumbs([wording("page-settings"), "#/settings"], [wording("page-advanced"), ADVANCED], here)),
     notice,
     form,
   );

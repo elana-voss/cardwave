@@ -246,6 +246,7 @@ character-translate-card = 翻译角色……
 character-discard-card = 丢弃角色
 character-card-menu = 角色菜单
 character-title = 标题
+character-click-to-edit = 点击编辑
 character-name-the-card = 给角色起名
 character-summary = 用于资料库的一行摘要
 character-this-card-is-in = 这个角色在废纸篓中。

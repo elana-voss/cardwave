@@ -199,6 +199,16 @@ pub struct FitView {
     pub models: Vec<FitModel>,
 }
 
+/// Whether two file names are the same file, whatever the letters' case (a
+/// file renamed or fetched by another tool).
+fn same_file(a: &str, b: &str) -> bool {
+    a.to_lowercase() == b.to_lowercase()
+}
+
+fn is_there(there: &[String], file: &str) -> bool {
+    there.iter().any(|name| same_file(name, file))
+}
+
 /// Cardwave's list, and how far each of its downloads is.
 pub struct Downloads {
     offered: Vec<Offered>,
@@ -233,13 +243,15 @@ impl Downloads {
             .offered
             .iter()
             .map(|offered| {
-                let (state, done, failure) =
-                    match self.fetches.state(&folder.join(&offered.file_name)) {
-                        Seen::Running(done) => (FitState::Downloading, done, None),
-                        _ if there.contains(&offered.file_name) => (FitState::Downloaded, 0, None),
-                        Seen::Failed(why) => (FitState::Absent, 0, Some(why)),
-                        Seen::Idle => (FitState::Absent, 0, None),
-                    };
+                let (state, done, failure) = match self
+                    .fetches
+                    .state(&folder.join(&offered.file_name))
+                {
+                    Seen::Running(done) => (FitState::Downloading, done, None),
+                    _ if is_there(&there, &offered.file_name) => (FitState::Downloaded, 0, None),
+                    Seen::Failed(why) => (FitState::Absent, 0, Some(why)),
+                    Seen::Idle => (FitState::Absent, 0, None),
+                };
                 FitModel {
                     file: offered.file_name.clone(),
                     name: offered.name.clone(),
@@ -253,7 +265,11 @@ impl Downloads {
             })
             .collect();
         for file in there {
-            if self.offered.iter().any(|offered| offered.file_name == file) {
+            if self
+                .offered
+                .iter()
+                .any(|offered| same_file(&offered.file_name, &file))
+            {
                 continue;
             }
             let size = size_in(folder, &file);
@@ -289,10 +305,9 @@ impl Downloads {
             .with("what", "model_for_computer")
             .with("name", (offered.name).to_string())
         );
-        let lower = file.to_lowercase();
         let there = local::models(folder)?;
         ensure!(
-            !there.iter().any(|name| name.to_lowercase() == lower),
+            !is_there(&there, file),
             Fail::said(
                 Code::Taken,
                 format!("{} is in the folder already", offered.name)
@@ -418,6 +433,21 @@ mod tests {
         ];
         std::fs::remove_dir_all(&folder).unwrap();
         assert_eq!(sizes, [7, 5]);
+    }
+
+    #[test]
+    fn a_file_there_under_other_letters_is_the_listed_model_downloaded() {
+        let folder = std::env::temp_dir().join(format!("cardwave-fit-case-{}", std::process::id()));
+        std::fs::create_dir_all(&folder).unwrap();
+        let first = offered().remove(0);
+        std::fs::write(folder.join(first.file_name.to_lowercase()), [0]).unwrap();
+        let view = Downloads::new(vec![first.clone()])
+            .unwrap()
+            .list(&folder)
+            .unwrap();
+        std::fs::remove_dir_all(&folder).unwrap();
+        assert_eq!(view.models.len(), 1);
+        assert!(matches!(view.models[0].state, FitState::Downloaded));
     }
 
     #[test]

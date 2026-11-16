@@ -103,7 +103,7 @@ impl Storage for Db {
                 [user],
                 |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
             )?;
-            let failure = conn
+            let failure: Option<String> = conn
                 .query_row(
                     "select f.reason from (
                         select d.reason, d.updated_at, d.card_id from card_descriptions d where d.state = 'failed'
@@ -122,7 +122,7 @@ impl Storage for Db {
                 left: left as usize,
                 failed: failed as usize,
                 // Kept as JSON by `describe::kept_failure`.
-                failure: failure.and_then(|kept: String| serde_json::from_str(&kept).ok()),
+                failure: crate::json::or_none(failure.as_deref(), "a description's failure"),
             })
         })?)
     }

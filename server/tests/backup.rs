@@ -5,23 +5,20 @@ mod common;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use common::api::{Api, JSON, Says, says};
+use common::api::{Api, JSON, held, says};
 use common::model::{Model, SLOW_TITLE, next_event, stream, text_piece};
 use common::server::{answer, start};
 use serde_json::json;
 
 /// A backup is not restored while a picture is being made: the picture's message would go into the
-/// restored data by the old data's number of the chat. The image model takes seconds to answer.
+/// restored data by the old data's number of the chat. The image model answers once the test lets it.
 #[tokio::test]
 async fn a_backup_waits_for_a_picture_being_made() {
     let words = json!({ "choices": [{ "message": { "content": "lighthouse" } }] });
     let worker = Api::start(says(200, JSON, &words.to_string())).await;
     let picture = json!({ "data": [{ "b64_json": STANDARD.encode(common::picture()) }] });
-    let slow = Says {
-        after: std::time::Duration::from_secs(3),
-        ..says(200, JSON, &picture.to_string())
-    };
-    let image = Api::start_each(vec![says(404, JSON, "{}"), slow]).await;
+    let held = held(says(200, JSON, &picture.to_string()));
+    let image = Api::start_each(vec![says(404, JSON, "{}"), held]).await;
     let server = start().await;
     let provider = json!({ "base_url": worker.url, "model": "small-1", "api_key": "sk-chat" });
     assert_eq!(server.set_provider(provider).await.0, 200);
@@ -43,25 +40,22 @@ async fn a_backup_waits_for_a_picture_being_made() {
         server.addr, view["chat"]["id"]
     );
     let making = tokio::spawn(async move {
-        let sent = reqwest::Client::new().post(asked).json(&json!({})).send();
+        let sent = common::server::client().post(asked).json(&json!({})).send();
         sent.await.unwrap().status().as_u16()
     });
-    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
-    let restoring = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .header("x-cardwave-password", "harbour")
-        .body(file);
-    let (status, said) = answer(restoring.send().await.unwrap()).await;
+    image.until_asked(2).await;
+    let (status, said) = server.restore(file, Some("harbour")).await;
     assert_eq!(
         (status, said["code"].as_str()),
         (400, Some("restore_busy")),
         "{said}"
     );
+    image.release();
     assert_eq!(making.await.unwrap(), 201);
 }
 
 /// A backup is not restored while a card's picture is being made: the picture would go into the restored
-/// data by the old data's number of the card. The image model takes seconds to answer.
+/// data by the old data's number of the card. The image model answers once the test lets it.
 #[tokio::test]
 async fn a_backup_waits_for_a_cards_picture_being_made() {
     // A card keeps no picture of a single pixel, so this one is larger.
@@ -70,11 +64,8 @@ async fn a_backup_waits_for_a_cards_picture_being_made() {
         .write_to(&mut png, image::ImageFormat::Png)
         .unwrap();
     let picture = json!({ "data": [{ "b64_json": STANDARD.encode(png.into_inner()) }] });
-    let slow = Says {
-        after: std::time::Duration::from_secs(3),
-        ..says(200, JSON, &picture.to_string())
-    };
-    let image = Api::start_each(vec![says(404, JSON, "{}"), slow]).await;
+    let held = held(says(200, JSON, &picture.to_string()));
+    let image = Api::start_each(vec![says(404, JSON, "{}"), held]).await;
     let server = start().await;
     let (_, card) = server.upload("/api/cards", common::card_file()).await;
     let own =
@@ -92,52 +83,53 @@ async fn a_backup_waits_for_a_cards_picture_being_made() {
         server.addr, card["card_id"]
     );
     let making = tokio::spawn(async move {
-        let sent = reqwest::Client::new()
+        let sent = common::server::client()
             .post(asked)
             .json(&json!({ "words": "a lighthouse at night" }))
             .send();
         answer(sent.await.unwrap()).await
     });
-    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
-    let restoring = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .header("x-cardwave-password", "harbour")
-        .body(file);
-    let (status, said) = answer(restoring.send().await.unwrap()).await;
+    image.until_asked(2).await;
+    let (status, said) = server.restore(file, Some("harbour")).await;
     assert_eq!(
         (status, said["code"].as_str()),
         (400, Some("restore_busy")),
         "{said}"
     );
+    image.release();
     let (status, made) = making.await.unwrap();
     assert_eq!(status, 201, "{made}");
 }
 
 /// A backup is not restored while a folder of cards is imported: the cards still to come would go into the
-/// restored data under the old data's number of the account.
+/// restored data under the old data's number of the account. The test holds the database's write lock, so
+/// the import's two files that are no cards each wait for it to be noted (the store's busy timeout of 5 s):
+/// the restore is asked within the import's run of at least 10 s.
 #[tokio::test]
 async fn a_backup_waits_for_a_folder_of_cards_being_imported() {
     let server = start().await;
     let folder = common::Folder::new("restore-import");
-    let mut container = common::container();
-    for at in 0..300 {
-        container.toml[0].1 = common::unique(&container.toml[0].1);
-        let file = cw_ccv4::png::write(&container).unwrap();
-        std::fs::write(folder.0.join(format!("card-{at}.png")), file).unwrap();
+    std::fs::write(folder.0.join("card.png"), common::card_file()).unwrap();
+    for name in ["not-a-card-1.png", "not-a-card-2.png"] {
+        std::fs::write(folder.0.join(name), b"no picture").unwrap();
     }
+    let options = server.options();
+    let db = cw_store::Db::open(
+        &options.data_dir.join(cw_key::FILE_NAME),
+        options.key.given().unwrap(),
+    )
+    .unwrap();
     let file = server
         .save_backup(Some("harbour"))
         .await
         .bytes()
         .await
         .unwrap();
+    db.with(|c| c.execute_batch("begin immediate")).unwrap();
     let begun = json!({ "folder": folder.path() });
     assert_eq!(server.post("/api/card-folder/import", begun).await.0, 202);
-    let restoring = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .header("x-cardwave-password", "harbour")
-        .body(file);
-    let (status, said) = answer(restoring.send().await.unwrap()).await;
+    let (status, said) = server.restore(file, Some("harbour")).await;
+    db.with(|c| c.execute_batch("rollback")).unwrap();
     assert_eq!(
         (status, said["code"].as_str()),
         (400, Some("restore_busy")),
@@ -170,11 +162,7 @@ async fn a_backup_waits_for_a_chat_being_titled() {
     );
     while next_event(&mut socket).await["type"] != "reply_ended" {}
 
-    let restoring = reqwest::Client::new()
-        .post(format!("http://{}/api/backup", server.addr))
-        .header("x-cardwave-password", "harbour")
-        .body(file);
-    let (status, said) = answer(restoring.send().await.unwrap()).await;
+    let (status, said) = server.restore(file, Some("harbour")).await;
     assert_eq!(
         (status, said["code"].as_str()),
         (400, Some("restore_busy")),

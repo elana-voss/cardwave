@@ -3,7 +3,7 @@
 // for one that is not the card's first; path "Characters / [card] / [name] · this card's own"): its entries
 // listed and searched at the right, the one chosen in the middle. The screen stays from one entry to the next
 // (`View.moved`), keeping the list's place, the focus and the notice. From 960 px down list and entry are screens
-// of their own, by app.css alone (`.at-entry`).
+// of their own, by app/lorebook.css alone (`.at-entry`).
 //
 // The entry's column, saved part by part as it is left, is ../lorebook/lorebook-entry.ts's; the header's AI tools for the
 // whole lorebook are ../lorebook/lore-tools.ts's. A switch in the list is saved at once. The event `lorebook` (of one of
@@ -16,7 +16,7 @@
 import { changeLorebook, describeLorebook, exportLorebook, getLorebookEdit, type LoreOf } from "../api/client";
 import type { EditEntry } from "../api/generated/EditEntry";
 import type { LorebookEdit } from "../api/generated/LorebookEdit";
-import { announce, el, failure, newest, noticeBox, oneAtATime, reason, searchField, switchBox, titled, type View } from "../dom";
+import { announce, crumbs, el, failure, newest, noticeBox, oneAtATime, reason, searchField, switchBox, titled, type View } from "../dom";
 import { menu } from "../dialogs";
 import { entryOf, matches, NEW } from "../lorebook/entry";
 import { icon } from "../icons";
@@ -83,7 +83,7 @@ function editor(of: LoreOf): Editor {
   const base = lorebookAddress(of);
   const asked = { q: "" };
   const name = el("a", { className: "cut here", href: base }, wording("page-lorebook"));
-  const crumbs = el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, name);
+  const path = crumbs(name);
   const about = el("button", { type: "button", className: "btn btn-quiet btn-fit", disabled: true, onclick: () => describe(b) }, icon("edit", 16), wording("lorebook-lorebook-settings"));
   const marks = el("div", { className: "flex ai-c g-2" });
   const notice = noticeBox();
@@ -92,7 +92,7 @@ function editor(of: LoreOf): Editor {
   const page = el(
     "div",
     { className: "main main-form rel" },
-    el("header", { className: "pbar" }, crumbs, el("div", { className: "rel flex ai-c g-2" }, about, marks)),
+    el("header", { className: "pbar" }, path, el("div", { className: "rel flex ai-c g-2" }, about, marks)),
     notice,
     bar,
     column,
@@ -131,7 +131,7 @@ function editor(of: LoreOf): Editor {
       drawLines(b);
       drawEntry(b);
     },
-    crumbs,
+    crumbs: path,
     name,
     about,
     marks,
@@ -169,15 +169,11 @@ async function reload(b: Editor): Promise<void> {
 /** The path: "Lorebooks / [name]", or of a card's own "Characters / [card] / [name] · this card's own". */
 function drawPath(b: Editor, read: LorebookEdit): void {
   const card = read.card;
-  if (!card) return b.crumbs.replaceChildren(el("a", { href: "#/library/lorebooks" }, wording("page-lorebooks")), "/", b.name);
-  b.crumbs.replaceChildren(
-    el("a", { href: "#/library" }, wording("page-characters")),
-    "/",
-    el("a", { className: "cut", href: `#/library/${card.card_id}` }, cardTitle(card.title)),
-    "/",
-    b.name,
-    el("span", { className: "meta" }, wording("lorebook-this-cards-own")),
-  );
+  const path = card
+    ? crumbs([wording("page-characters"), "#/library"], el("a", { className: "cut", href: `#/library/${card.card_id}` }, cardTitle(card.title)), b.name)
+    : crumbs([wording("page-lorebooks"), "#/library/lorebooks"], b.name);
+  if (card) path.append(el("span", { className: "meta" }, wording("lorebook-this-cards-own")));
+  b.crumbs.replaceChildren(...path.childNodes);
 }
 
 /** An entry's line in the list: its link, with what is said of it, and its switch, saved at once. */

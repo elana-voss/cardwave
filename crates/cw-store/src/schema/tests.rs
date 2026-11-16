@@ -439,3 +439,46 @@ fn the_needs_answered_before_ranks_are_dropped_and_refusals_stay() {
         .unwrap();
     assert_eq!(left, ["refused"]);
 }
+
+/// A deleted chat's, message's, card's or lorebook's unsaved texts go with it:
+/// SQLite gives its number to the next row made, which would show them.
+#[test]
+fn the_unsaved_texts_of_a_row_deleted_go_with_it() {
+    register_vec();
+    let mut conn = Connection::open_in_memory().unwrap();
+    migrate(&mut conn).unwrap();
+    conn.execute_batch(
+        r#"pragma foreign_keys = on;
+         insert into users (id, name, created_at) values (1, 'erin', 0);
+         insert into cards (id, user_id, title, created_at, updated_at) values (1, 1, 'Gone', 0, 0);
+         insert into chats (id, user_id, title, created_at, updated_at) values (1, 1, 'Gone', 0, 0);
+         insert into messages (id, chat_id, role, content, created_at) values (1, 1, 'user', 'hi', 0);
+         insert into lorebooks (id, user_id, name, toml, entries, entry_names, created_at)
+            values (1, 1, 'Gone', '', 0, '', 0);
+         insert into unsaved (user_id, field, text, updated_at) values
+            (1, 'chat.1', 'a', 0), (1, 'message.1', 'a', 0), (1, 'card.1.en.name', 'a', 0),
+            (1, 'lorebook.{"card":1}.content', 'a', 0), (1, 'lorebook.{"card":1,"book":"b"}.name', 'a', 0),
+            (1, 'lorebook.{"library":1}.name', 'a', 0),
+            (1, 'chat.12', 'kept', 0), (1, 'card.12..name', 'kept', 0), (1, 'lorebook.{"card":12}.name', 'kept', 0),
+            (1, 'lorebook.{"library":12}.name', 'kept', 0), (1, 'interview', 'kept', 0);
+         delete from chats where id = 1;
+         delete from cards where id = 1;
+         delete from lorebooks where id = 1;"#,
+    )
+    .unwrap();
+    let left: Vec<String> = conn
+        .prepare("select field from unsaved order by field")
+        .unwrap()
+        .query_map([], |r| r.get(0))
+        .unwrap()
+        .collect::<rusqlite::Result<_>>()
+        .unwrap();
+    let kept = [
+        "card.12..name",
+        "chat.12",
+        "interview",
+        r#"lorebook.{"card":12}.name"#,
+        r#"lorebook.{"library":12}.name"#,
+    ];
+    assert_eq!(left, kept);
+}

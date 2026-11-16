@@ -5,7 +5,7 @@ import type { Team } from "./Team";
 /**
  * The coding team (`coding`): the team a task is given unless it names
  * another, and the models of its roles. What its tools may do is the
- * account's Settings › Tools (`Permissions::of`; second review of the v4
+ * account's Tools for the AI (`Permissions::of`; second review of the v4
  * boards, 2026-10-17).
  */
 export type CodingTeam = { team: Team, 

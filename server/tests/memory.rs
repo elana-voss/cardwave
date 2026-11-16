@@ -314,6 +314,78 @@ async fn a_memory_names_the_user_without_a_persona_in_the_apps_language_of_now()
 }
 
 #[tokio::test]
+async fn a_chat_whose_persona_is_switched_has_a_fresh_memory_and_switching_back_finds_the_old_one()
+{
+    let server = start().await;
+    let fake = Fake::start().await;
+    setup(&server, &fake).await;
+    let chat = chat(&server).await;
+    let mut socket = server.listen().await;
+    fill(&server, &chat, 19).await;
+    fake.finds(SISTER);
+    reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    remembered(&mut socket).await;
+    assert_eq!(memories(&server).await.len(), 2);
+
+    // Another persona is another memory: none yet, the chat read again from its start.
+    let made = json!({ "name": "Bea", "description": "" });
+    let (_, bea) = server.post("/api/personas", made).await;
+    let persona = format!("{chat}/persona");
+    assert_eq!(
+        server
+            .put(&persona, json!({ "persona_id": bea["id"] }))
+            .await
+            .0,
+        200
+    );
+    // The first persona's memories stay listed: the list shows them all.
+    assert_eq!(memories(&server).await.len(), 2);
+    fake.finds(
+        "PRESENT: Mira, Bea
+FACTS:
+user | boat | Bea owns a red boat | personal | Mira, Bea | current
+EVENTS:",
+    );
+    say(&server, &chat, "Do you like boats?").await;
+    reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    passes(&fake, 2).await;
+    remembered(&mut socket).await;
+    let asked = fake.noted().passes[1].clone();
+    assert!(asked.contains("[1] Mira: \"You picked"), "{asked}");
+    assert!(asked.contains("[2] Bea: Message 2."), "{asked}");
+    let listed = memories(&server).await;
+    assert_eq!(listed.len(), 3);
+    let bea_owns = listed
+        .iter()
+        .find(|m| m["text"] == json!("Bea owns a red boat"))
+        .expect("Bea's memory is listed");
+    assert_eq!(
+        (&bea_owns["names"], &bea_owns["persona"]),
+        (&json!(["Mira", "Bea"]), &json!("Bea"))
+    );
+    assert!(
+        listed
+            .iter()
+            .filter(|m| m["text"] != json!("Bea owns a red boat"))
+            .all(|m| m["persona"].is_null())
+    );
+
+    // Back to none: the first memory as it was.
+    assert_eq!(server.call(Method::DELETE, &persona, None).await.0, 200);
+    let listed = memories(&server).await;
+    let texts: Vec<&Value> = listed.iter().map(|m| &m["text"]).collect();
+    assert_eq!(texts.len(), 3);
+    for text in [
+        "The user said Ana comes tonight (cause: Ana visits; result: Mira waits)",
+        "The user's sister is called Ana",
+        "Bea owns a red boat",
+    ] {
+        assert!(texts.contains(&&json!(text)), "{text}: {texts:?}");
+    }
+    assert_eq!(fake.noted().passes.len(), 2);
+}
+
+#[tokio::test]
 async fn a_memory_is_changed_deleted_and_put_back() {
     let server = start().await;
     let fake = Fake::start().await;
@@ -567,6 +639,46 @@ async fn a_search_model_that_hangs_holds_no_reply_back() {
         .await
         .expect("the reply waited for the search model");
     assert!(prompt.to_string().contains("The keeper watches the storm"));
+}
+
+#[tokio::test]
+async fn by_meaning_entries_read_in_part_before_a_reply_could_wait_no_longer_are_kept() {
+    let stand_in = Embedder::start().await;
+    let fake = Fake::start().await;
+    let (server, chat) = searching(&stand_in, &fake).await;
+    let mut entries = vec![
+        json!({ "keys": ["zzz"], "comment": "Light", "content": "The keeper watches the storm over the harbor.", "vectorized": true }),
+    ];
+    for n in 1..20 {
+        entries.push(json!({ "keys": [format!("k{n}")], "comment": format!("Wood {n}"), "content": format!("Forest note {n}: moss{}.", if n == 19 { " HANG" } else { "" }), "vectorized": true }));
+    }
+    let file = json!({ "name": "Coast", "entries": entries });
+    let (_, imported) = server
+        .upload("/api/lorebooks", file.to_string().into_bytes())
+        .await;
+    let lorebook = json!({ "lorebook_id": imported["lorebook"]["id"].clone() });
+    assert_eq!(
+        server.post(&format!("{chat}/lorebooks"), lorebook).await.0,
+        200
+    );
+    let mut socket = server.listen().await;
+    let forest = |read: &[String]| read.iter().filter(|t| t.starts_with("Forest note")).count();
+    // The first batch of entries is answered, the second (with entry 19) hangs.
+    timeout(WAIT * 2, async {
+        while forest(&stand_in.read()) == 0 {
+            say(&server, &chat, "The waves crash on the ship.").await;
+            reply(&server, &fake, &mut socket, &chat, json!({})).await;
+        }
+    })
+    .await
+    .expect("the entries were not asked for");
+    let before = forest(&stand_in.read());
+    stand_in.answer_hang();
+    say(&server, &chat, "The waves crash on the ship.").await;
+    let (_, prompt) = reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    // The model that answered is asked again at once, and only for what it did not answer.
+    assert!(prompt.to_string().contains("The keeper watches the storm"));
+    assert_eq!((before, forest(&stand_in.read())), (15, 19));
 }
 
 #[tokio::test]
@@ -840,4 +952,49 @@ async fn a_pass_that_read_an_older_state_lets_go_of_no_vector_of_the_newest() {
     // What a pass that read the state before the block keeps: nothing new.
     cw_chat::memory::keep_vectors(&db, store, cw_provider::embedder::MODEL, &[]).unwrap();
     assert_eq!(count(), 2);
+}
+
+#[tokio::test]
+async fn a_memory_put_back_after_its_vector_was_let_go_has_it_made_again() {
+    let stand_in = Embedder::start().await;
+    let fake = Fake::start().await;
+    let (server, chat) = searching(&stand_in, &fake).await;
+    let mut socket = server.listen().await;
+    fill(&server, &chat, 19).await;
+    fake.finds(SISTER);
+    reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    remembered(&mut socket).await;
+    let id = memories(&server).await[0]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let (db, store) = store_of(&server, &id);
+    let count = || -> i64 {
+        db.with(|conn| {
+            conn.query_row(
+                "select count(*) from memory_vectors where store_id = ?1",
+                [store],
+                |r| r.get(0),
+            )
+        })
+        .unwrap()
+    };
+    let until = |n: i64| async move {
+        let end = Instant::now() + WAIT;
+        while count() != n {
+            assert!(Instant::now() < end, "{} vectors, not {n}", count());
+            sleep(std::time::Duration::from_millis(20)).await;
+        }
+    };
+    until(2).await;
+    let path = format!("/api/memories/{id}");
+    assert_eq!(server.call(Method::DELETE, &path, None).await.0, 204);
+    // The pass after a reply lets go of the deleted text's vector.
+    cw_chat::memory::keep_vectors(&db, store, cw_provider::embedder::MODEL, &[]).unwrap();
+    assert_eq!(count(), 1);
+    assert_eq!(
+        server.post(&format!("{path}/restore"), json!({})).await.0,
+        200
+    );
+    until(2).await;
 }

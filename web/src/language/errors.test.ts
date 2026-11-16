@@ -9,7 +9,7 @@ it("words an error by its code and details, not by the server's sentence", () =>
   expect(errorWords(400, { code: "lorebook_trashed", error: "the server's own words", details: { name: "Harbour" } })).toBe("The lorebook “Harbour” is in the Trash; restore it to use it.");
   expect(errorWords(404, { code: "not_found", error: "no such card_version", details: { what: "card_version" } })).toBe("There is no such card version. It may have been deleted.");
   expect(errorWords(400, { code: "not_readable", error: "x", details: { what: "picture" } })).toBe("The picture is not a PNG, JPEG or WebP.");
-  expect(errorWords(403, { code: "owner_only", error: "x", details: { action: "use its files" } })).toBe("Only this computer's account can use its files.");
+  expect(errorWords(403, { code: "owner_only", error: "x", details: { action: "use_its_files" } })).toBe("Only this computer's account can use its files.");
 });
 
 it("words a reply's failure from its code, a provider's own text as its detail", () => {
@@ -42,7 +42,12 @@ it("closes a provider's own text with a full stop before what follows it", () =>
 
 
 it("says a refused key as refused, not as a provider that did not answer", () => {
-  const refused = { code: "answered", error: "x", details: { whose: "model_server", said: "did not take the key", status: "401", reason: "" } } as const;
+  const refused = { code: "answered", error: "x", details: { whose: "model_server", said: "did_not_take_the_key", status: "401", reason: "" } } as const;
   expect(failureWords(refused)).toBe("The provider did not take the key.");
   expect(failureWords({ ...refused, details: { whose: "model_server", status: "502", reason: "" } })).toBe("The AI's provider answered 502. Try again later.");
+});
+
+it("says what ComfyUI said as it said it", () => {
+  const said = { code: "not_possible", error: "x", details: { what: "comfyui_said", said: "out of memory" } } as const;
+  expect(failureWords(said)).toBe("ComfyUI said: out of memory");
 });

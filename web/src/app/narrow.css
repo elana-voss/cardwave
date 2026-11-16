@@ -1,6 +1,7 @@
 /* The narrow window (600 px and less, boards Narrow*) and what only a wide window shows: read right after
    app.css, before the areas' files, so its rules win over app.css's; a selector an area's file also sets
-   (app/chat.css's .chat-scroller) has its narrow rule in that file, after the rule it overrides. */
+   (app/chat.css's .chat-scroller) has its narrow rule in that file, after the rule it overrides. At its end, what
+   cardwave.css's phone block leaves to the app: a text written in place at 16 px at least, a lone link's 44 px reach. */
 /* What only a wide window shows, and what only a narrow one. */
 @media (max-width: 600px) {
   .wide-only {
@@ -68,20 +69,17 @@
     width: auto;
     min-width: 112px;
   }
+  /* A switch group in a narrow window may be two rows: its corners are not a pill's. */
+  .seg {
+    border-radius: var(--r-2xl);
+  }
   /* Two buttons beside the words squeeze them to a sliver in a longer language: the words take the line, the
      buttons go under them. */
-  .group > .item:has(> .selectbtn, > .seg, > .field, > .btn:not([hidden]) ~ .btn:not([hidden])) > .item-text {
+  .group > .item:has(> .select-field, > .selectbtn, > .seg, > .field, > .btn:not([hidden]) ~ .btn:not([hidden])) > .item-text {
     flex-basis: 100%;
   }
-  .group > .item > :is(.selectbtn, .field) {
+  .group > .item > :is(.select-field, .selectbtn, .field) {
     width: 100%;
-  }
-  /* A switch group too long for the line (the Coding team's Team in Spanish) wraps its buttons onto a second row
-     instead of running past the window's edge. */
-  .seg {
-    flex-wrap: wrap;
-    max-width: 100%;
-    border-radius: var(--r-2xl);
   }
   /* A chat: its bar 56 px with a 32 px round, the thread 16 px from the sides, a message 92 % wide at most. */
   .chat-bar {
@@ -100,14 +98,6 @@
   }
   .bubble {
     max-width: 92%;
-  }
-  /* What can be done with an item goes under its words. */
-  .trash .row {
-    flex-wrap: wrap;
-  }
-  .trash .side-acts {
-    flex: 1 0 100%;
-    width: auto;
   }
   /* A card's page: the picture 200 px over the title, the side column folded into its line, a text's tools
      opening inside the window. */
@@ -133,5 +123,36 @@
 @keyframes sheet {
   from {
     translate: 100% 0;
+  }
+}
+/* On a phone, and wherever the pointer is a finger (cardwave.css's phone block): a text written in place keeps its
+   own size, never under the block's 16 px, as the block's 16 px would shrink a title; a link standing alone
+   (`.reach`, a line's link, About's community link) gets the block's 44 px reach, which takes no room. */
+@media (max-width: 600px) {
+  html input.in-place,
+  html textarea.in-place,
+  html .entry-name > .in-place {
+    font-size: max(16px, 1em);
+  }
+  /* a text block's size is the reading size, or in Details (cardwave.css's .cdv-texts) the body's */
+  html .tb-body .in-place {
+    font-size: max(16px, var(--fs-read));
+  }
+  html .cdv-texts .tb-body .in-place {
+    font-size: max(16px, var(--fs-body));
+  }
+}
+@media (max-width: 600px), (pointer: coarse) {
+  html .reach {
+    position: relative;
+  }
+  html .reach::after {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: max(100%, 44px);
+    content: "";
+    translate: 0 -50%;
   }
 }

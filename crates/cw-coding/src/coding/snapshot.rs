@@ -8,8 +8,11 @@
 //! folders `SKIPPED` (a repository's own, packages installed), those a marker
 //! file says are a build or an environment (`MARKED`), and files over
 //! `FILE_LIMIT`. A folder that holds more than `MOST_FILES` or `MOST_BYTES`
-//! besides is refused. A file that cannot be read (locked, gone meanwhile) is
-//! noted as unread, and no change of it is counted.
+//! besides is refused. A file that cannot be read (locked, gone meanwhile)
+//! or is no plain file is noted as unread, and no change of it is counted; one
+//! over `FILE_LIMIT` is noted as too big: no change counted where it was too
+//! big before (Undo would delete it), one counted where it grew too big (Undo
+//! writes it back as it was).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -39,10 +42,16 @@ pub(crate) const MOST_BYTES: usize = 200 << 20;
 /// The longest diff of a file that is drawn, in lines.
 const DIFF_LINES: usize = 2_000;
 
-/// The files of a folder by their paths in it, with `/` between folders, and
-/// the paths of those that could not be read.
+/// The files of a folder by their paths in it, with `/` between folders.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Snapshot(pub BTreeMap<String, Vec<u8>>, pub BTreeSet<String>);
+pub struct Snapshot {
+    /// Each file read, by its path.
+    pub files: BTreeMap<String, Vec<u8>>,
+    /// The paths of the files that could not be read.
+    pub unread: BTreeSet<String>,
+    /// The paths of the files too big to keep.
+    pub big: BTreeSet<String>,
+}
 
 /// A file a step changed: as it was before and after (`None`: not there).
 #[derive(Clone, Debug, PartialEq)]
@@ -57,6 +66,7 @@ impl Snapshot {
     pub fn read(folder: &Path) -> anyhow::Result<Self> {
         let mut files = BTreeMap::new();
         let mut unread = BTreeSet::new();
+        let mut big = BTreeSet::new();
         let mut bytes = 0;
         let mut open = vec![folder.to_path_buf()];
         while let Some(dir) = open.pop() {
@@ -85,13 +95,18 @@ impl Snapshot {
                     continue;
                 }
                 let size = entry.metadata().map(|data| data.len()).unwrap_or(0);
-                if !kind.is_file() || size > FILE_LIMIT {
-                    continue;
-                }
                 let inside = path
                     .strip_prefix(folder)?
                     .to_string_lossy()
                     .replace('\\', "/");
+                if !kind.is_file() {
+                    unread.insert(inside);
+                    continue;
+                }
+                if size > FILE_LIMIT {
+                    big.insert(inside);
+                    continue;
+                }
                 let Ok(data) = std::fs::read(&path) else {
                     unread.insert(inside);
                     continue;
@@ -101,18 +116,18 @@ impl Snapshot {
                 ensure!(files.len() <= MOST_FILES && bytes <= MOST_BYTES, Fail::said(Code::TooBig, format!("the folder holds too much to keep checkpoints of (more than {MOST_FILES} files or {} MB); choose the project's own folder", MOST_BYTES >> 20)).with("what", "checkpoint_folder").with("most_files", MOST_FILES));
             }
         }
-        Ok(Self(files, unread))
+        Ok(Self { files, unread, big })
     }
 
     /// What changed from `self` to `after`, by path; of a file that one of
-    /// them could not read, nothing.
+    /// them could not read, or that was too big before, nothing.
     pub fn changes(&self, after: &Snapshot) -> Vec<Change> {
         self.changed(after)
             .into_iter()
             .map(|path| Change {
                 path: path.clone(),
-                before: self.0.get(path).cloned(),
-                after: after.0.get(path).cloned(),
+                before: self.files.get(path).cloned(),
+                after: after.files.get(path).cloned(),
             })
             .collect()
     }
@@ -124,8 +139,8 @@ impl Snapshot {
         paths
             .into_iter()
             .map(|path| Change {
-                before: self.0.remove(&path),
-                after: after.0.get(&path).cloned(),
+                before: self.files.remove(&path),
+                after: after.files.get(&path).cloned(),
                 path,
             })
             .collect()
@@ -133,11 +148,12 @@ impl Snapshot {
 
     /// The paths of the files that differ from `self` to `after`, in order.
     fn changed<'a>(&'a self, after: &'a Snapshot) -> Vec<&'a String> {
-        let mut paths: Vec<&String> = self.0.keys().chain(after.0.keys()).collect();
+        let mut paths: Vec<&String> = self.files.keys().chain(after.files.keys()).collect();
         paths.sort();
         paths.dedup();
-        paths.retain(|path| !self.1.contains(*path) && !after.1.contains(*path));
-        paths.retain(|path| self.0.get(*path) != after.0.get(*path));
+        let unread = |path: &String| self.unread.contains(path) || after.unread.contains(path);
+        paths.retain(|path| !unread(path) && !self.big.contains(*path));
+        paths.retain(|path| self.files.get(*path) != after.files.get(*path));
         paths
     }
 }

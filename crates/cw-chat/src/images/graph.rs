@@ -17,7 +17,7 @@
 
 use std::collections::HashMap;
 
-use anyhow::{Context, bail};
+use anyhow::{Context, bail, ensure};
 use cw_core::{Code, Fail};
 use serde_json::{Map, Value, json};
 
@@ -116,6 +116,11 @@ struct Frame<'g, 'a> {
     graph: &'g Graph<'a>,
     instance: Option<&'a Value>,
 }
+
+/// How many links one input's source is followed through, and how many
+/// subgraphs deep one stands: a workflow past either holds a loop.
+const MOST_LINKS: usize = 256;
+const MOST_NESTED: usize = 32;
 
 struct Walk<'g, 'a> {
     info: &'a Value,
@@ -301,6 +306,14 @@ impl<'g, 'a> Walk<'g, 'a> {
             }
             let kind = node["type"].as_str().unwrap_or_default();
             if let Some(inner) = self.subgraphs.get(kind) {
+                ensure!(
+                    scope.len() <= MOST_NESTED,
+                    Fail::said(
+                        Code::NotReadable,
+                        "the workflow's subgraphs hold themselves"
+                    )
+                    .with("what", "workflow_broken")
+                );
                 let mut deeper = scope.to_vec();
                 deeper.push(Frame {
                     graph: inner,
@@ -341,7 +354,7 @@ impl<'g, 'a> Walk<'g, 'a> {
                 continue;
             };
             let name = input["name"].as_str().unwrap_or_default().to_string();
-            match self.source_of_link(scope, link)? {
+            match self.source_of_link(scope, link, 0)? {
                 Source::Output(from, slot) => {
                     inputs.insert(name, json!([from, slot]));
                 }
@@ -366,7 +379,20 @@ impl<'g, 'a> Walk<'g, 'a> {
     }
 
     /// Where the link `id` of the graph at the end of `scope` comes from.
-    fn source_of_link(&self, scope: &[Frame<'g, 'a>], id: i64) -> anyhow::Result<Source> {
+    fn source_of_link(
+        &self,
+        scope: &[Frame<'g, 'a>],
+        id: i64,
+        depth: usize,
+    ) -> anyhow::Result<Source> {
+        ensure!(
+            depth <= MOST_LINKS,
+            Fail::said(
+                Code::NotReadable,
+                "the workflow's links lead round in a circle"
+            )
+            .with("what", "workflow_broken")
+        );
         let here = scope.last().expect("a scope has a graph").graph;
         let link = here.links.get(&id).with_context(|| {
             Fail::said(
@@ -376,7 +402,43 @@ impl<'g, 'a> Walk<'g, 'a> {
             .with("what", "workflow_broken")
             .with("id", id.to_string())
         })?;
-        self.source_of_output(scope, link.origin, link.slot, &link.kind)
+        self.source_of_output(scope, link.origin, link.slot, &link.kind, depth + 1)
+    }
+
+    /// Where the input `slot` of the subgraph at the end of `scope` comes from:
+    /// its instance's input of that name, outside.
+    fn source_of_input(
+        &self,
+        scope: &[Frame<'g, 'a>],
+        slot: usize,
+        depth: usize,
+    ) -> anyhow::Result<Source> {
+        let frame = *scope.last().expect("a scope has a graph");
+        let (Some(instance), Some(own)) = (frame.instance, frame.graph.own) else {
+            bail!(
+                Fail::said(
+                    Code::NotReadable,
+                    "the workflow links to a subgraph's input outside one"
+                )
+                .with("what", "workflow_broken")
+            );
+        };
+        let name = &own["inputs"][slot]["name"];
+        let outer = instance["inputs"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .find(|input| &input["name"] == name);
+        match outer.and_then(|input| number(&input["link"])) {
+            Some(link) => {
+                let outside = &scope[..scope.len() - 1];
+                match self.source_of_link(outside, link, depth)? {
+                    Source::Nothing => Ok(Source::Own),
+                    found => Ok(found),
+                }
+            }
+            None => Ok(Source::Own),
+        }
     }
 
     /// Where the output `slot` of the node `origin` of the graph at the end of
@@ -387,36 +449,12 @@ impl<'g, 'a> Walk<'g, 'a> {
         origin: i64,
         slot: usize,
         kind: &str,
+        depth: usize,
     ) -> anyhow::Result<Source> {
-        let frame = *scope.last().expect("a scope has a graph");
         if origin == INPUT_NODE {
-            // The subgraph's input: its instance's input of that name, outside.
-            let (Some(instance), Some(own)) = (frame.instance, frame.graph.own) else {
-                bail!(
-                    Fail::said(
-                        Code::NotReadable,
-                        "the workflow links to a subgraph's input outside one"
-                    )
-                    .with("what", "workflow_broken")
-                );
-            };
-            let name = &own["inputs"][slot]["name"];
-            let outer = instance["inputs"]
-                .as_array()
-                .into_iter()
-                .flatten()
-                .find(|input| &input["name"] == name);
-            return match outer.and_then(|input| number(&input["link"])) {
-                Some(link) => {
-                    let outside = &scope[..scope.len() - 1];
-                    match self.source_of_link(outside, link)? {
-                        Source::Nothing => Ok(Source::Own),
-                        found => Ok(found),
-                    }
-                }
-                None => Ok(Source::Own),
-            };
+            return self.source_of_input(scope, slot, depth);
         }
+        let frame = *scope.last().expect("a scope has a graph");
         let node = frame
             .graph
             .nodes
@@ -438,7 +476,7 @@ impl<'g, 'a> Walk<'g, 'a> {
         }
         if class == "Reroute" {
             return match inputs.first().and_then(|input| number(&input["link"])) {
-                Some(link) => self.source_of_link(scope, link),
+                Some(link) => self.source_of_link(scope, link, depth),
                 None => Ok(Source::Nothing),
             };
         }
@@ -453,7 +491,7 @@ impl<'g, 'a> Walk<'g, 'a> {
                 .or_else(|| inputs.iter().find(fits))
                 .and_then(|input| number(&input["link"]));
             return match through {
-                Some(link) => self.source_of_link(scope, link),
+                Some(link) => self.source_of_link(scope, link, depth),
                 None => Ok(Source::Nothing),
             };
         }
@@ -468,7 +506,7 @@ impl<'g, 'a> Walk<'g, 'a> {
                 graph: inner,
                 instance: Some(node),
             });
-            return self.source_of_link(&deeper, link);
+            return self.source_of_link(&deeper, link, depth);
         }
         if self.info.get(class).is_none() {
             bail!(

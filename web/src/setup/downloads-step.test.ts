@@ -22,6 +22,8 @@ vi.mock("../api/client", () => ({
   getVoice: vi.fn(),
 }));
 
+const voiceModel = (): VoiceModel => ({ size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false });
+
 const model = (state: SearchModel["state"], more: Partial<SearchModel> = {}): SearchModel => ({ name: "bge-m3", size: 1000, state, done: 0, failure: null, left: 0, ...more });
 
 test("a download waits for the one before it, then says how far it is, and is done once there", () => {
@@ -33,7 +35,7 @@ test("a download waits for the one before it, then says how far it is, and is do
 });
 
 test("a download the server refuses to start is told on its line and asked for again only by “Try again”", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   vi.mocked(getVoice).mockResolvedValue(voice);
   vi.mocked(getSearchModel).mockResolvedValue(model("absent"));
   vi.mocked(getSettings).mockResolvedValue({ voice: null, setup_downloads: ["voice", "search"] } as Settings);
@@ -57,7 +59,7 @@ test("a download the server refuses to start is told on its line and asked for a
 });
 
 test("a download the server takes but does not start is tried once and told as failed on its line, until “Try again”", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   vi.mocked(getVoice).mockResolvedValue(voice);
   vi.mocked(getSearchModel).mockResolvedValue(model("ready"));
   vi.mocked(getSettings).mockResolvedValue({ voice: null, setup_downloads: ["voice"] } as Settings);
@@ -79,7 +81,7 @@ test("a download the server takes but does not start is tried once and told as f
 
 test("a started download that fails says the server's reason on its line, not a failure of Cardwave", async () => {
   const failure: ErrorBody = { code: "download_failed", error: "connection reset", details: {} };
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   vi.mocked(getVoice).mockReset().mockResolvedValueOnce(voice).mockResolvedValue({ ...voice, failure });
   vi.mocked(getSearchModel).mockResolvedValue(model("ready"));
   vi.mocked(getSettings).mockResolvedValue({ voice: null, setup_downloads: ["voice"] } as Settings);
@@ -103,7 +105,7 @@ const later = <T>() => {
 const settled = () => new Promise((settle) => setTimeout(settle, 20));
 
 test("a read asked before a start answers is not taken for that start's failure, nor starts it again", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   const reads: ReturnType<typeof later<VoiceModel>>[] = [];
   vi.mocked(getVoice).mockReset().mockImplementation(() => (reads.push(later<VoiceModel>()), reads.at(-1)!.answer));
   vi.mocked(getSearchModel).mockResolvedValue(model("ready"));
@@ -132,7 +134,7 @@ test("a read asked before a start answers is not taken for that start's failure,
 });
 
 test("a download cut from outside (a server restart) is started again once, not told as failed", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   const running = { ...voice, state: "downloading" as const };
   vi.mocked(getVoice).mockReset().mockResolvedValueOnce(voice).mockResolvedValueOnce(running).mockResolvedValueOnce(voice).mockResolvedValue(running);
   vi.mocked(getSearchModel).mockResolvedValue(model("ready"));
@@ -154,7 +156,7 @@ test("a download cut from outside (a server restart) is started again once, not 
 });
 
 test("step 4 starts nothing while it still asks (its bars hidden), even with downloads left in the list", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   vi.mocked(getVoice).mockReset().mockResolvedValue(voice);
   vi.mocked(getSearchModel).mockResolvedValue(model("absent"));
   vi.mocked(getSettings).mockResolvedValue({ voice: null, setup_downloads: ["voice", "search"] } as Settings);
@@ -170,7 +172,7 @@ test("step 4 starts nothing while it still asks (its bars hidden), even with dow
 });
 
 test("only the downloads step 4 chose show, and the app opens once they are there", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   vi.mocked(getVoice).mockResolvedValue(voice);
   vi.mocked(getSearchModel).mockResolvedValue(model("ready"));
   vi.mocked(getSettings).mockResolvedValue({ voice: null, setup_downloads: ["search"] } as Settings);
@@ -213,7 +215,7 @@ async function openedWhileDownloading(now: () => [VoiceModel, SearchModel]) {
 }
 
 test("“Open Cardwave” opens while a download runs; the next starts after it, and one notice tells when all are there", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   let now: [VoiceModel, SearchModel] = [voice, model("downloading", { done: 100 })];
   notice().replaceChildren();
   await openedWhileDownloading(() => now);
@@ -243,7 +245,7 @@ test("a download that fails after “Open Cardwave” leaves a notice that stays
 });
 
 test("a download cut by a restart after “Open Cardwave” goes on at the next start, outside first run, and the list empties once all are there", async () => {
-  const voice: VoiceModel = { size: 1000, state: "absent", done: 0, failure: null, rate: 22050, voices: [], languages: [], reads_in: "English", at_provider: false };
+  const voice = voiceModel();
   let now: [VoiceModel, SearchModel] = [voice, model("downloading", { done: 100 })];
   await openedWhileDownloading(() => now);
   expect(changeSettings).not.toHaveBeenCalledWith({ setup_downloads: [] });

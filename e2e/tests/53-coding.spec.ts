@@ -6,7 +6,7 @@ import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { NOW, picture, stopClock } from "../pictures";
 
-// The coding team: Settings › Tools › "Coding team" sets the team, and the team goes by Settings › Tools; "+" ›
+// The coding team: Settings › Advanced › "Coding team" sets the team, and the team goes by "Tools for the AI"; "+" ›
 // "Start a coding task" in a chat starts one, whose card follows it there, asks before the worker writes ("Ask
 // before writing" on), and says the auditor's verdict; its page shows the steps, the changed file and the checkpoints, and "Undo
 // all" puts the folder back. The stand-in `api` is every role's model, which calls the roles' tools in the
@@ -51,12 +51,12 @@ test("a coding task is set up, started in a chat, allowed to write, and undone f
   await page.getByRole("button", { name: "Attach, or let the AI write" }).click();
   const offered = page.getByRole("menuitem", { name: "Start a coding task" });
   await expect(offered).toHaveAttribute("aria-disabled", "true");
-  await expect(offered).toContainText("Switch on Files in Settings › Tools first");
+  await expect(offered).toContainText("Switch on Files in Settings › Advanced › Tools for the AI first");
   await page.keyboard.press("Escape");
-  await page.goto("/#/settings");
+  await page.goto("/#/settings/advanced");
   await page.getByRole("link", { name: /Coding team/ }).click();
   await expect(page.locator(".settings-group p.hint").first()).toHaveText("Balanced: one planner, two workers and an auditor who runs the tests.");
-  // The team goes by Settings › Tools: Files on for the folder, asking before a write.
+  // The team goes by "Tools for the AI": Files on for the folder, asking before a write.
   const tools = await request.patch("/api/settings", { data: { tools: { folder, files: true, ask_writes: true } } });
   expect(tools.status(), await tools.text()).toBe(200);
 

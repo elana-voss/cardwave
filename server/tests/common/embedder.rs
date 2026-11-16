@@ -10,7 +10,7 @@
 //! ending, for a test that cancels it, and `drop_once` drops its connection
 //! once; it serves a `Range`, and `ranges` says where each download began. As `llama-server` it refuses a text of
 //! more than 480 tokens, and a text with "POISON" in it; `down` has it answer
-//! nothing but 503, `stall` never answer for a vector, and `asked` counts
+//! nothing but 503, `stall` never answer for a vector (one with "HANG" in it until `answer_hang`), and `asked` counts
 //! what it was asked but the download.
 
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -61,6 +61,7 @@ pub struct Embedder {
     hold: Arc<AtomicBool>,
     down: Arc<AtomicBool>,
     stalled: Arc<AtomicBool>,
+    hang: Arc<AtomicBool>,
     asked: Arc<AtomicUsize>,
     dropping: Arc<AtomicBool>,
     ranges: Arc<Mutex<Vec<Option<usize>>>>,
@@ -79,6 +80,8 @@ impl Embedder {
         let (down_, asked_) = (down.clone(), asked.clone());
         let stalled = Arc::new(AtomicBool::new(false));
         let stalled_ = stalled.clone();
+        let hang = Arc::new(AtomicBool::new(true));
+        let hang_ = hang.clone();
         let (dropping, ranges) = (
             Arc::new(AtomicBool::new(false)),
             Arc::new(Mutex::new(Vec::new())),
@@ -133,7 +136,7 @@ impl Embedder {
             )
             .fallback(move |uri: Uri, body: String| {
                 let (log, down, asked) = (log.clone(), down_.clone(), asked_.clone());
-                let stalled = stalled_.clone();
+                let (stalled, hang) = (stalled_.clone(), hang_.clone());
                 async move {
                     asked.fetch_add(1, Ordering::Relaxed);
                     if down.load(Ordering::Relaxed) {
@@ -156,6 +159,9 @@ impl Embedder {
                                 .map(|text| text.as_str().unwrap().to_string())
                                 .collect();
                             let refused = |text: &String| text.split_whitespace().count() > 480 || text.contains("POISON");
+                            if hang.load(Ordering::Relaxed) && texts.iter().any(|text| text.contains("HANG")) {
+                                std::future::pending::<()>().await;
+                            }
                             if texts.iter().any(refused) {
                                 return (StatusCode::BAD_REQUEST, Json(json!({ "error": "input is too large" }))).into_response();
                             }
@@ -180,6 +186,7 @@ impl Embedder {
             hold,
             down,
             stalled,
+            hang,
             asked,
             dropping: dropping_,
             ranges: ranges_,
@@ -189,6 +196,12 @@ impl Embedder {
     /// Has the stand-in never answer when it is asked for vectors, as a model that hangs.
     pub fn stall(&self) {
         self.stalled.store(true, Ordering::Relaxed);
+    }
+
+    /// Has the stand-in answer for texts with "HANG" in them too.
+    #[allow(dead_code)]
+    pub fn answer_hang(&self) {
+        self.hang.store(false, Ordering::Relaxed);
     }
 
     /// Has the stand-in answer 503 to all but the download, as a model that is gone.

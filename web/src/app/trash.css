@@ -1,0 +1,27 @@
+/* The Trash page's own rules (board Trash), read after app.css and before app/narrow.css. */
+/* The Trash: the column, and what can be done with an item in a place as wide in every row, so the buttons line up;
+   "Delete forever" ends where the row's words may. */
+.trash {
+  max-width: 920px;
+  container-type: inline-size;
+}
+.trash .side-acts {
+  width: 400px;
+}
+/* Where the page is too narrow for the actions' place, they go under the item's words (by the page's width, not the
+   window's: the rail takes 248 px of it). */
+@container (max-width: 720px) {
+  .trash .row {
+    flex-wrap: wrap;
+  }
+  .trash .side-acts {
+    flex: 1 0 100%;
+    width: auto;
+  }
+}
+.trash .left {
+  margin-right: var(--s8);
+}
+.trash .side-acts > .btn-danger {
+  padding: 0 0 0 var(--s14);
+}

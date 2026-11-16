@@ -1,5 +1,5 @@
-// What the browser keeps and saves: `remember` and `remembered`, a choice kept for the next start, and `save` and
-// `saveFrom`, a file handed to the browser to save, which in the desktop app's window say the folder it went into.
+// What the browser keeps and saves: `remember` and `remembered`, a choice kept for the next start; `keepOverReload`
+// and `takeKept`, a note kept for this tab's next load; `save` and `saveFrom`, a file handed to the browser to save, which in the desktop app's window say the folder it went into.
 import { el } from "./dom";
 
 /**
@@ -38,5 +38,25 @@ export function remember(key: string, value: string): void {
     localStorage.setItem(key, value);
   } catch {
     // Not kept, then.
+  }
+}
+
+/** Keeps a note for this tab's next load, read once by [`takeKept`]; nothing kept where the browser refuses. */
+export function keepOverReload(key: string, value: string): void {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    // Not kept, then: the next load says nothing.
+  }
+}
+
+/** The note [`keepOverReload`] kept under `key`, removed as it is read; `null` when none or the browser keeps nothing. */
+export function takeKept(key: string): string | null {
+  try {
+    const value = sessionStorage.getItem(key);
+    sessionStorage.removeItem(key);
+    return value;
+  } catch {
+    return null;
   }
 }

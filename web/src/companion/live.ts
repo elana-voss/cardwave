@@ -25,14 +25,18 @@ export interface Shown {
 
 /** The clip each feeling plays once. */
 export const FEELINGS: Record<Feeling, Clip> = {
-  happy: "jump",
-  excited: "dance",
-  surprised: "startled",
-  sad: "idle_shift",
-  angry: "no",
-  agree: "nod",
-  disagree: "no",
-  puzzled: "thinking",
+  happy: "joyful_jump",
+  excited: "cheering",
+  surprised: "surprised",
+  sad: "disappointed",
+  angry: "shake_fist",
+  agree: "head_nod_yes",
+  disagree: "shaking_head_no",
+  puzzled: "shrugging",
+  afraid: "terrified",
+  playful: "silly_dancing",
+  bashful: "bashful",
+  tired: "yawn",
 };
 
 /** How long a feeling shows at least, and a look lasts, in ms. */

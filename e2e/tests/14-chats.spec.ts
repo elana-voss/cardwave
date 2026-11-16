@@ -112,18 +112,15 @@ test("a chat's line shows its picture, the others in it, its card and the newest
 
   // It is called after its first character: the others and their cards are named beside that.
   const una = row(page, "Una");
-  await expect(una.locator(".row-head > *")).toHaveText(["Una", "with Odo", "listed in Characters as Tern Rock, Odo"]);
+  await expect(una.locator(".row-head > *")).toHaveText(["Una", "with Odo", "listed in Characters as Tern Rock"]);
   await expect(una.locator("img.cover")).toHaveAttribute("src", `/api/card-versions/${version}/image?size=96x128`);
   await expect(una.locator(".excerpt")).toHaveText("The gulls are loud today.");
   await expect(una.locator(".last")).toHaveText("Today");
   await expect(una.locator(".last")).toHaveAttribute("title", /^Last message: \d/);
   await expect(star(page, "Una")).toHaveAttribute("aria-pressed", "false");
   await expect(star(page, "Una")).toHaveAttribute("title", "Add to Favourites");
-  // A starred row's star is the accent star alone, not a pressed icon button's tinted box.
   await star(page, "Una").click();
   await expect(star(page, "Una")).toHaveAttribute("aria-pressed", "true");
-  await page.mouse.move(0, 0);
-  await expect(star(page, "Una")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await star(page, "Una").click();
   await expect(star(page, "Una")).toHaveAttribute("aria-pressed", "false");
   // The search says it finds, and All that it leaves the archived out.

@@ -72,7 +72,10 @@ error-not-found = There is no such { $what ->
     [voice] voice
    *[other] thing
 }. It may have been deleted.
-error-chat-busy = A reply is being written in this chat; stop it first.
+error-chat-busy = { $what ->
+    [coding_task] A coding task of this chat is running; stop it first.
+   *[other] A reply is being written in this chat; stop it first.
+}
 error-no-provider = { $what ->
     [chat_model] No chat model is chosen yet. Choose one in Settings › Models.
    *[other] No provider is set up yet. Add one in Settings › Providers.
@@ -102,7 +105,7 @@ error-drive-root-for-model = A drive's root holds too much to give the AI; choos
 error-data-folder = That folder holds Cardwave's own data, or is in it; choose another.
 error-commands-windows-only = Commands are run only on Windows.
 error-recycle-bin-windows-only = Files are moved to the Recycle Bin only on Windows.
-error-files-tool-off = Switch on Files in Settings › Tools first: the team reads and writes the task's folder with it.
+error-files-tool-off = Switch on Files in Settings › Advanced › Tools for the AI first: the team reads and writes the task's folder with it.
 
 ## Pictures, replies and voices
 
@@ -205,6 +208,7 @@ error-in-trash = { $what ->
     [persona_to_use] The persona “{ $name }” is in the Trash; restore it to use it.
    *[other] That is in the Trash; restore it first.
 }
+-card-unreadable = This file is not a character card Cardwave can read. Export it again from the app it came from.
 error-not-readable = { $what ->
     [damaged_key] Its key is damaged.
     [json] The file is not valid JSON.
@@ -218,7 +222,7 @@ error-not-readable = { $what ->
     [backup_key] This backup is damaged: its key cannot be read.
     [base64] That is not base64.
     [base64_file] { $name } is not base64.
-    [card_defined_twice] This file is not a character card Cardwave can read. Export it again from the app it came from.
+    [card_defined_twice] { -card-unreadable }
     [card_file_name] A file name in the card cannot be used.
     [card_reference] That names no part of the card.
     [ccv4_version] This card was made by a newer Cardwave. Update Cardwave to open it.
@@ -233,7 +237,7 @@ error-not-readable = { $what ->
     [figure_still] The figure's still is not a PNG of at most 4 MB.
     [figure_type] A 3D figure is a VRM, GLB or FBX file.
     [folder_read] The folder cannot be read.
-    [format_version] This file is not a character card Cardwave can read. Export it again from the app it came from.
+    [format_version] { -card-unreadable }
     [image_model_answer] The image model's answer cannot be read.
     [image_model_picture] The image model's picture cannot be read.
     [key_characters] The key holds letters a key cannot have. Copy it again from the provider's site.
@@ -263,15 +267,15 @@ error-not-readable = { $what ->
     [recording_short] The recording is too short: at least { $shortest } seconds are needed.
     [recording_silent] The recording has no sound.
     [recording_wav] The recording is not a WAV file.
-    [sillytavern_base64] This file is not a character card Cardwave can read. Export it again from the app it came from.
+    [sillytavern_base64] { -card-unreadable }
     [sillytavern_empty] The card is empty.
     [sillytavern_file] The SillyTavern card in this file cannot be read.
-    [sillytavern_json] This file is not a character card Cardwave can read. Export it again from the app it came from.
-    [sillytavern_object] This file is not a character card Cardwave can read. Export it again from the app it came from.
+    [sillytavern_json] { -card-unreadable }
+    [sillytavern_object] { -card-unreadable }
     [sillytavern_png] The SillyTavern card in this PNG cannot be read.
-    [spec_version] This file is not a character card Cardwave can read. Export it again from the app it came from.
-    [spec_version_form] This file is not a character card Cardwave can read. Export it again from the app it came from.
-    [toml] This file is not a character card Cardwave can read. Export it again from the app it came from.
+    [spec_version] { -card-unreadable }
+    [spec_version_form] { -card-unreadable }
+    [toml] { -card-unreadable }
     [word_file] The Word file cannot be read.
     [word_text] The Word file has no text.
     [workflow] The workflow “{ $name }” cannot be read.
@@ -286,6 +290,7 @@ error-not-readable = { $what ->
 error-too-big = { $what ->
     [card_for_worker] The character is too long for the helper model; pick a helper model that reads more.
     [card_for_chat] The character is too long for the chat model, so it would not be itself; pick a chat model that reads more, or shorten the character.
+    [message_for_chat] The message is too long for the chat model; shorten it, send fewer pictures with it, or pick a chat model that reads more.
     [card_file] The file is larger than { $most } MB.
     [checkpoint_folder] The folder is too large to keep copies of before each step.
     [expression_pack_size] { $name }'s pictures are too large.
@@ -389,21 +394,22 @@ error-not-possible = { $what ->
     [voice_runtime] Reading aloud needs a Microsoft part that is missing: install the Visual C++ Redistributable from microsoft.com, then restart Cardwave.
     [workflow_no_text] The workflow “{ $name }” has no text field for the picture's words.
     [workflow_use] The workflow “{ $name }” cannot be used.
-    [written_tools_full] You can keep { $most_tools } tools at most; delete one in Settings › Tools the AI wrote first.
+    [written_tools_full] You can keep { $most_tools } tools at most; delete one in Settings › Advanced › Tools the AI wrote first.
     [delete_not_in_trash] Only what is in the Trash can be deleted for good; move it there first.
    *[other] That cannot be done.
 }
+-helper-unusable = The helper model's answer could not be used. Try again, or pick another helper model.
 error-model-answer = { $what ->
     [no_greeting] The AI wrote no greeting.
-    [background_answer] The helper model's answer could not be used. Try again, or pick another helper model.
-    [background_text] The helper model's answer could not be used. Try again, or pick another helper model.
+    [background_answer] { -helper-unusable }
+    [background_text] { -helper-unusable }
     [card_texts] The AI's answer was not the character's texts.
-    [classification] The helper model's answer could not be used. Try again, or pick another helper model.
+    [classification] { -helper-unusable }
     [example_messages] The AI wrote no example messages.
     [no_example_message] The AI wrote an example message without its text.
     [json] The AI's answer was not in the form asked for.
-    [keywords] The helper model's answer could not be used. Try again, or pick another helper model.
-    [logline] The helper model's answer could not be used. Try again, or pick another helper model.
+    [keywords] { -helper-unusable }
+    [logline] { -helper-unusable }
     [no_chat_reply] The AI's provider sent no chat reply.
     [no_fitting_answer] The AI gave no usable answer in three tries.
     [no_picture] The image model answered without a picture.
@@ -414,17 +420,17 @@ error-model-answer = { $what ->
     [picture_field] The helper model found no field for the picture's words.
     [picture_server_no_picture] The picture server answered without a picture.
     [picture_words] The helper model wrote no words for the picture.
-    [rating] The helper model's answer could not be used. Try again, or pick another helper model.
+    [rating] { -helper-unusable }
     [reply_broke_off] The reply broke off.
-    [needs] The helper model's answer could not be used. Try again, or pick another helper model.
+    [needs] { -helper-unusable }
     [rounds] The team did not end its work in { $rounds } rounds.
     [search_left_out] The search model left out a text.
     [search_model] The search model's answer cannot be read.
     [search_tokens] The search model's tokens cannot be read.
-    [title] The helper model's answer could not be used. Try again, or pick another helper model.
+    [title] { -helper-unusable }
     [too_many_tools] The AI called too many tools.
-    [worker_mode] The helper model's answer could not be used. Try again, or pick another helper model.
-    [worker_texts] The helper model's answer could not be used. Try again, or pick another helper model.
+    [worker_mode] { -helper-unusable }
+    [worker_texts] { -helper-unusable }
     [server_reported] The AI's provider reported: { $reason }
    *[other] The AI's answer cannot be used.
 }

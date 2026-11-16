@@ -1,6 +1,7 @@
 // A part of a page written where it stands (`inPlace`): a click or the focus shows a field in its place with what
 // it holds, and leaving the field saves. A text being written that is not saved yet is kept as the field's unsaved
-// text (`InPlace.keep`, unsaved.ts) and comes back when it is written in again.
+// text (`InPlace.keep`, unsaved.ts) and comes back when it is written in again. Its hint ("Click to edit") is the
+// tooltip while it is not written in (`InPlace.hint`): shown on hover only, so a touch is not in its way.
 import { atMost, el } from "./dom";
 import { forget, keep, kept } from "./unsaved";
 
@@ -26,6 +27,8 @@ export interface InPlace {
   blocked?(): boolean;
   /** Whether, not written in, it shows a button to begin (Add tags): then it is a button to who cannot see it. */
   button?(): boolean;
+  /** Its tooltip while not written in ("Click to edit"), none while it is. */
+  hint?: string;
   /** The name what is written and not saved yet is kept by (unsaved.ts), to come back when it is written in again. */
   keep?(): string | null;
 }
@@ -40,6 +43,7 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
   const read = () => {
     field = null;
     node.tabIndex = 0;
+    if (place.hint) node.title = place.hint;
     node.replaceChildren(...place.show());
     if (place.button?.()) node.role = "button";
     else node.removeAttribute("role");
@@ -89,6 +93,7 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
     };
     node.tabIndex = -1;
     node.removeAttribute("role");
+    node.removeAttribute("title");
     node.replaceChildren(now);
     place.editing?.(true);
     grow();
@@ -105,6 +110,10 @@ export function inPlace(node: HTMLElement, place: InPlace): () => void {
       });
     }
   };
+  // Pointed at while it cannot be written in (an AI change waiting with Keep and Undo), it says nothing.
+  node.addEventListener("pointerenter", () => {
+    if (place.hint && !field) node.title = place.blocked?.() ? "" : place.hint;
+  });
   node.addEventListener("focus", begin);
   node.addEventListener("click", begin);
   read();

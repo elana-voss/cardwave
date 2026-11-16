@@ -102,7 +102,7 @@ impl Storage for Db {
                 [user],
                 |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?)),
             )?;
-            let failure = conn
+            let failure: Option<String> = conn
                 .query_row(
                     "select r.reason from card_redos r join cards c on c.id = r.card_id
                      where c.user_id = ?1 and c.trashed_at is null and r.state = 'failed'
@@ -117,7 +117,7 @@ impl Storage for Db {
                 done: (read + failed) as usize,
                 failed: failed as usize,
                 // Kept as JSON by `describe::kept_failure`.
-                failure: failure.and_then(|kept: String| serde_json::from_str(&kept).ok()),
+                failure: crate::json::or_none(failure.as_deref(), "a description's failure"),
                 stopped,
             })
         })?)

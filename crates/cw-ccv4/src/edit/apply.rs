@@ -1,5 +1,6 @@
 //! [`apply`]: an edit written into a card's files, a character at a time
-//! (`character_edit`), then what the whole card holds (`card_edit`), checked
+//! (`character_edit`), then what the whole card holds (`card_edit`; a change
+//! of its modes reaches every block, also another language's: `others_moded`), checked
 //! against the card as it reads afterwards (`finish`).
 
 use anyhow::{Context, bail, ensure};
@@ -8,7 +9,7 @@ use toml_edit::visit::Visit;
 use toml_edit::{Datetime, DocumentMut};
 
 use crate::mapping::Section;
-use crate::{Document, plain, tag_key, tidy_modes, written_date};
+use crate::{Document, plain, same_mode, tag_key, tidy_modes, written_date};
 
 use crate::edit::{
     Card, CardEdit, EditCharacter, EditText, Named, character, greetings, of_block, set, set_list,
@@ -260,6 +261,46 @@ fn texts(
     Ok(())
 }
 
+/// Makes a change of the card's modes to `modes` in every block the edit did
+/// not write (another language's, one no editor shows): a mode renamed in
+/// `edit.renamed` is renamed, one of the card's gone from `modes` taken off. A
+/// mode the card never had (a card written by hand) stays.
+fn others_moded(
+    card: &mut Card<'_>,
+    document: &Document,
+    edit: &CardEdit,
+    modes: &[String],
+) -> anyhow::Result<()> {
+    let had = document.modes();
+    for reference in document.moded_blocks() {
+        if card.has_modes(&reference) {
+            continue;
+        }
+        let before = document.block_modes(&reference);
+        let mut after = before.clone();
+        for (from, to) in &edit.renamed {
+            for mode in after.iter_mut().filter(|mode| same_mode(mode, from)) {
+                mode.clone_from(to);
+            }
+        }
+        after.retain(|mode| {
+            !had.iter().any(|one| same_mode(one, mode))
+                || modes.iter().any(|one| same_mode(one, mode))
+        });
+        // As the card names it.
+        for mode in &mut after {
+            if let Some(one) = modes.iter().find(|one| same_mode(one, mode)) {
+                mode.clone_from(one);
+            }
+        }
+        let after = tidy_modes(after.iter().map(String::as_str));
+        if after != before {
+            card.set_modes(&reference, &after)?;
+        }
+    }
+    Ok(())
+}
+
 /// Writes what `edit` changes of the whole card: its modes, tags, creator and
 /// `title`.
 fn card_edit(
@@ -270,6 +311,7 @@ fn card_edit(
     title: Option<&str>,
 ) -> anyhow::Result<()> {
     if modes != document.modes() {
+        others_moded(card, document, edit, &modes)?;
         if modes.is_empty() {
             card.meta("modes")?.remove("modes");
         } else {

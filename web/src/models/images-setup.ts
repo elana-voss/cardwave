@@ -49,7 +49,7 @@ export function imagesLine(
   };
   shown.change.onclick = () => {
     // Asked anew at each opening: the address or its key may be another since.
-    const listing = models(home(), asked, () => {}, take, listImageModels);
+    const listing = models(home(), asked, () => {}, take, listImageModels, wording("provider-form-no-image-models"));
     listing.pick(chosen || stored?.model || "", wording("images-setup-image-model"));
   };
   const order = newest();

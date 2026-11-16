@@ -5,11 +5,13 @@
 //
 // Traps: a VRM is moved by its normalized bones and `update` copies them to the bones it draws, each frame. A VRM
 // 0.x looks the other way and is turned (`rotateVRM0`). The figure's root is a group around what the file holds,
-// which the companion turns; the rests the clips are made from are taken before it is turned.
+// which the companion turns; the rests the clips are made from are taken before it is turned. A VRM's MToon looks
+// are three-vrm's node materials (`MToonNodeMaterial`), which drawer.ts's renderer draws on WebGPU and WebGL alike.
 import { type AnimationClip, Group, type Object3D } from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { type VRM, type VRMHumanBoneName, VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import { MToonMaterialLoaderPlugin, type VRM, type VRMHumanBoneName, VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import { MToonNodeMaterial } from "@pixiv/three-vrm/nodes";
 import carrierUrl from "./animations.glb";
 import { retarget, type Rig } from "./retarget";
 import { type HumanBone, matchBones } from "./skeleton";
@@ -44,7 +46,7 @@ export async function loadFigure(url: string, kind: FigureKind): Promise<Model> 
     return { root, bones: named(object), vrm: null };
   }
   const loader = new GLTFLoader();
-  loader.register((parser) => new VRMLoaderPlugin(parser));
+  loader.register((parser) => new VRMLoaderPlugin(parser, { mtoonMaterialPlugin: new MToonMaterialLoaderPlugin(parser, { materialType: MToonNodeMaterial }) }));
   const gltf = await loader.loadAsync(url);
   const vrm = (gltf.userData.vrm as VRM | undefined) ?? null;
   if (!vrm) {

@@ -277,6 +277,45 @@ mod tests {
             (Code::Answered, Some("model_download".to_string()))
         );
     }
+
+    #[tokio::test]
+    async fn a_cancel_does_not_wait_for_a_server_that_does_not_answer() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let at = listener.local_addr().unwrap();
+        // Takes the connection and says nothing.
+        let silent = tokio::spawn(async move {
+            let socket = listener.accept().await.unwrap();
+            tokio::time::sleep(Duration::from_secs(20)).await;
+            drop(socket);
+        });
+        let model = ModelFile {
+            url: format!("http://{at}/model"),
+            size: 1,
+            sha256: String::new(),
+        };
+        let path = std::env::temp_dir().join(format!("cw-modelfiles-silent-{}", at.port()));
+        let mut file = tokio::fs::File::create(&path).await.unwrap();
+        let stop = AtomicBool::new(true);
+        let failure = tokio::time::timeout(
+            Duration::from_secs(5),
+            fetch(
+                &client().unwrap(),
+                &model,
+                &mut file,
+                &mut Sha256::new(),
+                &mut 0,
+                &mut |_| {},
+                &stop,
+            ),
+        )
+        .await
+        .expect("a cancel is not held up by the request")
+        .unwrap_err();
+        drop(file);
+        let _ = std::fs::remove_file(&path); // A file left in the temporary folder harms nothing.
+        silent.abort();
+        assert!(failure.is::<Cancelled>(), "{failure:#}");
+    }
 }
 
 /// A file a model needs (the voice's, dictation's): where it comes from, and
@@ -480,7 +519,10 @@ async fn fetch(
     if *done > 0 {
         asked = asked.header(cw_platform::http::header::RANGE, format!("bytes={done}-"));
     }
-    let response = asked.send().await.map_err(broke)?;
+    let response = tokio::select! {
+        response = asked.send() => response.map_err(broke)?,
+        () = stopped(stop) => bail!(Cancelled),
+    };
     let status = response.status();
     if status.is_server_error() {
         // Tried again like a connection lost; told, when the tries are over, as the server's fault.

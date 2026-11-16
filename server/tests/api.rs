@@ -13,7 +13,9 @@ use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 async fn status_reports_app_and_version() {
     let server = start().await;
     let addr = &server.addr;
-    let body: serde_json::Value = reqwest::get(format!("http://{addr}/api/status"))
+    let body: serde_json::Value = common::server::client()
+        .get(format!("http://{addr}/api/status"))
+        .send()
         .await
         .unwrap()
         .json()
@@ -152,7 +154,9 @@ async fn socket_refuses_foreign_origin() {
 #[tokio::test]
 async fn unknown_api_path_is_404() {
     let server = start().await;
-    let res = reqwest::get(format!("http://{}/api/nope", server.addr))
+    let res = common::server::client()
+        .get(format!("http://{}/api/nope", server.addr))
+        .send()
         .await
         .unwrap();
     assert_eq!(res.status(), 404);
@@ -162,7 +166,7 @@ async fn unknown_api_path_is_404() {
 async fn http_refuses_foreign_origin_but_allows_same_or_none() {
     let server = start().await;
     let url = format!("http://{}/api/status", server.addr);
-    let client = reqwest::Client::new();
+    let client = common::server::client();
     let get = |origin: Option<String>| {
         let mut req = client.get(&url);
         if let Some(o) = origin {
@@ -179,7 +183,7 @@ async fn http_refuses_foreign_origin_but_allows_same_or_none() {
 async fn only_a_numeric_address_or_localhost_is_answered() {
     let server = start().await;
     let url = format!("http://{}/api/status", server.addr);
-    let client = reqwest::Client::new();
+    let client = common::server::client();
     let port = server.addr.rsplit(':').next().unwrap();
     let to = |host: String| {
         let req = client
@@ -265,7 +269,9 @@ async fn a_card_is_uploaded_listed_and_served() {
         headers["cache-control"],
         "private, max-age=31536000, immutable"
     );
-    let list = reqwest::get(format!("http://{}/api/cards", server.addr))
+    let list = common::server::client()
+        .get(format!("http://{}/api/cards", server.addr))
+        .send()
         .await
         .unwrap();
     assert_eq!(list.headers()["cache-control"], "no-cache");
@@ -463,7 +469,7 @@ async fn bad_uploads_and_missing_items_are_told_apart() {
 async fn another_sites_page_cannot_load_from_the_api() {
     let server = start().await;
     let from = |site: &'static str| {
-        let request = reqwest::Client::new().get(format!("http://{}/api/cards", server.addr));
+        let request = common::server::client().get(format!("http://{}/api/cards", server.addr));
         async move {
             answer(request.header("sec-fetch-site", site).send().await.unwrap())
                 .await

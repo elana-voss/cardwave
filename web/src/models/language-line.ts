@@ -10,14 +10,18 @@ import { languageName, wording } from "../language/language";
 export function languageLine(): { node: HTMLElement; notice: HTMLElement; read(): void } {
   const notice = noticeBox();
   let saving = Promise.resolve();
+  /** The language the server holds, as last read or stored. */
+  let stored = "";
   const take = (code: string) =>
     void (saving = saving.then(async () => {
       notice.replaceChildren();
       try {
         const settings = await changeSettings({ language: code });
-        field.value = settings.language;
+        stored = settings.language;
+        field.value = stored;
         say(settings.language_chosen);
       } catch (error) {
+        field.value = stored;
         notice.replaceChildren(failure(reason(error)));
       }
     }));
@@ -30,7 +34,8 @@ export function languageLine(): { node: HTMLElement; notice: HTMLElement; read()
     void Promise.all([(languages ??= listLanguages()), getSettings()]).then(
       ([all, settings]) => {
         field.offer(all.map((one) => ({ value: one.code, label: languageName(one.code, one.name) })));
-        field.value = settings.language;
+        stored = settings.language;
+        field.value = stored;
         say(settings.language_chosen);
         field.field.disabled = false;
         notice.replaceChildren();

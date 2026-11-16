@@ -3,4 +3,4 @@
 /**
  * The feelings the figure shows (`Move::React`).
  */
-export type Feeling = "happy" | "excited" | "surprised" | "sad" | "angry" | "agree" | "disagree" | "puzzled";
+export type Feeling = "happy" | "excited" | "surprised" | "sad" | "angry" | "agree" | "disagree" | "puzzled" | "afraid" | "playful" | "bashful" | "tired";

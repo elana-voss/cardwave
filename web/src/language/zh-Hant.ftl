@@ -132,6 +132,7 @@ search-keys = 搜尋 Cardwave（Ctrl+K）
 label-settings-theme = 主題
 label-settings-chat-layout = 聊天版面
 label-settings-web-pictures = 顯示其他網站的圖片
+label-settings-tabs = 分頁
 label-settings-app-language = 應用程式的語言
 label-settings-language = AI 寫作的語言
 label-settings-providers = 供應商
@@ -149,7 +150,6 @@ label-settings-dice = 骰子
 label-settings-folder = 資料夾
 label-settings-written = AI 寫的工具
 label-settings-coding = 程式設計團隊
-label-settings-trash = 垃圾桶
 label-settings-backup = 備份
 label-settings-restore = 還原
 label-settings-cards-folder = 角色卡資料夾
@@ -187,16 +187,12 @@ settings-appearance = 外觀
 settings-theme-about = 跟隨系統，除非你選一個
 settings-layout-about = 訊息以氣泡或純文字顯示
 settings-web-pictures-about = 你開啟聊天時，那些網站會知道。
+settings-tabs-about = 在標題列中同時開啟多個頁面
 settings-language = 語言
 settings-data = 資料
-settings-trash-about = { $count ->
-   *[other] { $count } 個項目
-  } · { $days } 天後清空
-settings-open-trash = 開啟垃圾桶
-settings-open = 開啟
 settings-version = 版本 { $version } · 授權條款
 settings-licences = 授權條款
-settings-advanced-about = 輔助模型、資料庫、匯出、不帶角色聊天、取樣、預設集、自訂 CSS
+settings-advanced-about = 輔助模型、資料庫、AI 的工具、匯出、不帶角色聊天、取樣、預設集、自訂 CSS
 settings-setup-about = 供應商、模型和語音，一步一步設定
 settings-providers-about = 執行模型的服務的位址和金鑰
 settings-this-computer = 這台電腦
@@ -242,7 +238,7 @@ backup-back-up = 儲存備份
 backup-no-file = 未選擇檔案
 backup-choose-file = 選擇檔案
 backup-its-password = 備份的密碼
-backup-restoring = 還原會取代 Cardwave 中的一切：聊天、角色、使用者角色、世界書、記憶和設定。此操作無法復原。這裡設定的密碼保持不變。 其他帳戶也會被取代。
+backup-restoring = 還原會取代 Cardwave 中的一切：聊天、角色、使用者角色、世界書、記憶和設定。此操作無法復原。其他帳戶也會被取代。
 backup-restored = 備份已還原：Cardwave 中的一切都回到了備份時的樣子。其他裝置需要重新登入。
 backup-file = 檔案
 backup-restore-title = 還原備份
@@ -280,7 +276,7 @@ companion-size-value = { $size }%
 ## Other programs, MCP (settings/mcp.ts)
 
 mcp-ask-title = 讓這台電腦上的 AI 應用程式使用 Cardwave
-mcp-ask = 這台電腦上的程式（例如 Claude Desktop）可以讀取你的角色和聊天、在你的聊天中寫入，並使用在設定 › 工具中開啟的工具。Cardwave 會先問你的事，它們做不到。
+mcp-ask = 這台電腦上的程式（例如 Claude Desktop）可以讀取你的角色和聊天、在你的聊天中寫入，並使用在設定中開啟的工具。Cardwave 會先問你的事，它們做不到。
 mcp-switch-on = 開啟
 mcp-about = 例如 Claude Desktop，透過 MCP：它們會使用你的角色、聊天和工具
 mcp-copy-address = 複製 MCP 位址
@@ -406,6 +402,7 @@ tools-change = 變更
 tools-choose = 選擇
 tools-none-chosen = 未選擇
 tools-title = 工具
+tools-for-ai = AI 的工具
 tools-ask-new = { $name } 想使用一個新工具：{ $what }
 tools-ask-write = { $name } 想在你的資料夾中寫入「{ $what }」：
 tools-ask-read = { $name } 想讀取你資料夾中的內容：
@@ -467,6 +464,9 @@ providers-choose-folder = 選擇模型資料夾
 providers-change = 變更
 providers-not-set-up = 未設定
 providers-folder-not-set-up = 執行這台電腦上某個資料夾裡的模型 · 未設定
+providers-this-computer-runs = 可以執行：{ $models }
+providers-this-computer-none = 還沒有模型：在下面下載一個合適的
+providers-details = 詳細資料
 providers-menu = 供應商選單：編輯、移除
 providers-remove = 移除
 providers-removed = 已移除供應商「{ $name }」。
@@ -476,6 +476,7 @@ providers-remove-key = 移除金鑰
 providers-key-removed = 儲存時會移除金鑰
 providers-edit = 編輯供應商
 providers-keep-key = 留空即保留已儲存的金鑰。
+providers-new-address-key = 新位址需要重新輸入金鑰：金鑰絕不會傳送到其他伺服器。
 providers-saved = 已儲存供應商「{ $name }」。
 providers-added = 已新增供應商「{ $name }」。
 providers-add = 新增供應商
@@ -549,15 +550,13 @@ advanced-not-described = { $count ->
    *[other] { $count } 個角色
   }尚未描述
 advanced-describe-cards = 描述角色
-advanced-describe-cost = { $count ->
-   *[other] { $count } 個角色
-  }約需 { $low } 至 { $high } 個 token
+advanced-describe-cost = 待讀取的角色卡：{ $count }
 advanced-failed = { $count ->
    *[other] { $count } 張失敗
   }：{ $failure }。按「描述角色」再試一次。
 advanced-describe-again = 全部重新描述
 advanced-describe-again-stop = 停止
-advanced-describe-again-about = 用輔助模型重寫每個角色的一句話描述、摘要、標籤，以及「依需求」用來找到它的內容，每個約 11,000 到 12,000 個 token。你自己編輯過的內容保留。 供應商按 token 計費。
+advanced-describe-again-about = 用輔助模型重新讀取每張角色卡，並重寫每個角色的一句話描述、摘要、標籤，以及「依需求」用來找到它的內容。你自己編輯過的內容保留。
 advanced-no-characters = 沒有要描述的角色
 advanced-describe-again-far = 已重新描述 { $done } / { $all }
 advanced-describe-again-stopped = 已停止：已重新描述 { $done } / { $all }
@@ -810,6 +809,8 @@ server-switch-on = 開啟
 server-network-about = 手機和其他電腦在瀏覽器中開啟 Cardwave
 server-other-devices = 其他裝置
 server-inside = 只有這個網路中的裝置能存取，除非你在路由器上設定允許外部存取。
+server-anywhere = 任何地方
+server-tailscale = 要從任何地方開啟，請在這台電腦和你的手機上安裝免費 App Tailscale（tailscale.com），並在兩者上登入。
 server-add-account = 新增帳號
 server-owner = 這台電腦 · 可新增和移除帳號
 server-more-of = 更多：{ $name }

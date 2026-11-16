@@ -4,7 +4,7 @@
 //
 // A grey line under the search says memories come from chats (none is added by hand, the owner). A row
 // (`.memory-row`) is the memory's text, an event's cause and result read as one sentence (`plainText`), under it in
-// grey who knows it (the user as "you"), the chat it is from, a link, and the day it was said; its kind and state
+// grey who knows it (the user as "you", or by the persona's name where the memory has one), the chat it is from, a link, and the day it was said; its kind and state
 // stay behind (proposal 59 of 88, the owner). Its "…" has Edit, a dialog of its text as the row reads it (sent only
 // where it was changed, so an event keeps the form the prompt has) and of who of the chat's characters and the user
 // know it (pills), and Delete,
@@ -33,18 +33,21 @@ export function knowers(memory: MemoryView): string[] {
   return known ? memory.names.filter((name) => known.includes(name.toLowerCase())) : memory.names;
 }
 
-/** A name of `memory.names` as the page writes it: the user, the last of them, as "you" ("You" where it stands alone, a pill). */
+/** A name of `memory.names` as the page writes it: the user, the last of them, as "you" ("You" where it stands alone, a pill), but by the persona's name where the memory has one, which tells two personas' memories of a character apart. */
 const named = (memory: MemoryView, name: string, alone = false) =>
-  isUser(memory, name) ? (alone ? wording("memories-you-alone") : wording("memories-you")) : name;
+  isUser(memory, name) && memory.persona === null ? (alone ? wording("memories-you-alone") : wording("memories-you")) : name;
 
 /** Whether `name` is the user's, the last of `memory.names`. */
 const isUser = (memory: MemoryView, name: string) => name === memory.names[memory.names.length - 1];
 
 /** What a row says of a memory under its text: who know it, the user as "you". */
 export function about(memory: MemoryView): string {
-  if (!memory.known_to) return knownLine({ code: "everyone" });
+  // Everyone is named where the memory is a persona's, else two personas' memories of a character read the same.
+  if (!memory.known_to && memory.persona === null) return knownLine({ code: "everyone" });
   const known = knowers(memory);
-  return knownLine({ code: "by", names: known.filter((name) => !isUser(memory, name)), you: known.some((name) => isUser(memory, name)) });
+  // The persona is a name like the characters'; the user without one is "you".
+  const apart = (name: string) => isUser(memory, name) && memory.persona === null;
+  return knownLine({ code: "by", names: known.filter((name) => !apart(name)), you: known.some(apart) });
 }
 
 /** An event's text as one plain sentence: "[what] (cause: [c]; result: [r])", as the memory keeps it for the prompt, reads "[what], because [c], so [r]."; a part the helper model left as "?" is left out. */

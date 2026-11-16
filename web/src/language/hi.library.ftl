@@ -244,6 +244,7 @@ character-translate-card = किरदार का अनुवाद कर�
 character-discard-card = किरदार हटाएँ
 character-card-menu = किरदार मेन्यू
 character-title = शीर्षक
+character-click-to-edit = बदलने के लिए क्लिक करें
 character-name-the-card = किरदार को नाम दें
 character-summary = लाइब्रेरी के लिए एक लाइन का सारांश
 character-this-card-is-in = यह किरदार ट्रैश में है।{ " " }

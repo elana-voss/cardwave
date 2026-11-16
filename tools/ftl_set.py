@@ -55,15 +55,6 @@ def set_text(text: str, key: str, value: str, newline: str) -> str:
     return newline.join(lines)
 
 
-def add_after(text: str, key: str, after: str, value: str, newline: str) -> str:
-    lines = text.split(newline)
-    if any(re.match(rf"^{re.escape(key)}\s*=", line) for line in lines):
-        raise SystemExit(f"{key}: there already")
-    _, end = span(lines, after)
-    lines.insert(end, f"{key} = x")
-    return set_text(newline.join(lines), key, value, newline)
-
-
 def remove(text: str, key: str, newline: str) -> str:
     lines = text.split(newline)
     first, end = span(lines, key)
@@ -98,6 +89,11 @@ def add_after(text: str, key: str, after: str, value: str, newline: str) -> str:
     return set_text(newline.join(lines), key, value, newline)
 
 
+def newline_of(text: str) -> str:
+    """The line end the file uses."""
+    return "\r\n" if "\r\n" in text else "\n"
+
+
 def files_with(folder: Path, key: str, read) -> list[Path]:
     """Every language file holding `key`; at least one."""
     files = [f for f in sorted(folder.glob("*.ftl")) if re.search(rf"^{re.escape(key)}\s*=", read(f), re.M)]
@@ -117,24 +113,19 @@ def apply(steps: list[dict], folder: Path = LANGUAGE) -> list[Path]:
 
     for step in steps:
         if "remove" in step:
-            files = [f for f in sorted(folder.glob("*.ftl")) if re.search(rf"^{re.escape(step['remove'])}\s*=", read(f), re.M)]
-            if not files:
-                raise SystemExit(f"{step['remove']}: in no file")
-            for path in files:
-                nl = "\r\n" if "\r\n" in read(path) else "\n"
-                texts[path] = remove(read(path), step["remove"], nl)
+            for path in files_with(folder, step["remove"], read):
+                texts[path] = remove(read(path), step["remove"], newline_of(read(path)))
             continue
         if "rename" in step:
             for path in files_with(folder, step["rename"], read):
-                nl = "\r\n" if "\r\n" in read(path) else "\n"
-                texts[path] = rename(read(path), step["rename"], step["to"], nl)
+                texts[path] = rename(read(path), step["rename"], step["to"], newline_of(read(path)))
             continue
         codes = languages(folder, step["part"])
         if sorted(step["text"]) != codes:
             raise SystemExit(f"{step['key']}: languages {sorted(step['text'])}, files {codes}")
         for code in codes:
             path = folder / f"{code}{step['part']}.ftl"
-            nl = "\r\n" if "\r\n" in read(path) else "\n"
+            nl = newline_of(read(path))
             if "after" in step:
                 texts[path] = add_after(read(path), step["key"], step["after"], step["text"][code], nl)
             elif "variant" in step:

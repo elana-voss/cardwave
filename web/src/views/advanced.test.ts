@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { describeCost, describingSays, SAMPLING, valueOf } from "./advanced";
+import { describe, expect, it, vi } from "vitest";
+import { changeSettings, getSettings, getSampling } from "../api/client";
+import { describeCost, describingSays, plainGroup, samplingPart, SAMPLING, valueOf } from "./advanced";
+
+vi.mock("../api/client", () => ({ getSampling: vi.fn(), setSampling: vi.fn(), getSettings: vi.fn(), changeSettings: vi.fn() }));
 
 const of = (key: string) => SAMPLING.find((value) => value.key === key)!;
 
@@ -13,7 +16,7 @@ describe("the page Advanced", () => {
   });
 
   it("says what describing the characters not yet described costs, and nothing while it runs or with none left", () => {
-    expect(describeCost({ waiting: 0, left: 503, failed: 0, failure: null })).toBe("About 5,533,000 to 6,036,000 tokens for 503 characters");
+    expect(describeCost({ waiting: 0, left: 503, failed: 0, failure: null })).toBe("Cards to read: 503");
     expect(describeCost({ waiting: 3, left: 3, failed: 0, failure: null })).toBe("");
     expect(describeCost({ waiting: 0, left: 0, failed: 0, failure: null })).toBe("");
   });
@@ -28,5 +31,27 @@ describe("the page Advanced", () => {
     expect(valueOf("3.5", of("seed"))).toBeUndefined();
     expect(valueOf("256", of("context_size"))).toBeUndefined();
     expect(valueOf("8192", of("context_size"))).toBe(8192);
+  });
+
+  it("keeps the sampling fields shut until the stored values have been read, so a value typed does not clear the others", async () => {
+    vi.mocked(getSampling).mockRejectedValueOnce(new Error("not reached"));
+    const part = samplingPart();
+    const inputs = () => [...part.node.querySelectorAll("input")];
+    await part.read();
+    expect(inputs().every((input) => input.disabled)).toBe(true);
+    vi.mocked(getSampling).mockResolvedValueOnce({ context_size: 8192, temperature: 0.7, top_p: null, frequency_penalty: null, presence_penalty: null, seed: null });
+    await part.read();
+    expect(inputs().some((input) => input.disabled)).toBe(false);
+    expect(inputs()[1].value).toBe("0.7");
+  });
+
+  it("saves the text of \"Chat without a character\" when the page is left with the field still in focus", async () => {
+    vi.mocked(getSettings).mockResolvedValue({ plain_prompt: "old" } as never);
+    vi.mocked(changeSettings).mockResolvedValue({ plain_prompt: "new" } as never);
+    const part = plainGroup();
+    await vi.waitFor(() => expect(part.node.querySelector("textarea")!.disabled).toBe(false));
+    part.node.querySelector("textarea")!.value = "new";
+    part.left();
+    await vi.waitFor(() => expect(changeSettings).toHaveBeenCalledWith({ plain_prompt: "new" }));
   });
 });

@@ -8,9 +8,11 @@
 // three buttons, asked of the program (desktop.ts). A tab is shown by a click (from the keyboard by Enter or
 // Space), closed by its × or a middle-click, and dragged to another place. `bare` takes the tabs away where the
 // rail is not (first run, the start screen), and in a browser the bar with them; `alone` (the desktop app's
-// window of one page) has no tabs at all. Its words are language.ts's, set anew when the language changes.
+// window of one page) has no tabs at all, and the tabs switched off (tabs.ts) none, nor "+" or "All tabs".
+// Its words are language.ts's, set anew when the language changes.
 // Traps: the bar measures itself to fit the tabs, so a bar that is not drawn (a browser at 600 px) is not
 // fitted, which would move the tab in view to the first place; a drag ends in a click, which shows no tab.
+import { pictureOr } from "../art";
 import { el } from "../dom";
 import { opener, step } from "../dialogs";
 import { desktop, inDesktop } from "../desktop";
@@ -30,13 +32,10 @@ export interface TitleBar {
   bare(now: boolean): void;
 }
 
-/** A tab's round: its picture, or its page's drawing, also where the picture is none (a card without one answers 404). */
+/** A tab's round: its picture, or its page's drawing, also where the picture is none (a card without one answers 404); a stub stays. */
 function round(t: Tab): HTMLElement {
   const drawing = () => el("span", { className: "ico" }, icon(t.shape, 16));
-  if (!t.picture) return drawing();
-  const picture = el("img", { className: "tico", src: t.picture, alt: "" });
-  picture.onerror = () => picture.replaceWith(drawing());
-  return picture;
+  return t.picture ? pictureOr(el("img", { className: "tico", src: t.picture, alt: "" }), drawing, { stubs: true }) : drawing();
 }
 
 const quiet = (label: string, title: string, shape: IconName) => el("button", { type: "button", className: "btn btn-quiet btn-icon btn-sm btn-bar", ariaLabel: label, title }, icon(shape, 16));
@@ -169,7 +168,9 @@ export function makeTitleBar(tabs: Tabs, alone = false): TitleBar {
   const strip = el("div", { className: "tabs", role: "tablist", ariaLabel: wording("tabs") });
   const plus = quiet(wording("tab-new"), desktopped ? wording("tab-new-keys") : wording("tab-new"), "plus");
   plus.onclick = () => tabs.newTab();
+  plus.classList.add("tab-plus");
   const all = allTabs(tabs);
+  all.node.classList.add("all-tabs");
   const view = viewButton("btn btn-quiet btn-icon btn-sm btn-bar", () => tabs.now().view);
   const search = searchButton("btn btn-quiet btn-icon btn-sm btn-bar");
   const buttons = desktopped ? windowButtons() : null;

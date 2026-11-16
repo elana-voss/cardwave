@@ -145,7 +145,7 @@ async fn the_animator_is_told_the_screen_and_the_newest_messages_and_its_steps_a
  {
     let answer = r#"Here: {"steps": [
         {"do": "walk", "x": 5000},
-        {"do": "play", "clip": "wave"},
+        {"do": "play", "clip": "waving"},
         {"do": "say", "text": "  Hi  "},
         {"do": "fly", "to": "moon"},
         {"do": "play", "clip": "backflip"},
@@ -167,7 +167,7 @@ async fn the_animator_is_told_the_screen_and_the_newest_messages_and_its_steps_a
         planned["steps"],
         json!([
             { "do": "walk", "x": 1600.0 },
-            { "do": "play", "clip": "wave" },
+            { "do": "play", "clip": "waving" },
             { "do": "say", "text": "Hi" },
             { "do": "climb", "side": "left", "height": 1.0 },
             { "do": "wait", "ms": 10000 },
@@ -272,7 +272,7 @@ async fn the_animator_is_told_the_persona_of_the_companions_newest_version() {
 
 #[tokio::test]
 async fn a_reply_in_a_chat_that_is_not_the_companions_has_it_do_nothing() {
-    let model = Model::start(r#"{"steps": [{"do": "play", "clip": "wave"}]}"#).await;
+    let model = Model::start(r#"{"steps": [{"do": "play", "clip": "waving"}]}"#).await;
     let server = start().await;
     gwen(&server, &model, "").await;
     let other = card(&server, &model, "Mira", "").await;

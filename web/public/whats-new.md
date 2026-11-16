@@ -1,3 +1,16 @@
+# 0.2.0
+
+Cardwave on your phone, and many fixes.
+
+- Open Cardwave from anywhere: with Tailscale, Account › Sharing shows the address to open it on your phone or another computer, and every screen fits a phone.
+- Memories belong to a character and your persona: switching a chat's persona starts fresh memories, and switching back finds the old ones.
+- The companion moves more: many more motions, chosen by its mood, and four more feelings: afraid, playful, bashful and tired.
+- 3D figures are drawn with WebGPU where your computer has it.
+- A backup can be restored right at the first start, and a restored backup keeps its password.
+- Tidier settings: the AI's tools moved to Advanced, and the tabs can be switched off in Settings › Appearance.
+- A character's texts show "Click to edit" when you point at them, and the taskbar icon fills its square.
+- Many fixes found by a search through the whole app.
+
 # 0.1.3
 
 Small fixes.

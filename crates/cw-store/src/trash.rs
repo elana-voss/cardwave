@@ -44,11 +44,29 @@ fn delete(
             Some(true) => {}
         }
         if !remove(&tx, id)? {
-            return Ok(Err(BUSY.into()));
+            return Ok(Err(busy(&tx, table, id)?.into()));
         }
         tx.commit()?;
         Ok(Ok(()))
     })?
+}
+
+/// Why the chat or card `id` of `table` was not deleted: a coding task of
+/// it runs (`what`: `coding_task`), or a reply is being written.
+fn busy(conn: &Connection, table: &str, id: i64) -> rusqlite::Result<Fail> {
+    let chats = match table {
+        "cards" => CHATS_OF_CARD,
+        _ => "select ?1",
+    };
+    let task: bool = conn.query_row(
+        &format!("select exists ({TASK_RUNNING} and chat_id in ({chats}))"),
+        [id],
+        |r| r.get(0),
+    )?;
+    Ok(match task {
+        true => BUSY.with("what", "coding_task"),
+        false => BUSY,
+    })
 }
 
 /// Deletes an item that went to the Trash alone. Nothing stands in its way,
@@ -72,22 +90,32 @@ fn remove_persona(conn: &Connection, persona_id: i64) -> rusqlite::Result<bool> 
     Ok(true)
 }
 
-/// Deletes a chat unless a reply is being written in it; tells whether it did.
+/// Deletes a chat unless a reply is being written in it or a coding task of
+/// it runs; tells whether it did.
 fn remove_chat(conn: &Connection, chat_id: i64) -> rusqlite::Result<bool> {
     let deleted = conn.execute(
-        "delete from chats where id = ?1
-           and not exists (select 1 from messages where chat_id = ?1 and complete = 0)",
+        &format!(
+            "delete from chats where id = ?1
+               and not exists (select 1 from messages where chat_id = ?1 and complete = 0)
+               and not exists ({TASK_RUNNING} and chat_id = ?1)"
+        ),
         [chat_id],
     )?;
     Ok(deleted == 1)
 }
 
 /// Deletes a card and the chats its characters are in, unless a reply is
-/// being written in one of them; tells whether it did. The pictures and files
+/// being written in one of them or a coding task of one runs; tells whether
+/// it did. The pictures and files
 /// it leaves unused are for [`cards::remove_unused_blobs`]; its expression pack
 /// and figures go to the Trash where no other card has them.
 fn remove_card(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
-    if card_writing(conn, card_id)? {
+    let task_running: bool = conn.query_row(
+        &format!("select exists ({TASK_RUNNING} and chat_id in ({CHATS_OF_CARD}))"),
+        [card_id],
+        |r| r.get(0),
+    )?;
+    if task_running || card_writing(conn, card_id)? {
         return Ok(false);
     }
     conn.execute(
@@ -108,7 +136,6 @@ fn remove_card(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
     Ok(true)
 }
 
-/// The chats the characters of the card `?1` are in.
 /// Whether a reply is being written in one of the card's chats.
 fn card_writing(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
     conn.query_row(
@@ -118,6 +145,10 @@ fn card_writing(conn: &Connection, card_id: i64) -> rusqlite::Result<bool> {
     )
 }
 
+/// A running coding task, whose rows and checkpoints go with its chat.
+const TASK_RUNNING: &str = "select 1 from coding_tasks where state = 'running'";
+
+/// The chats the characters of the card `?1` are in.
 const CHATS_OF_CARD: &str = "select p.chat_id from chat_characters p
      join card_versions v on v.id = p.version_id where v.card_id = ?1";
 
@@ -160,7 +191,8 @@ impl Storage for Db {
                     id: r.get(0)?,
                     title: r.get(1)?,
                     trashed_at: r.get(2)?,
-                    cards: serde_json::from_str(&cards).unwrap_or_default(),
+                    // `json_group_array` writes it: one that does not parse is a fault of this crate.
+                    cards: crate::json::of(&cards, 3)?,
                 })
             })?;
             let mut personas = conn.prepare(

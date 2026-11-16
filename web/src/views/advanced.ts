@@ -1,6 +1,7 @@
 // Account settings, the page "Advanced" (board "Settings › Advanced"), what is seldom changed (the split into
 // basic and advanced, milestone 70): the groups "Helper model" (the server's `worker_model`;
-// ../models/models-group.ts), "Chat without a character" (`plainGroup`), Library (`describeLines`), Data
+// ../models/models-group.ts), "Chat without a character" (`plainGroup`), Library (`describeLines`), "Tools for the
+// AI" (../settings/tools.ts; the owner, 2026-11-15, milestone 144), Data
 // (`dataGroup`: export; the thumbnails keep in check by themselves, so the cache has no line), then
 // "Sampling", the account's values for a reply for the chat model, the model presets (../settings/presets.ts) and the
 // prompt presets (../settings/prompt-presets.ts), and last "Your own CSS" (../settings/own-css.ts) in a box of its own. Each
@@ -35,13 +36,14 @@ import type { ExportFormat } from "../api/generated/ExportFormat";
 import type { Sampling } from "../api/generated/Sampling";
 import type { ServerEvent } from "../api/generated/ServerEvent";
 import type { Style } from "../api/generated/Style";
-import { el, failure, group, item, newest, noticeBox, oneAtATime, reason, savedChoice, selectField, type View } from "../dom";
+import { crumbs, el, failure, group, item, newest, noticeBox, oneAtATime, reason, savedChoice, selectField, type View } from "../dom";
 import { clause, count } from "../format";
 import { modelsGroup } from "../models/models-group";
 import { ownCssGroup } from "../settings/own-css";
 import { lineFiller, settingSwitch } from "../settings/setting-lines";
 import { presetsGroup } from "../settings/presets";
 import { promptPresetsGroup } from "../settings/prompt-presets";
+import { toolsGroup } from "../settings/tools";
 import { field } from "../models/provider-form";
 import { LABELS } from "../setting-labels";
 
@@ -96,10 +98,10 @@ function oneStore(): (store: () => Promise<unknown>) => Promise<boolean> {
 }
 
 /** The part "Sampling": its fields, kept as typed, and `read`, which shows what is stored. */
-function samplingPart() {
+export function samplingPart() {
   const notice = noticeBox();
   const fields = SAMPLING.map((value) => {
-    const input = el("input", { name: value.key, className: "field", type: "text", inputMode: "decimal", autocomplete: "off" });
+    const input = el("input", { name: value.key, className: "field", type: "text", inputMode: "decimal", autocomplete: "off", disabled: true });
     const about = el("small", { className: "hint" }, value.hint?.() ?? "");
     return { ...value, input, about, node: field(value.label(), input, about) };
   });
@@ -110,7 +112,9 @@ function samplingPart() {
 
   /** Shows the values `kept`, but in the fields typed into since they were last filled where `typed` says so. */
   function fill(kept: Sampling, typed = false): void {
+    // Shut until the first reading: a value typed before it would send the others as empty.
     fields.forEach(({ key, input }, index) => {
+      input.disabled = false;
       const text = textOf(kept, key);
       if (!typed || input.value === shown[index]) input.value = text;
       shown[index] = text;
@@ -164,14 +168,11 @@ const formats = (): [ExportFormat, string][] => ([
   ["ccv4", wording("advanced-ccv4")],
 ]);
 
-/** The tokens describing one character costs, low and high, as `advanced-describe-again-about` says. */
-const TOKENS_EACH = [11_000, 12_000];
-
-/** What describing the characters not yet described would cost, beside "Describe characters"; nothing while it runs. */
+/** The cards describing would read, beside "Describe characters", spoken of as cards, not tokens (Claude,
+ * 2026-11-15); nothing while it runs. */
 export function describeCost({ waiting, left }: Describing): string {
   if (waiting > 0 || left === 0) return "";
-  const [low, high] = TOKENS_EACH.map((tokens) => tokens * left);
-  return wording("advanced-describe-cost", { low: count(low), high: count(high), count: left });
+  return wording("advanced-describe-cost", { count: left });
 }
 
 /** What the line "Cards described" says of how far the describing has come. */
@@ -314,7 +315,7 @@ function describeLines(): { lines: HTMLElement[]; read(): void; readSwitch(): vo
  * `{{date}}` and `{{time}}` filled in at each message, written in place and saved on leaving it, each save after
  * the one before, so a change left while one is on its way is not lost.
  */
-function plainGroup(): { node: HTMLElement; read(): void } {
+export function plainGroup(): { node: HTMLElement; read(): void; left(): void } {
   const notice = noticeBox();
   let saving = Promise.resolve();
   const told = el("textarea", { className: "field on-box w100 bb", ariaLabel: LABELS.advanced.told, rows: 2, disabled: true });
@@ -324,7 +325,7 @@ function plainGroup(): { node: HTMLElement; read(): void } {
     told.style.height = `${told.scrollHeight}px`;
   };
   told.oninput = grow;
-  told.onblur = () => {
+  const save = () => {
     const text = told.value;
     saving = saving.then(async () => {
       if (text === kept) return;
@@ -336,6 +337,7 @@ function plainGroup(): { node: HTMLElement; read(): void } {
       }
     });
   };
+  told.onblur = save;
   const read = () =>
     void getSettings().then((settings) => {
       kept = settings.plain_prompt;
@@ -359,7 +361,7 @@ function plainGroup(): { node: HTMLElement; read(): void } {
       ),
     ),
   );
-  return { node, read };
+  return { node, read, left: save };
 }
 
 /**
@@ -372,15 +374,21 @@ function dataGroup(): { node: HTMLElement; read(): void } {
   const format = selectField(
     formats().map(([value, label]) => ({ value, label })),
     formats()[0][0],
-    (value) =>
-      attempt(async () => {
+    (value) => {
+      let ran = false;
+      void attempt(async () => {
+        ran = true;
         try {
           kept = (await changeSettings({ export_format: value as ExportFormat })).export_format;
         } finally {
           // A choice the server did not take is not shown as made.
           format.value = kept;
         }
-      }),
+      }).then(() => {
+        // An action the runner dropped (another is on its way) took nothing either.
+        if (!ran) format.value = kept;
+      });
+    },
     { id: "export-format", disabled: true, wide: true },
   );
   const historyLabel = LABELS.advanced.history;
@@ -429,6 +437,7 @@ export function advancedView(): View {
   const described = describeLines();
   // The group "Library": the lines of the cards the background model describes (the owner, 2026-10-15).
   const library = group(wording("advanced-library"), null, el("div", { className: "group" }, ...described.lines, ...interviewLine()));
+  const tools = toolsGroup(() => node, "ai");
   const data = dataGroup();
   const own = ownCssGroup(() => node);
   // A page under the settings, as the Trash is.
@@ -438,9 +447,9 @@ export function advancedView(): View {
     el(
       "header",
       { className: "pbar" },
-      el("nav", { className: "crumbs", ariaLabel: wording("crumbs") }, el("a", { href: "#/settings" }, wording("page-settings")), "/", el("b", null, wording("page-advanced"))),
+      crumbs([wording("page-settings"), "#/settings"], wording("page-advanced")),
     ),
-    el("div", { className: "page-col mt-12" }, background.node, plain.node, library, data.node, sampling.node, presets.node, prompts.node, own.node),
+    el("div", { className: "page-col mt-12" }, background.node, plain.node, library, tools.node, data.node, sampling.node, presets.node, prompts.node, own.node),
   );
   // The presets are read after the values, as which is in use goes by them.
   const reread = (typed = true) => void sampling.read(typed).then(presets.read);
@@ -449,13 +458,17 @@ export function advancedView(): View {
   /** Every line that shows a setting reads it anew. */
   const settled = () => {
     plain.read();
+    tools.read();
     data.read();
     described.readSwitch();
     own.read();
   };
   return {
     node: node,
-    left: own.left,
+    left: () => {
+      plain.left();
+      own.left();
+    },
     onEvent(event: ServerEvent) {
       if (event.type === "presets") void presets.read();
       if (event.type === "provider") {

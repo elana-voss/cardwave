@@ -16,7 +16,6 @@ import type { ChatSummary } from "../api/generated/ChatSummary";
 import type { Show } from "../api/generated/Show";
 import { freshStart } from "../shell/create";
 import { el, type View } from "../dom";
-import { isArt } from "../art";
 import { chatTitle } from "../chat-title";
 import { contextMenu, menu, type MenuItem } from "../dialogs";
 import { icon } from "../icons";
@@ -46,14 +45,7 @@ const noChats = () => (wording("chats-no-chats-yet"));
  */
 function picture(versionId: number | undefined): HTMLElement {
   const blank = () => el("span", { className: "icover cover" }, icon("chat"));
-  if (versionId === undefined) return blank();
-  const shown = cover(versionId);
-  const none = () => shown.replaceWith(blank());
-  shown.onload = () => {
-    if (!isArt(shown)) none();
-  };
-  shown.onerror = none;
-  return shown;
+  return versionId === undefined ? blank() : cover(versionId, "", blank);
 }
 
 /** The list of chats; `open` shows a screen, for the fresh start's lines. */
@@ -68,7 +60,7 @@ export function chatsView(open: (address: string) => View | null): View {
     read: async () => {
       const read = await readList((query) => listChats({ ...query, sort: asked.sort }), wording("list-screen-chats"), asked, noChats());
       // Without a chat and without a card nothing exists: the page is the fresh start.
-      const fresh = read[1] === noChats() && (await listCards()).length === 0;
+      const fresh = read[2] && (await listCards()).length === 0;
       return [read, fresh] as const;
     },
     show: ([[found, none], fresh]) => {
@@ -101,7 +93,7 @@ export function chatsView(open: (address: string) => View | null): View {
     const star = starButton(chat, (favorite) => changeChat(chat.id, { favorite }), act, 18, starred);
     // The chat is called after its first character: the others are named, and its cards where they are called otherwise.
     const others = chat.names.slice(1).join(comma());
-    const cards = chat.cards.map((card) => cardTitle(card.title)).filter((card) => card !== title);
+    const cards = chat.cards.map((card) => cardTitle(card.title)).filter((card) => !chat.names.some((name) => chatTitle(name) === card));
     const [withThem, fromThem] = [others && wording("chats-with", { others }), cards.length > 0 && wording("chats-from", { join: cards.join(comma()) })];
     const both = [withThem, fromThem].filter(Boolean).join(" · ");
     const remove = deleteLine(put);
