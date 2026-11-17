@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] Ứng dụng này không biết ngôn ngữ đó.
     [version_lacks_character] Có cuộc trò chuyện với một nhân vật mà phiên bản mới nhất không có.
     [voice_runtime] Đọc to cần một thành phần của Microsoft đang bị thiếu: hãy cài Visual C++ Redistributable từ microsoft.com, rồi khởi động lại Cardwave.
+    [voice_runtime_other] Không thể bắt đầu đọc to: không tải được một thành phần cần thiết. Hãy cài lại Cardwave, rồi khởi động lại.
     [workflow_no_text] Quy trình “{ $name }” không có trường văn bản cho lời mô tả hình ảnh.
     [workflow_use] Không dùng được quy trình “{ $name }”.
     [written_tools_full] Bạn chỉ giữ được tối đa { $most_tools } công cụ; hãy xóa một cái trong Cài đặt › Nâng cao › Công cụ do AI viết trước.

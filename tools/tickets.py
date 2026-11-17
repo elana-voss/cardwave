@@ -244,13 +244,6 @@ def main(argv):
         found = problems(load(), index.read_text(encoding="utf-8") if index.exists() else "")
         print("\n".join(found) if found else f"tickets: {len(load())} tickets, no problem")
         return 1 if found else 0
-    elif cmd == "trials":
-        report = closed_report(load(), agent_rows())
-        if report:
-            print(report)
-        found = trials(load(), PLAN.read_text(encoding="utf-8"), replies_words())
-        print("\n".join(found) if found else "trials: no problem")
-        return 1 if found else 0
     else:
         print(__doc__)
         return 2

@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] यह ऐसी कोई भाषा नहीं है जिसे यह ऐप जानता हो।
     [version_lacks_character] एक चैट ऐसे किरदार के साथ है जो सबसे नए वर्ज़न में नहीं है।
     [voice_runtime] ज़ोर से पढ़ने के लिए Microsoft का एक हिस्सा नहीं है: microsoft.com से Visual C++ Redistributable इंस्टॉल करें, फिर Cardwave दोबारा शुरू करें।
+    [voice_runtime_other] ज़ोर से पढ़ना शुरू नहीं हो सकता: उसके लिए ज़रूरी एक हिस्सा लोड नहीं हो सका। Cardwave दोबारा इंस्टॉल करें, फिर उसे फिर से शुरू करें।
     [workflow_no_text] वर्कफ़्लो “{ $name }” में तस्वीर के शब्दों के लिए कोई टेक्स्ट फ़ील्ड नहीं है।
     [workflow_use] वर्कफ़्लो “{ $name }” इस्तेमाल नहीं हो सकता।
     [written_tools_full] आप ज़्यादा से ज़्यादा { $most_tools } टूल रख सकते हैं; पहले सेटिंग्स › एडवांस्ड › AI के लिखे टूल में एक मिटाएँ।

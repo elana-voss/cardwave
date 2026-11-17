@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] That is no language this app knows.
     [version_lacks_character] A chat is with a character the newest version lacks.
     [voice_runtime] Reading aloud needs a Microsoft part that is missing: install the Visual C++ Redistributable from microsoft.com, then restart Cardwave.
+    [voice_runtime_other] Reading aloud cannot start: a part it needs could not be loaded. Reinstall Cardwave, then restart it.
     [workflow_no_text] The workflow “{ $name }” has no text field for the picture's words.
     [workflow_use] The workflow “{ $name }” cannot be used.
     [written_tools_full] You can keep { $most_tools } tools at most; delete one in Settings › Advanced › Tools the AI wrote first.

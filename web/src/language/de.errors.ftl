@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] Diese Sprache kennt die App nicht.
     [version_lacks_character] Ein Chat ist mit einem Charakter, den die neueste Version nicht hat.
     [voice_runtime] Zum Vorlesen fehlt ein Teil von Microsoft: Installiere das Visual C++ Redistributable von microsoft.com und starte Cardwave dann neu.
+    [voice_runtime_other] Das Vorlesen kann nicht starten: Ein dafür nötiger Teil ließ sich nicht laden. Installiere Cardwave neu und starte es dann neu.
     [workflow_no_text] Der Workflow „{ $name }“ hat kein Textfeld für die Worte des Bilds.
     [workflow_use] Der Workflow „{ $name }“ lässt sich nicht verwenden.
     [written_tools_full] Du kannst höchstens { $most_tools } Werkzeuge behalten; lösche zuerst eines unter Einstellungen › Erweitert › Werkzeuge der KI.

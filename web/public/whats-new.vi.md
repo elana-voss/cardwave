@@ -1,3 +1,9 @@
+# 0.3.1
+
+Một bản sửa nhỏ cho Linux.
+
+- Khi tính năng đọc to không thể bắt đầu trên Linux, Cardwave giờ đề nghị bạn cài đặt lại nó, thay vì yêu cầu một thành phần của Microsoft mà Linux không có.
+
 # 0.3.0
 
 Cardwave trên Linux.

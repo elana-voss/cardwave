@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] Itu bukan bahasa yang dikenal aplikasi ini.
     [version_lacks_character] Sebuah chat bersama karakter yang tidak ada di versi terbaru.
     [voice_runtime] Membaca keras butuh komponen Microsoft yang tidak ada: pasang Visual C++ Redistributable dari microsoft.com, lalu mulai ulang Cardwave.
+    [voice_runtime_other] Membaca keras tidak bisa dimulai: satu komponen yang dibutuhkan tidak bisa dimuat. Pasang ulang Cardwave, lalu mulai ulang.
     [workflow_no_text] Workflow “{ $name }” tidak punya kolom teks untuk kata-kata gambar.
     [workflow_use] Workflow “{ $name }” tidak dapat dipakai.
     [written_tools_full] Kamu bisa menyimpan paling banyak { $most_tools } alat; hapus dulu satu di Pengaturan › Lanjutan › Alat buatan AI.

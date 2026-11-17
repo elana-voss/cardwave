@@ -1,3 +1,9 @@
+# 0.3.1
+
+Uma pequena correção para Linux.
+
+- Quando a leitura em voz alta não consegue começar no Linux, o Cardwave agora pede que você o reinstale, em vez de pedir um componente da Microsoft que o Linux não tem.
+
 # 0.3.0
 
 Cardwave no Linux.

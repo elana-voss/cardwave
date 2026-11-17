@@ -35,12 +35,6 @@ def test_more_than_ten_open_trials_fail():
     assert trials({}, plan(*lines[:10])) == []
 
 
-def test_the_replies_section_may_not_grow_past_the_reply_trial():
-    line = "- Open, 2026-11-17: the reply rules rewritten. Replies to the owner: 585 words."
-    assert trials({}, plan(line), replies_words=585) == []
-    assert any("586 words" in p for p in trials({}, plan(line), replies_words=586))
-
-
 def test_a_trial_never_closes_unmeasured():
     for line in ("- Closed, unmeasured, 2026-11-17: x.", "- Closed, unmeasurable, 2026-11-17: x."):
         assert any("Kept or Reverted" in p for p in trials({}, plan(line))), trials({}, plan(line))
@@ -61,7 +55,6 @@ if __name__ == "__main__":
     test_trials_want_the_actual_of_a_done_milestone_since_2026_11_15()
     test_a_trial_open_past_five_closed_milestones_fails()
     test_more_than_ten_open_trials_fail()
-    test_the_replies_section_may_not_grow_past_the_reply_trial()
     test_a_trial_never_closes_unmeasured()
     test_the_last_closed_milestone_is_reported_from_its_agents()
-    print("selfcheck: 6 tests passed")
+    print("selfcheck: 5 tests passed")

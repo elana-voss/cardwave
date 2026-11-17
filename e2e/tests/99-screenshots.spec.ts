@@ -10,7 +10,7 @@ import { ASHWOOD, CARDS, PERSONA, TURNS } from "../screenshot-cards";
 import { setProvider } from "../stored";
 
 // The readme's and the landing site's screenshots, written to docs/screenshots/ (chat, library, card, lorebook,
-// companion, and chat-dark for the landing alone), not compared: run only when asked, `SCREENSHOTS=1 npx playwright
+// companion, and chat-dark and chat-<look> for three looks for the landing alone), not compared: run only when asked, `SCREENSHOTS=1 npx playwright
 // test screenshots` in e2e (playwright.config.ts leaves it out otherwise). The database is this spec's own: the
 // twelve cards of ../screenshot-cards.ts, each given its portrait from e2e/portraits/ and described by the fake
 // provider's answers so the library shows their pitches and tags, a persona with her picture, a lorebook, and a chat
@@ -145,6 +145,15 @@ test("chat-dark", async ({ page }) => {
   await openChat(page);
   await shoot(page, "chat-dark");
 });
+
+// The chat in the three looks the owner picked for the landing site's slides (chat-<look>).
+for (const look of ["outrun", "retrowave", "neonwave-light"]) {
+  test(`chat-${look}`, async ({ page }) => {
+    await page.addInitScript((theme) => localStorage.setItem("theme", theme), look);
+    await openChat(page);
+    await shoot(page, `chat-${look}`);
+  });
+}
 
 test("library", async ({ page }) => {
   await page.goto("/#/library");

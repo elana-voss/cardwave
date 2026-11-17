@@ -390,6 +390,7 @@ error-not-possible = { $what ->
     [unknown_language] 이 앱이 아는 언어가 아니에요.
     [version_lacks_character] 최신 버전에 없는 캐릭터와의 채팅이 있어요.
     [voice_runtime] 소리 내어 읽기에 필요한 Microsoft 구성 요소가 없어요. microsoft.com에서 Visual C++ 재배포 가능 패키지를 설치한 뒤 Cardwave를 다시 시작하세요.
+    [voice_runtime_other] 소리 내어 읽기를 시작할 수 없어요. 필요한 구성 요소를 불러오지 못했어요. Cardwave를 다시 설치한 뒤 다시 시작해 주세요.
     [workflow_no_text] “{ $name }” 워크플로에 이미지 설명을 넣을 텍스트 필드가 없어요.
     [workflow_use] “{ $name }” 워크플로를 사용할 수 없어요.
     [written_tools_full] 도구는 최대 { $most_tools }개까지 둘 수 있어요. 먼저 설정 › 고급 › AI가 만든 도구에서 하나를 삭제하세요.

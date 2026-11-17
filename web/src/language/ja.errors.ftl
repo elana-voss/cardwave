@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] それはこのアプリが知っている言語ではありません。
     [version_lacks_character] 最新のバージョンにないキャラクターとのチャットがあります。
     [voice_runtime] 読み上げに必要なMicrosoftの部品がありません。microsoft.com から Visual C++ 再頒布可能パッケージをインストールし、Cardwaveを再起動してください。
+    [voice_runtime_other] 読み上げを開始できません。必要な部品を読み込めませんでした。Cardwaveを再インストールしてから、再起動してください。
     [workflow_no_text] ワークフロー「{ $name }」に、画像の言葉を入れるテキスト欄がありません。
     [workflow_use] ワークフロー「{ $name }」は使えません。
     [written_tools_full] ツールは最大 { $most_tools } 個までです。先に 設定 › 詳細設定 › AIが書いたツール で一つ削除してください。

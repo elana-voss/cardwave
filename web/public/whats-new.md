@@ -1,3 +1,9 @@
+# 0.3.1
+
+A small fix for Linux.
+
+- When reading aloud cannot start on Linux, Cardwave now asks you to reinstall it, instead of asking for a Microsoft part that Linux does not have.
+
 # 0.3.0
 
 Cardwave on Linux.

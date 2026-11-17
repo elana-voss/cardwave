@@ -3,7 +3,8 @@
 # on the installed program (its window, on a scratch folder: first run by the provider's address, a reply, the chat
 # kept over a restart), then uninstalls it silently and checks that the program is gone.
 #
-# Run from Git Bash, with the owner present (it opens a window), after `npm run dist` in desktop/:
+# Run from Git Bash (it opens a window and replaces the installed Cardwave), on the release draft's downloaded exe
+# (the skill cardwave-release, step 4), or after `npm run dist` in desktop/:
 #   sh tools/installer_test.sh [<path to Cardwave_<version>_x64-setup.exe>]
 # Without a path it takes the newest installer in target/release/bundle/nsis/. Needs what `npm run test:desktop`
 # needs (head of e2e/desktop/driver.ts: tauri-driver, a matching msedgedriver).

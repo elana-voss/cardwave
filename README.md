@@ -2,9 +2,9 @@
 
 Chat with characters. Bring any AI provider you already use, or run a model on your own computer. Your cards and chats stay with you.
 
-**[Download for Windows](https://github.com/elana-voss/cardwave/releases/latest)** / [cardwave.cc](https://cardwave.cc) / [Discord](https://discord.gg/C62KZVg6J)
+**[Download for Windows or Linux](https://github.com/elana-voss/cardwave/releases/latest)** / [cardwave.cc](https://cardwave.cc) / [Discord](https://discord.gg/C62KZVg6J)
 
-Beta: Cardwave is in active development and this is its first public release. An update may not keep what an earlier version stored, so export the cards you care about and keep a backup.
+Beta: Cardwave is in active development. An update may not keep what an earlier version stored, so export the cards you care about and keep a backup.
 
 ![A chat in Cardwave](docs/screenshots/chat.png)
 
@@ -82,7 +82,7 @@ Tests: `cargo test --workspace` for the server and the desktop app (after `deskt
 | `e2e/` | The browser tests |
 | `tools/` | Checks and the scripts that fetch or write shipped data |
 
-Publishing a GitHub release builds the signed installers, Windows' and Linux's AppImage and .deb, and the updater's feed (`.github/workflows/installer.yml`).
+A release's signed installers, Windows' and Linux's AppImage and .deb, and the updater's feed are built once by a workflow started by hand with the release's tag, which fills a draft; publishing the draft builds nothing (`.github/workflows/installer.yml`).
 
 ## License
 

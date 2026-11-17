@@ -1,3 +1,9 @@
+# 0.3.1
+
+Linux를 위한 작은 수정.
+
+- Linux에서 읽어 주기를 시작할 수 없을 때, Cardwave가 이제 Linux에는 없는 Microsoft 구성 요소 대신 Cardwave를 다시 설치하라고 안내합니다.
+
 # 0.3.0
 
 Linux에서 쓰는 Cardwave.

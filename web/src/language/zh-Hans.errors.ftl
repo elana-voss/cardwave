@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] 这不是这个应用认识的语言。
     [version_lacks_character] 有一个聊天中的角色在最新版本中不存在。
     [voice_runtime] 朗读缺少一个 Microsoft 组件：请从 microsoft.com 安装 Visual C++ Redistributable，然后重新启动 Cardwave。
+    [voice_runtime_other] 朗读无法开始：它所需的一个组件无法加载。请重新安装 Cardwave，然后重新启动。
     [workflow_no_text] 工作流“{ $name }”中没有用于图片描述的文字字段。
     [workflow_use] 无法使用工作流“{ $name }”。
     [written_tools_full] 最多只能保留 { $most_tools } 个工具；请先在“设置 › 高级 › AI 编写的工具”中删除一个。

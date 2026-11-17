@@ -1,3 +1,9 @@
+# 0.3.1
+
+Linux 向けの小さな修正。
+
+- Linux で読み上げを開始できないとき、Linux にはない Microsoft の部品を求める代わりに、Cardwave の再インストールを案内するようになりました。
+
 # 0.3.0
 
 Linux で使える Cardwave。

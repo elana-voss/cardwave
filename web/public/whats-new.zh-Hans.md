@@ -1,3 +1,9 @@
+# 0.3.1
+
+针对 Linux 的一个小修复。
+
+- 在 Linux 上无法开始朗读时，Cardwave 现在会请你重新安装它，而不再要求安装 Linux 上并不存在的 Microsoft 组件。
+
 # 0.3.0
 
 Linux 版 Cardwave。

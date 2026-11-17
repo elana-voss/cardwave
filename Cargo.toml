@@ -1,13 +1,14 @@
-# `cargo audit` compares Cargo.lock with the RustSec advisories. Five warnings are known and are not in the
+# `cargo audit` compares Cargo.lock with the RustSec advisories. Six warnings are known. Five are not in the
 # Windows build, as all come with what Tauri and rfd use on Linux: RUSTSEC-2024-0370 (proc-macro-error),
-# RUSTSEC-2024-0429 (glib), and zbus_names, zvariant and zvariant_derive unmaintained (RUSTSEC-2026-0370 to 0372). cargo-audit 0.22.2 came by `cargo install cargo-audit --locked`, `cargo fmt`
+# RUSTSEC-2024-0429 (glib), and zbus_names, zvariant and zvariant_derive unmaintained (RUSTSEC-2026-0370 to 0372).
+# The sixth, chrono unmaintained (RUSTSEC-2026-0543), is our crates' own date library; it has no known defect. cargo-audit 0.22.2 came by `cargo install cargo-audit --locked`, `cargo fmt`
 # by `rustup component add rustfmt`.
 [workspace]
 resolver = "3"
 members = ["server", "desktop", "crates/cw-core", "crates/cw-platform", "crates/cw-faces", "crates/cw-whisper", "crates/cw-prompt", "crates/cw-ccv4", "crates/cw-key", "crates/cw-accounts", "crates/cw-modelfiles", "crates/cw-provider", "crates/cw-search", "crates/cw-voice", "crates/cw-dictation", "crates/cw-library", "crates/cw-coding", "crates/cw-chat", "crates/cw-find", "crates/cw-store"]
 
 [workspace.package]
-version = "0.3.0"
+version = "0.3.1"
 edition = "2024"
 license = "UNLICENSED"
 publish = false

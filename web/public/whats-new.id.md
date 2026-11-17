@@ -1,3 +1,9 @@
+# 0.3.1
+
+Perbaikan kecil untuk Linux.
+
+- Jika fitur membacakan tidak bisa dimulai di Linux, Cardwave sekarang memintamu memasangnya ulang, bukan meminta komponen Microsoft yang tidak ada di Linux.
+
 # 0.3.0
 
 Cardwave di Linux.

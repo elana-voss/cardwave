@@ -1,3 +1,9 @@
+# 0.3.1
+
+Eine kleine Korrektur für Linux.
+
+- Wenn das Vorlesen unter Linux nicht starten kann, bittet dich Cardwave jetzt, es neu zu installieren, statt nach einem Teil von Microsoft zu fragen, den es unter Linux nicht gibt.
+
 # 0.3.0
 
 Cardwave unter Linux.

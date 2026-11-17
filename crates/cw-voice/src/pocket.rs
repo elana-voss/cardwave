@@ -165,6 +165,13 @@ const NEEDS: &str = if cfg!(windows) {
     ""
 };
 
+/// The text the user is told: Windows names the Visual C++ Redistributable, other systems no Microsoft part.
+const WHAT: &str = if cfg!(windows) {
+    "voice_runtime"
+} else {
+    "voice_runtime_other"
+};
+
 /// Loads ONNX Runtime from `folder`, once it has loaded for the process's life.
 fn runtime(folder: &Path) -> anyhow::Result<()> {
     static LOADED: Mutex<bool> = Mutex::new(false);
@@ -176,7 +183,7 @@ fn runtime(folder: &Path) -> anyhow::Result<()> {
                     Code::NotPossible,
                     format!("ONNX Runtime cannot be loaded ({failure}){NEEDS}")
                 )
-                .with("what", "voice_runtime")
+                .with("what", WHAT)
                 .with("failure", failure.to_string())
             )
         })?;
@@ -610,5 +617,23 @@ impl Speak for Pocket {
             }
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A runtime that cannot be loaded is told as the text of the user's own system: only Windows names a Microsoft part.
+    #[test]
+    fn missing_runtime_names_no_microsoft_part_off_windows() {
+        let folder = std::env::temp_dir().join("cw-no-onnx-runtime-here");
+        let failure = cw_core::coded(&runtime(&folder).unwrap_err()).unwrap();
+        let what = if cfg!(windows) {
+            "voice_runtime"
+        } else {
+            "voice_runtime_other"
+        };
+        assert!(failure.has("what", what));
     }
 }

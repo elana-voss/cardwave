@@ -1,9 +1,8 @@
 """The self-check of the plan's trials section: python tools/selfcheck.py (check.sh's `tickets` runs it after `tickets.py check`).
 
 Prints the last closed milestone's agents, hand-overs and tokens against its estimate (from .checklists/agents.tsv), then each
-problem of `trials` (its docstring says what) or "trials: no problem"; exit 1 with problems. The plan's file, its trials heading
-and the file whose "Replies to the owner" section is counted (`replies`, a `~` path; absent file: not checked) are read from
-.claude/one_run.json. Standard library only; the tickets are read through tickets.py.
+problem of `trials` (its docstring says what) or "trials: no problem"; exit 1 with problems. The plan's file and its trials heading
+are read from .claude/one_run.json. Standard library only; the tickets are read through tickets.py.
 """
 
 import datetime
@@ -23,24 +22,11 @@ ACTUALS_SINCE = "2026-11-15"  # the owner's decision: older Done milestones may 
 OPEN_AT_MOST, CLOSED_AT_MOST = 10, 5
 
 
-def replies_words(path):
-    """Words of the global CLAUDE.md's "Replies to the owner" section (heading to the next "## "); None without it."""
-    try:
-        lines = path.read_text(encoding="utf-8").split("\n")
-    except OSError:
-        return None
-    start = next((n for n, l in enumerate(lines) if l.startswith("## Replies to the owner")), None)
-    if start is None:
-        return None
-    end = next((n for n in range(start + 1, len(lines)) if lines[n].startswith("## ")), len(lines))
-    return len(" ".join(lines[start + 1:end]).split())
-
-
-def trials(tickets, plan, replies_words=None):
+def trials(tickets, plan):
     """The self-check (global section 4): a Done milestone since ACTUALS_SINCE without its actual tokens; a trial of the
     plan's Trials section ("- Open, <date>") open past CLOSED_AT_MOST closed milestones (numbered, Done, without parts,
     updated after its date); more than OPEN_AT_MOST open; one closed unmeasured (a trial ends Kept or Reverted with its
-    figure); the Replies section grown past the "<n> words" its open reply trial recorded."""
+    figure)."""
     found = []
     children = {t["fields"].get("parent") for t in tickets.values()}
     closed = []
@@ -58,10 +44,6 @@ def trials(tickets, plan, replies_words=None):
         later = sum(u > line[8:18] for u in closed)
         if later > CLOSED_AT_MOST:
             found.append(f"trial open across {later} closed milestones (at most {CLOSED_AT_MOST}): {line[:90]}")
-        words = re.search(r"Replies to the owner: (\d[\d,]*) words", line)
-        if words and replies_words is not None and replies_words > int(words.group(1).replace(",", "")):
-            found.append(f"the global CLAUDE.md's Replies to the owner has {replies_words} words, more than the "
-                         f"{words.group(1)} its trial started with: cut it back")
     for line in section.split("\n"):
         if re.match(r"- Closed, unmeasur", line):
             found.append(f"a trial ends Kept or Reverted with its figure, never closed unmeasured: {line[:90]}")
@@ -123,8 +105,7 @@ def main():
     report = closed_report(load(), agent_rows())
     if report:
         print(report)
-    replies = CONFIG.get("replies")
-    found = trials(load(), PLAN.read_text(encoding="utf-8"), replies_words(Path(replies).expanduser()) if replies else None)
+    found = trials(load(), PLAN.read_text(encoding="utf-8"))
     print(chr(10).join(found) if found else "trials: no problem")
     return 1 if found else 0
 

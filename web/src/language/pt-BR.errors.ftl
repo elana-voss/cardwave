@@ -391,6 +391,7 @@ error-not-possible = { $what ->
     [unknown_language] Esse não é um idioma que este aplicativo conhece.
     [version_lacks_character] Há um chat com um personagem que a versão mais nova não tem.
     [voice_runtime] Para ler em voz alta falta uma peça da Microsoft: instale o Visual C++ Redistributable pelo microsoft.com e reinicie o Cardwave.
+    [voice_runtime_other] A leitura em voz alta não pode começar: uma peça de que ela precisa não pôde ser carregada. Reinstale o Cardwave e reinicie-o.
     [workflow_no_text] O workflow “{ $name }” não tem campo de texto para as palavras da imagem.
     [workflow_use] O workflow “{ $name }” não pode ser usado.
     [written_tools_full] Você pode manter no máximo { $most_tools } ferramentas; exclua uma antes em Configurações › Avançado › Ferramentas que a IA escreveu.
