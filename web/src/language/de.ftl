@@ -237,8 +237,16 @@ backup-about-chosen = Chats, Charaktere und Einstellungen in einer Datei, versch
 
 folder-watch = Neue Karten automatisch importieren
 folder-watch-about = Eine Kartendatei, die in den Ordner kommt, landet von selbst in deiner Bibliothek
-folder-recycle = Importierte Dateien in den Windows-Papierkorb verschieben
-folder-recycle-about = Sobald eine Datei importiert ist, kommt sie in den Papierkorb
+folder-recycle =
+    Importierte Dateien in den { $system ->
+        [linux] Papierkorb des Computers
+       *[other] Windows-Papierkorb
+    } verschieben
+folder-recycle-about =
+    Sobald eine Datei importiert ist, kommt sie in den { $system ->
+        [linux] Papierkorb des Computers
+       *[other] Papierkorb
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -385,7 +393,11 @@ tools-pictures = Verwendet das Bildmodell
 tools-pictures-first = Richte zuerst das Bildmodell ein
 tools-app = Deine Charaktere, Chats und Einstellungen nutzen und ändern; jede Änderung wird vorher erfragt
 tools-dice = Lässt die KI würfeln; Cardwave würfelt, damit das Ergebnis fair ist.
-tools-folder-example = C:\Users\du\Dokumente\Geteilt
+tools-folder-example =
+    { $system ->
+        [linux] /home/du/Dokumente/Geteilt
+       *[other] C:\Users\du\Dokumente\Geteilt
+    }
 tools-folder-says = Dateien und Befehle erreichen diesen Ordner und seinen Inhalt, sonst nichts.
 tools-change-folder = Ordner ändern
 tools-change = Ändern

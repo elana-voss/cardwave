@@ -18,3 +18,10 @@ ts-rs.workspace = true
 windows.workspace = true
 windows-collections.workspace = true
 windows-future.workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+wgpu.workspace = true
+
+# The Vulkan engine is built on Windows for its tests, to compare with Windows ML.
+[target.'cfg(windows)'.dev-dependencies]
+wgpu.workspace = true

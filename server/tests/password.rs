@@ -385,10 +385,8 @@ async fn what_a_backup_left_in_the_data_folder_is_gone_at_the_next_start() {
 
 /// The credential store's entry of `server`'s data folder under `service`,
 /// which is taken out of the store when it is dropped.
-#[cfg(any(windows, target_os = "macos"))]
 struct Stored(keyring::Entry);
 
-#[cfg(any(windows, target_os = "macos"))]
 impl Stored {
     fn of(service: &str, server: &Server) -> Self {
         let dir = server.options().data_dir.canonicalize().unwrap();
@@ -405,14 +403,12 @@ impl Stored {
     }
 }
 
-#[cfg(any(windows, target_os = "macos"))]
 impl Drop for Stored {
     fn drop(&mut self) {
         let _ = self.0.delete_credential();
     }
 }
 
-#[cfg(any(windows, target_os = "macos"))]
 #[tokio::test]
 async fn the_key_leaves_the_credential_store_while_a_password_is_on() {
     // A service of the test's own: the installed app keeps its keys under "cardwave".

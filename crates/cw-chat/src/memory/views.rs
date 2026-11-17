@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use super::{
-    Change, Kind, Owner, Storage, TEXT_LIMIT, changes, holding_all, index, is_read, kept_form,
+    Blocks, Change, Kind, Owner, Storage, TEXT_LIMIT, changes, index, is_read, kept_form,
     owner_name, persona_name, read_chat, read_form, stand_in, system,
 };
 use crate::chats::{self, Chat};
@@ -69,10 +69,10 @@ pub(super) fn current(
         },
         Owner::Character(..) => None,
     };
-    let blocks = db.memory_blocks(store)?;
-    match holding_all(db, user, (&blocks, owner), read.as_ref())?.checked_sub(1) {
+    let memory = Blocks::of(db, store, owner)?;
+    match memory.holding_all(db, user, read.as_ref())?.checked_sub(1) {
         Some(at) => Ok(Some(read_form(
-            &db.memory_state(blocks[at].id)?,
+            &db.memory_state(memory.kept[at].id)?,
             stand_in(db, user)?,
         )?)),
         None => Ok(None),

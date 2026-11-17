@@ -259,7 +259,7 @@ pub fn offered(tools: &Tools, owner: bool, image: bool) -> Vec<Tool> {
         (Tool::Files, folder && tools.files),
         (
             Tool::Commands,
-            folder && tools.commands && cw_coding::tools::sandbox::AVAILABLE,
+            folder && tools.commands && cw_coding::tools::sandbox::available(),
         ),
         (Tool::Pictures, tools.pictures && image),
         (Tool::Coding, owner),

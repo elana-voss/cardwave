@@ -1,3 +1,11 @@
+# 0.3.0
+
+Cardwave no Linux.
+
+- O Cardwave roda no Linux: a página da versão tem um AppImage, que roda na maioria dos computadores com Linux, e um .deb, que se instala no Ubuntu e no Debian.
+- No Linux também, os rostos são encontrados na sua placa de vídeo, o microfone funciona na janela do Cardwave e as ferramentas de programação da IA executam comandos.
+- Pequenas correções: os botões do topo de uma página cabem em uma janela estreita, e o menu da conta fica aberto enquanto suas contas carregam.
+
 # 0.2.0
 
 Cardwave no seu celular, e muitas correções.

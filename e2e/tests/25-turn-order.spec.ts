@@ -1,5 +1,5 @@
 import type { APIRequestContext, Locator, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, composer, expect, test } from "../test";
 import { ccv4File } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -65,9 +65,7 @@ test.beforeAll(async ({ request }) => {
 });
 test.afterAll(() => provider.close());
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const messages = (page: Page) => page.locator(".message:not(.asked)");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 /** Who replies: the pill over the message field, which says the choice. */
 const replier = (page: Page) => page.getByRole("button", { name: /^Who replies/ });
 /** The lines of its menu, open or shut. */
@@ -255,7 +253,6 @@ test("an order chosen is kept with its chat, and in turn each replies after the 
   await expect(replier(page)).toHaveText(NAMED);
   expect(await turn(request, other)).toEqual(["natural", null]);
 });
-
 
 test("the chat's menu renames it, and starts a new chat with these characters and its turn order", async ({ page, request }) => {
   const chat = await start(request);

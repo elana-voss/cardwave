@@ -102,8 +102,7 @@ error-folder-not-chosen = 먼저 폴더를 선택하세요.
 error-drive-root-to-watch = 드라이브의 최상위 폴더는 지켜보기에 너무 많은 것을 담고 있어요. 그 안의 폴더를 선택하세요.
 error-drive-root-for-model = 드라이브의 루트는 AI에게 주기에는 담긴 것이 너무 많아요. 그 안의 폴더를 고르세요.
 error-data-folder = 그 폴더는 Cardwave 자체의 데이터를 담고 있거나 그 안에 있어요. 다른 폴더를 선택하세요.
-error-commands-windows-only = 명령은 Windows에서만 실행돼요.
-error-recycle-bin-windows-only = 파일은 Windows에서만 Windows 휴지통으로 옮겨져요.
+error-commands-unsafe = 이 컴퓨터에서는 명령을 안전하게 실행할 수 없어요. 시스템에 명령을 위한 샌드박스가 없어요.
 error-files-tool-off = 먼저 설정 › 고급 › AI용 도구에서 파일을 켜세요: 팀이 이 도구로 작업 폴더를 읽고 써요.
 
 ## Pictures, replies and voices
@@ -379,13 +378,13 @@ error-not-possible = { $what ->
     [no_image_model] 아직 설정한 이미지 모델이 없어요: 설정 › 모델 › 이미지에서 설정하세요.
     [no_local_model] 그 폴더에 “{ $id }” 모델이 없어요.
     [no_local_models] 로컬 모델이 설정되지 않았어요.
-    [no_recycle_bin] { $path } 경로에는 Windows 휴지통이 없어요.
     [no_summary] 카드에 아직 요약이 없어요.
     [no_voice] 그런 음성이 없어요.
     [no_vulkan] 이 컴퓨터의 그래픽 카드로는 모델을 실행할 수 없어요. 대신 제공자를 쓰세요.
     [no_vulkan_dictation] 이 컴퓨터의 그래픽 카드로는 받아쓰기를 실행할 수 없어요.
     [prompt_change] 이 카드에서 그 캐릭터의 프롬프트를 바꿀 수 없어요.
     [recycle_bin_move] { $path } 파일을 Windows 휴지통으로 옮기지 못했어요.
+    [trash_move] { $path } 파일을 컴퓨터의 휴지통으로 옮기지 못했어요.
     [speaker_not_in_chat] 말하는 캐릭터가 이 채팅에 속하지 않아요.
     [speaker_only_character] 캐릭터의 메시지에만 말하는 캐릭터가 있어요.
     [unknown_language] 이 앱이 아는 언어가 아니에요.

@@ -19,9 +19,11 @@ mod languages;
 pub mod own;
 mod pieces;
 mod pocket;
+mod runtime;
 mod stretch;
 
 pub use languages::LANGUAGES;
+use runtime::{RUNTIME, RUNTIME_FILE, RUNTIME_IN_PACKAGE};
 pub use stretch::Stretch;
 
 use std::path::{Path, PathBuf};
@@ -417,17 +419,6 @@ pub fn find(id: &str) -> Option<&'static Voice> {
 const VOICES_AT: &str = "323332d33f997de8394f24a193e1a76df720e01a";
 /// The revision of `KevinAHM/pocket-tts-onnx` the model is taken from.
 const MODEL_AT: &str = "58a6d00cf13d239b6748cb0769f35c580a8f606c";
-
-/// ONNX Runtime 1.28.0, the one the crate `ort` 2.0.0-rc.13 is made for, as
-/// Microsoft's Python package for 64-bit Windows holds it (MIT).
-const RUNTIME: (&str, u64, &str) = (
-    "https://files.pythonhosted.org/packages/56/f1/51225c202edba4dfc94e1ea03f3d78f1aaf307da75fd792c0ce1946b2514/onnxruntime-1.28.0-cp313-cp313-win_amd64.whl",
-    13_755_033,
-    "1a1a19175464665c9b8d50bc916f216cc0b569110045b7bbca8f9f290b186f58",
-);
-/// Where the library is in that package, and where it is kept.
-const RUNTIME_IN_PACKAGE: &str = "onnxruntime/capi/onnxruntime.dll";
-pub(crate) const RUNTIME_FILE: &str = "onnxruntime.dll";
 
 /// The folder of the English model, and its files the app uses: the main
 /// model, the flow and the decoder as int8, the encoder of a voice's recording
@@ -857,4 +848,22 @@ pub fn resample(samples: &[f32], from: u32, to: u32) -> Vec<f32> {
             sum as f32
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    /// ONNX Runtime comes as this system's library, from this system's package.
+    #[test]
+    fn the_runtime_is_this_systems_library() {
+        let setup = super::Setup::pocket();
+        let runtime = &setup.parts[0];
+        let (name, package) = if cfg!(windows) {
+            ("onnxruntime.dll", "win_amd64.whl")
+        } else {
+            ("libonnxruntime.so", "manylinux_2_28_x86_64.whl")
+        };
+        assert_eq!(runtime.path, name);
+        assert!(runtime.unpack.as_deref().unwrap().contains(name));
+        assert!(runtime.file.url.ends_with(package), "{}", runtime.file.url);
+    }
 }

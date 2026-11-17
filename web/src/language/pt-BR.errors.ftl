@@ -103,8 +103,7 @@ error-folder-not-chosen = Escolha uma pasta primeiro.
 error-drive-root-to-watch = A raiz de uma unidade contém coisas demais para acompanhar; escolha uma pasta dentro dela.
 error-drive-root-for-model = A raiz de uma unidade tem coisas demais para dar à IA; escolha uma pasta dentro dela.
 error-data-folder = Essa pasta contém os dados do próprio Cardwave, ou está dentro deles; escolha outra.
-error-commands-windows-only = Comandos só são executados no Windows.
-error-recycle-bin-windows-only = Mover arquivos para a Lixeira do Windows só é possível no Windows.
+error-commands-unsafe = Os comandos não podem ser executados com segurança neste computador: o sistema dele não tem uma sandbox para eles.
 error-files-tool-off = Ative Arquivos em Configurações › Avançado › Ferramentas para a IA primeiro: a equipe lê e escreve a pasta da tarefa com ela.
 
 ## Imagens, respostas e vozes
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] Nenhum modelo de imagem foi configurado ainda: configure um em Configurações › Modelos › Imagens.
     [no_local_model] Não existe o modelo “{ $id }” nessa pasta.
     [no_local_models] Os modelos locais não estão configurados.
-    [no_recycle_bin] Não há Lixeira do Windows para { $path }.
     [no_summary] A ficha ainda não tem resumo.
     [no_voice] Essa voz não existe.
     [no_vulkan] A placa de vídeo deste computador não consegue rodar modelos. Use um provedor no lugar.
     [no_vulkan_dictation] A placa de vídeo deste computador não consegue rodar o ditado.
     [prompt_change] O prompt desse personagem não pode ser alterado nesta ficha.
     [recycle_bin_move] { $path } não foi movido para a Lixeira do Windows.
+    [trash_move] { $path } não foi movido para a Lixeira do computador.
     [speaker_not_in_chat] Quem fala não faz parte deste chat.
     [speaker_only_character] Só a mensagem de um personagem tem quem fala.
     [unknown_language] Esse não é um idioma que este aplicativo conhece.

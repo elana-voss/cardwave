@@ -11,7 +11,11 @@ coding-open-task = 開啟程式設計任務
 coding-undo-all = 全部復原
 coding-put-the-folder-back = 要把資料夾還原成任務開始前的樣子嗎？
 coding-add-an-export-of = 加入把聊天匯出成 Markdown 的功能，並附上測試。
-coding-c-users-you-projects = C:\Users\you\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/you/Projects/app
+       *[other] C:\Users\you\Projects\app
+    }
 coding-start-a-coding-task = 開始程式設計任務
 coding-start = 開始
 coding-goal = 目標
@@ -50,7 +54,7 @@ composer-replies = 由 { $name } 回覆
 
 dictate-dictate = 聽寫
 mic-none = 找不到麥克風：請接上一個，然後再試一次。
-mic-not-allowed-desktop = Cardwave 無權使用麥克風：請在 Windows 隱私權設定的「麥克風」中允許。
+mic-not-allowed-desktop = Cardwave 無權使用麥克風：請在電腦隱私權設定的「麥克風」中允許。
 mic-not-allowed-browser = 此頁面無權使用麥克風：請在瀏覽器中此網站的設定裡允許。
 mic-not-started = 無法啟動麥克風：請關閉正在使用它的其他程式，然後再試一次。
 mic-not-offered = 在這個位址上瀏覽器不提供麥克風：請在執行 Cardwave 的電腦上使用麥克風。
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = 你好，我是 { $name }。你的訊息被朗讀
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = 語音沒有回應了。請再試一次，或在 設定 › 語音 中選擇其他語音。
-voice-this-window-cannot-play = 此視窗無法播放聲音：{ $reason }。請檢查 Windows 的聲音輸出。
+voice-this-window-cannot-play = 此視窗無法播放聲音：{ $reason }。請檢查此裝置的聲音輸出。
 
 ## Written by hand: plurals, conditions and numbers
 

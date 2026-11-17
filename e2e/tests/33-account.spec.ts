@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 
 // The account's profile: "Change" puts a field in the name's place, and "Save" renames the account wherever
 // its name shows: the profile itself, the rail, a narrow window's bar, and the round beside the user's
@@ -23,7 +23,6 @@ async function open(page: Page, address = "/#/account/profile"): Promise<void> {
   await heard;
 }
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const account = (page: Page) => page.getByRole("button", { name: /^Account/ });
 const head = (page: Page) => page.locator(".profile-head");
 /** The group "Account": its line "Name", what that says, and the field the name is changed in. */

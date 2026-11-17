@@ -71,7 +71,7 @@ npm run dist    # the installer, in target/release/bundle/nsis
 
 Both fetch llama.cpp's `llama-server` into `desktop/llama` first (`tools/llama.py`); it runs local models and the search model.
 
-Tests: `cargo test --workspace --exclude cardwave-desktop` for the server, `npm test` in `web/` for the UI's modules, `npm test` in `e2e/` for the browser tests (Playwright).
+Tests: `cargo test --workspace` for the server and the desktop app (after `desktop/llama` and `npm run build` in `web/`), `npm test` in `web/` for the UI's modules, `npm test` in `e2e/` for the browser tests (Playwright).
 
 | Folder | What it holds |
 | --- | --- |
@@ -82,7 +82,7 @@ Tests: `cargo test --workspace --exclude cardwave-desktop` for the server, `npm 
 | `e2e/` | The browser tests |
 | `tools/` | Checks and the scripts that fetch or write shipped data |
 
-Publishing a GitHub release builds the signed installer and the updater's feed (`.github/workflows/installer.yml`).
+Publishing a GitHub release builds the signed installers, Windows' and Linux's AppImage and .deb, and the updater's feed (`.github/workflows/installer.yml`).
 
 ## License
 

@@ -11,7 +11,11 @@ coding-open-task = कोडिंग का काम खोलें
 coding-undo-all = सब वापस लें
 coding-put-the-folder-back = फ़ोल्डर को टास्क से पहले जैसा कर दें?
 coding-add-an-export-of = चैट को Markdown में एक्सपोर्ट करने की सुविधा जोड़ें, एक टेस्ट के साथ।
-coding-c-users-you-projects = C:\Users\aap\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/aap/Projects/app
+       *[other] C:\Users\aap\Projects\app
+    }
 coding-start-a-coding-task = कोडिंग टास्क शुरू करें
 coding-start = शुरू करें
 coding-goal = लक्ष्य
@@ -50,7 +54,7 @@ composer-replies = { $name } की ओर से
 
 dictate-dictate = बोलकर लिखें
 mic-none = कोई माइक्रोफ़ोन नहीं मिला: एक लगाएँ, फिर दोबारा कोशिश करें।
-mic-not-allowed-desktop = Cardwave माइक्रोफ़ोन इस्तेमाल नहीं कर सकता: Windows की प्राइवेसी सेटिंग्स में Microphone के नीचे इसकी अनुमति दें।
+mic-not-allowed-desktop = Cardwave माइक्रोफ़ोन इस्तेमाल नहीं कर सकता: अपने कंप्यूटर की प्राइवेसी सेटिंग्स में Microphone के नीचे इसकी अनुमति दें।
 mic-not-allowed-browser = यह पेज माइक्रोफ़ोन इस्तेमाल नहीं कर सकता: ब्राउज़र की इस साइट की सेटिंग्स में इसकी अनुमति दें।
 mic-not-started = माइक्रोफ़ोन शुरू नहीं हो सका: उसे इस्तेमाल कर रहा कोई दूसरा प्रोग्राम बंद करें, फिर दोबारा कोशिश करें।
 mic-not-offered = इस पते पर ब्राउज़र कोई माइक्रोफ़ोन नहीं देता: जिस कंप्यूटर पर Cardwave चलता है, उस पर माइक्रोफ़ोन इस्तेमाल करें।
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = नमस्ते, मैं { $name } हूँ
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = आवाज़ ने जवाब देना बंद कर दिया। फिर से कोशिश करें, या सेटिंग्स › आवाज़ें में कोई दूसरी आवाज़ चुनें।
-voice-this-window-cannot-play = यह विंडो आवाज़ नहीं चला सकती: { $reason }। Windows में साउंड आउटपुट जाँचें।
+voice-this-window-cannot-play = यह विंडो आवाज़ नहीं चला सकती: { $reason }। इस डिवाइस का साउंड आउटपुट जाँचें।
 
 ## Written by hand: plurals, conditions and numbers
 

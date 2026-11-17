@@ -224,8 +224,16 @@ backup-about-chosen = Chats, characters and settings in one file, encrypted with
 
 folder-watch = Import new cards automatically
 folder-watch-about = A card file put in the folder comes into your library by itself
-folder-recycle = Move imported files to the Recycle Bin
-folder-recycle-about = Once a file is imported, it goes to the Recycle Bin
+folder-recycle =
+    Move imported files to the { $system ->
+        [linux] computer's Trash
+       *[other] Recycle Bin
+    }
+folder-recycle-about =
+    Once a file is imported, it goes to the { $system ->
+        [linux] computer's Trash
+       *[other] Recycle Bin
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -372,7 +380,11 @@ tools-pictures = Uses the image model
 tools-pictures-first = Set up the image model first
 tools-app = Use and change your characters, chats and settings; each change asked first
 tools-dice = Lets the AI roll dice; Cardwave rolls them, so the result is fair.
-tools-folder-example = C:\Users\you\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/you/Documents/Shared
+       *[other] C:\Users\you\Documents\Shared
+    }
 tools-folder-says = Files and commands reach this folder and what it holds, and nothing else.
 tools-change-folder = Change folder
 tools-change = Change

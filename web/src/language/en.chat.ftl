@@ -11,7 +11,11 @@ coding-open-task = Open coding task
 coding-undo-all = Undo all
 coding-put-the-folder-back = Put the folder back as it was before the task?
 coding-add-an-export-of = Add an export of chats as Markdown, with a test.
-coding-c-users-you-projects = C:\Users\you\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/you/Projects/app
+       *[other] C:\Users\you\Projects\app
+    }
 coding-start-a-coding-task = Start a coding task
 coding-start = Start
 coding-goal = Goal
@@ -50,7 +54,7 @@ composer-replies = { $name } replies
 
 dictate-dictate = Dictate
 mic-none = No microphone was found: plug one in, then try again.
-mic-not-allowed-desktop = Cardwave may not use the microphone: allow it in Windows' privacy settings, under Microphone.
+mic-not-allowed-desktop = Cardwave may not use the microphone: allow it in your computer's privacy settings, under Microphone.
 mic-not-allowed-browser = This page may not use the microphone: allow it in the browser's settings for this site.
 mic-not-started = The microphone could not be started: close any other program that uses it, then try again.
 mic-not-offered = The browser offers no microphone at this address: use one on the computer Cardwave runs on.
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = Hello, I'm { $name }. This is how your messages s
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = The voice stopped answering. Try again, or choose another voice in Settings › Voices.
-voice-this-window-cannot-play = This window cannot play sound: { $reason }. Check the sound output in Windows.
+voice-this-window-cannot-play = This window cannot play sound: { $reason }. Check this device's sound output.
 
 ## Written by hand: plurals, conditions and numbers
 

@@ -12,7 +12,9 @@ use toml_edit::{Array, DocumentMut, Formatted, Item, Table, TableLike};
 use crate::mapping::SECTIONS;
 use crate::{Document, free_id, is_placeholder, plain, split_reference, strings};
 
-use crate::edit::{EditText, find, line_of, named, of_block, set, set_list, text_of};
+use crate::edit::{
+    EditText, character_change, find, home_of, line_of, named, of_block, set, set_list, text_of,
+};
 
 /// Whether the edited card reads as the edit asks; told the card after the edit.
 type Check<'a> = Box<dyn Fn(&Document) -> bool + 'a>;
@@ -151,14 +153,7 @@ impl<'a> Card<'a> {
         let block = self
             .at(&["character", id])
             .and_then(Item::as_table_like_mut);
-        block.with_context(|| {
-            Fail::said(
-                Code::NotPossible,
-                format!("the character {id} cannot be changed in this card"),
-            )
-            .with("what", "character_change")
-            .with("id", id.to_string())
-        })
+        block.with_context(|| character_change(id))
     }
 
     /// Makes a block of `kind` with `text` in the file of the character `id`,
@@ -174,18 +169,8 @@ impl<'a> Card<'a> {
             block || card.document.has_revision(&format!("{kind}.{free}"))
         };
         let free = free_id(id, |free| taken(self, free));
-        let home = self
-            .files
-            .iter_mut()
-            .find(|file| file.get("character").and_then(|all| all.get(id)).is_some());
-        let file = home.with_context(|| {
-            Fail::said(
-                Code::NotPossible,
-                format!("the character {id} cannot be changed in this card"),
-            )
-            .with("what", "character_change")
-            .with("id", id.to_string())
-        })?;
+        let home = home_of(&self.files, id).with_context(|| character_change(id))?;
+        let file = &mut self.files[home];
         // Blocks stand under headers of their own (`[greeting.ID]`), not under one of their kind.
         let blocks = file.entry(kind).or_insert_with(|| {
             let mut blocks = Table::new();

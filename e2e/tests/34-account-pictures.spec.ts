@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, noneAdded, test } from "../test";
+import { button, expect, noneAdded, test } from "../test";
 import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { NOW, picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
@@ -98,7 +98,6 @@ async function firstRun(page: Page): Promise<void> {
 }
 
 const key = (page: Page) => page.getByLabel("API key", { exact: true });
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
 for (const [width, height] of SIZES) {
   for (const theme of THEMES) {

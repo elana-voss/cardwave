@@ -158,13 +158,27 @@ pub(crate) struct Pocket {
     voice: Option<(String, Vec<Array>)>,
 }
 
+/// What the library needs beside it, said when it cannot be loaded.
+const NEEDS: &str = if cfg!(windows) {
+    "; it needs the Microsoft Visual C++ Redistributable"
+} else {
+    ""
+};
+
 /// Loads ONNX Runtime from `folder`, once it has loaded for the process's life.
 fn runtime(folder: &Path) -> anyhow::Result<()> {
     static LOADED: Mutex<bool> = Mutex::new(false);
     let mut loaded = cw_core::lock(&LOADED);
     if !*loaded {
         let environment = ort::init_from(folder.join(RUNTIME_FILE)).map_err(|failure| {
-            anyhow!(Fail::said(Code::NotPossible, format!("ONNX Runtime cannot be loaded ({failure}); it needs the Microsoft Visual C++ Redistributable")).with("what", "voice_runtime").with("failure", failure.to_string()))
+            anyhow!(
+                Fail::said(
+                    Code::NotPossible,
+                    format!("ONNX Runtime cannot be loaded ({failure}){NEEDS}")
+                )
+                .with("what", "voice_runtime")
+                .with("failure", failure.to_string())
+            )
         })?;
         environment.with_name("cardwave-voice").commit();
         *loaded = true;

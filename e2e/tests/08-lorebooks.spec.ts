@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, composer, expect, test } from "../test";
 import { cardFile, ccv4File } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -78,13 +78,11 @@ test.beforeEach(async ({ request }) => {
   }
 });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const item = (page: Page, name: string) => page.getByRole("menuitem", { name, exact: true });
 const search = (page: Page) => page.getByLabel("Search lorebooks");
 const names = (page: Page) => page.locator(".card-row .row-title");
 const row = (page: Page, name: string) => page.locator(".card-row", { hasText: name });
 const messages = (page: Page) => page.locator(".message");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const panel = (page: Page) => page.getByRole("complementary", { name: "Chat details" });
 const lorebook = (page: Page, name: string) => panel(page).getByRole("switch", { name, exact: true });
 /** A part of the panel, by its name. */

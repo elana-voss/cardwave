@@ -138,8 +138,7 @@ codes! {
     DriveRootToWatch, "a drive's root holds too much to watch; choose a folder in it";
     DriveRootForModel, "a drive's root holds too much to give the model; choose a folder in it";
     DataFolder, "that folder holds Cardwave's own data, or is in it; choose another";
-    CommandsWindowsOnly, "commands are run only on Windows";
-    RecycleBinWindowsOnly, "files are moved to the Recycle Bin only on Windows";
+    CommandsUnsafe, "commands cannot run safely on this computer: its system has no sandbox for them";
     CardTrashed, "the card is in the Trash; restore it first";
     LorebookTrashed, "the lorebook “{name}” is in the Trash; restore it to use it";
     OwnLorebookFlags, "a card's own lorebook has no star, is not archived or trashed by itself and is not for every chat";

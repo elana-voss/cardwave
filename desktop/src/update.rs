@@ -28,6 +28,20 @@ pub struct Checked {
     notes: Option<String>,
 }
 
+/// Writes to the log which of the feed's entries this app's updates come from
+/// (`<os>-<arch>-<bundle>`: the AppImage and the .deb each have their own), which
+/// the Linux installer test looks up in a feed of its own. The bundle is what
+/// the bundler wrote into the program, as the updater reads it; a program not
+/// bundled (a debug build) has none and asks for `<os>-<arch>` alone.
+pub fn log_entry() {
+    let target = tauri_plugin_updater::target().unwrap_or_default();
+    let entry = match tauri::utils::platform::bundle_type() {
+        Some(bundle) => format!("{target}-{bundle}"),
+        None => target,
+    };
+    tracing::info!("updates from the feed's entry {entry}");
+}
+
 /// Asks the feed for a newer version than this one.
 #[tauri::command]
 pub async fn update_check(app: AppHandle, pending: State<'_, Pending>) -> Result<Checked, String> {

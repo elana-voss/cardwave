@@ -7,7 +7,11 @@ setup-use-this = Use this
 setup-choose-folder = Choose folder
 setup-this-computer = This computer
 setup-this-computer-about = AI model files (.gguf) you have downloaded, run by Cardwave
-setup-models-example = C:\Users\you\Models
+setup-models-example =
+    { $system ->
+        [linux] /home/you/Models
+       *[other] C:\Users\you\Models
+    }
 setup-models-says = Each model file in it (.gguf) is a chat model, which Cardwave runs on this computer. No model files yet? Choose an empty folder: Settings › Providers › This computer then offers the models that fit this computer, downloaded into it.
 setup-not-this = Not this one?
 setup-recognised = Recognised:{ " " }

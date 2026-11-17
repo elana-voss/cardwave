@@ -13,13 +13,12 @@ import { cardThumbnailUrl, changeCard, deleteCard, setSummary } from "../api/cli
 import { cardItems, starButton } from "../library/library-actions";
 import type { CardEdit } from "../api/generated/CardEdit";
 import type { EditCharacter } from "../api/generated/EditCharacter";
-import { inPlace } from "../in-place";
 import { addLines, drawBox } from "../card/card-box";
 import { heroPicture, watchDrags } from "../card/card-picture";
 import { languageBar, translateDialog, translationView } from "../card/card-languages";
 import { addMode, askMode, modeBar, modesDialog } from "../card/card-modes";
 import { otherWays } from "../card/card-ways";
-import { after, load, modes, newCard, person, save, SHOWN, written, type Card } from "../card/card-page";
+import { after, editInPlace, load, modes, newCard, person, save, SHOWN, written, type Card } from "../card/card-page";
 import { begin, firstMessage, reading } from "../card/card-texts";
 import { tagWord } from "../content-level";
 import { wholeCard, type CardTools } from "../card/card-tools";
@@ -175,9 +174,8 @@ function drawAbout(c: Card, one: EditCharacter | undefined, texts: boolean, toke
 
 /** The card's tags written in `node`, shown as `shown` draws them, or "add tags" without one. */
 function tagsField<T extends HTMLElement>(c: Card, node: T, tags: string[], shown: () => (HTMLElement | string)[]): T {
-  inPlace(node, {
+  editInPlace(node, {
     label: wording("character-tags-separated-by-commas"),
-    hint: wording("character-click-to-edit"),
     value: () => c.edit.tags.join(", "),
     show: () => (tags.length ? shown() : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-tags"))]),
     button: () => !tags.length,
@@ -190,9 +188,8 @@ function tagsField<T extends HTMLElement>(c: Card, node: T, tags: string[], show
 /** The character's name in chats and the card's creator, each written where it stands. */
 function aboutFields(c: Card, one: EditCharacter | undefined): { name: HTMLElement; creator: HTMLElement } {
   const name = el("span");
-  inPlace(name, {
+  editInPlace(name, {
     label: wording("character-name-in-the-chat"),
-    hint: wording("character-click-to-edit"),
     value: () => one?.name ?? "",
     show: () => [one?.name || el("span", { className: "c-faint" }, wording("character-name"))],
     commit: (text) =>
@@ -202,9 +199,8 @@ function aboutFields(c: Card, one: EditCharacter | undefined): { name: HTMLEleme
       }),
   });
   const creator = el("span");
-  inPlace(creator, {
+  editInPlace(creator, {
     label: wording("character-creator"),
-    hint: wording("character-click-to-edit"),
     value: () => c.edit.creator,
     // "by" is the field's own: without a creator only "Add creator", as "Add tags".
     show: () => (c.edit.creator ? [wording("character-by"), el("span", null, c.edit.creator)] : [el("span", { className: "textbtn" }, icon("plus", 16), wording("character-add-creator"))]),
@@ -262,9 +258,8 @@ const retitle = (c: Card, card: CardEdit, title: string) => {
 /** The title, written where it stands; a new card is made at its first letter. */
 function title(c: Card, className = "hero-title"): HTMLElement {
   const heading = el("h1", { className });
-  inPlace(heading, {
+  editInPlace(heading, {
     label: wording("character-title"),
-    hint: wording("character-click-to-edit"),
     placeholder: wording("character-name-the-card"),
     value: () => c.edit.title,
     show: () => [c.edit.title || el("span", { className: "c-faint" }, wording("character-name-the-card"))],
@@ -285,9 +280,8 @@ function summary(c: Card, className = "hero-sum logline"): HTMLElement | null {
   const card = c.id;
   let words = c.detail.summary;
   const line = el("p", { className });
-  inPlace(line, {
+  editInPlace(line, {
     label: wording("character-summary"),
-    hint: wording("character-click-to-edit"),
     multiline: true,
     value: () => words,
     show: () => [words],

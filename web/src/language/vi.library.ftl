@@ -130,8 +130,16 @@ add-character-start-chat = Bắt đầu trò chuyện
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Đổi thư mục thẻ
-card-folder-c-users-you-cards = C:\Users\ban\Cards
-card-folder-its-card-files-and = Các thẻ trong thư mục này và các thư mục con được nhập vào thư viện của bạn, cả những thẻ bạn thêm vào sau. Để lấy đường dẫn thư mục trên Windows, nhấp chuột phải vào thư mục trong File Explorer và chọn Copy as path.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/ban/Cards
+       *[other] C:\Users\ban\Cards
+    }
+card-folder-its-card-files-and =
+    Các thẻ trong thư mục này và các thư mục con được nhập vào thư viện của bạn, cả những thẻ bạn thêm vào sau. { $system ->
+        [linux] Để lấy đường dẫn thư mục trên Linux, hãy mở thư mục trong trình quản lý tệp và nhấn Ctrl+L: đường dẫn hiện ra, sẵn sàng để sao chép.
+       *[other] Để lấy đường dẫn thư mục trên Windows, nhấp chuột phải vào thư mục trong File Explorer và chọn Copy as path.
+    }
 card-folder-use = Dùng thư mục này
 
 ## importing (library/importing.ts)

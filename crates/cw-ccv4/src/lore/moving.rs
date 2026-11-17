@@ -13,7 +13,7 @@ use cw_core::{Code, Fail};
 use toml::{Table, Value};
 use toml_edit::{DocumentMut, Item};
 
-use crate::edit::{find, set_list};
+use crate::edit::{find, home_of, set_list};
 use crate::lore::{Open, Rewritten, joined, unplace};
 use crate::{Document, drafts, mapping, split_reference, strings};
 
@@ -155,10 +155,17 @@ pub fn put_in(
     );
     let blocks = book_blocks(from, book, id, &entries)?;
     let mut written = files.to_vec();
-    let home = home_of(files, &character)?;
+    let mut open = files
+        .iter()
+        .map(|(_, text)| text.parse::<DocumentMut>())
+        .collect::<Result<Vec<_>, _>>()?;
+    let home = home_of(&open, &character).context(
+        Fail::said(Code::NotPossible, "the card's character cannot be changed")
+            .with("what", "card_character_change"),
+    )?;
+    let mut file = open.swap_remove(home);
     let owned: Vec<String> = entries.iter().map(|entry| entry.to_string()).collect();
     drafts::adopt(&mut written, from, &owned)?;
-    let mut file: DocumentMut = files[home].1.parse()?;
     add_blocks(&mut file, &blocks)?;
     let had = document
         .character(&character)
@@ -225,22 +232,6 @@ fn book_blocks(
         .collect();
     blocks.insert("lore".into(), Value::Table(lore));
     Ok(toml::to_string(&blocks)?.parse()?)
-}
-
-/// The index in `files` of the file holding the block of `character`.
-fn home_of(files: &[(String, String)], character: &str) -> anyhow::Result<usize> {
-    let home = files.iter().position(|(_, text)| {
-        let file: Option<DocumentMut> = text.parse().ok();
-        file.is_some_and(|file| {
-            file.get("character")
-                .and_then(|all| all.get(character))
-                .is_some()
-        })
-    });
-    home.context(
-        Fail::said(Code::NotPossible, "the card's character cannot be changed")
-            .with("what", "card_character_change"),
-    )
 }
 
 /// Adds the `[lorebook]` and `[lore]` blocks of `blocks` to `file`, each

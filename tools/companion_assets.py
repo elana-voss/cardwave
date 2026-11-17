@@ -13,6 +13,7 @@ never handed out, only these):
 until he picks in the viewer (the ticket's questions): a swap is one file name here. Every clip's skeleton must rest
 as the first one's, or the run stops. Run with Blender 5.2, from anywhere (every path is absolute):
 blender -b -P tools/companion_assets.py
+Blender runs headless only (`-b`), and every output path is absolute.
 """
 
 import json

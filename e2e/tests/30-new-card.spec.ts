@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { ccv4File } from "../card";
 
 // "New card": the card's page empty, saved as it is written. The card is made at the first letter of its
@@ -9,7 +9,6 @@ import { ccv4File } from "../card";
 //
 // `leave` takes the focus out of what is written, as a click elsewhere does, which saves it.
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const field = (page: Page, name: string) => page.getByRole("textbox", { name, exact: true });
 /** A text of the card on its page, by its name. */
 const part = (page: Page, name: string) => page.locator(".reading section.tb", { has: page.getByRole("heading", { name, exact: true }) });

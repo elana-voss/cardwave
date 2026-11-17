@@ -53,9 +53,6 @@ tower.workspace = true
 tokio-util.workspace = true
 dirs.workspace = true
 
-[target.'cfg(any(windows, target_os = "macos"))'.dependencies]
-keyring.workspace = true
-
 # build.rs reads the API's routes and their handlers (`tools::app`).
 [build-dependencies]
 syn = { version = "2", features = ["full", "visit"] }
@@ -69,5 +66,4 @@ rusqlite.workspace = true
 tokio-tungstenite = "0.29"
 
 # A test reads the database key the credential store keeps under a service of its own.
-[target.'cfg(any(windows, target_os = "macos"))'.dev-dependencies]
 keyring.workspace = true

@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, modelLine, test } from "../test";
+import { button, expect, modelLine, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
 // The account's group "Models": a line to Settings › Providers, then Chat and Images, and Settings › Advanced's
@@ -23,7 +23,6 @@ test.afterAll(() => Promise.all([api.close(), other.close()]));
 const KEY = "sk-account-0123456789-7c1d";
 const QUESTION = "Reply with the single word OK.";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 /** The group "Models", the chat model's line in it (or the line called `name`), and what the line says under its name. */
 const group = (page: Page) => page.locator(".settings-group", { has: page.getByRole("heading", { name: "Models", exact: true }) });
 const line = (page: Page, name = "Chat") => page.locator(".settings-group .item", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) });

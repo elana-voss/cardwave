@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 
 // Run-through "making a character together": each style (Tree, Cloud, Hybrid) on the pretend model, by clicks and
 // typing alone: the style chosen in Settings › Advanced, the interview from Create's line asked to its end, the
@@ -10,8 +10,6 @@ import { expect, test } from "../test";
 // known; the loop answers whatever comes, by the field or the first pill.
 
 test.describe.configure({ mode: "serial" });
-
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
 test.beforeAll(async ({ request }) => {
   const provider = await request.put("/api/provider", { data: { base_url: "https://pretend.cardwave.invalid/v1", model: "pretend-chat", api_key: "sk-cardwave-fake-0000" } });

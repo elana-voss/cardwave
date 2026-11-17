@@ -11,7 +11,7 @@
 // and the server heard again after a drop, have the list read anew.
 import { addCardDocument, addChatDocument, deleteDocument, getSearchModel, listCards, listChats, listDocuments, restoreDocument } from "../api/client";
 import type { DocumentView } from "../api/generated/DocumentView";
-import { announce, el, latest, noticeBox, oneAtATime, searchField, selectField, type View } from "../dom";
+import { announce, el, headButton, latest, noticeBox, oneAtATime, searchField, selectField, type View } from "../dom";
 import { chatNames, chatTitle } from "../chat-title";
 import { formDialog, menu } from "../dialogs";
 import { icon } from "../icons";
@@ -91,7 +91,7 @@ export function documentsView(): View {
     list.append(all.length ? emptyLine(wording("documents-no-document-found")) : emptyLine(wording("documents-no-documents-yet-a"), [{ label: wording("library-actions-add-document"), go: () => addAnywhere(node, attempt, load) }]));
   };
   const search = searchField(wording("documents-search-documents"), wording("documents-name-chat-or-character"), asked, draw, "search-list");
-  const add = el("button", { type: "button", className: "btn btn-quiet", onclick: () => addAnywhere(node, attempt, load) }, icon("plus", 16), wording("library-actions-add-document"));
+  const add = headButton(wording("library-actions-add-document"), "btn btn-quiet", () => addAnywhere(node, attempt, load), "plus");
   const node: HTMLElement = el("section", { className: "main main-list knowledge" }, el("header", { className: "pbar" }, pageTitle(wording("page-documents")), el("div", { className: "flex ai-c g-8" }, add)), el("div", { className: "flex g-12" }, search), el("p", { className: "meta m0" }, wording("documents-what-they-are")), notice, unread, list);
   const attempt = oneAtATime(notice);
   // The chats' names only tell chats of one name apart: without them a row says the chat's title.

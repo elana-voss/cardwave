@@ -1,3 +1,11 @@
+# 0.3.0
+
+Cardwave on Linux.
+
+- Cardwave runs on Linux: the release page has an AppImage, which runs on most Linux computers, and a .deb, which installs on Ubuntu and Debian.
+- On Linux too, faces are found on your graphics card, the microphone works in Cardwave's window, and the AI's coding tools run commands.
+- Small fixes: the buttons at the top of a page fit a narrow window, and the account menu stays open while your accounts load.
+
 # 0.2.0
 
 Cardwave on your phone, and many fixes.

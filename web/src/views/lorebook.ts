@@ -16,7 +16,7 @@
 import { changeLorebook, describeLorebook, exportLorebook, getLorebookEdit, type LoreOf } from "../api/client";
 import type { EditEntry } from "../api/generated/EditEntry";
 import type { LorebookEdit } from "../api/generated/LorebookEdit";
-import { announce, crumbs, el, failure, newest, noticeBox, oneAtATime, reason, searchField, switchBox, titled, type View } from "../dom";
+import { announce, crumbs, el, failure, headButton, newest, noticeBox, oneAtATime, reason, searchField, switchBox, titled, type View } from "../dom";
 import { menu } from "../dialogs";
 import { entryOf, matches, NEW } from "../lorebook/entry";
 import { icon } from "../icons";
@@ -84,7 +84,8 @@ function editor(of: LoreOf): Editor {
   const asked = { q: "" };
   const name = el("a", { className: "cut here", href: base }, wording("page-lorebook"));
   const path = crumbs(name);
-  const about = el("button", { type: "button", className: "btn btn-quiet btn-fit", disabled: true, onclick: () => describe(b) }, icon("edit", 16), wording("lorebook-lorebook-settings"));
+  const about = headButton(wording("lorebook-lorebook-settings"), "btn btn-quiet btn-fit", () => describe(b), "edit");
+  about.disabled = true;
   const marks = el("div", { className: "flex ai-c g-2" });
   const notice = noticeBox();
   const bar = el("div", { className: "banner lore-bar", role: "status", hidden: true });

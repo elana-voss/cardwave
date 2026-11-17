@@ -17,15 +17,15 @@
 // app looks for a newer version (settings/update.ts, `watchUpdates`). The
 // user's own CSS (own-css.ts) is shown before the first screen and read anew when the settings change elsewhere.
 // The UI's words are in the app's language: the one the settings name, read at start and when they change
-// (app-language.ts), else the computer's where the app has it (language.ts); when it changes, the tabs make
+// (app-language.ts), else the computer's where the app has it (language.ts), told the server's system (`setSystem`); when it changes, the tabs make
 // their screens anew (`relanguage`), once they are restored. A phone's keyboard is followed from the start
 // (shell/keyboard.ts).
 import { reread, setElsewhere, take } from "./account";
 import { signInScreen } from "./settings/accounts";
-import { companionApp, connectEvents, getLock, getProvider, getSettings, getSignIn, startedSignedIn, unlock } from "./api/client";
+import { companionApp, connectEvents, getLock, getProvider, getSettings, getSignIn, getStatus, startedSignedIn, unlock } from "./api/client";
 import { appWindow, PAGE_WINDOW } from "./desktop";
 import { clearNotice, type View } from "./dom";
-import { followComputer, onLanguage } from "./language/language";
+import { followComputer, onLanguage, setSystem } from "./language/language";
 import { restoredHeard, tellRestored } from "./settings/backup";
 import { lockedElsewhere, passwordIs, startScreen, untilUnlocked } from "./settings/password";
 import { pickCompanion, startCompanion } from "./library/companion-app";
@@ -182,7 +182,9 @@ async function start(): Promise<void> {
   // The font is there before the first screen is made, which is made after the server's answer: a screen made
   // before it came and one made after would differ (seen: a field's words a pixel lower, in some runs).
   const font = document.fonts.load(`16px ${getComputedStyle(document.body).fontFamily}`).catch(() => []);
-  const [lock, signing] = await Promise.all([getLock().catch(() => null), getSignIn().catch(() => null), font, computerLanguage]);
+  // The server's system is in the texts (paths, the bin) before the first screen is made.
+  const system = getStatus().then(({ system }) => setSystem(system), () => undefined);
+  const [lock, signing] = await Promise.all([getLock().catch(() => null), getSignIn().catch(() => null), font, computerLanguage, system]);
   if (lock?.locked) {
     chrome(false);
     // A device signed in to another account cannot open the app: its password is this computer's account's.

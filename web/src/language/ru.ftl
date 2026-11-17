@@ -243,8 +243,16 @@ backup-about-chosen = Чаты, персонажи и настройки в од
 
 folder-watch = Импортировать новые карточки автоматически
 folder-watch-about = Файл карточки, положенный в папку, сам попадает в вашу библиотеку
-folder-recycle = Перемещать импортированные файлы в корзину Windows
-folder-recycle-about = Как только файл импортирован, он отправляется в Корзину
+folder-recycle =
+    Перемещать импортированные файлы в корзину { $system ->
+        [linux] компьютера
+       *[other] Windows
+    }
+folder-recycle-about =
+    Как только файл импортирован, он отправляется в { $system ->
+        [linux] корзину компьютера
+       *[other] Корзину
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -401,7 +409,11 @@ tools-pictures = Использует модель изображений
 tools-pictures-first = Сначала настройте модель изображений
 tools-app = Пользоваться вашими персонажами, чатами и настройками и менять их; о каждом изменении сначала спрашивается
 tools-dice = Позволяет ИИ бросать кости; бросает их Cardwave, поэтому результат честный.
-tools-folder-example = C:\Users\вы\Documents\Общая
+tools-folder-example =
+    { $system ->
+        [linux] /home/вы/Documents/Общая
+       *[other] C:\Users\вы\Documents\Общая
+    }
 tools-folder-says = Файлы и команды достигают только этой папки и её содержимого, и ничего больше.
 tools-change-folder = Сменить папку
 tools-change = Сменить

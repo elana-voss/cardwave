@@ -23,6 +23,8 @@ async fn status_reports_app_and_version() {
         .unwrap();
     assert_eq!(body["app"], "cardwave");
     assert_eq!(body["version"], env!("CARGO_PKG_VERSION"));
+    // The system, which the texts of paths and of the bin follow.
+    assert_eq!(body["system"], std::env::consts::OS);
     // When the server was built, which the page "About Cardwave" says beside the version.
     let built = body["built"].as_i64().unwrap();
     let now = std::time::SystemTime::now()
@@ -33,8 +35,6 @@ async fn status_reports_app_and_version() {
         built > now - 400 * 24 * 3600 * 1000 && built <= now,
         "{built}"
     );
-    // Whether Settings › Data shows "Move imported files to the Recycle Bin": Windows' alone.
-    assert_eq!(body["recycle_bin"], cfg!(windows));
 }
 
 #[tokio::test]

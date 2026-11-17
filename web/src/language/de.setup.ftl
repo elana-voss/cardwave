@@ -7,7 +7,11 @@ setup-use-this = Diesen verwenden
 setup-choose-folder = Ordner wählen
 setup-this-computer = Dieser Computer
 setup-this-computer-about = Heruntergeladene KI-Modelldateien (.gguf), von Cardwave ausgeführt
-setup-models-example = C:\Users\du\Modelle
+setup-models-example =
+    { $system ->
+        [linux] /home/du/Modelle
+       *[other] C:\Users\du\Modelle
+    }
 setup-models-says = Jede Modelldatei darin (.gguf) ist ein Chatmodell, das Cardwave auf diesem Computer ausführt. Noch keine Modelldateien? Wähle einen leeren Ordner: Einstellungen › Anbieter › Dieser Computer bietet dann die Modelle an, die zu diesem Computer passen, und lädt sie hinein.
 setup-not-this = Nicht dieser?
 setup-recognised = Erkannt:{ " " }

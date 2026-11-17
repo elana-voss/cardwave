@@ -18,7 +18,7 @@ test("each case has its own sentence, never the browser's words", async () => {
   refusing("NotAllowedError");
   await expect(microphone()).rejects.toThrow("This page may not use the microphone: allow it in the browser's settings for this site.");
   vi.mocked(inDesktop).mockReturnValue(true);
-  await expect(microphone()).rejects.toThrow("Cardwave may not use the microphone: allow it in Windows' privacy settings, under Microphone.");
+  await expect(microphone()).rejects.toThrow("Cardwave may not use the microphone: allow it in your computer's privacy settings, under Microphone.");
   refusing("NotReadableError");
   await expect(microphone()).rejects.toThrow("The microphone could not be started: close any other program that uses it, then try again.");
   // A page over plain http on another device has no microphone at all.

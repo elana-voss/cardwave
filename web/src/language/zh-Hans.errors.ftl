@@ -103,8 +103,7 @@ error-folder-not-chosen = 请先选择文件夹。
 error-drive-root-to-watch = 磁盘的根目录内容太多，无法监视；请选择其中的一个文件夹。
 error-drive-root-for-model = 驱动器的根目录内容太多，无法交给 AI；请选择其中的一个文件夹。
 error-data-folder = 这个文件夹存放着 Cardwave 自己的数据，或者位于其中；请选择其他文件夹。
-error-commands-windows-only = 只有在 Windows 上才能运行命令。
-error-recycle-bin-windows-only = 只有在 Windows 上才能把文件移到 Windows 回收站。
+error-commands-unsafe = 无法在这台电脑上安全地运行命令：它的系统没有可供命令使用的沙盒。
 error-files-tool-off = 请先在“设置 › 高级 › AI 的工具”中开启“文件”：团队用它读写任务的文件夹。
 
 ## Pictures, replies and voices
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] 还没有设置图像模型：请在“设置 › 模型 › 图片”中设置。
     [no_local_model] 那个文件夹中没有模型“{ $id }”。
     [no_local_models] 还没有设置本地模型。
-    [no_recycle_bin] { $path } 没有 Windows 回收站。
     [no_summary] 这张角色卡还没有摘要。
     [no_voice] 没有这个语音。
     [no_vulkan] 这台电脑的显卡无法运行模型。请改用服务商。
     [no_vulkan_dictation] 这台电脑的显卡无法运行听写。
     [prompt_change] 这张角色卡中该角色的提示词无法修改。
     [recycle_bin_move] { $path } 没有被移到 Windows 回收站。
+    [trash_move] { $path } 没有被移到电脑的回收站。
     [speaker_not_in_chat] 说话者不属于这个聊天。
     [speaker_only_character] 只有角色的消息才有说话者。
     [unknown_language] 这不是这个应用认识的语言。

@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { Page } from "@playwright/test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider } from "../stored";
-import { expect, test } from "../test";
+import { button, composer, expect, test } from "../test";
 
 // Run-through "tools and coding": a user's path through them by clicks and typing alone, each story going on from
 // the one before (`serial`). The start, made through `request`: the stand-in `api` every model (`calls` of
@@ -19,8 +19,6 @@ test.describe.configure({ mode: "serial" });
 let api: FakeProvider;
 let folder = "";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const line = (page: Page, name: string) => page.locator(".settings-group .item", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) });
 /** Opens a new chat without a character from the rail's Create menu. */
 async function plainChat(page: Page) {

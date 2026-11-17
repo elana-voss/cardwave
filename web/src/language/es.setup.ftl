@@ -7,7 +7,11 @@ setup-use-this = Usar esta
 setup-choose-folder = Elegir carpeta
 setup-this-computer = Este equipo
 setup-this-computer-about = Archivos de modelos de IA (.gguf) que descargaste, ejecutados por Cardwave
-setup-models-example = C:\Users\tu-usuario\Modelos
+setup-models-example =
+    { $system ->
+        [linux] /home/tu-usuario/Modelos
+       *[other] C:\Users\tu-usuario\Modelos
+    }
 setup-models-says = Cada archivo de modelo que contiene (.gguf) es un modelo de chat, que Cardwave ejecuta en este equipo. ¿Aún no tienes archivos de modelo? Elige una carpeta vacía: Ajustes › Proveedores › Este equipo te ofrece entonces los modelos que caben en este equipo y los descarga en ella.
 setup-not-this = ¿No es este?
 setup-recognised = Reconocido:{ " " }

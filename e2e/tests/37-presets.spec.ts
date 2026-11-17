@@ -19,7 +19,6 @@ const OPENROUTER = "https://openrouter.ai/api/v1";
 const KEY = "sk-preset-home-0000-h0me";
 const OTHER_KEY = "sk-or-v1-preset-0000-0r0r";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const group = (page: Page) => page.locator(".presets");
 const temperature = (page: Page) => page.getByLabel("Temperature");
 const notice = (page: Page) => page.locator("#toast span");

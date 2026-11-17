@@ -239,8 +239,16 @@ backup-about-chosen = Chats, personagens e configurações em um só arquivo, cr
 
 folder-watch = Importar novas fichas automaticamente
 folder-watch-about = Um arquivo de ficha colocado na pasta entra sozinho na sua biblioteca
-folder-recycle = Mover os arquivos importados para a Lixeira do Windows
-folder-recycle-about = Depois que um arquivo é importado, ele vai para a Lixeira
+folder-recycle =
+    Mover os arquivos importados para a Lixeira do { $system ->
+        [linux] computador
+       *[other] Windows
+    }
+folder-recycle-about =
+    Depois que um arquivo é importado, ele vai para a { $system ->
+        [linux] Lixeira do computador
+       *[other] Lixeira
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -392,7 +400,11 @@ tools-pictures = Usa o modelo de imagem
 tools-pictures-first = Configure primeiro o modelo de imagem
 tools-app = Usar e alterar seus personagens, chats e configurações; cada alteração perguntada antes
 tools-dice = Deixa a IA rolar dados; o Cardwave os rola, então o resultado é justo.
-tools-folder-example = C:\Users\você\Documents\Compartilhado
+tools-folder-example =
+    { $system ->
+        [linux] /home/você/Documents/Compartilhado
+       *[other] C:\Users\você\Documents\Compartilhado
+    }
 tools-folder-says = Arquivos e comandos alcançam esta pasta e o que ela contém, e nada mais.
 tools-change-folder = Trocar a pasta
 tools-change = Trocar

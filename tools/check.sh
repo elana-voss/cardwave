@@ -107,15 +107,19 @@ check sentences . python tools/sentences.py
 check tools-tests . python tools/run_tests.py
 check crates . python tools/deps.py --check
 check webimports . python tools/web_layers.py
-if wants '^(docs/tickets/|tools/tickets)'; then
-  check tickets . python tools/tickets.py check
+if [ ! -d docs/tickets ]; then
+  ran="$ran tickets"  # asked for by name (precommit.sh), it holds nothing to check here
+  echo "(the tickets' check skipped: no docs/tickets here, as in tools/clean_repo.py's public tree)"
+elif wants '^(docs/tickets/|tools/tickets|tools/selfcheck|docs/cardwave-rewrite\.md)'; then
+  check tickets . sh -c 'python tools/tickets.py check && python tools/selfcheck.py'
 else
   echo "(the tickets' check skipped: they did not change)"
 fi
 check interview-texts . interview_texts
 if wants "$SERVER_PATHS"; then
   check fmt . cargo fmt --all --check
-  check server-tests . cargo test --workspace --exclude cardwave-desktop --no-fail-fast
+  # The whole workspace, the desktop crate's own tests among them (its build needs desktop/llama and web/dist).
+  check server-tests . cargo test --workspace --no-fail-fast
   check clippy . cargo clippy --workspace --all-targets -- -D warnings
   check audit . cargo audit
 else

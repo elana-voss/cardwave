@@ -249,8 +249,16 @@ backup-about-chosen = 채팅, 캐릭터, 설정을 하나의 파일로, 직접 �
 
 folder-watch = 새 카드 자동으로 가져오기
 folder-watch-about = 폴더에 넣은 카드 파일이 저절로 라이브러리에 들어와요
-folder-recycle = 가져온 파일을 Windows 휴지통으로 이동
-folder-recycle-about = 파일을 가져오면 휴지통으로 옮겨집니다
+folder-recycle =
+    가져온 파일을 { $system ->
+        [linux] 컴퓨터의
+       *[other] Windows
+    } 휴지통으로 이동
+folder-recycle-about =
+    파일을 가져오면 { $system ->
+        [linux] 컴퓨터의 휴지통으로
+       *[other] 휴지통으로
+    } 옮겨집니다
 
 ## The companion's line (library/companion-app.ts)
 
@@ -392,7 +400,11 @@ tools-pictures = 이미지 모델 사용
 tools-pictures-first = 먼저 이미지 모델을 설정하세요
 tools-app = 캐릭터, 채팅, 설정을 사용하고 바꾸기. 바꿀 때마다 먼저 물어봐요
 tools-dice = AI가 주사위를 굴리게 합니다. 굴리는 건 Cardwave라 결과가 공정합니다.
-tools-folder-example = C:\Users\you\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/you/Documents/Shared
+       *[other] C:\Users\you\Documents\Shared
+    }
 tools-folder-says = 파일과 명령은 이 폴더와 그 안의 것에만 닿고, 그 밖에는 닿지 않아요.
 tools-change-folder = 폴더 변경
 tools-change = 변경

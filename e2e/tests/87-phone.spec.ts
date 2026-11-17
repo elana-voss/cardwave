@@ -7,7 +7,8 @@ import { cardFile } from "../card";
 // message field stays over an open keyboard, the thread at its end. Safari on iOS cannot run here: its keyboard only shrinks
 // window.visualViewport, which the keyboard test fakes, so it walks the code path iOS takes (shell/keyboard.ts).
 // At 390 px in the longer languages a settings line keeps its words readable, its buttons going under them, and a
-// switch group stays inside the window; that test sets the app's language and leaves it unset.
+// switch group stays inside the window; that test sets the app's language and leaves it unset, as does the one of
+// a page head's button at 320 px in German (dom.ts's headButton), whose words are cut so it stays inside the window.
 
 test("the start screen's and the sign-in's password stand above their button, Back after the form", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -132,5 +133,20 @@ test("at 390 px a line with two buttons keeps its words across the line, and the
     await expect(page.locator(".seg .btn").last()).toBeVisible();
     expect(await cut(page)).toEqual([]);
   }
+  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+});
+
+test("at 320 px in German a page head's button stays inside the window, its words cut at their end, its icon whole", async ({ page, request }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  const added = await (await request.post("/api/cards", { data: cardFile({ name: "Mira" }) })).json();
+  expect((await request.patch(`/api/cards/${added.card_id}`, { data: { trashed: true } })).status()).toBe(200);
+  expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+  await page.goto("/#/settings/trash");
+  const button = page.locator(".page-head").getByRole("button", { name: "Papierkorb leeren" });
+  await expect(button).toBeVisible();
+  const box = (await button.boundingBox())!;
+  expect(box.x + box.width).toBeLessThanOrEqual(320);
+  const label = button.locator(".btn-label");
+  expect(await label.evaluate((node) => node.scrollWidth > node.clientWidth && getComputedStyle(node).textOverflow === "ellipsis")).toBe(true);
   expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
 });

@@ -129,8 +129,16 @@ add-character-start-chat = Начать чат
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Изменить папку карточек
-card-folder-c-users-you-cards = C:\Users\вы\Карточки
-card-folder-its-card-files-and = Карточки из неё и из её подпапок импортируются в вашу библиотеку, как и карточки, добавленные туда позже. Чтобы получить путь к папке в Windows, щёлкните её правой кнопкой в Проводнике и выберите «Копировать как путь».
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/вы/Карточки
+       *[other] C:\Users\вы\Карточки
+    }
+card-folder-its-card-files-and =
+    Карточки из неё и из её подпапок импортируются в вашу библиотеку, как и карточки, добавленные туда позже. { $system ->
+        [linux] Чтобы получить путь к папке в Linux, откройте её в файловом менеджере и нажмите Ctrl+L: путь появится, его можно скопировать.
+       *[other] Чтобы получить путь к папке в Windows, щёлкните её правой кнопкой в Проводнике и выберите «Копировать как путь».
+    }
 card-folder-use = Использовать эту папку
 
 ## importing (library/importing.ts)

@@ -10,9 +10,9 @@
 // lets clicks through hangs on where the real cursor is (over the figure it takes them), so the check puts the
 // cursor in the screen's top left corner, away from the figure, and back where it was after (`away`).
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import { after, before, test } from "node:test";
-import { Desktop, until } from "./driver.ts";
+import { Desktop, ELEMENT, WINDOWS, until } from "./driver.ts";
+import { cursorAt, cursorOnWindow, windowStyle } from "./screen.ts";
 
 let app: Desktop;
 
@@ -20,15 +20,6 @@ before(async () => {
   app = await Desktop.start();
 });
 after(() => app?.close());
-
-/** Puts the screen's cursor at `x`, `y` and answers where it was. */
-function cursorAt(x: number, y: number): { x: number; y: number } {
-  const script = `Add-Type -AssemblyName System.Windows.Forms; $p = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${x}, ${y}); "$($p.X) $($p.Y)"`;
-  const asked = spawnSync("powershell", ["-NoProfile", "-Command", script], { encoding: "utf8" });
-  assert.equal(asked.status, 0, `the cursor was not moved: ${asked.stderr}`);
-  const [was, wasY] = asked.stdout.trim().split(" ").map(Number);
-  return { x: was!, y: wasY! };
-}
 
 /** Runs `check` with the cursor in the screen's top left corner, away from the figure, and puts it back after. */
 async function away<T>(check: () => Promise<T>): Promise<T> {
@@ -44,27 +35,14 @@ async function away<T>(check: () => Promise<T>): Promise<T> {
 function companionSwitch(): Promise<string> {
   return until("the switch ready", async () => {
     const toggle = await app.find('input[role="switch"][aria-label="Companion"]');
-    return (await app.run<boolean>("return !arguments[0].disabled", { "element-6066-11e4-a52e-4f735466cecf": toggle })) && toggle;
+    return (await app.run<boolean>("return !arguments[0].disabled", { [ELEMENT]: toggle })) && toggle;
   });
-}
-
-/** WS_EX_TOPMOST and WS_EX_TRANSPARENT of the window of this title: on top, and letting clicks through. */
-function windowStyle(title: string): { top: boolean; through: boolean } {
-  const script = `
-Add-Type -Namespace W -Name U -MemberDefinition '[DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern System.IntPtr FindWindow(string c, string t); [DllImport("user32.dll")] public static extern System.IntPtr GetWindowLongPtr(System.IntPtr h, int i);'
-$h = [W.U]::FindWindow([NullString]::Value, '${title}')
-if ($h -eq [System.IntPtr]::Zero) { exit 3 }
-[W.U]::GetWindowLongPtr($h, -20).ToInt64()`;
-  const asked = spawnSync("powershell", ["-NoProfile", "-Command", script], { encoding: "utf8" });
-  assert.equal(asked.status, 0, `no window “${title}”: ${asked.stderr}`);
-  const style = Number(asked.stdout.trim());
-  return { top: (style & 0x8) !== 0, through: (style & 0x20) !== 0 };
 }
 
 test("“Make companion” opens the companion on top of everything, whose compact chat opens in the app, and “Close companion” closes it", async () => {
   const [main] = await app.windows();
   // The window may still be loading the app's page, where a fetch has no address to go from.
-  await until("the app's page", async () => (await app.url()).startsWith("http"));
+  await app.appPage();
   const id = await app.run<number>(`return fetch("/api/cards/new", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: "Gwen", tags: [], creator: "", name: "Gwen", greetings: ["Hello."], description: "", personality: "", scenario: "", example_dialogue: "", creator_notes: "" }) }).then((made) => made.json()).then((made) => made.card_id)`);
   await app.go(`${new URL(await app.url()).origin}/#/library/${id}`);
   await app.click(await app.find('button[aria-label="Character menu"]'));
@@ -95,7 +73,7 @@ test("“Make companion” opens the companion on top of everything, whose compa
   await app.go(`${new URL(await app.url()).origin}/#/settings`);
   await app.findText("span", "Gwen · Starts with the app");
   const toggle = await app.find('input[role="switch"][aria-label="Companion"]');
-  const turned = (on: boolean) => until(`the switch ${on ? "on" : "off"}`, () => app.run<boolean>(`const t = arguments[0]; return !t.disabled && t.checked === arguments[1]`, { "element-6066-11e4-a52e-4f735466cecf": toggle }, on));
+  const turned = (on: boolean) => until(`the switch ${on ? "on" : "off"}`, () => app.run<boolean>(`const t = arguments[0]; return !t.disabled && t.checked === arguments[1]`, { [ELEMENT]: toggle }, on));
   await turned(true);
   await app.click(toggle);
   await turned(false);
@@ -114,11 +92,12 @@ test("at the smallest and largest size the figure is dragged, lands on the floor
   const companion = await until("the companion's window", async () => (await app.windows()).find((handle) => handle !== main));
   type Seen = { width: number; height: number; x: number; y: number; state: string; acted: number };
   const seen = () => app.run<Seen>(`return fetch("/api/companion/state").then((answer) => answer.json()).then((state) => state.figure)`);
+  // The walk at the smallest size takes most of 15 s in Xvfb's software drawing, past it under load: 30 s.
   const standing = (what: string, test: (figure: Seen) => boolean) =>
     until(what, async () => {
       const figure = await seen();
       return figure && figure.y === figure.height && ["idle", "listening"].includes(figure.state) && test(figure) && figure;
-    });
+    }, 30_000);
 
   for (const size of [10, 50]) {
     await app.switchTo(main!);
@@ -127,11 +106,23 @@ test("at the smallest and largest size the figure is dragged, lands on the floor
     assert.equal(await app.run<number>(set), 200);
     await app.switchTo(companion);
     const figure = await app.find("canvas.companion-figure");
-    await until(`the figure at ${size}%`, async () => Math.round(await app.run<number>("return arguments[0].getBoundingClientRect().height * 0.62 * 100 / innerHeight", { "element-6066-11e4-a52e-4f735466cecf": figure })) === size);
+    await until(`the figure at ${size}%`, async () => Math.round(await app.run<number>("return arguments[0].getBoundingClientRect().height * 0.62 * 100 / innerHeight", { [ELEMENT]: figure })) === size);
     const before = await standing(`the figure standing at ${size}%`, () => true);
 
-    await app.drag(figure, -150, -150);
-    const landed = await standing(`the figure landed after the drag at ${size}%`, (now) => now.x !== before.x);
+    // Linux: WebDriver's presses leave X's cursor where it is, and the window takes a press only where the cursor is
+    // on the figure, as a user's own is: the test puts it there and checks the window takes it. The drag itself is
+    // left to a real Linux computer: in Xvfb, WebKitWebDriver's pointer up never reaches the companion's window, not
+    // even a bare element in it, while it reaches one in the main window (probe of 152).
+    const middle = "const box = arguments[0].getBoundingClientRect(); return { x: box.left + box.width / 2, y: box.top + box.height / 2 }";
+    await until(`the figure taking the press at ${size}%`, async () => {
+      const at = await app.run<{ x: number; y: number }>(middle, { [ELEMENT]: figure });
+      return cursorOnWindow("Cardwave companion", at.x, at.y);
+    });
+    let landed = before;
+    if (WINDOWS) {
+      await app.drag(figure, -150, -150);
+      landed = await standing(`the figure landed after the drag at ${size}%`, (now) => now.x !== before.x);
+    } else cursorAt(0, 0);
 
     const x = Math.round(landed.x > landed.width / 2 ? landed.width / 3 : (landed.width * 2) / 3);
     const act = `return fetch("/api/companion/act", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ steps: [{ do: "walk", x: ${x} }] }) }).then((answer) => answer.status)`;

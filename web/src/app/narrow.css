@@ -29,6 +29,19 @@
   .main {
     padding: 0 var(--s16) var(--s24);
   }
+  /* A page head's buttons stay inside the window where their words are wider (German, or Linux's own font where
+     Geist and Segoe UI are missing): a button's label in .btn-label (dom.ts's headButton) is cut at its end (Claude). */
+  .pbar > :last-child,
+  .page-head > :last-child {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .pbar .btn-label,
+  .page-head .btn-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   /* A list's search as wide as the page (board NarrowLibrary). */
   .search-list {
     flex-basis: 100%;

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { cardFile } from "../card";
 
 // A chat's export from its own menu: the chat is saved as a file for SillyTavern, and goes on.
@@ -8,7 +8,6 @@ import { cardFile } from "../card";
 // One database for the file: every test makes a chat of its own, under a name no other has. `saved` does what
 // starts a download and reads the chat file's lines.
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const item = (page: Page, name: string) => page.getByRole("menuitem", { name, exact: true });
 const said = (page: Page) => page.locator("#toast span");
 

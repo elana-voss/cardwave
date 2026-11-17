@@ -129,8 +129,16 @@ add-character-start-chat = चैट शुरू करें
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = कार्ड का फ़ोल्डर बदलें
-card-folder-c-users-you-cards = C:\Users\aap\Cards
-card-folder-its-card-files-and = इसके और इसके सब-फ़ोल्डरों के कार्ड आपकी लाइब्रेरी में इंपोर्ट होते हैं, और बाद में इसमें रखे गए कार्ड भी। Windows में किसी फ़ोल्डर का पाथ पाने के लिए Explorer में उस पर राइट-क्लिक करके Copy as path चुनें।
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/aap/Cards
+       *[other] C:\Users\aap\Cards
+    }
+card-folder-its-card-files-and =
+    { $system ->
+        [linux] इसके और इसके सब-फ़ोल्डरों के कार्ड आपकी लाइब्रेरी में इंपोर्ट होते हैं, और बाद में इसमें रखे गए कार्ड भी। Linux में किसी फ़ोल्डर का पाथ पाने के लिए उसे अपने फ़ाइल मैनेजर में खोलें और Ctrl+L दबाएँ: पाथ कॉपी करने के लिए दिख जाता है।
+       *[other] इसके और इसके सब-फ़ोल्डरों के कार्ड आपकी लाइब्रेरी में इंपोर्ट होते हैं, और बाद में इसमें रखे गए कार्ड भी। Windows में किसी फ़ोल्डर का पाथ पाने के लिए Explorer में उस पर राइट-क्लिक करके Copy as path चुनें।
+    }
 card-folder-use = यह फ़ोल्डर इस्तेमाल करें
 
 ## importing (library/importing.ts)

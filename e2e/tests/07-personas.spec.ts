@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { cardFile } from "../card";
 
 // Personas: one made with "New persona", and the default one, which its row says and as which a new chat
@@ -8,7 +8,6 @@ import { cardFile } from "../card";
 // One database for the file. Every test starts without personas and makes its own.
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const item = (page: Page, name: string) => page.getByRole("menuitem", { name, exact: true });
 const toast = (page: Page) => page.locator("#toast");
 const names = (page: Page) => page.locator(".card-row .row-title");

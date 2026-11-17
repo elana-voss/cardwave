@@ -103,8 +103,7 @@ error-folder-not-chosen = Pilih folder dulu.
 error-drive-root-to-watch = Akar sebuah drive berisi terlalu banyak untuk dipantau; pilih folder di dalamnya.
 error-drive-root-for-model = Akar sebuah drive berisi terlalu banyak untuk diberikan ke AI; pilih folder di dalamnya.
 error-data-folder = Folder itu berisi data Cardwave sendiri, atau ada di dalamnya; pilih yang lain.
-error-commands-windows-only = Perintah hanya dijalankan di Windows.
-error-recycle-bin-windows-only = Berkas dipindahkan ke Keranjang Sampah hanya di Windows.
+error-commands-unsafe = Perintah tidak dapat dijalankan dengan aman di komputer ini: sistemnya tidak punya sandbox untuknya.
 error-files-tool-off = Nyalakan Berkas di Pengaturan › Lanjutan › Alat untuk AI dulu: tim membaca dan menulis folder tugas dengannya.
 
 ## Gambar, balasan, dan suara
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] Belum ada model gambar yang disiapkan: siapkan satu di Pengaturan › Model › Gambar.
     [no_local_model] Tidak ada model “{ $id }” di folder itu.
     [no_local_models] Model lokal belum disiapkan.
-    [no_recycle_bin] Tidak ada Keranjang Sampah untuk { $path }.
     [no_summary] Kartu belum punya ringkasan.
     [no_voice] Tidak ada suara seperti itu.
     [no_vulkan] Kartu grafis komputer ini tidak dapat menjalankan model. Pakai penyedia sebagai gantinya.
     [no_vulkan_dictation] Kartu grafis komputer ini tidak dapat menjalankan dikte.
     [prompt_change] Prompt karakter itu tidak dapat diubah di kartu ini.
     [recycle_bin_move] { $path } tidak dipindahkan ke Keranjang Sampah.
+    [trash_move] { $path } tidak dipindahkan ke Tempat Sampah komputer.
     [speaker_not_in_chat] Pembicara itu bukan bagian dari chat ini.
     [speaker_only_character] Hanya pesan karakter yang punya pembicara.
     [unknown_language] Itu bukan bahasa yang dikenal aplikasi ini.

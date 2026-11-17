@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, modelLine, test } from "../test";
+import { button, composer, expect, modelLine, test } from "../test";
 import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -31,8 +31,6 @@ const messages = (page: Page) => page.locator(".message");
 const texts = (page: Page) => page.locator(".message .text");
 const newest = (page: Page) => messages(page).last();
 const newestText = (page: Page) => newest(page).locator(".text");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
 /** Picks a line of a message's menu, "…", which shows while the message is pointed at. */
 async function pick(message: Locator, line: string): Promise<void> {

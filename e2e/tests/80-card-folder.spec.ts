@@ -25,7 +25,6 @@ const says = (page: Page, name: string) => line(page, name).locator(".item-text 
 const settings = async (page: Page) => (await (await page.request.get("/api/settings")).json()).card_folder;
 
 test("Settings › Data's cards folder is picked, stored and imported; its switches show once it is set", async ({ page }) => {
-  const { recycle_bin } = await (await page.request.get("/api/status")).json();
   await page.goto("/#/settings");
   // Without a folder: what it is for, and no switches.
   await expect(says(page, "Cards folder")).toHaveText("Card files in a folder and its subfolders, imported into your library");
@@ -42,7 +41,7 @@ test("Settings › Data's cards folder is picked, stored and imported; its switc
   expect((await settings(page)).folder).toBe(cards);
   expect((await (await page.request.get("/api/cards")).json()).length).toBe(2);
 
-  // The watch, on at first, is switched off and on; the Recycle Bin's switch, where there is one, is off.
+  // The watch, on at first, is switched off and on; the Recycle Bin's switch is off.
   const watch = page.getByRole("switch", { name: "Import new cards automatically" });
   await expect(watch).toBeChecked();
   await watch.click();
@@ -54,8 +53,7 @@ test("Settings › Data's cards folder is picked, stored and imported; its switc
   await expect(watch).toBeEnabled();
   expect((await settings(page)).watch).toBe(true);
   const recycle = page.getByRole("switch", { name: "Move imported files to the Recycle Bin" });
-  if (recycle_bin) await expect(recycle).not.toBeChecked();
-  else await expect(recycle).toBeHidden();
+  await expect(recycle).not.toBeChecked();
   expect((await settings(page)).recycle).toBe(false);
 
   // Changed: "Change" opens the dialog with the folder in it.

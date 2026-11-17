@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { pictureFile } from "../card";
 
 // Accounts, from Account › Server: the home network switched on there is reached by another device (in the
@@ -12,7 +12,6 @@ import { pictureFile } from "../card";
 
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const line = (page: Page, name: string) => page.locator(".item", { has: page.getByText(name, { exact: true }) });
 const dialog = (page: Page) => page.getByRole("dialog");
 const account = (page: Page) => page.locator("#rail").getByRole("button", { name: /^Account/ });

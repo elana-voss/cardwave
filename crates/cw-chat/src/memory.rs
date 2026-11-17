@@ -11,7 +11,7 @@
 //! its chat, number and `chain` (its messages and all before), so a changed block
 //! and every later one are let go and read again (`next_block`); a reply reads the
 //! state that holds on its branch and in the other chats still with the memory
-//! (`to_render`, `holding_all`; one moved to another persona holds as read),
+//! (`to_render`, `Blocks::holding_all`; one moved to another persona holds as read),
 //! without what chats in the Trash told it. Days are calendar days, day 1 the
 //! memory's first. Passes: `api/memory.rs`; Knowledge › Memories: `views.rs`;
 //! Search Cardwave's entries: `index`, `find.rs`. No persona is `USER_MARK`.
@@ -473,48 +473,68 @@ fn holding(blocks: &[Kept], reads: &[&ChatRead]) -> usize {
         .unwrap_or(blocks.len())
 }
 
-/// The chats of `blocks` but `but` that are still with the memory of `owner`,
-/// each read down to its head: a memory shared by chats holds a block only
-/// while its own chat still holds it. A chat now with another memory (another
-/// persona, a mode or personality that does not share it) changes this one no
-/// more, so its blocks hold as they were read.
-fn others(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    (blocks, owner): (&[Kept], &Owner),
-    but: Option<i64>,
-) -> anyhow::Result<Vec<ChatRead>> {
-    let mut ids: Vec<i64> = blocks
-        .iter()
-        .filter_map(|kept| kept.chat_id)
-        .filter(|id| Some(*id) != but)
-        .collect();
-    ids.sort_unstable();
-    ids.dedup();
-    let mut reads = Vec::new();
-    for id in ids {
-        let Some(chat) = chats::get(db, user, id)? else {
-            continue;
-        };
-        let now = crate::assistant::chat_remembering(db, user, &chat)?.owner(&chat);
-        if now.is_some_and(|(now, _)| now == *owner) {
-            reads.push(read_chat(db, user, &chat, None)?);
-        }
-    }
-    Ok(reads)
+/// A memory's kept blocks with its owner: what tells which of them hold.
+pub(super) struct Blocks<'a> {
+    pub kept: Vec<Kept>,
+    owner: &'a Owner,
 }
 
-/// How many of `blocks`, the memory of `owner`'s, hold for `read` and the
-/// other chats they are of.
-fn holding_all(
-    db: &dyn crate::chats::Storage,
-    user: i64,
-    (blocks, owner): (&[Kept], &Owner),
-    read: Option<&ChatRead>,
-) -> anyhow::Result<usize> {
-    let others = others(db, user, (blocks, owner), read.map(|read| read.chat_id))?;
-    let reads: Vec<&ChatRead> = read.into_iter().chain(&others).collect();
-    Ok(holding(blocks, &reads))
+impl<'a> Blocks<'a> {
+    /// The blocks of the memory `store`, of `owner`.
+    pub fn of(
+        db: &dyn crate::chats::Storage,
+        store: i64,
+        owner: &'a Owner,
+    ) -> anyhow::Result<Self> {
+        Ok(Self {
+            kept: db.memory_blocks(store)?,
+            owner,
+        })
+    }
+
+    /// The chats of the blocks but `but` that are still with this memory, each
+    /// read down to its head: a memory shared by chats holds a block only
+    /// while its own chat still holds it. A chat now with another memory (another
+    /// persona, a mode or personality that does not share it) changes this one no
+    /// more, so its blocks hold as they were read.
+    fn others(
+        &self,
+        db: &dyn crate::chats::Storage,
+        user: i64,
+        but: Option<i64>,
+    ) -> anyhow::Result<Vec<ChatRead>> {
+        let mut ids: Vec<i64> = self
+            .kept
+            .iter()
+            .filter_map(|kept| kept.chat_id)
+            .filter(|id| Some(*id) != but)
+            .collect();
+        ids.sort_unstable();
+        ids.dedup();
+        let mut reads = Vec::new();
+        for id in ids {
+            let Some(chat) = chats::get(db, user, id)? else {
+                continue;
+            };
+            let now = crate::assistant::chat_remembering(db, user, &chat)?.owner(&chat);
+            if now.is_some_and(|(now, _)| now == *self.owner) {
+                reads.push(read_chat(db, user, &chat, None)?);
+            }
+        }
+        Ok(reads)
+    }
+
+    /// How many of the blocks hold for `read` and the other chats they are of.
+    pub fn holding_all(
+        &self,
+        db: &dyn crate::chats::Storage,
+        user: i64,
+        read: Option<&ChatRead>,
+    ) -> anyhow::Result<usize> {
+        let others = self.others(db, user, read.map(|read| read.chat_id))?;
+        let reads: Vec<&ChatRead> = read.into_iter().chain(&others).collect();
+        Ok(holding(&self.kept, &reads))
+    }
 }
 
 /// The next block a pass reads of the chat, into the memory of `owner`.
@@ -543,8 +563,9 @@ pub fn next_block(
     let Some((store, day_one)) = db.memory_store(owner, !read.chains.is_empty())? else {
         return Ok(None);
     };
-    let mut blocks = db.memory_blocks(store)?;
-    let holds = holding_all(db, user, (&blocks, owner), Some(&read))?;
+    let mut memory = Blocks::of(db, store, owner)?;
+    let holds = memory.holding_all(db, user, Some(&read))?;
+    let blocks = &mut memory.kept;
     let mut again = Vec::new();
     if holds < blocks.len() {
         db.forget_memory_blocks(store, blocks[holds].id)?;
@@ -679,8 +700,9 @@ pub fn to_render(
     let Some((store, day_one)) = db.memory_store(owner, false)? else {
         return Ok(None);
     };
-    let blocks = db.memory_blocks(store)?;
-    let holds = holding_all(db, user, (&blocks, owner), Some(read))?;
+    let memory = Blocks::of(db, store, owner)?;
+    let holds = memory.holding_all(db, user, Some(read))?;
+    let blocks = &memory.kept;
     let (Some(kept), Some((newest, ms))) =
         (holds.checked_sub(1).map(|at| &blocks[at]), read.said.last())
     else {

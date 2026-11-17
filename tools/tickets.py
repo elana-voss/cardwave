@@ -4,11 +4,13 @@ A ticket is a file `YYYY-MM-DD-<slug>.md` (its id: the name without `.md`), a fr
 (a list is `[a, b]`; a line starting with `#` is a comment) and a body of `##` sections; docs/tickets/TEMPLATE.md holds the
 fields and what each may hold. `index` writes INDEX.md (generated, never edited by hand); `check` fails on a missing or
 unknown field, a value outside its list, a parent or waits-on that names no ticket, a parent Done with an open child, a
-priority missing or not Critical, High, Medium or Low (closed tickets too), and a stale INDEX.md. Standard library only; the front matter is parsed by hand.
+priority missing or not Critical, High, Medium or Low (closed tickets too), a sixth milestone started past the last audit
+(kind audit) or one started past an audit not yet Done (`audit_due`), and a stale INDEX.md. Standard library only; the front matter is parsed by hand.
 Trap: a title is one line and may hold colons (only the first ": " of a line splits), but no newline; one starting
 with "-" (`new --help`) is refused with the usage, as no ticket is meant by it.
 """
 
+import datetime
 import re
 import sys
 from datetime import date
@@ -16,7 +18,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent / "docs" / "tickets"
 FIELDS = ["title", "kind", "status", "priority", "assignee", "number", "parent", "waits_on", "estimate", "actual", "cost", "commits", "design", "updated"]
-KINDS = ["milestone", "backlog", "defect", "question"]
+KINDS = ["milestone", "backlog", "defect", "question", "audit"]
 STATUSES = ["In progress", "Blocked", "Planned", "To do", "Done", "Won't do"]  # the open ones in index order, then the closed
 PRIORITIES = ["Critical", "High", "Medium", "Low"]
 ASSIGNEES = ["Claude", "Claude Design", "owner"]  # who works the ticket
@@ -109,8 +111,43 @@ def problems(tickets, index=None):
             for kid in kids:
                 if tickets[kid]["fields"].get("status") not in CLOSED:
                     found.append(f"{parent}: Done, but its child {kid} is {tickets[kid]['fields'].get('status')}")
+    found += audit_due(tickets)
     if index is not None and index != index_text(tickets):
         found.append("INDEX.md is stale: python tools/tickets.py index")
+    return found
+
+
+def audit_due(tickets):
+    """The audit by Fable comes after every fifth milestone: an audit ticket's waits_on names the last milestone it
+    covers; a milestone (a whole number; a part numbered so, as 151 of 151-157, counts as one) is started when it or a
+    part of it is In progress or Done. Fails on a sixth started past the last audit, and on one started past an audit
+    not yet Done."""
+    def num(id):
+        f = tickets[id]["fields"]
+        ok = f.get("kind") == "milestone" and re.fullmatch(r"\d+", f.get("number", ""))
+        return int(f["number"]) if ok else None
+    started = {id if num(id) is not None else tickets[id]["fields"].get("parent") or id
+               for id, t in tickets.items() if t["fields"].get("status") in ("In progress", "Done")}
+    started = {n: id for id in started if id in tickets and (n := num(id)) is not None}
+    found, covered = [], 0
+    for id, t in tickets.items():
+        f = t["fields"]
+        if f.get("kind") != "milestone" and not f.get("parent") and re.fullmatch(r"\d+", f.get("number", "")):
+            found.append(f"{id}: a whole number on its own is a milestone's; kind milestone, else no number")
+    for id, t in tickets.items():
+        if t["fields"].get("kind") != "audit":
+            continue
+        last = [n for w in items(t["fields"].get("waits_on", "")) if w in tickets and (n := num(w)) is not None]
+        if not last:
+            found.append(f"{id}: an audit's waits_on names the last milestone it covers")
+            continue
+        covered = max(covered, max(last))
+        if t["fields"].get("status") != "Done":
+            found += [f"{started[n]}: started before the audit {id} is Done" for n in sorted(started) if n > max(last)]
+    past = sorted(n for n in started if n > covered)
+    if len(past) > 5:
+        found.append(f"{started[past[-1]]}: {len(past)} milestones started since the last audit; an audit ticket comes first "
+                     f"(kind audit, waits_on [{started[past[4]]}])")
     return found
 
 
@@ -206,6 +243,13 @@ def main(argv):
         index = HERE / "INDEX.md"
         found = problems(load(), index.read_text(encoding="utf-8") if index.exists() else "")
         print("\n".join(found) if found else f"tickets: {len(load())} tickets, no problem")
+        return 1 if found else 0
+    elif cmd == "trials":
+        report = closed_report(load(), agent_rows())
+        if report:
+            print(report)
+        found = trials(load(), PLAN.read_text(encoding="utf-8"), replies_words())
+        print("\n".join(found) if found else "trials: no problem")
         return 1 if found else 0
     else:
         print(__doc__)

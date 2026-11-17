@@ -3,6 +3,7 @@ in three skeletons: `mannequin.vrm` (VRoid's bone names, made a VRM 1.0 by its `
 `mixamo.glb` and `mixamo.fbx` (Mixamo's names, no VRM) and `odd.glb` (a tail of bones no human skeleton has, which is refused).
 
 Run once, with Blender 5.2: blender -b --python tools/test-figures.py
+Blender runs headless only (`-b`), and every output path is absolute.
 """
 
 import json

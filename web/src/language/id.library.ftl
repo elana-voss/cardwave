@@ -129,8 +129,16 @@ add-character-start-chat = Mulai chat
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Ganti folder kartu
-card-folder-c-users-you-cards = C:\Users\kamu\Kartu
-card-folder-its-card-files-and = Kartu di dalamnya, dan di subfoldernya, diimpor ke perpustakaanmu, begitu juga kartu yang kamu taruh di sana nanti. Untuk mendapatkan path folder di Windows, klik kanan folder itu di Explorer lalu pilih Copy as path.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/kamu/Kartu
+       *[other] C:\Users\kamu\Kartu
+    }
+card-folder-its-card-files-and =
+    Kartu di dalamnya, dan di subfoldernya, diimpor ke perpustakaanmu, begitu juga kartu yang kamu taruh di sana nanti. { $system ->
+        [linux] Untuk mendapatkan path folder di Linux, buka folder itu di pengelola berkasmu lalu tekan Ctrl+L: path-nya muncul, siap disalin.
+       *[other] Untuk mendapatkan path folder di Windows, klik kanan folder itu di Explorer lalu pilih Copy as path.
+    }
 card-folder-use = Pakai folder ini
 
 ## importing (library/importing.ts)

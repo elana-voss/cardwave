@@ -9,7 +9,11 @@ coding-open-task = Buka tugas coding
 coding-undo-all = Batalkan semua
 coding-put-the-folder-back = Kembalikan folder seperti sebelum tugas?
 coding-add-an-export-of = Tambahkan ekspor chat sebagai Markdown, beserta tesnya.
-coding-c-users-you-projects = C:\Users\kamu\Proyek\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/kamu/Proyek/app
+       *[other] C:\Users\kamu\Proyek\app
+    }
 coding-start-a-coding-task = Mulai tugas pemrograman
 coding-start = Mulai
 coding-goal = Tujuan
@@ -48,7 +52,7 @@ composer-replies = { $name } membalas
 
 dictate-dictate = Dikte
 mic-none = Mikrofon tidak ditemukan: colokkan satu, lalu coba lagi.
-mic-not-allowed-desktop = Cardwave tidak boleh memakai mikrofon: izinkan di pengaturan privasi Windows, di bagian Mikrofon.
+mic-not-allowed-desktop = Cardwave tidak boleh memakai mikrofon: izinkan di pengaturan privasi komputermu, di bagian Mikrofon.
 mic-not-allowed-browser = Halaman ini tidak boleh memakai mikrofon: izinkan di pengaturan browser untuk situs ini.
 mic-not-started = Mikrofon tidak bisa dinyalakan: tutup program lain yang memakainya, lalu coba lagi.
 mic-not-offered = Browser tidak menyediakan mikrofon di alamat ini: pakai mikrofon di komputer tempat Cardwave berjalan.
@@ -422,7 +426,7 @@ voice-setup-hello-im-this-is = Halo, aku { $name }. Beginilah pesanmu terdengar 
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = Suaranya berhenti merespons. Coba lagi, atau pilih suara lain di Pengaturan › Suara.
-voice-this-window-cannot-play = Jendela ini tidak bisa memutar suara: { $reason }. Periksa keluaran suara di Windows.
+voice-this-window-cannot-play = Jendela ini tidak bisa memutar suara: { $reason }. Periksa keluaran suara perangkat ini.
 
 ## Written by hand: plurals, conditions and numbers
 

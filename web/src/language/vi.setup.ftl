@@ -7,7 +7,11 @@ setup-use-this = Dùng cái này
 setup-choose-folder = Chọn thư mục
 setup-this-computer = Máy tính này
 setup-this-computer-about = Các tệp mô hình AI (.gguf) bạn đã tải về, do Cardwave chạy
-setup-models-example = C:\Users\ban\Models
+setup-models-example =
+    { $system ->
+        [linux] /home/ban/Models
+       *[other] C:\Users\ban\Models
+    }
 setup-models-says = Mỗi tệp mô hình trong đó (.gguf) là một mô hình chat mà Cardwave chạy trên máy này. Chưa có tệp mô hình nào? Hãy chọn một thư mục trống: Cài đặt › Nhà cung cấp › Máy tính này sẽ gợi ý các mô hình hợp với máy này và tải chúng vào đó.
 setup-not-this = Không phải cái này?
 setup-recognised = Đã nhận ra:{ " " }

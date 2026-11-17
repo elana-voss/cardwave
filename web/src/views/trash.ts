@@ -26,7 +26,7 @@ import {
   getTrash,
 } from "../api/client";
 import type { TrashItem } from "../api/generated/TrashItem";
-import { announce, crumbs, el, noticeBox, oneAtATime, type View } from "../dom";
+import { announce, crumbs, el, headButton, noticeBox, oneAtATime, type View } from "../dom";
 import { chatTitle } from "../chat-title";
 import { askFirst } from "../dialogs";
 import { DAY_MS, comma, daysLeft, moment } from "../format";
@@ -41,13 +41,14 @@ import { cardTitle } from "../card-title";
  * Enter does no harm.
  */
 function irreversible(place: HTMLElement, before: HTMLElement[], label: string, question: string, yes: string, action: () => void): void {
-  const ask = el("button", { type: "button", className: "btn btn-danger btn-fit" }, label);
-  const offer = () => place.replaceChildren(...before, ask);
-  ask.onclick = () =>
+  // The page head's button (Empty Trash), whose words a narrow window cuts; a row's never are.
+  const ask = headButton(label, "btn btn-danger btn-fit", () =>
     askFirst(place, question, yes, action, () => {
       offer();
       ask.focus();
-    });
+    }),
+  );
+  const offer = () => place.replaceChildren(...before, ask);
   offer();
 }
 

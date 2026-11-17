@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
-import { chooseView, expect, test, viewLine } from "../test";
+import { button, chooseView, expect, test, viewLine } from "../test";
 import { cardFile, ccv4File, readCard, type CardParts } from "../card";
 
 // The library's three views (list, Gallery and Discovery, chosen in the view menu), a card's export from its row, with the texts'
@@ -11,7 +11,6 @@ import { cardFile, ccv4File, readCard, type CardParts } from "../card";
 // there, past the page.
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const item = (page: Page, name: string) => page.getByRole("menuitem", { name, exact: true });
 const search = (page: Page) => page.getByLabel("Search characters");
 const row = (page: Page, title: string) => page.locator(".card-row", { hasText: title });

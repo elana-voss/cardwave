@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { Download, Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider } from "../stored";
 
@@ -43,7 +43,6 @@ test.beforeAll(async ({ request }) => {
 });
 test.afterAll(() => api.close());
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const item = (page: Page, name: string) => page.getByRole("menuitem", { name, exact: true });
 const rail = (page: Page, name: string) => page.locator("#rail").getByRole("link", { name, exact: true });
 const texts = (page: Page) => page.locator(".message .text");

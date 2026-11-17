@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, linesOf, pickFrom, test } from "../test";
+import { button, composer, expect, linesOf, pickFrom, test } from "../test";
 import { cardFile, ccv4File } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -80,10 +80,7 @@ test.beforeAll(async ({ request }) => {
 });
 test.afterAll(() => provider.close());
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-
 const messages = (page: Page) => page.locator(".message");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const panel = (page: Page) => page.getByRole("complementary", { name: "Chat details" });
 const persona = (page: Page) => panel(page).getByLabel("Persona", { exact: true });
 const lorebook = (page: Page, name: string) => panel(page).getByRole("switch", { name, exact: true });

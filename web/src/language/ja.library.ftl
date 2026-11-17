@@ -131,8 +131,16 @@ add-character-start-chat = チャットを始める
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = カードのフォルダーを変更
-card-folder-c-users-you-cards = C:\Users\you\Cards
-card-folder-its-card-files-and = このフォルダーとサブフォルダーのカードはライブラリーにインポートされます。あとから入れたカードも同じです。Windows でフォルダーのパスを得るには、エクスプローラーで右クリックして「パスのコピー」を選びます。
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/you/Cards
+       *[other] C:\Users\you\Cards
+    }
+card-folder-its-card-files-and =
+    このフォルダーとサブフォルダーのカードはライブラリーにインポートされます。あとから入れたカードも同じです。{ $system ->
+        [linux] Linux でフォルダーのパスを得るには、ファイルマネージャーでフォルダーを開いて Ctrl+L を押します。パスが表示され、コピーできます。
+       *[other] Windows でフォルダーのパスを得るには、エクスプローラーで右クリックして「パスのコピー」を選びます。
+    }
 card-folder-use = このフォルダーを使う
 
 ## importing (library/importing.ts)

@@ -240,8 +240,16 @@ backup-about-chosen = Chat, karakter, dan pengaturan dalam satu berkas, dienkrip
 
 folder-watch = Impor kartu baru secara otomatis
 folder-watch-about = Berkas kartu yang ditaruh di folder masuk ke pustakamu dengan sendirinya
-folder-recycle = Pindahkan berkas yang diimpor ke Keranjang Sampah
-folder-recycle-about = Setelah file diimpor, file masuk ke Recycle Bin
+folder-recycle =
+    Pindahkan berkas yang diimpor ke { $system ->
+        [linux] Tempat Sampah komputer
+       *[other] Keranjang Sampah
+    }
+folder-recycle-about =
+    Setelah file diimpor, file masuk ke { $system ->
+        [linux] Tempat Sampah komputer
+       *[other] Recycle Bin
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -383,7 +391,11 @@ tools-pictures = Memakai model gambar
 tools-pictures-first = Siapkan model gambar dulu
 tools-app = Pakai dan ubah karakter, chat, dan pengaturanmu; setiap perubahan ditanyakan dulu
 tools-dice = Membiarkan AI melempar dadu; Cardwave yang melemparnya, jadi hasilnya adil.
-tools-folder-example = C:\Users\kamu\Documents\Berbagi
+tools-folder-example =
+    { $system ->
+        [linux] /home/kamu/Documents/Berbagi
+       *[other] C:\Users\kamu\Documents\Berbagi
+    }
 tools-folder-says = Berkas dan perintah menjangkau folder ini beserta isinya, dan tidak lebih.
 tools-change-folder = Ganti folder
 tools-change = Ganti

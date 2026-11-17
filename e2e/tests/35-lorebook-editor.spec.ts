@@ -1,6 +1,6 @@
 import type { APIRequestContext, Locator, Page, Request } from "@playwright/test";
 import { ccv4File } from "../card";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 
 // A lorebook's editor, one screen for a lorebook of the library and a card's own: an entry's parts are saved as
 // they are left, with no Save (its name written where it stands, Content a text block with its versions); a new
@@ -98,7 +98,6 @@ async function show(page: Page, name: string): Promise<void> {
   await line(page, name).getByRole("link").click();
   await expect(title(page)).toHaveText(name);
 }
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const field = (page: Page, name: string) => page.locator(".entry-form").getByLabel(name, { exact: true });
 const used = (page: Page) => page.getByRole("group", { name: "Used when" });
 const pressed = (group: Locator) => group.locator('button[aria-pressed="true"]');

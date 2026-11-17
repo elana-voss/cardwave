@@ -238,8 +238,16 @@ backup-about-chosen = Chats, personajes y ajustes en un solo archivo, cifrado co
 
 folder-watch = Importar tarjetas nuevas automáticamente
 folder-watch-about = Una tarjeta puesta en la carpeta entra sola en tu biblioteca
-folder-recycle = Mover los archivos importados a la Papelera de reciclaje
-folder-recycle-about = Cuando un archivo se importa, va a la Papelera de reciclaje
+folder-recycle =
+    Mover los archivos importados a la Papelera { $system ->
+        [linux] del ordenador
+       *[other] de reciclaje
+    }
+folder-recycle-about =
+    Cuando un archivo se importa, va a la Papelera { $system ->
+        [linux] del ordenador
+       *[other] de reciclaje
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -391,7 +399,11 @@ tools-pictures = Usa el modelo de imágenes
 tools-pictures-first = Configura primero el modelo de imágenes
 tools-app = Usar y cambiar tus personajes, chats y ajustes; cada cambio se pregunta antes
 tools-dice = Deja que la IA tire dados; Cardwave los tira, así el resultado es justo.
-tools-folder-example = C:\Users\tu-usuario\Documents\Compartido
+tools-folder-example =
+    { $system ->
+        [linux] /home/tu-usuario/Documents/Compartido
+       *[other] C:\Users\tu-usuario\Documents\Compartido
+    }
 tools-folder-says = Los archivos y comandos llegan a esta carpeta y a lo que contiene, y a nada más.
 tools-change-folder = Cambiar de carpeta
 tools-change = Cambiar

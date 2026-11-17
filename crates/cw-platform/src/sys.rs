@@ -1,12 +1,18 @@
-//! The one wrapper of `windows-sys` for the server (global layer rule;
-//! `tools/check.sh` holds it, the tools' sandbox `tools/sandbox.rs` apart):
-//! the job object that ends `llama-server` with the server ([`Job`]), the
-//! flag that keeps its console window shut ([`NO_WINDOW`]), and this
-//! computer's memory ([`memory`]), read elsewhere from `/proc/meminfo`, and
-//! whether Vulkan's loader is there ([`has_vulkan`]), which the server's
-//! programs load at its first call (the `/DELAYLOAD` of `.cargo/config.toml`),
-//! and a file moved to the Recycle Bin ([`recycle`]), Windows' alone.
+//! The one wrapper of `windows-sys`, `libc` and `trash` for the server
+//! (global layer rule; `tools/check.sh` holds it, the tools' sandbox
+//! `tools/sandbox.rs` apart): a process ended with the server's (on Windows
+//! the job object [`Job`], on Linux [`end_with_this`]'s parent-death signal),
+//! the flag that keeps its console window shut ([`NO_WINDOW`]), this
+//! computer's memory ([`memory`]), whether Vulkan's loader is there
+//! ([`has_vulkan`]; on Windows the server's programs load it at its first
+//! call, the `/DELAYLOAD` of `.cargo/config.toml`), and a file moved to the
+//! Recycle Bin or freedesktop.org's Trash ([`recycle`]).
+//! Trap: Linux sends the parent-death signal when the *thread* that started
+//! the process ends, so a process is started from a thread that lives as long
+//! as it is wanted (a tokio runtime's worker, never `spawn_blocking`'s).
 
+#[cfg(target_os = "linux")]
+pub use linux::end_with_this;
 #[cfg(windows)]
 pub use windows::{Job, NO_WINDOW};
 
@@ -33,32 +39,23 @@ pub fn has_vulkan() -> bool {
     {
         windows::has_vulkan()
     }
-    #[cfg(not(windows))]
+    #[cfg(target_os = "linux")]
     {
-        true
+        linux::has_vulkan()
     }
 }
 
-/// Whether files can be moved to the Recycle Bin here ([`recycle`]).
-pub const RECYCLE_BIN: bool = cfg!(windows);
-
-/// Moves the file at `path` to the Recycle Bin. On a drive
-/// without one, Windows asks before it deletes the file for good.
+/// Moves the file at `path` to the Recycle Bin (Windows) or the Trash
+/// (freedesktop.org's, Linux). On a drive without one, Windows asks before it
+/// deletes the file for good.
 pub fn recycle(path: &std::path::Path) -> anyhow::Result<()> {
     #[cfg(windows)]
     {
         windows::recycle(path)
     }
-    #[cfg(not(windows))]
+    #[cfg(target_os = "linux")]
     {
-        anyhow::bail!(
-            cw_core::Fail::said(
-                cw_core::Code::NotPossible,
-                format!("there is no Recycle Bin for {}", path.display())
-            )
-            .with("what", "no_recycle_bin")
-            .with("path", (path.display()).to_string())
-        )
+        linux::recycle(path)
     }
 }
 
@@ -171,5 +168,154 @@ mod windows {
             .with("failure", failure.to_string())
         );
         Ok(())
+    }
+}
+
+#[cfg(target_os = "linux")]
+mod linux {
+    use std::ffi::CStr;
+
+    /// Makes the process `command` starts end when this one ends, however it
+    /// ends: the kernel sends it SIGKILL when the thread starting it ends
+    /// (the module's trap). A process started after this one ended is ended
+    /// at once.
+    pub fn end_with_this(command: &mut tokio::process::Command) {
+        // SAFETY: `getpid` cannot fail.
+        let parent = unsafe { libc::getpid() };
+        // SAFETY: the closure runs in the child between fork and exec and
+        // calls only `prctl` and `getppid`, both safe to call there; it
+        // allocates nothing.
+        unsafe {
+            command.pre_exec(move || {
+                if libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                if libc::getppid() != parent {
+                    return Err(std::io::Error::from_raw_os_error(libc::ESRCH));
+                }
+                Ok(())
+            });
+        }
+    }
+
+    pub fn has_vulkan() -> bool {
+        const NAME: &CStr = c"libvulkan.so.1";
+        // SAFETY: a NUL-ended name. The library stays loaded, as the
+        // programs that use it load it anyway.
+        !unsafe { libc::dlopen(NAME.as_ptr(), libc::RTLD_NOW | libc::RTLD_LOCAL) }.is_null()
+    }
+
+    pub fn recycle(path: &std::path::Path) -> anyhow::Result<()> {
+        trash::delete(path).map_err(|failure| {
+            anyhow::anyhow!(
+                cw_core::Fail::said(
+                    cw_core::Code::NotPossible,
+                    format!("{} was not moved to the Trash ({failure})", path.display())
+                )
+                .with("what", "trash_move")
+                .with("path", (path.display()).to_string())
+                .with("failure", failure.to_string())
+            )
+        })
+    }
+}
+
+#[cfg(all(test, target_os = "linux"))]
+mod tests {
+    //! Each test that needs a process of its own (the parent that ends, a
+    //! Trash of its own by `XDG_DATA_HOME`) runs this test program again for
+    //! itself alone, with `CW_PLATFORM_ROLE` set.
+    use std::path::Path;
+    use std::process::Command;
+
+    const ROLE: &str = "CW_PLATFORM_ROLE";
+
+    /// Runs the test `name` of this module in a new process with `env`; its output.
+    fn again(name: &str, env: &[(&str, &Path)]) -> String {
+        let mut command = Command::new(std::env::current_exe().unwrap());
+        command.args(["--exact", &format!("sys::tests::{name}"), "--nocapture"]);
+        command.env(ROLE, name).envs(env.iter().copied());
+        let out = command.output().unwrap();
+        let text = String::from_utf8_lossy(&out.stdout).into_owned();
+        assert!(
+            out.status.success(),
+            "{text}{}",
+            String::from_utf8_lossy(&out.stderr)
+        );
+        text
+    }
+
+    fn scratch(name: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!("cw-platform-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir); // none there is as good
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    #[test]
+    fn a_process_ends_with_the_one_that_started_it() {
+        if std::env::var_os(ROLE).is_some() {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            let child = runtime.block_on(async {
+                let mut command = tokio::process::Command::new("sleep");
+                command.arg("600");
+                super::end_with_this(&mut command);
+                command.spawn().unwrap()
+            });
+            println!("child {}", child.id().unwrap());
+            std::process::exit(0);
+        }
+        let out = again("a_process_ends_with_the_one_that_started_it", &[]);
+        let pid: u32 = out
+            .lines()
+            .find_map(|line| line.strip_prefix("child "))
+            .unwrap()
+            .parse()
+            .unwrap();
+        let stat = format!("/proc/{pid}/stat");
+        let ended = (0..100).any(|_| {
+            // Gone, or a zombie its new parent has not yet taken.
+            let gone = std::fs::read_to_string(&stat).map_or(true, |s| s.contains(") Z "));
+            if !gone {
+                std::thread::sleep(std::time::Duration::from_millis(50));
+            }
+            gone
+        });
+        if !ended {
+            let _ = Command::new("kill").arg(pid.to_string()).status(); // the test fails anyway
+        }
+        assert!(ended, "sleep {pid} lives on");
+    }
+
+    #[test]
+    fn has_vulkan_answers_by_the_loader() {
+        let loader = ["/usr/lib/x86_64-linux-gnu", "/usr/lib64", "/usr/lib"]
+            .iter()
+            .any(|dir| Path::new(dir).join("libvulkan.so.1").exists());
+        // One way only: the loader may also be found elsewhere (LD_LIBRARY_PATH, the Vulkan SDK).
+        assert!(!loader || super::has_vulkan());
+    }
+
+    #[test]
+    fn a_file_goes_to_the_trash() {
+        if let Some(data) =
+            std::env::var_os("XDG_DATA_HOME").filter(|_| std::env::var_os(ROLE).is_some())
+        {
+            let file = Path::new(&data).with_file_name("card.png");
+            std::fs::write(&file, b"png").unwrap();
+            super::recycle(&file).unwrap();
+            assert!(!file.exists());
+            return;
+        }
+        let dir = scratch("trash");
+        let data = dir.join("data");
+        again("a_file_goes_to_the_trash", &[("XDG_DATA_HOME", &data)]);
+        let kept = data.join("Trash/files/card.png");
+        assert_eq!(std::fs::read(&kept).unwrap(), b"png");
+        assert!(data.join("Trash/info/card.png.trashinfo").exists());
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }

@@ -11,7 +11,11 @@ coding-open-task = Abrir tarefa de programação
 coding-undo-all = Desfazer tudo
 coding-put-the-folder-back = Deixar a pasta como estava antes da tarefa?
 coding-add-an-export-of = Adicionar uma exportação de chats em Markdown, com um teste.
-coding-c-users-you-projects = C:\Users\você\Projetos\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/você/Projetos/app
+       *[other] C:\Users\você\Projetos\app
+    }
 coding-start-a-coding-task = Iniciar uma tarefa de programação
 coding-start = Iniciar
 coding-goal = Objetivo
@@ -50,7 +54,7 @@ composer-replies = { $name } responde
 
 dictate-dictate = Ditar
 mic-none = Nenhum microfone foi encontrado: conecte um e tente de novo.
-mic-not-allowed-desktop = O Cardwave não tem permissão para usar o microfone: permita nas configurações de privacidade do Windows, em Microfone.
+mic-not-allowed-desktop = O Cardwave não tem permissão para usar o microfone: permita nas configurações de privacidade do seu computador, em Microfone.
 mic-not-allowed-browser = Esta página não tem permissão para usar o microfone: permita nas configurações do navegador para este site.
 mic-not-started = Não foi possível iniciar o microfone: feche outros programas que o estejam usando e tente de novo.
 mic-not-offered = O navegador não oferece microfone neste endereço: use um no computador em que o Cardwave roda.
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = Olá, aqui é { $name }. É assim que suas mensag
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = A voz parou de responder. Tente de novo ou escolha outra voz em Configurações › Vozes.
-voice-this-window-cannot-play = Esta janela não consegue tocar som: { $reason }. Verifique a saída de som no Windows.
+voice-this-window-cannot-play = Esta janela não consegue tocar som: { $reason }. Verifique a saída de som deste dispositivo.
 
 ## Written by hand: plurals, conditions and numbers
 

@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, test } from "../test";
+import { button, expect, say, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider } from "../stored";
 
@@ -16,8 +16,6 @@ test.describe.configure({ mode: "serial" });
 let api: FakeProvider;
 let mira = 0;
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const panel = (page: Page) => page.getByRole("complementary", { name: "Chat details" });
 const entryField = (page: Page, name: string) => page.locator(".entry-form").getByLabel(name, { exact: true });
 const content = (page: Page) => page.getByRole("region", { name: "Content" }).locator(".tb-body");
@@ -39,15 +37,6 @@ async function setContent(page: Page, words: string): Promise<void> {
   await page.getByRole("textbox", { name: "Content" }).fill(words);
   await page.getByRole("textbox", { name: "Content" }).press("Escape");
   await expect(content(page)).toHaveText(words);
-}
-
-/** Sends `text` and waits for the reply to it. */
-async function say(page: Page, text: string): Promise<void> {
-  const before = await page.locator("article.message").count();
-  await composer(page).fill(text);
-  await composer(page).press("Enter");
-  await expect(page.locator("article.message")).toHaveCount(before + 2);
-  await expect(button(page, "Write again")).toBeEnabled();
 }
 
 test.beforeAll(async ({ request }) => {

@@ -345,6 +345,25 @@ test("where there are other accounts, the account's menu has them to switch to u
   expect(account(rail()).querySelector(".initial img")!.getAttribute("src")).toBe("/api/account/picture?at=1");
 });
 
+test("the account's menu open when the accounts are told again stays open, with them", () => {
+  make();
+  told({ name: "Ada", local: false, picture: null });
+  const accounts: AccountLine[] = [
+    { id: 1, name: "Wren", local: true, current: false, password: false },
+    { id: 2, name: "Ada", local: false, current: true, password: true },
+  ];
+  toldAccounts(accounts);
+  for (const within of [rail(), bar()]) {
+    account(within).click();
+    // A second reading of the accounts, such as a screen's, made the menu anew closed under the pointer.
+    toldAccounts(accounts);
+    const list = account(within).parentElement!.querySelector<HTMLElement>('[role="menu"]')!;
+    expect(list.hidden).toBe(false);
+    expect([...list.querySelectorAll<HTMLElement>("button")].map((line) => line.textContent)).toContain("Wren");
+    account(within).click();
+  }
+});
+
 test("on another device the account's menu ends with Sign out, a lone account's too", () => {
   setElsewhere(true);
   try {

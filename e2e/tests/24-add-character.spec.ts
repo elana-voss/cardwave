@@ -1,5 +1,5 @@
 import type { APIRequestContext, Locator, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, composer, expect, test } from "../test";
 import { ccv4File } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
@@ -98,9 +98,7 @@ test.beforeAll(async ({ request }) => {
 });
 test.afterAll(() => provider.close());
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const messages = (page: Page) => page.locator(".message");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const toast = (page: Page) => page.locator("#toast");
 /** What the notice at the window's foot says, without its button. */
 const said = (page: Page) => toast(page).locator("span");

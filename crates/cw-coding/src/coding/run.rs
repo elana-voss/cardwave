@@ -50,9 +50,16 @@ const DIFF_LIMIT: usize = 60_000;
 /// The most steps of a plan.
 const MOST_STEPS: usize = 12;
 
-const PLANNER: &str = "You are the planner of a small coding team that works in a folder on the user's Windows computer. Read what you need of the folder with the tools, then call `plan` with the steps that reach the goal, in order, each a piece of work one worker can do alone (one step for a small goal, at most 8), and the command that runs the project's tests, if it has tests or the steps add them (empty where none). Change nothing yourself.";
+const PLANNER: &str = "You are the planner of a small coding team that works in a folder on the user's {system} computer. Read what you need of the folder with the tools, then call `plan` with the steps that reach the goal, in order, each a piece of work one worker can do alone (one step for a small goal, at most 8), and the command that runs the project's tests, if it has tests or the steps add them (empty where none). Change nothing yourself.";
 
-const WORKER: &str = "You are a worker of a small coding team that works in a folder on the user's Windows computer. Do your step of the plan, and only it, with the tools: paths are relative to the folder, and commands run with cmd.exe in it, in a sandbox. When your step is done, call `report` with what you did, in a sentence or two.";
+const WORKER: &str = "You are a worker of a small coding team that works in a folder on the user's {system} computer. Do your step of the plan, and only it, with the tools: paths are relative to the folder, and commands run with {shell} in it, in a sandbox. When your step is done, call `report` with what you did, in a sentence or two.";
+
+/// A role's words with the system and shell commands run on (`{system}`, `{shell}`).
+fn shell_words(words: &str) -> String {
+    words
+        .replace("{system}", sandbox::SYSTEM)
+        .replace("{shell}", sandbox::SHELL)
+}
 
 const AUDITOR: &str = "You are the auditor of a small coding team. You are given the goal, the plan, what the workers reported and the changes they made as a diff. Check that the changes reach the goal and are right; run the tests with run_command where you can, and read their output yourself. Then call `verdict`: passed is true only if the goal is reached and every test passes; tests_passed and tests_total as the tests' output counts them (left out where no tests ran); each failure with its output; and notes on what is wrong.";
 
@@ -227,8 +234,8 @@ impl Ctx {
         match name {
             "list_files" | "read_file" => permissions.read,
             "write_file" => permissions.write,
-            "run_command" if sandbox::AVAILABLE => permissions.commands,
-            "install_packages" if sandbox::AVAILABLE => permissions.install,
+            "run_command" if sandbox::available() => permissions.commands,
+            "install_packages" if sandbox::available() => permissions.install,
             "web_search" | "read_web_page" => permissions.web,
             _ => Permit::Never,
         }
@@ -267,7 +274,7 @@ impl Ctx {
                 ),
                 "run_command" => tool(
                     "run_command",
-                    "Runs a command with cmd.exe in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there, but git does not. `dir` is refused there: list the files with `for %f in (*) do @echo %f`.",
+                    &format!("Runs a command with {} in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there{}. {}", sandbox::SHELL, if cfg!(windows) { ", but git does not" } else { "" }, sandbox::ADVICE),
                     json!({ "command": command }),
                 ),
                 "install_packages" => tool(
@@ -609,7 +616,7 @@ async fn plan(ctx: &Ctx) -> anyhow::Result<Plan> {
         ctx.brief(None, &[]),
         ctx.started.crew.workers
     );
-    let planned = ctx.work(&role, PLANNER, task).await?;
+    let planned = ctx.work(&role, &shell_words(PLANNER), task).await?;
     let steps: Vec<String> = planned["steps"]
         .as_array()
         .into_iter()
@@ -706,7 +713,7 @@ async fn build(
             "\nThe auditor found this wrong; fix it:\n{findings}\n"
         ));
     }
-    let worked = ctx.work(&role, WORKER, task).await;
+    let worked = ctx.work(&role, &shell_words(WORKER), task).await;
     // What the step changed is its checkpoint, also where it failed or was
     // stopped; a folder unreadable now keeps none, and the worker's own
     // failure is told before that one.

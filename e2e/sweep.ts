@@ -7,7 +7,7 @@
 //
 // Traps: contrast is computed from the computed styles: the colours through a canvas (so oklch and color-mix are
 // read as drawn), the background the first opaque one up the tree, layers and opacity blended; text over a
-// picture or gradient is left out. A request the page cancels as it moves on (ERR_ABORTED) is no failure. The
+// picture or gradient is left out. A request the page cancels as it moves on (ERR_ABORTED, WebKit's "Load request cancelled") is no failure. The
 // event stream is never "pending". A menu closes when the window changes its size, so `sweep` opens it again. A test written here
 // has this file as `info.file`: test.ts keys a spec file's server by the title path.
 import { appendFileSync, readdirSync, readFileSync } from "node:fs";
@@ -50,14 +50,18 @@ export function watch(page: Page): { problems: string[]; settle: () => Promise<v
   const open = new Set<Request>();
   const counted = (kind: string) => kind !== "eventsource";
   const at = (url: string) => url.replace(/^https?:\/\/[^/]+/, "");
-  page.on("console", (message) => void (message.type() === "error" && problems.push(`console: ${message.text().slice(0, 160)}`)));
+  // WebKit (Linux's window) says it as an error that the viewport's `interactive-widget` (Chromium's, for a phone's
+  // keyboard) is unknown to it; it is ignored there as meant (web/src/shell/keyboard.ts), so no failure.
+  const harmless = (text: string) => text.includes('"interactive-widget" not recognized');
+  page.on("console", (message) => void (message.type() === "error" && !harmless(message.text()) && problems.push(`console: ${message.text().slice(0, 160)}`)));
   page.on("pageerror", (error) => void problems.push(`page error: ${error.message.slice(0, 160)}`));
   page.on("request", (request) => void (counted(request.resourceType()) && open.add(request)));
   page.on("requestfinished", (request) => void open.delete(request));
   page.on("requestfailed", (request) => {
     open.delete(request);
     const why = request.failure()?.errorText ?? "";
-    if (!why.includes("ERR_ABORTED")) problems.push(`failed: ${request.method()} ${at(request.url())} ${why}`);
+    // Chromium's word for a request the page cancelled, and WebKit's.
+    if (!why.includes("ERR_ABORTED") && !why.includes("Load request cancelled")) problems.push(`failed: ${request.method()} ${at(request.url())} ${why}`);
   });
   // A request's 4xx or 5xx is noted with what the server said, so its cause is read in the finding.
   page.on("response", (response) => {

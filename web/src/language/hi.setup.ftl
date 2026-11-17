@@ -7,7 +7,11 @@ setup-use-this = यही इस्तेमाल करें
 setup-choose-folder = फ़ोल्डर चुनें
 setup-this-computer = यह कंप्यूटर
 setup-this-computer-about = आपकी डाउनलोड की हुई AI मॉडल फ़ाइलें (.gguf), जिन्हें Cardwave चलाता है
-setup-models-example = C:\Users\aap\Models
+setup-models-example =
+    { $system ->
+        [linux] /home/aap/Models
+       *[other] C:\Users\aap\Models
+    }
 setup-models-says = इसमें हर मॉडल फ़ाइल (.gguf) एक चैट मॉडल है, जिसे Cardwave इसी कंप्यूटर पर चलाता है। अभी कोई मॉडल फ़ाइल नहीं? एक खाली फ़ोल्डर चुनें: फिर सेटिंग्स › प्रोवाइडर › यह कंप्यूटर इस कंप्यूटर पर चलने वाले मॉडल दिखाता है और उन्हें उसी में डाउनलोड करता है।
 setup-not-this = यह नहीं?
 setup-recognised = पहचाना गया:{ " " }

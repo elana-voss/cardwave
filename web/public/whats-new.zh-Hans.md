@@ -1,3 +1,11 @@
+# 0.3.0
+
+Linux 版 Cardwave。
+
+- Cardwave 可在 Linux 上运行：发布页面提供 AppImage（可在大多数 Linux 电脑上运行）和 .deb（可在 Ubuntu 和 Debian 上安装）。
+- 在 Linux 上同样会用你的显卡识别人脸，麦克风可在 Cardwave 的窗口中使用，AI 的编程工具可以运行命令。
+- 小修复：页面顶部的按钮能放进窄窗口，加载你的账户时账户菜单保持打开。
+
 # 0.2.0
 
 在手机上使用 Cardwave，以及许多修复。

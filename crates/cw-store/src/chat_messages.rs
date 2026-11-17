@@ -47,9 +47,8 @@ pub(super) fn message(row: &Row<'_>) -> rusqlite::Result<Message> {
 
 fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
     let swipes: String = row.get(8)?;
-    let lore: Option<String> = row.get(9)?;
     // What cannot be read is shown as none: the chat opens all the same.
-    let lore = json::or_none(lore.as_deref(), "a reply's lorebook entries");
+    let lore = json::column(row, 9, "a reply's lorebook entries")?;
     let memories: String = row.get(10)?;
     let message = message(row)?;
     let used: Option<i64> = row.get(12)?;
@@ -70,25 +69,11 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
         picture: row.get(11)?,
         task_id: row.get(14)?,
         model: row.get(15)?,
-        sent: json::or_none(
-            row.get::<_, Option<String>>(16)?.as_deref(),
-            "a reply's parts' tokens",
-        ),
-        reads: json::or_none(
-            row.get::<_, Option<String>>(17)?.as_deref(),
-            "a reply's pages and files read",
-        )
-        .unwrap_or_default(),
-        attachments: json::or_none(
-            row.get::<_, Option<String>>(18)?.as_deref(),
-            "a reply's attachments",
-        )
-        .unwrap_or_default(),
+        sent: json::column(row, 16, "a reply's parts' tokens")?,
+        reads: json::column(row, 17, "a reply's pages and files read")?.unwrap_or_default(),
+        attachments: json::column(row, 18, "a reply's attachments")?.unwrap_or_default(),
         provider: row.get(19)?,
-        times: json::or_none(
-            row.get::<_, Option<String>>(20)?.as_deref(),
-            "a reply's times",
-        ),
+        times: json::column(row, 20, "a reply's times")?,
         broke_off: row.get(21)?,
     })
 }

@@ -97,7 +97,7 @@ fn calls_with(name: &str, arguments: &str) -> String {
 /// where the sandbox runs them.
 async fn tools_on(server: &Server, folder: &Folder, ask_writes: bool) {
     let tools = json!({ "folder": folder.path(), "files": true, "ask_writes": ask_writes,
-        "commands": sandbox::AVAILABLE, "ask_commands": true });
+        "commands": sandbox::available(), "ask_commands": true });
     let (status, body) = server
         .patch("/api/settings", json!({ "tools": tools }))
         .await;
@@ -541,7 +541,7 @@ async fn a_call_that_asks_waits_for_the_user_and_a_stop_keeps_the_checkpoint() {
     assert!(!offered.contains(&"web_search".to_string()), "{offered:?}");
     assert!(offered.contains(&"write_file".to_string()));
 
-    if sandbox::AVAILABLE {
+    if sandbox::available() {
         let asking = task_when(&server, &task, |task| !task["ask"].is_null()).await;
         assert_eq!(
             asking["ask"],
@@ -566,7 +566,6 @@ async fn a_call_that_asks_waits_for_the_user_and_a_stop_keeps_the_checkpoint() {
 
 /// A folder the step left unreadable keeps no checkpoint, yet the step ends
 /// failed, and the worker's own failure is the task's.
-#[cfg(windows)]
 #[tokio::test]
 async fn a_step_whose_folder_cannot_be_read_after_it_tells_the_workers_failure() {
     let server = start().await;
@@ -593,6 +592,10 @@ async fn a_step_whose_folder_cannot_be_read_after_it_tells_the_workers_failure()
     std::fs::create_dir(&locked).unwrap();
     // Everyone may not list it, until the guard's drop, so a failed assert leaves no locked folder behind.
     let _locked = Denied::new(&locked);
+    #[cfg(unix)]
+    if std::fs::read_dir(&locked).is_ok() {
+        return; // run as root, whom mode 000 does not bind: nothing to show here
+    }
     let answer = json!({ "allow": false });
     assert_eq!(server.post(&format!("{task}/answer"), answer).await.0, 204);
     let failed = ended(&server, &task).await;
@@ -600,9 +603,27 @@ async fn a_step_whose_folder_cannot_be_read_after_it_tells_the_workers_failure()
     assert_eq!(failed["steps"][1]["state"], "failed", "{failed:#}");
 }
 
-/// A folder Everyone may not list (icacls deny) while it lives; its drop takes the deny away.
-#[cfg(windows)]
+/// A folder Everyone may not list while it lives (Windows: an icacls deny; Unix:
+/// mode 000, which binds the tests' user, not root); its drop takes that away.
 struct Denied(std::path::PathBuf);
+
+#[cfg(unix)]
+impl Denied {
+    fn new(folder: &std::path::Path) -> Self {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(folder, std::fs::Permissions::from_mode(0o000)).unwrap();
+        Self(folder.to_path_buf())
+    }
+}
+
+#[cfg(unix)]
+impl Drop for Denied {
+    fn drop(&mut self) {
+        use std::os::unix::fs::PermissionsExt;
+        // Not asserted: a panic in a drop during a failed test's unwinding would abort.
+        let _ = std::fs::set_permissions(&self.0, std::fs::Permissions::from_mode(0o755));
+    }
+}
 
 #[cfg(windows)]
 impl Denied {
@@ -634,12 +655,15 @@ impl Drop for Denied {
 
 /// A task stopped while its command writes keeps all the command wrote in
 /// its checkpoint: Undo leaves none of it.
-#[cfg(windows)]
 #[tokio::test]
 async fn a_task_stopped_while_its_command_writes_undoes_all_it_wrote() {
     let server = start().await;
     let folder = Folder::new("stopped-command");
-    let writes = "for /l %i in (1,1,100000) do @echo %i> f%i.txt";
+    let writes = if cfg!(windows) {
+        "for /l %i in (1,1,100000) do @echo %i> f%i.txt"
+    } else {
+        "i=1; while [ $i -le 100000 ]; do echo $i > f$i.txt; i=$((i+1)); done"
+    };
     let team = Team::start(vec![
         (
             "planner",
@@ -795,7 +819,18 @@ fn a_teams_command_is_let_into_a_path_folder_only_where_it_holds_a_program() {
     let data = Folder::new("grant-data");
     let write = |file: std::path::PathBuf| {
         std::fs::create_dir_all(file.parent().unwrap()).unwrap();
-        std::fs::write(file, "").unwrap();
+        std::fs::write(&file, "").unwrap();
+        // On Linux a program is a file one may run, whatever its name.
+        #[cfg(unix)]
+        if file
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("tool")
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o755)).unwrap();
+        }
     };
     let programs = Folder::new("grant-programs");
     write(programs.0.join("tool.exe"));
@@ -817,8 +852,18 @@ fn a_teams_command_is_let_into_a_path_folder_only_where_it_holds_a_program() {
     assert!(!sandbox::grantable(&holder.0, &holder.0.join("data")));
     let root = programs.0.ancestors().last().unwrap();
     assert!(!sandbox::grantable(root, &data.0));
-    if let Some(profile) = std::env::var_os("USERPROFILE") {
-        assert!(!sandbox::grantable(std::path::Path::new(&profile), &data.0));
+    for home in ["USERPROFILE", "HOME"]
+        .into_iter()
+        .filter_map(std::env::var_os)
+    {
+        assert!(!sandbox::grantable(std::path::Path::new(&home), &data.0));
+    }
+    // A folder of links to programs (pipx's, snap's) holds programs.
+    #[cfg(unix)]
+    {
+        let links = Folder::new("grant-links");
+        std::os::unix::fs::symlink(programs.0.join("tool.exe"), links.0.join("tool")).unwrap();
+        assert!(sandbox::grantable(&links.0, &data.0));
     }
 }
 
@@ -852,6 +897,95 @@ fn a_teams_command_has_the_servers_programs_and_a_folder_of_its_own() {
     let bare = run(sandbox::Reach::default());
     assert!(!bare.output.contains(&last), "{}", bare.output);
     assert_ne!(bare.code, Some(0), "{}", bare.output);
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn a_teams_command_on_linux_has_the_servers_programs_and_a_folder_of_its_own() {
+    let folder = Folder::new("reach");
+    let data = Folder::new("reach-data");
+    let run = |reach| {
+        let command =
+            r#"echo "$PATH"; echo "[$HOME]"; echo kept > "$HOME/kept.txt" && cat "$HOME/kept.txt""#;
+        sandbox::run_with(
+            &folder.0,
+            command,
+            Duration::from_secs(20),
+            &AtomicBool::new(false),
+            reach,
+        )
+        .unwrap()
+    };
+    let host = std::env::var("PATH").unwrap();
+    // The system's own folders are on every command's PATH.
+    let system = [
+        "/usr/local/sbin",
+        "/usr/local/bin",
+        "/usr/sbin",
+        "/usr/bin",
+        "/sbin",
+        "/bin",
+    ];
+    let granted = |part: &&str| {
+        !system.contains(part) && sandbox::grantable(std::path::Path::new(part), &data.0)
+    };
+    let last = host.split(':').rfind(granted).map(str::to_string);
+    let reached = run(sandbox::Reach {
+        network: false,
+        programs: true,
+        data: data.0.clone(),
+    });
+    assert!(!reached.output.contains("[]"), "{}", reached.output);
+    assert_eq!(reached.code, Some(0), "{}", reached.output);
+    let bare = run(sandbox::Reach::default());
+    assert!(bare.output.contains("[]"), "{}", bare.output);
+    assert_ne!(bare.code, Some(0), "{}", bare.output);
+    if let Some(last) = last {
+        assert!(reached.output.contains(&last), "{}", reached.output);
+        assert!(!bare.output.contains(&last), "{}", bare.output);
+    }
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn a_teams_command_on_linux_runs_node_and_npm_where_they_are_installed_and_reads_no_other_file() {
+    let installed = std::env::split_paths(&std::env::var_os("PATH").unwrap())
+        .any(|folder| folder.join("node").is_file() && folder.join("npm").is_file());
+    let folder = Folder::new("node");
+    let other = Folder::new("node-other");
+    let data = Folder::new("node-data");
+    std::fs::write(other.0.join("secret.txt"), "kept").unwrap();
+    let run = |command: &str| {
+        let reach = sandbox::Reach {
+            network: false,
+            programs: true,
+            data: data.0.clone(),
+        };
+        sandbox::run_with(
+            &folder.0,
+            command,
+            COMMAND_START,
+            &AtomicBool::new(false),
+            reach,
+        )
+        .unwrap()
+    };
+    let secret = run(&format!("cat '{}/secret.txt'", other.path()));
+    assert!(!secret.output.contains("kept"), "{}", secret.output);
+    assert!(
+        secret.output.contains("Permission denied"),
+        "{}",
+        secret.output
+    );
+    let own = run("echo mine > own.txt && cat own.txt");
+    assert_eq!(own.output.trim(), "mine", "{}", own.output);
+    if !installed {
+        eprintln!("skipped: node and npm, not installed on this computer");
+        return;
+    }
+    let ran = run(r#"node -e "console.log(1)" && npm --version"#);
+    assert_eq!(ran.code, Some(0), "{}", ran.output);
+    assert_eq!(ran.output.lines().next(), Some("1"), "{}", ran.output);
 }
 
 #[cfg(windows)]

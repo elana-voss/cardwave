@@ -1,5 +1,6 @@
 // What the browser keeps and saves: `remember` and `remembered`, a choice kept for the next start; `keepOverReload`
 // and `takeKept`, a note kept for this tab's next load; `save` and `saveFrom`, a file handed to the browser to save, which in the desktop app's window say the folder it went into.
+import { desktop, inDesktop } from "./desktop";
 import { el } from "./dom";
 
 /**
@@ -19,7 +20,10 @@ export function save(name: string, file: Blob): string | null {
  * `name`), without holding it in the page. Returns the folder as `save` does.
  */
 export function saveFrom(url: string, name = ""): string | null {
-  el("a", { href: url, download: name }).click();
+  const hand = () => el("a", { href: url, download: name }).click();
+  // The desktop app is told the name first: on Linux its window would save the file under its own (main.rs).
+  if (inDesktop() && name) void desktop("download_name", { url: new URL(url, location.href).href, name }).catch(() => {}).finally(hand);
+  else hand();
   return window.cardwaveDesktop?.downloads ?? null;
 }
 

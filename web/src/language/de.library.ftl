@@ -132,8 +132,16 @@ add-character-start-chat = Chat beginnen
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Kartenordner ändern
-card-folder-c-users-you-cards = C:\Users\du\Karten
-card-folder-its-card-files-and = Seine Karten und die in seinen Unterordnern werden in deine Bibliothek importiert, ebenso Karten, die du später hineinlegst. Den Pfad eines Ordners bekommst du unter Windows per Rechtsklick im Explorer und Als Pfad kopieren.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/du/Karten
+       *[other] C:\Users\du\Karten
+    }
+card-folder-its-card-files-and =
+    Seine Karten und die in seinen Unterordnern werden in deine Bibliothek importiert, ebenso Karten, die du später hineinlegst. { $system ->
+        [linux] Den Pfad eines Ordners bekommst du unter Linux, indem du ihn im Dateimanager öffnest und Strg+L drückst: Der Pfad erscheint und lässt sich
+       *[other] Den Pfad eines Ordners bekommst du unter Windows per Rechtsklick im Explorer und Als Pfad
+    } kopieren.
 card-folder-use = Diesen Ordner verwenden
 
 ## importing (library/importing.ts)

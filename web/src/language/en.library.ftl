@@ -129,8 +129,16 @@ add-character-start-chat = Start chat
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Change the cards folder
-card-folder-c-users-you-cards = C:\Users\you\Cards
-card-folder-its-card-files-and = Its cards, and those in its subfolders, are imported into your library, and so are cards put in it later. To get a folder's path in Windows, right-click it in Explorer and choose Copy as path.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/you/Cards
+       *[other] C:\Users\you\Cards
+    }
+card-folder-its-card-files-and =
+    Its cards, and those in its subfolders, are imported into your library, and so are cards put in it later. { $system ->
+        [linux] To get a folder's path on Linux, open it in your file manager and press Ctrl+L: the path shows, ready to copy.
+       *[other] To get a folder's path in Windows, right-click it in Explorer and choose Copy as path.
+    }
 card-folder-use = Use this folder
 
 ## importing (library/importing.ts)

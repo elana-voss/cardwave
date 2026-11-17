@@ -6,44 +6,19 @@
 // The tests run one after the other in one window, so that a test finds what the one before it left (first
 // run left for the account's page "Advanced", the card imported, the page shown).
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { cardFile, readCard } from "../card.ts";
 import { Desktop, until } from "./driver.ts";
+import { downloadsFolder, placed } from "./screen.ts";
 
 let app: Desktop;
-
-/** The user's Downloads folder, as Windows itself names it; it can be moved from its usual place. */
-function downloadsFolder(): string {
-  const asked = spawnSync("powershell", ["-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"], { encoding: "utf8" });
-  assert.equal(asked.status, 0, asked.stderr);
-  return asked.stdout.trim();
-}
 
 before(async () => {
   app = await Desktop.start();
 });
 after(() => app?.close());
-
-/** The visible frame of the window of this title, and the work area of its screen, in the screen's pixels. */
-function placed(title: string): { frame: number[]; area: number[] } {
-  const script = `
-Add-Type -Namespace W -Name U -MemberDefinition '[DllImport("user32.dll")] public static extern bool SetProcessDPIAware(); [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern System.IntPtr FindWindow(string c, string t); [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(System.IntPtr h, int a, int[] r, int s);'
-[void][W.U]::SetProcessDPIAware()
-Add-Type -AssemblyName System.Windows.Forms
-$h = [W.U]::FindWindow([NullString]::Value, '${title}')
-if ($h -eq [System.IntPtr]::Zero) { exit 3 }
-$r = New-Object int[] 4
-[void][W.U]::DwmGetWindowAttribute($h, 9, $r, 16)
-$a = [System.Windows.Forms.Screen]::FromHandle($h).WorkingArea
-"$($r -join ' ') $($a.Left) $($a.Top) $($a.Right) $($a.Bottom)"`;
-  const asked = spawnSync("powershell", ["-NoProfile", "-Command", script], { encoding: "utf8" });
-  assert.equal(asked.status, 0, `no window “${title}”: ${asked.stderr}`);
-  const numbers = asked.stdout.trim().split(/\s+/).map(Number);
-  return { frame: numbers.slice(0, 4), area: numbers.slice(4) };
-}
 
 test("the window opens inside the screen's work area, above the taskbar, and centred in it", () => {
   const { frame: [left, top, right, bottom], area: [areaLeft, areaTop, areaRight, areaBottom] } = placed("Cardwave");
@@ -105,7 +80,7 @@ test("a card imported in the desktop window is exported from its menu, and the f
   assert.deepEqual(readdirSync(app.downloads), ["Desk Lamp.png"]);
   // The notice names the folder the window saves into by itself. The file of
   // this test is not there: the driver sent it to the scratch folder.
-  assert.equal(await app.text(await app.find("#toast")), `“Desk Lamp” exported to ${downloadsFolder()}.`);
+  assert.equal(await app.text(await app.find("#toast")), `“Desk Lamp” exported to ${downloadsFolder(app)}.`);
 });
 
 test("a chat started in the desktop window is exported from its menu, and the file is saved", async () => {
@@ -126,7 +101,7 @@ test("a chat started in the desktop window is exported from its menu, and the fi
   assert.deepEqual(lines[0], { chat_metadata: {}, user_name: "Guest", character_name: "Desk Lamp" });
   assert.deepEqual([lines[1].name, lines[1].is_user, lines[1].mes, lines[1].swipes], ["Desk Lamp", false, "Click.", ["Click."]]);
   assert.deepEqual(readdirSync(app.downloads).sort(), ["Desk Lamp.png", saved].sort());
-  assert.equal(await app.text(await app.find("#toast")), `Chat exported to ${downloadsFolder()}.`);
+  assert.equal(await app.text(await app.find("#toast")), `Chat exported to ${downloadsFolder(app)}.`);
 });
 
 test("the dialog's link opens Cardwave's CSS in a window of its own, with its own title bar, and the dialog stays", async () => {
@@ -143,7 +118,10 @@ test("the dialog's link opens Cardwave's CSS in a window of its own, with its ow
     return null;
   });
   await app.findText("span", "--accent");
-  await app.click(await app.find("#titlebar .window_close"));
+  // WebKitWebDriver may answer the click "no such window" when the window it closed goes before the answer.
+  await app.click(await app.find("#titlebar .window_close")).catch((error: unknown) => {
+    if (!String(error).includes("no such window")) throw error;
+  });
   await until("the page's window closed", async () => !(await app.windows()).includes(page));
   await app.switchTo(main!);
   await app.find("dialog[open] textarea");
@@ -152,7 +130,7 @@ test("the dialog's link opens Cardwave's CSS in a window of its own, with its ow
 test("only the app's own page is told the folder, not another one the window shows", async () => {
   const told = () => app.run<string | null>("return window.cardwaveDesktop?.downloads ?? null");
   const own = new URL(await app.url());
-  assert.equal(await told(), downloadsFolder());
+  assert.equal(await told(), downloadsFolder(app));
   // And the logs' folder, which "About Cardwave" opens, in the app's data folder, with the day's debug log.
   const logs = await app.run<string>("return window.cardwaveDesktop.logs");
   assert.match(logs, /[\\/]data[\\/]logs$/);
@@ -160,7 +138,7 @@ test("only the app's own page is told the folder, not another one the window sho
   // The same server under its other name is another site to the window.
   own.hostname = "localhost";
   await app.go(own.href);
-  await app.find("#toast");
+  await app.pageIsThere();
   assert.equal(new URL(await app.url()).hostname, "localhost");
   assert.equal(await told(), null);
 });

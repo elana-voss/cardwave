@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { cardFile } from "../card";
 
 // The pretend model (crates/cw-provider/src/pretend.rs): a key that begins `sk-cardwave-fake-` is taken for it in
@@ -9,7 +9,6 @@ const KEY = "sk-cardwave-fake-0123456789";
 /** What the pretend model answers every chat with (`REPLY`). */
 const REPLY = "This is Cardwave's pretend model. It gives every message this same reply, so the app can be tried without a provider.";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const says = (page: Page, name: string) =>
   page.locator(".setup .item", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) }).locator(".item-text > .meta");
 

@@ -16,7 +16,8 @@ use common::model::{
     Model, PAUSE, call_pieces, chat_at, code_mode, names, next_event, stream, text_piece,
 };
 use common::server::{WAIT, device, start};
-use cw_coding::tools::{REFUSED, files, sandbox, web::Web};
+use cw_coding::tools::sandbox;
+use cw_coding::tools::{REFUSED, files, web::Web};
 use reqwest::Method;
 use serde_json::{Value, json};
 use tokio::time::timeout;
@@ -99,6 +100,219 @@ fn a_command_that_runs_too_long_is_ended() {
     assert!(began.elapsed() < Duration::from_secs(10));
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn a_command_on_linux_reaches_its_folder_and_no_other() {
+    let inside = Folder::new("inside");
+    let outside = Folder::new("outside");
+    let secret = outside.0.join("secret.txt");
+    std::fs::write(&secret, "the secret").unwrap();
+    let time = Duration::from_secs(20);
+    let run = |folder: &Folder, command: &str| {
+        sandbox::run(&folder.0, command, time, &AtomicBool::new(false)).unwrap()
+    };
+
+    let ran = run(&inside, "echo made > made.txt && cat made.txt");
+    assert_eq!(ran.code, Some(0), "{}", ran.output);
+    assert_eq!(ran.output.trim(), "made");
+    let ran = run(&inside, sandbox::LISTING);
+    assert_eq!(
+        (ran.code, ran.output.trim()),
+        (Some(0), "made.txt"),
+        "{}",
+        ran.output
+    );
+
+    let ran = run(&inside, &format!("cat '{}'", secret.display()));
+    assert!(!ran.output.contains("the secret"), "{}", ran.output);
+    assert_ne!(ran.code, Some(0));
+    let ran = run(&inside, &format!("ls '{}'", outside.0.display()));
+    assert!(!ran.output.contains("secret.txt"), "{}", ran.output);
+    assert_ne!(ran.code, Some(0));
+
+    let planted = outside.0.join("planted.txt");
+    let ran = run(&inside, &format!("echo x > '{}'", planted.display()));
+    assert!(!planted.exists(), "{}", ran.output);
+    let ran = run(&inside, &format!("rm -f '{}'", secret.display()));
+    assert!(secret.exists(), "{}", ran.output);
+
+    // A file's mode, times and length outside are not changed; inside they are.
+    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+    let before = std::fs::metadata(&secret).unwrap();
+    for change in ["chmod 000", "touch -d 2000-01-01", "truncate -s 0"] {
+        let ran = run(&inside, &format!("{change} '{}'", secret.display()));
+        assert!(
+            ran.output.contains("Permission denied"),
+            "{change}: {}",
+            ran.output
+        );
+        assert_ne!(ran.code, Some(0), "{change}");
+    }
+    let after = std::fs::metadata(&secret).unwrap();
+    assert_eq!(
+        (after.mode(), after.mtime(), after.len()),
+        (before.mode(), before.mtime(), before.len())
+    );
+    let ran = run(
+        &inside,
+        "chmod +x made.txt && truncate -s 2 made.txt && touch -d 2000-01-01 made.txt",
+    );
+    assert_eq!(ran.code, Some(0), "{}", ran.output);
+    let made = std::fs::metadata(inside.0.join("made.txt")).unwrap();
+    assert_eq!(made.permissions().mode() & 0o100, 0o100);
+    // 2000-01-01 in any time zone, before 2001-09-09.
+    assert!(made.mtime() < 1_000_000_000, "{}", made.mtime());
+    assert_eq!(made.len(), 2);
+
+    // No network for a plain command, and no way to leave the process group.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let ran = run(
+        &inside,
+        &format!("bash -c 'exec 3<>/dev/tcp/127.0.0.1/{port}' && echo reached"),
+    );
+    assert!(!ran.output.contains("reached"), "{}", ran.output);
+    assert!(ran.output.contains("Permission denied"), "{}", ran.output);
+    let ran = run(&inside, "setsid sh -c 'echo left' || echo kept");
+    assert!(ran.output.contains("kept"), "{}", ran.output);
+    assert!(!ran.output.contains("left"), "{}", ran.output);
+    // A signal to the lowest group there is ends neither the call nor the server's watch.
+    // sh's own kill refuses the number before any call: python3 makes it.
+    if std::path::Path::new("/usr/bin/python3").exists() {
+        // A chmod after it is the server's to do: it fails where its watch ended.
+        let lowest = "touch low.txt; python3 -c 'import os; os.kill(-2147483648, 0)'; chmod +x low.txt && echo next";
+        let ran = run(&inside, lowest);
+        assert!(ran.output.contains("next"), "{}", ran.output);
+        assert!(ran.output.contains("Error"), "{}", ran.output);
+    } else {
+        eprintln!("skipped: the lowest group's signal, python3 not installed on this computer");
+    }
+    let ran = run(&inside, "env");
+    assert!(!ran.output.contains("CARGO"), "{}", ran.output);
+
+    let made = inside.0.join("made.txt");
+    let ran = run(&outside, &format!("cat '{}'", made.display()));
+    assert!(ran.output.contains("Permission denied"), "{}", ran.output);
+    assert_ne!(ran.code, Some(0));
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn a_teams_command_on_linux_reaches_the_internet_but_not_this_computer() {
+    let inside = Folder::new("internet");
+    let data = Folder::new("internet-data");
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let reach = sandbox::Reach {
+        network: true,
+        programs: true,
+        data: data.0.clone(),
+    };
+    // The internet itself was measured by hand (curl to an https site: 200); no test asks it.
+    let command = format!("bash -c 'exec 3<>/dev/tcp/127.0.0.1/{port}' && echo reached");
+    let ran = sandbox::run_with(
+        &inside.0,
+        &command,
+        Duration::from_secs(30),
+        &AtomicBool::new(false),
+        reach,
+    )
+    .unwrap();
+    assert!(
+        ran.output.contains("Network is unreachable"),
+        "{}",
+        ran.output
+    );
+    assert!(!ran.output.contains("reached"), "{}", ran.output);
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn a_command_on_linux_that_runs_too_long_is_ended() {
+    let inside = Folder::new("long");
+    // A child that would outlive the shell, also in a session of its own, is ended with it.
+    let sleep = "sleep 1093 & setsid sleep 1094 & while :; do :; done";
+    let left = || {
+        let found = std::process::Command::new("pgrep")
+            .args(["-f", "sleep 109[34]"])
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&found.stdout).trim().to_string()
+    };
+    let began = std::time::Instant::now();
+    let ran = sandbox::run(
+        &inside.0,
+        sleep,
+        Duration::from_secs(2),
+        &AtomicBool::new(false),
+    )
+    .unwrap();
+    assert_eq!(ran.code, None, "{}", ran.output);
+    assert!(began.elapsed() < Duration::from_secs(10));
+    assert_eq!(left(), "", "{}", ran.output);
+
+    let stopped = Arc::new(AtomicBool::new(false));
+    let stop = stopped.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_secs(1));
+        stop.store(true, std::sync::atomic::Ordering::Relaxed);
+    });
+    let began = std::time::Instant::now();
+    let ran = sandbox::run(&inside.0, sleep, Duration::from_secs(60), &stopped).unwrap();
+    assert_eq!(ran.code, None, "{}", ran.output);
+    assert!(began.elapsed() < Duration::from_secs(10));
+}
+
+/// The server killed, a command's children end with it. The test runs itself
+/// again as the server, with the folder named by `CW_SERVER_ENDS`.
+#[cfg(target_os = "linux")]
+#[test]
+fn a_command_on_linux_ends_with_the_server() {
+    const NAME: &str = "a_command_on_linux_ends_with_the_server";
+    if let Some(folder) = std::env::var_os("CW_SERVER_ENDS") {
+        let command = "sleep 1095 & echo $! > started; wait";
+        // Ignored: this process is killed while it runs.
+        let _ = sandbox::run(
+            std::path::Path::new(&folder),
+            command,
+            Duration::from_secs(60),
+            &AtomicBool::new(false),
+        );
+        return;
+    }
+    let folder = Folder::new("server-ends");
+    let mut server = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([NAME, "--exact", "--test-threads=1"])
+        .env("CW_SERVER_ENDS", &folder.0)
+        .stdout(std::process::Stdio::null())
+        .spawn()
+        .unwrap();
+    let started = folder.0.join("started");
+    let began = std::time::Instant::now();
+    while !started.exists() && began.elapsed() < Duration::from_secs(20) {
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    server.kill().unwrap();
+    server.wait().unwrap();
+    let pid = std::fs::read_to_string(&started).unwrap();
+    // Alive while its stat is there and not a zombie's, which waits only for init.
+    let alive = || {
+        std::fs::read_to_string(format!("/proc/{}/stat", pid.trim())).is_ok_and(|stat| {
+            !stat
+                .rsplit(')')
+                .next()
+                .unwrap_or("")
+                .trim_start()
+                .starts_with('Z')
+        })
+    };
+    let killed = std::time::Instant::now();
+    while alive() && killed.elapsed() < Duration::from_secs(5) {
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    assert!(!alive(), "sleep {} outlived the server", pid.trim());
+}
+
 #[test]
 fn the_file_tools_reach_their_folder_and_no_other() {
     let inside = Folder::new("files");
@@ -145,6 +359,18 @@ fn the_file_tools_reach_their_folder_and_no_other() {
             assert!(files::write(&inside.0, "nowhere.txt", "x").is_err());
             assert!(!later.exists());
         }
+    }
+    // The same on Linux: a link to a folder outside, and one to a file not there yet.
+    #[cfg(unix)]
+    {
+        std::os::unix::fs::symlink(&outside.0, inside.0.join("door")).unwrap();
+        assert!(files::read(&inside.0, "door/secret.txt").is_err());
+        assert!(files::write(&inside.0, "door/planted.txt", "x").is_err());
+        assert!(!outside.0.join("planted.txt").exists());
+        let later = outside.0.join("later.txt");
+        std::os::unix::fs::symlink(&later, inside.0.join("nowhere.txt")).unwrap();
+        assert!(files::write(&inside.0, "nowhere.txt", "x").is_err());
+        assert!(!later.exists());
     }
     assert_eq!(
         std::fs::read_to_string(outside.0.join("secret.txt")).unwrap(),
@@ -604,8 +830,9 @@ async fn files_need_a_folder_and_are_this_computers_accounts_alone() {
         let (status, refused) = server.patch("/api/settings", on(folder)).await;
         assert_eq!(status, 400, "{kept:?}: {refused}");
     }
-    let both =
-        on(json!({ "files": true, "commands": true, "folder": format!("  {} ", folder.path()) }));
+    let both = on(
+        json!({ "files": true, "commands": cfg!(windows), "folder": format!("  {} ", folder.path()) }),
+    );
     let (status, settings) = server.patch("/api/settings", both).await;
     assert_eq!(status, 200, "{settings}");
     assert_eq!(settings["tools"]["folder"], folder.path());

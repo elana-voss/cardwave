@@ -6,6 +6,6 @@ export type Status = { app: string, version: string,
  */
 built: number, 
 /**
- * Whether files can be moved to the Recycle Bin here, which Settings › Data's switch needs.
+ * The server's system (`std::env::consts::OS`: "windows", "linux"), which the texts of paths and of the bin follow.
  */
-recycle_bin: boolean, };
+system: string, };

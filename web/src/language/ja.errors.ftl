@@ -103,8 +103,7 @@ error-folder-not-chosen = 先にフォルダーを選んでください。
 error-drive-root-to-watch = ドライブのルートは監視するには大きすぎます。その中のフォルダーを選んでください。
 error-drive-root-for-model = ドライブのルートはAIに渡すには中身が多すぎます。その中のフォルダーを選んでください。
 error-data-folder = そのフォルダーはCardwave自身のデータを含むか、その中にあります。別のフォルダーを選んでください。
-error-commands-windows-only = コマンドはWindowsでのみ実行されます。
-error-recycle-bin-windows-only = ファイルをWindowsのごみ箱に移せるのはWindowsだけです。
+error-commands-unsafe = このコンピューターではコマンドを安全に実行できません。システムにコマンド用のサンドボックスがありません。
 error-files-tool-off = 先に設定 › 詳細設定 › AIのツールで「ファイル」をオンにしてください。チームはそれでタスクのフォルダーを読み書きします。
 
 ## Pictures, replies and voices
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] 画像モデルがまだ設定されていません：設定 › モデル › 画像で設定してください。
     [no_local_model] そのフォルダーにモデル「{ $id }」はありません。
     [no_local_models] ローカルモデルが設定されていません。
-    [no_recycle_bin] { $path }にはWindowsのごみ箱がありません。
     [no_summary] カードにはまだ要約がありません。
     [no_voice] その音声はありません。
     [no_vulkan] このコンピューターのグラフィックカードではモデルを動かせません。代わりにプロバイダーを使ってください。
     [no_vulkan_dictation] このコンピューターのグラフィックカードでは音声入力を動かせません。
     [prompt_change] このカードではそのキャラクターのプロンプトを変更できません。
     [recycle_bin_move] { $path }をWindowsのごみ箱に移せませんでした。
+    [trash_move] { $path }をコンピューターのゴミ箱に移せませんでした。
     [speaker_not_in_chat] 話し手はこのチャットの参加者ではありません。
     [speaker_only_character] 話し手がいるのはキャラクターのメッセージだけです。
     [unknown_language] それはこのアプリが知っている言語ではありません。

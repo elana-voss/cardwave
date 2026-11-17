@@ -11,7 +11,7 @@ import type { FileChange } from "../api/generated/FileChange";
 import type { Step } from "../api/generated/Step";
 import type { Task } from "../api/generated/Task";
 import { asker, checkpointName, lineCounts, SETTLE_MS, stateWord, stepDetail, stepSays, teamName, verdictText, whoName } from "../chat/coding";
-import { crumbs, el, newest, noticeBox, oneAtATime, type View } from "../dom";
+import { crumbs, el, headButton, newest, noticeBox, oneAtATime, type View } from "../dom";
 import { chatTitle } from "../chat-title";
 import { askFirst } from "../dialogs";
 import { icon, type IconName } from "../icons";
@@ -116,7 +116,7 @@ export function codingTaskView(chatId: number, taskId: number): View {
     const running = now.state === "running";
     bar.replaceChildren(
       crumbs([wording("page-chats"), "#/chats"], [chatTitle(now.chat_title), `#/chats/${chatId}`], wording("page-coding-task")),
-      running ? el("button", { type: "button", className: "btn btn-secondary", onclick: () => void attempt(() => stopTask(taskId)) }, wording("gen-stop")) : "",
+      running ? headButton(wording("gen-stop"), "btn btn-secondary", () => void attempt(() => stopTask(taskId))) : "",
     );
     const team = teamName(now.crew.team);
     const head = el(

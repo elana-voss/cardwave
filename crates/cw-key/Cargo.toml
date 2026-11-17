@@ -12,6 +12,8 @@ doctest = false
 getrandom.workspace = true
 anyhow.workspace = true
 cw-core.workspace = true
-
-[target.'cfg(any(windows, target_os = "macos"))'.dependencies]
 keyring.workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+dirs.workspace = true
+sha2.workspace = true

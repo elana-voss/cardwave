@@ -247,7 +247,7 @@ impl Toolbox {
     }
 
     fn commands(&self) -> bool {
-        self.tools.commands && self.folder.is_some() && crate::tools::sandbox::AVAILABLE
+        self.tools.commands && self.folder.is_some() && crate::tools::sandbox::available()
     }
 
     /// Whether Cardwave's own tools (`app`) are offered.
@@ -313,7 +313,7 @@ impl Toolbox {
         if self.commands() {
             all.push(tool(
                 "run_command",
-                "Runs a command with cmd.exe on Windows in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. PowerShell's commands for files do not work there; cmd's do. `dir` is refused there: list the files with `for %f in (*) do @echo %f`.",
+                &format!("Runs a command with {} on {} in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. {}", sandbox::SHELL, sandbox::SYSTEM, sandbox::ADVICE),
                 json!({ "command": { "type": "string", "description": "The command line" } }),
             ));
         }

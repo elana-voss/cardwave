@@ -7,7 +7,11 @@ setup-use-this = Использовать этот
 setup-choose-folder = Выбрать папку
 setup-this-computer = Этот компьютер
 setup-this-computer-about = Скачанные вами файлы моделей ИИ (.gguf), их запускает Cardwave
-setup-models-example = C:\Users\вы\Models
+setup-models-example =
+    { $system ->
+        [linux] /home/вы/Models
+       *[other] C:\Users\вы\Models
+    }
 setup-models-says = Каждый файл модели в ней (.gguf) — это чат-модель, которую Cardwave запускает на этом компьютере. Файлов моделей ещё нет? Выберите пустую папку: Настройки › Провайдеры › Этот компьютер тогда предложит модели, подходящие этому компьютеру, и скачает их в неё.
 setup-not-this = Не тот?
 setup-recognised = Распознан:{ " " }

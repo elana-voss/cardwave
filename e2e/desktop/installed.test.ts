@@ -7,9 +7,10 @@
 // and the search model's download switched off before it starts.
 //
 // The servers on this computer the list of providers names (as 09-smoke's `LOCAL`) cannot be answered as none
-// here: the model is told by its line ("Tide 1"), the reply by the stand-in's echo.
+// here: the model is told by its line ("Tide 1"), the reply by the stand-in's echo. Linux's twin of the script is
+// `tools/installer_test_linux.sh`, which has the app's logs kept in `CARDWAVE_KEEP_LOGS`.
 import assert from "node:assert/strict";
-import { writeFileSync } from "node:fs";
+import { cpSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { cardFile } from "../card.ts";
@@ -29,6 +30,9 @@ before(async () => {
   app = await Desktop.start({ exe });
 });
 after(async () => {
+  // tools/installer_test_linux.sh reads in the app's log which feed entry it asks for.
+  const keep = process.env.CARDWAVE_KEEP_LOGS;
+  if (keep && app) cpSync(join(app.data, "logs"), keep, { recursive: true });
   await app?.close();
   await api?.close();
 });
@@ -42,6 +46,8 @@ const shows = (wanted: string[]) => until(`the messages ${JSON.stringify(wanted)
 test("installed: first run by the provider's address, a card, one reply, and the chat kept over a restart", async () => {
   api.models(["tide-1"]);
   await app.findText("h1", "Provider");
+  // tools/installer_test_linux.sh keeps the first screen of the empty data folder as its proof.
+  if (process.env.CARDWAVE_SCREENSHOT) await app.screenshot(process.env.CARDWAVE_SCREENSHOT);
   await app.type(await app.find('input[name="api_key"]'), KEY);
   await app.click(await app.findText("button", "Enter address"));
   await app.type(await app.find('input[name="base_url"]'), api.url);

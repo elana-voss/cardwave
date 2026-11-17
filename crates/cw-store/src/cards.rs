@@ -88,11 +88,7 @@ fn summary(row: &rusqlite::Row<'_>) -> rusqlite::Result<CardSummary> {
         poster: Some(Poster {
             tagline: of_description(16)?,
             mood: Mood::read(&of_description(17)?),
-            faces: crate::json::or_none(
-                row.get::<_, Option<String>>(18)?.as_deref(),
-                "a picture's faces",
-            )
-            .unwrap_or_default(),
+            faces: crate::json::column(row, 18, "a picture's faces")?.unwrap_or_default(),
             design: row
                 .get::<_, Option<String>>(19)?
                 .as_deref()

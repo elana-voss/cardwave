@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { picture, SIZES, stopClock, THEMES } from "../pictures";
 
 // The character generator: Create's "New character" page offers it; picks,
@@ -8,7 +8,6 @@ import { picture, SIZES, stopClock, THEMES } from "../pictures";
 // button with the picks kept. A test holds the answer back, or fails it, with `page.route` on `/api/generator`.
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const make = (page: Page) => button(page, "Make the character");
 
 test.beforeAll(async ({ request }) => {

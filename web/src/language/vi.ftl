@@ -242,8 +242,16 @@ backup-about-chosen = Các cuộc trò chuyện, nhân vật và cài đặt tro
 
 folder-watch = Tự động nhập thẻ mới
 folder-watch-about = Tệp thẻ đặt vào thư mục sẽ tự vào thư viện của bạn
-folder-recycle = Chuyển tệp đã nhập vào Thùng rác của Windows
-folder-recycle-about = Khi tệp đã được nhập, nó vào Thùng rác
+folder-recycle =
+    Chuyển tệp đã nhập vào Thùng rác của { $system ->
+        [linux] máy tính
+       *[other] Windows
+    }
+folder-recycle-about =
+    Khi tệp đã được nhập, nó vào Thùng { $system ->
+        [linux] rác của máy tính
+       *[other] rác
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -385,7 +393,11 @@ tools-pictures = Dùng mô hình hình ảnh
 tools-pictures-first = Hãy thiết lập mô hình hình ảnh trước
 tools-app = Dùng và thay đổi nhân vật, cuộc trò chuyện và cài đặt của bạn; mỗi thay đổi đều được hỏi trước
 tools-dice = Cho AI tung xúc xắc; Cardwave tung nên kết quả công bằng.
-tools-folder-example = C:\Users\ban\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/ban/Documents/Shared
+       *[other] C:\Users\ban\Documents\Shared
+    }
 tools-folder-says = Tệp và lệnh chỉ chạm tới thư mục này và những gì bên trong, ngoài ra không gì khác.
 tools-change-folder = Đổi thư mục
 tools-change = Đổi

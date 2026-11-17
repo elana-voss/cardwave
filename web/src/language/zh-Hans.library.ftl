@@ -131,8 +131,16 @@ add-character-start-chat = 开始聊天
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = 更改角色卡文件夹
-card-folder-c-users-you-cards = C:\Users\you\Cards
-card-folder-its-card-files-and = 其中及子文件夹中的角色卡会导入你的资料库，之后放入的角色卡也一样。要在 Windows 中获取文件夹路径，请在资源管理器中右键单击它，然后选择“复制文件地址”。
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/you/Cards
+       *[other] C:\Users\you\Cards
+    }
+card-folder-its-card-files-and =
+    其中及子文件夹中的角色卡会导入你的资料库，之后放入的角色卡也一样。{ $system ->
+        [linux] 要在 Linux 中获取文件夹路径，请在文件管理器中打开它并按 Ctrl+L：路径会显示出来，可以复制。
+       *[other] 要在 Windows 中获取文件夹路径，请在资源管理器中右键单击它，然后选择“复制文件地址”。
+    }
 card-folder-use = 使用此文件夹
 
 ## importing (library/importing.ts)

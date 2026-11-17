@@ -247,8 +247,16 @@ backup-about-chosen = チャット、キャラクター、設定をひとつの�
 
 folder-watch = 新しいカードを自動でインポート
 folder-watch-about = フォルダーに置いたカードファイルが、自動でライブラリに入ります
-folder-recycle = インポートしたファイルをWindowsのごみ箱へ移動
-folder-recycle-about = ファイルは取り込まれるとごみ箱に移ります
+folder-recycle =
+    { $system ->
+        [linux] インポートしたファイルをコンピューターのゴミ箱へ移動
+       *[other] インポートしたファイルをWindowsのごみ箱へ移動
+    }
+folder-recycle-about =
+    { $system ->
+        [linux] ファイルは取り込まれるとコンピューターのゴミ箱に移ります
+       *[other] ファイルは取り込まれるとごみ箱に移ります
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -390,7 +398,11 @@ tools-pictures = 画像モデルを使います
 tools-pictures-first = 先に画像モデルを設定してください
 tools-app = キャラクター、チャット、設定を使い、変更します。変更はそれぞれ先に確認します
 tools-dice = AI がサイコロを振れるようにします。振るのは Cardwave なので結果は公平です。
-tools-folder-example = C:\Users\you\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/you/Documents/Shared
+       *[other] C:\Users\you\Documents\Shared
+    }
 tools-folder-says = ファイルとコマンドが届くのは、このフォルダーとその中身だけです。
 tools-change-folder = フォルダーを変更
 tools-change = 変更

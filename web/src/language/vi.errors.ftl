@@ -103,8 +103,7 @@ error-folder-not-chosen = Hãy chọn thư mục trước.
 error-drive-root-to-watch = Thư mục gốc của ổ đĩa chứa quá nhiều để theo dõi; hãy chọn một thư mục bên trong.
 error-drive-root-for-model = Thư mục gốc của ổ đĩa chứa quá nhiều để đưa cho AI; hãy chọn một thư mục bên trong.
 error-data-folder = Thư mục đó chứa dữ liệu của chính Cardwave, hoặc nằm trong đó; hãy chọn thư mục khác.
-error-commands-windows-only = Lệnh chỉ chạy được trên Windows.
-error-recycle-bin-windows-only = Tệp chỉ được chuyển vào Thùng rác của Windows khi chạy trên Windows.
+error-commands-unsafe = Không thể chạy lệnh an toàn trên máy tính này: hệ thống của nó không có hộp cát cho lệnh.
 error-files-tool-off = Hãy bật Tệp trong Cài đặt › Nâng cao › Công cụ cho AI trước: nhóm dùng nó để đọc và ghi thư mục của nhiệm vụ.
 
 ## Hình ảnh, câu trả lời và giọng nói
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] Chưa thiết lập mô hình hình ảnh: hãy thiết lập trong Cài đặt › Mô hình › Hình ảnh.
     [no_local_model] Không có mô hình “{ $id }” trong thư mục đó.
     [no_local_models] Chưa thiết lập mô hình trên máy.
-    [no_recycle_bin] Không có Thùng rác của Windows cho { $path }.
     [no_summary] Thẻ chưa có bản tóm tắt.
     [no_voice] Không có giọng nói này.
     [no_vulkan] Card đồ họa của máy này không chạy được mô hình. Hãy dùng một nhà cung cấp thay thế.
     [no_vulkan_dictation] Card đồ họa của máy này không chạy được tính năng đọc chính tả.
     [prompt_change] Không thể thay đổi prompt của nhân vật đó trong thẻ này.
     [recycle_bin_move] { $path } không được chuyển vào Thùng rác của Windows.
+    [trash_move] { $path } không được chuyển vào Thùng rác của máy tính.
     [speaker_not_in_chat] Người nói không thuộc cuộc trò chuyện này.
     [speaker_only_character] Chỉ tin nhắn của nhân vật mới có người nói.
     [unknown_language] Ứng dụng này không biết ngôn ngữ đó.

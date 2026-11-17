@@ -1,3 +1,11 @@
+# 0.3.0
+
+Cardwave trên Linux.
+
+- Cardwave chạy trên Linux: trang phát hành có một AppImage, chạy trên hầu hết máy tính Linux, và một .deb, cài đặt trên Ubuntu và Debian.
+- Trên Linux cũng vậy, khuôn mặt được tìm trên card đồ họa của bạn, micro hoạt động trong cửa sổ của Cardwave, và các công cụ lập trình của AI chạy lệnh.
+- Sửa lỗi nhỏ: các nút ở đầu trang vừa với cửa sổ hẹp, và menu tài khoản vẫn mở trong khi các tài khoản của bạn đang tải.
+
 # 0.2.0
 
 Cardwave trên điện thoại của bạn, và nhiều bản sửa lỗi.

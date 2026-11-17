@@ -178,7 +178,7 @@ async fn a_folder_of_cards_that_is_not_there_is_refused() {
     assert_eq!(status, 400, "{refused}");
 }
 
-#[cfg(windows)]
+// Leaves the test's card in the Recycle Bin or the Trash of the user running it.
 #[tokio::test]
 async fn an_imported_file_goes_to_the_recycle_bin_where_the_switch_is_on() {
     let server = start().await;

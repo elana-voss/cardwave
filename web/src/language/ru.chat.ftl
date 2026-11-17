@@ -11,7 +11,11 @@ coding-open-task = Открыть задачу по коду
 coding-undo-all = Отменить всё
 coding-put-the-folder-back = Вернуть папку в то состояние, в каком она была до задачи?
 coding-add-an-export-of = Добавить экспорт чатов в Markdown, с тестом.
-coding-c-users-you-projects = C:\Users\вы\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/вы/Projects/app
+       *[other] C:\Users\вы\Projects\app
+    }
 coding-start-a-coding-task = Начать задачу для программистов
 coding-start = Начать
 coding-goal = Цель
@@ -50,7 +54,7 @@ composer-replies = { $name } отвечает
 
 dictate-dictate = Диктовать
 mic-none = Микрофон не найден: подключите его и попробуйте снова.
-mic-not-allowed-desktop = Cardwave не может использовать микрофон: разрешите это в параметрах конфиденциальности Windows, в разделе «Микрофон».
+mic-not-allowed-desktop = Cardwave не может использовать микрофон: разрешите это в параметрах конфиденциальности компьютера, в разделе «Микрофон».
 mic-not-allowed-browser = Этой странице нельзя использовать микрофон: разрешите это в настройках браузера для этого сайта.
 mic-not-started = Не удалось включить микрофон: закройте другие программы, которые его используют, и попробуйте снова.
 mic-not-offered = По этому адресу браузер не даёт микрофон: используйте микрофон на компьютере, где работает Cardwave.
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = Привет, я { $name }. Так звучат �
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = Голос перестал отвечать. Попробуйте ещё раз или выберите другой голос в Настройки › Голоса.
-voice-this-window-cannot-play = Это окно не может воспроизвести звук: { $reason }. Проверьте вывод звука в Windows.
+voice-this-window-cannot-play = Это окно не может воспроизвести звук: { $reason }. Проверьте вывод звука на этом устройстве.
 
 ## Written by hand: plurals, conditions and numbers
 

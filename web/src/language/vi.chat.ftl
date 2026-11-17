@@ -11,7 +11,11 @@ coding-open-task = Mở tác vụ lập trình
 coding-undo-all = Hoàn tác tất cả
 coding-put-the-folder-back = Đưa thư mục về như trước khi làm nhiệm vụ?
 coding-add-an-export-of = Thêm chức năng xuất cuộc trò chuyện dạng Markdown, kèm một bài kiểm thử.
-coding-c-users-you-projects = C:\Users\ban\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/ban/Projects/app
+       *[other] C:\Users\ban\Projects\app
+    }
 coding-start-a-coding-task = Bắt đầu nhiệm vụ lập trình
 coding-start = Bắt đầu
 coding-goal = Mục tiêu
@@ -50,7 +54,7 @@ composer-replies = { $name } trả lời
 
 dictate-dictate = Đọc chính tả
 mic-none = Không tìm thấy micrô: hãy cắm một micrô vào rồi thử lại.
-mic-not-allowed-desktop = Cardwave không được dùng micrô: hãy cho phép trong cài đặt quyền riêng tư của Windows, mục Micrô.
+mic-not-allowed-desktop = Cardwave không được dùng micrô: hãy cho phép trong cài đặt quyền riêng tư của máy tính, mục Micrô.
 mic-not-allowed-browser = Trang này không được dùng micrô: hãy cho phép trong cài đặt của trình duyệt cho trang web này.
 mic-not-started = Không bật được micrô: hãy đóng các chương trình khác đang dùng nó rồi thử lại.
 mic-not-offered = Ở địa chỉ này trình duyệt không cho dùng micrô: hãy dùng micrô trên máy tính chạy Cardwave.
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = Xin chào, tôi là { $name }. Tin nhắn của b
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = Giọng nói đã ngừng phản hồi. Hãy thử lại, hoặc chọn giọng khác trong Cài đặt › Giọng nói.
-voice-this-window-cannot-play = Cửa sổ này không phát được âm thanh: { $reason }. Hãy kiểm tra đầu ra âm thanh trong Windows.
+voice-this-window-cannot-play = Cửa sổ này không phát được âm thanh: { $reason }. Hãy kiểm tra đầu ra âm thanh của thiết bị này.
 
 ## Written by hand: plurals, conditions and numbers
 

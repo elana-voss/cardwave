@@ -2,8 +2,8 @@
 //! folder are this computer's account's alone (403 for another), and are
 //! switched on only with a folder that is there and is neither Cardwave's
 //! data folder, one that holds it, nor a drive's root (`tools_checked`). So is
-//! the folder of cards, which must be a folder that is there and no drive's root, and its Recycle
-//! Bin is Windows' alone (`card_folder_checked`). A change tells the user's
+//! the folder of cards, which must be a folder that is there and no drive's
+//! root (`card_folder_checked`). A change tells the user's
 //! other pages (`PageEvent::Settings`).
 
 use axum::extract::State;
@@ -134,14 +134,13 @@ fn tools_checked(
         ensure!(folder.is_some(), Fail::new(Code::FolderNotChosen));
     }
     if *commands == Some(true) {
-        ensure!(sandbox::AVAILABLE, Fail::new(Code::CommandsWindowsOnly));
+        ensure!(sandbox::available(), Fail::new(Code::CommandsUnsafe));
     }
     Ok(())
 }
 
 /// Refuses a change of the folder of cards by another account than this
-/// computer's (`owner`), a folder that is not there or a drive's root, and the Recycle Bin where
-/// there is none.
+/// computer's (`owner`), and a folder that is not there or a drive's root.
 fn card_folder_checked(change: &ChangeCardFolder, owner: bool) -> anyhow::Result<()> {
     if !owner {
         Err(owner_only("use_its_folders"))?;
@@ -149,12 +148,6 @@ fn card_folder_checked(change: &ChangeCardFolder, owner: bool) -> anyhow::Result
     if let Some(folder) = &change.folder {
         // Walked every few seconds, a whole drive would never let the computer rest.
         settings::folder_there(folder, Code::DriveRootToWatch)?;
-    }
-    if change.recycle == Some(true) {
-        ensure!(
-            cw_platform::sys::RECYCLE_BIN,
-            Fail::new(Code::RecycleBinWindowsOnly)
-        );
     }
     Ok(())
 }

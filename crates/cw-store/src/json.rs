@@ -1,7 +1,8 @@
 //! A value kept as JSON in a text column: `to` writes it, `of` reads it back; the one way this crate reads one.
 //! A column that does not parse is an error, never a silent default (greenfield: an older form is dropped by its
 //! schema step, not read). Trap: `or_none` is for a column read only to be shown (a reply's parts, a card's line
-//! in a list), where the screen opens all the same and the log says why the part is missing.
+//! in a list; `column` reads it from its row), where the screen opens all the same and the log says why the
+//! part is missing.
 
 use rusqlite::types::Type;
 use serde::Serialize;
@@ -23,6 +24,15 @@ pub(crate) fn or_none<T: DeserializeOwned>(column: Option<&str>, what: &str) -> 
     serde_json::from_str(column?)
         .inspect_err(|error| tracing::warn!("{what} cannot be read: {error}"))
         .ok()
+}
+
+/// What column `at` of `row`, read only to be shown, holds, where it holds any (`or_none`).
+pub(crate) fn column<T: DeserializeOwned>(
+    row: &rusqlite::Row<'_>,
+    at: usize,
+    what: &str,
+) -> rusqlite::Result<Option<T>> {
+    Ok(or_none(row.get::<_, Option<String>>(at)?.as_deref(), what))
 }
 
 /// The error of column `at`, a text, that does not hold what it should.
@@ -54,5 +64,20 @@ mod tests {
         );
         assert_eq!(or_none::<Vec<String>>(Some("{"), "names"), None);
         assert_eq!(or_none::<Vec<String>>(None, "names"), None);
+    }
+
+    #[test]
+    fn a_column_read_from_its_row_is_none_where_null_or_unreadable() {
+        let db = rusqlite::Connection::open_in_memory().unwrap();
+        let read = db
+            .query_row(r#"SELECT '["a"]', NULL, '{'"#, [], |row| {
+                Ok((
+                    column::<Vec<String>>(row, 0, "names")?,
+                    column::<Vec<String>>(row, 1, "names")?,
+                    column::<Vec<String>>(row, 2, "names")?,
+                ))
+            })
+            .unwrap();
+        assert_eq!(read, (Some(vec!["a".to_string()]), None, None));
     }
 }

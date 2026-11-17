@@ -141,16 +141,11 @@ impl Titles {
         free.then(|| Titling(self.0.clone(), (user, chat_id)))
     }
 
-    /// Whether no chat is being titled.
-    pub fn is_empty(&self) -> bool {
-        held(&self.0).is_empty()
-    }
-
-    /// Whether a chat of `user` is being titled.
-    pub fn for_user(&self, user: i64) -> bool {
+    /// Whether a chat of `user` is being titled, with `None` anyone's.
+    pub fn any(&self, user: Option<i64>) -> bool {
         held(&self.0)
             .iter()
-            .any(|(held_user, _)| *held_user == user)
+            .any(|(held_user, _)| user.is_none_or(|id| id == *held_user))
     }
 }
 

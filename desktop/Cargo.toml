@@ -24,7 +24,12 @@ tracing.workspace = true
 # signed installer itself, and that feature brings a zip with known holes.
 tauri-plugin-updater = { version = "2", default-features = false, features = ["rustls-tls", "system-proxy"] }
 anyhow.workspace = true
-# The system's folder picker (`pick_folder`) and the message box at a start without a free port.
-rfd = "0.15"
+# The system's folder picker (`pick_folder`) and the message box at a start without a free port. On Linux
+# GTK's own dialogs (as Tauri's dialog plugin), not the desktop portal, which a light desktop or xvfb lacks.
+rfd = { version = "0.15", default-features = false, features = ["gtk3"] }
 # A second start brings the open window up instead (`main`).
 tauri-plugin-single-instance = "2"
+
+# The microphone in the window (src/microphone.rs): the WebKitGTK that Tauri itself uses, so nothing new is built.
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = "=2.0.2"

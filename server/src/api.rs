@@ -137,8 +137,8 @@ pub struct Status {
     pub version: String,
     /// When the server was built, in ms since 1970 (`build.rs`).
     pub built: i64,
-    /// Whether files can be moved to the Recycle Bin here, which Settings › Data's switch needs.
-    pub(crate) recycle_bin: bool,
+    /// The server's system (`std::env::consts::OS`: "windows", "linux"), which the texts of paths and of the bin follow.
+    pub system: String,
 }
 
 /// Paths that answer a page signed in to no account.
@@ -438,7 +438,7 @@ async fn status() -> Json<Status> {
         app: "cardwave".into(),
         version: version(),
         built: env!("CARDWAVE_BUILT").parse().unwrap_or_default(),
-        recycle_bin: cw_platform::sys::RECYCLE_BIN,
+        system: std::env::consts::OS.into(),
     })
 }
 

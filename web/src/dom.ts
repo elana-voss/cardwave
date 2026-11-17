@@ -4,7 +4,7 @@
 // What is here: `View`, a screen, with what main.ts tells it; `el`; what went wrong (`told`, `reason`, `failure`)
 // and `oneAtATime`, which runs a screen's actions and shows why one failed in `noticeBox`; the readings of a list
 // (`latest`, `newest`); `announce`, the notice at the bottom with "Undo", and `copyText`, which says so; `titled`,
-// which names a screen's tab; `crumbs`, a page's path; the small parts (`iconButton`, `lineButton`, `segmented`, `savedChoice`, `searchField`, `suggest`,
+// which names a screen's tab; `crumbs`, a page's path; the small parts (`headButton`, a page head's button whose words a narrow window cuts, `iconButton`, `lineButton`, `segmented`, `savedChoice`, `searchField`, `suggest`,
 // `selectField`, the app's own select, `typingDots`, `pill`, `closeButton`, `item`, `tabs`, `changesBar`, `fileField`, `atMost`,
 // `moreOpener`, which shows and hides "More settings" or "Details", and opens for a wrong field), a settings page's `group`; `suggest` with readable names
 // shows each value (a model's ID) only on hover; the window's width (`SMALL`, 600 px or less, `NARROW`, 960 px or less, `WIDE`, 1200 px
@@ -600,6 +600,13 @@ export function moreOpener(label: string, rest: HTMLElement | HTMLElement[], ope
     );
   return opener;
 }
+
+/**
+ * A page head's button with words: they stand in `.btn-label`, which a window of 600 px or less cuts at its end with
+ * "…" where they are wider than the room left (app/narrow.css); the icon before them stays whole.
+ */
+export const headButton = (label: string, className: string, action: () => void, shape?: IconName): HTMLButtonElement =>
+  el("button", { type: "button", className, onclick: action }, shape && icon(shape, 16), el("span", { className: "btn-label" }, label));
 
 /** A small button that is an icon, with its name for who does not see it and what it says when pointed at. */
 export const iconButton = (label: string, title: string, shape: IconName, action: () => void): HTMLButtonElement =>

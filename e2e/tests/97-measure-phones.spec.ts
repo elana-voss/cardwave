@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
 import { expect, test } from "../test";
-import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
+import { addresses, seed, taskRoute, type Seeded } from "../sweep";
 
 // A measurement, not a test (runs only with MEASURE=1): every screen of web/src/main.ts, the start and sign-in
 // screens and the sheets a phone meets, at 320 and 390 px wide (the skill ux, "Phones"): whether the page scrolls
@@ -13,27 +13,18 @@ test.skip(process.env.MEASURE !== "1", "a measurement, MEASURE=1");
 test.describe.configure({ mode: "serial" });
 
 let provider: FakeProvider;
-const ids = { chat: 0, plain: 0, lorebook: 0, entry: "", card: 0 };
+let ids: Seeded;
 const lines: string[] = [];
 const ACCOUNTS = [
   { id: 1, name: "local", local: true, current: false, password: true },
   { id: 2, name: "Ada", local: false, current: false, password: true },
 ];
 
-test.beforeAll(async ({ request }) => {
+test.beforeAll(async ({ browser, request }) => {
   provider = await startFakeProvider();
-  expect((await request.put("/api/provider", { data: { base_url: provider.url, model: "test-model", api_key: "sk-test", sampling: {} } })).status()).toBe(200);
-  const add = async (data: Buffer) => (await (await request.post("/api/cards", { data })).json()) as { version_id: number; card_id: number };
-  const mira = await add(cardFile({ name: "Mira", first_mes: "Mira waves." }));
-  ids.card = mira.card_id;
-  const chat = await request.post("/api/chats", { data: { characters: [{ version_id: mira.version_id, character: "mira" }] } });
-  ids.chat = (await chat.json()).chat.id;
-  const plain = await request.post("/api/chats", { data: { characters: [] } });
-  ids.plain = plain.ok() ? (await plain.json()).chat.id : 0;
-  const book = await request.post("/api/lorebooks/new", { data: { name: "Harbour Lore" } });
-  ids.lorebook = (await book.json()).id;
-  const entry = await request.post(`/api/lorebooks/${ids.lorebook}/entries`, { data: { name: "Gulls", keywords: ["birds"], content: "They steal chips." } });
-  ids.entry = (await entry.json()).reference;
+  const page = await browser.newPage();
+  ids = await seed(page, request, provider);
+  await page.close();
 });
 test.afterAll(async () => {
   await provider.close();
@@ -107,38 +98,6 @@ async function measure(page: Page, screen: string): Promise<void> {
   if (shots && width === "390") await page.screenshot({ path: `${shots}/${screen.replace(/[^a-z0-9]+/gi, "-")}.png`, fullPage: true });
 }
 
-/** Every address of web/src/main.ts's `screen`, by a short name. */
-const addresses = () => ({
-  chats: "/#/chats",
-  chat: `/#/chats/${ids.chat}`,
-  "chat plain": `/#/chats/${ids.plain}`,
-  library: "/#/library",
-  card: `/#/library/${ids.card}`,
-  "card lorebook": `/#/library/${ids.card}/lorebook`,
-  "new card": "/#/library/new",
-  lorebooks: "/#/library/lorebooks",
-  lorebook: `/#/library/lorebooks/${ids.lorebook}`,
-  "lorebook entry": `/#/library/lorebooks/${ids.lorebook}/${ids.entry}`,
-  personas: "/#/library/personas",
-  memories: "/#/knowledge/memories",
-  documents: "/#/knowledge/documents",
-  generator: "/#/generator",
-  interview: "/#/interview",
-  profile: "/#/account/profile",
-  server: "/#/account/server",
-  settings: "/#/settings",
-  trash: "/#/settings/trash",
-  advanced: "/#/settings/advanced",
-  providers: "/#/settings/providers",
-  "prompt preset": "/#/settings/advanced/prompts/new",
-  css: "/#/settings/advanced/css",
-  "written tools": "/#/settings/tools/written",
-  "coding team": "/#/settings/tools/coding",
-  about: "/#/settings/about",
-  voices: "/#/settings/voices",
-  setup: "/#/setup",
-});
-
 /** Compact set before the page's first script reads it (web/public/early.js), so every screen opens in it. */
 const inCompact = (page: Page) => page.addInitScript(() => localStorage.setItem("density", "compact"));
 
@@ -147,7 +106,8 @@ for (const [width, compact] of [[320, false], [390, false], [320, true], [390, t
   test(`every screen at ${named}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     if (compact) await inCompact(page);
-    for (const [screen, address] of Object.entries(addresses())) {
+    await taskRoute(page, ids.chat);
+    for (const [screen, address] of Object.entries(addresses(ids))) {
       await page.goto("about:blank");
       await page.goto(address);
       await measure(page, screen);

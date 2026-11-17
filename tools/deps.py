@@ -39,10 +39,14 @@ WRAPS = {
     "windows": ["cw-faces"],
     "windows-collections": ["cw-faces"],
     "windows-future": ["cw-faces"],
+    "wgpu": ["cw-faces"],
     "rusqlite": ["cw-store"],
     "sqlite-vec": ["cw-store"],
     "axum": ["cardwave-server"],
     "getrandom": ["cw-key"],
+    "libc": ["cw-platform", "cw-coding"],  # cw-coding: the tools' sandbox on Linux (tools/sandbox/linux.rs)
+    "trash": ["cw-platform"],
+    "keyring": ["cw-key"],
 }
 def metadata():
     out = subprocess.run(["cargo", "metadata", "--no-deps", "--format-version", "1", "--offline"],

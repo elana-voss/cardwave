@@ -16,6 +16,7 @@ import json
 import pathlib
 import re
 import subprocess
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEXTS = ROOT / "tools" / "licenses"
@@ -47,11 +48,12 @@ FIGURES = [
 ]
 LISTS = [("models.dev", "The list of providers", "MIT")]
 # Programs that are no package of Rust's or npm's: llama.cpp's llama-server comes with the app (tools/llama.py,
-# with LLVM's OpenMP library), ONNX Runtime is downloaded for the voice (crates/cw-voice/src/lib.rs), with the notices
+# on Windows with LLVM's OpenMP library; Linux's uses the system's), ONNX Runtime is downloaded for the voice (crates/cw-voice/src/lib.rs), with the notices
 # of what it is built of. The Rust standard library, in every Rust program, is `rust`.
 PROGRAMS = [
     ("llama.cpp", "b11528", "MIT", [TEXTS / "llama.cpp.txt"]),
-    ("LLVM OpenMP", "", "Apache-2.0 WITH LLVM-exception", [ROOT / "desktop" / "llama" / "LICENSE-LLVM-OpenMP"]),
+    *([("LLVM OpenMP", "", "Apache-2.0 WITH LLVM-exception", [ROOT / "desktop" / "llama" / "LICENSE-LLVM-OpenMP"])]
+      if sys.platform == "win32" else []),
     ("ONNX Runtime", "1.28.0", "MIT", [TEXTS / "onnxruntime.txt", TEXTS / "onnxruntime-notices.txt"]),
 ]
 NAMES = ("LICENSE", "LICENCE", "COPYING", "NOTICE", "UNLICENSE", "COPYRIGHT")

@@ -18,6 +18,7 @@ macro_rules! commands {
             window_title,
             pick_folder,
             open_logs,
+            download_name,
             update_check,
             update_install
         )

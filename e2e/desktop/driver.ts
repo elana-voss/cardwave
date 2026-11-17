@@ -1,35 +1,37 @@
-// Runs the desktop app for a test: built fresh, on a scratch folder with a
-// throwaway database key, and driven through tauri-driver (WebDriver).
+// Runs the desktop app for a test (this folder's debug build, or a given program such as the installed one) on
+// a scratch folder in `CARDWAVE_DATA_DIR` with a throwaway database key, which `restart` keeps, driven through
+// tauri-driver (WebDriver; 2.1.0 by `cargo install tauri-driver --locked`). Nothing may listen on port 4455.
+// Windows: an `msedgedriver` of the installed WebView2's version, which updates itself: compare `msedgedriver
+// --version` with `reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+// /v pv`; a new one from `https://msedgedriver.microsoft.com/<version>/edgedriver_win64.zip` (signed by
+// Microsoft); both in `%USERPROFILE%\.cargo\bin`. Linux: WebKitWebDriver, under Xvfb with Openbox and
+// `GDK_BACKEND=x11` (`tools/wsl.sh desktop-test`); downloads go to the scratch folder (its own `user-dirs.dirs`).
 //
-// It is the only way a test starts the desktop app (this folder's debug build, or a given program such as the
-// installed one), on a scratch folder given in `CARDWAVE_DATA_DIR`, which `restart` keeps with its key. `npm
-// run test:desktop` needs `tauri-driver` and an `msedgedriver` of the same version as the installed WebView2,
-// which updates itself: compare `msedgedriver --version` with `reg query
-// "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" /v pv`; a
-// new driver comes from `https://msedgedriver.microsoft.com/<version>/edgedriver_win64.zip` (check that its
-// signature is Microsoft's). Both are in `%USERPROFILE%\.cargo\bin` (`tauri-driver` 2.1.0 came by `cargo
-// install tauri-driver --locked`). Nothing may be listening on port 4455.
-//
-// Node 24 runs the `.ts` files of this folder as they are, but only strips the types: a constructor parameter
-// property is refused (seen), as is by Node's documentation an enum; an import names its file with `.ts`. In
-// the desktop window the app opens without an address, so on first run (`#/setup`) while its scratch folder
-// has no provider; a hidden file field takes a path through WebDriver's "element value"; what tauri-driver is
-// started with (environment) reaches the app; tauri-driver passes `ms/cdp/execute` on to WebView2.
+// Node 24 runs these `.ts` files as they are, only stripping types: no constructor parameter properties or
+// enums; imports name their file with `.ts`. The window opens without an address, so on first run on `#/setup`;
+// a hidden file field takes a path through WebDriver's "element value"; tauri-driver's environment reaches the
+// app, and on Windows it passes `ms/cdp/execute` on to WebView2.
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const root = resolve(import.meta.dirname, "..", "..");
+export const WINDOWS = process.platform === "win32";
 const PORT = 4455;
 const NATIVE_PORT = 4456;
 const DRIVER = `http://127.0.0.1:${PORT}`;
 /** The key WebDriver names an element by. */
-const ELEMENT = "element-6066-11e4-a52e-4f735466cecf";
+export const ELEMENT = "element-6066-11e4-a52e-4f735466cecf";
 
 type Element = string;
+
+/** This folder's debug build of the app (`CARGO_TARGET_DIR` moves it). */
+export function debugProgram(): string {
+  return join(process.env.CARGO_TARGET_DIR ?? join(root, "target"), "debug", WINDOWS ? "cardwave.exe" : "cardwave");
+}
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(DRIVER + path, {
@@ -96,7 +98,7 @@ export class Desktop {
       const built = spawnSync(command, args, { cwd: root, stdio: "inherit", shell: command === "npm" });
       if (built.status !== 0) throw new Error(`${command} ${args.join(" ")} failed`);
     }
-    const exe = given.exe ?? join(process.env.CARGO_TARGET_DIR ?? join(root, "target"), "debug", "cardwave.exe");
+    const exe = given.exe ?? debugProgram();
     // A driver left over from a run that was cut short would answer in place of
     // the new one, with that run's folder and key.
     if (await call("GET", "/status").then(() => true, () => false)) {
@@ -109,8 +111,16 @@ export class Desktop {
     // The app takes its folder and key from here, and so never opens the user's
     // own data. Should it ever look there all the same, this key does not fit.
     const key = given.key ?? randomBytes(32).toString("hex");
-    const env = { ...process.env, CARDWAVE_DATA_DIR: scratch, CARDWAVE_DB_KEY: key, CARDWAVE_USER: "local" };
-    const driver = spawn("tauri-driver", ["--port", String(PORT), "--native-port", String(NATIVE_PORT)], { env, stdio: ["ignore", "inherit", "inherit"] });
+    const env: NodeJS.ProcessEnv = { ...process.env, CARDWAVE_DATA_DIR: scratch, CARDWAVE_DB_KEY: key, CARDWAVE_USER: "local" };
+    if (!WINDOWS) {
+      // Linux: the Downloads folder is the one XDG's user-dirs.dirs names, which both WebKitGTK and the app read.
+      env.XDG_CONFIG_HOME = join(scratch, "config");
+      mkdirSync(env.XDG_CONFIG_HOME, { recursive: true });
+      writeFileSync(join(env.XDG_CONFIG_HOME, "user-dirs.dirs"), `XDG_DOWNLOAD_DIR="${join(scratch, "downloads")}"
+`);
+    }
+    // On Linux in a process group of its own, so that `stop` ends WebKitWebDriver and the app with it.
+    const driver = spawn("tauri-driver", ["--port", String(PORT), "--native-port", String(NATIVE_PORT)], { env, stdio: ["ignore", "inherit", "inherit"], detached: !WINDOWS });
     let failed: Error | undefined;
     driver.on("error", (error) => (failed = new Error(`cannot start tauri-driver (is it installed and on PATH?): ${error.message}`)));
     // A run that is cut short takes the driver and the app with it.
@@ -123,8 +133,8 @@ export class Desktop {
       const capabilities = { alwaysMatch: { browserName: "wry", "tauri:options": { application: exe } } };
       const { sessionId } = await call<{ sessionId: string }>("POST", "/session", { capabilities });
       const desktop = new Desktop(exe, scratch, key, driver, sessionId);
-      // Files are saved without asking, into the scratch folder and not the user's Downloads.
-      await desktop.send("POST", "/ms/cdp/execute", {
+      // Files are saved without asking, into the scratch folder and not the user's Downloads (Linux: by user-dirs.dirs).
+      if (WINDOWS) await desktop.send("POST", "/ms/cdp/execute", {
         cmd: "Browser.setDownloadBehavior",
         params: { behavior: "allow", downloadPath: desktop.downloads },
       });
@@ -226,9 +236,24 @@ export class Desktop {
     return this.send("POST", "/url", { url });
   }
 
+  /** Writes a PNG picture of what the window shows to `file`. */
+  async screenshot(file: string): Promise<void> {
+    writeFileSync(file, Buffer.from(await this.send<string>("GET", "/screenshot"), "base64"));
+  }
+
   /** The address of the page in the window. */
   url(): Promise<string> {
     return this.send("GET", "/url");
+  }
+
+  /** Waits until the page is there: its toast is, empty and so not shown under WebKitGTK. */
+  async pageIsThere(): Promise<void> {
+    await this.find("#toast", true);
+  }
+
+  /** Waits until the window shows the app's own page (an address), not the start-up one without. */
+  appPage(): Promise<boolean> {
+    return until("the app's page", async () => (await this.url()).startsWith("http"));
   }
 
   /** Runs a script in the page and returns what it returns. */
@@ -239,6 +264,13 @@ export class Desktop {
 
 /** Ends tauri-driver with the driver and app it started, then removes the scratch folder, where one is named. */
 function stop(driver: ChildProcess, scratch?: string): void {
-  if (driver.pid) spawnSync("taskkill", ["/pid", String(driver.pid), "/T", "/F"], { stdio: "ignore" });
+  if (driver.pid && WINDOWS) spawnSync("taskkill", ["/pid", String(driver.pid), "/T", "/F"], { stdio: "ignore" });
+  if (driver.pid && !WINDOWS) {
+    try {
+      process.kill(-driver.pid, "SIGKILL");
+    } catch {
+      // The group is gone already.
+    }
+  }
   if (scratch && existsSync(scratch)) rmSync(scratch, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
 }

@@ -129,8 +129,16 @@ add-character-start-chat = Iniciar chat
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Mudar a pasta de fichas
-card-folder-c-users-you-cards = C:\Users\você\Fichas
-card-folder-its-card-files-and = As fichas dela, e das subpastas, são importadas para a sua biblioteca, assim como as que você puser nela depois. Para obter o caminho de uma pasta no Windows, clique nela com o botão direito no Explorador e escolha Copiar como caminho.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/você/Fichas
+       *[other] C:\Users\você\Fichas
+    }
+card-folder-its-card-files-and =
+    As fichas dela, e das subpastas, são importadas para a sua biblioteca, assim como as que você puser nela depois. { $system ->
+        [linux] Para obter o caminho de uma pasta no Linux, abra-a no seu gerenciador de arquivos e pressione Ctrl+L: o caminho aparece, pronto para copiar.
+       *[other] Para obter o caminho de uma pasta no Windows, clique nela com o botão direito no Explorador e escolha Copiar como caminho.
+    }
 card-folder-use = Usar esta pasta
 
 ## importing (library/importing.ts)

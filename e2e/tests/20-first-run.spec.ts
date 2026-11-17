@@ -2,7 +2,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, modelLine, noneAdded, test } from "../test";
+import { button, expect, modelLine, noneAdded, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 
@@ -39,7 +39,6 @@ const KEY = "key-first-run-0123456789-4f2a";
 const LOCAL = /^http:\/\/127\.0\.0\.1:(5001|1234|11434)\//;
 const QUESTION = "Reply with the single word OK.";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const heading = (page: Page) => page.locator(".setup h1");
 const where = (page: Page) => page.locator(".setup-where");
 const about = (page: Page) => page.locator(".setup-head p");

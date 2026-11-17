@@ -103,8 +103,7 @@ error-folder-not-chosen = Wähle zuerst einen Ordner.
 error-drive-root-to-watch = Das Stammverzeichnis eines Laufwerks enthält zu viel zum Beobachten; wähle einen Ordner darin.
 error-drive-root-for-model = Das Stammverzeichnis eines Laufwerks enthält zu viel, um es der KI zu geben; wähle einen Ordner darin.
 error-data-folder = Dieser Ordner enthält Cardwaves eigene Daten oder liegt darin; wähle einen anderen.
-error-commands-windows-only = Befehle werden nur unter Windows ausgeführt.
-error-recycle-bin-windows-only = Dateien werden nur unter Windows in den Windows-Papierkorb verschoben.
+error-commands-unsafe = Befehle können auf diesem Computer nicht sicher ausgeführt werden: Sein System hat keine Sandbox für sie.
 error-files-tool-off = Schalte zuerst Dateien unter Einstellungen › Erweitert › Werkzeuge für die KI ein: Damit liest und schreibt das Team den Ordner der Aufgabe.
 
 ## Bilder, Antworten und Stimmen
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] Es ist noch kein Bildmodell eingerichtet: Richte eines unter Einstellungen › Modelle › Bilder ein.
     [no_local_model] In diesem Ordner gibt es kein Modell „{ $id }“.
     [no_local_models] Lokale Modelle sind nicht eingerichtet.
-    [no_recycle_bin] Für { $path } gibt es keinen Windows-Papierkorb.
     [no_summary] Die Karte hat noch keine Zusammenfassung.
     [no_voice] Diese Stimme gibt es nicht.
     [no_vulkan] Die Grafikkarte dieses Computers kann keine Modelle ausführen. Nutze stattdessen einen Anbieter.
     [no_vulkan_dictation] Die Grafikkarte dieses Computers kann das Diktat nicht ausführen.
     [prompt_change] Der Prompt dieses Charakters lässt sich in dieser Karte nicht ändern.
     [recycle_bin_move] { $path } wurde nicht in den Windows-Papierkorb verschoben.
+    [trash_move] { $path } wurde nicht in den Papierkorb des Computers verschoben.
     [speaker_not_in_chat] Der Sprecher gehört nicht zu diesem Chat.
     [speaker_only_character] Nur die Nachricht eines Charakters hat einen Sprecher.
     [unknown_language] Diese Sprache kennt die App nicht.

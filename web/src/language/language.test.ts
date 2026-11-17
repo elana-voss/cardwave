@@ -1,7 +1,7 @@
 // The UI's words (language.ts): which of the computer's languages is taken, a language that lacks a text, and
 // every message of the English file read.
 import { afterEach, expect, it, vi } from "vitest";
-import { appCode, followComputer, language, languagesNamed, languageName, midSentence, onLanguage, pick, useLanguage, wanted, wording, englishText as english } from "./language";
+import { appCode, followComputer, language, languagesNamed, languageName, midSentence, onLanguage, setSystem, pick, useLanguage, wanted, wording, englishText as english } from "./language";
 import { keysOf } from "./keys";
 import fileCodes from "./file-codes.json";
 
@@ -90,4 +90,11 @@ it("is done following the computer once its language is in use, so a screen draw
   vi.spyOn(navigator, "languages", "get").mockReturnValue(["de-DE"]);
   await followComputer();
   expect(language()).toBe("de");
+});
+
+it("tells every text the server's system, so a path and the bin are Linux's on Linux", () => {
+  setSystem("linux");
+  expect(wording("card-folder-c-users-you-cards")).toBe("/home/you/Cards");
+  setSystem("windows");
+  expect(wording("card-folder-c-users-you-cards")).toBe("C:\\Users\\you\\Cards");
 });

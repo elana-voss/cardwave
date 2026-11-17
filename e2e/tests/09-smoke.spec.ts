@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, composer, expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 
 // The smoke test, before every release and in every run: the app from an empty data folder through first run by
@@ -26,9 +26,7 @@ const LOCAL = /^http:\/\/127\.0\.0\.1:(5001|1234|11434)\//;
 /** A key that begins as no provider's does, so the provider is found by its address. */
 const KEY = "key-smoke-0123456789-7c1e";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const heading = (page: Page) => page.locator(".setup h1");
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const texts = (page: Page) => page.locator(".message .text");
 const alert = (page: Page) => page.locator(".note").getByRole("alert");
 

@@ -2,7 +2,7 @@ import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
 import { NOTHING, startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider } from "../stored";
-import { expect, test } from "../test";
+import { button, expect, say, test } from "../test";
 
 // Run-through "knowledge": a user's path through it by clicks and typing alone, each story going on from the one
 // before (`serial`). The start, made through `request`: the stand-in `api` the chat model, the card Mira, a chat
@@ -16,18 +16,7 @@ test.describe.configure({ mode: "serial" });
 let api: FakeProvider;
 let chat = 0;
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const memory = (page: Page) => page.locator(".memory-row");
-
-/** Sends `text` and waits for the reply to it. */
-async function say(page: Page, text: string): Promise<void> {
-  const before = await page.locator("article.message").count();
-  await composer(page).fill(text);
-  await composer(page).press("Enter");
-  await expect(page.locator("article.message")).toHaveCount(before + 2);
-  await expect(button(page, "Write again")).toBeEnabled();
-}
 
 test.beforeAll(async ({ request }) => {
   api = await startFakeProvider();

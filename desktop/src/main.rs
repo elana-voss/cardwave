@@ -11,19 +11,22 @@
 //! process, a reply under way too (`end_with_last`). The page draws the title
 //! bar (`window_*`); a link opened in a new window goes to the system's
 //! browser (`outside`); `open_page` opens a third window, `page`. Updates:
-//! update.rs.
+//! update.rs; the microphone on Linux: microphone.rs.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 #[macro_use]
 mod commands;
+mod downloads;
+#[cfg(target_os = "linux")]
+mod microphone;
 mod update;
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use cardwave_server::{DEFAULT_PORTS, Options, bind_local, router, serve};
+use cardwave_server::{DEFAULT_PORTS, Options, bind_local, router, serve, stand_ins};
 use commands::COMMANDS;
 use cw_platform::logs;
 use tauri::generate_handler;
@@ -80,6 +83,7 @@ fn main() -> tauri::Result<()> {
     }
     builder
         .manage(Companion::default())
+        .manage(downloads::Named::default())
         .manage(update::Pending::default())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(commands!(generate_handler))
@@ -96,6 +100,7 @@ fn main() -> tauri::Result<()> {
             if let Err(failure) = logs::start(&data_dir) {
                 eprintln!("the logs could not be started: {failure}");
             }
+            update::log_entry();
             let logs = logs::folder(&data_dir);
             start(app, data_dir, scratch.clone(), logs.clone())
                 .inspect_err(|failure| tell(&cannot_start(failure, &logs)))?;
@@ -126,6 +131,8 @@ fn start(
     if let Some(dir) = &scratch {
         options.documents = Some(dir.join("Documents"));
     }
+    // The window tests' stand-ins (e2e/desktop), read by a debug build only.
+    stand_ins(&mut options)?;
     let server = router(options)?;
     drop(inside);
     std::thread::spawn(move || {
@@ -222,6 +229,18 @@ fn window<'a>(
             outside(&url);
             NewWindowResponse::Deny
         });
+    // WebKitGTK saves a file only where the app says: into the Downloads
+    // folder (wry's choice), under the name the page gave it (downloads.rs).
+    #[cfg(target_os = "linux")]
+    let window = window.on_download(|webview, event| {
+        if let tauri::webview::DownloadEvent::Requested { url, destination } = event {
+            let named = webview.state::<downloads::Named>();
+            if let Some(path) = named.destination(url.as_str(), destination) {
+                *destination = path;
+            }
+        }
+        true
+    });
     // The window saves a file into the user's Downloads folder without asking
     // (WebView2 does), so the app's page is told the folder, to say where a
     // file went, and which window it is in (the window of one page has no
@@ -259,7 +278,7 @@ fn outside(url: &Url) {
 }
 
 /// Has the system open `what` (a web page's address, a folder): on Windows
-/// with the program and its arguments `windows`, elsewhere as the system opens files.
+/// with the program and its arguments `windows`, on Linux by `xdg-open`.
 fn system_open(windows: &[&str], what: impl AsRef<std::ffi::OsStr>) -> std::io::Result<()> {
     #[cfg(windows)]
     let mut command = {
@@ -267,13 +286,17 @@ fn system_open(windows: &[&str], what: impl AsRef<std::ffi::OsStr>) -> std::io::
         command.args(&windows[1..]);
         command
     };
-    #[cfg(target_os = "macos")]
-    let mut command = std::process::Command::new("open");
-    #[cfg(all(unix, not(target_os = "macos")))]
+    #[cfg(target_os = "linux")]
     let mut command = std::process::Command::new("xdg-open");
     #[cfg(not(windows))]
     let _ = windows;
     command.arg(what).spawn().map(drop)
+}
+
+/// The page saves the file at `url` under `name` next (downloads.rs).
+#[tauri::command]
+fn download_name(named: State<downloads::Named>, url: String, name: String) {
+    named.tell(url, name);
 }
 
 /// Opens the logs' folder in the system's file manager ("About Cardwave").
@@ -316,6 +339,8 @@ fn app_window(
         // browser: Tauri's own handler would keep them from it on Windows.
         .disable_drag_drop_handler()
         .build()?;
+    #[cfg(target_os = "linux")]
+    microphone::allow(&shown, &app.state::<Shell>().url)?;
     let screen = match shown.current_monitor()? {
         Some(screen) => Some(screen),
         None => app.primary_monitor()?,
@@ -323,7 +348,12 @@ fn app_window(
     if let Some(screen) = screen {
         let area = *screen.work_area();
         let (inner, outer) = (shown.inner_size()?, shown.outer_size()?);
-        let frame = (outer.width - inner.width, outer.height - inner.height);
+        // X11 tells the outer size only once a window manager framed the window:
+        // before, or with none (Xvfb), it is smaller than the inner one.
+        let frame = (
+            outer.width.saturating_sub(inner.width),
+            outer.height.saturating_sub(inner.height),
+        );
         let width = inner.width.min(area.size.width.saturating_sub(frame.0));
         let height = inner.height.min(area.size.height.saturating_sub(frame.1));
         shown.set_size(PhysicalSize::new(width, height))?;
@@ -353,6 +383,7 @@ fn open_companion(app: &AppHandle) -> anyhow::Result<()> {
         return Ok(());
     };
     let area = *screen.work_area();
+    let scale = screen.scale_factor();
     let state = app.state::<Companion>();
     // Until its page says so, the cursor is on nothing it shows, whatever the window before said: the new one lets clicks through.
     state.over.store(false, Ordering::Relaxed);
@@ -368,6 +399,12 @@ fn open_companion(app: &AppHandle) -> anyhow::Result<()> {
         .resizable(false)
         .visible(false)
         .disable_drag_drop_handler()
+        // Linux: GTK's window keeps telling the size it was made with (800 by 600) after `set_size`, so the cursor
+        // past it counted as outside and the figure never took a press there; made at the work area's size it tells that.
+        .inner_size(
+            f64::from(area.size.width) / scale,
+            f64::from(area.size.height) / scale,
+        )
         .build()?;
     companion.set_position(PhysicalPosition::new(area.position.x, area.position.y))?;
     companion.set_size(PhysicalSize::new(area.size.width, area.size.height))?;

@@ -4,7 +4,8 @@
 //! else the processor.
 //! It is started with a key of its own (`--api-key`; only `/health` answers
 //! without it), so no web page in the user's browser can use it.
-//! The process ends with the server (on Windows a job object); its log is
+//! The process ends with the server (on Windows a job object, on Linux the
+//! parent-death signal of `cw_platform::sys::end_with_this`); its log is
 //! `llama-server.log` in the data folder, made anew at each start.
 //! `Running` counts a text's tokens (`tokens`), cuts it into pieces of at most
 //! `CHUNK_TOKENS` by halving (`chunks`), and embeds to unit vectors (`embed`).
@@ -209,6 +210,8 @@ impl Running {
         }
         #[cfg(windows)]
         command.creation_flags(cw_platform::sys::NO_WINDOW);
+        #[cfg(target_os = "linux")]
+        cw_platform::sys::end_with_this(&mut command);
         let mut child = command.spawn().with_context(|| {
             Fail::said(
                 Code::NotPossible,

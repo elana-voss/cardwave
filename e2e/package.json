@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "playwright test",
-    "test:desktop": "node --test --test-concurrency=1 desktop/export.test.ts desktop/companion.test.ts"
+    "test:desktop": "node --test --test-concurrency=1 desktop/export.test.ts desktop/companion.test.ts desktop/shell.test.ts desktop/media.test.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0"

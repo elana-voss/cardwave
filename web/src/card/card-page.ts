@@ -1,6 +1,6 @@
 // A card's page's state (`newCard`), which its parts share (views/character.ts, card-modes.ts, card-box.ts, and the
 // chat's split view, chat/split.ts), and what they all do with it: run a step after the saves that wait (`after`),
-// save a change (`save`), tell its AI tools what of it they are given as context (`context`), make a new card (`make`), and read the card (`load`, `refresh`), its texts in the language in view (`language`, remembered per card by
+// save a change (`save`), write a text where it stands (`editInPlace`), tell its AI tools what of it they are given as context (`context`), make a new card (`make`), and read the card (`load`, `refresh`), its texts in the language in view (`language`, remembered per card by
 // `languageKey`; card-languages.ts). The page sets `render` and `drawState`; the parts draw only from the state.
 //
 // Traps: saves go one after the other, each writing into `edit` when its turn comes; once none waits the card is
@@ -26,6 +26,7 @@ import { remembered } from "../storage";
 import { sameMode, usedIn } from "./modes";
 import { pictureMade } from "./card-picture";
 import { wording } from "../language/language";
+import { inPlace, type InPlace } from "../in-place";
 
 /** The card's one character (a card from before may have more): the one its page shows. */
 export const SHOWN = 0;
@@ -237,6 +238,11 @@ export const inMode = (c: Card) => modes(c).find((one) => sameMode(one, c.mode ?
 export function redrawIdle(c: Card): void {
   if (c.body.querySelector(".in-place")) c.drawState();
   else c.render();
+}
+
+/** A text of the card written where it stands (`inPlace`), with its hint "Click to edit". */
+export function editInPlace(node: HTMLElement, place: Omit<InPlace, "hint">): () => void {
+  return inPlace(node, { ...place, hint: wording("character-click-to-edit") });
 }
 
 /** Runs `step` after the saves that wait. */

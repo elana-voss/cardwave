@@ -10,7 +10,7 @@
 // for every key used in the English file and fails on one it lacks (keys.ts, vite.config.ts), and cannot see
 // one put together. A key a language other than English lacks is said in English. Placeables are not wrapped in
 // Unicode isolation marks (`useIsolating: false`), so a text reads as written; a number is written ungrouped (1234,
-// as the code wrote it), still a number to pick a plural by.
+// as the code wrote it), still a number to pick a plural by. Every text is told the server's system as `$system` (`setSystem`).
 import { FluentBundle, FluentNumber, FluentResource, type FluentVariable } from "@fluent/bundle";
 
 /** What a text is told: its placeables by name. */
@@ -41,12 +41,20 @@ const ENGLISH = bundleOf("en", englishText);
 let now = ENGLISH;
 const heard = new Set<() => void>();
 
+/** The server's system (`/api/status`), which every text is told as `$system`: a path or a file manager differs on Linux. */
+let system = "windows";
+
+/** Takes the server's system, `"linux"`, `"windows"` or another. */
+export const setSystem = (name: string) => {
+  system = name;
+};
+
 /** The text of `key` in the language in use, English where that language lacks it; the key itself where English does too. */
 export function wording(key: string, args?: Args): string {
   for (const bundle of now === ENGLISH ? [ENGLISH] : [now, ENGLISH]) {
     const message = bundle.getMessage(key);
     // A placeable that cannot be said is said by its name: the text stands all the same.
-    if (message?.value) return bundle.formatPattern(message.value, args && told(args), []);
+    if (message?.value) return bundle.formatPattern(message.value, { system, ...(args && told(args)) }, []);
   }
   return key;
 }

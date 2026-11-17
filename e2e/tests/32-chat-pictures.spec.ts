@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page, Request } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { ccv4File, pictureFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
@@ -150,7 +150,6 @@ async function make(request: APIRequestContext): Promise<void> {
 test.beforeAll(({ request }) => make(request));
 test.afterAll(() => provider.close());
 
-const button = (page: Page, name: string | RegExp) => page.getByRole("button", { name, exact: true });
 const messages = (page: Page) => page.locator(".message");
 
 /** Opens a chat and waits for its `count` messages, as its second reading draws them, and the round pictures beside their names. */

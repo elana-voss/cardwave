@@ -3,10 +3,12 @@
 //! The key is 32 random bytes made on first run. Where it is kept is a [`Place`]:
 //! `CARDWAVE_DB_KEY` (64 hex digits) gives it from outside, for servers, CI and
 //! tests, and the app keeps it nowhere; otherwise it lives in the operating
-//! system's credential store (Windows Credential Manager, macOS Keychain), one
-//! entry per data folder under the service `cardwave` (`SERVICE`; a test's own
-//! is another, so that no test touches the installed app's entry), so it is
-//! never on disk beside the database. While a
+//! system's credential store (Windows Credential Manager, Linux's Secret
+//! Service), one entry per data folder under the service
+//! `cardwave` (`SERVICE`; a test's own is another, so that no test touches the
+//! installed app's entry), so it is never on disk beside the database; on a
+//! Linux where no Secret Service answers, a file only the user can read
+//! (`store/file.rs`). While a
 //! password is on (`password.rs`), the store holds nothing: `keep` and `forget`
 //! put it back and take it out. Every random value of the server is drawn
 //! here ([`random`], [`random_hex`]), the one crate naming `getrandom`.
@@ -31,7 +33,7 @@ pub fn random_hex(len: usize) -> anyhow::Result<String> {
     Ok(hex(&bytes))
 }
 
-fn hex(bytes: &[u8]) -> String {
+pub(crate) fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
@@ -149,68 +151,7 @@ impl Place {
     }
 }
 
-#[cfg(any(windows, target_os = "macos"))]
-mod store {
-    use super::*;
-
-    /// One entry per data folder, so two installs or profiles never share a key.
-    pub fn entry(service: &str, data_dir: &Path) -> anyhow::Result<keyring::Entry> {
-        let account = data_dir.canonicalize()?.to_string_lossy().into_owned();
-        keyring::Entry::new(service, &account).context("cannot reach the credential store")
-    }
-
-    pub fn load_or_create(service: &str, data_dir: &Path) -> anyhow::Result<DbKey> {
-        let entry = entry(service, data_dir)?;
-        match entry.get_password() {
-            Ok(hex) => DbKey::from_hex(&hex).context("the stored database key is damaged"),
-            Err(keyring::Error::NoEntry) => {
-                if data_dir.join(FILE_NAME).exists() {
-                    bail!(
-                        "the database in {} exists but its key is not in the credential store; set {KEY_ENV} to open it",
-                        data_dir.display()
-                    );
-                }
-                let key = DbKey::generate()?;
-                keep(service, data_dir, &key)?;
-                Ok(key)
-            }
-            Err(e) => Err(e).context("cannot read the database key from the credential store"),
-        }
-    }
-
-    pub fn keep(service: &str, data_dir: &Path, key: &DbKey) -> anyhow::Result<()> {
-        entry(service, data_dir)?
-            .set_password(&key.to_hex())
-            .context("cannot store the database key")
-    }
-
-    pub fn forget(service: &str, data_dir: &Path) -> anyhow::Result<()> {
-        match entry(service, data_dir)?.delete_credential() {
-            Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
-            Err(e) => Err(e).context("cannot take the database key out of the credential store"),
-        }
-    }
-}
-
-#[cfg(not(any(windows, target_os = "macos")))]
-mod store {
-    use super::*;
-
-    const NONE: &str =
-        "no credential store on this platform yet; set CARDWAVE_DB_KEY to 64 hex digits";
-
-    pub fn load_or_create(_service: &str, _data_dir: &Path) -> anyhow::Result<DbKey> {
-        bail!(NONE)
-    }
-
-    pub fn keep(_service: &str, _data_dir: &Path, _key: &DbKey) -> anyhow::Result<()> {
-        bail!(NONE)
-    }
-
-    pub fn forget(_service: &str, _data_dir: &Path) -> anyhow::Result<()> {
-        bail!(NONE)
-    }
-}
+mod store;
 
 #[cfg(test)]
 mod tests {

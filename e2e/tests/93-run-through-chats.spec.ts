@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { chooseView, expect, modelLine, test } from "../test";
+import { button, chooseView, composer, expect, modelLine, say, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { setProvider } from "../stored";
 
@@ -18,8 +18,6 @@ let api: FakeProvider;
 let gwen = 0;
 
 const GREETING = "The lamp is lit.";
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
-const composer = (page: Page) => page.getByLabel("Message", { exact: true });
 const messages = (page: Page) => page.locator("article.message");
 const texts = (page: Page) => page.locator("article.message .text");
 
@@ -28,15 +26,6 @@ async function pick(message: Locator, line: string): Promise<void> {
   await message.hover();
   await message.getByRole("button", { name: "Message options" }).click();
   await message.page().getByRole("menuitem", { name: line, exact: true }).click();
-}
-
-/** Sends `text` and waits for the reply to end. */
-async function say(page: Page, text: string): Promise<void> {
-  const before = await messages(page).count();
-  await composer(page).fill(text);
-  await composer(page).press("Enter");
-  await expect(messages(page)).toHaveCount(before + 2);
-  await expect(button(page, "Write again")).toBeEnabled();
 }
 
 /** Opens Mira's chat, the newest one with her, from the rail's Chats. */

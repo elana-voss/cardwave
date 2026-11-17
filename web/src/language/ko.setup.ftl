@@ -7,7 +7,11 @@ setup-use-this = 이것 사용
 setup-choose-folder = 폴더 선택
 setup-this-computer = 이 컴퓨터
 setup-this-computer-about = 내려받은 AI 모델 파일(.gguf)을 Cardwave가 실행해요
-setup-models-example = C:\Users\you\Models
+setup-models-example =
+    { $system ->
+        [linux] /home/you/Models
+       *[other] C:\Users\you\Models
+    }
 setup-models-says = 안의 모델 파일(.gguf)은 각각 채팅 모델이며, Cardwave가 이 컴퓨터에서 실행해요. 아직 모델 파일이 없나요? 빈 폴더를 고르세요: 설정 › 제공자 › 이 컴퓨터에서 이 컴퓨터에 맞는 모델을 보여 주고 그 폴더에 다운로드해요.
 setup-not-this = 이게 아닌가요?
 setup-recognised = 인식됨:{ " " }

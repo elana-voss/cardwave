@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { setProvider } from "../stored";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 
 // The password, from Profile, and the backup, from Settings › Data: a password switched on is asked for by the
 // start screen when the app opens again (`restartServer`), and by "Lock" in the account's menu, and switched off
@@ -13,7 +13,6 @@ import { expect, test } from "../test";
 
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const line = (page: Page, name: string) => page.locator(".item", { has: page.getByText(name, { exact: true }) });
 const dialog = (page: Page) => page.getByRole("dialog");
 

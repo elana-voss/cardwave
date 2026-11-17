@@ -18,8 +18,9 @@
 use std::collections::HashSet;
 
 use cw_core::languages::Language;
+use cw_core::{Code, Fail};
 use serde::{Deserialize, Serialize};
-use toml_edit::{Array, Item, TableLike, Value};
+use toml_edit::{Array, DocumentMut, Item, TableLike, Value};
 use ts_rs::TS;
 
 use crate::mapping::Section;
@@ -366,9 +367,46 @@ pub(super) fn find<'a>(item: &'a mut Item, keys: &[&str]) -> Option<&'a mut Item
         .try_fold(item, |item, key| item.as_table_like_mut()?.get_mut(key))
 }
 
+/// The index in `files` of the file holding the block of the character `id`.
+pub(super) fn home_of(files: &[DocumentMut], id: &str) -> Option<usize> {
+    files
+        .iter()
+        .position(|file| file.get("character").and_then(|all| all.get(id)).is_some())
+}
+
+/// The failure where the character `id` has no block to change in the card.
+pub(super) fn character_change(id: &str) -> Fail {
+    Fail::said(
+        Code::NotPossible,
+        format!("the character {id} cannot be changed in this card"),
+    )
+    .with("what", "character_change")
+    .with("id", id.to_string())
+}
+
 /// The one among `texts` that stands in the block `reference`.
 fn of_block<'a>(texts: &'a [EditText], reference: &str) -> Option<&'a EditText> {
     texts
         .iter()
         .find(|one| one.reference.as_deref() == Some(reference))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The home of a character is the file with its block, wherever it stands
+    /// among the card's files; none where no file has it.
+    #[test]
+    fn home_of_finds_the_file_with_the_characters_block() {
+        let files: Vec<DocumentMut> = [
+            "[meta-info]\nname = \"x\"\n",
+            "[character.ada]\nname = \"Ada\"\n",
+        ]
+        .iter()
+        .map(|text| text.parse().unwrap())
+        .collect();
+        assert_eq!(home_of(&files, "ada"), Some(1));
+        assert_eq!(home_of(&files, "bo"), None);
+    }
 }

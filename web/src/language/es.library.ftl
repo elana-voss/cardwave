@@ -130,8 +130,16 @@ add-character-start-chat = Empezar chat
 ## card-folder (library/card-folder.ts)
 
 card-folder-change-the-cards-folder = Cambiar la carpeta de tarjetas
-card-folder-c-users-you-cards = C:\Users\tu-nombre\Tarjetas
-card-folder-its-card-files-and = Sus tarjetas, y las de sus subcarpetas, se importan a tu biblioteca, y también las que pongas en ella más adelante. Para obtener la ruta de una carpeta en Windows, haz clic derecho sobre ella en el Explorador y elige Copiar como ruta de acceso.
+card-folder-c-users-you-cards =
+    { $system ->
+        [linux] /home/tu-nombre/Tarjetas
+       *[other] C:\Users\tu-nombre\Tarjetas
+    }
+card-folder-its-card-files-and =
+    Sus tarjetas, y las de sus subcarpetas, se importan a tu biblioteca, y también las que pongas en ella más adelante. { $system ->
+        [linux] Para obtener la ruta de una carpeta en Linux, ábrela en tu gestor de archivos y pulsa Ctrl+L: la ruta aparece, lista para copiar.
+       *[other] Para obtener la ruta de una carpeta en Windows, haz clic derecho sobre ella en el Explorador y elige Copiar como ruta de acceso.
+    }
 card-folder-use = Usar esta carpeta
 
 ## importing (library/importing.ts)

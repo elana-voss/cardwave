@@ -11,7 +11,11 @@ coding-open-task = 打开编程任务
 coding-undo-all = 全部撤销
 coding-put-the-folder-back = 要把文件夹恢复成任务开始前的样子吗？
 coding-add-an-export-of = 添加把聊天导出为 Markdown 的功能，并附一个测试。
-coding-c-users-you-projects = C:\Users\you\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/you/Projects/app
+       *[other] C:\Users\you\Projects\app
+    }
 coding-start-a-coding-task = 开始编程任务
 coding-start = 开始
 coding-goal = 目标
@@ -50,7 +54,7 @@ composer-replies = { $name } 回复
 
 dictate-dictate = 语音输入
 mic-none = 没有找到麦克风：请接上一个，然后再试一次。
-mic-not-allowed-desktop = Cardwave 无权使用麦克风：请在 Windows 的隐私设置的“麦克风”中允许。
+mic-not-allowed-desktop = Cardwave 无权使用麦克风：请在电脑隐私设置的“麦克风”中允许。
 mic-not-allowed-browser = 此页面无权使用麦克风：请在浏览器中此网站的设置里允许。
 mic-not-started = 无法启动麦克风：请关闭正在使用它的其他程序，然后再试一次。
 mic-not-offered = 在这个地址上浏览器不提供麦克风：请在运行 Cardwave 的电脑上使用麦克风。
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = 你好，我是 { $name }。你的消息被朗读
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = 语音没有响应了。请再试一次，或在 设置 › 语音 中选择其他语音。
-voice-this-window-cannot-play = 此窗口无法播放声音：{ $reason }。请检查 Windows 的声音输出。
+voice-this-window-cannot-play = 此窗口无法播放声音：{ $reason }。请检查此设备的声音输出。
 
 ## Written by hand: plurals, conditions and numbers
 

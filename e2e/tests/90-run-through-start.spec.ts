@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { cardFile } from "../card";
-import { expect, modelLine, test } from "../test";
+import { button, expect, modelLine, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 
@@ -36,7 +36,6 @@ const CARD = cardFile({
 });
 const REPLY = "The east wing holds the star charts.";
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const heading = (page: Page) => page.locator(".setup h1");
 /** What a line of Settings or of first run says under its name. */
 const says = (page: Page, name: string) => page.locator(".item:visible", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) }).locator(".item-text > .meta");

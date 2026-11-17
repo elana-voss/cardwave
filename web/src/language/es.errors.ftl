@@ -103,8 +103,7 @@ error-folder-not-chosen = Elige una carpeta primero.
 error-drive-root-to-watch = La raíz de una unidad contiene demasiado para vigilarla; elige una carpeta dentro.
 error-drive-root-for-model = La raíz de una unidad contiene demasiado para dárselo a la IA; elige una carpeta dentro de ella.
 error-data-folder = Esa carpeta contiene los datos propios de Cardwave, o está dentro de ellos; elige otra.
-error-commands-windows-only = Los comandos solo se ejecutan en Windows.
-error-recycle-bin-windows-only = Los archivos solo se mueven a la Papelera de reciclaje en Windows.
+error-commands-unsafe = Los comandos no se pueden ejecutar de forma segura en este equipo: su sistema no tiene un entorno aislado para ellos.
 error-files-tool-off = Activa primero Archivos en Ajustes › Avanzado › Herramientas para la IA: con ella el equipo de programación lee y escribe la carpeta de la tarea.
 
 ## Pictures, replies and voices
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] Aún no hay ningún modelo de imágenes configurado: configura uno en Ajustes › Modelos › Imágenes.
     [no_local_model] No hay ningún modelo “{ $id }” en esa carpeta.
     [no_local_models] Los modelos locales no están configurados.
-    [no_recycle_bin] No hay Papelera de reciclaje para { $path }.
     [no_summary] La tarjeta aún no tiene resumen.
     [no_voice] No existe esa voz.
     [no_vulkan] La tarjeta gráfica de este equipo no puede ejecutar modelos. Usa un proveedor en su lugar.
     [no_vulkan_dictation] La tarjeta gráfica de este equipo no puede ejecutar el dictado.
     [prompt_change] El prompt de ese personaje no se puede cambiar en esta tarjeta.
     [recycle_bin_move] { $path } no se movió a la Papelera de reciclaje.
+    [trash_move] { $path } no se movió a la Papelera del ordenador.
     [speaker_not_in_chat] Quien habla no forma parte de este chat.
     [speaker_only_character] Solo el mensaje de un personaje tiene a alguien que habla.
     [unknown_language] Ese no es un idioma que esta app conozca.

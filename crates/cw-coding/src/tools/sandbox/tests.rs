@@ -1,7 +1,8 @@
 //! The sandbox's own tests, on Windows only.
 
 use crate::tools::sandbox::OUTPUT_LIMIT;
-use crate::tools::sandbox::windows::{copied_for_test as copied, keep, resolve};
+use crate::tools::sandbox::keep;
+use crate::tools::sandbox::windows::{copied_for_test as copied, resolve};
 use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};

@@ -1,8 +1,10 @@
 //! The faces on a picture, found by YuNet (2023mar, MIT, Shiqi Yu; `yunet.onnx`, 232,589 bytes, inside the app).
 //!
-//! The model runs on the graphics card, never on the processor: through Windows ML, which comes with Windows
-//! (`winml.rs`), so no runtime is added; elsewhere, and on a computer with no graphics card, [`Finder::open`]
-//! fails and no picture has faces. This crate alone names `windows`; what is here beside it is plain arithmetic.
+//! The model runs on the graphics card, never on the processor: on Windows through Windows ML, which comes with
+//! Windows (`winml.rs`), so no runtime is added; elsewhere through Vulkan by wgpu and own kernels (`vulkan/`),
+//! which on Windows is built for tests alone, to compare its boxes with Windows ML's. On a computer with no graphics
+//! card [`Finder::open`] fails and no picture has faces. This crate alone names `windows` and `wgpu`; what is here
+//! beside them is plain arithmetic.
 //!
 //! A picture is looked at twice, its longest side at 640 pixels and at 320 (a face filling a picture is too large
 //! for the first), top-left on a black square of 640. Each pass answers per stride a score and a box per cell.
@@ -15,9 +17,10 @@ use image::imageops::{FilterType, resize};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+#[cfg(any(not(windows), test))]
+mod vulkan;
 #[cfg(not(windows))]
-#[path = "elsewhere.rs"]
-mod engine;
+use vulkan as engine;
 #[cfg(windows)]
 #[path = "winml.rs"]
 mod engine;
@@ -31,7 +34,6 @@ const SURE: f32 = 0.7;
 /// How much two boxes may overlap and be two faces.
 const SAME: f32 = 0.3;
 /// The model's strides, its outputs `cls_8`, `obj_8`, `bbox_8` and so on.
-#[cfg(windows)]
 const STRIDES: [u32; 3] = [8, 16, 32];
 
 /// Where a face is, in fractions of the picture's width and height.
@@ -63,14 +65,19 @@ impl Finder {
 
     /// The faces on a picture, the surest first.
     pub fn find(&self, picture: &RgbImage) -> Result<Vec<Face>> {
-        let mut found = vec![];
-        for side in PASSES {
-            let (scale, tensor) = square(picture, side);
-            let answer = self.0.pass(&tensor)?;
-            found.extend(boxes(&answer, scale, picture.width(), picture.height()));
-        }
-        Ok(merged(found))
+        faces(picture, |tensor| self.0.pass(tensor))
     }
+}
+
+/// The faces on a picture, each square read by `pass`.
+fn faces(picture: &RgbImage, pass: impl Fn(&[f32]) -> Result<Vec<Stride>>) -> Result<Vec<Face>> {
+    let mut found = vec![];
+    for side in PASSES {
+        let (scale, tensor) = square(picture, side);
+        let answer = pass(&tensor)?;
+        found.extend(boxes(&answer, scale, picture.width(), picture.height()));
+    }
+    Ok(merged(found))
 }
 
 /// The picture scaled to `side`, top-left on the black square, as the model reads it: blue, green, red planes of

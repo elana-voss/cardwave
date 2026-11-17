@@ -1,5 +1,5 @@
 import type { APIRequestContext, Locator, Page } from "@playwright/test";
-import { chooseView, expect, test } from "../test";
+import { button, chooseView, expect, test } from "../test";
 import { ccv4File } from "../card";
 
 // A card's page is where it is written: a text, the title, the tags and the lines under About are edited
@@ -107,7 +107,6 @@ const form = async (request: APIRequestContext, card: number): Promise<Form> => 
 const saved = <T>(request: APIRequestContext, card: number, read: (form: Form) => T, value: T) =>
   expect.poll(async () => read(await form(request, card))).toEqual(value);
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const field = (page: Page, name: string) => page.getByRole("textbox", { name, exact: true });
 const toast = (page: Page) => page.locator("#toast");
 /** A text of the card on its page, by its name. */

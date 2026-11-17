@@ -1,3 +1,11 @@
+# 0.3.0
+
+Cardwave di Linux.
+
+- Cardwave berjalan di Linux: halaman rilis menyediakan AppImage, yang berjalan di sebagian besar komputer Linux, dan .deb, yang terpasang di Ubuntu dan Debian.
+- Di Linux juga, wajah dicari di kartu grafismu, mikrofon berfungsi di jendela Cardwave, dan alat pemrograman AI menjalankan perintah.
+- Perbaikan kecil: tombol di bagian atas halaman muat di jendela yang sempit, dan menu akun tetap terbuka selama akunmu dimuat.
+
 # 0.2.0
 
 Cardwave di ponselmu, dan banyak perbaikan.

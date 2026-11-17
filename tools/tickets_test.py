@@ -143,6 +143,21 @@ def test_new_refuses_a_title_starting_with_a_dash():
             tickets.HERE = here
 
 
+def test_the_audit_comes_after_every_fifth_milestone():
+    done = [ticket(f"2026-11-01-{n}-m", number=str(n), status="Done") for n in range(1, 6)]
+    sixth = ticket("2026-11-01-6-m", number="6", status="In progress")
+    assert problems(table(*done)) == [], problems(table(*done))
+    assert any("audit" in p for p in problems(table(*done, sixth))), problems(table(*done, sixth))
+    audit = ticket("2026-11-01-audit", kind="audit", waits_on="[2026-11-01-5-m]")
+    assert any("audit" in p for p in problems(table(*done, sixth, audit))), "a milestone started before its audit is Done"
+    audit["fields"]["status"] = "Done"
+    assert problems(table(*done, sixth, audit)) == [], problems(table(*done, sixth, audit))
+    loose = ticket("2026-11-01-loose", kind="audit", waits_on="[owner]")
+    assert any("audit" in p and "loose" in p for p in problems(table(loose))), problems(table(loose))
+    odd = ticket("2026-11-01-7-b", kind="backlog", number="7", status="Done")
+    assert any("milestone" in p for p in problems(table(odd))), "a numbered backlog item would slip past the count"
+
+
 if __name__ == "__main__":
     test_a_parent_with_an_open_child_cannot_be_done()
     test_an_unknown_status_or_a_missing_field_fails()
@@ -154,4 +169,5 @@ if __name__ == "__main__":
     test_the_assignee_is_checked_shown_and_set_by_new()
     test_a_slug_keeps_a_word_ending_at_60()
     test_new_refuses_a_title_starting_with_a_dash()
-    print("tickets: 10 tests passed")
+    test_the_audit_comes_after_every_fifth_milestone()
+    print("tickets: 9 tests passed")

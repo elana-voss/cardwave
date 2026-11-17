@@ -8,11 +8,10 @@ import type { DepthText } from "../api/generated/DepthText";
 import type { EditCharacter } from "../api/generated/EditCharacter";
 import type { EditText } from "../api/generated/EditText";
 import { textBlock, type Source } from "./card-block";
-import { inPlace } from "../in-place";
 import { firstName } from "./card-languages";
 import { modeTagOf } from "./card-modes";
 import { place } from "./card-tools";
-import { after, inMode, redrawIdle, person, save, SHOWN, textKinds, type Card, type Kind } from "./card-page";
+import { after, editInPlace, inMode, redrawIdle, person, save, SHOWN, textKinds, type Card, type Kind } from "./card-page";
 import { announce, el } from "../dom";
 import { icon, type IconName } from "../icons";
 import { beginChat } from "../library/library-actions";
@@ -179,9 +178,8 @@ function talkativeness(c: Card, one: EditCharacter): HTMLElement {
   const content = el("div", { className: "tb-body" });
   let held: number | null = null;
   const talk = () => person(c)?.talkativeness ?? one.talkativeness;
-  inPlace(content, {
+  editInPlace(content, {
     label: wording("card-texts-talkativeness-in-percent-from"),
-    hint: wording("character-click-to-edit"),
     value: () => String(percent(held ?? talk())),
     show: () => [el("div", { className: "md" }, el("p", null, wording("card-texts-talkativeness-said", { percent: percent(held ?? talk()) })))],
     editing: (on) => section.classList.toggle("is-edit", on),

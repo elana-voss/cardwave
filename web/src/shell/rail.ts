@@ -289,11 +289,15 @@ function accountButtons() {
     return made;
   }
   let [accountMenu, barAccountMenu] = menus();
+  /** Makes the menus anew; one open stays open, as what it is told can come while it is (a screen reads the accounts too). */
   const remake = () => {
+    const open = [account, barAccount].filter((button) => button.ariaExpanded === "true");
     const [made, barMade] = menus();
     accountMenu.replaceWith(made);
     barAccountMenu.replaceWith(barMade);
     [accountMenu, barAccountMenu] = [made, barMade];
+    // The new menu's own opener, called directly: a dispatched click would reach the page's listeners too.
+    for (const button of open) button.onclick?.call(button, new PointerEvent("click"));
   };
   watchPassword((on) => {
     passwordOn = on;

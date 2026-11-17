@@ -11,7 +11,11 @@ coding-open-task = 코딩 작업 열기
 coding-undo-all = 모두 되돌리기
 coding-put-the-folder-back = 폴더를 작업 전 상태로 되돌릴까요?
 coding-add-an-export-of = 채팅을 Markdown으로 내보내는 기능을 테스트와 함께 추가해 줘.
-coding-c-users-you-projects = C:\Users\you\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/you/Projects/app
+       *[other] C:\Users\you\Projects\app
+    }
 coding-start-a-coding-task = 코딩 작업 시작
 coding-start = 시작
 coding-goal = 목표
@@ -50,7 +54,7 @@ composer-replies = { $name } 캐릭터가 답장
 
 dictate-dictate = 음성 입력
 mic-none = 마이크를 찾지 못했어요. 마이크를 연결한 뒤 다시 시도하세요.
-mic-not-allowed-desktop = Cardwave가 마이크를 쓸 수 없어요. Windows 개인 정보 설정의 마이크에서 허용하세요.
+mic-not-allowed-desktop = Cardwave가 마이크를 쓸 수 없어요. 컴퓨터의 개인 정보 설정의 마이크에서 허용하세요.
 mic-not-allowed-browser = 이 페이지가 마이크를 쓸 수 없어요. 브라우저의 이 사이트 설정에서 허용하세요.
 mic-not-started = 마이크를 시작하지 못했어요. 마이크를 쓰는 다른 프로그램을 닫은 뒤 다시 시도하세요.
 mic-not-offered = 이 주소에서는 브라우저가 마이크를 제공하지 않아요. Cardwave가 실행되는 컴퓨터에서 마이크를 쓰세요.
@@ -424,7 +428,7 @@ voice-setup-hello-im-this-is = 안녕하세요, { $name } 음성이에요. 메�
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = 음성이 응답하지 않아요. 다시 해 보거나 설정 › 음성에서 다른 음성을 고르세요.
-voice-this-window-cannot-play = 이 창에서는 소리를 재생할 수 없어요: { $reason }. Windows의 사운드 출력을 확인하세요.
+voice-this-window-cannot-play = 이 창에서는 소리를 재생할 수 없어요: { $reason }. 이 기기의 사운드 출력을 확인하세요.
 
 ## Written by hand: plurals, conditions and numbers
 

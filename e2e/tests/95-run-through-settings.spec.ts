@@ -3,7 +3,7 @@ import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 import { setProvider } from "../stored";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 
 // Run-through "settings and account": a user's path through them by clicks and typing alone, each story going on
 // from the one before (`serial`). The start, made through `request`: the stand-in `api` the chat model, the cards
@@ -19,7 +19,6 @@ let api: FakeProvider;
 let search: FakeSearch;
 let moss = 0;
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const notice = (page: Page) => page.locator("#toast span");
 const dialog = (page: Page) => page.getByRole("dialog");
 const item = (page: Page, name: string) => page.locator(".item", { has: page.getByText(name, { exact: true }) });

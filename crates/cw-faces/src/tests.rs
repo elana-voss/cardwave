@@ -66,12 +66,72 @@ fn a_tall_picture_lies_top_left_on_the_square_in_blue_green_red() {
     assert_eq!(tensor[320 * SQUARE as usize], 0.);
 }
 
+/// Off Windows, a computer whose Vulkan has only the processor (WSL's llvmpipe, GitHub's runner) has no Finder.
+#[cfg(not(windows))]
+#[test]
+fn without_a_graphics_card_no_finder_opens() {
+    if vulkan::card().unwrap().is_none() {
+        assert!(Finder::open().is_err());
+    }
+}
+
 /// Through the model itself, where this computer has a graphics card to run it on.
-#[cfg(windows)]
 #[test]
 fn a_blank_picture_has_no_faces() {
     // No graphics card: nothing to show here.
     let Ok(finder) = Finder::open() else { return };
     let blank = RgbImage::from_pixel(64, 64, image::Rgb([128, 128, 128]));
     assert_eq!(finder.find(&blank).unwrap(), vec![]);
+}
+
+/// The Vulkan engine, run here on this computer's graphics card, finds the boxes Windows ML finds on the browser
+/// tests' portraits, each side within a hundredth of the picture.
+#[cfg(windows)]
+#[test]
+fn vulkan_finds_the_faces_windows_ml_finds() {
+    // Where neither engine finds a graphics card (GitHub's runner) there is nothing to compare: skipped by name,
+    // never passed. Where only one does, the test fails. A Vulkan without its loader counts as no card.
+    let windows = match (engine::Session::open(), vulkan::card().ok().flatten()) {
+        (Ok(windows), Some(_)) => windows,
+        (Err(why), None) => {
+            eprintln!(
+                "skipped vulkan_finds_the_faces_windows_ml_finds: no graphics card here ({why:#})"
+            );
+            return;
+        }
+        (windows, card) => panic!(
+            "vulkan_finds_the_faces_windows_ml_finds: only one engine reaches a graphics card \
+             (Windows ML: {:?}; Vulkan's card found: {})",
+            windows.err().map(|why| format!("{why:#}")),
+            card.is_some()
+        ),
+    };
+    let vulkan = vulkan::Session::open().unwrap();
+    let folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../e2e/portraits");
+    let mut compared = 0;
+    for entry in std::fs::read_dir(&folder).unwrap() {
+        let path = entry.unwrap().path();
+        let picture = image::open(&path).unwrap().to_rgb8();
+        let expected = faces(&picture, |tensor| windows.pass(tensor)).unwrap();
+        let found = faces(&picture, |tensor| vulkan.pass(tensor)).unwrap();
+        assert_eq!(
+            found.len(),
+            expected.len(),
+            "{path:?}: {found:?} {expected:?}"
+        );
+        for (one, other) in found.iter().zip(&expected) {
+            let sides = [
+                one.left - other.left,
+                one.top - other.top,
+                one.width - other.width,
+                one.height - other.height,
+            ];
+            assert!(
+                sides.iter().all(|side| side.abs() <= 0.01),
+                "{path:?}: {one:?} {other:?}"
+            );
+        }
+        compared += 1;
+    }
+    assert!(compared > 0, "no portrait in {folder:?} to compare on");
 }

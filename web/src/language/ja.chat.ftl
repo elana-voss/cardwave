@@ -9,7 +9,11 @@ coding-open-task = コーディングタスクを開く
 coding-undo-all = すべて元に戻す
 coding-put-the-folder-back = フォルダーをタスクの前の状態に戻しますか？
 coding-add-an-export-of = チャットをMarkdownでエクスポートする機能を、テストつきで追加して。
-coding-c-users-you-projects = C:\Users\you\Projects\app
+coding-c-users-you-projects =
+    { $system ->
+        [linux] /home/you/Projects/app
+       *[other] C:\Users\you\Projects\app
+    }
 coding-start-a-coding-task = コーディングタスクを始める
 coding-start = 開始
 coding-goal = 目標
@@ -48,7 +52,7 @@ composer-replies = { $name }が返信
 
 dictate-dictate = 音声入力
 mic-none = マイクが見つかりません。マイクを接続してから、もう一度お試しください。
-mic-not-allowed-desktop = Cardwaveはマイクを使えません。Windowsのプライバシー設定の「マイク」で許可してください。
+mic-not-allowed-desktop = Cardwaveはマイクを使えません。コンピューターのプライバシー設定の「マイク」で許可してください。
 mic-not-allowed-browser = このページはマイクを使えません。ブラウザーのこのサイトの設定で許可してください。
 mic-not-started = マイクを起動できませんでした。マイクを使っているほかのプログラムを閉じてから、もう一度お試しください。
 mic-not-offered = このアドレスではブラウザーがマイクを使わせません。Cardwave が動いているコンピューターでマイクを使ってください。
@@ -422,7 +426,7 @@ voice-setup-hello-im-this-is = こんにちは、{ $name }です。メッセー�
 ## voice (voice/voice.ts)
 
 voice-the-voice-stopped-answering = 音声が応答しなくなりました。もう一度試すか、設定 › 音声で別の音声を選んでください。
-voice-this-window-cannot-play = このウィンドウでは音を再生できません: { $reason }。Windowsのサウンド出力を確認してください。
+voice-this-window-cannot-play = このウィンドウでは音を再生できません: { $reason }。このデバイスのサウンド出力を確認してください。
 
 ## Written by hand: plurals, conditions and numbers
 

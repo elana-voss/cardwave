@@ -246,8 +246,16 @@ backup-about-chosen = 聊天、角色和设置存为一个文件，用你选择�
 
 folder-watch = 自动导入新的角色卡
 folder-watch-about = 放进这个文件夹的角色卡文件会自动进入你的资料库
-folder-recycle = 把已导入的文件移到 Windows 回收站
-folder-recycle-about = 文件导入后会移到回收站
+folder-recycle =
+    { $system ->
+        [linux] 把已导入的文件移到电脑的回收站
+       *[other] 把已导入的文件移到 Windows 回收站
+    }
+folder-recycle-about =
+    { $system ->
+        [linux] 文件导入后会移到电脑的回收站
+       *[other] 文件导入后会移到回收站
+    }
 
 ## The companion's line (library/companion-app.ts)
 
@@ -389,7 +397,11 @@ tools-pictures = 使用图像模型
 tools-pictures-first = 请先设置图像模型
 tools-app = 使用和更改你的角色、聊天和设置；每次更改都先询问
 tools-dice = 让 AI 掷骰子；由 Cardwave 来掷，结果公平。
-tools-folder-example = C:\Users\you\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/you/Documents/Shared
+       *[other] C:\Users\you\Documents\Shared
+    }
 tools-folder-says = 文件和命令只能访问这个文件夹及其中的内容，别的都不行。
 tools-change-folder = 更改文件夹
 tools-change = 更改

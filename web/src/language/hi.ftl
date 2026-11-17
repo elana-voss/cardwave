@@ -247,8 +247,16 @@ backup-about-chosen = चैट, किरदार और सेटिंग्
 
 folder-watch = नए कार्ड अपने-आप इंपोर्ट करें
 folder-watch-about = फ़ोल्डर में रखी गई कार्ड फ़ाइल अपने-आप आपकी लाइब्रेरी में आ जाती है
-folder-recycle = इंपोर्ट हो चुकी फ़ाइलें रीसायकल बिन में डालें
-folder-recycle-about = फ़ाइल इंपोर्ट होते ही रीसायकल बिन में चली जाती है
+folder-recycle =
+    इंपोर्ट हो चुकी फ़ाइलें { $system ->
+        [linux] कंप्यूटर के ट्रैश
+       *[other] रीसायकल बिन
+    } में डालें
+folder-recycle-about =
+    फ़ाइल इंपोर्ट होते ही { $system ->
+        [linux] कंप्यूटर के ट्रैश
+       *[other] रीसायकल बिन
+    } में चली जाती है
 
 ## The companion's line (library/companion-app.ts)
 
@@ -395,7 +403,11 @@ tools-pictures = इमेज मॉडल इस्तेमाल करता
 tools-pictures-first = पहले इमेज मॉडल सेट करें
 tools-app = आपके किरदार, चैट और सेटिंग्स इस्तेमाल करना और बदलना; हर बदलाव पहले पूछा जाता है
 tools-dice = AI को पासे फेंकने देता है; पासे Cardwave फेंकता है, ताकि नतीजा निष्पक्ष रहे।
-tools-folder-example = C:\Users\aap\Documents\Shared
+tools-folder-example =
+    { $system ->
+        [linux] /home/aap/Documents/Shared
+       *[other] C:\Users\aap\Documents\Shared
+    }
 tools-folder-says = फ़ाइलें और कमांड सिर्फ़ इस फ़ोल्डर और इसके अंदर की चीज़ों तक पहुँचती हैं, और कहीं नहीं।
 tools-change-folder = फ़ोल्डर बदलें
 tools-change = बदलें

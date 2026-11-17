@@ -22,7 +22,7 @@ use toml::{Table, Value};
 use toml_edit::{DocumentMut, Item};
 use ts_rs::TS;
 
-use crate::edit::Edited;
+use crate::edit::{Edited, character_change, home_of};
 use crate::{Document, free_id, is_placeholder, split_reference, strings};
 
 /// The keys of a character that name its texts in its language: all but its name.
@@ -427,20 +427,6 @@ fn opened(files: &[(String, String)]) -> anyhow::Result<Vec<DocumentMut>> {
     Ok(open)
 }
 
-/// The index in `open` of the file holding the character `id`.
-fn home_of(open: &[DocumentMut], id: &str) -> anyhow::Result<usize> {
-    open.iter()
-        .position(|file| file.get("character").and_then(|all| all.get(id)).is_some())
-        .with_context(|| {
-            Fail::said(
-                Code::NotPossible,
-                format!("the character {id} cannot be changed in this card"),
-            )
-            .with("what", "character_change")
-            .with("id", id.to_string())
-        })
-}
-
 /// Sets the card's last change to `now` (milliseconds) where it says anything
 /// of itself (its `meta-info`); the index of that file, where it has one.
 fn dated(open: &mut [DocumentMut], now: i64) -> anyhow::Result<Option<usize>> {
@@ -489,7 +475,7 @@ pub fn add(
             .with("name", name.to_string())
     );
     let mut open = opened(files)?;
-    let home = home_of(&open, id)?;
+    let home = home_of(&open, id).with_context(|| character_change(id))?;
 
     let mut copies = Copies {
         document: &document,

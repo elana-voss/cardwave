@@ -103,8 +103,7 @@ error-folder-not-chosen = Choose a folder first.
 error-drive-root-to-watch = A drive's root holds too much to watch; choose a folder in it.
 error-drive-root-for-model = A drive's root holds too much to give the AI; choose a folder in it.
 error-data-folder = That folder holds Cardwave's own data, or is in it; choose another.
-error-commands-windows-only = Commands are run only on Windows.
-error-recycle-bin-windows-only = Files are moved to the Recycle Bin only on Windows.
+error-commands-unsafe = Commands cannot run safely on this computer: its system has no sandbox for them.
 error-files-tool-off = Switch on Files in Settings › Advanced › Tools for the AI first: the team reads and writes the task's folder with it.
 
 ## Pictures, replies and voices
@@ -380,13 +379,13 @@ error-not-possible = { $what ->
     [no_image_model] No image model is set up yet: set one up in Settings › Models › Images.
     [no_local_model] There is no model “{ $id }” in that folder.
     [no_local_models] Local models are not set up.
-    [no_recycle_bin] There is no Recycle Bin for { $path }.
     [no_summary] The card has no summary yet.
     [no_voice] There is no such voice.
     [no_vulkan] This computer's graphics card cannot run models. Use a provider instead.
     [no_vulkan_dictation] This computer's graphics card cannot run dictation.
     [prompt_change] That character's prompt cannot be changed in this card.
     [recycle_bin_move] { $path } was not moved to the Recycle Bin.
+    [trash_move] { $path } was not moved to the computer's Trash.
     [speaker_not_in_chat] The speaker is not part of this chat.
     [speaker_only_character] Only a character's message has a speaker.
     [unknown_language] That is no language this app knows.

@@ -7,7 +7,7 @@ resolver = "3"
 members = ["server", "desktop", "crates/cw-core", "crates/cw-platform", "crates/cw-faces", "crates/cw-whisper", "crates/cw-prompt", "crates/cw-ccv4", "crates/cw-key", "crates/cw-accounts", "crates/cw-modelfiles", "crates/cw-provider", "crates/cw-search", "crates/cw-voice", "crates/cw-dictation", "crates/cw-library", "crates/cw-coding", "crates/cw-chat", "crates/cw-find", "crates/cw-store"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 license = "UNLICENSED"
 publish = false
@@ -88,12 +88,20 @@ reqwest = { version = "0.12", default-features = false, features = ["json", "nat
 image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
 # Several askings at once, answered in their order (the search for a provider's API). axum and reqwest bring it anyway.
 futures-util = "0.3"
-keyring ={ version = "3", features = ["windows-native", "apple-native"] }
+# On Linux the Secret Service over D-Bus (libdbus), its secret sent encrypted; where none answers, a file (cw-key).
+keyring = { version = "3", features = ["windows-native", "sync-secret-service", "crypto-rust"] }
+# Linux's own calls: the search model's process ended with the server's (parent-death signal), Vulkan's loader
+# looked for (`crates/cw-platform/src/sys.rs`), as windows-sys on Windows.
+libc = "0.2"
+# freedesktop.org's Trash on Linux, where a removed file goes (`crates/cw-platform/src/sys.rs`).
+trash = "5"
 # The search model's process is ended with the server's, by a job object (`crates/cw-provider/src/embedder.rs`).
 # The shell tool's sandbox, an AppContainer (`server/src/tools/sandbox.rs`).
 # The faces on a picture, through Windows ML, which comes with Windows (crates/cw-faces).
 windows = { version = "0.62", features = ["AI_MachineLearning", "Foundation", "Foundation_Collections", "Graphics", "Storage", "Storage_Streams", "Win32_Foundation", "Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common", "Win32_System_WinRT"] }
 windows-collections = "0.3"
+# The faces on a picture off Windows, through Vulkan, with own kernels (crates/cw-faces/src/vulkan).
+wgpu = { version = "30.0.2", default-features = false, features = ["std", "vulkan", "wgsl"] }
 windows-future = "0.3"
 windows-sys = { version = "0.61", features = ["Win32_System_JobObjects", "Win32_Security_Isolation", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Storage_FileSystem", "Win32_System_Com", "Win32_System_SystemInformation", "Win32_System_LibraryLoader", "Win32_UI_Shell", "Win32_Foundation", "Win32_Globalization"] }
 # Documents of a chat or a character: the text of a PDF, and of a Word file (a zip of XML).

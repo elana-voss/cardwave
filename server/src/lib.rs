@@ -16,6 +16,9 @@ pub mod api;
 mod faces;
 mod ports;
 pub mod pretend;
+mod stand_ins;
+
+pub use stand_ins::stand_ins;
 
 use anyhow::Context;
 use axum::extract::connect_info::ConnectInfo;
@@ -345,21 +348,14 @@ impl AppState {
     /// the cards too (it is no one user's). Every registry of work under way is asked here, so a restore
     /// and an account's delete wait for the same.
     fn busy(&self, user: Option<i64>) -> bool {
-        let Some(id) = user else {
-            return !(self.replies().is_empty()
-                && self.describing().is_empty()
-                && self.remembering().is_empty()
-                && self.coding().is_empty()
-                && self.titles.is_empty()
-                && cw_core::lock(&self.0.at_work).is_empty()
-                && !self.search.is_reading());
-        };
-        self.replies().keys().any(|(user, _)| *user == id)
-            || self.describing().contains_key(&id)
-            || self.remembering().values().any(|user| *user == id)
-            || self.coding().values().any(|task| task.user() == id)
-            || self.titles.for_user(id)
-            || cw_core::lock(&self.0.at_work).contains_key(&id)
+        let of = |who: i64| user.is_none_or(|id| id == who);
+        self.replies().keys().any(|(who, _)| of(*who))
+            || self.describing().keys().any(|who| of(*who))
+            || self.remembering().values().any(|who| of(*who))
+            || self.coding().values().any(|task| of(task.user()))
+            || self.titles.any(user)
+            || cw_core::lock(&self.0.at_work).keys().any(|who| of(*who))
+            || (user.is_none() && self.search.is_reading())
     }
 }
 

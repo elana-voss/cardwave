@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { button, expect, test } from "../test";
 import { picture, SIZES, stopClock, THEMES } from "../pictures";
 
 // "Make a character together": Create's New character offers it, the opening's questions have Next alone, the kinds six
@@ -9,7 +9,6 @@ import { picture, SIZES, stopClock, THEMES } from "../pictures";
 // lets the kept interview go. Past it the read-back, whose lines `lines` fixes; the writing runs on the pretend model.
 test.describe.configure({ mode: "serial" });
 
-const button = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 const next = (page: Page) => button(page, "Next");
 const WANTED = "Someone who listens";
 /** The English words of each interview text's id, as en.interview.ftl has them. */
