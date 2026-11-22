@@ -14,6 +14,7 @@ http.workspace = true
 chrono.workspace = true
 tracing-subscriber.workspace = true
 anyhow.workspace = true
+flate2.workspace = true
 tokio.workspace = true
 cw-core.workspace = true
 

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Clicks, Reactions } from "./react";
+import { Answers, Clicks, Reactions, Touches } from "./react";
 
 describe("the figure's reactions", () => {
   it("keep a handling that ends while another question is in flight, and ask it once that one has answered", async () => {
@@ -103,5 +103,37 @@ describe("a click on the figure", () => {
     vi.advanceTimersByTime(400);
     clicks.up(true);
     expect(startle).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("a touch of the figure", () => {
+  it("is told where the click landed, and while its answer is on its way a second touch asks nothing", async () => {
+    vi.useFakeTimers();
+    const startle = vi.fn();
+    new Clicks(startle, 300).up(false, () => "hand");
+    vi.advanceTimersByTime(400);
+    vi.useRealTimers();
+    expect(startle).toHaveBeenCalledWith("hand");
+    let answer = () => {};
+    const ask = vi.fn(() => new Promise<void>((resolve) => (answer = resolve)));
+    const touches = new Touches(ask);
+    touches.touched("head");
+    touches.touched("hand");
+    expect(ask.mock.calls).toEqual([["head"]]);
+    answer();
+    await new Promise((resolve) => setTimeout(resolve));
+    touches.touched("hand");
+    expect(ask.mock.calls).toEqual([["head"], ["hand"]]);
+    expect(touches.answering).toBe(true);
+  });
+
+  it("keeps its answer from an older question's that comes after it", () => {
+    const answers = new Answers();
+    const [alone, touch] = [answers.ask(), answers.ask()];
+    expect(touch()).toBe(true);
+    expect(alone()).toBe(false);
+    const [first, second] = [answers.ask(), answers.ask()];
+    expect(first()).toBe(true);
+    expect(second()).toBe(true);
   });
 });

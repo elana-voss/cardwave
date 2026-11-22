@@ -14,10 +14,12 @@
 
 pub mod api;
 mod faces;
+mod policy;
 mod ports;
 pub mod pretend;
 mod stand_ins;
 
+use policy::{PAGE_POLICY, worker_policy};
 pub use stand_ins::stand_ins;
 
 use anyhow::Context;
@@ -553,32 +555,12 @@ pub fn router(opts: Options) -> anyhow::Result<Router> {
     Ok(outer(gated(gate)))
 }
 
-/// The pages' Content-Security-Policy with the pictures it allows (`img-src`).
-macro_rules! page_policy {
-    ($pictures:literal) => {
-        concat!(
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src ",
-            $pictures,
-            "; media-src 'self' data: blob:; font-src 'self' data:; ",
-            "connect-src 'self' data: blob: ipc: http://ipc.localhost; frame-src 'self'; object-src 'none'; ",
-            "base-uri 'none'; form-action 'self'; frame-ancestors 'self'"
-        )
-    };
-}
-
-/// The pages' Content-Security-Policy, the second guard should a stranger's text ever reach the page as HTML:
-/// scripts only the app's own files, no inline script or eval. Styles allow inline for the user's own CSS
-/// (a `<style>`); pictures only the app's own; `ipc:` is the desktop window's way to its shell, `blob:`/`data:`
-/// the figures' files read in the page. A stored file's answer keeps its own, stricter policy (api.rs).
-pub(crate) const PAGE_POLICY: &str = page_policy!("'self' data: blob:");
-/// [`PAGE_POLICY`] with pictures from the web, for a page whose user's Settings show them ([`api::page_policy`]).
-pub(crate) const WEB_PAGE_POLICY: &str = page_policy!("'self' data: blob: http: https:");
-
 /// What every answer of the server has around it, of both its listeners.
 fn outer(app: Router) -> Router {
     let default =
         |name, value| SetResponseHeaderLayer::if_not_present(name, HeaderValue::from_static(value));
-    app.layer(middleware::from_fn(origin_guard))
+    app.layer(middleware::from_fn(worker_policy))
+        .layer(middleware::from_fn(origin_guard))
         .layer(middleware::from_fn(api::noted))
         .layer(middleware::map_response(api::error_body))
         .layer(default(header::CACHE_CONTROL, "no-cache"))

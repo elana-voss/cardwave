@@ -34,7 +34,4 @@ cw-provider.workspace = true
 cw-search.workspace = true
 cw-library.workspace = true
 cw-coding.workspace = true
-
-[dev-dependencies]
-# memory_port's test reads its gzipped golden file.
-flate2.workspace = true
+cw-sandbox.workspace = true

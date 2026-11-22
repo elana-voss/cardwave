@@ -19,6 +19,7 @@ cw-find.workspace = true
 cw-chat.workspace = true
 cw-coding.workspace = true
 cw-library.workspace = true
+cw-sandbox.workspace = true
 cw-dictation.workspace = true
 cw-voice.workspace = true
 cw-search.workspace = true

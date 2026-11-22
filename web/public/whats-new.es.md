@@ -1,3 +1,15 @@
+# 0.3.2
+
+La cara del acompañante cobra vida, y responde cuando lo tocas.
+
+- Una figura 3D con formas de cara parpadea, te mira y muestra en su cara sus sentimientos y su voz, en VRM, GLB y FBX.
+- Sin voz, los labios del acompañante se mueven igualmente mientras llega una respuesta.
+- Haz clic en la cabeza del acompañante, en una mano u otra parte de su cuerpo: se sobresalta y el personaje responde en su bocadillo. Un doble clic sigue abriendo el chat.
+- En cualquier tamaño, el acompañante está de pie, se tumba y camina con los pies sobre el borde inferior de la ventana, y ya no se desliza al caminar.
+- Una figura VRM que añades nombra a su creador.
+- El panel lateral del chat lista cada herramienta que usó una respuesta, en «Usado en esta respuesta».
+- Nuevo en Ajustes › Avanzado › Herramientas para la IA: «Nombres para personajes nuevos» hace que la IA tome el nombre de cada personaje nuevo de una gran lista que encaja con la cultura, la época y el género.
+
 # 0.3.1
 
 Una pequeña corrección para Linux.

@@ -5,7 +5,7 @@
 // A message is `article.message`: `.message-head` (`.avatar`, `.speaker`, whose tooltip says its tokens),
 // `.bubble > .text` (narration.ts) or a picture with its own menu (pictures.ts), what the user attached over the
 // bubble (`.attached-stack`), and `.actions`. Its menu places itself in the window
-// (`menuOn` with `float`). A click on a reply, not on one of its controls or its words being selected, chooses it
+// (`menuOn` with `float`), and stays open as the list is drawn anew (`openMenu`). A click on a reply, not on one of its controls or its words being selected, chooses it
 // (`.chosen`, `choose`), for the side panel's "Used in this reply"; a second click lets it go. The user's round is the persona's, else the account's; a chat
 // without a character has "AI" with the robot round (`aiRound`). A coding task's card (coding.ts)
 // stands in its message's place (`cards`). While something is written a message is only read (`idle`). While the
@@ -41,6 +41,7 @@ export function drawMessages(s: Screen): void {
   const active = document.activeElement;
   const typing = active instanceof HTMLTextAreaElement && s.list.contains(active) ? active : null;
   const point = messages.findIndex((message) => message.id === s.branchAt);
+  const reopen = openMenu(s.list);
   s.list.replaceChildren(
     ...messages.map((message, i) => {
       const shown = messageNode(s, message, i === messages.length - 1);
@@ -55,6 +56,25 @@ export function drawMessages(s: Screen): void {
     area?.focus();
     area?.setSelectionRange(typing.selectionStart, typing.selectionEnd);
   }
+  reopen();
+}
+
+/**
+ * The menu open in `list` (a message's or a picture's), by its message and its button's name; what it returns opens
+ * it again in the list drawn anew, so an event of the server (a memory kept, the chat's title) does not close it
+ * under the user's pointer. Nothing, where none is open or its message is gone.
+ */
+function openMenu(list: HTMLElement): () => void {
+  const buttons = (within: ParentNode) => [...within.querySelectorAll("button")].filter((button) => button.ariaHasPopup);
+  const open = buttons(list).find((button) => button.ariaExpanded === "true");
+  const id = open?.closest<HTMLElement>("[data-id]")?.dataset.id;
+  if (!open || id === undefined) return () => {};
+  return () => {
+    const message = list.querySelector(`[data-id="${id}"]`);
+    // A coding task's card is the same node drawn again, its menu still open.
+    const again = message && buttons(message).find((button) => button.ariaLabel === open.ariaLabel);
+    if (again && again.ariaExpanded !== "true") again.click();
+  };
 }
 
 /** The round of a chat without a character: the AI itself. */
@@ -92,8 +112,8 @@ function head(s: Screen, message: MessageView): HTMLElement {
   const me = el("span", { className: `initial initial-sm avatar own${persona ? " of-persona" : ""}`, ariaHidden: "true" });
   if (persona) showRound(me, persona);
   else if (s.account) showRound(me, s.account);
-  // Plain has every message at the left, and says which is the user's. Without a character the user is the account.
-  if (persona) return by(me, persona.name, el("span", { className: "you" }, wording("messages-you")));
+  // The user's name stands alone, no "(you)" (the owner, 2026-11-17). Without a character the user is the account.
+  if (persona) return by(me, persona.name);
   return by(me, !characters.length && s.account ? s.account.name : wording("messages-you-2"));
 }
 

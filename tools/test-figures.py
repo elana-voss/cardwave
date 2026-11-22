@@ -1,14 +1,20 @@
 """Writes the browser tests' 3D figures into e2e/figures/: a mannequin of boxes, one per bone, standing in T-pose,
 in three skeletons: `mannequin.vrm` (VRoid's bone names, made a VRM 1.0 by its `VRMC_vrm` humanoid),
-`mixamo.glb` and `mixamo.fbx` (Mixamo's names, no VRM) and `odd.glb` (a tail of bones no human skeleton has, which is refused).
+`mixamo.glb` and `mixamo.fbx` (Mixamo's names, no VRM) and `odd.glb` (a tail of bones no human skeleton has, which is refused);
+and the Mixamo mannequin with a face (`faces`): face shapes named as Apple's face tracking names them, in mixed case, on two
+meshes, as `faces.fbx` and as `faces-packed.glb`, its geometry meshopt-compressed and its texture KTX2 (gltf-transform),
+and `faces-base.glb`, `faces.fbx` packed as the base figures are (tools/companion_assets.py's one-figure run, a second Blender).
 
 Run once, with Blender 5.2: blender -b --python tools/test-figures.py
-Blender runs headless only (`-b`), and every output path is absolute.
+Blender runs headless only (`-b`), and every output path is absolute. `faces-packed.glb` needs gltf-transform (npm) and
+KTX-Software's toktx on PATH; Blender rewrites the other files with new bytes but the same content, which git restores.
 """
 
 import json
 import pathlib
+import shutil
 import struct
+import subprocess
 
 import bpy
 
@@ -87,6 +93,36 @@ def mannequin(names: dict, colour: tuple) -> None:
     body.modifiers.new("Armature", "ARMATURE").object = rig
 
 
+def faces(names: dict) -> None:
+    """A face on the mannequin's head, two meshes moved by its head bone: "Face" with a texture and the shapes JawOpen,
+    eyeblinkleft and MOUTHSMILELEFT, "Brows" with browInnerUp and EyeBlinkLeft (the lid's shape on a second mesh)."""
+    rig = bpy.data.objects["Armature"]
+    picture = bpy.data.images.new("Skin", 8, 8)
+    picture.pixels = [0.9, 0.7, 0.6, 1] * 64
+    picture.pack()
+    material = bpy.data.materials.new("Face")
+    material.use_nodes = True
+    nodes = material.node_tree.nodes
+    texture = nodes.new("ShaderNodeTexImage")
+    texture.image = picture
+    material.node_tree.links.new(texture.outputs["Color"], nodes["Principled BSDF"].inputs["Base Color"])
+    for name, z, shapes in (("Face", 1.6, ("JawOpen", "eyeblinkleft", "MOUTHSMILELEFT")), ("Brows", 1.72, ("browInnerUp", "EyeBlinkLeft"))):
+        mesh = bpy.data.meshes.new(name)
+        mesh.from_pydata([(-0.05, -0.11, z), (0.05, -0.11, z), (0.05, -0.11, z + 0.04), (-0.05, -0.11, z + 0.04)], [], [(0, 1, 2, 3)])
+        mesh.uv_layers.new()
+        mesh.materials.append(material)
+        part = bpy.data.objects.new(name, mesh)
+        bpy.context.scene.collection.objects.link(part)
+        part.vertex_groups.new(name=names["head"]).add([0, 1, 2, 3], 1.0, "REPLACE")
+        part.parent = rig
+        part.modifiers.new("Armature", "ARMATURE").object = rig
+        part.shape_key_add(name="Basis")
+        for shape in shapes:
+            key = part.shape_key_add(name=shape, from_mix=False)
+            for point in key.data:
+                point.co.z += 0.02
+
+
 def export(path: pathlib.Path) -> None:
     bpy.ops.export_scene.gltf(filepath=str(path), export_format="GLB", export_animations=False)
 
@@ -121,6 +157,16 @@ mixamo = {key: f"mixamorig:{name}" for key, name in MIXAMO.items()}
 mannequin(mixamo, (0.9, 0.55, 0.35))
 export(OUT / "mixamo.glb")
 bpy.ops.export_scene.fbx(filepath=str(OUT / "mixamo.fbx"), bake_anim=False, add_leaf_bones=False)
+faces(mixamo)
+bpy.ops.export_scene.fbx(filepath=str(OUT / "faces.fbx"), bake_anim=False, add_leaf_bones=False, path_mode="RELATIVE")
+packer = [bpy.app.binary_path, "-b", "-P", str(ROOT / "tools" / "companion_assets.py"), "--"]
+subprocess.run([*packer, str(OUT / "faces.fbx"), str(OUT / "faces-base.glb")], check=True)
+export(OUT / "faces.glb")
+tool = shutil.which("gltf-transform")
+# The textures first: gltf-transform decodes meshopt's geometry to write anything else.
+subprocess.run([tool, "etc1s", str(OUT / "faces.glb"), str(OUT / "faces-packed.glb")], check=True)
+subprocess.run([tool, "meshopt", str(OUT / "faces-packed.glb"), str(OUT / "faces-packed.glb")], check=True)
+(OUT / "faces.glb").unlink()
 odd = {key: f"Bone.{at:03}" for at, (key, *_) in enumerate(BONES)}
 mannequin(odd, (0.5, 0.5, 0.5))
 export(OUT / "odd.glb")

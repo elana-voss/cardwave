@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { APIRequestContext, Locator, Page, Request } from "@playwright/test";
-import { expect, test } from "../test";
+import type { APIRequestContext, Locator, Page } from "@playwright/test";
+import { expect, goHeard, test } from "../test";
 import { cardFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { still, stopClock } from "../pictures";
 import { ASHWOOD, CARDS, PERSONA, TURNS } from "../screenshot-cards";
-import { setProvider } from "../stored";
+import { setProvider, setSettings } from "../stored";
 
 // The readme's and the landing site's screenshots, written to docs/screenshots/ (chat, library, card, lorebook,
 // companion, and chat-dark and chat-<look> for three looks for the landing alone), not compared: run only when asked, `SCREENSHOTS=1 npx playwright
@@ -122,15 +122,9 @@ async function shoot(page: Page, name: string, on?: Locator): Promise<void> {
   await page.screenshot({ path: join(OUT, `${name}.png`) });
 }
 
-/** The chat with Nyra, once both of its readings are in and every picture has come. */
+/** The chat with Nyra, once the server's first word and all it read are in and every picture has come. */
 async function openChat(page: Page): Promise<void> {
-  let read = 0;
-  const counted = (request: Request) => {
-    if (request.method() === "GET" && new URL(request.url()).pathname === `/api/chats/${chat}`) read += 1;
-  };
-  page.on("requestfinished", counted);
-  await page.goto(`/#/chats/${chat}`);
-  await expect.poll(() => read).toBe(2);
+  await goHeard(page, `/#/chats/${chat}`);
   await expect(page.locator(".message")).toHaveCount(TURNS.length + 1);
   await expect.poll(() => page.locator("img").evaluateAll((all: HTMLImageElement[]) => all.filter((one) => one.getBoundingClientRect().width > 0).every((one) => one.complete && one.naturalWidth > 0))).toBe(true);
 }
@@ -182,8 +176,7 @@ test("companion", async ({ page, request }) => {
   await page.mouse.move(1438, 898);
   await still(page);
   const behind = (await page.screenshot()).toString("base64");
-  const set = await request.patch("/api/settings", { data: { companion: { card_id: nyra, starts: true, hidden_until: null, size: 40 } } });
-  expect(set.status(), await set.text()).toBe(200);
+  await setSettings(request, { companion: { card_id: nyra, starts: true, hidden_until: null, size: 40 } });
   await page.goto("/companion.html");
   const figure = page.locator("canvas.companion-figure");
   await expect(figure).toBeVisible();

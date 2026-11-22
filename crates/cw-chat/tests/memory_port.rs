@@ -7,23 +7,18 @@
 //! The helper is a fake that answers the stored replies; no model is asked.
 //! The app's own fields of an entry (`id`, `chat`, `deleted`) are left out of the comparison.
 
-use std::io::Read;
-
 use cw_chat::memory::{self, Ask, Away, Block, Helper, Mode, Said, Vectors};
 use futures_util::future::BoxFuture;
 use serde_json::Value;
 
 fn golden() -> Value {
-    let file = std::fs::File::open(concat!(
+    let packed = std::fs::read(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/memory_port/golden.json.gz"
     ))
     .expect("the golden file is there");
-    let mut text = String::new();
-    flate2::read::GzDecoder::new(file)
-        .read_to_string(&mut text)
-        .expect("the golden file reads");
-    serde_json::from_str(&text).expect("the golden file is JSON")
+    let bytes = cw_platform::packed::unpacked(&packed).expect("the golden file reads");
+    serde_json::from_slice(&bytes).expect("the golden file is JSON")
 }
 
 /// Answers the stored reply once its prompt is the one the benchmark sent.

@@ -3,10 +3,15 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "tests",
   // The run-throughs (9x-run-through-*) run only with RUN_THROUGHS=1: when asked, or as tools/check.sh's `run-throughs`;
-  // the readme's screenshots (99-screenshots) only with SCREENSHOTS=1, never by tools/check.sh.
-  testIgnore: [process.env.RUN_THROUGHS === "1" ? [] : [/run-through/], process.env.SCREENSHOTS === "1" ? [] : [/screenshots/]].flat(),
+  // the readme's screenshots (99-screenshots) only with SCREENSHOTS=1, never by tools/check.sh; a figure seen
+  // (97-seen) only with SEEN=<figures>, never by tools/check.sh.
+  testIgnore: [
+    process.env.RUN_THROUGHS === "1" ? [] : [/run-through/],
+    process.env.SCREENSHOTS === "1" ? [] : [/screenshots/],
+    process.env.SEEN ? [] : [/97-seen/],
+  ].flat(),
   // Spec files run beside each other, each on a server of its own (test.ts); a file's tests run one after the other.
-  workers: 6,
+  workers: 4,
   // Builds the UI and the server once, and cleans up after the run.
   globalSetup: "./server.mjs",
   // WEBKIT=1: Playwright's own WebKit, the stand-in for Linux's window (WebKitGTK; run in WSL, 154), where the stored

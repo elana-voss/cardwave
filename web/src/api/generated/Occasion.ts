@@ -3,4 +3,4 @@
 /**
  * Why the animator is asked now.
  */
-export type Occasion = "reply" | "handled" | "alone";
+export type Occasion = "reply" | "handled" | "alone" | "touched";

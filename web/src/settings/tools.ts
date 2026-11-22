@@ -8,7 +8,7 @@
 // account's alone; an "Ask before" line shows while its tool is on. Files and Commands cannot be switched on
 // without a folder, nor Image generation without an image model. Cardwave is the app's own tools, each change
 // asked first, without the switch for the chat. Dice, off at first, the dice the model rolls in every chat (the owner,
-// 2026-10-23), last of the switches (Claude).
+// 2026-10-23), then Names for new characters, also off at first (Claude, 161), the last switches.
 import { wording } from "../language/language";
 import { changeSettings, getImages, getSettings, listWrittenTools } from "../api/client";
 import type { ChangeTools } from "../api/generated/ChangeTools";
@@ -20,7 +20,7 @@ import { el, failure, group, item, link, noticeBox, oneAtATime, reason, switchBo
 import { folderDialog } from "../dialogs";
 import { LABELS } from "../setting-labels";
 
-type Switch = "web" | "files" | "ask_writes" | "commands" | "ask_commands" | "pictures" | "app" | "dice";
+type Switch = "web" | "files" | "ask_writes" | "commands" | "ask_commands" | "pictures" | "app" | "dice" | "names";
 
 /** What the link to the tools the model wrote says: how many there are, and whether a new one asks first. */
 export function writtenSays(count: number, ask: boolean): string {
@@ -53,6 +53,7 @@ export function toolLines(tools: Tools, local: boolean, image: boolean, part: To
   });
   lines.push({ key: "app", label: LABELS.advanced.app, says: wording("tools-app"), off: false });
   lines.push({ key: "dice", label: LABELS.advanced.dice, says: wording("tools-dice"), off: false });
+  lines.push({ key: "names", label: LABELS.advanced.names, says: wording("tools-names"), off: false });
   return lines;
 }
 

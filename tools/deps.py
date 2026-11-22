@@ -28,13 +28,13 @@ ORDER = [
     "cw-core", "cw-platform", "cw-faces", "cw-whisper",
     "cw-prompt", "cw-ccv4",
     "cw-key", "cw-accounts", "cw-modelfiles", "cw-provider", "cw-search", "cw-voice", "cw-dictation",
-    "cw-library", "cw-coding", "cw-chat", "cw-find",
+    "cw-library", "cw-sandbox", "cw-coding", "cw-chat", "cw-find",
     "cw-store", "cardwave-server", "cardwave-desktop",
 ]
 # A library named by one crate alone, the one that wraps it.
 WRAPS = {
     "reqwest": ["cw-platform"],
-    "windows-sys": ["cw-platform", "cw-coding"],  # the tools' sandbox (tools/sandbox.rs) has its own
+    "windows-sys": ["cw-platform", "cw-sandbox"],  # the tools' sandbox has its own
     "whisper-rs": ["cw-whisper"],
     "windows": ["cw-faces"],
     "windows-collections": ["cw-faces"],
@@ -44,9 +44,10 @@ WRAPS = {
     "sqlite-vec": ["cw-store"],
     "axum": ["cardwave-server"],
     "getrandom": ["cw-key"],
-    "libc": ["cw-platform", "cw-coding"],  # cw-coding: the tools' sandbox on Linux (tools/sandbox/linux.rs)
+    "libc": ["cw-platform", "cw-sandbox"],  # cw-sandbox: the tools' sandbox on Linux
     "trash": ["cw-platform"],
     "keyring": ["cw-key"],
+    "flate2": ["cw-platform"],  # zip's deflate backend reaches cw-modelfiles through it
 }
 def metadata():
     out = subprocess.run(["cargo", "metadata", "--no-deps", "--format-version", "1", "--offline"],

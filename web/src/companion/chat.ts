@@ -6,7 +6,8 @@
 // none. A reply streams in by the event socket, as in the chat's screen (views/chat.ts), and what the box does is
 // told as the figure's mood: listening while the user types, thinking until the reply's first words, talking while
 // they come and while the reply it asked for is read aloud in the card's voice, where the voice is set up and not muted (the
-// lips move with it, figure.ts); a reply that ended is told too (`replied`), for the animator.
+// lips move with it, figure.ts; a reply no voice will read has its letters told as they come, `talks`, for lips.ts);
+// a reply that ended is told too (`replied`), for the animator.
 //
 // Traps: the box is made before its chat is known (`open` finds it, once, also when opened twice at once); an event of another chat, or one that
 // comes while the chat is read, is let go, as the reply's end brings the whole message; a message sent or deleted in
@@ -28,6 +29,8 @@ import { readAloud, spoken, stopReading } from "../voice/voice";
 export interface Hooks {
   mood(mood: Mood): void;
   replied(chatId: number): void;
+  /** Letters of a reply that came in and no voice will read (the figure's lips speak them), or none: it ended. */
+  talks(letters: string | null): void;
   /** "Open in Cardwave": the chat in the app's window. */
   openFull(chatId: number): void;
   closed(): void;
@@ -192,6 +195,10 @@ function boxVoice(cardId: number, loud: HTMLButtonElement, status: HTMLElement, 
     get speaking(): boolean {
       return speaking;
     },
+    /** Whether a reply asked for here will be read aloud: a voice set up and not muted. */
+    get reads(): boolean {
+      return !muted && voice !== null && usable(voice);
+    },
     /** Reads the voice anew. A failed read keeps the speaker as it was: the next voice or provider event asks again. */
     readVoice(): void {
       getVoice().then(hear, () => {});
@@ -227,6 +234,8 @@ interface Talk {
   asked: boolean;
   /** Whether the box has heard the server before: the next `hello` is after a drop, when a reply's end may have been missed. */
   heard: boolean;
+  /** A reply's words that came before the answer to `generate` brought its message, by the message's id. */
+  early: Map<number, string>;
 }
 
 /** What the box's event handling reaches. */
@@ -253,6 +262,7 @@ function onEvent(box: Box, event: ServerEvent): void {
   if (event.type === "hello") {
     if (!talk.heard) return void (talk.heard = true);
     talk.waiting = talk.streaming = talk.asked = false;
+    box.hooks.talks(null);
     box.mood();
     if (!box.node.hidden && chat.id !== null) quietly(box);
     return;
@@ -277,8 +287,12 @@ function replyText(box: Box, event: Extract<ServerEvent, { type: "reply_text" }>
   box.talk.waiting = false;
   box.talk.streaming = true;
   const message = box.talk.messages.find((one) => one.id === event.message_id);
-  if (!message || message.content.length < event.start) return;
-  message.content = message.content.slice(0, event.start) + event.text;
+  const known = message ? message.content : (box.talk.early.get(event.message_id) ?? "");
+  if (known.length < event.start) return;
+  const content = known.slice(0, event.start) + event.text;
+  if (message) message.content = content;
+  else box.talk.early.set(event.message_id, content);
+  if (!(box.talk.asked && box.voice.reads)) box.hooks.talks(content.slice(known.length));
   box.draw();
   box.mood();
 }
@@ -287,6 +301,8 @@ function replyText(box: Box, event: Extract<ServerEvent, { type: "reply_text" }>
 function replyEnded(box: Box, event: Extract<ServerEvent, { type: "reply_ended" }>): void {
   const { talk } = box;
   talk.waiting = talk.streaming = false;
+  box.hooks.talks(null);
+  talk.early.clear();
   if (event.error) box.status.replaceChildren(failure(failureWords(event.error)));
   if (talk.asked && !event.error && event.message) box.voice.say(event.message);
   talk.asked = false;
@@ -302,7 +318,7 @@ function replyEnded(box: Box, event: Extract<ServerEvent, { type: "reply_ended" 
 }
 
 export function compactChat(cardId: number, hooks: Hooks): CompactChat {
-  const talk: Talk = { messages: [], waiting: false, streaming: false, asked: false, heard: false };
+  const talk: Talk = { messages: [], waiting: false, streaming: false, asked: false, heard: false, early: new Map() };
   const chat = chatFinder(cardId);
   const { node, picture, name, full, loud, more, shut, list, status, input, form } = compactBox();
   const mood = () =>
@@ -336,7 +352,9 @@ export function compactChat(cardId: number, hooks: Hooks): CompactChat {
       talk.messages.push(sent);
       draw();
       const reply = await generate(id, {});
-      if (!talk.messages.some((one) => one.id === reply.id)) talk.messages.push(reply);
+      // Its first words may have come before this answer, and its end too.
+      if (!talk.messages.some((one) => one.id === reply.id)) talk.messages.push({ ...reply, content: talk.early.get(reply.id) ?? reply.content });
+      talk.early.delete(reply.id);
       draw();
     } catch (error) {
       talk.asked = talk.waiting = talk.streaming = false;

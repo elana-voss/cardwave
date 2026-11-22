@@ -63,7 +63,7 @@ export const ROBOT: ClipTable = {
     thrown: { clips: ["Jump"], speed: 0, at: 0.5 },
     falling: { clips: ["Jump"], speed: 0, at: 0.3 },
     bumped: { clips: ["Death"], speed: 0, at: 0.25 },
-    bouncing: { clips: ["Death"], speed: 0, at: 0.8 },
+    bouncing: { clips: ["Jump"], speed: 0, at: 0.6 },
     landing: { clips: ["Standing"], speed: 1, once: true },
     walking: { clips: ["Walking"], speed: 1 },
     climbing: { clips: ["Walking"], speed: 0.8 },
@@ -124,8 +124,8 @@ export const CARRIED: ClipTable = {
     thrown: { clips: ["fall_loop", "falling_idle"], speed: 1 },
     falling: { clips: ["fall_loop", "falling_idle"], speed: 1 },
     bumped: { clips: ["reacting"], speed: 0, at: 0.3 },
-    // Thrown, it lies at once while it bounces, not by a clip between.
-    bouncing: { clips: ["laying_idle", "laying_idle_2"], speed: 1, direct: true },
+    // Bouncing, a pose of its own in the air (the owner, 2026-11-21), braced as its landing starts, reached at once.
+    bouncing: { clips: ["hard_landing"], speed: 0, at: 0, direct: true },
     landing: { clips: ["hard_landing", "hard_landing_2", "fall_landing"], speed: 1, once: true },
     walking: { clips: ["walking", "walking_2", "walking_3", "walking_4", "happy_walk", "sad_walk"], speed: 1 },
     climbing: { clips: ["climbing_up_wall"], speed: 1 },
@@ -195,6 +195,11 @@ export class Clips {
     const front = this.front;
     if (this.route.length > 0) return true;
     return !!front && front === this.state && front.once && this.elapsed * front.speed < front.action.getClip().duration;
+  }
+
+  /** Each clip that plays, by its weight in the pose. */
+  get weighed(): ReadonlyMap<AnimationAction, number> {
+    return this.weights;
   }
 
   /** The clip that gives the figure its pose now. */

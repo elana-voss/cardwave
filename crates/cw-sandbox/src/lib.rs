@@ -1,20 +1,18 @@
-//! The shell tool's sandbox: a command reaches no file but those of the
-//! folder it is given (and the system's own programs and libraries, read
-//! only), no network, and nothing of the server's: no handle but its
-//! output's, no variable of its environment but a few of the system's. All
-//! its processes end when it has run its time, is stopped or has ended.
+//! The commands' sandbox (the chat's shell tool, the coding team), all the
+//! tools' unsafe code: a command reaches no file but its folder's (and the
+//! system's programs and libraries, read only), no network, nothing of the
+//! server's (no handle but its output's, a few system variables). All its
+//! processes end when it has run its time, is stopped or has ended.
 //!
-//! On Windows (`windows.rs`) a command runs by `cmd.exe` in an AppContainer of
-//! the folder's own and a job; on Linux (`linux.rs`) by `sh`, held by
-//! Landlock (files) and a seccomp filter (network, other processes) in a
-//! process group of its own. On a Linux whose kernel has no
-//! Landlock, no command runs and the tool is not offered (`available`).
-//! Trap: cmd's `dir` and `vol` read the drive's root and are refused; a refused one says `LISTING`.
+//! Windows (`windows.rs`): `cmd.exe` in an AppContainer of the folder's own and
+//! a job. Linux (`linux.rs`): `sh` held by Landlock (files) and seccomp
+//! (network, other processes) in its own process group and a user systemd
+//! scope; without either no command runs and the tool is not offered
+//! (`available`). Trap: cmd's `dir` and `vol` read the drive's root and are
+//! refused; a refused one says `LISTING`.
 //!
-//! The coding team's commands reach more (`Reach`): the folders of the
-//! server's `PATH` that hold programs (`grantable`) and what their programs
-//! need, read only; a folder of the command's own for their caches; and for
-//! installs the internet (not this computer's own addresses).
+//! The team's commands reach more (`Reach`): the `PATH` folders holding
+//! programs (`grantable`), a folder of their own, for installs the internet.
 
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -30,9 +28,12 @@ pub fn available() -> bool {
     return linux::available();
 }
 
-/// Why no command runs where the sandbox is missing, as the model is told.
+/// Why no command runs where the sandbox is missing, as the model and the
+/// settings are told: one text, `Code::CommandsUnsafe`'s.
 #[cfg(not(windows))]
-const UNSAFE: &str = "commands cannot run safely on this computer: its system has no sandbox for them (on Linux, a kernel with Landlock), so no command was run";
+fn unsafe_here() -> cw_core::Fail {
+    cw_core::Fail::new(cw_core::Code::CommandsUnsafe)
+}
 
 /// The system commands run on, as the model is told.
 pub const SYSTEM: &str = if cfg!(windows) { "Windows" } else { "Linux" };
@@ -40,21 +41,35 @@ pub const SYSTEM: &str = if cfg!(windows) { "Windows" } else { "Linux" };
 /// The shell a command runs by, as the model is told.
 pub const SHELL: &str = if cfg!(windows) { "cmd.exe" } else { "sh" };
 
+#[cfg(windows)]
+macro_rules! listing {
+    () => {
+        "for %f in (*) do @echo %f"
+    };
+}
+#[cfg(not(windows))]
+macro_rules! listing {
+    () => {
+        "ls -A"
+    };
+}
+
 /// A command that lists the folder's files in the sandbox, where cmd's `dir`
 /// and `vol` are refused: they read the drive's own details first.
-pub const LISTING: &str = if cfg!(windows) {
-    "for %f in (*) do @echo %f"
-} else {
-    "ls -A"
-};
+pub const LISTING: &str = listing!();
 
-/// What the model is told of the shell beside its name: how to list a folder,
-/// and on Windows what is refused.
+/// What the model is told of the shell beside its name: how to list a folder
+/// ([`LISTING`]), and on Windows what is refused.
 #[cfg(windows)]
-pub const ADVICE: &str = "PowerShell's commands for files do not work there; cmd's do. `dir` is refused there: list the files with `for %f in (*) do @echo %f`.";
-/// What the model is told of the shell beside its name: how to list a folder.
+pub const ADVICE: &str = concat!(
+    "PowerShell's commands for files do not work there; cmd's do. `dir` is refused there: list the files with `",
+    listing!(),
+    "`."
+);
+/// What the model is told of the shell beside its name: how to list a folder
+/// ([`LISTING`]).
 #[cfg(not(windows))]
-pub const ADVICE: &str = "List the files with `ls -A`.";
+pub const ADVICE: &str = concat!("List the files with `", listing!(), "`.");
 
 /// The most of a command's output that is kept, in bytes.
 pub(crate) const OUTPUT_LIMIT: usize = 32 * 1024;
@@ -164,8 +179,8 @@ pub fn run_with(
     Ok(ran)
 }
 
-/// [`run`], reaching what `reach` says too; refused where the kernel has no
-/// Landlock.
+/// [`run`], reaching what `reach` says too; refused where the sandbox is
+/// missing (`available`).
 #[cfg(target_os = "linux")]
 pub fn run_with(
     folder: &Path,
@@ -174,7 +189,7 @@ pub fn run_with(
     stopped: &AtomicBool,
     reach: Reach,
 ) -> anyhow::Result<Ran> {
-    anyhow::ensure!(linux::available(), UNSAFE);
+    anyhow::ensure!(linux::available(), unsafe_here());
     linux::run(folder, command, time, stopped, reach)
 }
 

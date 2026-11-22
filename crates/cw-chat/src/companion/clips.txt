@@ -1,0 +1,100 @@
+acknowledging: an acknowledging gesture
+agreeing: agrees, at times stepping back cautiously
+angry: stands angrily
+arm_stretching: stretches the arms, pushing the elbows
+bashful: stands shyly
+being_cocky: leans back cockily
+bellydancing: belly dance
+blow_a_kiss: blows a kiss
+bored: stands around bored
+braced_hang_shimmy: hanging from a ledge, shimmies sideways
+breathing_idle: stands breathing
+can_can: dances the can-can
+cheering: cheers, pumping both fists or head-banging
+chicken_dance: does the chicken dance
+clapping: claps while standing
+climbing_down_wall: climbs down a wall
+climbing_up_wall: climbs up a wall
+crying: cries, rubbing the eyes
+dancing: dances (African Rainbow or boogaloo)
+defeat: shows defeat, covering the face in shame
+disappointed: a disappointed "aw, shucks"
+dismissing_gesture: waves something away with the back of the hand
+excited: super excited
+fall_landing: lands from a fall in a crouch and stands up
+fall_loop: falling through the air, arms spread
+falling_down: is knocked over and ends lying on the back
+falling_idle: falling through the air, arms flung out
+freehang_climb: from hanging by the hands, climbs up to standing
+freehang_drop: from hanging by the hands, drops to standing
+getting_up: gets up from the ground
+hand_raising: raises a hand
+hanging_idle: hangs by the hands from a ledge
+happy: stands happily
+happy_idle: idles happily
+happy_walk: walks happily
+hard_landing: lands hard in a crouch, a hand down, and rises
+head_nod_yes: nods yes
+hip_hop_dancing: hip hop: slide step, moonwalk or timid dancing
+idle: stands idle, shifting weight or looking over the shoulders
+joyful_jump: jumps for joy, arms raised
+jump: jumps, on the spot or in a running leap
+laughing: laughs
+laying_idle: lies on the back, almost still
+laying_sleeping: sleeps on the back
+leaning: leans back against a wall not shown, one foot up
+look_around: looks around, a little nervous
+looking: shades the eyes, looks into the distance
+looking_around: stands looking around
+macarena_dance: dances the Macarena
+nervously_look_around: looks nervously left and right
+neutral_idle: stands neutrally
+no: indicates no
+one_shoulder_lean: slumps, head bowed, leaning slightly as if on a wall
+pointing_gesture: points
+pouting: stands pouting
+quick_formal_bow: a quick formal bow
+quick_informal_bow: a quick casual bow
+reacting: surprised, looks to the right
+relieved_sigh: sighs with relief
+run_forward: runs forward
+sad_idle: stands sadly
+sad_walk: walks sadly
+scratch_idle: stands scratching itself
+seated_idle: sits on a chair not shown, head bowed
+shake_fist: shakes a fist in anger
+shaking_head_no: shakes the head, dismissive
+shrugging: shrugs
+shuffling: dances the shuffle
+silly_dancing: silly dancing: the twist or the cabbage patch
+sitting_idle: sits on the floor, idling
+sleeping_idle: sleeps on the floor, curled up
+snake_hip_hop_dance: snake hip hop dance
+sneak_walk: sneaks along
+stand_to_sit: sits down on a chair not shown
+stand_up: gets up from lying down
+standard_idle: stands idle
+standing_greeting: greets while standing
+standing_thumbs_up: gives a thumbs up
+standing_up: gets up from the floor
+start_walking: starts walking
+stop_walking: stops walking
+stumble_backwards: slips backwards and ends sitting on the floor
+surprised: finds something, fingers wiggling
+talking: talks: asks, chats or finds something funny
+telling_a_secret: leans aside, hand by the mouth, whispers
+terrified: stands terrified
+thankful: shows thanks
+thinking: stands thinking
+thoughtful_head_nod: nods thoughtfully
+twist_dance: does the twist
+victory_idle: stands in victory
+waking: on the floor, slumps, then wakes and looks up
+walk_backwards: backs away slowly in fear
+walking: walks: happy, careful, swaggering or hurried
+wave_hip_hop_dance: hip hop dance waving the arms
+waving: waves
+weight_shift: shifts weight from side to side
+whatever_gesture: a "whatever" gesture
+yawn: a big yawn
+ymca_dance: dances the YMCA

@@ -2,13 +2,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { beforeEach, expect, test } from "vitest";
-import { chatLayouts, chatLayout, compact, setChatLayout, setCompact, setTheme, showChatLayout, theme, themes } from "./theme";
+import { chatLayouts, chatLayout, compact, messagePictures, setChatLayout, setCompact, setMessagePictures, setTheme, showChatLayout, showMessagePictures, theme, themes } from "./theme";
 
 beforeEach(() => {
   localStorage.clear();
   delete document.documentElement.dataset.theme;
   delete document.documentElement.dataset.chat;
   delete document.documentElement.dataset.density;
+  delete document.documentElement.dataset.msgPictures;
 });
 
 test("the theme is the system's while none was chosen, and when what is kept is no theme", () => {
@@ -114,4 +115,19 @@ test("public/early.js sets every theme but the system's, its list written by too
   expect(line).toContain("tools/looks.py");
   const listed: unknown = JSON.parse(line!.slice(line!.indexOf("["), line!.indexOf("]") + 1));
   expect(listed).toEqual(themes().map(([name]) => name).filter((name) => name !== "system"));
+});
+
+test("the message pictures are on until switched off; off is said on the root at once and kept for the next start", () => {
+  expect(messagePictures()).toBe(true);
+  showMessagePictures();
+  expect(document.documentElement.dataset.msgPictures).toBeUndefined();
+  setMessagePictures(false);
+  expect(document.documentElement.dataset.msgPictures).toBe("off");
+  expect(localStorage.getItem("message-pictures")).toBe("off");
+  delete document.documentElement.dataset.msgPictures;
+  showMessagePictures();
+  expect(document.documentElement.dataset.msgPictures).toBe("off");
+  setMessagePictures(true);
+  expect(document.documentElement.dataset.msgPictures).toBeUndefined();
+  expect(messagePictures()).toBe(true);
 });

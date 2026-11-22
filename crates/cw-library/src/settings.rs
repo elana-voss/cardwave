@@ -232,6 +232,9 @@ pub struct Tools {
     pub app: bool,
     /// Dice the model rolls (`tools::dice`), off until switched on (the owner, 2026-10-23).
     pub dice: bool,
+    /// Names for new characters (`tools::names`), off until switched on (Claude, 161:
+    /// its note costs every request about 2,000 tokens, as Dice is off at first).
+    pub names: bool,
     /// The folder of files and commands, as the user gave it.
     pub folder: Option<String>,
 }
@@ -248,6 +251,7 @@ impl Default for Tools {
             ask_new_tools: true,
             app: false,
             dice: false,
+            names: false,
             folder: None,
         }
     }
@@ -395,6 +399,8 @@ pub struct ChangeTools {
     pub app: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dice: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub names: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub folder: Option<String>,
 }

@@ -1,5 +1,6 @@
 import { expect, test } from "../test";
 import { cardFile } from "../card";
+import { setSettings } from "../stored";
 
 // The pages' Content-Security-Policy (milestone 104), the second guard behind showing a stranger's texts as text:
 // should a future change put a card's words into the page as HTML, what they carry does not run. The test makes
@@ -29,8 +30,8 @@ test("a script in a card's text does not run, even put into the page as HTML", a
 test("the page lets pictures from other websites load only while Settings shows them, from the next page load", async ({ page, request }) => {
   const policy = async () => (await page.goto("/"))?.headers()["content-security-policy"] ?? "";
   expect(await policy()).toContain("img-src 'self' data: blob:;");
-  expect((await request.patch("/api/settings", { data: { web_pictures: true } })).status()).toBe(200);
+  await setSettings(request, { web_pictures: true });
   expect(await policy()).toContain("img-src 'self' data: blob: http: https:;");
-  expect((await request.patch("/api/settings", { data: { web_pictures: false } })).status()).toBe(200);
+  await setSettings(request, { web_pictures: false });
   expect(await policy()).toContain("img-src 'self' data: blob:;");
 });

@@ -5,6 +5,7 @@ import type { APIRequestContext } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { NOW, picture, stopClock } from "../pictures";
+import { setSettings } from "../stored";
 
 // The coding team: Settings › Advanced › "Coding team" sets the team, and the team goes by "Tools for the AI"; "+" ›
 // "Start a coding task" in a chat starts one, whose card follows it there, asks before the worker writes ("Ask
@@ -57,8 +58,7 @@ test("a coding task is set up, started in a chat, allowed to write, and undone f
   await page.getByRole("link", { name: /Coding team/ }).click();
   await expect(page.locator(".settings-group p.hint").first()).toHaveText("Balanced: one planner, two workers and an auditor who runs the tests.");
   // The team goes by "Tools for the AI": Files on for the folder, asking before a write.
-  const tools = await request.patch("/api/settings", { data: { tools: { folder, files: true, ask_writes: true } } });
-  expect(tools.status(), await tools.text()).toBe(200);
+  await setSettings(request, { tools: { folder, files: true, ask_writes: true } });
 
   api.calls("plan", { steps: ["Write hello.txt"], test_command: "type hello.txt" });
   api.calls("write_file", { path: "hello.txt", content: "hi\n" });
@@ -116,7 +116,7 @@ test.describe("at 1440 px, light", () => {
     // The team as it is at first, whatever a test before changed.
     const permissions = { read: "allow", write: "allow", commands: "ask", install: "ask", web: "never" };
     const coding = { team: "balanced", planner_model: null, worker_model: null, auditor_model: null, workers: 2, audit: "end", permissions };
-    expect((await request.patch("/api/settings", { data: { coding } })).status()).toBe(200);
+    await setSettings(request, { coding });
     const tasks = [
       { id: 2, chat_id: 1, goal: "Add an export of chats as Markdown", folder: "C:\\Projects\\cardwave", state: "done", verdict, started_at: at },
       { id: 1, chat_id: 1, goal: "Fix the dates in the list", folder: "C:\\Projects\\cardwave", state: "running", verdict: null, started_at: at },

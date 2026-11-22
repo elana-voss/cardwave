@@ -1,7 +1,7 @@
 //! The coding team (`coding`): a task planned, built and audited in a chat,
 //! its checkpoints undone, a failed verdict fixed once, a call that asks, a
 //! stop, the ready-made teams, who may start one, the folder's snapshot, and
-//! the sandbox's reach for the team's commands.
+//! the sandbox's reach for the team's commands (on Linux in `sandbox_linux.rs`).
 //!
 //! `Team` is a stand-in for the model's server that answers each role (by
 //! its system prompt's first words) with the next of the test's answers for
@@ -11,6 +11,7 @@
 mod common;
 
 use std::collections::HashMap;
+#[cfg(windows)]
 use std::sync::atomic::AtomicBool;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -22,7 +23,7 @@ use axum::{Json, Router};
 use common::Folder;
 use common::server::{Server, WAIT, device, start};
 use cw_coding::coding::snapshot::{FILE_LIMIT, Snapshot};
-use cw_coding::tools::{REFUSED, sandbox};
+use cw_coding::tools::REFUSED;
 use serde_json::{Value, json};
 use tokio::net::TcpListener;
 
@@ -97,7 +98,7 @@ fn calls_with(name: &str, arguments: &str) -> String {
 /// where the sandbox runs them.
 async fn tools_on(server: &Server, folder: &Folder, ask_writes: bool) {
     let tools = json!({ "folder": folder.path(), "files": true, "ask_writes": ask_writes,
-        "commands": sandbox::available(), "ask_commands": true });
+        "commands": cw_sandbox::available(), "ask_commands": true });
     let (status, body) = server
         .patch("/api/settings", json!({ "tools": tools }))
         .await;
@@ -541,7 +542,7 @@ async fn a_call_that_asks_waits_for_the_user_and_a_stop_keeps_the_checkpoint() {
     assert!(!offered.contains(&"web_search".to_string()), "{offered:?}");
     assert!(offered.contains(&"write_file".to_string()));
 
-    if sandbox::available() {
+    if cw_sandbox::available() {
         let asking = task_when(&server, &task, |task| !task["ask"].is_null()).await;
         assert_eq!(
             asking["ask"],
@@ -662,7 +663,9 @@ async fn a_task_stopped_while_its_command_writes_undoes_all_it_wrote() {
     let writes = if cfg!(windows) {
         "for /l %i in (1,1,100000) do @echo %i> f%i.txt"
     } else {
-        "i=1; while [ $i -le 100000 ]; do echo $i > f$i.txt; i=$((i+1)); done"
+        // Slowed: Linux's sh outran the stop past the checkpoint's 20,000
+        // files (`MOST_FILES`), which then kept none.
+        "i=1; while [ $i -le 100000 ]; do echo $i > f$i.txt; i=$((i+1)); sleep 0.01; done"
     };
     let team = Team::start(vec![
         (
@@ -844,26 +847,26 @@ fn a_teams_command_is_let_into_a_path_folder_only_where_it_holds_a_program() {
     let holder = Folder::new("grant-holder");
     write(holder.0.join("tool.exe"));
     std::fs::create_dir_all(holder.0.join("data")).unwrap();
-    assert!(sandbox::grantable(&programs.0, &data.0));
-    assert!(sandbox::grantable(&scripts.0, &data.0));
-    assert!(!sandbox::grantable(&notes.0, &data.0));
-    assert!(!sandbox::grantable(&data.0, &data.0));
-    assert!(!sandbox::grantable(&data.0.join("bin"), &data.0));
-    assert!(!sandbox::grantable(&holder.0, &holder.0.join("data")));
+    assert!(cw_sandbox::grantable(&programs.0, &data.0));
+    assert!(cw_sandbox::grantable(&scripts.0, &data.0));
+    assert!(!cw_sandbox::grantable(&notes.0, &data.0));
+    assert!(!cw_sandbox::grantable(&data.0, &data.0));
+    assert!(!cw_sandbox::grantable(&data.0.join("bin"), &data.0));
+    assert!(!cw_sandbox::grantable(&holder.0, &holder.0.join("data")));
     let root = programs.0.ancestors().last().unwrap();
-    assert!(!sandbox::grantable(root, &data.0));
+    assert!(!cw_sandbox::grantable(root, &data.0));
     for home in ["USERPROFILE", "HOME"]
         .into_iter()
         .filter_map(std::env::var_os)
     {
-        assert!(!sandbox::grantable(std::path::Path::new(&home), &data.0));
+        assert!(!cw_sandbox::grantable(std::path::Path::new(&home), &data.0));
     }
     // A folder of links to programs (pipx's, snap's) holds programs.
     #[cfg(unix)]
     {
         let links = Folder::new("grant-links");
         std::os::unix::fs::symlink(programs.0.join("tool.exe"), links.0.join("tool")).unwrap();
-        assert!(sandbox::grantable(&links.0, &data.0));
+        assert!(cw_sandbox::grantable(&links.0, &data.0));
     }
 }
 
@@ -874,7 +877,7 @@ fn a_teams_command_has_the_servers_programs_and_a_folder_of_its_own() {
     let data = Folder::new("reach-data");
     let run = |reach| {
         let command = r#"echo %PATH%& echo [%APPDATA%]& echo kept>"%APPDATA%\kept.txt" && type "%APPDATA%\kept.txt""#;
-        sandbox::run_with(
+        cw_sandbox::run_with(
             &folder.0,
             command,
             Duration::from_secs(20),
@@ -884,9 +887,9 @@ fn a_teams_command_has_the_servers_programs_and_a_folder_of_its_own() {
         .unwrap()
     };
     let host = std::env::var("PATH").unwrap();
-    let granted = |part: &&str| sandbox::grantable(std::path::Path::new(part), &data.0);
+    let granted = |part: &&str| cw_sandbox::grantable(std::path::Path::new(part), &data.0);
     let last = host.split(';').rfind(granted).unwrap().to_string();
-    let reached = run(sandbox::Reach {
+    let reached = run(cw_sandbox::Reach {
         network: false,
         programs: true,
         data: data.0.clone(),
@@ -894,98 +897,9 @@ fn a_teams_command_has_the_servers_programs_and_a_folder_of_its_own() {
     assert!(reached.output.contains(&last), "{}", reached.output);
     assert!(reached.output.contains(r"\AC]"), "{}", reached.output);
     assert_eq!(reached.code, Some(0), "{}", reached.output);
-    let bare = run(sandbox::Reach::default());
+    let bare = run(cw_sandbox::Reach::default());
     assert!(!bare.output.contains(&last), "{}", bare.output);
     assert_ne!(bare.code, Some(0), "{}", bare.output);
-}
-
-#[cfg(target_os = "linux")]
-#[test]
-fn a_teams_command_on_linux_has_the_servers_programs_and_a_folder_of_its_own() {
-    let folder = Folder::new("reach");
-    let data = Folder::new("reach-data");
-    let run = |reach| {
-        let command =
-            r#"echo "$PATH"; echo "[$HOME]"; echo kept > "$HOME/kept.txt" && cat "$HOME/kept.txt""#;
-        sandbox::run_with(
-            &folder.0,
-            command,
-            Duration::from_secs(20),
-            &AtomicBool::new(false),
-            reach,
-        )
-        .unwrap()
-    };
-    let host = std::env::var("PATH").unwrap();
-    // The system's own folders are on every command's PATH.
-    let system = [
-        "/usr/local/sbin",
-        "/usr/local/bin",
-        "/usr/sbin",
-        "/usr/bin",
-        "/sbin",
-        "/bin",
-    ];
-    let granted = |part: &&str| {
-        !system.contains(part) && sandbox::grantable(std::path::Path::new(part), &data.0)
-    };
-    let last = host.split(':').rfind(granted).map(str::to_string);
-    let reached = run(sandbox::Reach {
-        network: false,
-        programs: true,
-        data: data.0.clone(),
-    });
-    assert!(!reached.output.contains("[]"), "{}", reached.output);
-    assert_eq!(reached.code, Some(0), "{}", reached.output);
-    let bare = run(sandbox::Reach::default());
-    assert!(bare.output.contains("[]"), "{}", bare.output);
-    assert_ne!(bare.code, Some(0), "{}", bare.output);
-    if let Some(last) = last {
-        assert!(reached.output.contains(&last), "{}", reached.output);
-        assert!(!bare.output.contains(&last), "{}", bare.output);
-    }
-}
-
-#[cfg(target_os = "linux")]
-#[test]
-fn a_teams_command_on_linux_runs_node_and_npm_where_they_are_installed_and_reads_no_other_file() {
-    let installed = std::env::split_paths(&std::env::var_os("PATH").unwrap())
-        .any(|folder| folder.join("node").is_file() && folder.join("npm").is_file());
-    let folder = Folder::new("node");
-    let other = Folder::new("node-other");
-    let data = Folder::new("node-data");
-    std::fs::write(other.0.join("secret.txt"), "kept").unwrap();
-    let run = |command: &str| {
-        let reach = sandbox::Reach {
-            network: false,
-            programs: true,
-            data: data.0.clone(),
-        };
-        sandbox::run_with(
-            &folder.0,
-            command,
-            COMMAND_START,
-            &AtomicBool::new(false),
-            reach,
-        )
-        .unwrap()
-    };
-    let secret = run(&format!("cat '{}/secret.txt'", other.path()));
-    assert!(!secret.output.contains("kept"), "{}", secret.output);
-    assert!(
-        secret.output.contains("Permission denied"),
-        "{}",
-        secret.output
-    );
-    let own = run("echo mine > own.txt && cat own.txt");
-    assert_eq!(own.output.trim(), "mine", "{}", own.output);
-    if !installed {
-        eprintln!("skipped: node and npm, not installed on this computer");
-        return;
-    }
-    let ran = run(r#"node -e "console.log(1)" && npm --version"#);
-    assert_eq!(ran.code, Some(0), "{}", ran.output);
-    assert_eq!(ran.output.lines().next(), Some("1"), "{}", ran.output);
 }
 
 #[cfg(windows)]
@@ -998,12 +912,12 @@ fn a_teams_command_runs_node_and_npm_where_they_are_installed_and_reads_no_other
     let data = Folder::new("node-data");
     std::fs::write(other.0.join("secret.txt"), "kept").unwrap();
     let run = |command: &str| {
-        let reach = sandbox::Reach {
+        let reach = cw_sandbox::Reach {
             network: false,
             programs: true,
             data: data.0.clone(),
         };
-        sandbox::run_with(
+        cw_sandbox::run_with(
             &folder.0,
             command,
             COMMAND_START,

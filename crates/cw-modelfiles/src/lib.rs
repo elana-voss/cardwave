@@ -465,11 +465,7 @@ pub async fn download_file(
         }
         file.sync_all().await?;
         drop(file);
-        let sum: String = hash
-            .finalize()
-            .iter()
-            .map(|byte| format!("{byte:02x}"))
-            .collect();
+        let sum = cw_core::hex(&hash.finalize());
         ensure!(
             sum == model.sha256,
             Fail::said(Code::NotReadable, "the file downloaded is not the model")

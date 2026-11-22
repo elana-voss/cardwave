@@ -2,12 +2,12 @@
 import { expect, test } from "vitest";
 import { toolLines, writtenSays } from "./tools";
 
-const none = { web: false, files: false, ask_writes: true, commands: false, ask_commands: true, pictures: false, ask_new_tools: true, app: false, dice: false, folder: null };
+const none = { web: false, files: false, ask_writes: true, commands: false, ask_commands: true, pictures: false, ask_new_tools: true, app: false, dice: false, names: false, folder: null };
 
 test("files and commands are this computer's account's, need a folder, and ask while they are on", () => {
   const labels = (lines: { label: string }[]) => lines.map(({ label }) => label);
   expect(labels(toolLines(none, true, true, "web"))).toEqual(["Web"]);
-  expect(labels(toolLines(none, false, true, "ai"))).toEqual(["Image generation", "Cardwave", "Dice"]);
+  expect(labels(toolLines(none, false, true, "ai"))).toEqual(["Image generation", "Cardwave", "Dice", "Names for new characters"]);
   const bare = toolLines(none, true, false, "ai");
   expect(bare.map(({ label, says, off }) => [label, says, off])).toEqual([
     ["Files", "Choose a folder first", true],
@@ -15,6 +15,7 @@ test("files and commands are this computer's account's, need a folder, and ask w
     ["Image generation", "Set up the image model first", true],
     ["Cardwave", "Use and change your characters, chats and settings; each change asked first", false],
     ["Dice", "Lets the AI roll dice; Cardwave rolls them, so the result is fair.", false],
+    ["Names for new characters", "Gives the AI a fitting name for each new character from a large list, so names do not repeat.", false],
   ]);
   const on = toolLines({ ...none, files: true, commands: true, folder: "D:\Shared" }, true, true, "ai");
   expect(on.map(({ label, says, off }) => [label, says, off])).toEqual([
@@ -25,6 +26,7 @@ test("files and commands are this computer's account's, need a folder, and ask w
     ["Image generation", "Uses the image model", false],
     ["Cardwave", "Use and change your characters, chats and settings; each change asked first", false],
     ["Dice", "Lets the AI roll dice; Cardwave rolls them, so the result is fair.", false],
+    ["Names for new characters", "Gives the AI a fitting name for each new character from a large list, so names do not repeat.", false],
   ]);
 });
 

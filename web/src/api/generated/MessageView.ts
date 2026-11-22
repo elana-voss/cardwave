@@ -2,10 +2,10 @@
 import type { Attachment } from "./Attachment";
 import type { ContextUse } from "./ContextUse";
 import type { Lore } from "./Lore";
-import type { Read } from "./Read";
 import type { Role } from "./Role";
 import type { Sent } from "./Sent";
 import type { Times } from "./Times";
+import type { UsedCall } from "./UsedCall";
 
 /**
  * A message as a chat's screen shows it.
@@ -59,9 +59,9 @@ times: Times | null,
  */
 sent: Sent | null, 
 /**
- * The pages and files it read with its tools, the first first.
+ * The tools it called, in the order they ran.
  */
-reads: Array<Read>, 
+calls: Array<UsedCall>, 
 /**
  * What the user attached to it, the first first (`attachments`).
  */

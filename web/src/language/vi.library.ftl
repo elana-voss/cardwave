@@ -589,6 +589,8 @@ card-figure-remove-from = Gỡ { $name } khỏi { $mode }
 card-figure-search-figures = Tìm hình 3D
 card-figure-no-3d-figures-yet = Chưa có hình 3D nào. Hãy thêm từ một tệp: mô hình 3D của một người có thể cử động (tệp .vrm, như VRoid Studio tạo ra; cũng có thể là .glb hoặc .fbx).
 card-figure-in = { " " }· trong { $mode }
+card-figure-by = { " " }· của { $maker }
+card-figure-made-by = của { $maker }
 card-figure-the-card = Nhân vật
 card-figure-what = Hình dạng nhân vật hiện ra trong cửa sổ bạn đồng hành.
 

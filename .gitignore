@@ -26,3 +26,6 @@ __pycache__/
 .claude/scheduled_tasks.lock
 # The public release's repo, which tools/clean_repo.py builds here.
 clean-repo/
+# Figures with faces for trying the companion's face on this machine (the DAZ figure, the VRM pack's): their terms
+# forbid passing them on, so never in the repo (the owner, 2026-11-21).
+test-figures/

@@ -4,7 +4,8 @@
 // Windows: an `msedgedriver` of the installed WebView2's version, which updates itself: compare `msedgedriver
 // --version` with `reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
 // /v pv`; a new one from `https://msedgedriver.microsoft.com/<version>/edgedriver_win64.zip` (signed by
-// Microsoft); both in `%USERPROFILE%\.cargo\bin`. Linux: WebKitWebDriver, under Xvfb with Openbox and
+// Microsoft); both in `%USERPROFILE%\.cargo\bin` (a hook refuses writing there: a newer one goes into
+// `.checklists/edgedriver<version>/`, put first on `PATH`). Linux: WebKitWebDriver, under Xvfb with Openbox and
 // `GDK_BACKEND=x11` (`tools/wsl.sh desktop-test`); downloads go to the scratch folder (its own `user-dirs.dirs`).
 //
 // Node 24 runs these `.ts` files as they are, only stripping types: no constructor parameter properties or

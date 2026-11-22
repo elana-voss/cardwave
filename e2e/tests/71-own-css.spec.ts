@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { deafen, expect, test } from "../test";
 import { picture, SIZES, stopClock, THEMES } from "../pictures";
+import { setSettings } from "../stored";
 
 // The user's own CSS (milestone 71): Settings › Advanced's last box "Your own CSS", whose "Edit" opens the dialog
 // whose field restyles the app as typed, Save keeping it and Escape taking it back; a second page hears of it,
@@ -114,7 +115,7 @@ test("the companion's page takes a CSS changed while its connection was down onc
   await page.goto("/companion.html");
   await expect(page.locator("canvas.companion-figure")).toBeVisible();
   const own = () => page.evaluate(() => [...document.querySelectorAll("style")].some((style) => style.textContent?.includes("rgb(1, 2, 3)")));
-  expect((await request.patch("/api/settings", { data: { own_css: OWN } })).status()).toBe(200);
+  await setSettings(request, { own_css: OWN });
   await page.waitForTimeout(500); // unheard: the connection is down
   expect(await own()).toBe(false);
   await hear();

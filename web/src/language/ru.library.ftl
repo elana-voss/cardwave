@@ -621,6 +621,8 @@ card-figure-remove-from = Убрать «{ $name }» из режима «{ $mode
 card-figure-search-figures = Поиск фигур
 card-figure-no-3d-figures-yet = 3D-фигур пока нет. Добавьте фигуру из файла: 3D-модель человека, которая умеет двигаться (файл .vrm, как делает VRoid Studio; также .glb или .fbx).
 card-figure-in = { " " }· в режиме «{ $mode }»
+card-figure-by = { " " }· автор: { $maker }
+card-figure-made-by = автор: { $maker }
 card-figure-the-card = Персонаж
 card-figure-what = Фигура, в виде которой персонаж появляется в окне компаньона.
 

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { button, chooseView, expect, test, viewLine } from "../test";
 import { cardFile, ccv4File, readCard, type CardParts } from "../card";
+import { setSettings } from "../stored";
 
 // The library's three views (list, Gallery and Discovery, chosen in the view menu), a card's export from its row, with the texts'
 // history where the switch in Settings › Data asks for it, and the Trash's Restore of a card with its chats.
@@ -200,7 +201,7 @@ test("the switch \"Include earlier versions of each text\" puts each text's earl
   const edit = await (await request.get(`/api/cards/${ids.vera}/edit`)).json();
   edit.characters[0].description[0].text = "A scribe of the pier.";
   expect((await request.put(`/api/cards/${ids.vera}/edit`, { data: edit })).status()).toBe(200);
-  expect((await request.patch("/api/settings", { data: { export_format: "ccv4" } })).status()).toBe(200);
+  await setSettings(request, { export_format: "ccv4" });
   const files = async () => Object.keys((await saved(page, () => exportFromRow(page, "Vera Vellum"))).card.ccv4);
 
   // Off at first: the card goes without its history.
@@ -216,7 +217,7 @@ test("the switch \"Include earlier versions of each text\" puts each text's earl
   await vellum(page);
   expect(await files()).toContain("user/0001_revision.toml");
 
-  expect((await request.patch("/api/settings", { data: { export_format: "sillytavern_v3", export_history: false } })).status()).toBe(200);
+  await setSettings(request, { export_format: "sillytavern_v3", export_history: false });
 });
 
 // The Gallery.

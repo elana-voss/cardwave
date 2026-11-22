@@ -588,6 +588,8 @@ card-figure-remove-from = 從 { $mode } 移除 { $name }
 card-figure-search-figures = 搜尋形象
 card-figure-no-3d-figures-yet = 還沒有 3D 形象。從檔案新增一個：一個能動起來的人物 3D 模型（.vrm 檔，如 VRoid Studio 製作的；也可以是 .glb 或 .fbx）。
 card-figure-in = { " " }· 在 { $mode } 中
+card-figure-by = { " " }· 作者：{ $maker }
+card-figure-made-by = 作者：{ $maker }
 card-figure-the-card = 角色
 card-figure-what = 角色在陪伴視窗中顯示的形象。
 

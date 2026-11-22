@@ -9,7 +9,6 @@
 use axum::extract::State;
 use axum::routing::get;
 use axum::{Json, Router};
-use cw_coding::tools::sandbox;
 use cw_core::PageEvent;
 use cw_core::{Code, Fail};
 use cw_library::settings::{self, ChangeCardFolder, ChangeSettings, ChangeTools, Settings};
@@ -134,7 +133,7 @@ fn tools_checked(
         ensure!(folder.is_some(), Fail::new(Code::FolderNotChosen));
     }
     if *commands == Some(true) {
-        ensure!(sandbox::available(), Fail::new(Code::CommandsUnsafe));
+        ensure!(cw_sandbox::available(), Fail::new(Code::CommandsUnsafe));
     }
     Ok(())
 }

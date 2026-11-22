@@ -1,23 +1,23 @@
 """Writes what the companion plays, from the owner's Mixamo material (../mixamo_dataset: its named clips in
-data_named/animation_motion, their catalogue viewer/catalogue/clips.json, the characters in data; the raw files are
-never handed out, only these):
-
-- web/src/figures/animations.glb, the carrier: a Mixamo skeleton with no body carrying the clips `CLIPS` names, which
-  every 3D figure is given (web/src/figures/retarget.ts) and which is never shown; a name's first version is the
-  action of its name, the others `<name>_2`, `<name>_3` (the companion rotates among them);
-- web/src/figures/animations.json, each action's mood and the pose it starts and ends in, from the catalogue
-  (`POSES` maps the catalogue's poses to the companion's, web/src/companion/clips.ts);
-- web/src/figures/woman.glb and man.glb, the base figures `FIGURES` names, textures at most `TEXTURE` px, as JPEG.
-
-`CLIPS` is the owner's 100 names (ticket 141); where he kept fewer versions than exist, the files are those taken
-until he picks in the viewer (the ticket's questions): a swap is one file name here. Every clip's skeleton must rest
-as the first one's, or the run stops. Run with Blender 5.2, from anywhere (every path is absolute):
-blender -b -P tools/companion_assets.py
-Blender runs headless only (`-b`), and every output path is absolute.
+data_named/animation_motion, their catalogue viewer/catalogue/clips.json) and the two characters, which this script
+fetches once from an open copy of the dataset on Hugging Face into target/companion_figures (never handed out):
+web/src/figures/animations.glb, the carrier: a bodiless Mixamo skeleton with the clips `CLIPS` names, given to every
+figure (web/src/figures/retarget.ts), a name's other versions as `<name>_2`, `<name>_3`; animations.json, each action's
+mood and start and end pose (`POSES`, web/src/companion/clips.ts); woman.glb and man.glb (`FIGURES`), textures at most
+`TEXTURE` px, as JPEG. `CLIPS` is the owner's 100 names (ticket 141): a swap is one file name here, and its line in
+crates/cw-chat/src/companion/clips.txt. Every clip's skeleton must rest as the first one's, or the run stops.
+A figure's face shapes (morph targets), where its source has them, are kept under their names (web/src/figures/face.ts).
+Run with Blender 5.2, from anywhere (every path is absolute): blender -b -P tools/companion_assets.py
+One figure alone, from a source on this machine (FBX, GLB or glTF), packed as the base figures are, its shapes printed
+as read and as written (nothing else written): blender -b -P tools/companion_assets.py -- <source> <out.glb>
 """
 
+import hashlib
 import json
 import pathlib
+import struct
+import sys
+import urllib.request
 
 import bpy
 
@@ -135,21 +135,35 @@ CLIPS = {
 # The catalogue's poses as the companion's (a lying one face down lies too; a crouch is where a landing ends).
 POSES = {"stand": "stand", "sit": "sit", "sit-floor": "floor", "lie": "lie", "lie-front": "lie", "hang": "hang",
          "air": "air", "crouch": "land"}
-# The base figures and their files in DATA/data/character_fbx_upgraded.
-FIGURES = {"woman": "cf7e9c498421b75e2df678adc5284783", "man": "8dfaf7ace7778cd25a6b181d98cd7e77"}
+# The base figures: each one's file in that copy's character_fbx_upgraded and its SHA-256.
+CHARACTERS = "https://huggingface.co/dkatz2391/Mixamo2/resolve/be20d37d53e653ef98746f62dab2969da2465236/character_fbx_upgraded"
+FIGURES = {
+    "woman": ("cf7e9c498421b75e2df678adc5284783.fbx", "c95814203cb663d73cdfe9a87aa492879d5769e05ff75d25fb705655b85e5174"),
+    "man": ("8dfaf7ace7778cd25a6b181d98cd7e77.fbx", "f9ad33201fc01d782480b461bafe2deef0ad9731765cd8d52c89cb1ac8634b12"),
+}
+FETCHED = ROOT / "target" / "companion_figures"
 
 
-def file_of(folder: str, prefix: str) -> pathlib.Path:
-    """The one file in DATA/folder whose name starts with `prefix`."""
-    found = sorted((DATA / "data" / folder).glob(f"{prefix}*.fbx"))
-    assert len(found) == 1, f"{folder}/{prefix}: {len(found)} files"
-    return found[0]
+def fetched(file: str, sha256: str) -> pathlib.Path:
+    """The character `file`, downloaded the first time; the run stops where it is not the file named."""
+    path = FETCHED / file
+    if not path.exists():
+        FETCHED.mkdir(parents=True, exist_ok=True)
+        part = path.with_suffix(".part")
+        urllib.request.urlretrieve(f"{CHARACTERS}/{file}", part)
+        part.replace(path)
+    found = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert found == sha256, f"{file}: another file ({found})"
+    return path
 
 
 def imported(path: pathlib.Path) -> list:
-    """The objects the FBX at `path` adds to the scene."""
+    """The objects the FBX, GLB or glTF at `path` adds to the scene."""
     before = set(bpy.data.objects)
-    bpy.ops.import_scene.fbx(filepath=str(path))
+    if path.suffix.lower() in (".glb", ".gltf"):
+        bpy.ops.import_scene.gltf(filepath=str(path))
+    else:
+        bpy.ops.import_scene.fbx(filepath=str(path))
     return [one for one in bpy.data.objects if one not in before]
 
 
@@ -199,25 +213,56 @@ def carrier() -> None:
     (OUT / "animations.json").write_text(json.dumps(meta, indent=0, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def figure(name: str, file: str) -> None:
+def shapes_read() -> dict:
+    """Each mesh object's face shapes (shape keys but the basis) in the scene."""
+    return {one.name: [key.name for key in one.data.shape_keys.key_blocks[1:]]
+            for one in bpy.data.objects if one.type == "MESH" and one.data.shape_keys}
+
+
+def shapes_written(path: pathlib.Path) -> dict:
+    """Each mesh's morph targets' names in the GLB at `path` (Blender's exporter names them in the mesh's extras)."""
+    data = path.read_bytes()
+    gltf = json.loads(data[20:20 + struct.unpack_from("<I", data, 12)[0]])
+    return {mesh.get("name"): mesh.get("extras", {}).get("targetNames", []) for mesh in gltf.get("meshes", [])
+            if "targets" in mesh["primitives"][0]}
+
+
+def figure(name: str, file: str, sha256: str) -> None:
+    pack(fetched(file, sha256), OUT / f"{name}.glb")
+
+
+def pack(source: pathlib.Path, out: pathlib.Path) -> None:
+    """The figure at `source` as a base figure at `out`: no animation, textures at most `TEXTURE` px as JPEG, its face
+    shapes kept."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    for one in imported(file_of("character_fbx_upgraded", file)):
+    for one in imported(source):
         if one.animation_data:
             one.animation_data_clear()
+        if one.type == "MESH" and one.data.shape_keys and one.data.shape_keys.animation_data:
+            one.data.shape_keys.animation_data_clear()
     for image in bpy.data.images:
         width, height = image.size
         if max(width, height) > TEXTURE:
             scale = TEXTURE / max(width, height)
             image.scale(round(width * scale), round(height * scale))
+    read = shapes_read()
     bpy.ops.export_scene.gltf(
-        filepath=str(OUT / f"{name}.glb"),
+        filepath=str(out),
         export_format="GLB",
         export_animations=False,
         export_image_format="JPEG",
         export_image_quality=85,
+        export_morph=True,
+        export_morph_normal=False,
     )
+    print("SHAPES read", json.dumps(read))
+    print("SHAPES written", json.dumps(shapes_written(out)))
 
 
-carrier()
-for name, file in FIGURES.items():
-    figure(name, file)
+ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+if ARGS:
+    pack(pathlib.Path(ARGS[0]).resolve(), pathlib.Path(ARGS[1]).resolve())
+else:
+    carrier()
+    for name, (file, sha256) in FIGURES.items():
+        figure(name, file, sha256)

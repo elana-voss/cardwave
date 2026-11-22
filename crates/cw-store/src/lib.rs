@@ -59,6 +59,7 @@ mod settings;
 mod thumbnails;
 mod trash;
 mod unsaved;
+mod used_names;
 mod users;
 mod voice;
 mod written_tools;

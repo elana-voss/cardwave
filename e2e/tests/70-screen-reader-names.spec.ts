@@ -2,6 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { cardFile } from "../card";
 import { NOTHING, startFakeProvider, type FakeProvider } from "../fake-provider";
+import { setSettings } from "../stored";
 
 // Every control has a name a screen reader says: a test per screen finds none unnamed on it, and none in the
 // menus and windows its buttons open (`opens`). What counts is the page's accessibility tree as Playwright reads
@@ -240,7 +241,7 @@ test("Signing in, from another device", async ({ page }) => {
 });
 
 test("The companion window", async ({ page, request }) => {
-  expect((await request.patch("/api/settings", { data: { companion: { card_id: card, starts: true, hidden_until: null } } })).status()).toBe(200);
+  await setSettings(request, { companion: { card_id: card, starts: true, hidden_until: null } });
   await screen(page, "/companion.html", (p) => p.locator("canvas.companion-figure"));
   await page.locator("canvas.companion-figure").dblclick();
   await expect(page.getByRole("dialog", { name: "Chat with your companion" })).toBeVisible();

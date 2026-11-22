@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
-import { setProvider } from "../stored";
+import { setProvider, setSettings } from "../stored";
 import { button, expect, test } from "../test";
 
 // The password, from Profile, and the backup, from Settings › Data: a password switched on is asked for by the
@@ -160,10 +160,10 @@ test("at first run, this computer's account restores a backup from step 1's foot
 });
 
 test("a line's button grows with a longer language's words: German's restore button holds its label", async ({ page, request }) => {
-  expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+  await setSettings(request, { app_language: "de" });
   await page.goto("/#/settings");
   const restore = page.getByRole("button", { name: "Sicherung wiederherstellen", exact: true });
   await expect(restore).toBeVisible();
   expect(await restore.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
-  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+  await setSettings(request, { app_language: null });
 });

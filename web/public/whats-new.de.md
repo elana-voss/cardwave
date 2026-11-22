@@ -1,3 +1,15 @@
+# 0.3.2
+
+Das Gesicht des Begleiters wird lebendig, und er antwortet auf deine Berührung.
+
+- Eine 3D-Figur mit Gesichtsformen blinzelt, schaut dich an und zeigt ihre Gefühle und ihre Stimme im Gesicht, bei VRM, GLB und FBX.
+- Ohne Stimme bewegen sich die Lippen des Begleiters trotzdem, während eine Antwort hereinkommt.
+- Klicke auf den Kopf des Begleiters, eine Hand oder einen anderen Teil seines Körpers: Er schreckt auf, und die Figur antwortet in ihrer Sprechblase. Ein Doppelklick öffnet weiterhin den Chat.
+- In jeder Größe steht, liegt und geht der Begleiter mit den Füßen auf dem unteren Fensterrand und rutscht beim Gehen nicht mehr.
+- Eine VRM-Figur, die du hinzufügst, nennt ihren Urheber.
+- Die Seitenleiste des Chats listet jedes Werkzeug, das eine Antwort benutzt hat, unter „In dieser Antwort verwendet“.
+- Neu in Einstellungen › Erweitert › Werkzeuge für die KI: „Namen für neue Figuren“ lässt die KI den Namen jeder neuen Figur aus einer großen Liste nehmen, passend zu Kultur, Epoche und Genre.
+
 # 0.3.1
 
 Eine kleine Korrektur für Linux.

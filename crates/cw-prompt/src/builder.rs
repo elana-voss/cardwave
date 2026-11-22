@@ -5,7 +5,8 @@
 //! What stays the same from reply to reply comes first, so the provider's cache
 //! of the prompt's start holds (the owner): the system message, the lorebook
 //! entries always given (`is_steady`), the example dialogue, the history; what
-//! changes (other entries triggered, documents' pieces, the memory note) stands
+//! changes (the tools' note, other entries triggered, documents' pieces, the
+//! memory note) stands
 //! just before the newest message (build spec A7). A history message's macros
 //! draw the same every build and set variables once (`expand_message`). The
 //! history is dropped in blocks of an [`HISTORY_BLOCKS`]th of the context,
@@ -46,7 +47,8 @@ pub struct PromptRequest<'a> {
     /// Pieces of the documents of the chat and of the card, as written (no
     /// macro is expanded in them), a system message before the memory note.
     pub data_context: Option<&'a str>,
-    /// Description of the tools enabled for this generation.
+    /// What the chat's own tools on for this reply tell the model of them, a
+    /// system message just before the newest message, its macros expanded.
     pub tools_advertisement: Option<&'a str>,
     /// A one-off message placed after the chat log.
     pub injected_message: Option<(Role, &'a str)>,
@@ -121,6 +123,9 @@ pub struct BuiltPrompt {
     pub lore: Vec<String>,
     /// What the prompt cannot go without and left out as it did not fit.
     pub left_out: Option<LeftOut>,
+    /// Where in `messages` the tools' note stands, to be taken out of a
+    /// round that offers no tools.
+    pub tools_at: Option<usize>,
 }
 
 /// A part of the prompt it cannot go without that did not fit, with the
@@ -159,6 +164,7 @@ pub fn build(
         depth_insertions: Vec::new(),
         post_history: None,
         depth_prompts: Vec::new(),
+        tools: None,
         triggered: None,
         documents: None,
         memory: None,
@@ -175,8 +181,9 @@ pub fn build(
     builder.used -= newest;
     let history = builder.build_history();
     builder.build_examples();
-    builder.assemble(history);
+    let tools_at = builder.assemble(history);
     BuiltPrompt {
+        tools_at,
         messages: builder.messages,
         breakdown: Breakdown {
             context_size: req.context_size,
@@ -201,9 +208,10 @@ struct Builder<'r, 'a> {
     depth_insertions: Vec<(PromptMessage, usize)>,
     post_history: Option<PromptMessage>,
     depth_prompts: Vec<(PromptMessage, usize)>,
-    /// The lorebook entries triggered that are not steady, the documents'
-    /// pieces and the memory note: just before the newest message, after
-    /// every depth insertion, in this order.
+    /// The tools' note, the lorebook entries triggered that are not steady,
+    /// the documents' pieces and the memory note: just before the newest
+    /// message, after every depth insertion, in this order.
+    tools: Option<PromptMessage>,
     triggered: Option<PromptMessage>,
     documents: Option<PromptMessage>,
     memory: Option<PromptMessage>,
@@ -320,12 +328,8 @@ impl Builder<'_, '_> {
 
     /// The system message, where it fits, then what stands after the chat (`build_later`).
     fn build_static(&mut self) {
-        let req = self.req;
         let recorded = self.segments.len();
-        let mut system = self.character_text();
-        if let Some(text) = req.tools_advertisement {
-            self.add_counted(&mut system, SegmentKind::Tools, "available_tools", text);
-        }
+        let system = self.character_text();
         if !system.is_empty() {
             let content = self.expand(&system, "system").trim().to_string();
             let tokens = self.count(&content);
@@ -341,11 +345,17 @@ impl Builder<'_, '_> {
         self.build_later();
     }
 
-    /// The memory note and the documents' pieces, each where it fits. Both
-    /// are given as written: their `{{…}}` is no macro, and a memory is not
+    /// The tools' note, the memory note and the documents' pieces, each where
+    /// it fits. The latter two are given as written: their `{{…}}` is no macro, and a memory is not
     /// rolled anew at each reply.
     fn build_recalled(&mut self) {
         let req = self.req;
+        if let Some(text) = req.tools_advertisement.filter(|text| !text.is_empty()) {
+            let content = self.expand(text, "tools").trim().to_string();
+            if self.record(SegmentKind::Tools, &content) {
+                self.tools = Some(PromptMessage::new(Role::System, content));
+            }
+        }
         if let Some(text) = req.memory_context.filter(|text| !text.is_empty()) {
             let content = format!("[Memory]\n{text}");
             let tokens = self.count(&content);
@@ -771,7 +781,8 @@ impl Builder<'_, '_> {
         }
     }
 
-    fn assemble(&mut self, history: Vec<PromptMessage>) {
+    /// Puts the parts in their places and answers where the tools' note stands.
+    fn assemble(&mut self, history: Vec<PromptMessage>) -> Option<usize> {
         // Where the chat log starts and ends in the final list. Depth insertions
         // go inside that span and nowhere else, as in SillyTavern: the system
         // blocks above the log and the injected and post-history messages below
@@ -789,6 +800,7 @@ impl Builder<'_, '_> {
         // What is recalled for the reply, nearest of all before the newest
         // message, the memory note last.
         let recalled = [
+            self.tools.take(),
             self.triggered.take(),
             self.documents.take(),
             self.memory.take(),
@@ -797,17 +809,26 @@ impl Builder<'_, '_> {
             .iter()
             .position(|(_, depth)| *depth < 1)
             .unwrap_or(insertions.len());
+        // The note, where there is one, is the first of them.
+        let note = recalled[0].is_some().then_some(at);
         insertions.splice(at..at, recalled.into_iter().flatten().map(|m| (m, 1)));
 
         // Depth counts chat messages back from the newest: 0 lands right after
         // the newest message, 1 before it, and a depth at or past the log's
         // length before its oldest message. Deepest first, with the log's end
         // moving along, so several insertions stack as they do in SillyTavern.
+        let mut tools_at = None;
         for (added, (message, depth)) in insertions.into_iter().enumerate() {
             let end = log_end + added;
             let index = end.saturating_sub(depth).clamp(log_start, end);
             self.messages.insert(index, message);
+            match tools_at {
+                Some(ref mut note_at) if index <= *note_at => *note_at += 1,
+                None if note == Some(added) => tools_at = Some(index),
+                _ => {}
+            }
         }
+        tools_at
     }
 }
 

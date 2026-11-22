@@ -4,6 +4,11 @@
 //! read only, a folder of its own) and a seccomp filter (`seccomp.rs`: no
 //! network, no other process), whose connects and signals the server judges
 //! (`supervisor.rs`). Its environment is a few of the system's variables.
+//! Before it runs, its first process is put into a scope of the user's
+//! systemd manager, which holds it and all it starts together to 1 GiB and
+//! 512 processes (`scope.rs`); without Landlock or that manager no command runs,
+//! and a scope refused kills the waiting process: its fork's copy of the socket
+//! would keep it waiting for ever.
 //! At its end, its time or a stop the whole group is killed before its first
 //! process is reaped, so the group's id is not taken by another meanwhile;
 //! where the server itself ends, its keeper process kills the group.
@@ -12,8 +17,10 @@
 //! by are all made before.
 
 mod address;
+mod caller;
 mod landlock;
 mod metadata;
+mod scope;
 mod seccomp;
 mod supervisor;
 
@@ -36,10 +43,6 @@ use landlock::{DEVICE, READ_EXEC, READ_FILE, Ruleset};
 /// How often the command is looked at while it runs.
 const LOOK: Duration = Duration::from_millis(100);
 
-/// The most memory each of the command's processes may hold, as Windows'
-/// job holds them all to.
-const MEMORY_LIMIT: libc::rlim_t = 1 << 30;
-
 /// The system's folders a command reads and runs programs from.
 const SYSTEM_FOLDERS: [&str; 7] = ["/usr", "/bin", "/sbin", "/lib", "/lib32", "/lib64", "/etc"];
 
@@ -55,9 +58,10 @@ const DEVICES: [&str; 5] = [
 /// The folders of a command's `PATH` after the server's that are let in.
 const DEFAULT_PATH: [&str; 3] = ["/usr/local/bin", "/usr/bin", "/bin"];
 
-/// Whether this kernel has Landlock, without which no command runs.
+/// Whether this computer has Landlock and a scope for a command
+/// (`scope::available`), without which no command runs.
 pub(super) fn available() -> bool {
-    landlock::version() > 0
+    landlock::version() > 0 && scope::available()
 }
 
 pub(super) fn run(
@@ -211,8 +215,10 @@ unsafe fn keep(read: RawFd, group: libc::pid_t) -> ! {
     }
 }
 
-/// Starts `command` held by `rules` and `filter`; the descriptor the
-/// filter's notices come by.
+/// Starts `command` held by `rules`, `filter` and its scope; the descriptor
+/// the filter's notices come by. Its process sends its id and that
+/// descriptor, then waits to be let go until a thread of the server's has put
+/// it into its scope (`enter`), as `spawn` returns only once it has run `sh`.
 fn spawn(
     folder: &Path,
     command: &str,
@@ -253,28 +259,28 @@ fn spawn(
             confine(parent, ruleset, &program, their_end)
         });
     }
-    let process = sh.spawn().context("the command cannot be started")?;
+    let entering = std::thread::spawn(move || enter(ours));
+    let spawned = sh.spawn();
+    // The process's end of the socket closed, `enter` waits no longer.
     drop(theirs);
     drop(sh);
-    let listener = match receive_fd(&ours) {
-        Some(listener) => listener,
-        None => {
-            // SAFETY: the group is the command's, its first process not reaped.
-            unsafe { libc::killpg(process.id() as libc::pid_t, libc::SIGKILL) };
-            let mut process = process;
-            // Ignored: the process was killed; its end is all that is waited for.
-            let _ = process.wait();
-            bail!("the command's sandbox could not be set up");
+    let entered = entering
+        .join()
+        .unwrap_or_else(|_| Err(anyhow::anyhow!("the command's scope panicked")));
+    let (process, listener) = match (spawned, entered) {
+        (Ok(process), Ok(listener)) => (process, listener),
+        (Ok(process), Err(error)) => {
+            kill_and_reap(process);
+            return Err(error.context(super::unsafe_here()));
         }
+        // The scope failed first: the process, never let go, ended unrun.
+        (Err(_), Err(error)) => return Err(error.context(super::unsafe_here())),
+        (Err(error), Ok(_)) => return Err(error).context("the command cannot be started"),
     };
     let keeper = match Keeper::start(process.id() as libc::pid_t) {
         Ok(keeper) => keeper,
         Err(error) => {
-            // SAFETY: the group is the command's, its first process not reaped.
-            unsafe { libc::killpg(process.id() as libc::pid_t, libc::SIGKILL) };
-            let mut process = process;
-            // Ignored: the process was killed; its end is all that is waited for.
-            let _ = process.wait();
+            kill_and_reap(process);
             return Err(error);
         }
     };
@@ -288,10 +294,20 @@ fn spawn(
     ))
 }
 
+/// Kills the command's whole group, its first process `process` not yet
+/// reaped (so the group's id is not taken meanwhile), then reaps it.
+fn kill_and_reap(mut process: std::process::Child) {
+    // SAFETY: the group is the command's, its first process not reaped.
+    unsafe { libc::killpg(process.id() as libc::pid_t, libc::SIGKILL) };
+    // Ignored: the process was killed; its end is all that is waited for.
+    let _ = process.wait();
+}
+
 /// In the command's process before it runs `sh`: ends it with the server,
-/// limits its memory, closes the server's descriptors at exec, lays the
-/// Landlock `ruleset` and the seccomp `program` on it and sends the filter's
-/// descriptor to the server by `socket`.
+/// closes the server's descriptors at exec, lays the Landlock `ruleset` and
+/// the seccomp `program` on it, sends its id and the filter's descriptor to
+/// the server by `socket` and waits there until the server has put it into
+/// its scope.
 fn confine(
     parent: libc::pid_t,
     ruleset: RawFd,
@@ -308,13 +324,6 @@ fn confine(
         if libc::getppid() != parent {
             return Err(std::io::Error::from_raw_os_error(libc::ESRCH));
         }
-        let limit = libc::rlimit {
-            rlim_cur: MEMORY_LIMIT,
-            rlim_max: MEMORY_LIMIT,
-        };
-        if libc::setrlimit(libc::RLIMIT_DATA, &limit) != 0 {
-            return Err(failed());
-        }
         // Ignored: on a kernel before 5.11 it fails, and the server's own
         // descriptors are opened to close at exec anyway (Rust's are).
         let _ = libc::syscall(libc::SYS_close_range, 3u32, u32::MAX, 4u32);
@@ -327,7 +336,39 @@ fn confine(
     let sent = send_fd(socket, listener);
     // SAFETY: the descriptor is the filter's, ours to close.
     unsafe { libc::close(listener) };
-    sent
+    sent?;
+    let mut go = 0u8;
+    // SAFETY: the byte lives through the call.
+    match unsafe { libc::read(socket, (&raw mut go).cast(), 1) } {
+        1 => Ok(()),
+        // The server put it into no scope: it ends unrun.
+        _ => Err(std::io::Error::from_raw_os_error(libc::ECANCELED)),
+    }
+}
+
+/// In a thread of the server's while the command's process waits: its id and
+/// filter's descriptor read from `socket`, the process put into its scope and
+/// let go; on any failure after its id came, the process is killed unrun.
+fn enter(socket: OwnedFd) -> anyhow::Result<OwnedFd> {
+    let (pid, listener) =
+        receive_fd(&socket).context("the command's sandbox could not be set up")?;
+    let entered = scope::enter(pid).and_then(|()| {
+        // SAFETY: the byte lives through the call.
+        match unsafe { libc::write(socket.as_raw_fd(), [1u8].as_ptr().cast(), 1) } {
+            1 => Ok(()),
+            _ => Err(anyhow::anyhow!(
+                "the command could not be let go: {}",
+                std::io::Error::last_os_error()
+            )),
+        }
+    });
+    if entered.is_err() {
+        // The process holds its own copy of `socket` from its fork, so it would
+        // never see it close: it is killed, unrun (not reaped: `spawn` waits on it).
+        // SAFETY: a plain system call on the process `spawn` still waits for.
+        unsafe { libc::kill(pid, libc::SIGKILL) };
+    }
+    entered.map(|()| listener)
 }
 
 fn socket_pair() -> anyhow::Result<(OwnedFd, OwnedFd)> {
@@ -358,55 +399,59 @@ union Control {
     bytes: [u8; 64],
 }
 
-/// Sends descriptor `fd` over `socket`; between fork and exec, allocating nothing.
+/// A message of the one `part` with room for one descriptor's control
+/// message in `control`; both must outlive its use. It allocates nothing.
+fn message(part: &mut libc::iovec, control: &mut Control) -> libc::msghdr {
+    // SAFETY: a `msghdr` of zeros is an empty one; the macro reads no memory.
+    unsafe {
+        let mut message: libc::msghdr = std::mem::zeroed();
+        message.msg_iov = part;
+        message.msg_iovlen = 1;
+        message.msg_control = (control as *mut Control).cast();
+        message.msg_controllen = libc::CMSG_SPACE(size_of::<RawFd>() as u32) as _;
+        message
+    }
+}
+
+/// Sends this process's id and descriptor `fd` over `socket`; between fork
+/// and exec, allocating nothing.
 fn send_fd(socket: RawFd, fd: RawFd) -> std::io::Result<()> {
     // SAFETY: every buffer lives through the calls, sized as the macros say.
     unsafe {
-        let mut byte = [0u8; 1];
+        let mut pid = libc::getpid().to_ne_bytes();
         let mut part = libc::iovec {
-            iov_base: byte.as_mut_ptr().cast(),
-            iov_len: 1,
+            iov_base: pid.as_mut_ptr().cast(),
+            iov_len: pid.len(),
         };
         let mut control: Control = std::mem::zeroed();
-        let mut message: libc::msghdr = std::mem::zeroed();
-        message.msg_iov = &mut part;
-        message.msg_iovlen = 1;
-        message.msg_control = (&raw mut control).cast();
-        message.msg_controllen = libc::CMSG_SPACE(size_of::<RawFd>() as u32) as _;
+        let message = message(&mut part, &mut control);
         let header = libc::CMSG_FIRSTHDR(&message);
         (*header).cmsg_level = libc::SOL_SOCKET;
         (*header).cmsg_type = libc::SCM_RIGHTS;
         (*header).cmsg_len = libc::CMSG_LEN(size_of::<RawFd>() as u32) as _;
         std::ptr::write_unaligned(libc::CMSG_DATA(header).cast::<RawFd>(), fd);
         match libc::sendmsg(socket, &message, 0) {
-            1 => Ok(()),
+            4 => Ok(()),
             _ => Err(std::io::Error::last_os_error()),
         }
     }
 }
 
-/// The descriptor the command's process sent over `socket`, if it did.
-fn receive_fd(socket: &OwnedFd) -> Option<OwnedFd> {
+/// The process id and descriptor the command's process sent over `socket`,
+/// waited for until it did or ended.
+fn receive_fd(socket: &OwnedFd) -> Option<(libc::pid_t, OwnedFd)> {
     // SAFETY: every buffer lives through the call, sized as the macros say.
     unsafe {
-        let mut byte = [0u8; 1];
+        let mut pid = [0u8; 4];
         let mut part = libc::iovec {
-            iov_base: byte.as_mut_ptr().cast(),
-            iov_len: 1,
+            iov_base: pid.as_mut_ptr().cast(),
+            iov_len: pid.len(),
         };
         let mut control: Control = std::mem::zeroed();
-        let mut message: libc::msghdr = std::mem::zeroed();
-        message.msg_iov = &mut part;
-        message.msg_iovlen = 1;
-        message.msg_control = (&raw mut control).cast();
-        message.msg_controllen = libc::CMSG_SPACE(size_of::<RawFd>() as u32) as _;
-        let read = libc::recvmsg(
-            socket.as_raw_fd(),
-            &mut message,
-            libc::MSG_DONTWAIT | libc::MSG_CMSG_CLOEXEC,
-        );
+        let mut message = message(&mut part, &mut control);
+        let read = libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC);
         let header = libc::CMSG_FIRSTHDR(&message);
-        if read != 1
+        if read != 4
             || header.is_null()
             || (*header).cmsg_level != libc::SOL_SOCKET
             || (*header).cmsg_type != libc::SCM_RIGHTS
@@ -414,7 +459,7 @@ fn receive_fd(socket: &OwnedFd) -> Option<OwnedFd> {
             return None;
         }
         let fd = std::ptr::read_unaligned(libc::CMSG_DATA(header).cast::<RawFd>());
-        Some(OwnedFd::from_raw_fd(fd))
+        Some((libc::pid_t::from_ne_bytes(pid), OwnedFd::from_raw_fd(fd)))
     }
 }
 
@@ -472,10 +517,7 @@ fn own_folder(folder: &Path) -> anyhow::Result<PathBuf> {
         .or_else(|| std::env::home_dir().map(|home| home.join(".cache")))
         .context("no cache folder for the command")?;
     let hash = Sha256::digest(folder.as_os_str().as_encoded_bytes());
-    let name: String = hash[..16]
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
+    let name = cw_core::hex(&hash[..16]);
     let own = cache.join("cardwave").join("commands").join(name);
     std::fs::create_dir_all(&own).context("no folder of the command's own")?;
     std::fs::set_permissions(&own, std::fs::Permissions::from_mode(0o700))

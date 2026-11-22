@@ -32,8 +32,8 @@ use crate::coding::shown::{Checkpoint, StepDetail, StepTool, StepWhat, Who};
 use crate::coding::snapshot::Snapshot;
 use crate::coding::{Crew, Progress, Verdict};
 use crate::ports::{AppActions, Storage};
-use crate::tools::sandbox::{self, Reach};
-use crate::tools::{AskKind, REFUSED, ToolAsk, files, tool, unreadable};
+use crate::tools::{AskKind, REFUSED, ToolAsk, builtin, files, tool, unreadable};
+use cw_sandbox::Reach;
 
 /// The most rounds of a role's questions to its model.
 const ROUNDS: usize = 30;
@@ -57,8 +57,8 @@ const WORKER: &str = "You are a worker of a small coding team that works in a fo
 /// A role's words with the system and shell commands run on (`{system}`, `{shell}`).
 fn shell_words(words: &str) -> String {
     words
-        .replace("{system}", sandbox::SYSTEM)
-        .replace("{shell}", sandbox::SHELL)
+        .replace("{system}", cw_sandbox::SYSTEM)
+        .replace("{shell}", cw_sandbox::SHELL)
 }
 
 const AUDITOR: &str = "You are the auditor of a small coding team. You are given the goal, the plan, what the workers reported and the changes they made as a diff. Check that the changes reach the goal and are right; run the tests with run_command where you can, and read their output yourself. Then call `verdict`: passed is true only if the goal is reached and every test passes; tests_passed and tests_total as the tests' output counts them (left out where no tests ran); each failure with its output; and notes on what is wrong.";
@@ -232,11 +232,11 @@ impl Ctx {
     fn permit(&self, name: &str) -> Permit {
         let permissions = &self.started.crew.permissions;
         match name {
-            "list_files" | "read_file" => permissions.read,
-            "write_file" => permissions.write,
-            "run_command" if sandbox::available() => permissions.commands,
-            "install_packages" if sandbox::available() => permissions.install,
-            "web_search" | "read_web_page" => permissions.web,
+            builtin::LIST_FILES | builtin::READ_FILE => permissions.read,
+            builtin::WRITE_FILE => permissions.write,
+            builtin::RUN_COMMAND if cw_sandbox::available() => permissions.commands,
+            builtin::INSTALL_PACKAGES if cw_sandbox::available() => permissions.install,
+            builtin::WEB_SEARCH | builtin::READ_WEB_PAGE => permissions.web,
             _ => Permit::Never,
         }
     }
@@ -261,34 +261,34 @@ impl Ctx {
             .iter()
             .filter(|name| self.permit(name) != Permit::Never)
             .map(|name| match *name {
-                "list_files" => tool(
-                    "list_files",
+                builtin::LIST_FILES => tool(
+                    builtin::LIST_FILES,
                     "Lists the files and folders in the task's folder, or in a folder inside it.",
                     json!({ "path": { "type": "string", "description": "A folder inside the task's folder; empty for the folder itself" } }),
                 ),
-                "read_file" => tool("read_file", "Reads a text file in the task's folder.", json!({ "path": path })),
-                "write_file" => tool(
-                    "write_file",
+                builtin::READ_FILE => tool(builtin::READ_FILE, "Reads a text file in the task's folder.", json!({ "path": path })),
+                builtin::WRITE_FILE => tool(
+                    builtin::WRITE_FILE,
                     "Writes a text file in the task's folder, in place of what it held.",
                     json!({ "path": path, "content": { "type": "string", "description": "What the file is to hold, whole" } }),
                 ),
-                "run_command" => tool(
-                    "run_command",
-                    &format!("Runs a command with {} in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there{}. {}", sandbox::SHELL, if cfg!(windows) { ", but git does not" } else { "" }, sandbox::ADVICE),
+                builtin::RUN_COMMAND => tool(
+                    builtin::RUN_COMMAND,
+                    &format!("Runs a command with {} in the task's folder and gives what it printed and its exit code. It runs in a sandbox without network that reaches only the folder's files; the computer's installed programs, such as node, npm, python or cargo, run there{}. {}", cw_sandbox::SHELL, if cfg!(windows) { ", but git does not" } else { "" }, cw_sandbox::ADVICE),
                     json!({ "command": command }),
                 ),
-                "install_packages" => tool(
-                    "install_packages",
+                builtin::INSTALL_PACKAGES => tool(
+                    builtin::INSTALL_PACKAGES,
                     "Runs a command that installs packages (npm install, pip install, cargo fetch and the like) in the task's folder, in the sandbox but with the internet.",
                     json!({ "command": command }),
                 ),
-                "web_search" => tool(
-                    "web_search",
+                builtin::WEB_SEARCH => tool(
+                    builtin::WEB_SEARCH,
                     "Searches the web. Gives the first results, each with its title, address and a few words of it.",
                     json!({ "query": { "type": "string", "description": "What to search for" } }),
                 ),
                 _ => tool(
-                    "read_web_page",
+                    builtin::READ_WEB_PAGE,
                     "Reads a web page and gives its text.",
                     json!({ "url": { "type": "string", "description": "The page's address, beginning with https:// or http://" } }),
                 ),
@@ -421,14 +421,14 @@ impl Ctx {
         let folder = self.started.folder.clone();
         let web = self.app.web();
         let done = match call.name.as_str() {
-            "list_files" => files::list(&folder, &argument("path")),
-            "read_file" => files::read(&folder, &argument("path")),
-            "write_file" => files::write(&folder, &argument("path"), &argument("content")),
-            "web_search" => self.stopping(web.search(&argument("query"))).await?,
-            "read_web_page" => self.stopping(web.read(&argument("url"))).await?,
+            builtin::LIST_FILES => files::list(&folder, &argument("path")),
+            builtin::READ_FILE => files::read(&folder, &argument("path")),
+            builtin::WRITE_FILE => files::write(&folder, &argument("path"), &argument("content")),
+            builtin::WEB_SEARCH => self.stopping(web.search(&argument("query"))).await?,
+            builtin::READ_WEB_PAGE => self.stopping(web.read(&argument("url"))).await?,
             name => {
                 let reach = Reach {
-                    network: name == "install_packages",
+                    network: name == builtin::INSTALL_PACKAGES,
                     programs: true,
                     data: self.app.data_dir().to_path_buf(),
                 };
@@ -436,7 +436,7 @@ impl Ctx {
                 let stopped = Arc::new(AtomicBool::new(false));
                 let flag = stopped.clone();
                 let mut running = tokio::task::spawn_blocking(move || {
-                    sandbox::run_with(&folder, &command, COMMAND_TIME, &flag, reach)
+                    cw_sandbox::run_with(&folder, &command, COMMAND_TIME, &flag, reach)
                 });
                 let ran = tokio::select! {
                     _ = self.stop.cancelled() => None,
@@ -511,19 +511,19 @@ impl Ctx {
 /// the team has no such tool.
 fn asked(name: &str, arguments: &Value) -> Option<(AskKind, String, String, (StepTool, String))> {
     let (kind, tool, key) = match name {
-        "list_files" => (AskKind::Read, StepTool::ListFiles, "path"),
-        "read_file" => (AskKind::Read, StepTool::ReadFile, "path"),
-        "write_file" => (AskKind::Write, StepTool::WriteFile, "path"),
-        "run_command" => (AskKind::Command, StepTool::RunCommand, "command"),
-        "install_packages" => (AskKind::Install, StepTool::InstallPackages, "command"),
-        "web_search" => (AskKind::Web, StepTool::WebSearch, "query"),
-        "read_web_page" => (AskKind::Web, StepTool::ReadWebPage, "url"),
+        builtin::LIST_FILES => (AskKind::Read, StepTool::ListFiles, "path"),
+        builtin::READ_FILE => (AskKind::Read, StepTool::ReadFile, "path"),
+        builtin::WRITE_FILE => (AskKind::Write, StepTool::WriteFile, "path"),
+        builtin::RUN_COMMAND => (AskKind::Command, StepTool::RunCommand, "command"),
+        builtin::INSTALL_PACKAGES => (AskKind::Install, StepTool::InstallPackages, "command"),
+        builtin::WEB_SEARCH => (AskKind::Web, StepTool::WebSearch, "query"),
+        builtin::READ_WEB_PAGE => (AskKind::Web, StepTool::ReadWebPage, "url"),
         _ => return None,
     };
     let argument = |name: &str| arguments[name].as_str().unwrap_or_default().to_string();
     let target = argument(key);
     let detail = match name {
-        "write_file" => argument("content"),
+        builtin::WRITE_FILE => argument("content"),
         _ => String::new(),
     };
     Some((kind, target.clone(), detail, (tool, target)))
@@ -607,7 +607,7 @@ async fn plan(ctx: &Ctx) -> anyhow::Result<Plan> {
         who: "Planner".into(),
         step,
         model: ctx.started.crew.planner_model.clone(),
-        tools: ctx.tools(&["list_files", "read_file"], finish),
+        tools: ctx.tools(&[builtin::LIST_FILES, builtin::READ_FILE], finish),
         finish: "plan",
         words_end: false,
     };
@@ -687,13 +687,13 @@ async fn build(
         json!({ "summary": { "type": "string", "description": "What you did, in a sentence or two" } }),
     );
     let names = [
-        "list_files",
-        "read_file",
-        "write_file",
-        "run_command",
-        "install_packages",
-        "web_search",
-        "read_web_page",
+        builtin::LIST_FILES,
+        builtin::READ_FILE,
+        builtin::WRITE_FILE,
+        builtin::RUN_COMMAND,
+        builtin::INSTALL_PACKAGES,
+        builtin::WEB_SEARCH,
+        builtin::READ_WEB_PAGE,
     ];
     let role = Role {
         who: who.clone(),
@@ -817,7 +817,14 @@ async fn check(
         who: "Auditor".into(),
         step,
         model: ctx.started.crew.auditor_model.clone(),
-        tools: ctx.tools(&["list_files", "read_file", "run_command"], function),
+        tools: ctx.tools(
+            &[
+                builtin::LIST_FILES,
+                builtin::READ_FILE,
+                builtin::RUN_COMMAND,
+            ],
+            function,
+        ),
         finish: "verdict",
         words_end: false,
     };

@@ -63,6 +63,28 @@ describe("the companion's body", () => {
     expect(body.x).toBe(200);
   });
 
+  it("walks and climbs as fast as its clip's feet go at its size, so they do not slide", () => {
+    const before = { ...SIZE };
+    try {
+      for (const percent of [10, 50]) {
+        sizeTo(percent, AREA.height);
+        const stride = 0.5 * SIZE.height * FILL;
+        const wide = { width: 4000, height: 3000 };
+        const body = new Body(wide, 2000, wide.height);
+        body.pace = 0.5;
+        body.walkTo(0);
+        run(body, 0.99);
+        expect(2000 - body.x).toBeCloseTo(stride * 0.99, 0);
+        body.x = SIZE.width / 2;
+        body.climb("left", 1);
+        run(body, 0.99);
+        expect(wide.height - body.y).toBeCloseTo(stride * 0.99, 0);
+      }
+    } finally {
+      Object.assign(SIZE, before);
+    }
+  });
+
   it("neither walks nor climbs while the hand holds it", () => {
     const body = new Body(AREA, 500, 300);
     body.hold();

@@ -5,7 +5,8 @@
 // and each stage of being handled that circe's avatar plan (`PLAN-avatar-system.md`) has: held, shaken (`shaking`
 // tells it from the hand's moves), thrown or falling, hitting an edge, bouncing on the floor, landing, startled by a
 // click, sitting. What happened since the hand took it is `happened`, which the animator is told. That plan
-// ("Physics", "Event vocabulary") is where the numbers come from.
+// ("Physics", "Event vocabulary") is where the numbers come from, but for walking and climbing, which go as fast as
+// the clip's feet at the figure's size (`pace`, from figure.ts), so they do not slide.
 //
 // Traps: `step` is to be given at most `LONGEST_TICK` at a time, as a long pause between frames would carry the
 // body through the floor; a body the window shrinks under falls to the new floor (`fit`). `SIZE` changes with the
@@ -51,8 +52,10 @@ const SETTLE = 40;
 /** A release faster than this is a throw, and none is faster than `FASTEST` (pixels a second). */
 const THROW = 300;
 const FASTEST = 3000;
-const WALK = 150;
-const CLIMB = 90;
+/** How fast the feet go in the walk that plays (figure.ts's `pace`) before it is known, and the least it goes at,
+ * in heights standing a second: about a person's stroll. */
+const PACE = 0.9;
+const LEAST_PACE = 0.1;
 /** The longest time `step` takes at once, in seconds. */
 export const LONGEST_TICK = 0.033;
 /** Off an edge faster than this the body is seen to hit it (pixels a second). */
@@ -110,6 +113,9 @@ export class Body {
   /** Whether the figure gets to its feet or lands (figure.ts), meanwhile it walks and climbs nowhere and a landing
    * lasts on. */
   rising = false;
+  /** How fast the feet of the clip that plays go, in the figure's heights standing a second (figure.ts's `pace`); it
+   * walks and climbs as fast, so its feet do not slide. Null: not known yet. */
+  pace: number | null = null;
   /** What happened since the hand last took it, in order, each stage once in a row. */
   happened: Handling[] = [];
   /** Seconds the body has been stepped, which the one-shot stages are timed by. */
@@ -268,7 +274,7 @@ export class Body {
     }
     if ((motion.kind === "walk" || motion.kind === "climb") && this.rising) return;
     if (motion.kind === "walk") {
-      this.x = towards(this.x, motion.to, WALK * dt);
+      this.x = towards(this.x, motion.to, this.speed() * dt);
       if (this.x === motion.to) this.motion = { kind: "rest" };
       return;
     }
@@ -277,14 +283,19 @@ export class Body {
       if (this.x !== wall) {
         // To the edge first, along the floor.
         this.heading = wall < this.x ? -1 : 1;
-        this.x = towards(this.x, wall, WALK * dt);
+        this.x = towards(this.x, wall, this.speed() * dt);
         return;
       }
-      this.y = towards(this.y, motion.to, CLIMB * dt);
+      this.y = towards(this.y, motion.to, this.speed() * dt);
       if (this.y === motion.to) this.motion = { kind: "hang", side: motion.side };
       return;
     }
     if (motion.kind === "rest" && this.y < floor) this.letGo();
+  }
+
+  /** How fast it walks or climbs, in pixels a second: as fast as its feet go at its size. */
+  private speed(): number {
+    return Math.max(this.pace ?? PACE, LEAST_PACE) * SIZE.height * FILL;
   }
 }
 

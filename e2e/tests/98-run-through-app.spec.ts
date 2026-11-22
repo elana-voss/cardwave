@@ -1,6 +1,6 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
-import { setProvider } from "../stored";
+import { setProvider, setSettings } from "../stored";
 import { expect, test } from "../test";
 
 // Run-through "companion and app": a user's path through what frames the app, by clicks and keys alone, each story
@@ -24,8 +24,7 @@ test.beforeAll(async ({ request }: { request: APIRequestContext }) => {
   const data = { title: "North Light", tags: [], creator: "", name: "Mira", greetings: ["You came in the storm."], description: "A lighthouse keeper.", personality: "", scenario: "", example_dialogue: "", creator_notes: "" };
   const made = await request.post("/api/cards/new", { data });
   expect(made.status(), await made.text()).toBe(201);
-  const set = await request.patch("/api/settings", { data: { companion: { card_id: (await made.json()).card_id, starts: true, hidden_until: null } } });
-  expect(set.status(), await set.text()).toBe(200);
+  await setSettings(request, { companion: { card_id: (await made.json()).card_id, starts: true, hidden_until: null } });
 });
 test.afterAll(() => api.close());
 

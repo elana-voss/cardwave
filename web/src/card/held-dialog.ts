@@ -14,6 +14,12 @@ const SEARCHED_FROM = 9;
 
 const usedBy = (cards: number) => (wording("held-dialog-cards", { count: cards }));
 
+/** An item's grey line: what it is, where the part says, and how many cards use it. */
+function aboutOf<T extends { id: number; name: string; cards: number }>(h: Held<T>, item: T): string {
+  const about = h.about?.(item) ?? null;
+  return about === null ? usedBy(item.cards) : wording("held-dialog-item-about", { about, usedBy: usedBy(item.cards) });
+}
+
 /** What a part gives the dialog. */
 export interface Held<T extends { id: number; name: string; cards: number }> {
   /** "Add expressions": the dialog's title, and the control the box has in focus when drawn anew. */
@@ -28,8 +34,8 @@ export interface Held<T extends { id: number; name: string; cards: number }> {
   /** Above the list, what the item is for, where there is a choice; `rechoose` after it changed. */
   head?: (rechoose: () => void) => HTMLElement | null;
   picture: (item: T) => HTMLElement;
-  /** What the item is, before how many cards use it: "12 expressions"; without it, only who uses it. */
-  about?: (item: T) => string;
+  /** What the item is, before how many cards use it: "12 expressions"; without it, or where it answers null, only who uses it. */
+  about?: (item: T) => string | null;
   /** The item the card, or what `head` chose, has now. */
   current: () => number | null;
   /** Whom it was added to: "this card". */
@@ -90,7 +96,7 @@ export async function heldDialog<T extends { id: number; name: string; cards: nu
         "button",
         { type: "button", className: "pk" },
         h.picture(item),
-        el("span", { className: "f-grow flex f-col" }, el("span", { className: "medium" }, item.name), el("span", { className: "meta" }, h.about ? wording("held-dialog-item-about", { about: h.about(item), usedBy: usedBy(item.cards) }) : usedBy(item.cards))),
+        el("span", { className: "f-grow flex f-col" }, el("span", { className: "medium" }, item.name), el("span", { className: "meta" }, aboutOf(h, item))),
         el("span", { className: "c-accent flex pack-tick" }, icon("check", 18)),
       );
       line.onclick = () => {

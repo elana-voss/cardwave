@@ -121,6 +121,7 @@ search-keys = Tìm trong Cardwave (Ctrl+K)
 
 label-settings-theme = Chủ đề
 label-settings-chat-layout = Bố cục trò chuyện
+label-settings-msg-pictures = Ảnh cạnh tên
 label-settings-web-pictures = Hiện hình ảnh từ trang web khác
 label-settings-tabs = Thẻ
 label-settings-app-language = Ngôn ngữ của ứng dụng
@@ -137,6 +138,7 @@ label-settings-commands = Lệnh
 label-settings-image-generation = Tạo hình ảnh
 label-settings-app = Cardwave
 label-settings-dice = Xúc xắc
+label-settings-names = Tên cho nhân vật mới
 label-settings-folder = Thư mục
 label-settings-written = Công cụ do AI viết
 label-settings-coding = Nhóm lập trình
@@ -176,6 +178,7 @@ layout-plain = Văn bản thường
 settings-appearance = Giao diện
 settings-theme-about = Theo hệ thống, trừ khi bạn chọn một chủ đề
 settings-layout-about = Tin nhắn dạng bong bóng hoặc dạng văn bản thường
+settings-msg-pictures-about = Ảnh của nhân vật và của bạn cạnh mỗi tên trong cuộc trò chuyện
 settings-web-pictures-about = Các trang web đó có thể biết khi bạn mở cuộc trò chuyện.
 settings-tabs-about = Giữ nhiều trang mở trên thanh tiêu đề
 settings-language = Ngôn ngữ
@@ -393,6 +396,7 @@ tools-pictures = Dùng mô hình hình ảnh
 tools-pictures-first = Hãy thiết lập mô hình hình ảnh trước
 tools-app = Dùng và thay đổi nhân vật, cuộc trò chuyện và cài đặt của bạn; mỗi thay đổi đều được hỏi trước
 tools-dice = Cho AI tung xúc xắc; Cardwave tung nên kết quả công bằng.
+tools-names = Cho AI một cái tên phù hợp cho mỗi nhân vật mới từ một danh sách lớn, để tên không bị lặp lại.
 tools-folder-example =
     { $system ->
         [linux] /home/ban/Documents/Shared

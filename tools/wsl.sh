@@ -5,7 +5,10 @@
 #   wsl -d Ubuntu -u root -- bash tools/wsl.sh root   tools/linux.sh's packages, mold and Node 24 (the owner's yes, 2026-11-17)
 #   wsl -d Ubuntu -- bash tools/wsl.sh user           Rust, the clone, the npm folders, Playwright's WebKit, tauri-driver; what is there stays
 #   wsl -d Ubuntu -- bash tools/wsl.sh sync           the copy made equal to this folder, uncommitted files too
-#   wsl -d Ubuntu -- bash tools/wsl.sh check          sync, then fmt, the workspace's tests (under tools/linux.sh keyring), clippy, web's tests
+#   wsl -d Ubuntu -- bash tools/wsl.sh check [<step>…] sync, then fmt, the workspace's tests (under tools/linux.sh keyring), clippy,
+#                                                     web's tests; given steps (fmt test clippy web), only those: web only where web/ changed
+#   wsl -d Ubuntu -- bash tools/wsl.sh test <args>     sync, then `cargo test <args>` in server/ as the check runs it (`--test sandbox_linux`,
+#                                                     `--workspace hex`): one test while building
 #   wsl -d Ubuntu -- bash tools/wsl.sh webkit [<spec>]  sync, then the browser tests in Playwright's WebKit (`e2e`'s WEBKIT=1)
 #   wsl -d Ubuntu -- bash tools/wsl.sh dist           sync, then the AppImage and the .deb (tools/linux.sh bundle)
 #   wsl -d Ubuntu -- bash tools/wsl.sh desktop-test   sync, then e2e/desktop's window tests (tools/linux.sh screen)
@@ -84,9 +87,10 @@ sync_copy() {
   git reset -q --hard FETCH_HEAD
   git clean -q -fd
   # A worktree's node_modules and desktop/llama are links to the main folder's, which git does not take as ignored folders.
-  wingit ls-files -m -o --exclude-standard -z | rsync -a --ignore-missing-args --exclude=node_modules --exclude=/desktop/llama \
-    --from0 --files-from=- "$WIN/" "$COPY/"
-  wingit ls-files -d -z | xargs -0 -r rm -f
+  # Changes against HEAD, not the index: a staged file (added, renamed) is one too.
+  { wingit diff --no-renames --name-only --diff-filter=d -z HEAD; wingit ls-files -o --exclude-standard -z; } \
+    | rsync -a --ignore-missing-args --exclude=node_modules --exclude=/desktop/llama --from0 --files-from=- "$WIN/" "$COPY/"
+  wingit diff --no-renames --name-only --diff-filter=D -z HEAD | xargs -0 -r rm -f
 }
 
 # Whether web/dist is missing or older than a file it is built from.
@@ -101,20 +105,42 @@ step() {
   if "$@" >>"$OUT" 2>&1; then echo "ok   $name"; else echo "FAIL $name"; FAILED=1; fi
 }
 
+# The desktop crate's build needs its resources: llama-server and the UI's build.
+resources() {
+  step llama python3 "$COPY/tools/llama.py"
+  if ui_stale; then step ui bash -c "cd '$COPY/web' && npm run build"; fi
+}
+
+# Whether step $1 is wanted: no steps named, or it is among them ($WANTED).
+wanted() { [ -z "$WANTED" ] || case " $WANTED " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
+
 check() {
+  WANTED="$*"
   sync_copy
   mkdir -p "$COPY/.checklists" && : >"$OUT"
   FAILED=0
   export RUST_TEST_THREADS=2
-  step fmt cargo fmt --all --check
-  # The desktop crate's build (clippy's) needs its resources: llama-server and the UI's build.
-  step llama python3 "$COPY/tools/llama.py"
-  if ui_stale; then step ui bash -c "cd '$COPY/web' && npm run build"; fi
-  # The whole workspace, the desktop crate's own tests among them (its build needs the two above).
-  step test bash -c "cd '$COPY' && CARGO_BUILD_JOBS=2 dbus-run-session -- bash tools/linux.sh keyring cargo test --no-fail-fast --workspace"
-  grep -E "^test result: FAILED|panicked" "$OUT" | head -n 8 || true
-  step clippy cargo clippy --workspace --all-targets -- -D warnings
-  step web bash -c "cd '$COPY/web' && npm test"
+  if wanted fmt; then step fmt cargo fmt --all --check; fi
+  if wanted test || wanted clippy; then resources; fi
+  # The whole workspace, the desktop crate's own tests among them.
+  if wanted test; then
+    step test bash -c "cd '$COPY' && CARGO_BUILD_JOBS=2 dbus-run-session -- bash tools/linux.sh keyring cargo test --no-fail-fast --workspace"
+    grep -E "^test result: FAILED|panicked" "$OUT" | head -n 8 || true
+  fi
+  if wanted clippy; then step clippy cargo clippy --workspace --all-targets -- -D warnings; fi
+  if wanted web; then step web bash -c "cd '$COPY/web' && npm test"; fi
+  return "$FAILED"
+}
+
+# cargo test <args> in server/, under the keyring as check runs it; prints its result lines.
+test_one() {
+  sync_copy
+  mkdir -p "$COPY/.checklists" && : >"$OUT"
+  FAILED=0
+  export RUST_TEST_THREADS=2
+  resources
+  step test bash -c "cd '$COPY/server' && CARGO_BUILD_JOBS=2 dbus-run-session -- bash ../tools/linux.sh keyring cargo test $*"
+  grep -E "^test result|FAILED|panicked" "$OUT" | head -n 12 || true
   return "$FAILED"
 }
 
@@ -160,10 +186,11 @@ case "$CMD" in
   root) root ;;
   user) user ;;
   sync) sync_copy ;;
-  check) check ;;
+  check) shift; check "$@" ;;
+  test) shift; test_one "$@" ;;
   webkit) shift; webkit "$@" ;;
   dist) dist ;;
   desktop-test) desktop-test ;;
   run) shift; sync_copy; cd "$COPY"; "$@" ;;
-  *) echo "usage: tools/wsl.sh root|user|sync|check|webkit [<spec>]|dist|desktop-test|run <command>" >&2; exit 2 ;;
+  *) echo "usage: tools/wsl.sh root|user|sync|check [<step>…]|test <args>|webkit [<spec>]|dist|desktop-test|run <command>" >&2; exit 2 ;;
 esac

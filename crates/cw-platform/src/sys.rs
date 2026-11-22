@@ -1,6 +1,6 @@
 //! The one wrapper of `windows-sys`, `libc` and `trash` for the server
 //! (global layer rule; `tools/check.sh` holds it, the tools' sandbox
-//! `tools/sandbox.rs` apart): a process ended with the server's (on Windows
+//! crate cw-sandbox apart): a process ended with the server's (on Windows
 //! the job object [`Job`], on Linux [`end_with_this`]'s parent-death signal),
 //! the flag that keeps its console window shut ([`NO_WINDOW`]), this
 //! computer's memory ([`memory`]), whether Vulkan's loader is there

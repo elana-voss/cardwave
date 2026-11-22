@@ -1,13 +1,13 @@
 // How the app looks by the user's choice, which is kept in the browser for the
 // next start: the theme (the system's, light, dark, or one of the five looks of app/looks.css, each its own colour
-// scheme; Cyberpunk is left out, the owner, 2026-11-06), the chat's layout (bubbles or plain) and Compact (every size about a fifth smaller).
+// scheme; Cyberpunk is left out, the owner, 2026-11-06), the chat's layout (bubbles or plain), the message pictures (on or off; Settings alone sets them, so no `LOOK`) and Compact (every size about a fifth smaller).
 // The title bar's view menu (view-menu.ts) and Settings › Appearance set the same choices; each choice tells the
 // page by the event `LOOK` on the document, so what shows a choice is drawn anew.
 //
 // `theme`, `setTheme` and `themes` (their words in the language in use) are the theme; index.html sets it and Compact before the page is drawn, under
 // the same names. `chatLayout`, `setChatLayout`, `showChatLayout` and `chatLayouts` are the chat's layout,
 // which the root says as `data-chat` and styles.css draws a chat's messages by; main.ts has it shown at the
-// start.
+// start, as `showMessagePictures` the root's `data-msg-pictures`.
 import type { PageViews } from "./dom";
 import { remember, remembered } from "./storage";
 import { wording } from "./language/language";
@@ -69,6 +69,24 @@ export function setChatLayout(to: ChatLayout): void {
   remember(CHAT_LAYOUT, to);
   showChatLayout(to);
   told();
+}
+
+/** The small pictures beside each message's name are kept on or off under this name. */
+const MESSAGE_PICTURES = "message-pictures";
+
+/** Are the message pictures on: on until switched off (the owner, 2026-11-17). */
+export const messagePictures = (): boolean => remembered(MESSAGE_PICTURES) !== "off";
+
+/** Has the page draw the message pictures or not: the root's `data-msg-pictures` is "off" while they are off. */
+export function showMessagePictures(on: boolean = messagePictures()): void {
+  if (on) delete document.documentElement.dataset.msgPictures;
+  else document.documentElement.dataset.msgPictures = "off";
+}
+
+/** Switches the message pictures on or off at once, in every chat, and keeps the choice. */
+export function setMessagePictures(on: boolean): void {
+  remember(MESSAGE_PICTURES, on ? "on" : "off");
+  showMessagePictures(on);
 }
 
 /** A chat's views in the view menu: its layouts, the same choice as Settings' Chat layout. */

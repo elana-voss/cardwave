@@ -2,6 +2,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { button, composer, expect, linesOf, pickFrom, test } from "../test";
 import { cardFile, ccv4File } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
+import { setSettings } from "../stored";
 
 // The chat's side panel: who the user is in the chat (a persona chosen, and a new one made there), and the
 // chat's lorebooks as switches, of which one switched off stays out of the replies; and a reply's statistics.
@@ -191,7 +192,7 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await expect(linesOf(persona(page))).toHaveText(["Guest", "Ines Fenn", "New persona…"]);
   await expect(shown).toHaveText("Ines Fenn");
   // The user's messages go by that name, and the next reply is written for it.
-  await expect(mine).toHaveText("Ines Fenn (you)");
+  await expect(mine).toHaveText("Ines Fenn");
   await expect(page.getByRole("alert")).toHaveCount(0);
   const ines = (await chatOf(request, chat)).chat.persona_id;
   expect(ines).toEqual(expect.any(Number));
@@ -203,7 +204,7 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   await pickFrom(persona(page), "Guest");
   await expect(page.getByRole("alert")).toHaveText("Something went wrong in Cardwave. Try again.");
   await expect(shown).toHaveText("Ines Fenn");
-  await expect(mine).toHaveText("Ines Fenn (you)");
+  await expect(mine).toHaveText("Ines Fenn");
   await page.unroute("**/api/chats/*/persona");
 
   // Back to nobody in particular.
@@ -213,10 +214,10 @@ test("who the user is in the chat is chosen in the side panel, and a new persona
   expect((await chatOf(request, chat)).chat.persona_id).toBeNull();
   // The persona is there for every chat, and the one chosen is shown after a new start.
   await pickFrom(persona(page), "Ines Fenn");
-  await expect(mine).toHaveText("Ines Fenn (you)");
+  await expect(mine).toHaveText("Ines Fenn");
   await page.reload();
   await expect(shown).toHaveText("Ines Fenn");
-  await expect(mine).toHaveText("Ines Fenn (you)");
+  await expect(mine).toHaveText("Ines Fenn");
   await open(page, await start(request, "moss"));
   await expect(linesOf(persona(page))).toHaveText(["Guest", "Ines Fenn", "New persona…"]);
   await expect(shown).toHaveText("Guest");
@@ -306,6 +307,23 @@ test("a click chooses a reply, whose part of the side panel shows what it was gi
   await page.keyboard.press("Escape");
   await expect(page.locator(".message.chosen")).toHaveCount(0);
   await expect(used(page)).toHaveText(["Entry of The FenThe Grey Heron"]);
+});
+
+test("the dice a reply rolled are listed once it has ended, and still after the chat is opened again; the chat shows no line for them", async ({ page, request }) => {
+  await setSettings(request, { tools: { dice: true } });
+  const chat = await start(request, "moss");
+  await open(page, chat);
+  provider.calls("dice", { count: 2, sides: 6 });
+  provider.next(["Seven it is."]);
+  await say(page, "Roll for me");
+  const tools = part(page, "Used in last reply").locator(".item", { hasText: "Tools used" });
+  await expect(tools).toContainText(/Dice · 2d6: \d \+ \d = \d+/);
+  await expect(messages(page).filter({ hasText: "2d6" })).toHaveCount(0);
+
+  // The same address would load nothing anew; a reload has the list come from what was stored.
+  await page.reload();
+  await expect(tools).toContainText(/Dice · 2d6: \d \+ \d = \d+/);
+  await setSettings(request, { tools: { dice: false } });
 });
 
 test("in a narrow window the side panel lies over the messages only: its Close, the bar and Send stay in reach; Escape closes it", async ({ page, request }) => {

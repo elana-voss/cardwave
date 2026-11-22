@@ -37,7 +37,7 @@ fn folder(service: &str) -> anyhow::Result<PathBuf> {
 }
 
 fn path(folder: &Path, account: &str) -> PathBuf {
-    let name = crate::hex(&Sha256::digest(account.as_bytes()));
+    let name = cw_core::hex(&Sha256::digest(account.as_bytes()));
     folder.join(format!("{name}.key"))
 }
 

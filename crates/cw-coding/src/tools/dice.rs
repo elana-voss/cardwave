@@ -1,8 +1,7 @@
 //! The dice a chat's model rolls (`dice(count, sides)`, the owner,
 //! 2026-10-23): the server rolls, so the model cannot pick its own number.
 //! It is offered in every chat reply while Tools for the AI › Dice is on (off
-//! at first, the owner, 2026-10-23), and as its arguments are two numbers it
-//! leaves the Reply length sent (`cuts`).
+//! at first, the owner, 2026-10-23), a chat tool (`chat::ChatTool`, `TOOL`).
 //!
 //! A model may send a number as text ("2") or with a point ("2.0"); it is taken. At most `MOST_COUNT`
 //! dice of at most `MOST_SIDES` sides; what is out of range is told the model.
@@ -29,13 +28,20 @@ pub(crate) fn definition() -> Value {
     )
 }
 
-/// Whether a request offered `definitions` is sent no Reply length: where
-/// any tool but the dice is offered, whose call's arguments a limit could cut.
-pub fn cuts(definitions: &[Value]) -> bool {
-    definitions
-        .iter()
-        .any(|definition| definition["function"]["name"] != NAME)
-}
+/// The dice as a chat tool.
+pub const TOOL: crate::tools::chat::ChatTool = crate::tools::chat::ChatTool {
+    name: NAME,
+    on: |tools| tools.dice,
+    definition,
+    note: None,
+    asked: notation,
+    run: |turn| {
+        let rolled = roll(turn.arguments, throw)?;
+        let shown = brief(&rolled);
+        Ok((rolled, Some(shown)))
+    },
+    short: true,
+};
 
 /// The roll `arguments` ask for, each die from `die(sides)` (1 to `sides`),
 /// as the model reads it: "2d10: 7 + 3 = 10", one die "1d20: 14".
@@ -63,6 +69,26 @@ pub fn roll(arguments: &str, mut die: impl FnMut(u64) -> u64) -> anyhow::Result<
     })
 }
 
+/// A roll as "Used in this reply" shows it: as the model read it, or where
+/// that is too long to show, "100d6: … = 350", which keeps the total.
+pub(crate) fn brief(rolled: &str) -> String {
+    if rolled.chars().count() <= crate::tools::used::MOST {
+        return rolled.to_string();
+    }
+    let asked = rolled.split(':').next().unwrap_or_default();
+    let total = rolled.rsplit(" = ").next().unwrap_or_default();
+    format!("{asked}: … = {total}")
+}
+
+/// The roll `arguments` ask for as "2d6"; empty where they do not say.
+pub(crate) fn notation(arguments: &str) -> String {
+    let asked = serde_json::from_str::<Value>(arguments).unwrap_or_default();
+    match (number(&asked, "count"), number(&asked, "sides")) {
+        (Ok(count), Ok(sides)) => format!("{count}d{sides}"),
+        _ => String::new(),
+    }
+}
+
 /// A die of `sides` sides, thrown.
 pub(crate) fn throw(sides: u64) -> u64 {
     rand::random_range(1..=sides)
@@ -84,6 +110,13 @@ fn number(arguments: &Value, name: &str) -> anyhow::Result<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_roll_too_long_to_show_keeps_its_total() {
+        let rolled = roll(r#"{"count":100,"sides":6}"#, |_| 3).unwrap();
+        assert_eq!(brief(&rolled), "100d6: … = 300");
+        assert_eq!(brief("2d6: 3 + 4 = 7"), "2d6: 3 + 4 = 7");
+    }
 
     #[test]
     fn a_roll_gives_each_die_and_the_total() {
@@ -126,13 +159,5 @@ mod tests {
         let thrown: Vec<u64> = (0..200).map(|_| throw(6)).collect();
         assert!(thrown.iter().all(|die| (1..=6).contains(die)));
         assert!(thrown.contains(&1) && thrown.contains(&6));
-    }
-
-    #[test]
-    fn the_dice_alone_cut_nothing() {
-        let other = crate::tools::tool("web_search", "", json!({}));
-        assert!(!cuts(&[definition()]));
-        assert!(!cuts(&[]));
-        assert!(cuts(&[definition(), other]));
     }
 }

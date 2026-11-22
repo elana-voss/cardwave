@@ -1,5 +1,5 @@
-import type { APIRequestContext, Page, Request } from "@playwright/test";
-import { button, expect, test } from "../test";
+import type { APIRequestContext, Page } from "@playwright/test";
+import { button, expect, goHeard, test } from "../test";
 import { ccv4File, pictureFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
@@ -11,15 +11,16 @@ import { setProvider, setImages } from "../stored";
 // several characters with the menu of who replies open, the window "Add a character", and the list of chats
 // with a row pointed at. The database is this spec's own: five cards, a persona, a lorebook and four chats.
 //
-// The pictures are `chat`, `tools`, `painted`, `group`, `adding` and `chats`. `painted` is a chat with Guinivere whose
+// The pictures are `chat`, `tools`, `plain` (the same chat in Plain), `painted`, `group`, `adding` and `chats`; one
+// test without pictures switches "Pictures beside names" off and measures both layouts. `painted` is a chat with Guinivere whose
 // second message is a picture the image model made, a portrait of 832 by 1216 pixels, as SDXL makes one. `solo` is the chat with Guinivere: her greeting, a
 // message of the user's and a reply in three versions, the second in view, with a lorebook of the library
 // whose entry the reply was given; the replies are written by the stand-in of ../fake-provider.ts. `group` is
 // the chat of Isolde, Captain Vale and Odalys.
-// `pair` is the chat of Guinivere and Lancelot, in which a character is added. A chat is read twice at a
-// start, when its screen is made and again once the page hears the server, and the second reading draws the
-// messages anew, with their round pictures: `open` waits for both, as a picture drawn anew while it is taken
-// comes out in two ways (../pictures.ts). A character whose card has no art has its round without a picture,
+// `pair` is the chat of Guinivere and Lancelot, in which a character is added. A chat whose screen was made
+// before the server's first word came is read and drawn anew at it, with its round pictures: `open` waits for
+// that word and what it has read (`goHeard`), as a picture drawn anew while it is taken comes out in two ways
+// (../pictures.ts). A character whose card has no art has its round without a picture,
 // for which `open` would wait in vain: the chats it opens are of cards with art.
 
 interface One {
@@ -152,16 +153,9 @@ test.afterAll(() => provider.close());
 
 const messages = (page: Page) => page.locator(".message");
 
-/** Opens a chat and waits for its `count` messages, as its second reading draws them, and the round pictures beside their names. */
+/** Opens a chat and waits for the server's first word and its `count` messages, and the round pictures beside their names. */
 async function open(page: Page, chat: number, count: number): Promise<void> {
-  let read = 0;
-  const counted = (request: Request) => {
-    if (request.method() === "GET" && new URL(request.url()).pathname === `/api/chats/${chat}`) read += 1;
-  };
-  page.on("requestfinished", counted);
-  await page.goto(`/#/chats/${chat}`);
-  await expect.poll(() => read).toBe(2);
-  page.off("requestfinished", counted);
+  await goHeard(page, `/#/chats/${chat}`);
   await expect(messages(page)).toHaveCount(count);
   await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
   await expect.poll(() => page.locator("img.avatar").evaluateAll((all: HTMLImageElement[]) => all.every((one) => one.complete && one.naturalWidth > 0))).toBe(true);
@@ -210,8 +204,12 @@ for (const [width, height] of SIZES) {
         await picture(page, named("group"), railChats(page, "Guinivere"));
       });
 
-      if (width <= 600) {
-      }
+      test("a chat as Plain with its pictures: 20 px between turns, the name's line the head's 32 px", async ({ page }) => {
+        await page.addInitScript(() => localStorage.setItem("chat-layout", "plain"));
+        await open(page, solo, 3);
+        await away(page);
+        await picture(page, named("plain"), railChats(page, "Guinivere"));
+      });
 
       test("Add a character: the library's cards, one in the chat already", async ({ page }) => {
         await open(page, pair, 1);
@@ -242,6 +240,55 @@ for (const [width, height] of SIZES) {
     });
   }
 }
+
+/** Where a locator's box starts, left and top, and how tall it is, in px. */
+const box = async (shown: ReturnType<Page["locator"]>) => {
+  const { x, y, height } = (await shown.boundingBox())!;
+  return { x: Math.round(x), y: Math.round(y), height: Math.round(height) };
+};
+
+/** Opens the chat with Guinivere in a fresh page, as a start does: a change of the address alone reads it once. */
+async function reopen(page: Page): Promise<void> {
+  await page.goto("about:blank");
+  await open(page, solo, 3);
+}
+
+test("Pictures beside names: switched off in Settings, both layouts lose the pictures and their indents, kept after a reload", async ({ page }) => {
+  await page.goto("/#/settings");
+  const on = page.getByRole("switch", { name: "Pictures beside names" });
+  await expect(on).toBeChecked();
+  await on.click();
+  await expect(on).not.toBeChecked();
+  await reopen(page);
+  const [first, mine] = [messages(page).first(), messages(page).nth(1)];
+  // Bubbles: no picture beside a name, the character's name and bubble at the left edge, the user's at the right.
+  await expect(page.locator(".msg-head .avatar")).toHaveCount(3);
+  for (const round of await page.locator(".msg-head .avatar").all()) await expect(round).toBeHidden();
+  await expect(page.locator(".chat-bar .avatar").first()).toBeVisible();
+  const edge = (await box(first)).x;
+  expect((await box(first.locator(".speaker"))).x).toBe(edge);
+  expect((await box(first.locator(".bubble"))).x).toBe(edge);
+  const right = async (shown: ReturnType<Page["locator"]>) => Math.round(((await shown.boundingBox())!).x + ((await shown.boundingBox())!).width);
+  expect(await right(mine.locator(".bubble"))).toBe(await right(mine));
+  expect(await right(mine.locator(".speaker"))).toBe(await right(mine));
+  expect((await box(messages(page).last().locator(".acts"))).x).toBe(edge);
+  // Plain, after a reload: the choice kept; the name's line only as tall as the name, the text and actions flush under it.
+  await page.evaluate(() => localStorage.setItem("chat-layout", "plain"));
+  await reopen(page);
+  await expect(page.locator("html")).toHaveAttribute("data-msg-pictures", "off");
+  for (const round of await page.locator(".msg-head .avatar").all()) await expect(round).toBeHidden();
+  const newest = messages(page).last();
+  const head = await box(newest.locator(".msg-head"));
+  expect(head.height).toBeLessThan(32);
+  expect((await box(newest.locator(".bubble"))).x).toBe(head.x);
+  expect((await box(newest.locator(".acts"))).x).toBe(head.x);
+  // On again: the pictures are back at once.
+  await page.goto("/#/settings");
+  await page.getByRole("switch", { name: "Pictures beside names" }).click();
+  await reopen(page);
+  await expect(page.locator(".msg-head .avatar").first()).toBeVisible();
+  expect((await box(messages(page).last().locator(".msg-head"))).height).toBe(32);
+});
 
 test("a picture opened whole is as wide as it is shown, the whole of it and Save in the window", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });

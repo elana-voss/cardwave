@@ -1,13 +1,18 @@
-//! The tools the chat model calls (`tools.rs`): commands in the sandbox, a
+//! The tools the chat model calls (`tools.rs`): commands in the sandbox (on
+//! Linux in `sandbox_linux.rs`), a
 //! folder's files, the web at a stand-in, a reply's rounds of calls, the
-//! user's answer to a call that asks, and who may switch which on.
+//! user's answer to a call that asks, who may switch which on. The chat
+//! tools (the dice, names) are in `chat_tools.rs`.
 //!
 //! `Model` (`common::model`) is a stand-in for a model's server.
 
 mod common;
 
+#[cfg(windows)]
 use std::sync::Arc;
+#[cfg(windows)]
 use std::sync::atomic::AtomicBool;
+#[cfg(windows)]
 use std::time::Duration;
 
 use common::Folder;
@@ -15,8 +20,7 @@ use common::api::{Api, says};
 use common::model::{
     Model, PAUSE, call_pieces, chat_at, code_mode, names, next_event, stream, text_piece,
 };
-use common::server::{WAIT, device, start};
-use cw_coding::tools::sandbox;
+use common::server::{Server, Socket, WAIT, device, start};
 use cw_coding::tools::{REFUSED, files, web::Web};
 use reqwest::Method;
 use serde_json::{Value, json};
@@ -31,7 +35,7 @@ fn a_command_reaches_its_folder_and_no_other() {
     std::fs::write(&secret, "the secret").unwrap();
     let time = Duration::from_secs(20);
     let run = |folder: &Folder, command: &str| {
-        sandbox::run(&folder.0, command, time, &AtomicBool::new(false)).unwrap()
+        cw_sandbox::run(&folder.0, command, time, &AtomicBool::new(false)).unwrap()
     };
 
     let ran = run(&inside, "echo made> made.txt && type made.txt");
@@ -44,8 +48,8 @@ fn a_command_reaches_its_folder_and_no_other() {
     );
     // `dir` reads the drive, which the sandbox refuses: the output says how to list the folder.
     let ran = run(&inside, "dir /b");
-    assert!(ran.output.contains(sandbox::LISTING), "{}", ran.output);
-    let ran = run(&inside, sandbox::LISTING);
+    assert!(ran.output.contains(cw_sandbox::LISTING), "{}", ran.output);
+    let ran = run(&inside, cw_sandbox::LISTING);
     assert_eq!(
         (ran.code, ran.output.trim()),
         (Some(0), "made.txt"),
@@ -77,7 +81,7 @@ fn a_command_that_runs_too_long_is_ended() {
     // path … is denied"), so that the test saw it end by itself.
     let sleep = "for /l %i in (1,1,2147483647) do @rem";
     let began = std::time::Instant::now();
-    let ran = sandbox::run(
+    let ran = cw_sandbox::run(
         &inside.0,
         sleep,
         Duration::from_secs(2),
@@ -95,222 +99,9 @@ fn a_command_that_runs_too_long_is_ended() {
         stop.store(true, std::sync::atomic::Ordering::Relaxed);
     });
     let began = std::time::Instant::now();
-    let ran = sandbox::run(&inside.0, sleep, Duration::from_secs(60), &stopped).unwrap();
+    let ran = cw_sandbox::run(&inside.0, sleep, Duration::from_secs(60), &stopped).unwrap();
     assert_eq!(ran.code, None, "{}", ran.output);
     assert!(began.elapsed() < Duration::from_secs(10));
-}
-
-#[cfg(target_os = "linux")]
-#[test]
-fn a_command_on_linux_reaches_its_folder_and_no_other() {
-    let inside = Folder::new("inside");
-    let outside = Folder::new("outside");
-    let secret = outside.0.join("secret.txt");
-    std::fs::write(&secret, "the secret").unwrap();
-    let time = Duration::from_secs(20);
-    let run = |folder: &Folder, command: &str| {
-        sandbox::run(&folder.0, command, time, &AtomicBool::new(false)).unwrap()
-    };
-
-    let ran = run(&inside, "echo made > made.txt && cat made.txt");
-    assert_eq!(ran.code, Some(0), "{}", ran.output);
-    assert_eq!(ran.output.trim(), "made");
-    let ran = run(&inside, sandbox::LISTING);
-    assert_eq!(
-        (ran.code, ran.output.trim()),
-        (Some(0), "made.txt"),
-        "{}",
-        ran.output
-    );
-
-    let ran = run(&inside, &format!("cat '{}'", secret.display()));
-    assert!(!ran.output.contains("the secret"), "{}", ran.output);
-    assert_ne!(ran.code, Some(0));
-    let ran = run(&inside, &format!("ls '{}'", outside.0.display()));
-    assert!(!ran.output.contains("secret.txt"), "{}", ran.output);
-    assert_ne!(ran.code, Some(0));
-
-    let planted = outside.0.join("planted.txt");
-    let ran = run(&inside, &format!("echo x > '{}'", planted.display()));
-    assert!(!planted.exists(), "{}", ran.output);
-    let ran = run(&inside, &format!("rm -f '{}'", secret.display()));
-    assert!(secret.exists(), "{}", ran.output);
-
-    // A file's mode, times and length outside are not changed; inside they are.
-    use std::os::unix::fs::{MetadataExt, PermissionsExt};
-    let before = std::fs::metadata(&secret).unwrap();
-    for change in ["chmod 000", "touch -d 2000-01-01", "truncate -s 0"] {
-        let ran = run(&inside, &format!("{change} '{}'", secret.display()));
-        assert!(
-            ran.output.contains("Permission denied"),
-            "{change}: {}",
-            ran.output
-        );
-        assert_ne!(ran.code, Some(0), "{change}");
-    }
-    let after = std::fs::metadata(&secret).unwrap();
-    assert_eq!(
-        (after.mode(), after.mtime(), after.len()),
-        (before.mode(), before.mtime(), before.len())
-    );
-    let ran = run(
-        &inside,
-        "chmod +x made.txt && truncate -s 2 made.txt && touch -d 2000-01-01 made.txt",
-    );
-    assert_eq!(ran.code, Some(0), "{}", ran.output);
-    let made = std::fs::metadata(inside.0.join("made.txt")).unwrap();
-    assert_eq!(made.permissions().mode() & 0o100, 0o100);
-    // 2000-01-01 in any time zone, before 2001-09-09.
-    assert!(made.mtime() < 1_000_000_000, "{}", made.mtime());
-    assert_eq!(made.len(), 2);
-
-    // No network for a plain command, and no way to leave the process group.
-    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-    let port = listener.local_addr().unwrap().port();
-    let ran = run(
-        &inside,
-        &format!("bash -c 'exec 3<>/dev/tcp/127.0.0.1/{port}' && echo reached"),
-    );
-    assert!(!ran.output.contains("reached"), "{}", ran.output);
-    assert!(ran.output.contains("Permission denied"), "{}", ran.output);
-    let ran = run(&inside, "setsid sh -c 'echo left' || echo kept");
-    assert!(ran.output.contains("kept"), "{}", ran.output);
-    assert!(!ran.output.contains("left"), "{}", ran.output);
-    // A signal to the lowest group there is ends neither the call nor the server's watch.
-    // sh's own kill refuses the number before any call: python3 makes it.
-    if std::path::Path::new("/usr/bin/python3").exists() {
-        // A chmod after it is the server's to do: it fails where its watch ended.
-        let lowest = "touch low.txt; python3 -c 'import os; os.kill(-2147483648, 0)'; chmod +x low.txt && echo next";
-        let ran = run(&inside, lowest);
-        assert!(ran.output.contains("next"), "{}", ran.output);
-        assert!(ran.output.contains("Error"), "{}", ran.output);
-    } else {
-        eprintln!("skipped: the lowest group's signal, python3 not installed on this computer");
-    }
-    let ran = run(&inside, "env");
-    assert!(!ran.output.contains("CARGO"), "{}", ran.output);
-
-    let made = inside.0.join("made.txt");
-    let ran = run(&outside, &format!("cat '{}'", made.display()));
-    assert!(ran.output.contains("Permission denied"), "{}", ran.output);
-    assert_ne!(ran.code, Some(0));
-}
-
-#[cfg(target_os = "linux")]
-#[test]
-fn a_teams_command_on_linux_reaches_the_internet_but_not_this_computer() {
-    let inside = Folder::new("internet");
-    let data = Folder::new("internet-data");
-    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-    let port = listener.local_addr().unwrap().port();
-    let reach = sandbox::Reach {
-        network: true,
-        programs: true,
-        data: data.0.clone(),
-    };
-    // The internet itself was measured by hand (curl to an https site: 200); no test asks it.
-    let command = format!("bash -c 'exec 3<>/dev/tcp/127.0.0.1/{port}' && echo reached");
-    let ran = sandbox::run_with(
-        &inside.0,
-        &command,
-        Duration::from_secs(30),
-        &AtomicBool::new(false),
-        reach,
-    )
-    .unwrap();
-    assert!(
-        ran.output.contains("Network is unreachable"),
-        "{}",
-        ran.output
-    );
-    assert!(!ran.output.contains("reached"), "{}", ran.output);
-}
-
-#[cfg(target_os = "linux")]
-#[test]
-fn a_command_on_linux_that_runs_too_long_is_ended() {
-    let inside = Folder::new("long");
-    // A child that would outlive the shell, also in a session of its own, is ended with it.
-    let sleep = "sleep 1093 & setsid sleep 1094 & while :; do :; done";
-    let left = || {
-        let found = std::process::Command::new("pgrep")
-            .args(["-f", "sleep 109[34]"])
-            .output()
-            .unwrap();
-        String::from_utf8_lossy(&found.stdout).trim().to_string()
-    };
-    let began = std::time::Instant::now();
-    let ran = sandbox::run(
-        &inside.0,
-        sleep,
-        Duration::from_secs(2),
-        &AtomicBool::new(false),
-    )
-    .unwrap();
-    assert_eq!(ran.code, None, "{}", ran.output);
-    assert!(began.elapsed() < Duration::from_secs(10));
-    assert_eq!(left(), "", "{}", ran.output);
-
-    let stopped = Arc::new(AtomicBool::new(false));
-    let stop = stopped.clone();
-    std::thread::spawn(move || {
-        std::thread::sleep(Duration::from_secs(1));
-        stop.store(true, std::sync::atomic::Ordering::Relaxed);
-    });
-    let began = std::time::Instant::now();
-    let ran = sandbox::run(&inside.0, sleep, Duration::from_secs(60), &stopped).unwrap();
-    assert_eq!(ran.code, None, "{}", ran.output);
-    assert!(began.elapsed() < Duration::from_secs(10));
-}
-
-/// The server killed, a command's children end with it. The test runs itself
-/// again as the server, with the folder named by `CW_SERVER_ENDS`.
-#[cfg(target_os = "linux")]
-#[test]
-fn a_command_on_linux_ends_with_the_server() {
-    const NAME: &str = "a_command_on_linux_ends_with_the_server";
-    if let Some(folder) = std::env::var_os("CW_SERVER_ENDS") {
-        let command = "sleep 1095 & echo $! > started; wait";
-        // Ignored: this process is killed while it runs.
-        let _ = sandbox::run(
-            std::path::Path::new(&folder),
-            command,
-            Duration::from_secs(60),
-            &AtomicBool::new(false),
-        );
-        return;
-    }
-    let folder = Folder::new("server-ends");
-    let mut server = std::process::Command::new(std::env::current_exe().unwrap())
-        .args([NAME, "--exact", "--test-threads=1"])
-        .env("CW_SERVER_ENDS", &folder.0)
-        .stdout(std::process::Stdio::null())
-        .spawn()
-        .unwrap();
-    let started = folder.0.join("started");
-    let began = std::time::Instant::now();
-    while !started.exists() && began.elapsed() < Duration::from_secs(20) {
-        std::thread::sleep(Duration::from_millis(100));
-    }
-    server.kill().unwrap();
-    server.wait().unwrap();
-    let pid = std::fs::read_to_string(&started).unwrap();
-    // Alive while its stat is there and not a zombie's, which waits only for init.
-    let alive = || {
-        std::fs::read_to_string(format!("/proc/{}/stat", pid.trim())).is_ok_and(|stat| {
-            !stat
-                .rsplit(')')
-                .next()
-                .unwrap_or("")
-                .trim_start()
-                .starts_with('Z')
-        })
-    };
-    let killed = std::time::Instant::now();
-    while alive() && killed.elapsed() < Duration::from_secs(5) {
-        std::thread::sleep(Duration::from_millis(100));
-    }
-    assert!(!alive(), "sleep {} outlived the server", pid.trim());
 }
 
 #[test]
@@ -653,55 +444,6 @@ async fn a_write_allowed_for_the_chat_is_not_asked_about_again_in_it() {
 }
 
 #[tokio::test]
-async fn the_dice_are_rolled_on_the_server_once_switched_on() {
-    let server = start().await;
-    let model = Model::start(vec![
-        (200, stream(&[text_piece("No dice.")])),
-        (
-            200,
-            stream(&call_pieces("dice", &json!({ "count": 2, "sides": 10 }))),
-        ),
-        (200, stream(&[text_piece("The dice roll.")])),
-    ])
-    .await;
-    // No tool is switched on in the settings: the dice are off until switched on (the owner, 2026-10-23).
-    let chat = chat_at(&server, &model).await;
-    let mut socket = server.listen().await;
-    assert_eq!(
-        server.post(&format!("{chat}/generate"), json!({})).await.0,
-        202
-    );
-    let ended = next_event(&mut socket).await;
-    assert_eq!(ended["message"]["content"], "No dice.", "{ended}");
-    assert!(model.asked()[0].get("tools").is_none());
-
-    let on = server
-        .patch("/api/settings", json!({ "tools": { "dice": true } }))
-        .await;
-    assert_eq!(on.1["tools"]["dice"], true, "{on:?}");
-    assert_eq!(
-        server.post(&format!("{chat}/generate"), json!({})).await.0,
-        202
-    );
-    let ended = next_event(&mut socket).await;
-    assert_eq!(ended["message"]["content"], "The dice roll.", "{ended}");
-    let asked = &model.asked()[1..];
-    assert_eq!(names(&asked[0]["tools"]), ["dice"]);
-    let rolled = asked[1]["messages"].as_array().unwrap().last().unwrap();
-    assert_eq!(rolled["tool_call_id"], "call_1");
-    // "2d10: 7 + 3 = 10": each die from 1 to 10, and their sum.
-    let said = rolled["content"].as_str().unwrap();
-    let (dice, total) = said
-        .strip_prefix("2d10: ")
-        .and_then(|rest| rest.split_once(" = "))
-        .unwrap_or_else(|| panic!("{said}"));
-    let dice: Vec<u32> = dice.split(" + ").map(|die| die.parse().unwrap()).collect();
-    assert_eq!(dice.len(), 2, "{said}");
-    assert!(dice.iter().all(|die| (1..=10).contains(die)), "{said}");
-    assert_eq!(total.parse::<u32>().unwrap(), dice.iter().sum::<u32>());
-}
-
-#[tokio::test]
 async fn a_model_that_takes_no_tools_is_asked_without_them() {
     let server = start().await;
     let model = Model::start(vec![
@@ -853,55 +595,181 @@ async fn files_need_a_folder_and_are_this_computers_accounts_alone() {
     assert_eq!(web, 200);
 }
 
-/// A reply keeps the pages and files it read, each once, for its "Used in this reply".
+/// Lets a reply run to its end: each call that asks is answered by `answer`, `None` being Stop.
+async fn reply_ended(
+    server: &Server,
+    chat: &str,
+    socket: &mut Socket,
+    answer: impl Fn(&Value) -> Option<bool>,
+) -> Value {
+    loop {
+        let event = next_event(socket).await;
+        match event["type"].as_str().unwrap() {
+            "reply_ended" => return event,
+            // The same event with no question says the question is gone.
+            "tool_asks" if !event["ask"].is_null() => {
+                let (place, body) = match answer(&event["ask"]) {
+                    Some(allow) => ("answer", json!({ "allow": allow })),
+                    None => ("stop", json!({})),
+                };
+                let sent = server.post(&format!("{chat}/{place}"), body).await;
+                assert_eq!(sent.0, 204, "{}", sent.1);
+            }
+            _ => {}
+        }
+    }
+}
+
+/// A reply keeps its tool calls for "Used in this reply": each in the order it
+/// ran, its outcome told, nothing of what it carried but a short "what".
 #[tokio::test]
-async fn a_reply_keeps_the_pages_and_files_it_read() {
+async fn a_reply_keeps_its_tool_calls() {
     let page = "<html><head><title> Lamp  oil &amp; wicks </title></head><body>Oil.</body></html>";
     let web = Api::start_each(vec![says(200, "text/html", page)]).await;
     let server = common::server::start_asking(Some(web.url.clone())).await;
-    let folder = Folder::new("reads");
+    let folder = Folder::new("calls");
     std::fs::write(folder.0.join("note.txt"), "Buy lamp oil.").unwrap();
     let whole = |id: &str, name: &str, arguments: &str| json!({ "choices": [{ "delta": { "tool_calls": [{ "id": id, "type": "function", "function": { "name": name, "arguments": arguments } }] } }] });
+    let dice = r#"{"count":2,"sides":6}"#;
+    let long = "a".repeat(200);
+    let make = json!({
+        "name": "lamp_tool",
+        "description": "Reads the note.",
+        "parameters": { "type": "object" },
+        "code": "export default () => readFile('note.txt') /* CODE BODY */",
+    });
     let model = Model::start(vec![
         (
             200,
             stream(&[
-                whole("call_1", "read_file", r#"{"path":"note.txt"}"#),
-                whole(
-                    "call_2",
-                    "read_web_page",
-                    r#"{"url":"https://example.com/oil"}"#,
-                ),
+                whole("call_1", "dice", dice),
+                whole("call_2", "dice", dice),
                 whole("call_3", "read_file", r#"{"path":"note.txt"}"#),
+                whole("call_4", "read_file", r#"{"path":"missing.txt"}"#),
                 whole(
                     "call_5",
                     "read_web_page",
-                    r#"{"url":"HTTPS://Example.com/oil"}"#,
+                    r#"{"url":"https://www.example.com/oil"}"#,
                 ),
-                whole("call_4", "read_file", r#"{"path":"missing.txt"}"#),
+                whole("call_6", "no_such_tool", r#"{"key":"HIDDEN VALUE"}"#),
+                whole("call_7", "read_file", r#"{"path":"#),
+                whole("call_8", "read_file", &json!({ "path": long }).to_string()),
+                whole(
+                    "call_9",
+                    "write_file",
+                    r#"{"path":"plan.txt","content":"FILE BODY"}"#,
+                ),
+                whole("call_10", "make_tool", &make.to_string()),
             ]),
         ),
+        (200, stream(&[whole("call_11", "lamp_tool", "{}")])),
         (200, stream(&[text_piece("Lamp oil it is.")])),
+        // Continued.
+        (
+            200,
+            stream(&[whole("call_12", "dice", r#"{"count":1,"sides":20}"#)]),
+        ),
+        (200, stream(&[text_piece(" And wicks.")])),
+        // Another version.
+        (
+            200,
+            stream(&[whole("call_13", "read_file", r#"{"path":"note.txt"}"#)]),
+        ),
+        (200, stream(&[text_piece("Oil.")])),
+        // Stopped at a call that waits for the user.
+        (
+            200,
+            stream(&[
+                text_piece("Writing."),
+                whole("call_14", "write_file", r#"{"path":"b.txt","content":"x"}"#),
+            ]),
+        ),
     ])
     .await;
     let chat = chat_at(&server, &model).await;
-    let tools = json!({ "tools": { "files": true, "web": true, "folder": folder.path() } });
+    code_mode(&server, &chat, true).await;
+    let tools =
+        json!({ "tools": { "files": true, "web": true, "dice": true, "folder": folder.path() } });
     assert_eq!(server.patch("/api/settings", tools).await.0, 200);
     let mut socket = server.listen().await;
+    let generate = format!("{chat}/generate");
 
-    let (status, reply) = server.post(&format!("{chat}/generate"), json!({})).await;
-    assert_eq!(status, 202, "{reply}");
-    let ended = next_event(&mut socket).await;
-    assert_eq!(ended["type"], "reply_ended", "{ended}");
-    // A file that could not be read is not among them, and a page however its address is spelled is there once.
-    let read = json!([
-        { "kind": "file", "path": "note.txt" },
-        { "kind": "web", "title": "Lamp oil & wicks", "address": "https://example.com/oil" },
-    ]);
-    assert_eq!(ended["message"]["reads"], read);
-    let (_, view) = server.get(&chat).await;
+    assert_eq!(server.post(&generate, json!({})).await.0, 202);
+    let refuse_writes = |ask: &Value| Some(ask["kind"] != "write");
+    let ended = reply_ended(&server, &chat, &mut socket, refuse_writes).await;
+    let calls = ended["message"]["calls"].clone();
+    let line =
+        |tool: &str, what: &str, end: &str| json!({ "tool": tool, "what": what, "end": end });
+    // A roll's dice are its own: the first two lines are checked by their form.
+    let rolls: Vec<&str> = (0..2)
+        .map(|at| calls[at]["what"].as_str().unwrap_or(""))
+        .collect();
+    assert!(
+        rolls.iter().all(|what| what.starts_with("2d6: ")),
+        "{calls}"
+    );
+    assert_eq!(calls[0]["tool"], "dice", "{calls}");
+    assert_eq!(calls[1]["end"], "done", "{calls}");
+    let cut = format!("{}…", "a".repeat(80));
     assert_eq!(
-        view["messages"].as_array().unwrap().last().unwrap()["reads"],
-        read
+        calls.as_array().unwrap()[2..],
+        [
+            line("read_file", "note.txt", "done"),
+            line("read_file", "missing.txt", "failed"),
+            line("read_web_page", "Lamp oil & wicks · example.com", "done"),
+            line("no_such_tool", "", "failed"),
+            line("read_file", "", "failed"),
+            line("read_file", &cut, "failed"),
+            line("write_file", "plan.txt", "not_allowed"),
+            line("make_tool", "lamp_tool", "done"),
+            // Only the outer call of a tool the model wrote.
+            line("lamp_tool", "", "done"),
+        ]
+    );
+    let kept = calls.to_string();
+    for secret in ["FILE BODY", "CODE BODY", "HIDDEN VALUE", "Buy lamp oil"] {
+        assert!(!kept.contains(secret), "{kept}");
+    }
+    let last = |view: &Value| view["messages"].as_array().unwrap().last().unwrap().clone();
+    assert_eq!(last(&server.get(&chat).await.1)["calls"], calls);
+
+    // Continuing adds to the list.
+    let more = json!({ "continue": true });
+    assert_eq!(server.post(&generate, more).await.0, 202);
+    let ended = reply_ended(&server, &chat, &mut socket, |_| Some(true)).await;
+    let longer = ended["message"]["calls"].as_array().unwrap();
+    assert_eq!(longer.len(), calls.as_array().unwrap().len() + 1);
+    assert_eq!(longer[..longer.len() - 1], calls.as_array().unwrap()[..]);
+    assert!(
+        longer.last().unwrap()["what"]
+            .as_str()
+            .unwrap()
+            .starts_with("1d20: ")
+    );
+    assert_eq!(
+        last(&server.get(&chat).await.1)["calls"],
+        ended["message"]["calls"]
+    );
+
+    // Another version has its own.
+    let again = json!({ "regenerate": true });
+    assert_eq!(server.post(&generate, again.clone()).await.0, 202);
+    let ended = reply_ended(&server, &chat, &mut socket, |_| Some(true)).await;
+    assert_eq!(
+        ended["message"]["calls"],
+        json!([line("read_file", "note.txt", "done")])
+    );
+
+    // A call Stop cuts is listed as stopped.
+    assert_eq!(server.post(&generate, again).await.0, 202);
+    let ended = reply_ended(&server, &chat, &mut socket, |_| None).await;
+    assert_eq!(
+        ended["message"]["calls"],
+        json!([line("write_file", "b.txt", "stopped")]),
+        "{ended}"
+    );
+    assert_eq!(
+        last(&server.get(&chat).await.1)["calls"],
+        ended["message"]["calls"]
     );
 }

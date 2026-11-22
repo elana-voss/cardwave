@@ -3,4 +3,4 @@
 /**
  * Changes to the tools; what is left out stays as it is.
  */
-export type ChangeTools = { web?: boolean, files?: boolean, ask_writes?: boolean, commands?: boolean, ask_commands?: boolean, pictures?: boolean, code?: boolean, ask_new_tools?: boolean, app?: boolean, dice?: boolean, folder?: string, };
+export type ChangeTools = { web?: boolean, files?: boolean, ask_writes?: boolean, commands?: boolean, ask_commands?: boolean, pictures?: boolean, code?: boolean, ask_new_tools?: boolean, app?: boolean, dice?: boolean, names?: boolean, folder?: string, };

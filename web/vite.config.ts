@@ -21,7 +21,7 @@ function wordsChecked(): Plugin {
     name: "cardwave-words",
     buildStart() {
       const root = join(__dirname, "src");
-      const files = (readdirSync(root, { recursive: true }) as string[]).filter((file) => file.endsWith(".ts") && !file.endsWith(".test.ts") && !/^language[\\/]/.test(file));
+      const files = (readdirSync(root, { recursive: true }) as string[]).filter((file) => file.endsWith(".ts") && !/\.test(-support)?\.ts$/.test(file) && !/^language[\\/]/.test(file));
       const words = english(join(root, "language"));
       const wrong = missing(files.map((file) => [file, readFileSync(join(root, file), "utf8")]), words);
       wrong.push(...codesMissing(readFileSync(join(root, "api", "generated", "Code.ts"), "utf8"), words));

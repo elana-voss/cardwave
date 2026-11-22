@@ -1,6 +1,7 @@
 import type { APIRequestContext } from "@playwright/test";
 import { deafen, expect, test } from "../test";
 import { startFakeProvider } from "../fake-provider";
+import { setSettings } from "../stored";
 
 // What another window changes shows at once: a change made by `request` is told to the page as one made in
 // another window of the app is (test.ts), and the screen in view reads it anew. The stand-in model of the chat's
@@ -47,7 +48,7 @@ test("the personas and the settings show what another window changed", async ({ 
   await page.goto("/#/settings/advanced");
   const told = page.getByLabel("What the AI is told");
   await expect(told).toBeEnabled();
-  expect((await request.patch("/api/settings", { data: { plain_prompt: "Be brief." } })).status()).toBe(200);
+  await setSettings(request, { plain_prompt: "Be brief." });
   await expect(told).toHaveValue("Be brief.");
 });
 
@@ -75,6 +76,22 @@ async function start(request: APIRequestContext, version: number): Promise<numbe
   expect(started.status(), await started.text()).toBe(201);
   return (await started.json()).chat.id;
 }
+
+test("a chat opened with the app is read once, not again at the server's first word, which would redraw its buttons under a click", async ({ page, request }) => {
+  const { version } = await card(request, "Cove");
+  const started = await request.post("/api/chats", { data: { characters: [{ version_id: version, character: "mira" }] } });
+  expect(started.status(), await started.text()).toBe(201);
+  const chat = (await started.json()).chat.id;
+  const reads: string[] = [];
+  page.on("request", (asked) => void (new URL(asked.url()).pathname === `/api/chats/${chat}` && reads.push(asked.method())));
+  let hello = false;
+  page.on("websocket", (socket) => socket.on("framereceived", (frame) => void (String(frame.payload).includes('"hello"') && (hello = true))));
+  await page.goto(`/#/chats/${chat}`);
+  await expect(page.getByText("You came in the storm.")).toBeVisible();
+  await expect.poll(() => hello).toBe(true);
+  await page.waitForLoadState("networkidle");
+  expect(reads).toEqual(["GET"]);
+});
 
 test("the chats, the rail and a card's box show a chat started, renamed, starred and put in the Trash elsewhere", async ({ page, request }) => {
   const { id: cardId, version } = await card(request, "Beacon");
@@ -151,19 +168,22 @@ test("a chat shows a message, a reply and a persona of another window", async ({
 });
 
 test("the settings read the languages again after they could not be read", async ({ page, request }) => {
-  let failed = false;
-  await page.route("**/api/languages", (route) => (failed ? route.fallback() : ((failed = true), route.fulfill({ status: 500, body: "down" }))));
+  // Every reading fails until the test lets them through: the page reads once at its start and again when the
+  // server's events first connect, in either order; a one-time failure let the second succeed (seen in the full run).
+  let down = true;
+  await page.route("**/api/languages", (route) => (down ? route.fulfill({ status: 500, body: "down" }) : route.fallback()));
   await page.goto("/#/settings");
   const language = page.getByRole("button", { name: "Language the AI writes in" });
-  // The field is grey from its start: the change waits for the failure to show, else the reading it should
-  // repeat may still be under way and fail after it (seen in the full run).
   await expect(page.locator(".page-col").getByRole("alert")).toBeVisible();
   await expect(language).toBeDisabled();
-  expect((await request.patch("/api/settings", { data: { export_history: true } })).status()).toBe(200);
+  down = false;
+  await setSettings(request, { export_history: true });
   await expect(language).toBeEnabled();
 });
 
 test("the settings' line to Providers names a provider added in another window", async ({ page, request }) => {
+  // An earlier test of the file left its fake provider stored, which the line would name from the start.
+  for (const { id } of (await (await request.get("/api/provider-list")).json()).providers as { id: number }[]) await request.delete(`/api/provider-list/${id}`);
   await page.goto("/#/settings");
   const line = page.locator('a[href="#/settings/providers"] .meta');
   await expect(line).toHaveText("Addresses and keys of the services that run the models");
@@ -201,10 +221,10 @@ test("the app takes a language chosen while its connection was down once it conn
   await page.goto("/#/settings");
   const heading = (name: string) => page.getByRole("heading", { name, exact: true });
   await expect(heading("Settings")).toBeVisible();
-  expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+  await setSettings(request, { app_language: "de" });
   await page.waitForTimeout(500); // unheard: the connection is down
   await expect(heading("Settings")).toBeVisible();
   await hear();
   await expect(heading("Einstellungen")).toBeVisible();
-  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+  await setSettings(request, { app_language: null });
 });

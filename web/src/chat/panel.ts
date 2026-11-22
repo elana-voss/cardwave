@@ -3,7 +3,7 @@
 // is in a chat of several characters (`castPart`), who the user is in the chat (`personaPart`), the prompt preset it
 // goes by (`promptPart`), how its replies are written (`replyPart`: Reply length in five steps, greyed where not sent, and "Let the AI write tools" (Code mode); in a chat of several the pause between
 // the characters' own replies and how many they write in a row, while they keep replying by themselves), the lorebooks its characters and their cards bring along, its persona's,
-// those for every chat (each of these two saying so in grey after its name) and those it took from the library, which alone have a × (`lorebooksPart`), what the reply chosen with a click, or else the newest, was given, read and saved to
+// those for every chat (each of these two saying so in grey after its name) and those it took from the library, which alone have a × (`lorebooksPart`), what the reply chosen with a click, or else the newest (`usedReply`), was given, the tools it called and what it saved to
 // memory, counting no tokens (`usedPart`, last), and before it the portrait (`portraitPart`). Lorebooks shows only
 // where the chat has one, or once the chat's menu asked for it (`addLorebook`); "Used in last reply" where it used something.
 //
@@ -18,7 +18,9 @@
 import type { ChatCharacter } from "../api/generated/ChatCharacter";
 import type { ChatLorebook } from "../api/generated/ChatLorebook";
 import type { ChatView } from "../api/generated/ChatView";
+import type { CallEnd } from "../api/generated/CallEnd";
 import type { MessageView } from "../api/generated/MessageView";
+import type { UsedCall } from "../api/generated/UsedCall";
 import type { Lore } from "../api/generated/Lore";
 import type { Lorebook } from "../api/generated/Lorebook";
 import type { LoreSource } from "../api/generated/LoreSource";
@@ -617,7 +619,7 @@ export function bookSays(book: ChatLorebook): { why: string | null; own: number 
 
 /**
  * "Used in last reply", or "Used in this reply" for a reply chosen with a click: the lorebook entries it was given
- * (those the chat has left out since aside), the pages and files it read and what was saved to memory from it; it counts
+ * (those the chat has left out since aside), the tools it called and what was saved to memory from it; it counts
  * no tokens, which the reply's statistics do (stats.ts).
  */
 function usedPart(actions: PanelActions): Part {
@@ -631,7 +633,7 @@ function usedPart(actions: PanelActions): Part {
     show({ view, locked, chosen }) {
       title.textContent = chosen === null ? wording("panel-used-in-last-reply") : wording("panel-used-in-this-reply");
       hint.hidden = chosen !== null;
-      const reply = view.messages.find((message) => message.id === chosen) ?? lastReply(view);
+      const reply = view.messages.find((message) => message.id === chosen) ?? usedReply(view);
       const removed = view.lorebooks.flatMap((book) => book.removed);
       const entries = (reply?.lore ?? []).filter((lore) => !removed.some((gone) => same(gone, lore)));
       // An entry the chat no longer has (it let the lorebook go, or is with a version of the card without it)
@@ -648,33 +650,77 @@ function usedPart(actions: PanelActions): Part {
   };
 }
 
+/** A line of a `Fact`, with in grey at its end how it came out where that needs saying. */
+type FactLine = { text: string; note?: string };
 /** A line of "Used in this reply" besides its lorebook entries: what it is, and under that each of them. */
-type Fact = { about: string; lines: string[] };
+type Fact = { about: string; lines: FactLine[] };
 
-/** What a reply read and what was saved to memory from it. */
+/** The reply "Used in last reply" tells of: the newest, also where pictures it made came after it as messages of their own. */
+export function usedReply(view: ChatView): MessageView | undefined {
+  const last = lastReply(view);
+  if (!last?.picture) return last;
+  const before = view.messages.slice(0, view.messages.indexOf(last)).filter((message) => !message.picture).at(-1);
+  return before?.role === "assistant" ? before : last;
+}
+
+/** Each built-in tool's name for the user, by the name the server reports it under (a call each, so the build's check of the words sees its key). */
+const TOOL_WORDS = new Map([
+  ["dice", () => wording("panel-tool-dice")],
+  ["suggest_npc_name", () => wording("panel-tool-names")],
+  ["web_search", () => wording("panel-tool-web-search")],
+  ["read_web_page", () => wording("panel-tool-read-web-page")],
+  ["list_files", () => wording("panel-tool-list-files")],
+  ["read_file", () => wording("panel-tool-read-file")],
+  ["write_file", () => wording("panel-tool-write-file")],
+  ["run_command", () => wording("panel-tool-run-command")],
+  ["start_coding_task", () => wording("panel-tool-coding-task")],
+  ["make_picture", () => wording("panel-tool-make-picture")],
+  ["make_tool", () => wording("panel-tool-make-tool")],
+  ["cardwave", () => wording("panel-tool-cardwave")],
+  ["cardwave_help", () => wording("panel-tool-cardwave-help")],
+]);
+
+/** A tool's name for the user; a tool the AI wrote, or one it made up, goes by its own. */
+function toolName(tool: string): string {
+  return TOOL_WORDS.get(tool)?.() ?? tool;
+}
+
+/** How a call came out, where it did not simply succeed. */
+function callNote(end: CallEnd): string | undefined {
+  switch (end) {
+    case "done":
+      return undefined;
+    case "not_allowed":
+      return wording("panel-call-not-allowed");
+    case "failed":
+      return wording("panel-call-failed");
+    case "stopped":
+      return wording("panel-call-stopped");
+  }
+}
+
+/** A tool call as "[tool's name] · [what]", the name alone where there is nothing to say of it. */
+function callLine(call: UsedCall): FactLine {
+  const name = toolName(call.tool);
+  const note = callNote(call.end);
+  return { text: call.what ? `${name} · ${call.what}` : name, ...(note ? { note } : {}) };
+}
+
+/** The tools a reply called and what was saved to memory from it. */
 export function usedFacts(reply: MessageView): Fact[] {
-  const pages = reply.reads.flatMap((read) => (read.kind === "web" ? [pageLine(read.title, read.address)] : []));
-  const files = reply.reads.flatMap((read) => (read.kind === "file" ? [read.path] : []));
   const facts: Fact[] = [];
-  if (pages.length) facts.push({ about: wording("panel-read-on-the-web"), lines: pages });
-  if (files.length) facts.push({ about: wording("panel-read-from-your-files"), lines: files });
-  if (reply.memories.length) facts.push({ about: wording("panel-saved-to-memory"), lines: reply.memories });
+  if (reply.calls.length) facts.push({ about: wording("panel-tools-used"), lines: reply.calls.map(callLine) });
+  if (reply.memories.length) facts.push({ about: wording("panel-saved-to-memory"), lines: reply.memories.map((text) => ({ text })) });
   return facts;
 }
 
-/** A page read as "[title] · [site]", or its address where it has no title. */
-function pageLine(title: string, address: string): string {
-  let site = address;
-  try {
-    site = new URL(address).hostname.replace(/^www\./, "");
-  } catch {
-    // Not an address the browser reads: it shows as it is.
-  }
-  return title ? `${title} · ${site}` : address;
+function factLine(line: FactLine): HTMLElement {
+  const note = line.note ? [" ", el("span", { className: "meta" }, line.note)] : [];
+  return el("span", { className: "entry-name fs-small lh-snug" }, line.text, ...note);
 }
 
 function factRow(fact: Fact): HTMLElement {
-  return el("div", { className: "item item-side-act entry" }, el("span", { className: "item-text" }, el("span", { className: "meta" }, fact.about), ...fact.lines.map((line) => el("span", { className: "entry-name fs-small lh-snug" }, line))));
+  return el("div", { className: "item item-side-act entry" }, el("span", { className: "item-text" }, el("span", { className: "meta" }, fact.about), ...fact.lines.map(factLine)));
 }
 
 /** One thing the last reply was given, with the way to keep it out of the chat from now on where there is one. */

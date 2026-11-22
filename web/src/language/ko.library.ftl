@@ -590,6 +590,8 @@ card-figure-remove-from = { $mode }에서 { $name } 빼기
 card-figure-search-figures = 피규어 검색
 card-figure-no-3d-figures-yet = 아직 3D 피규어가 없어요. 파일에서 추가하세요: 움직일 수 있는 사람의 3D 모델(VRoid Studio에서 만드는 .vrm 파일, .glb나 .fbx도 돼요).
 card-figure-in = { " " }· { $mode }에서
+card-figure-by = { " " }· 제작: { $maker }
+card-figure-made-by = 제작: { $maker }
 card-figure-the-card = 캐릭터
 card-figure-what = 컴패니언 창에서 캐릭터가 나타나는 모습이에요.
 

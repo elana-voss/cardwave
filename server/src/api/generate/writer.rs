@@ -109,7 +109,7 @@ pub(super) async fn finish(writer: Writer, job: Job, read: Read) {
     };
     let model = job.provider.model.clone();
     let offered = job.toolbox.as_ref().and_then(Toolbox::task_offered);
-    let reads = job.toolbox.as_ref().map(Toolbox::reads).unwrap_or_default();
+    let calls = job.toolbox.as_ref().map(Toolbox::used).unwrap_or_default();
     let ended = state
         .work(move |db| {
             if let Some(model) = learned
@@ -124,9 +124,9 @@ pub(super) async fn finish(writer: Writer, job: Job, read: Read) {
                     "whether the model is still offered could not be kept: {failure:#}"
                 );
             }
-            // What was read is kept before the end, whose message tells it.
-            if let Err(failure) = chats::save_reads(db, user, message_id, &reads) {
-                tracing::error!("what a reply read could not be kept: {failure:#}");
+            // The tools called are kept before the end, whose message tells them.
+            if let Err(failure) = chats::save_calls(db, user, message_id, &calls) {
+                tracing::error!("what tools a reply called could not be kept: {failure:#}");
             }
             if let Err(failure) = chats::save_times(db, user, message_id, times) {
                 tracing::error!("how long a reply took could not be kept: {failure:#}");

@@ -1,6 +1,7 @@
 // The part "3D figure" of a card page's box (board "Card page · expressions and 3D figure"): what the desktop
-// companion shows for the card, a line with its still and name (not its file's format), whose × takes it off the card (with Undo), and
-// a line for each of the card's modes that has its own (Claude: "· in [mode]"); "+" opens "Add a 3D figure" (board
+// companion shows for the card, a line with its still and name (not its file's format), "· by [maker]" where its VRM
+// file names one (Claude), whose × takes it off the card (with Undo), and a line for each of the card's modes that has
+// its own (Claude: "· in [mode]"); the dialog's line names the maker too; "+" opens "Add a 3D figure" (board
 // "Add a 3D figure"): the figures the app holds, one chosen and given by "Add", or "From a file…", a VRM, GLB or FBX
 // of a rigged human, read here first (figures/load.ts), refused where its skeleton is not one the animations move,
 // and drawn once for its still (figures/still.ts), which the server keeps with it. A card with modes has "Used for" over
@@ -43,7 +44,7 @@ export function figurePart(c: Card, redraw: (focus: string) => void): { tools: H
     el(
       "li",
       { className: "bline row figure-row" },
-      el("span", { className: "f-grow flex ai-c g-10" }, still(figure, "fig-small"), el("span", null, figure.name), mode !== null && el("span", { className: "meta" }, wording("card-figure-in", { mode }))),
+      el("span", { className: "f-grow flex ai-c g-10" }, still(figure, "fig-small"), el("span", null, figure.name), figure.maker !== null && el("span", { className: "meta" }, wording("card-figure-by", { maker: figure.maker })), mode !== null && el("span", { className: "meta" }, wording("card-figure-in", { mode }))),
       lineButton(mode === null ? wording("card-box-remove-from-this-card-2", { name: figure.name }) : wording("card-figure-remove-from", { name: figure.name, mode }), wording("mcp-remove"), "close", () => void takeOff(figure, mode)),
     );
   const own = c.figures.figure;
@@ -84,18 +85,19 @@ function addDialog(c: Card, redraw: (focus: string) => void): Promise<void> {
           : null,
       ),
     picture: (figure) => still(figure, "fig"),
+    about: (figure) => (figure.maker === null ? null : wording("card-figure-made-by", { maker: figure.maker })),
     current: () => ownOf(c, mode)?.id ?? null,
     addedTo: () => (mode === null ? wording("held-dialog-this-card") : mode),
     held: figures,
     give: async (id) => given(await setCardFigure(card, id, mode)),
     fromFiles: async ([file]) => {
-      const { kindOf, loadFigure } = await import("../figures/load");
+      const { kindOf } = await import("../figures/load");
       const { stillOf } = await import("../figures/still");
       const kind = kindOf(file.name);
       if (!kind) throw new Error(wording("card-figure-a-3d-figure-is"));
       const url = URL.createObjectURL(file);
       try {
-        return given(await figureFromFile(card, file, await stillOf(await loadFigure(url, kind)), mode));
+        return given(await figureFromFile(card, file, await stillOf(url, kind), mode));
       } finally {
         URL.revokeObjectURL(url);
       }

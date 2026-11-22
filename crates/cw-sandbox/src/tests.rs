@@ -1,8 +1,8 @@
 //! The sandbox's own tests, on Windows only.
 
-use crate::tools::sandbox::OUTPUT_LIMIT;
-use crate::tools::sandbox::keep;
-use crate::tools::sandbox::windows::{copied_for_test as copied, resolve};
+use crate::OUTPUT_LIMIT;
+use crate::keep;
+use crate::windows::{copied_for_test as copied, resolve};
 use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -16,7 +16,7 @@ use std::time::Duration;
 fn a_command_of_several_lines_is_refused() {
     let folder = std::env::temp_dir().join(format!("cardwave-lines-{}", std::process::id()));
     std::fs::create_dir_all(&folder).unwrap();
-    let ran = crate::tools::sandbox::run(
+    let ran = crate::run(
         &folder,
         "echo one\r\necho two",
         Duration::from_secs(20),
@@ -33,7 +33,7 @@ fn a_command_of_several_lines_is_refused() {
 fn a_commands_output_keeps_letters_that_are_not_ascii() {
     let folder = std::env::temp_dir().join(format!("cardwave-letters-{}", std::process::id()));
     std::fs::create_dir_all(&folder).unwrap();
-    let ran = crate::tools::sandbox::run(
+    let ran = crate::run(
         &folder,
         "echo Straße üä",
         Duration::from_secs(20),

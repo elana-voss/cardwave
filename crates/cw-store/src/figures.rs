@@ -10,8 +10,8 @@ use crate::Db;
 use crate::cards::put_blob;
 use crate::held::Held;
 
-/// A figure's columns: its id, name, kind and the cards outside the Trash that have it, as theirs or a mode's.
-const FIGURE: &str = "select f.id, f.name, f.kind,
+/// A figure's columns: its id, name, kind, maker and the cards outside the Trash that have it, as theirs or a mode's.
+const FIGURE: &str = "select f.id, f.name, f.kind, f.maker,
         (select count(*) from cards c where c.trashed_at is null and (c.figure_id = f.id
            or exists (select 1 from card_mode_figures m where m.card_id = c.id and m.figure_id = f.id)))
      from figures f";
@@ -21,7 +21,8 @@ fn figure(row: &Row<'_>) -> rusqlite::Result<Figure> {
         id: row.get(0)?,
         name: row.get(1)?,
         kind: row.get(2)?,
-        cards: row.get(3)?,
+        maker: row.get(3)?,
+        cards: row.get(4)?,
     })
 }
 
@@ -82,9 +83,9 @@ impl Storage for Db {
             let data = put_blob(&tx, file.hash, file.data)?;
             let still = put_blob(&tx, file.still_hash, file.still)?;
             tx.execute(
-                "insert into figures (user_id, name, kind, hash, file_id, still_id, created_at)
-                 values (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-                params![user, file.name, file.kind, file.hash, data, still, now_ms()],
+                "insert into figures (user_id, name, kind, maker, hash, file_id, still_id, created_at)
+                 values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+                params![user, file.name, file.kind, file.maker, file.hash, data, still, now_ms()],
             )?;
             let id = tx.last_insert_rowid();
             tx.commit()?;

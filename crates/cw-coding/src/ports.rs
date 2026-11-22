@@ -16,10 +16,17 @@ use futures_util::future::BoxFuture;
 use crate::coding::run::Tasks;
 use crate::tools::web::Web;
 
-/// What coding stores: its tasks and the written tools.
-pub trait Storage: crate::coding::Storage + crate::tools::written::Storage {}
+/// What coding stores: its tasks, the written tools and the names a chat used.
+pub trait Storage:
+    crate::coding::Storage + crate::tools::written::Storage + crate::tools::names::Storage
+{
+}
 
-impl<T: crate::coding::Storage + crate::tools::written::Storage + ?Sized> Storage for T {}
+impl<
+    T: crate::coding::Storage + crate::tools::written::Storage + crate::tools::names::Storage + ?Sized,
+> Storage for T
+{
+}
 
 /// What coding's tools and tasks ask of the app.
 pub trait AppActions: Events + Failures + Send + Sync {

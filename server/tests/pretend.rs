@@ -154,6 +154,7 @@ async fn the_worker_models_questions_get_answers_their_readers_take() {
         occasion: companion::Occasion::Reply,
         handled: Vec::new(),
         alone_s: 0,
+        touched: None,
     };
     let moves = companion::plan(&http, &worker, "Hello.".into(), &plan).await;
     assert!(moves.unwrap().is_empty());

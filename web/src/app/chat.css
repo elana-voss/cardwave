@@ -1,7 +1,8 @@
 /* The chat's own rules over the design system's chat parts (boards Chat, ChatPlain, SplitView, ChatTools,
    ChatPicture, ChatWebPicture, CodingTaskStart), read after app.css. A message is
    `.msg` (`.me` the user's) of `.msg-head`, `.bubble-row` (the bubble and its `.tools`) and `.acts`; Plain
-   (`data-chat="plain"` on the root) lays the same markup out as the board ChatPlain's `.pm`. */
+   (`data-chat="plain"` on the root) lays the same markup out as the board ChatPlain's `.pm`. `data-msg-pictures="off"` on the root takes the
+   pictures beside the names out, with their indents (theme.ts). */
 
 /* A coding task (board "Coding task"): its goal, the steps beside the checkpoints and the files changed; a step's
    mark is blue while it runs and once done, red where it failed; a step's output and a diff scroll within. */
@@ -229,13 +230,6 @@ button.task-step {
 .avatar.ai {
   background: var(--fill);
   color: var(--ink);
-}
-
-/* "(you)" behind the user's name only in Plain; the bubbles say it by their side. */
-.you {
-  display: none;
-  color: var(--grey);
-  font-weight: 400;
 }
 
 /* The messages scroll under the bar; a narrow window's side panel lies over them (chat.css, narrow.css). */
@@ -485,7 +479,7 @@ button.task-step {
 /* Plain (board ChatPlain): every message at the left, its name's line, which ends with its "…", over its text; the
    user's on the grey fill. */
 [data-chat="plain"] .chat-thread {
-  gap: var(--s8);
+  gap: var(--s20);
 }
 [data-chat="plain"] .msg {
   display: grid;
@@ -510,12 +504,12 @@ button.task-step {
 [data-chat="plain"] .bubble-row {
   display: contents;
 }
+/* The (i) and "…" at the name line's end, centred on it, take no height: the head's own 32 px sets it. */
 [data-chat="plain"] .bubble-row > .tools {
   grid-row: 1;
   grid-column: 2;
-}
-[data-chat="plain"] .you {
-  display: inline;
+  height: 0;
+  align-items: center;
 }
 [data-chat="plain"] .bubble {
   max-width: none;
@@ -526,6 +520,23 @@ button.task-step {
 }
 [data-chat="plain"] .msg > :is(.acts, .message-edit) {
   margin: 0 0 0 var(--s28);
+}
+
+/* Without the message pictures (Settings › Appearance; the root's `data-msg-pictures="off"`, boards ChatNoPicsBubbles
+   and ChatNoPicsPlain): the pictures in a message's head are taken out with every indent that follows them, so each
+   name and bubble stands at the column's edge; in Plain the name's line is only as tall as the name. The header's
+   and the side panel's rounds, drawn by the same `avatar()`, are not in a `.msg-head` and stay. */
+[data-msg-pictures="off"] .msg-head .avatar {
+  display: none;
+}
+[data-msg-pictures="off"] :is(.msg-indent, .msg-indent-end, .acts, .think, .task-card, .msg > .message-edit, .me > .acts, .me > .message-edit),
+[data-msg-pictures="off"][data-chat="plain"] .bubble,
+[data-msg-pictures="off"][data-chat="plain"] .msg > :is(.acts, .message-edit) {
+  margin-left: 0;
+  margin-right: 0;
+}
+[data-msg-pictures="off"][data-chat="plain"] .msg > .msg-head {
+  min-height: 0;
 }
 
 /* A chat of several's rounds in the header (board ChatGroup): written last to first in a row drawn from the

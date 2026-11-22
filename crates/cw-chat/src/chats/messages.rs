@@ -4,12 +4,12 @@
 //! (`deleted_from is null`, kept for its Undo until the next deletion or the
 //! server's start, `purge_deleted`). A message not complete is a reply being written:
 //! the chat takes nothing else until it ends (`BUSY`). A reply keeps the lore,
-//! the context its prompt took and its parts' tokens (`save_used`), the pages
-//! and files it read (`save_reads`), its model and provider (`set_model`) and
+//! the context its prompt took and its parts' tokens (`save_used`), the tools
+//! it called (`save_calls`), its model and provider (`set_model`) and
 //! how long it took (`save_times`): its "Used in this reply" and "Reply statistics".
 //! What is stored is `Storage`'s, which `cw_store::chat_messages` gives.
 
-use cw_coding::tools::Read;
+use cw_coding::tools::used::UsedCall;
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_library::lorebooks;
@@ -67,8 +67,8 @@ pub struct MessageView {
     pub times: Option<Times>,
     /// On a reply, what its prompt held, part by part ("Sent to the AI").
     pub sent: Option<Sent>,
-    /// The pages and files it read with its tools, the first first.
-    pub reads: Vec<Read>,
+    /// The tools it called, in the order they ran.
+    pub calls: Vec<UsedCall>,
     /// What the user attached to it, the first first (`attachments`).
     pub attachments: Vec<crate::attachments::Attachment>,
     /// Whether it was cut off by the app's close, which the chat says when it is opened.
@@ -139,9 +139,9 @@ pub trait Storage {
         context: ContextUse,
         sent: &str,
     ) -> anyhow::Result<()>;
-    /// Keeps on a reply the pages and files it read (JSON), after those it
-    /// read before it was continued.
-    fn keep_reads(&self, user: i64, message_id: i64, reads: &[Read]) -> anyhow::Result<()>;
+    /// Keeps on a reply the tools it called (JSON), after those it called
+    /// before it was continued.
+    fn keep_calls(&self, user: i64, message_id: i64, calls: &[UsedCall]) -> anyhow::Result<()>;
     fn append_message(&self, user: i64, chat_id: i64, new: &NewMessage<'_>) -> anyhow::Result<i64>;
     fn add_swipe(
         &self,
@@ -465,15 +465,15 @@ pub fn save_used(
     db.keep_used(user, message_id, lore.as_deref(), context, &sent)
 }
 
-/// Keeps on a reply the pages and files it read with its tools.
-pub fn save_reads(
+/// Keeps on a reply the tools it called, after those of its earlier parts.
+pub fn save_calls(
     db: &dyn Storage,
     user: i64,
     message_id: i64,
-    reads: &[Read],
+    calls: &[UsedCall],
 ) -> anyhow::Result<()> {
-    if reads.is_empty() {
+    if calls.is_empty() {
         return Ok(());
     }
-    db.keep_reads(user, message_id, reads)
+    db.keep_calls(user, message_id, calls)
 }

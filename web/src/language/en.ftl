@@ -103,6 +103,7 @@ search-keys = Search Cardwave (Ctrl+K)
 
 label-settings-theme = Theme
 label-settings-chat-layout = Chat layout
+label-settings-msg-pictures = Pictures beside names
 label-settings-web-pictures = Show pictures from other websites
 label-settings-tabs = Tabs
 label-settings-app-language = Language of the app
@@ -119,6 +120,7 @@ label-settings-commands = Commands
 label-settings-image-generation = Image generation
 label-settings-app = Cardwave
 label-settings-dice = Dice
+label-settings-names = Names for new characters
 label-settings-folder = Folder
 label-settings-written = Tools the AI wrote
 label-settings-coding = Coding team
@@ -158,6 +160,7 @@ layout-plain = Plain
 settings-appearance = Appearance
 settings-theme-about = Follows the system unless you pick one
 settings-layout-about = Messages as bubbles, or as plain text
+settings-msg-pictures-about = The character's and your picture beside each name in the chat
 settings-web-pictures-about = Those websites can see when you open the chat.
 settings-tabs-about = Keep several pages open in the title bar
 settings-language = Language
@@ -380,6 +383,7 @@ tools-pictures = Uses the image model
 tools-pictures-first = Set up the image model first
 tools-app = Use and change your characters, chats and settings; each change asked first
 tools-dice = Lets the AI roll dice; Cardwave rolls them, so the result is fair.
+tools-names = Gives the AI a fitting name for each new character from a large list, so names do not repeat.
 tools-folder-example =
     { $system ->
         [linux] /home/you/Documents/Shared

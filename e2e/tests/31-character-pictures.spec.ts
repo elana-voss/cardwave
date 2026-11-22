@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { APIRequestContext, Page } from "@playwright/test";
-import { chooseView, expect, test } from "../test";
+import { chooseView, expect, goHeard, test } from "../test";
 import { ccv4File, pictureFile } from "../card";
 import { NOW, picture, railChats, SIZES, stopClock, storeModel, THEMES } from "../pictures";
 
@@ -143,21 +143,12 @@ async function dated(page: Page): Promise<void> {
 const chats = (page: Page) => railChats(page, "Guinivere");
 const field = (page: Page, name: string) => page.getByRole("textbox", { name, exact: true });
 
-/** Opens `address` and waits for the server's first `hello`, after which the page is not drawn again by it. */
-async function goHeard(page: Page, address: string): Promise<void> {
-  const heard = page.waitForEvent("websocket").then((socket) => socket.waitForEvent("framereceived", (frame) => String(frame.payload).includes('"hello"')));
-  await page.goto(address);
-  await heard;
-}
-
 /**
- * Opens a page of `protector` and waits for its box and for its picture, after which nothing on it moves. The
- * server's first `hello` on the socket has the page read the card anew and draw it again (`onConnected`), which
- * closes a menu opened before it: in a whole run it came late once, so `open` waits for it and for that reading.
+ * Opens a page of `protector` and waits for its box and for its picture, after which nothing on it moves; a
+ * `hello` that came late has the page read the card anew, which would close a menu opened before it (`goHeard`).
  */
 async function open(page: Page, address: string): Promise<void> {
   await goHeard(page, address);
-  await page.waitForLoadState("networkidle");
   await expect(page.locator(".part").last()).toBeVisible();
   await expect.poll(() => page.locator(".hero-picture img").evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
 }

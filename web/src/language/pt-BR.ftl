@@ -118,6 +118,7 @@ search-keys = Pesquisar no Cardwave (Ctrl+K)
 
 label-settings-theme = Tema
 label-settings-chat-layout = Layout do chat
+label-settings-msg-pictures = Imagens ao lado dos nomes
 label-settings-web-pictures = Mostrar imagens de outros sites
 label-settings-tabs = Abas
 label-settings-app-language = Idioma do aplicativo
@@ -134,6 +135,7 @@ label-settings-commands = Comandos
 label-settings-image-generation = Geração de imagens
 label-settings-app = Cardwave
 label-settings-dice = Dados
+label-settings-names = Nomes para novos personagens
 label-settings-folder = Pasta
 label-settings-written = Ferramentas que a IA escreveu
 label-settings-coding = Equipe de programação
@@ -173,6 +175,7 @@ layout-plain = Simples
 settings-appearance = Aparência
 settings-theme-about = Segue o sistema, a menos que você escolha um
 settings-layout-about = Mensagens em balões ou como texto simples
+settings-msg-pictures-about = A imagem do personagem e a sua ao lado de cada nome no chat
 settings-web-pictures-about = Esses sites podem ver quando você abre o chat.
 settings-tabs-about = Manter várias páginas abertas na barra de título
 settings-language = Idioma
@@ -400,6 +403,7 @@ tools-pictures = Usa o modelo de imagem
 tools-pictures-first = Configure primeiro o modelo de imagem
 tools-app = Usar e alterar seus personagens, chats e configurações; cada alteração perguntada antes
 tools-dice = Deixa a IA rolar dados; o Cardwave os rola, então o resultado é justo.
+tools-names = Dá à IA um nome adequado para cada novo personagem a partir de uma lista grande, para que os nomes não se repitam.
 tools-folder-example =
     { $system ->
         [linux] /home/você/Documents/Compartilhado

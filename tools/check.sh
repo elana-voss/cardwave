@@ -5,12 +5,12 @@
 # tools/precommit.sh runs before each commit (the global git pre-commit hook).
 #
 # What runs is chosen from the changed files (CHANGED): the uncommitted work, plus `git diff --name-only $SINCE` when
-# SINCE=<commit> is set; ALL=1 runs everything but the desktop window's tests. Always: the layer rules (`layers`), the sentences to the page
+# SINCE=<commit> is set, less code built only on Linux (LINUX_ONLY: WSL's check, tools/wsl.sh, covers it); ALL=1 runs everything but the desktop window's tests. Always: the layer rules (`layers`), the sentences to the page
 # (tools/sentences.py), the crates' order (`crates`: tools/deps.py), the web interface's areas (tools/web_layers.py)
 # and the small tools' tests (tools/run_tests.py runs every tools/*_test.py). fmt, server-tests, clippy and audit when crates/, server/ or Cargo* changed (SERVER_PATHS);
 # ui-types, stylesheet, ui-tests and browser-tests when web/, e2e/ or what SERVER_PATHS covers did (UI_PATHS: the
-# server writes the page's API types, the browser tests run the whole server). The desktop window's tests open windows on the owner's screen: only with DESKTOP=1 (or named), never by ALL=1 or a
-# changed file. The run-throughs (RUN_THROUGHS=1) run when what they cover changed (RUN_THROUGH_PATHS). Strawberry Perl
+# server writes the page's API types, the browser tests run the whole server), less the server's tests (TEST_PATHS). The desktop window's tests open windows on the owner's screen: only with DESKTOP=1 (or named), never by ALL=1 or a
+# changed file. The run-throughs (RUN_THROUGHS=1) run when what they cover changed (RUN_THROUGH_PATHS); a figure seen (SEEN) never. Strawberry Perl
 # goes first on PATH for SQLCipher's OpenSSL. `fmt` only checks: `cargo fmt --all` lays the code out.
 # Each check runs under a time limit (tools/limited.sh), from its measured seconds with room for a cold build: 1800 s
 # server-tests, clippy and browser-tests, 900 s audit, run-throughs and desktop-tests, 300 s the rest; CHECK_LIMIT=<s>
@@ -28,6 +28,9 @@ count=0
 WANTED="$*"
 CHANGED=$(git -C "$ROOT" -c core.quotePath=false status --porcelain | cut -c4-)
 [ -z "$SINCE" ] || CHANGED=$(printf '%s\n%s' "$CHANGED" "$(git -C "$ROOT" -c core.quotePath=false diff --name-only "$SINCE")")
+LINUX_ONLY='(^|/)linux(/|\.rs$)|_linux\.rs$|^tools/(linux|wsl)\.sh$'
+CHANGED=$(printf '%s\n' "$CHANGED" | grep -vE "$LINUX_ONLY")
+TEST_PATHS='^(server/tests/|crates/[^/]+/tests/)'
 SERVER_PATHS='^(crates/|server/|desktop/|Cargo)'
 UI_PATHS='^(web/|e2e/|crates/|server/|Cargo)'
 RUN_THROUGH_PATHS='^(e2e/(tests/9[0-9]-run-through|fake-provider|fake-search|stored|test\.ts|server\.mjs|playwright)|web/src/(views/(setup|providers|settings|chats?|library|character|interview|lorebooks?|personas|trash|profile|prompt-preset|voices|advanced|memories|documents|coding-task|coding-team|written-tools|about)\.ts|interview/|setup/|settings/|chat/|card/|library/|lorebook/|companion/|voice/|shell/|api/client|main\.ts|dom\.ts|in-place|edit-form)|server/src/api/(provider|kinds|cards|chats|generate|find|trash|settings|interview|lorebooks|personas|prompt_presets|presets|accounts|password|voices?|memory|documents|coding|written|companion|app_tools)|crates/cw-(ccv4|provider|prompt|chat|library|find|store|coding|accounts|voice|search)/)'
@@ -67,9 +70,10 @@ limit_of() {
   esac
 }
 
-# wants PATHS: true when names were given (check() then picks), ALL=1, or a changed file matches PATHS.
+# wants PATHS [SKIP]: true when names were given (check() then picks), ALL=1, or a changed file not matching SKIP
+# matches PATHS.
 wants() {
-  [ -n "$WANTED" ] || [ "$ALL" = 1 ] || printf '%s\n' "$CHANGED" | grep -qE "$1"
+  [ -n "$WANTED" ] || [ "$ALL" = 1 ] || printf '%s\n' "$CHANGED" | grep -vE "${2:-^$}" | grep -qE "$1"
 }
 
 # layers: prints and fails on what breaks the global layer rules (a library named outside the crate that wraps
@@ -125,11 +129,11 @@ if wants "$SERVER_PATHS"; then
 else
   echo "(fmt, server tests, clippy and audit skipped: nothing they cover changed)"
 fi
-if wants "$UI_PATHS"; then
+if wants "$UI_PATHS" "$TEST_PATHS"; then
   check ui-types web npx tsc --noEmit
   check stylesheet web stylesheet
   check ui-tests web npm test
-  check browser-tests e2e env RUN_THROUGHS=0 npm test
+  check browser-tests e2e env -u SEEN RUN_THROUGHS=0 npm test
 else
   echo "(UI types, stylesheet, UI and browser tests skipped: nothing they cover changed)"
 fi
@@ -138,8 +142,8 @@ if [ "$DESKTOP" = 1 ]; then
 else
   echo "(desktop window's tests skipped: they open windows, only with DESKTOP=1)"
 fi
-if [ "$RUN_THROUGHS" = 1 ] || wants "$RUN_THROUGH_PATHS"; then
-  check run-throughs e2e env RUN_THROUGHS=1 npx playwright test run-through
+if [ "$RUN_THROUGHS" = 1 ] || wants "$RUN_THROUGH_PATHS" "$TEST_PATHS"; then
+  check run-throughs e2e env -u SEEN RUN_THROUGHS=1 npx playwright test run-through
 else
   echo "(run-throughs skipped: nothing they cover changed)"
 fi

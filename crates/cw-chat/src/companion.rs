@@ -1,19 +1,17 @@
-//! The companion's animator, the AI that steers the figure: the chat model
-//! after a reply, else the worker model (the provider is the caller's), told who the character is (its card's description and personality), what
+//! The companion's animator, the AI that steers the figure (the provider is
+//! the caller's), told who the character is, its card's content level, what
 //! the figure stands on, what Cardwave's window shows, what was said last in
-//! the companion's chat, what its chat's memory holds (`remembered`: of a
-//! personal mode the character's, shared by its chats), what it did last and why it is asked now
-//! (`Occasion`: after a reply, after the hand handled it, or now and then
-//! while left alone), answers what the figure does next, as steps the
-//! companion window runs (web/src/companion/live.ts). Only the companion's
-//! card and its chats are steered by (`question`), as its card's character
-//! (also in a group chat begun with another card). The settings that choose
-//! the companion are `settings::Companion`.
-//!
-//! What the model answers is never trusted: a step that cannot be read or
-//! run is left out, each kept one is held within the screen and the limits
-//! (`keep`, `held`, which other programs' steps go through too), and an answer
-//! without a JSON object is no steps. The steps are also the companion's
+//! the companion's chat, what its chat's memory holds (`remembered`), what it
+//! did and said in its bubble lately (`told`) and why it is asked now
+//! (`Occasion`: after a reply, after the hand handled it, after a touch of a
+//! part of its body, or now and then while left alone), answers what the
+//! figure does next, as steps the companion window runs
+//! (web/src/companion/live.ts). Only the companion's card and its chats are
+//! steered by (`question`), as its card's character (also in a group chat
+//! begun with another card); the settings are `settings::Companion`.
+//! What the model answers is never trusted: a step that cannot be read or run
+//! is left out, each kept one held within the screen and the limits (`keep`,
+//! `held`, for other programs' steps too). The steps are also the companion's
 //! actions, and its state what it knows (`live`).
 
 use anyhow::Context;
@@ -31,18 +29,19 @@ use ts_rs::TS;
 use crate::{assistant, chats, memory};
 
 mod live;
+mod told;
 pub use live::{AppScreen, ChatShown, CompanionAct, CompanionFigure, CompanionState, Point, Said};
+pub use told::{BodyPart, Bubbled, Bubbles, bubble_note, lately};
 
-/// The animator's question, its `{clips}` the names of `Clip::ALL` (`animator`); a test's stand-in for the provider
-/// tells it by its first words.
+/// The animator's question, its `{clips}` the list `CLIPS` (`animator`); a test's stand-in for the provider tells it
+/// by its first words.
 pub const ANIMATE: &str = include_str!("companion/animate.txt");
-/// `ANIMATE` with the clips' names, each once.
+/// Every clip of `Clip::ALL` in its order, a line `name: what it shows`; written by hand, to fit each version of the
+/// clip the figure may play.
+const CLIPS: &str = include_str!("companion/clips.txt");
+/// `ANIMATE` with the clips and what each shows.
 fn animator() -> String {
-    let names: Vec<String> = Clip::ALL
-        .iter()
-        .filter_map(|clip| serde_json::to_value(clip).ok()?.as_str().map(str::to_owned))
-        .collect();
-    ANIMATE.replace("{clips}", &names.join(", "))
+    ANIMATE.replace("{clips}", CLIPS.trim_end())
 }
 
 /// The newest messages the animator reads.
@@ -66,8 +65,9 @@ const MOST_HANDLED: usize = 16;
 /// What the companion window asks: its chat (none: the newest chat with the
 /// companion's card), the screen it has (CSS pixels, the floor at `height`),
 /// where the figure's feet are and what it does, why it asks (a reply where
-/// not said), for `Occasion::Handled` what the hand did, in order, and for
-/// `Occasion::Alone` how long it has been alone, in seconds.
+/// not said), for `Occasion::Handled` what the hand did, in order, for
+/// `Occasion::Alone` how long it has been alone, in seconds, and for
+/// `Occasion::Touched` the part of the body touched (none: it was not found).
 #[derive(Deserialize, TS)]
 #[ts(export)]
 pub struct CompanionPlan {
@@ -83,6 +83,9 @@ pub struct CompanionPlan {
     pub handled: Vec<Handling>,
     #[serde(default)]
     pub alone_s: u32,
+    #[serde(default)]
+    #[ts(optional)]
+    pub touched: Option<BodyPart>,
 }
 
 /// Why the animator is asked now.
@@ -98,6 +101,9 @@ pub enum Occasion {
     /// Nobody has used the figure or its chat for a while; asked again and
     /// again while that lasts.
     Alone,
+    /// The user has just touched the figure (clicked it); the character
+    /// answers in the figure's bubble.
+    Touched,
 }
 
 /// What happened to the figure while the hand had it, and after.
@@ -152,6 +158,10 @@ fn occasion(plan: &CompanionPlan) -> String {
                 what.join(", ")
             )
         }
+        Occasion::Touched => match plan.touched {
+            Some(part) => format!("The user has just touched the figure's {}.", part.said()),
+            None => "The user has just touched the figure.".to_string(),
+        },
     }
 }
 
@@ -362,6 +372,7 @@ pub fn question(
     app: Option<&AppScreen>,
     last: &[Move],
     known: Option<Persona>,
+    bubbled: &[Bubbled],
 ) -> anyhow::Result<Option<(String, Persona)>> {
     let Some(card_id) = settings::get(db, user)?.companion.card_id else {
         return Ok(None);
@@ -374,7 +385,7 @@ pub fn question(
         },
         None => listed.first(),
     };
-    let Some(persona) = persona(db, user, card_id, known)? else {
+    let Some((persona, rating)) = persona(db, user, card_id, known)? else {
         return Ok(None);
     };
     let (shown, remembered) = match chat {
@@ -390,55 +401,21 @@ pub fn question(
         .flat_map(|chat| &chat.said)
         .map(|one| format!("{}: {}", one.who, one.text))
         .collect();
-    let remembered = match remembered.is_empty() {
-        true => String::new(),
-        false => format!(
-            "
-<memory>
-{remembered}
-</memory>"
-        ),
-    };
-    let app = app.map_or("not open".to_string(), |app| {
-        format!("{} ({})", app.title, app.route)
-    });
-    let last: Vec<String> = last
-        .iter()
-        .filter_map(|step| serde_json::to_string(step).ok())
-        .collect();
-    let question = format!(
-        "<character>{}</character>
-<persona>
-{}
-</persona>
-<now>{}</now>
-<screen>{:.0} wide, {:.0} high; the floor is at y = {:.0}</screen>
-<cardwave_window>{}</cardwave_window>
-<figure>x = {:.0}, y = {:.0}, {}</figure>
-<last_steps>{}</last_steps>
-<newest_messages>
-{}
-</newest_messages>{}",
-        shown
-            .as_ref()
-            .map_or(persona.name.as_str(), |chat| chat.character.as_str()),
-        persona.text,
-        occasion(plan),
-        plan.width,
-        plan.height,
-        plan.height,
+    let character = shown
+        .as_ref()
+        .map_or(persona.name.as_str(), |chat| chat.character.as_str());
+    let question = told::Asked {
+        character,
+        persona: &persona.text,
+        rating: &rating,
+        plan,
         app,
-        plan.x,
-        plan.y,
-        plan.state,
-        last.join(", "),
-        said.join(
-            "
-
-"
-        ),
-        remembered
-    );
+        last,
+        bubbled: told::lately(bubbled, card_id, std::time::Instant::now()),
+        said,
+        remembered: &remembered,
+    }
+    .text();
     Ok(Some((question, persona)))
 }
 
@@ -497,26 +474,50 @@ fn remembered(
 /// card's version `version_id`.
 #[derive(Clone)]
 pub struct Persona {
+    card_id: i64,
     version_id: i64,
     name: String,
     text: String,
 }
 
+impl Persona {
+    /// The companion card it was read of.
+    pub fn card_id(&self) -> i64 {
+        self.card_id
+    }
+
+    /// The name of the card's character the figure is.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+/// The name of the companion card `card_id`'s character its figure is, as
+/// [`persona`] reads it; none where the card is gone or has no character.
+pub fn figure_name(
+    db: &dyn crate::chats::Storage,
+    user: i64,
+    card_id: i64,
+) -> anyhow::Result<Option<String>> {
+    Ok(persona(db, user, card_id, None)?.map(|(persona, _)| persona.name))
+}
+
 /// The name of the companion card `card_id`'s character and its description
 /// and personality, `{{char}}` and `{{user}}` said, cut at `PERSONA_LIMIT`
-/// characters; none where the card is gone. `known` is kept where it was
-/// read from the card's version.
+/// characters, beside the card's content level (`CardSummary::rating`, read
+/// each time: a card is described after it is made); none where the card is
+/// gone. `known` is kept where it was read from the card's version.
 fn persona(
     db: &dyn crate::chats::Storage,
     user: i64,
     card_id: i64,
     known: Option<Persona>,
-) -> anyhow::Result<Option<Persona>> {
+) -> anyhow::Result<Option<(Persona, String)>> {
     let Some(card) = cards::get(db, user, card_id)? else {
         return Ok(None);
     };
     if let Some(known) = known.filter(|known| known.version_id == card.version_id) {
-        return Ok(Some(known));
+        return Ok(Some((known, card.rating)));
     }
     let document = cards::document_of(db, card.version_id)?;
     let Some(id) = document.characters().first().map(|id| id.to_string()) else {
@@ -534,11 +535,15 @@ fn persona(
         .chars()
         .take(PERSONA_LIMIT)
         .collect();
-    Ok(Some(Persona {
-        version_id: card.version_id,
-        name,
-        text,
-    }))
+    Ok(Some((
+        Persona {
+            card_id,
+            version_id: card.version_id,
+            name,
+            text,
+        },
+        card.rating,
+    )))
 }
 
 /// The newest chat with the companion's card `card_id`, as [`said_in`]
@@ -679,20 +684,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_animator_is_told_every_clip_once() {
+    fn the_animator_is_told_every_clip_once_with_what_it_shows() {
         let told = animator();
         assert!(!told.contains("{clips}"));
         let list = told
-            .split("one of: ")
+            .split("The clips, each with what it shows:\n")
             .nth(1)
             .unwrap()
-            .split(';')
+            .split("\n\n")
             .next()
             .unwrap();
-        let names: Vec<&str> = list.split(", ").collect();
-        assert_eq!(names.len(), 100);
-        for (clip, name) in Clip::ALL.iter().zip(names) {
+        let lines: Vec<&str> = list.lines().collect();
+        assert_eq!(lines.len(), 100);
+        assert_eq!(Clip::ALL.len(), 100);
+        for (clip, line) in Clip::ALL.iter().zip(lines) {
+            let (name, what) = line.split_once(": ").unwrap();
             assert_eq!(serde_json::to_value(clip).unwrap(), name);
+            assert!(!what.trim().is_empty(), "{name} tells nothing");
         }
     }
 }

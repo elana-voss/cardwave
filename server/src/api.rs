@@ -190,7 +190,7 @@ fn user_of(state: &AppState, session: Option<&str>, remote: bool) -> Option<i64>
 
 /// A page's policy lets pictures from the web load while its user's Settings show them in messages
 /// ("Show pictures from other websites"), from the page loaded after a change; else the stricter
-/// [`crate::PAGE_POLICY`] of every answer stands. A page is told by its address, not its answer's type:
+/// [`crate::policy::PAGE_POLICY`] of every answer stands. A page is told by its address, not its answer's type:
 /// a page loaded again may be answered "not modified", whose policy the browser takes too.
 pub(crate) async fn page_policy(
     State(state): State<AppState>,
@@ -215,7 +215,7 @@ pub(crate) async fn page_policy(
             Ok(true) => {
                 response.headers_mut().insert(
                     header::CONTENT_SECURITY_POLICY,
-                    header::HeaderValue::from_static(crate::WEB_PAGE_POLICY),
+                    header::HeaderValue::from_static(crate::policy::WEB_PAGE_POLICY),
                 );
             }
             Ok(false) => {}

@@ -8,7 +8,7 @@ use cw_chat::chats::messages::Storage;
 use cw_chat::chats::{
     BUSY, Chat, ContextUse, IN_TRASH, Message, MessageView, NOT_IN_CHAT, NewMessage,
 };
-use cw_coding::tools::Read;
+use cw_coding::tools::used::UsedCall;
 use cw_core::{Code, Fail};
 use cw_core::{NotFound, now_ms};
 use cw_prompt::Role;
@@ -70,7 +70,7 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
         task_id: row.get(14)?,
         model: row.get(15)?,
         sent: json::column(row, 16, "a reply's parts' tokens")?,
-        reads: json::column(row, 17, "a reply's pages and files read")?.unwrap_or_default(),
+        calls: json::column(row, 17, "a reply's tool calls")?.unwrap_or_default(),
         attachments: json::column(row, 18, "a reply's attachments")?.unwrap_or_default(),
         provider: row.get(19)?,
         times: json::column(row, 20, "a reply's times")?,
@@ -179,7 +179,7 @@ const VIEW_COLUMNS: &str = "(select group_concat(s.id order by s.id) from messag
      (select json_group_array(x.value) from (select j.value from memory_blocks b, json_each(b.saved) j
       where b.message_id = m.id order by b.id, j.key) x),
      exists (select 1 from pictures p where p.message_id = m.id), m.context_used, m.context_size,
-     (select t.id from coding_tasks t where t.message_id = m.id), m.model, m.sent, m.reads,
+     (select t.id from coding_tasks t where t.message_id = m.id), m.model, m.sent, m.calls,
      (select json_group_array(json_object('id', a.id, 'name', a.name, 'picture', json(a.picture)))
       from (select id, name, case when picture is null then 'false' else 'true' end picture
             from attachments where message_id = m.id order by id) a), m.provider, m.times, m.broke_off";
@@ -260,13 +260,13 @@ impl Storage for Db {
         Ok(())
     }
 
-    fn keep_reads(&self, user: i64, message_id: i64, reads: &[Read]) -> anyhow::Result<()> {
+    fn keep_calls(&self, user: i64, message_id: i64, calls: &[UsedCall]) -> anyhow::Result<()> {
         // One connection, taken for the whole call: nothing comes between the read and the write.
         self.with(|tx| {
             let mine = "where id = ?1 and chat_id in (select id from chats where user_id = ?2)";
             let before: Option<Option<String>> = tx
                 .query_row(
-                    &format!("select reads from messages {mine}"),
+                    &format!("select calls from messages {mine}"),
                     params![message_id, user],
                     |r| r.get(0),
                 )
@@ -274,21 +274,14 @@ impl Storage for Db {
             let Some(before) = before else {
                 return Ok(());
             };
-            // Those read before the reply was continued, where they can be read, come first.
-            let mut all: Vec<Read> =
-                json::or_none(before.as_deref(), "a reply's pages and files read")
-                    .unwrap_or_default();
-            all.extend(
-                reads
-                    .iter()
-                    .filter(|read| !all.contains(read))
-                    .cloned()
-                    .collect::<Vec<_>>(),
-            );
+            // Those from before the reply was continued, where they can be read, come first.
+            let mut all: Vec<UsedCall> =
+                json::or_none(before.as_deref(), "a reply's tool calls").unwrap_or_default();
+            all.extend_from_slice(calls);
             let all = serde_json::to_string(&all)
                 .map_err(|error| rusqlite::Error::ToSqlConversionFailure(Box::new(error)))?;
             tx.execute(
-                &format!("update messages set reads = ?3 {mine}"),
+                &format!("update messages set calls = ?3 {mine}"),
                 params![message_id, user, all],
             )?;
             Ok(())

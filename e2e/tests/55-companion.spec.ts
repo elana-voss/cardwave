@@ -2,10 +2,13 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { picture, stopClock } from "../pictures";
+import { setSettings } from "../stored";
+import { headAndHand, watchFigure } from "../figure";
 
 // The companion window's page (companion.html) in a browser, where it works without the desktop app: a
 // double-click on the figure opens the compact chat with the companion's card, whose reply has the animator (the
-// stand-in `api`, `moves`) asked what the figure does, as is a throw once the figure stands again (told what the hand did), its standing idle (the page's clock run on) and a reply in its chat sent from elsewhere; the
+// stand-in `api`, `moves`) asked what the figure does, as is a throw once the figure stands again (told what the hand did), its standing idle (the page's clock run on) and a reply in its chat sent from elsewhere;
+// a click on its head and one on a hand, each answered in its bubble with a feeling and not kept with its chat (the page's clock faked, its chance fixed, the hand found by its bones through three.js's devtools hook, e2e/figure.ts); the
 // companion's interface (`/api/companion/act` and `/state`), each step's state read back; its right-click menu, "Hide until tomorrow" kept in the
 // settings; the figure's size set in Settings, which the figure takes at once; that only the app's window, not a browser's page, tells it the screen in view; and that the app's window in a browser has neither "Make companion" nor the settings' line, which
 // the desktop app's own test (e2e/desktop/companion.test.ts) drives in the real window. The picture (1440 px, light) is of the compact chat with the menu open; the figure is drawn by WebGPU or WebGL 2, which no
@@ -25,8 +28,7 @@ async function companion(request: APIRequestContext): Promise<number> {
   const made = await request.post("/api/cards/new", { data });
   expect(made.status(), await made.text()).toBe(201);
   const id = (await made.json()).card_id;
-  const set = await request.patch("/api/settings", { data: { companion: { card_id: id, starts: true, hidden_until: null } } });
-  expect(set.status(), await set.text()).toBe(200);
+  await setSettings(request, { companion: { card_id: id, starts: true, hidden_until: null } });
   return id;
 }
 
@@ -138,6 +140,50 @@ test("once the figure stands again after a throw, the animator is told what the 
   expect(api.animated[before]!.body.messages[1].content).toContain("The user has just handled the figure: picked it up, threw it");
 });
 
+test("a click on the head and one on a hand each have the figure answer that touch in its bubble, not kept with the chat", async ({ page, request }) => {
+  test.setTimeout(90_000);
+  await companion(request);
+  const state = async () => (await (await request.get("/api/companion/state")).json()).figure;
+  // The page's clock faked (it runs on, and `runFor` jumps it) and its chance drawn the same each run: the figure
+  // stands in the same pose while its points are read and clicked.
+  await watchFigure(page);
+  await page.addInitScript(() => {
+    let seed = 7;
+    Math.random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  });
+  await page.clock.install();
+  await open(page);
+  await expect(async () => {
+    await page.clock.runFor(500);
+    expect((await state())?.clip ?? null).not.toBeNull();
+  }).toPass({ timeout: 20_000 });
+  // It lands from the top of the screen and gets up; then it stands.
+  await page.clock.runFor(10_000);
+  // The hand first, as the figure first stands; its head's crown stays where it is whatever it then plays.
+  for (const [part, said, feeling] of [["hand", "You want to hold my hand?", "bashful"], ["head", "Oh! My head?", "playful"]] as const) {
+    api.moves([{ do: "say", text: said }, { do: "react", feeling }]);
+    const before = api.animated.length;
+    const point = (await headAndHand(page))[part];
+    await page.mouse.click(point.x, point.y);
+    await page.clock.runFor(400);
+    await expect.poll(() => api.animated.length).toBe(before + 1);
+    expect(api.animated[before]!.body.messages[1].content).toContain(`The user has just touched the figure's ${part}.`);
+    await expect(page.locator(".companion-say")).toHaveText(said);
+    await expect.poll(async () => (await state()).saying).toBe(said);
+    // Its reaction once the bubble was read (a step waits for what it says).
+    await expect.poll(async () => (await state()).feeling).toBe(feeling);
+    // The answer done, the figure stands again.
+    await page.clock.runFor(12_000);
+    await expect(page.locator(".companion-say")).toBeHidden();
+  }
+  // Its answers are not in its chat.
+  // (The page's clock faked, the mouse's own double-click: a locator's waits on frames.)
+  const { head } = await headAndHand(page);
+  await page.mouse.dblclick(head.x, head.y);
+  await page.clock.runFor(500);
+  await expect(page.getByRole("dialog", { name: "Chat with your companion" }).locator(".bubble")).toHaveText(["Hello."]);
+});
+
 test.describe("at 1440 px, light", () => {
   test.use({ viewport: { width: 1440, height: 900 }, colorScheme: "light" });
   test("the figure's menu, and hidden until tomorrow", async ({ page, request }) => {
@@ -208,7 +254,7 @@ test("the figure picked in Settings is stored, and the companion shows it where 
   await expect.poll(() => figures).toEqual(["woman", "man", "robot"]);
   // Picked in another window, the line shows it.
   const { companion: stored } = await (await request.get("/api/settings")).json();
-  expect((await request.patch("/api/settings", { data: { companion: { ...stored, figure: "woman" } } })).status()).toBe(200);
+  await setSettings(request, { companion: { ...stored, figure: "woman" } });
   await expect(line.getByRole("button", { name: "Woman" })).toHaveAttribute("aria-pressed", "true");
 });
 

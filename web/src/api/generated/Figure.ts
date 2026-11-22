@@ -9,6 +9,10 @@ export type Figure = { id: number, name: string,
  */
 kind: string, 
 /**
+ * Who made it, as a VRM file's terms of use name them (`maker_of`); none for GLB and FBX.
+ */
+maker: string | null, 
+/**
  * How many cards outside the Trash have it, as theirs or a mode's.
  */
 cards: number, };

@@ -172,7 +172,6 @@ fn optional_sections_in_their_fixed_order() {
         scenario_mode: Some("M"),
         memory_context: Some("R"),
         data_context: Some("X"),
-        tools_advertisement: Some("T"),
         ..request(&card, 10_000)
     };
     let prompt = run(&req, &mut chat(&["Hi"]));
@@ -181,8 +180,7 @@ fn optional_sections_in_their_fixed_order() {
         "<system_prompt>\nS\n</system_prompt>\n\
          <unlimited_nsfw_mode>\nU\n</unlimited_nsfw_mode>\n\
          <scenario_mode>\nM\n</scenario_mode>\n\
-         <description>\nD\n</description>\n\
-         <available_tools>\nT\n</available_tools>"
+         <description>\nD\n</description>"
     );
 }
 
@@ -203,17 +201,14 @@ fn memories_and_a_documents_pieces_reach_the_model_as_written() {
         ..chat(&["Hi"])
     };
     let prompt = run(&req, &mut state);
-    assert!(
-        prompt.messages[0]
-            .content
-            .ends_with("<available_tools>\nCass's tools\n</available_tools>")
-    );
     assert!(state.local_variables.is_empty());
-    // The pieces, then the memory note, stand just before the newest message, as written.
-    let at = prompt.messages.len() - 3;
+    // The tools' note, its macros expanded, the pieces, then the memory note,
+    // as written, stand just before the newest message.
+    let at = prompt.messages.len() - 4;
     assert_eq!(
         prompt.messages[at..],
         [
+            system("Cass's tools"),
             system(
                 "<supplemental_data_context>\nFrom \"t.md\":\nHello {{user}}, {{setvar::x::1}}{{random:a,b}}\n</supplemental_data_context>"
             ),
@@ -221,6 +216,31 @@ fn memories_and_a_documents_pieces_reach_the_model_as_written() {
             user("Hi"),
         ]
     );
+}
+
+/// The tools' note is found where it stands, not at an earlier message of the
+/// same text: that one is taken out of a round that offers no tools.
+#[test]
+fn the_tools_note_is_found_where_it_stands() {
+    let card = Character {
+        depth_prompts: vec![DepthPrompt {
+            prompt: "Tools.".into(),
+            depth: 2,
+            role: Role::System,
+        }],
+        ..Default::default()
+    };
+    // The note says what the depth prompt says, as it stands in the prompt.
+    let note = "<depth_prompt>\nTools.\n</depth_prompt>";
+    let req = PromptRequest {
+        tools_advertisement: Some(note),
+        ..request(&card, 10_000)
+    };
+    let prompt = run(&req, &mut chat(&["Hi", "Hello", "Bye"]));
+    let at = prompt.messages.len() - 2;
+    assert_eq!(prompt.messages[at - 2], system(note));
+    assert_eq!(prompt.messages[at], system(note));
+    assert_eq!(prompt.tools_at, Some(at));
 }
 
 /// What changes from reply to reply stands after what stays the same, so a

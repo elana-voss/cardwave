@@ -49,7 +49,7 @@ use windows_sys::Win32::System::Threading::{
     UpdateProcThreadAttribute, WaitForSingleObject,
 };
 
-use crate::tools::sandbox::{Output, Ran, Reach};
+use crate::{Output, Ran, Reach};
 
 /// The capability of a container that reaches the internet ("internetClient").
 const INTERNET: &str = "S-1-15-3-1";
@@ -172,7 +172,7 @@ fn container(folder: &Path) -> anyhow::Result<Sid> {
     use sha2::{Digest, Sha256};
     let real = std::fs::canonicalize(folder).context("the folder is not there")?;
     let hash = Sha256::digest(real.to_string_lossy().to_lowercase().as_bytes());
-    let hash: String = hash[..8].iter().map(|byte| format!("{byte:02x}")).collect();
+    let hash = cw_core::hex(&hash[..8]);
     let name = wide(format!("{CONTAINER}{hash}"));
     let mut sid: PSID = null_mut();
     // SAFETY: the strings end in zero, and `sid` is written by the call.
@@ -322,7 +322,7 @@ fn programs(programs: &Capability, data: &Path) -> Found {
     let mut known = cw_core::lock(&KNOWN);
     let host = std::env::var_os("PATH").unwrap_or_default();
     resolve(std::env::split_paths(&host), data, &mut known, |folder| {
-        crate::tools::sandbox::grantable(folder, data)
+        crate::grantable(folder, data)
             .then(|| reached(folder, programs, data))
             .flatten()
     })
@@ -372,7 +372,7 @@ fn reached(
 ) -> Option<(PathBuf, Vec<(String, String)>)> {
     let read = FILE_GENERIC_READ | FILE_GENERIC_EXECUTE;
     let open = |folder: &Path| {
-        crate::tools::sandbox::allowed(folder, data)
+        crate::allowed(folder, data)
             && (lets_in(folder, programs.0).unwrap_or(false)
                 || let_in(folder, programs.0, read).is_ok())
     };
@@ -426,7 +426,7 @@ fn copied(folder: &Path, programs: &Capability) -> anyhow::Result<PathBuf> {
         FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
     )?;
     let hash = Sha256::digest(folder.to_string_lossy().to_lowercase().as_bytes());
-    let hash: String = hash[..8].iter().map(|byte| format!("{byte:02x}")).collect();
+    let hash = cw_core::hex(&hash[..8]);
     let copy = copies.join(hash);
     fn size(folder: &Path) -> std::io::Result<u64> {
         let mut all = 0;

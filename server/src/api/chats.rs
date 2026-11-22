@@ -126,7 +126,7 @@ pub(crate) struct ChatView {
     /// replies are sent no Reply length.
     pub thinks: bool,
     /// Whether a reply of its first character (in a chat without one, the AI)
-    /// is offered a tool besides Code mode's and the dice (`generate::offers_tools`), so
+    /// is offered a tool besides Code mode's and the chat tools (`generate::offers_tools`), so
     /// it is sent no Reply length; with Code mode on it always is.
     pub tools: bool,
 }

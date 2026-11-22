@@ -1,25 +1,18 @@
-// The app's start: which screen an address shows (`screen`, made by the tabs, tabs.ts, each tab's its own, which hide
-// the rail and the tabs for first run, `drawn`), one file per screen in views/; the tabs tell a screen that is replaced
-// (`View.left`), and every tab's screen hears the server's events. `go` shows a new address in the tab in view. `open`
-// shows a screen anew, for a line of "Create". `start` restores the tabs, per account (`tabs.restore`), and leads a start without an
-// address to first run while `GET /api/provider` answers `null`, for which it waits `START_WAIT` at most, and
-// `before` is where first run's "Confirm" leads back to, in first run's place in the history. The layout chats
-// are drawn in (theme.ts) is said on the root before the first screen is made. The account's pages are those
-// under `#/account` and `#/settings`, which the rail marks as one (`"account"`), and what the server says of a
-// change of the account goes to account.ts, which is also told to ask again when the server is heard after a
-// drop (`heard`). Where the server waits for the password, `start` shows the start screen (password.ts) and
-// nothing else, without the rail and the event socket; the app starts anew once it is given, and when the server
-// says that a backup was restored (`restored`; first run then starts anew as at an opening). Where the page is to sign in (another device's, or one whose
-// session ended: `GET /api/sign-in`), `start` shows the sign-in screen (accounts.ts) so too. In the desktop app
-// the companion's window opens with the app where the settings say so (companion-app.ts) and is told, by the app's own
-// window alone (`appWindow`), the tab in view's address and name, and `#/companion`, which
-// the companion's "Change character" opens, is the list of chats under the window that picks the companion, and the
-// app looks for a newer version (settings/update.ts, `watchUpdates`). The
-// user's own CSS (own-css.ts) is shown before the first screen and read anew when the settings change elsewhere.
-// The UI's words are in the app's language: the one the settings name, read at start and when they change
-// (app-language.ts), else the computer's where the app has it (language.ts), told the server's system (`setSystem`); when it changes, the tabs make
-// their screens anew (`relanguage`), once they are restored. A phone's keyboard is followed from the start
-// (shell/keyboard.ts).
+// The app's start: which screen an address shows (`screen`, made by the tabs, tabs.ts, each tab's its own; first
+// run hides the rail and the tabs, `drawn`), one file per screen in views/; every tab's screen hears the server's
+// events. `go` shows a new address in the tab in view, `open` a screen anew for a line of "Create". `start` restores
+// the tabs per account (`tabs.restore`) once the server's first word is heard (`listen`; a screen made before it
+// would read itself again then, redrawing its buttons under a click), and leads a start without an address to first
+// run while `GET /api/provider` answers `null`; it waits `START_WAIT` at most for each. `before` is where first
+// run's "Confirm" leads back to. The account's pages (`#/account`, `#/settings`) are one on the rail
+// (`"account"`); account.ts hears a change of the account and asks again after a drop (`heard`). Where the server
+// waits for the password, `start` shows the start screen (password.ts) alone, without the rail and the socket, and
+// so the sign-in screen (accounts.ts, `GET /api/sign-in`); the app starts anew once unlocked, and when a backup was
+// restored (`restored`). In the desktop app the companion's window (companion-app.ts) is told, by the app's window
+// alone (`appWindow`), the tab in view; `#/companion` is the list of chats under the window that picks the
+// companion; the app looks for a newer version (settings/update.ts). The user's own CSS (own-css.ts) shows before
+// the first screen. The UI's words are in the settings' language, else the computer's (app-language.ts,
+// language.ts); a change remakes the tabs' screens (`relanguage`). A phone's keyboard is followed (shell/keyboard.ts).
 import { reread, setElsewhere, take } from "./account";
 import { signInScreen } from "./settings/accounts";
 import { companionApp, connectEvents, getLock, getProvider, getSettings, getSignIn, getStatus, startedSignedIn, unlock } from "./api/client";
@@ -39,7 +32,7 @@ import { makeRail } from "./shell/rail";
 import { Tabs, type Tab } from "./shell/tabs";
 import { makeTitleBar } from "./shell/titlebar";
 import { remember, remembered } from "./storage";
-import { showChatLayout } from "./theme";
+import { showChatLayout, showMessagePictures } from "./theme";
 import { advancedView } from "./views/advanced";
 import { cssReferenceView } from "./views/css-reference";
 import { aboutView } from "./views/about";
@@ -71,11 +64,13 @@ const main = document.querySelector<HTMLElement>("#view")!;
 
 // Chats are drawn in the layout chosen, from the first one on.
 showChatLayout();
+showMessagePictures();
 
 /** The address shown before first run, which leads back there when it is done. */
 let before = "#/chats";
 
-/** How long a start without an address waits for the server to say whether a provider is stored, in milliseconds. */
+/** How long a start waits at most for the server's first word, and one without an address also for whether a provider
+ * is stored, in milliseconds (each). */
 const START_WAIT = 3000;
 
 /**
@@ -210,8 +205,10 @@ async function start(): Promise<void> {
   // The switch of pictures from the web as the page's policy was given (narration.ts).
   void settings.then(({ web_pictures }) => webPictures(web_pictures), () => {});
   readAppLanguage(settings);
-  await Promise.race([readOwnCss(settings), new Promise((over) => setTimeout(over, START_WAIT))]);
-  listen();
+  // The first screen is made once the server tells this page what happens: one made before would read itself again
+  // at the server's first word, redrawing its buttons under a click (spec 65, "read once").
+  const heard = listen();
+  await Promise.race([Promise.all([readOwnCss(settings), heard]), new Promise((over) => setTimeout(over, START_WAIT))]);
   startCompanion();
   if (!alone) watchUpdates();
   const unasked = () => location.hash.length < 3;
@@ -257,10 +254,16 @@ function go(): void {
 followKeyboard();
 void start();
 
-/** Has the server tell a screen what happens, and that it listens again after a drop. */
-function listen(): void {
+/**
+ * Has the server tell a screen what happens, and that it listens again after a drop; resolved at the server's first
+ * word (`hello`), which it sends once it tells this page all that happens.
+ */
+function listen(): Promise<void> {
   let heard = false;
+  let hello = () => {};
+  const first = new Promise<void>((resolve) => (hello = resolve));
   connectEvents((event) => {
+    if (event.type === "hello") hello();
     const views = tabs.list.map((tab) => tab.view);
     if (event.type === "hello") {
       for (const view of views) view?.onConnected?.();
@@ -291,4 +294,5 @@ function listen(): void {
     // Every tab's screen hears it, the ones out of view too.
     for (const view of views) view?.onEvent?.(event);
   });
+  return first;
 }

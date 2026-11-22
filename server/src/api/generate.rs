@@ -1,21 +1,22 @@
 //! Replies from the model, streamed into a new message and pushed over the
 //! event socket; one at a time per chat, and it can be stopped. A reply begins
 //! with `pick_mode`, `claim` (its message, or the one continued), then
-//! `memory::recall` and `build` (the prompt of `chats::reply`, and the tools);
-//! `turn::next` picks the speaker where none is named. Each round's words are
-//! saved and pushed in `stream`; a round is limited to the Reply length where
-//! the model does not think (`Provider::limited`) and no tool but the dice is
-//! offered, so that no call's arguments are cut short. Tools are told
-//! anew each round, up to `ROUNDS`; a call to allow first waits in
-//! `AppState::asks` (`ask_user`). Its end is kept in `writer::finish`: ended
-//! with words, memory reads the turn and a chat without a character names itself. The reply keeps whom it was asked
+//! `memory::recall` and `build` (the tools, then the prompt of `chats::reply`
+//! with their notes, none where the model's server refused tools: `toolless`;
+//! the companion's character is told its figure's bubble lately, `Building::bubble`);
+//! `turn::next` picks the speaker where none is named. The rounds, the tools
+//! run between them, are in `rounds`, each round's words saved and pushed in
+//! `stream`; a round is limited to the Reply length where the model does not
+//! think (`Provider::limited`) and no tool but a chat tool is offered. A call to
+//! allow first waits in `AppState::asks`, answered by `answer`. Its end is kept
+//! in `writer::finish`: ended with words, memory reads the turn and a chat
+//! without a character names itself. The reply keeps whom it was asked
 //! of (`set_model`) and how long it took (`chats::Times`). `draft` (`POST
 //! /api/chats/{id}/draft`) is no message: the text alone for the message field.
 //! A draft written for the user and a continued reply take a `direction`, the
 //! field's words, which steer them and are sent as no message.
 
 use std::collections::HashMap;
-use std::pin::Pin;
 use std::time::Duration;
 
 use anyhow::ensure;
@@ -27,20 +28,16 @@ use cw_chat::assistant;
 use cw_chat::chats::reply;
 use cw_chat::chats::{self, Chat, Message, MessageView, NewMessage, turn};
 use cw_chat::images;
-use cw_coding::tools::{Done, REFUSED, ToolAsk, Toolbox, WrittenRun, dice};
+use cw_coding::tools::{ToolAsk, Toolbox};
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_core::{Events, PageEvent};
 use cw_library::settings;
 use cw_prompt::{PromptMessage, Role};
-use cw_provider::Call;
-use cw_provider::images::Picture;
 use cw_provider::kinds::{self, Kind};
 use cw_provider::{self as provider, Provider};
 use cw_store::Db;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
-use tokio::sync::futures::Notified;
 use tokio::sync::oneshot;
 use tokio::time::Instant;
 use ts_rs::TS;
@@ -48,13 +45,10 @@ use ts_rs::TS;
 use super::events::EndTo;
 use super::{Api, ApiResult, Caller, ReplyEvent, User, memory};
 use crate::AppState;
-use stream::{Pushed, take_words};
+use stream::Pushed;
 use writer::{Read, Writer};
 
-/// The most rounds of tool calls a reply makes; the round after them is
-/// offered no tools.
-const ROUNDS: usize = 8;
-
+mod rounds;
 mod stream;
 mod writer;
 
@@ -131,8 +125,12 @@ struct Job {
     /// The chat's head before that message was added.
     head_before: Option<i64>,
     provider: Provider,
-    /// Taken out, as is `before`, when the reply is written.
-    prompt: Vec<PromptMessage>,
+    /// The prompt, taken out, as is `before`, when the reply is written.
+    messages: Vec<PromptMessage>,
+    /// Where in `messages` the tools' note stands (`assemble`).
+    tools_at: Option<usize>,
+    /// The model's server refused tools before: none is offered.
+    toolless: bool,
     /// The text the message holds before the reply: a continued reply's, else none.
     before: String,
     /// Who writes it, who sends the pictures it makes.
@@ -184,7 +182,12 @@ async fn generate(
         let building = Building {
             memory: recalled.memory,
             documents: recalled.documents,
+            bubble: state.companion.bubble_note(user, claimed.inputs.card_id),
             owner: user == state.local_user(),
+            toolless: state.toolless().contains(&(
+                claimed.provider.base_url.clone(),
+                claimed.provider.model.clone(),
+            )),
             // Cardwave's own tools ask the API as this request's caller.
             api,
             caller,
@@ -346,8 +349,14 @@ struct Building {
     /// What it is reminded of, and the pieces of documents it is given.
     memory: Option<String>,
     documents: Option<String>,
+    /// What the companion's figure said in its bubble lately, where the
+    /// speaker is the companion's character (`Live::bubble_note`).
+    bubble: Option<String>,
     /// The user is this computer's account, whose tools may touch its files.
     owner: bool,
+    /// The model's server refused tools before (`rounds`), looked up once per
+    /// reply: no tool is told of, as none is offered.
+    toolless: bool,
     /// The API Cardwave's own tools ask, and as whom.
     api: Api,
     caller: Caller,
@@ -360,7 +369,9 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
     let Building {
         memory,
         documents,
+        bubble,
         owner,
+        toolless,
         api,
         caller,
     } = building;
@@ -381,15 +392,25 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
         inputs.card_id,
         inputs.character_id.clone(),
     );
-    let given = reply::Given {
-        memory: memory.as_deref(),
-        documents: documents.as_deref(),
-        length: chat.reply_length,
-    };
     let (length, code) = (chat.reply_length, chat.code_mode);
     let continuing = continued.is_some();
     let before = continued.unwrap_or_default();
     let made = (|| -> anyhow::Result<_> {
+        let (personal, app) = speaker_tools(db, card_id, &character_id, mode.as_deref())?;
+        let api = app.then_some((api, caller));
+        let toolbox = toolbox(db, user, (owner, code), personal.as_deref(), api)?
+            .map(|toolbox| toolbox.in_chat(chat.id));
+        let notes = match &toolbox {
+            Some(toolbox) if !toolless => toolbox.notes().join("\n\n"),
+            _ => String::new(),
+        };
+        let given = reply::Given {
+            memory: memory.as_deref(),
+            documents: documents.as_deref(),
+            tools: Some(notes.as_str()).filter(|notes| !notes.is_empty()),
+            length,
+            bubble: bubble.as_deref(),
+        };
         let prompt = if continuing {
             reply::continue_prompt(&mut inputs, &provider.sampling, given, direction.as_deref())?
         } else {
@@ -398,10 +419,6 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
         let whose = kinds::whose(&provider.name, &provider.base_url);
         chats::set_model(db, user, reply.id, &provider.model, &whose)?;
         let message = chats::view(db, user, reply.id)?;
-        let (personal, app) = speaker_tools(db, card_id, &character_id, mode.as_deref())?;
-        let api = app.then_some((api, caller));
-        let toolbox = toolbox(db, user, (owner, code), personal.as_deref(), api)?
-            .map(|toolbox| toolbox.in_chat(chat.id));
         Ok((prompt, message, toolbox))
     })();
     // Without a prompt there is no reply; a continued one keeps what it had.
@@ -413,7 +430,9 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
             message_id: reply.id,
             head_before,
             provider,
-            prompt,
+            messages: prompt.messages,
+            tools_at: prompt.tools_at,
+            toolless,
             before,
             speaker_id: reply.speaker_id,
             toolbox,
@@ -442,7 +461,7 @@ fn speaker_tools(
 }
 
 /// Whether a reply of that speaker (`speaker_tools`) is offered any tool
-/// besides Code mode's `make_tool` and the dice, by the rule of `toolbox`: what the chat's
+/// besides Code mode's `make_tool` and the chat tools, by the rule of `toolbox`: what the chat's
 /// side panel tells of Reply length (`ChatView::tools`).
 pub(crate) fn offers_tools(
     db: &Db,
@@ -500,13 +519,15 @@ fn tools_of(
 
 /// Writes the reply into its message and tells the pages how it ended.
 async fn write_reply(writer: Writer, mut job: Job) {
-    let prompt = std::mem::take(&mut job.prompt);
+    let messages = std::mem::take(&mut job.messages);
     let mut content = std::mem::take(&mut job.before);
     let mut made = Vec::new();
     let mut pushed = Pushed::new(&content);
     let reply = (&mut pushed, &mut content, &mut made);
     let began = Instant::now();
-    let failure = read_reply(&writer, &job, prompt, reply).await.err();
+    let failure = rounds::read_reply(&writer, &job, messages, reply)
+        .await
+        .err();
     let read = Read {
         content,
         made,
@@ -515,256 +536,6 @@ async fn write_reply(writer: Writer, mut job: Job) {
         failure,
     };
     writer::finish(writer, job, read).await;
-}
-
-/// Reads the model's reply into `content`, after what it holds, saving and
-/// pushing it as it grows, until it is complete or stopped; the tools it
-/// calls are run between, and the pictures they make put in `made`. Each
-/// round's words begin at their first, joined to the text before by
-/// `stream::joint`. After an error `content` holds the reply as far as it got.
-/// `pushed` tells after whether the model thought.
-async fn read_reply(
-    writer: &Writer,
-    job: &Job,
-    prompt: Vec<PromptMessage>,
-    (pushed, content, made): (&mut Pushed, &mut String, &mut Vec<(String, Picture)>),
-) -> anyhow::Result<()> {
-    let message_id = job.message_id;
-    let stopped = writer.stop.notified();
-    tokio::pin!(stopped);
-    // A model whose server refused tools before, while the server runs, is asked
-    // without at once: the dice, where they are on, would double every request.
-    let whose = (job.provider.base_url.clone(), job.provider.model.clone());
-    let mut refused = writer.state.toolless().contains(&whose);
-    let mut prompt: Vec<Value> = prompt.into_iter().map(|message| json!(message)).collect();
-    let base = content.len();
-    let unlimited = Provider {
-        reply_limit: None,
-        ..job.provider.clone()
-    };
-    for round in 0..=ROUNDS {
-        let mut offered = match &job.toolbox {
-            Some(toolbox) if round < ROUNDS && !refused => toolbox.definitions(),
-            _ => Vec::new(),
-        };
-        let providers = (&job.provider, &unlimited);
-        let tools = (&mut offered, &mut refused);
-        let Some(mut reply) =
-            ask_round(writer, providers, &prompt, tools, stopped.as_mut()).await?
-        else {
-            return Ok(());
-        };
-        let begun = content.len();
-        let words = (message_id, &mut *pushed, &mut *content);
-        let from = (&mut reply, &job.others[..]);
-        if !take_words(writer, words, from, stopped.as_mut()).await? {
-            return Ok(());
-        }
-        let calls = reply.calls();
-        // Read, it lets go of its model, which a tool may need to swap (`provider::local`).
-        drop(reply);
-        let toolbox = match &job.toolbox {
-            Some(toolbox) if !calls.is_empty() && !offered.is_empty() => toolbox,
-            // Not to be taken for a reply that was stopped before its first word.
-            _ => {
-                ensure!(
-                    content.len() > base || !made.is_empty(),
-                    Fail::new(Code::NoText)
-                );
-                return Ok(());
-            }
-        };
-        // The pages have all the words before a call waits or runs.
-        if pushed.saved < content.len() {
-            pushed.flush(writer, message_id, content).await?;
-        }
-        let sent: Vec<Value> = calls.iter().map(|call| call.sent()).collect();
-        prompt
-            .push(json!({ "role": "assistant", "content": &content[begun..], "tool_calls": sent }));
-        let ran = (&mut prompt, &mut *made);
-        if !run_calls(writer, (message_id, toolbox), &calls, stopped.as_mut(), ran).await? {
-            return Ok(());
-        }
-    }
-    unreachable!("the last round is offered no tools")
-}
-
-/// Asks the model for a round of the reply, offered the tools in `offered`,
-/// of `provider`, or of `unlimited` where a call's arguments, a file's whole
-/// text among them, are not to be cut short. A server that refuses the tools
-/// is asked again without, `offered` emptied and `refused` set. `None` when
-/// the reply is stopped first.
-async fn ask_round(
-    writer: &Writer,
-    (provider, unlimited): (&Provider, &Provider),
-    prompt: &[Value],
-    (offered, refused): (&mut Vec<Value>, &mut bool),
-    mut stopped: Pin<&mut Notified<'_>>,
-) -> anyhow::Result<Option<provider::Reply>> {
-    let http = &writer.state.http;
-    let limited = match dice::cuts(offered) {
-        true => unlimited,
-        false => provider,
-    };
-    let asked = tokio::select! {
-        biased;
-        _ = &mut stopped => return Ok(None),
-        reply = provider::ask_with(http, limited, prompt, offered) => reply,
-    };
-    let reply = match asked {
-        Err(failure) if !offered.is_empty() && refuses_tools(&failure) => {
-            offered.clear();
-            *refused = true;
-            let reply = tokio::select! {
-                biased;
-                _ = &mut stopped => return Ok(None),
-                reply = provider::ask_with(http, provider, prompt, &[]) => reply?,
-            };
-            // Taken without: the tools were what it refused.
-            let whose = (provider.base_url.clone(), provider.model.clone());
-            writer.state.toolless().insert(whose);
-            reply
-        }
-        asked => asked?,
-    };
-    Ok(Some(reply))
-}
-
-/// Runs a round's tool calls in turn, each answer put after them in `prompt`
-/// and the pictures they make in `made`: false when the reply is stopped first.
-async fn run_calls(
-    writer: &Writer,
-    (message_id, toolbox): (i64, &Toolbox),
-    calls: &[Call],
-    mut stopped: Pin<&mut Notified<'_>>,
-    (prompt, made): (&mut Vec<Value>, &mut Vec<(String, Picture)>),
-) -> anyhow::Result<bool> {
-    for call in calls {
-        let done = match toolbox.start_written(&writer.state.actions(), call) {
-            Some(running) => {
-                let script = (message_id, toolbox, running);
-                run_script(writer, script, stopped.as_mut(), made).await?
-            }
-            None => called(writer, (message_id, toolbox, call), stopped.as_mut()).await?,
-        };
-        let Some(done) = done else {
-            return Ok(false);
-        };
-        made.extend(done.picture);
-        let text = done.text;
-        prompt.push(json!({ "role": "tool", "tool_call_id": call.id, "content": text }));
-    }
-    Ok(true)
-}
-
-/// Runs a tool the model wrote (`running`), answering its script's calls of
-/// the host's tools until it ends; the pictures they make go into `made`.
-/// `None` when the reply is stopped first.
-async fn run_script(
-    writer: &Writer,
-    (message_id, toolbox, mut running): (i64, &Toolbox, WrittenRun),
-    mut stopped: Pin<&mut Notified<'_>>,
-    made: &mut Vec<(String, Picture)>,
-) -> anyhow::Result<Option<Done>> {
-    let mut open = true;
-    let ended = loop {
-        let next = tokio::select! {
-            biased;
-            _ = &mut stopped => return Ok(None),
-            request = running.calls.recv(), if open => Ok(request),
-            ended = &mut running.done => Err(ended),
-        };
-        match next {
-            Ok(Some(request)) => {
-                let reading = (message_id, toolbox, &request.call);
-                let Some(mut done) = called(writer, reading, stopped.as_mut()).await? else {
-                    return Ok(None);
-                };
-                made.extend(done.picture.take());
-                // Its receiver gone, nobody waits for the answer.
-                let _ = request.answer.send(done.result());
-            }
-            Ok(None) => open = false,
-            Err(ended) => break ended,
-        }
-    };
-    let ran = ended.map_err(anyhow::Error::from).and_then(|ran| ran);
-    Ok(Some(Done {
-        failed: ran.is_err(),
-        text: ran.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
-        picture: None,
-    }))
-}
-
-/// Runs a tool's call (of the reply's message, in its toolbox), asking the
-/// user first where the settings say so and the chat does not allow it
-/// already (the owner, 2026-10-15): `None` when the reply is stopped first.
-async fn called(
-    writer: &Writer,
-    (message_id, toolbox, call): (i64, &Toolbox, &Call),
-    mut stopped: Pin<&mut Notified<'_>>,
-) -> anyhow::Result<Option<Done>> {
-    let (state, user, chat_id) = (&writer.state, writer.user, writer.chat_id);
-    if let Some(ask) = toolbox.asks(call).await
-        && !state
-            .work(move |db| chats::tool_allowed(db, user, chat_id, ask.kind))
-            .await?
-    {
-        match ask_user(writer, message_id, ask, stopped.as_mut()).await {
-            Some(true) => {}
-            Some(false) => {
-                return Ok(Some(Done {
-                    text: REFUSED.to_string(),
-                    picture: None,
-                    failed: true,
-                }));
-            }
-            None => return Ok(None),
-        }
-    }
-    let app = state.actions();
-    Ok(tokio::select! {
-        biased;
-        _ = stopped => None,
-        done = toolbox.run(&app, call) => Some(done),
-    })
-}
-
-/// Whether the model's server refused a request for the tools it was offered:
-/// it answered that the request was wrong, or that it has no such model.
-fn refuses_tools(failure: &anyhow::Error) -> bool {
-    provider::refusal_of(failure).is_some_and(|(status, _)| matches!(status, 400 | 404 | 422))
-}
-
-/// Asks the user whether a tool's call may run, and waits for the answer:
-/// `None` when the reply is stopped first.
-async fn ask_user(
-    writer: &Writer,
-    message_id: i64,
-    ask: ToolAsk,
-    stopped: Pin<&mut Notified<'_>>,
-) -> Option<bool> {
-    let (state, user, chat_id) = (&writer.state, writer.user, writer.chat_id);
-    let (answer, answered) = oneshot::channel();
-    let asking = Asking {
-        ask: ask.clone(),
-        answer,
-    };
-    state.asks().insert((user, chat_id), asking);
-    let told = |ask| ReplyEvent::ToolAsks {
-        chat_id,
-        message_id,
-        ask,
-    };
-    state.push_reply(user, told(Some(ask)));
-    let allowed = tokio::select! {
-        biased;
-        _ = stopped => None,
-        answer = answered => Some(answer.unwrap_or(false)),
-    };
-    state.asks().remove(&(user, chat_id));
-    state.push_reply(user, told(None));
-    allowed
 }
 
 /// Answers the call of a tool that waits in the chat.

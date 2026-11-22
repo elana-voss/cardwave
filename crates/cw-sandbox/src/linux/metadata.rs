@@ -6,12 +6,16 @@
 //! the command's memory, from its working folder or its descriptor; then held
 //! open (`O_PATH`), checked by its real path and changed through that
 //! descriptor, so no link swapped meanwhile leads elsewhere. Of a link
-//! itself (`AT_SYMLINK_NOFOLLOW` on a link) nothing is changed (`EPERM`).
+//! itself (`AT_SYMLINK_NOFOLLOW` on a link) only the times are changed, as
+//! `cp -a` and `tar xf` do, through its own descriptor; its mode never
+//! (`EOPNOTSUPP`, as Linux).
 //! Trap: `chmod`, `utime`, `utimes` and `futimesat` exist on x86_64 alone.
 
 use std::ffi::{CStr, CString};
 use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 use std::path::{Path, PathBuf};
+
+use super::caller::{descriptor, errno, read_memory, read_path};
 
 /// Numbers alike on every architecture, which the libc crate may not name.
 pub(super) const FCHMODAT2: libc::c_long = 452;
@@ -67,6 +71,16 @@ pub(super) fn change(
 ) -> Result<i64, i32> {
     let (named, change) = decode(pid, nr, args)?;
     let file = open(pid, named, standing)?;
+    // SAFETY: a stat of zeroes is a valid value, filled by the call after.
+    let mut kind: libc::stat = unsafe { std::mem::zeroed() };
+    // SAFETY: the stat lives through the call.
+    if unsafe { libc::fstat(file.as_raw_fd(), &mut kind) } != 0 {
+        return Err(libc::EPERM);
+    }
+    // A link's mode: Linux's own answer, which `tar xf` passes over.
+    if kind.st_mode & libc::S_IFMT == libc::S_IFLNK && !matches!(change, Change::Times(_)) {
+        return Err(libc::EOPNOTSUPP);
+    }
     let real = std::fs::read_link(format!("/proc/self/fd/{}", file.as_raw_fd()))
         .map_err(|_| libc::EACCES)?;
     if !writable.iter().any(|folder| real.starts_with(folder)) {
@@ -106,51 +120,6 @@ fn decode(pid: libc::pid_t, nr: libc::c_long, a: [u64; 6]) -> Result<(Named, Cha
         libc::SYS_futimesat => (at(a[0], a[1], 0), Change::Times(timevals(pid, a[2])?)),
         _ => return Err(libc::EPERM),
     })
-}
-
-/// Reads `into.len()` bytes at `address` of process `pid`, page by page.
-pub(super) fn read_memory(pid: libc::pid_t, address: u64, into: &mut [u8]) -> bool {
-    let mut done = 0;
-    while done < into.len() {
-        let at = address.wrapping_add(done as u64);
-        let page = 4096 - (at % 4096) as usize;
-        let length = page.min(into.len() - done);
-        let local = libc::iovec {
-            iov_base: into[done..].as_mut_ptr().cast(),
-            iov_len: length,
-        };
-        let remote = libc::iovec {
-            iov_base: at as *mut libc::c_void,
-            iov_len: length,
-        };
-        // SAFETY: the local buffer is ours and as long as asked; the remote
-        // one the kernel checks.
-        let read = unsafe { libc::process_vm_readv(pid, &local, 1, &remote, 1, 0) };
-        if read != length as isize {
-            return false;
-        }
-        done += length;
-    }
-    true
-}
-
-/// A path of at most `PATH_MAX` bytes at `address`, read up to its end.
-fn read_path(pid: libc::pid_t, address: u64) -> Result<CString, i32> {
-    let mut path = Vec::new();
-    let mut at = address;
-    while path.len() < libc::PATH_MAX as usize {
-        let mut page = vec![0u8; 4096 - (at % 4096) as usize];
-        if !read_memory(pid, at, &mut page) {
-            return Err(libc::EFAULT);
-        }
-        if let Some(end) = page.iter().position(|&byte| byte == 0) {
-            path.extend_from_slice(&page[..end]);
-            return CString::new(path).map_err(|_| libc::EINVAL);
-        }
-        path.extend_from_slice(&page);
-        at += page.len() as u64;
-    }
-    Err(libc::ENAMETOOLONG)
 }
 
 fn timespecs(pid: libc::pid_t, address: u64) -> Result<Option<[libc::timespec; 2]>, i32> {
@@ -239,16 +208,7 @@ fn open(pid: libc::pid_t, named: Named, standing: &dyn Fn() -> bool) -> Result<O
         0 => 0,
         _ => libc::O_NOFOLLOW,
     };
-    let file = open_at(base.as_raw_fd(), &path, nofollow)?;
-    // SAFETY: a stat of zeroes is a valid value, filled by the call after.
-    let mut kind: libc::stat = unsafe { std::mem::zeroed() };
-    // SAFETY: the stat lives through the call.
-    if unsafe { libc::fstat(file.as_raw_fd(), &mut kind) } != 0
-        || kind.st_mode & libc::S_IFMT == libc::S_IFLNK
-    {
-        return Err(libc::EPERM);
-    }
-    Ok(file)
+    open_at(base.as_raw_fd(), &path, nofollow)
 }
 
 /// `openat(folder, path, O_PATH | extra)`.
@@ -268,25 +228,9 @@ fn open_at(folder: i32, path: &CStr, extra: i32) -> Result<OwnedFd, i32> {
     }
 }
 
-/// A copy of descriptor `fd` of thread `pid`'s process.
-fn descriptor(pid: libc::pid_t, fd: i32, standing: &dyn Fn() -> bool) -> Result<OwnedFd, i32> {
-    let process = super::supervisor::status(pid, "Tgid:").ok_or(libc::EPERM)?;
-    let pidfd = super::supervisor::pidfd_open(process).ok_or(libc::EPERM)?;
-    // SAFETY: a plain system call; the descriptor it makes is ours.
-    let copy = unsafe { libc::syscall(libc::SYS_pidfd_getfd, pidfd.as_raw_fd(), fd, 0u32) };
-    if copy < 0 {
-        return Err(libc::EBADF);
-    }
-    // SAFETY: as above.
-    let copy = unsafe { OwnedFd::from_raw_fd(copy as i32) };
-    // The process read is the caller's.
-    match standing() {
-        true => Ok(copy),
-        false => Err(libc::EPERM),
-    }
-}
-
-/// Does `change` to `file` through its descriptor's link in `/proc`.
+/// Does `change` to `file` through its descriptor: times by `AT_EMPTY_PATH`,
+/// which changes a link itself, never what it names; the rest through the
+/// descriptor's link in `/proc`.
 fn apply(file: &OwnedFd, change: Change) -> Result<i64, i32> {
     let link = format!("/proc/self/fd/{}", file.as_raw_fd());
     let link = CString::new(link).map_err(|_| libc::EINVAL)?;
@@ -295,12 +239,12 @@ fn apply(file: &OwnedFd, change: Change) -> Result<i64, i32> {
         match change {
             Change::Mode(mode) => libc::fchmodat(libc::AT_FDCWD, link.as_ptr(), mode, 0),
             Change::Times(times) => libc::utimensat(
-                libc::AT_FDCWD,
-                link.as_ptr(),
+                file.as_raw_fd(),
+                c"".as_ptr(),
                 times
                     .as_ref()
                     .map_or(std::ptr::null(), |times| times.as_ptr()),
-                0,
+                libc::AT_EMPTY_PATH,
             ),
             Change::Length(length) => libc::truncate(link.as_ptr(), length),
         }
@@ -309,12 +253,6 @@ fn apply(file: &OwnedFd, change: Change) -> Result<i64, i32> {
         0 => Ok(0),
         _ => Err(errno()),
     }
-}
-
-fn errno() -> i32 {
-    std::io::Error::last_os_error()
-        .raw_os_error()
-        .unwrap_or(libc::EPERM)
 }
 
 /// The real paths of the folders a command writes, for [`change`].

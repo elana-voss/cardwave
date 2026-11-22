@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { chooseView, expect, test } from "../test";
 import { cardFile } from "../card";
+import { setSettings } from "../stored";
 
 // The phone layout (cardwave.css's block "phone", the boards Phone*): the start screen's and the sign-in's password
 // stand above their button, the top bar at 320 px keeps the six of the board without scrolling sideways, and the
@@ -122,25 +123,25 @@ const cut = (page: Page) =>
 
 test("at 390 px a line with two buttons keeps its words across the line, and the Team choice fits, in Korean and Spanish", async ({ page, request }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  expect((await request.patch("/api/settings", { data: { app_language: "ko" } })).status()).toBe(200);
+  await setSettings(request, { app_language: "ko" });
   await page.goto("/#/settings/advanced");
   await expect(page.getByRole("button", { name: "모두 다시 설명하기" })).toBeVisible();
   expect(await squeezed(page)).toEqual([]);
   for (const language of ["es", "de", "ko"]) {
-    expect((await request.patch("/api/settings", { data: { app_language: language } })).status()).toBe(200);
+    await setSettings(request, { app_language: language });
     await page.goto("about:blank");
     await page.goto("/#/settings/tools/coding");
     await expect(page.locator(".seg .btn").last()).toBeVisible();
     expect(await cut(page)).toEqual([]);
   }
-  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+  await setSettings(request, { app_language: null });
 });
 
 test("at 320 px in German a page head's button stays inside the window, its words cut at their end, its icon whole", async ({ page, request }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   const added = await (await request.post("/api/cards", { data: cardFile({ name: "Mira" }) })).json();
   expect((await request.patch(`/api/cards/${added.card_id}`, { data: { trashed: true } })).status()).toBe(200);
-  expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+  await setSettings(request, { app_language: "de" });
   await page.goto("/#/settings/trash");
   const button = page.locator(".page-head").getByRole("button", { name: "Papierkorb leeren" });
   await expect(button).toBeVisible();
@@ -148,5 +149,5 @@ test("at 320 px in German a page head's button stays inside the window, its word
   expect(box.x + box.width).toBeLessThanOrEqual(320);
   const label = button.locator(".btn-label");
   expect(await label.evaluate((node) => node.scrollWidth > node.clientWidth && getComputedStyle(node).textOverflow === "ellipsis")).toBe(true);
-  expect((await request.patch("/api/settings", { data: { app_language: null } })).status()).toBe(200);
+  await setSettings(request, { app_language: null });
 });

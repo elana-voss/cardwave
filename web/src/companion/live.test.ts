@@ -117,6 +117,16 @@ describe("the companion told to say a message", () => {
     expect(state()).toMatchObject({ saying: null, steps: [] });
   });
 
+  it("is a new bubble when the same message is said again, for the lips to speak anew", () => {
+    const { live, run } = told([]);
+    live.say("Hm.");
+    const first = live.bubble;
+    run(0.5);
+    live.say("Hm.");
+    expect(live.bubble).not.toBe(first);
+    expect(live.bubble?.text).toBe("Hm.");
+  });
+
   it("says nothing for a message of only spaces", () => {
     const { live, run } = told([{ do: "say", text: "   " }]);
     run(0.1);
@@ -163,5 +173,29 @@ describe("telling the server what the figure does", () => {
     vi.advanceTimersByTime(5000);
     report(state);
     expect(send).toHaveBeenCalledTimes(4);
+  });
+
+  it("tells at once when the hand takes the figure or lets it go, as the server keeps no steps done while held", () => {
+    vi.useFakeTimers();
+    const send = vi.fn(() => Promise.resolve());
+    const report = reporter(send);
+    const { state } = told([{ do: "walk", x: 100 }]);
+    report(state);
+    report(state, false, true);
+    expect(send).toHaveBeenCalledTimes(2);
+    report(state, false, true);
+    report(state, false, false);
+    expect(send).toHaveBeenCalledTimes(3);
+  });
+
+  it("tells again after half a second what a failed telling did not reach, as a bubble shown only briefly", async () => {
+    vi.useFakeTimers();
+    const send = vi.fn().mockRejectedValueOnce(new Error("down")).mockResolvedValue(undefined);
+    const report = reporter(send);
+    const { state } = told([{ do: "say", text: "Hi." }]);
+    report(state);
+    await vi.advanceTimersByTimeAsync(600);
+    report(state);
+    expect(send).toHaveBeenCalledTimes(2);
   });
 });

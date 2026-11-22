@@ -126,12 +126,15 @@ describe("one clip into the next", () => {
     expect(figure.between).toBe(false);
   });
 
-  it("bounces lying at once when thrown", () => {
+  it("bounces in a pose of its own in the air, not lying, at once when thrown; the robot in its jump", () => {
     const { figure } = carried();
     figure.show("thrown");
     figure.update(0.5);
     figure.show("bouncing");
-    expect(figure.current).toBe("laying_idle");
+    expect(figure.current).toBe("hard_landing");
+    expect(CARRIED.poses?.[figure.current!]?.[0]).toBe("air");
+    expect(CARRIED.states.bouncing).toMatchObject({ speed: 0, at: 0 });
+    expect(ROBOT.states.bouncing.clips).toEqual(["Jump"]);
   });
 });
 

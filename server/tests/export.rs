@@ -250,7 +250,7 @@ async fn export_writes_the_format_chosen_in_the_settings() {
             200,
             &json!({"export_format": "sillytavern_v3", "export_history": false, "describe_imported": false, "interview_style": "tree", "web_pictures": false, "check_updates": true, "voice": null, "voice_speed": 100,
                 "tools": {"web": false, "files": false, "ask_writes": true, "commands": false,
-                    "ask_commands": true, "pictures": false, "ask_new_tools": true, "app": false, "dice": false, "folder": null},
+                    "ask_commands": true, "pictures": false, "ask_new_tools": true, "app": false, "dice": false, "names": false, "folder": null},
                 "coding": {"team": "balanced", "planner_model": null, "worker_model": null, "auditor_model": null,
                     "workers": 2, "audit": "end"},
                 "companion": {"card_id": null, "starts": false, "hidden_until": null, "figure": "woman", "size": 21, "muted": false},

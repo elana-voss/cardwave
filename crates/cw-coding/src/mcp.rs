@@ -8,6 +8,14 @@ use ts_rs::TS;
 
 use cw_core::NotFound;
 
+/// The MCP server's own tools (`api::mcp`), which a written tool cannot be
+/// named either.
+pub const LIST_CARDS: &str = "list_cards";
+pub const READ_CARD: &str = "read_card";
+pub const LIST_CHATS: &str = "list_chats";
+pub const READ_CHAT: &str = "read_chat";
+pub const SEND_MESSAGE: &str = "send_message";
+
 /// What Account › Server's group "Other programs" shows.
 #[derive(Debug, PartialEq, Serialize, TS)]
 #[ts(export)]

@@ -119,6 +119,7 @@ search-keys = Cari di Cardwave (Ctrl+K)
 
 label-settings-theme = Tema
 label-settings-chat-layout = Tata letak chat
+label-settings-msg-pictures = Gambar di samping nama
 label-settings-web-pictures = Tampilkan gambar dari situs web lain
 label-settings-tabs = Tab
 label-settings-app-language = Bahasa aplikasi
@@ -135,6 +136,7 @@ label-settings-commands = Perintah
 label-settings-image-generation = Pembuatan gambar
 label-settings-app = Cardwave
 label-settings-dice = Dadu
+label-settings-names = Nama untuk karakter baru
 label-settings-folder = Folder
 label-settings-written = Alat buatan AI
 label-settings-coding = Tim pemrograman
@@ -174,6 +176,7 @@ layout-plain = Polos
 settings-appearance = Tampilan
 settings-theme-about = Mengikuti sistem kecuali kamu memilih satu
 settings-layout-about = Pesan sebagai gelembung, atau sebagai teks polos
+settings-msg-pictures-about = Gambar karakter dan gambarmu di samping setiap nama dalam obrolan
 settings-web-pictures-about = Situs web itu dapat melihat kapan kamu membuka chat.
 settings-tabs-about = Biarkan beberapa halaman terbuka di bilah judul
 settings-language = Bahasa
@@ -391,6 +394,7 @@ tools-pictures = Memakai model gambar
 tools-pictures-first = Siapkan model gambar dulu
 tools-app = Pakai dan ubah karakter, chat, dan pengaturanmu; setiap perubahan ditanyakan dulu
 tools-dice = Membiarkan AI melempar dadu; Cardwave yang melemparnya, jadi hasilnya adil.
+tools-names = Memberi AI nama yang cocok untuk setiap karakter baru dari daftar besar, agar nama tidak berulang.
 tools-folder-example =
     { $system ->
         [linux] /home/kamu/Documents/Berbagi

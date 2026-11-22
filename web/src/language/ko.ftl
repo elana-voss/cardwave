@@ -128,6 +128,7 @@ search-keys = Cardwave 검색 (Ctrl+K)
 
 label-settings-theme = 테마
 label-settings-chat-layout = 채팅 레이아웃
+label-settings-msg-pictures = 이름 옆 사진
 label-settings-web-pictures = 다른 웹사이트의 이미지 표시
 label-settings-tabs = 탭
 label-settings-app-language = 앱 언어
@@ -144,6 +145,7 @@ label-settings-commands = 명령
 label-settings-image-generation = 이미지 생성
 label-settings-app = Cardwave
 label-settings-dice = 주사위
+label-settings-names = 새 등장인물의 이름
 label-settings-folder = 폴더
 label-settings-written = AI가 만든 도구
 label-settings-coding = 코딩 팀
@@ -183,6 +185,7 @@ layout-plain = 일반
 settings-appearance = 모양
 settings-theme-about = 직접 고르지 않으면 시스템을 따라요
 settings-layout-about = 메시지를 말풍선으로, 또는 일반 텍스트로
+settings-msg-pictures-about = 채팅의 각 이름 옆에 캐릭터와 내 사진을 표시합니다
 settings-web-pictures-about = 채팅을 열면 그 웹사이트들이 알 수 있어요.
 settings-tabs-about = 제목 표시줄에 여러 페이지를 열어 둡니다
 settings-language = 언어
@@ -400,6 +403,7 @@ tools-pictures = 이미지 모델 사용
 tools-pictures-first = 먼저 이미지 모델을 설정하세요
 tools-app = 캐릭터, 채팅, 설정을 사용하고 바꾸기. 바꿀 때마다 먼저 물어봐요
 tools-dice = AI가 주사위를 굴리게 합니다. 굴리는 건 Cardwave라 결과가 공정합니다.
+tools-names = 새 등장인물마다 큰 목록에서 어울리는 이름을 AI에게 줍니다. 이름이 반복되지 않습니다.
 tools-folder-example =
     { $system ->
         [linux] /home/you/Documents/Shared

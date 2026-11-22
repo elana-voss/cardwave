@@ -2,6 +2,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeSearch, type FakeSearch } from "../fake-search";
 import { picture, stopClock } from "../pictures";
+import { setSettings } from "../stored";
 
 // Voice: the settings' line "Voice" leads to Settings › Voices, where the voice model is downloaded (Download,
 // Cancel), a voice tried and chosen, a voice made from a file chosen, renamed and deleted, the speed set, a
@@ -135,7 +136,7 @@ test.describe("the page Voices", () => {
     await ready(request);
     await card(request);
     // The first voice the account's, as without the test before.
-    expect((await request.patch("/api/settings", { data: { voice: "alba" } })).status()).toBe(200);
+    await setSettings(request, { voice: "alba" });
     await stopClock(page);
     // The rail narrow, without the chats the test before may have made.
     await page.addInitScript(() => localStorage.setItem("rail", "narrow"));

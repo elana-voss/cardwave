@@ -1,7 +1,8 @@
 // The chat model and the image model stored as first run's "Confirm" stores them (`confirm` in
 // web/src/setup/models-step.ts), for a spec that prepares through `request`. Each answers the first refusal,
 // else what the server shows of it (`PUT /api/provider`, `GET /api/images`), so a spec asks its `status()`.
-import type { APIRequestContext, APIResponse } from "@playwright/test";
+// `setSettings` changes the settings and fails the spec itself, with the server's answer, where they are refused.
+import { expect, type APIRequestContext, type APIResponse } from "@playwright/test";
 
 /** Stores the chat model as first run's "Confirm" does (`PUT /api/provider`). */
 export const setProvider = (request: APIRequestContext, stored: object): Promise<APIResponse> => request.put("/api/provider", { data: stored });
@@ -19,4 +20,10 @@ export async function setImages(request: APIRequestContext, own: { model: string
   }
   const picked = await request.put("/api/kinds/images", { data: { provider_id: at, model: own.model } });
   return picked.ok() ? request.get("/api/images") : picked;
+}
+
+/** Changes the given settings (`PATCH /api/settings`); a refusal fails the spec with the server's answer. */
+export async function setSettings(request: APIRequestContext, data: object): Promise<void> {
+  const set = await request.patch("/api/settings", { data });
+  expect(set.status(), await set.text()).toBe(200);
 }

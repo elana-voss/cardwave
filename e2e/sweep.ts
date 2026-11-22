@@ -16,6 +16,7 @@ import type { APIRequestContext, Page, Request } from "@playwright/test";
 import { expect, test } from "./test";
 import { cardFile } from "./card";
 import { NOTHING, startFakeProvider, type FakeProvider } from "./fake-provider";
+import { setSettings } from "./stored";
 
 export const WIDTHS = [1440, 960, 800, 390] as const;
 export type Scheme = "light" | "dark";
@@ -423,7 +424,7 @@ export function sweepSpec(names: readonly string[], german: boolean): void {
     const page = await browser.newPage();
     ids = await seed(page, request, api);
     await page.close();
-    if (german) expect((await request.patch("/api/settings", { data: { app_language: "de" } })).status()).toBe(200);
+    if (german) await setSettings(request, { app_language: "de" });
   });
   test.afterAll(() => api.close());
   test("the buttons the sweep never clicks", () => {

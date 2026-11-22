@@ -21,3 +21,21 @@ interface ImportMeta {
   glob<T>(pattern: string, options: { query: string; import: string; eager: true }): Record<string, T>;
   glob<T>(pattern: string, options: { query: string; import: string }): Record<string, () => Promise<T>>;
 }
+
+// A file imported by its address (`?url`), which the build copies (figures/decoders.ts).
+declare module "*?url" {
+  const address: string;
+  export default address;
+}
+
+// A worker of the app's own, bundled on its own, by its address (`?worker&url`; figures/decoders.ts).
+declare module "*?worker&url" {
+  const address: string;
+  export default address;
+}
+
+// Three.js's Basis transcoder (Emscripten), a CommonJS module the build converts (figures/ktx2-worker.ts).
+declare module "three/addons/libs/basis/basis_transcoder.js" {
+  const BASIS: (module: object) => Promise<unknown>;
+  export default BASIS;
+}

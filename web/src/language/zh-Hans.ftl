@@ -125,6 +125,7 @@ search-keys = 搜索 Cardwave（Ctrl+K）
 
 label-settings-theme = 主题
 label-settings-chat-layout = 聊天布局
+label-settings-msg-pictures = 名字旁的图片
 label-settings-web-pictures = 显示其他网站的图片
 label-settings-tabs = 标签页
 label-settings-app-language = 应用语言
@@ -141,6 +142,7 @@ label-settings-commands = 命令
 label-settings-image-generation = 图片生成
 label-settings-app = Cardwave
 label-settings-dice = 骰子
+label-settings-names = 新角色的名字
 label-settings-folder = 文件夹
 label-settings-written = AI 编写的工具
 label-settings-coding = 编程团队
@@ -180,6 +182,7 @@ layout-plain = 纯文本
 settings-appearance = 外观
 settings-theme-about = 跟随系统，除非你选择一个
 settings-layout-about = 消息显示为气泡或纯文本
+settings-msg-pictures-about = 在聊天中每个名字旁显示角色和你的图片
 settings-web-pictures-about = 你打开聊天时，这些网站能知道。
 settings-tabs-about = 在标题栏中同时打开多个页面
 settings-language = 语言
@@ -397,6 +400,7 @@ tools-pictures = 使用图像模型
 tools-pictures-first = 请先设置图像模型
 tools-app = 使用和更改你的角色、聊天和设置；每次更改都先询问
 tools-dice = 让 AI 掷骰子；由 Cardwave 来掷，结果公平。
+tools-names = 从一份大名单中为每个新角色给 AI 一个合适的名字，名字不会重复。
 tools-folder-example =
     { $system ->
         [linux] /home/you/Documents/Shared

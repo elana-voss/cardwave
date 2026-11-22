@@ -14,10 +14,10 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "n
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 import { setTimeout as sleep } from "node:timers/promises";
-import { Desktop, debugProgram, until } from "./driver.ts";
+import { Desktop, WINDOWS, debugProgram, until } from "./driver.ts";
 import { xWindows } from "./screen.ts";
 
-const skip = process.platform === "win32" && "Linux's shell; Windows' is tried through the installer test";
+const skip = WINDOWS && "Linux's shell; Windows' is tried through the installer test";
 let app: Desktop;
 let opened: string;
 

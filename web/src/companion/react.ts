@@ -3,9 +3,11 @@
 // idle again and again, each a while (`gap`) after the last moves ended, never two such questions at once (one that
 // cannot be asked yet waits for a later frame); where no model can be asked or its answer has no moves, the figure
 // walks of its own (`wander`), but not when the hand took it meanwhile. `Clicks` startles the figure at a click that no press follows within the
-// double-click's time.
+// double-click's time, told where it landed; `Touches` asks the figure's answer to that touch, one at a time.
+// `Answers` keeps a newer question's moves from an older one's that comes after them.
 //
 // Traps: a press cancels a pending startle, so a click followed by a drag does not startle the figure afterwards.
+import type { BodyPart } from "../api/generated/BodyPart";
 import type { Occasion } from "../api/generated/Occasion";
 
 /** Asks the worker model and has its moves done: whether it gave any; null where nothing can be asked (no companion). */
@@ -71,7 +73,7 @@ export class Clicks {
   private pending: ReturnType<typeof setTimeout> | undefined;
 
   constructor(
-    private readonly startle: () => void,
+    private readonly startle: (part: BodyPart | null) => void,
     private readonly doubleMs: number,
   ) {}
 
@@ -80,9 +82,45 @@ export class Clicks {
     clearTimeout(this.pending);
   }
 
-  /** The press let go; a click (not a drag) startles once no second click has come. */
-  up(dragged: boolean): void {
+  /** The press let go; a click (not a drag) startles once no second click has come, told the part of the body it
+   * landed on (`part`, asked only then: none where it is not found). */
+  up(dragged: boolean, part: () => BodyPart | null = () => null): void {
     clearTimeout(this.pending);
-    if (!dragged) this.pending = setTimeout(this.startle, this.doubleMs);
+    if (dragged) return;
+    const touched = part();
+    this.pending = setTimeout(() => this.startle(touched), this.doubleMs);
+  }
+}
+
+/** Has the figure answer a touch, one at a time: a touch while an answer is on its way asks nothing. */
+export class Touches {
+  /** Whether an answer is on its way. */
+  answering = false;
+
+  constructor(private readonly ask: (part: BodyPart | null) => Promise<unknown> | null) {}
+
+  touched(part: BodyPart | null): void {
+    if (this.answering) return;
+    const asked = this.ask(part);
+    if (!asked) return;
+    this.answering = true;
+    void asked.catch(() => {}).then(() => (this.answering = false));
+  }
+}
+
+/** The worker model's answers in the order asked: an answer to a question asked before the one whose moves are
+ * being done comes too late (a touch answered while an idle question still ran). */
+export class Answers {
+  private asked = 0;
+  private done = 0;
+
+  /** A question asked now; its answer, when it comes, asks whether its moves are still to be done. */
+  ask(): () => boolean {
+    const mine = ++this.asked;
+    return () => {
+      if (mine < this.done) return false;
+      this.done = mine;
+      return true;
+    };
   }
 }

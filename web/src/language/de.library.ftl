@@ -602,6 +602,8 @@ card-figure-remove-from = { $name } von { $mode } entfernen
 card-figure-search-figures = Figuren durchsuchen
 card-figure-no-3d-figures-yet = Noch keine 3D-Figuren. Füge eine aus einer Datei hinzu: ein 3D-Modell einer Person, das sich bewegen kann (eine .vrm-Datei, wie VRoid Studio sie macht; auch .glb oder .fbx).
 card-figure-in = { " " }· in { $mode }
+card-figure-by = { " " }· von { $maker }
+card-figure-made-by = von { $maker }
 card-figure-the-card = Der Charakter
 card-figure-what = Die Figur, als die der Charakter im Begleiter-Fenster erscheint.
 

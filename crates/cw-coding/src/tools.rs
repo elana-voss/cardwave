@@ -1,7 +1,8 @@
 //! Tools the chat model calls while it writes a reply (OpenAI's function tools,
-//! the call `cw_provider::Call`): dice (`dice`), the web (`web`), a folder's
-//! files (`files`), sandboxed commands (`sandbox`), pictures, the model's own
-//! tools (`written`, Code mode's `make_tool`), a coding task (`START_CODING`) and
+//! the call `cw_provider::Call`): a chat's own (`chat`: the dice, `dice`, and
+//! names for new characters, `names`), the web (`web`), a folder's
+//! files (`files`), sandboxed commands (`cw_sandbox`), pictures, the model's own
+//! tools (`written`, Code mode's `make_tool`), a coding task (`builtin::START_CODING`) and
 //! Cardwave's own (`app`). Which are offered is the account's settings and the
 //! chat (`Toolbox::of`): files, commands and coding are this computer's
 //! account's alone, pictures need an image model; a written tool switched on is
@@ -12,13 +13,17 @@
 //! at `ASKED` characters. A written tool runs on its own thread
 //! (`start_written`); its host calls come back as `HostCall`s. A picture is kept
 //! by the reply (`Done::picture`), a coding goal until it ends (`task_offered`);
-//! pages and files read are kept for "Used in this reply" (`reads`). What a
-//! tool asks of the app and the chats is `ports::AppActions`.
+//! a reply's own calls are noted by its loop for "Used in this reply"
+//! (`keep_call`, `used`). What a tool asks of the app and the chats is
+//! `ports::AppActions`. The app's tools' names are `names`, the MCP server's
+//! `crate::mcp`.
 
 pub mod app;
+pub mod chat;
 pub mod dice;
 pub mod files;
-pub mod sandbox;
+pub mod names;
+pub mod used;
 pub mod web;
 pub mod written;
 
@@ -39,6 +44,7 @@ use serde_json::{Value, json};
 use ts_rs::TS;
 
 use crate::ports::AppActions;
+use used::{CallEnd, UsedCall};
 use written::WrittenTool;
 
 /// The longest a command runs.
@@ -47,8 +53,22 @@ pub(crate) const COMMAND_TIME: Duration = Duration::from_secs(60);
 /// What the model is told of a call the user refused.
 pub const REFUSED: &str = "The user did not allow this.";
 
-/// The tool by which an assistant offers the user a coding task.
-pub(crate) const START_CODING: &str = "start_coding_task";
+/// The names of the app's own tools, as the models call them: one place for
+/// the offer, the run, the ask, "Used in this reply" and the names a written
+/// tool cannot take.
+pub(crate) mod builtin {
+    pub(crate) const WEB_SEARCH: &str = "web_search";
+    pub(crate) const READ_WEB_PAGE: &str = "read_web_page";
+    pub(crate) const LIST_FILES: &str = "list_files";
+    pub(crate) const READ_FILE: &str = "read_file";
+    pub(crate) const WRITE_FILE: &str = "write_file";
+    pub(crate) const RUN_COMMAND: &str = "run_command";
+    /// A coding task's alone: a command with the internet.
+    pub(crate) const INSTALL_PACKAGES: &str = "install_packages";
+    pub(crate) const MAKE_PICTURE: &str = "make_picture";
+    /// The tool by which an assistant offers the user a coding task.
+    pub(crate) const START_CODING: &str = "start_coding_task";
+}
 
 /// What the user is asked in the chat before a call runs.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TS)]
@@ -75,17 +95,6 @@ pub enum AskKind {
     Web,
     /// A tool of Cardwave's own that changes or deletes something (`app`).
     App,
-}
-
-/// A page or a file a reply read with its tools ("Used in this reply").
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-#[ts(export)]
-pub enum Read {
-    /// A web page: its title, empty where it has none, and its address.
-    Web { title: String, address: String },
-    /// A file of the user's folder, by its path in it.
-    File { path: String },
 }
 
 /// A written tool's call of a host's tool, which waits for what it comes to.
@@ -131,8 +140,8 @@ pub struct Toolbox {
     /// Whether a coding task may be offered, and the goal of the one offered.
     coding: bool,
     task: Mutex<Option<String>>,
-    /// The pages and files read so far, the first first, each once.
-    reads: Mutex<Vec<Read>>,
+    /// The reply's calls so far, the first first ("Used in this reply").
+    used: Mutex<Vec<UsedCall>>,
     /// Cardwave's own tools, and what asks the app for them (`with_app`).
     routes: &'static [crate::tools::app::Route],
     ask_app: Option<crate::tools::app::AskApp>,
@@ -144,8 +153,11 @@ pub struct Done {
     pub text: String,
     /// A picture made, with the words it was made of.
     pub picture: Option<(String, Picture)>,
-    /// Whether the call failed, which `text` then says.
-    pub failed: bool,
+    /// How it ended; a call that did not succeed says why in `text`.
+    pub end: CallEnd,
+    /// What "Used in this reply" says of it where its result tells more than
+    /// what was asked: a roll, a page's title.
+    pub shown: Option<String>,
 }
 
 impl Toolbox {
@@ -153,7 +165,7 @@ impl Toolbox {
     /// only for this computer's account (`owner`) and pictures only with an
     /// image model, and with Code mode (`code`) `make_tool` (the account's
     /// written tools come by `with_written`); with `coding`, on this computer's
-    /// account, `START_CODING`. [`Toolbox::offers`] says whether any is offered.
+    /// account, `builtin::START_CODING`. [`Toolbox::offers`] says whether any is offered.
     pub fn of(
         tools: Tools,
         (owner, code): (bool, bool),
@@ -176,7 +188,7 @@ impl Toolbox {
             written: Mutex::default(),
             coding: coding && owner,
             task: Mutex::default(),
-            reads: Mutex::default(),
+            used: Mutex::default(),
             routes,
             ask_app: None,
         }
@@ -188,9 +200,20 @@ impl Toolbox {
     }
 
     /// Whether a tool is offered that keeps the Reply length from being sent
-    /// (`dice::cuts`): any but the dice.
+    /// (`chat::cuts`): any but a chat tool with short arguments.
     pub fn cuts(&self) -> bool {
-        crate::tools::dice::cuts(&self.definitions())
+        crate::tools::chat::cuts(&self.definitions())
+    }
+
+    /// What the chat tools offered tell the model before the latest message.
+    /// Told by the switches: the definitions (the names tool's lists of
+    /// thousands of names) are not built for it.
+    pub fn notes(&self) -> Vec<String> {
+        crate::tools::chat::ALL
+            .into_iter()
+            .filter(|tool| (tool.on)(&self.tools))
+            .filter_map(|tool| tool.note.map(|note| note()))
+            .collect()
     }
 
     /// The toolbox with the account's written tools.
@@ -247,7 +270,7 @@ impl Toolbox {
     }
 
     fn commands(&self) -> bool {
-        self.tools.commands && self.folder.is_some() && crate::tools::sandbox::available()
+        self.tools.commands && self.folder.is_some() && cw_sandbox::available()
     }
 
     /// Whether Cardwave's own tools (`app`) are offered.
@@ -268,7 +291,9 @@ impl Toolbox {
         all.extend(
             written
                 .iter()
-                .filter(|tool| tool.on)
+                // One written before a chat tool took its name is not offered
+                // twice under it (the providers refuse that).
+                .filter(|tool| tool.on && crate::tools::chat::named(&tool.name).is_none())
                 .map(crate::tools::written::definition),
         );
         all
@@ -276,57 +301,58 @@ impl Toolbox {
 
     /// The tools of the settings' switches.
     fn switched(&self) -> Vec<Value> {
-        let mut all = Vec::new();
-        if self.tools.dice {
-            all.push(crate::tools::dice::definition());
-        }
+        let mut all: Vec<Value> = crate::tools::chat::ALL
+            .into_iter()
+            .filter(|tool| (tool.on)(&self.tools))
+            .map(|tool| (tool.definition)())
+            .collect();
         let path = json!({ "type": "string", "description": "A path relative to the folder, such as notes/today.txt" });
         if self.tools.web {
             all.push(tool(
-                "web_search",
+                builtin::WEB_SEARCH,
                 "Searches the web. Gives the first results, each with its title, address and a few words of it. Call it whenever the user asks you to search or look something up, and for anything that may have changed since your training (versions, news, prices, dates): do not answer those from memory.",
                 json!({ "query": { "type": "string", "description": "What to search for" } }),
             ));
             all.push(tool(
-                "read_web_page",
+                builtin::READ_WEB_PAGE,
                 "Reads a web page and gives its text.",
                 json!({ "url": { "type": "string", "description": "The page's address, beginning with https:// or http://" } }),
             ));
         }
         if self.files() {
             all.push(tool(
-                "list_files",
+                builtin::LIST_FILES,
                 "Lists the files and folders in the user's shared folder, or in a folder inside it.",
                 json!({ "path": { "type": "string", "description": "A folder inside the shared folder; empty for the shared folder itself" } }),
             ));
             all.push(tool(
-                "read_file",
+                builtin::READ_FILE,
                 "Reads a text file in the user's shared folder.",
                 json!({ "path": path }),
             ));
             all.push(tool(
-                "write_file",
+                builtin::WRITE_FILE,
                 "Writes a text file in the user's shared folder, in place of what it held.",
                 json!({ "path": path, "content": { "type": "string", "description": "What the file is to hold" } }),
             ));
         }
         if self.commands() {
             all.push(tool(
-                "run_command",
-                &format!("Runs a command with {} on {} in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. {}", sandbox::SHELL, sandbox::SYSTEM, sandbox::ADVICE),
+                builtin::RUN_COMMAND,
+                &format!("Runs a command with {} on {} in the user's shared folder and gives what it printed. It runs in a sandbox: it reaches only the files of that folder and has no network. {}", cw_sandbox::SHELL, cw_sandbox::SYSTEM, cw_sandbox::ADVICE),
                 json!({ "command": { "type": "string", "description": "The command line" } }),
             ));
         }
         if self.coding {
             all.push(tool(
-                START_CODING,
+                builtin::START_CODING,
                 "Offers the user a coding task: a team of models works on a goal in a folder of the user's computer, with a checkpoint before each step. The user is shown the task to start, with this goal, after your message, and starts it or not.",
                 json!({ "goal": { "type": "string", "description": "What the team is to do, in a sentence or two" } }),
             ));
         }
         if self.pictures.is_some() {
             all.push(tool(
-                "make_picture",
+                builtin::MAKE_PICTURE,
                 "Makes a picture with the image model; it is shown in the chat after your message. The only way to send a picture: one told of in words is not sent.",
                 json!({ "description": { "type": "string", "description": "What the picture shows, in a few sentences" } }),
             ));
@@ -341,12 +367,12 @@ impl Toolbox {
             return None;
         }
         match call.name.as_str() {
-            "write_file" if self.files() && self.tools.ask_writes => Some(ToolAsk {
+            builtin::WRITE_FILE if self.files() && self.tools.ask_writes => Some(ToolAsk {
                 kind: AskKind::Write,
                 what: call.argument("path"),
                 detail: call.argument("content"),
             }),
-            "run_command" if self.commands() && self.tools.ask_commands => Some(ToolAsk {
+            builtin::RUN_COMMAND if self.commands() && self.tools.ask_commands => Some(ToolAsk {
                 kind: AskKind::Command,
                 what: call.argument("command"),
                 detail: String::new(),
@@ -379,17 +405,14 @@ impl Toolbox {
         }
     }
 
-    /// The pages and files read so far, the first first.
-    pub fn reads(&self) -> Vec<Read> {
-        cw_core::lock(&self.reads).clone()
+    /// The reply's calls so far, the first first.
+    pub fn used(&self) -> Vec<UsedCall> {
+        cw_core::lock(&self.used).clone()
     }
 
-    /// Keeps `read` among [`Self::reads`], once.
-    fn note(&self, read: Read) {
-        let mut reads = cw_core::lock(&self.reads);
-        if !reads.contains(&read) {
-            reads.push(read);
-        }
+    /// Keeps `call`, which ended as `end`, among [`Self::used`].
+    pub fn keep_call(&self, call: &Call, end: CallEnd, shown: Option<String>) {
+        cw_core::lock(&self.used).push(used::of(call, end, shown));
     }
 
     /// Runs `call`. What went wrong is told to the model, as its result.
@@ -398,33 +421,33 @@ impl Toolbox {
         if let Some(why) = unreadable(call) {
             return told(Err(anyhow::anyhow!(why)));
         }
+        if let Some(tool) =
+            crate::tools::chat::named(&call.name).filter(|tool| (tool.on)(&self.tools))
+        {
+            return self.run_chat(app, tool, call).await;
+        }
         let folder = self.folder.clone().unwrap_or_default();
         match call.name.as_str() {
-            crate::tools::dice::NAME if self.tools.dice => told(crate::tools::dice::roll(
-                &call.arguments,
-                crate::tools::dice::throw,
-            )),
-            "web_search" if self.tools.web => told(web.search(&call.argument("query")).await),
-            "read_web_page" if self.tools.web => told(self.read_page(web, call).await),
-            "list_files" if self.files() => {
+            builtin::WEB_SEARCH if self.tools.web => {
+                told(web.search(&call.argument("query")).await)
+            }
+            builtin::READ_WEB_PAGE if self.tools.web => read_page(web, call).await,
+            builtin::LIST_FILES if self.files() => {
                 told(crate::tools::files::list(&folder, &call.argument("path")))
             }
-            "read_file" if self.files() => {
-                let path = call.argument("path").trim().to_string();
-                told(
-                    crate::tools::files::read(&folder, &path)
-                        .inspect(|_| self.note(Read::File { path })),
-                )
-            }
-            "write_file" if self.files() => told(crate::tools::files::write(
+            builtin::READ_FILE if self.files() => told(crate::tools::files::read(
+                &folder,
+                call.argument("path").trim(),
+            )),
+            builtin::WRITE_FILE if self.files() => told(crate::tools::files::write(
                 &folder,
                 &call.argument("path"),
                 &call.argument("content"),
             )),
-            "run_command" if self.commands() => {
+            builtin::RUN_COMMAND if self.commands() => {
                 told(run_command(folder, call.argument("command")).await)
             }
-            "make_picture" => self.make_picture(app, call).await,
+            builtin::MAKE_PICTURE => self.make_picture(app, call).await,
             crate::tools::written::MAKE if self.code => told(self.make(app, call).await),
             crate::tools::app::CALL if self.tools.app => told(self.ask_app(call).await),
             crate::tools::app::HELP if self.tools.app => told(
@@ -432,7 +455,7 @@ impl Toolbox {
                     .map(crate::tools::app::Route::help)
                     .ok_or_else(|| anyhow::anyhow!("Cardwave has no such tool")),
             ),
-            START_CODING if self.coding => {
+            builtin::START_CODING if self.coding => {
                 let goal = call.argument("goal").trim().to_string();
                 told(match goal.is_empty() {
                     true => Err(anyhow::anyhow!("say what the team is to do")),
@@ -449,20 +472,6 @@ impl Toolbox {
         }
     }
 
-    /// The text of the web page `call` names, kept among [`Self::reads`].
-    async fn read_page(&self, web: &Web, call: &Call) -> anyhow::Result<String> {
-        let address = call.argument("url").trim().to_string();
-        web.page(&address).await.map(|page| {
-            // One page however its address is spelled: as the browser writes it.
-            let address = cw_platform::http::Url::parse(&address).map_or(address, String::from);
-            self.note(Read::Web {
-                title: page.title,
-                address,
-            });
-            page.text
-        })
-    }
-
     /// Makes the picture `call` describes, where pictures are offered.
     async fn make_picture(&self, app: &Arc<dyn AppActions>, call: &Call) -> Done {
         let Some(whom) = &self.pictures else {
@@ -474,7 +483,8 @@ impl Toolbox {
             Ok(picture) => Done {
                 text: "The picture was made and is shown after your message.".into(),
                 picture: Some((words, picture)),
-                failed: false,
+                end: CallEnd::Done,
+                shown: None,
             },
             Err(failure) => told(Err(failure)),
         }
@@ -557,14 +567,45 @@ impl Done {
     /// What a written tool's script is given of the call: its text, or the
     /// failure it throws.
     pub fn result(self) -> Result<String, String> {
-        match self.failed {
+        match self.failed() {
             true => Err(self.text),
             false => Ok(self.text),
         }
     }
+
+    /// Whether the call did not succeed, which `text` then says.
+    pub fn failed(&self) -> bool {
+        self.end != CallEnd::Done
+    }
 }
 
 impl Toolbox {
+    /// Runs the chat tool `tool`'s `call`, on a thread that may block.
+    async fn run_chat(
+        &self,
+        app: &Arc<dyn AppActions>,
+        tool: &'static crate::tools::chat::ChatTool,
+        call: &Call,
+    ) -> Done {
+        let (app, chat_id, arguments) = (app.clone(), self.chat_id, call.arguments.clone());
+        let ran = tokio::task::spawn_blocking(move || {
+            (tool.run)(crate::tools::chat::Turn {
+                arguments: &arguments,
+                store: app.store(),
+                chat_id,
+            })
+        })
+        .await;
+        match ran {
+            Ok(Ok((text, shown))) => Done {
+                shown,
+                ..told(Ok(text))
+            },
+            Ok(Err(failure)) => told(Err(failure)),
+            Err(_) => told(Err(anyhow::anyhow!("the tool failed"))),
+        }
+    }
+
     /// The goal of the coding task the reply offered, the last where it offered several.
     pub fn task_offered(&self) -> Option<String> {
         cw_core::lock(&self.task).clone()
@@ -600,9 +641,26 @@ impl Drop for Stop {
 /// A tool's `result` as the model is told it: a failure as "Failed: …".
 fn told(result: anyhow::Result<String>) -> Done {
     Done {
-        failed: result.is_err(),
+        end: match result {
+            Ok(_) => CallEnd::Done,
+            Err(_) => CallEnd::Failed,
+        },
         text: result.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
         picture: None,
+        shown: None,
+    }
+}
+
+/// The text of the web page `call` names, shown in "Used in this reply" by its
+/// title and site.
+async fn read_page(web: &Web, call: &Call) -> Done {
+    let address = call.argument("url");
+    match web.page(address.trim()).await {
+        Ok(page) => Done {
+            shown: Some(used::page_line(&page.title, &address)),
+            ..told(Ok(page.text))
+        },
+        Err(failure) => told(Err(failure)),
     }
 }
 
@@ -612,7 +670,7 @@ async fn run_command(folder: PathBuf, command: String) -> anyhow::Result<String>
     let stop = Stop::default();
     let stopped = stop.0.clone();
     let ran = tokio::task::spawn_blocking(move || {
-        crate::tools::sandbox::run(&folder, &command, COMMAND_TIME, &stopped)
+        cw_sandbox::run(&folder, &command, COMMAND_TIME, &stopped)
     })
     .await;
     drop(stop);
@@ -644,4 +702,39 @@ pub(crate) fn tool(name: &str, description: &str, properties: Value) -> Value {
             "parameters": { "type": "object", "properties": properties, "required": required },
         },
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_written_tool_named_as_a_chat_tool_is_not_offered() {
+        let tools = Tools {
+            names: true,
+            ..Tools::default()
+        };
+        let written = |name: &str| WrittenTool {
+            id: 1,
+            name: name.to_string(),
+            description: "A tool.".to_string(),
+            code: String::new(),
+            on: true,
+            created_at: 0,
+            chat_id: None,
+            chat_title: None,
+            uses: 0,
+            parameters: serde_json::json!({ "type": "object" }),
+        };
+        let toolbox = Toolbox::of(tools, (false, false), None, 1, (false, &[])).with_written(vec![
+            written(crate::tools::names::NAME),
+            written("word_count"),
+        ]);
+        let offered: Vec<Value> = toolbox.definitions();
+        let named: Vec<&str> = offered
+            .iter()
+            .filter_map(|definition| definition["function"]["name"].as_str())
+            .collect();
+        assert_eq!(named, [crate::tools::names::NAME, "word_count"]);
+    }
 }

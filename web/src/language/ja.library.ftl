@@ -590,6 +590,8 @@ card-figure-remove-from = { $mode }から{ $name }を外す
 card-figure-search-figures = フィギュアを検索
 card-figure-no-3d-figures-yet = 3Dフィギュアはまだありません。ファイルから追加してください：動かせる人の3Dモデル（VRoid Studioで作る .vrm ファイル。.glb や .fbx も可）。
 card-figure-in = ・{ $mode }で
+card-figure-by = ・作者: { $maker }
+card-figure-made-by = 作者: { $maker }
 card-figure-the-card = キャラクター
 card-figure-what = コンパニオンのウィンドウでキャラクターが現れる姿です。
 

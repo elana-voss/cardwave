@@ -17,7 +17,7 @@ use std::fmt;
 use std::path::Path;
 
 use anyhow::{Context, bail};
-use cw_core::{Code, Fail};
+use cw_core::{Code, Fail, hex};
 
 /// Fills `bytes` with chance from the operating system; without a source,
 /// an internal failure that says so.
@@ -31,10 +31,6 @@ pub fn random_hex(len: usize) -> anyhow::Result<String> {
     let mut bytes = vec![0u8; len];
     random(&mut bytes)?;
     Ok(hex(&bytes))
-}
-
-pub(crate) fn hex(bytes: &[u8]) -> String {
-    bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
 /// The database file's name in a data folder, which the key is kept for.

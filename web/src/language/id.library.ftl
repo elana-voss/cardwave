@@ -588,6 +588,8 @@ card-figure-remove-from = Lepaskan { $name } dari { $mode }
 card-figure-search-figures = Cari figur
 card-figure-no-3d-figures-yet = Belum ada figur 3D. Tambahkan satu dari berkas: model 3D seseorang yang bisa bergerak (berkas .vrm, seperti buatan VRoid Studio; juga .glb atau .fbx).
 card-figure-in = { " " }· di { $mode }
+card-figure-by = { " " }· oleh { $maker }
+card-figure-made-by = oleh { $maker }
 card-figure-the-card = Karakter
 card-figure-what = Figur yang menjadi wujud karakter di jendela pendamping.
 

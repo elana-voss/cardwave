@@ -19,6 +19,20 @@ fn glb(mark: &str) -> Vec<u8> {
     file
 }
 
+/// A GLB file whose JSON chunk is `json`, padded with spaces as glTF wants.
+fn gltf(json: &Value) -> Vec<u8> {
+    let mut text = json.to_string().into_bytes();
+    while !text.len().is_multiple_of(4) {
+        text.push(b' ');
+    }
+    let mut file = b"glTF\x02\0\0\0".to_vec();
+    file.extend_from_slice(&(12 + 8 + text.len() as u32).to_le_bytes());
+    file.extend_from_slice(&(text.len() as u32).to_le_bytes());
+    file.extend_from_slice(b"JSON");
+    file.extend_from_slice(&text);
+    file
+}
+
 fn still() -> String {
     STANDARD.encode(b"\x89PNG\r\n\x1a\nstill")
 }
@@ -113,6 +127,42 @@ async fn a_figure_from_a_file_is_kept_once_and_shared_by_cards() {
     assert_eq!(again["figures"]["figure"]["cards"], 2);
     let (_, all) = server.get("/api/figures").await;
     assert_eq!(all.as_array().unwrap().len(), 1, "{all}");
+}
+
+#[tokio::test]
+async fn a_vrm_figure_names_its_maker_from_its_terms_of_use() {
+    let server = start().await;
+    let card = card(&server).await;
+    let vrm0 = json!({ "asset": { "version": "2.0" },
+        "extensions": { "VRM": { "meta": { "title": "Mira", "author": " Ana Ito " } } } });
+    let vrm1 = json!({ "asset": { "version": "2.0" },
+        "extensions": { "VRMC_vrm": { "meta": { "name": "Mira", "authors": ["Ana Ito", "", "Ben Ode"] } } } });
+    let none = json!({ "asset": { "version": "2.0" },
+        "extensions": { "VRMC_vrm": { "meta": { "name": "Mira", "authors": [] } } } });
+    for (name, data, maker) in [
+        ("one.vrm", gltf(&vrm1), json!("Ana Ito, Ben Ode")),
+        ("none.vrm", gltf(&none), Value::Null),
+        // A GLB has no terms of use, even where its file carries VRM's (another file, as one is kept once).
+        (
+            "plain.glb",
+            gltf(&json!({ "extensions": vrm0["extensions"], "asset": {} })),
+            Value::Null,
+        ),
+        ("short.vrm", glb("x"), Value::Null),
+        // Last, as the card's figure: the others went to the Trash, and the list shows it alone.
+        ("zero.vrm", gltf(&vrm0), json!("Ana Ito")),
+    ] {
+        let (status, done) = from_file(&server, &card, name, &data, None).await;
+        assert_eq!(status, 200, "{name}: {done}");
+        assert_eq!(done["figures"]["figure"]["maker"], maker, "{name}");
+    }
+    let (_, all) = server.get("/api/figures").await;
+    let zero = all
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|one| one["name"] == "zero");
+    assert_eq!(zero.unwrap()["maker"], "Ana Ito", "{all}");
 }
 
 #[tokio::test]

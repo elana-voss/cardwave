@@ -1,3 +1,15 @@
+# 0.3.2
+
+Wajah pendamping jadi hidup, dan ia menanggapi sentuhanmu.
+
+- Figur 3D dengan bentuk wajah berkedip, menatapmu, dan menunjukkan perasaan dan suaranya di wajahnya, untuk VRM, GLB, dan FBX.
+- Tanpa suara, bibir pendamping tetap bergerak selama balasan masuk.
+- Klik kepala pendamping, tangannya, atau bagian tubuh lain: ia terkejut, dan karakternya menjawab di gelembung bicaranya. Klik ganda tetap membuka obrolan.
+- Di setiap ukuran, pendamping berdiri, berbaring, dan berjalan dengan kaki di tepi bawah jendela, dan tidak lagi tergelincir saat berjalan.
+- Figur VRM yang kamu tambahkan menyebut pembuatnya.
+- Panel samping obrolan mencantumkan setiap alat yang dipakai sebuah balasan, di bawah "Dipakai di balasan ini".
+- Baru di Pengaturan › Lanjutan › Alat untuk AI: "Nama untuk karakter baru" membuat AI mengambil nama setiap karakter baru dari daftar besar yang cocok dengan budaya, zaman, dan genre.
+
 # 0.3.1
 
 Perbaikan kecil untuk Linux.

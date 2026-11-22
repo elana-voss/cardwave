@@ -116,6 +116,7 @@ search-keys = Cardwave durchsuchen (Strg+K)
 
 label-settings-theme = Erscheinungsbild
 label-settings-chat-layout = Chat-Layout
+label-settings-msg-pictures = Bilder neben Namen
 label-settings-web-pictures = Bilder von anderen Websites zeigen
 label-settings-tabs = Tabs
 label-settings-app-language = Sprache der App
@@ -132,6 +133,7 @@ label-settings-commands = Befehle
 label-settings-image-generation = Bilderzeugung
 label-settings-app = Cardwave
 label-settings-dice = Würfel
+label-settings-names = Namen für neue Figuren
 label-settings-folder = Ordner
 label-settings-written = Werkzeuge der KI
 label-settings-coding = Programmierteam
@@ -171,6 +173,7 @@ layout-plain = Schlicht
 settings-appearance = Darstellung
 settings-theme-about = Folgt dem System, außer du wählst eines
 settings-layout-about = Nachrichten als Sprechblasen oder als schlichter Text
+settings-msg-pictures-about = Das Bild der Figur und deines neben jedem Namen im Chat
 settings-web-pictures-about = Diese Websites können sehen, wann du den Chat öffnest.
 settings-tabs-about = Mehrere Seiten in der Titelleiste offen halten
 settings-language = Sprache
@@ -393,6 +396,7 @@ tools-pictures = Verwendet das Bildmodell
 tools-pictures-first = Richte zuerst das Bildmodell ein
 tools-app = Deine Charaktere, Chats und Einstellungen nutzen und ändern; jede Änderung wird vorher erfragt
 tools-dice = Lässt die KI würfeln; Cardwave würfelt, damit das Ergebnis fair ist.
+tools-names = Gibt der KI für jede neue Figur einen passenden Namen aus einer großen Liste, damit sich Namen nicht wiederholen.
 tools-folder-example =
     { $system ->
         [linux] /home/du/Dokumente/Geteilt

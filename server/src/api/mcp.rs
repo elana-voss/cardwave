@@ -24,7 +24,7 @@ use axum::{Extension, Json};
 use base64::Engine;
 use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
 use cw_coding::mcp::{self, ChangeMcp, McpSettings};
-use cw_coding::tools::{Toolbox, app, dice};
+use cw_coding::tools::{Toolbox, app, chat};
 use cw_provider::Call;
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 use serde_json::{Value, json};
@@ -322,10 +322,10 @@ async fn respond(
                 .map(|toolbox| toolbox.definitions())
                 .unwrap_or_default();
             // Cardwave's own come one per route, not as the chat model's two,
-            // and in place of a written tool of a route's name; the dice are a chat's.
+            // and in place of a written tool of a route's name; a chat tool is a chat's.
             let theirs = theirs.iter().filter(|tool| {
                 let name = tool["function"]["name"].as_str().unwrap_or_default();
-                name != dice::NAME
+                chat::named(name).is_none()
                     && !(app
                         && (name == app::CALL
                             || name == app::HELP
@@ -420,31 +420,31 @@ fn own_tools() -> Vec<Value> {
     };
     vec![
         tool(
-            "list_cards",
+            mcp::LIST_CARDS,
             "Lists the character cards of the user's library, each with its id, title, characters' names, tags and logline. A query finds those that have all its words in their title, names or tags, and, where the search model is set up, those about it.",
             json!({ "query": query }),
             json!([]),
         ),
         tool(
-            "read_card",
+            mcp::READ_CARD,
             "Reads a character card: its characters, each with its description, personality, scenario, example dialogue and greetings.",
             json!({ "card_id": id("card") }),
             json!(["card_id"]),
         ),
         tool(
-            "list_chats",
+            mcp::LIST_CHATS,
             "Lists the user's chats with the characters, the one written in last first, each with its id, title, characters and the start of its newest message. A query finds those that have all its words in their title, characters' names or cards' titles.",
             json!({ "query": query }),
             json!([]),
         ),
         tool(
-            "read_chat",
+            mcp::READ_CHAT,
             "Reads a chat: its characters, and its messages from the first to the newest, each with who wrote it. A chat of more than 50 messages comes in pages of 50, page 1 the newest, with how many pages it has.",
             json!({ "chat_id": id("chat"), "page": { "type": "integer", "description": "Which 50 messages, 1 the newest; 1 when left out" } }),
             json!(["chat_id"]),
         ),
         tool(
-            "send_message",
+            mcp::SEND_MESSAGE,
             "Writes a message into a chat as the user, waits for the character's reply and gives it, with whatever came after the message.",
             json!({ "chat_id": id("chat"), "text": { "type": "string", "description": "The message" } }),
             json!(["chat_id", "text"]),
@@ -481,11 +481,11 @@ async fn call(
             .ok_or_else(|| invalid(format!("{name} is to be a number")))
     };
     let asked = match name {
-        "list_cards" => format!("/api/cards?q={}", words("query")),
-        "read_card" => format!("/api/cards/{}", id("card_id")?),
-        "list_chats" => format!("/api/chats?q={}", words("query")),
-        "read_chat" => format!("/api/chats/{}", id("chat_id")?),
-        "send_message" => {
+        mcp::LIST_CARDS => format!("/api/cards?q={}", words("query")),
+        mcp::READ_CARD => format!("/api/cards/{}", id("card_id")?),
+        mcp::LIST_CHATS => format!("/api/chats?q={}", words("query")),
+        mcp::READ_CHAT => format!("/api/chats/{}", id("chat_id")?),
+        mcp::SEND_MESSAGE => {
             let (chat, text) = (
                 id("chat_id")?,
                 arguments["text"].as_str().unwrap_or_default(),
@@ -499,7 +499,7 @@ async fn call(
     };
     let page = arguments["page"].as_u64().unwrap_or(1).max(1) as usize;
     Ok(match api(app, caller, &asked).await {
-        Ok(text) if name == "read_chat" => text_result(paged(text, page), false),
+        Ok(text) if name == mcp::READ_CHAT => text_result(paged(text, page), false),
         Ok(text) => text_result(text, false),
         Err(failure) => text_result(failure, true),
     })
@@ -628,9 +628,9 @@ async fn their_tool(
     arguments: &Value,
 ) -> Result<Value, Failed> {
     let toolbox = toolbox(state, app, caller).await?;
-    // The dice are a chat's, not listed here.
+    // A chat tool is a chat's, not listed here.
     let offered = |toolbox: &Toolbox| {
-        name != dice::NAME
+        chat::named(name).is_none()
             && toolbox
                 .definitions()
                 .iter()
@@ -669,7 +669,9 @@ async fn their_tool(
         return Ok(text_result(refused, true));
     }
     let done = toolbox.run(&state.actions(), &call).await;
-    let mut result = text_result(done.text, done.failed);
+    let failed = done.failed();
+    let text = done.text;
+    let mut result = text_result(text, failed);
     if let Some((_, picture)) = done.picture {
         let image = json!({ "type": "image", "data": STANDARD.encode(&picture.data), "mimeType": picture.mime });
         if let Some(content) = result["content"].as_array_mut() {

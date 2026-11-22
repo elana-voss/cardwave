@@ -52,6 +52,8 @@
 // Sizes. The tests' browser hides scrollbars: a spec file that begins with `test.use({ launchOptions: {
 // ignoreDefaultArgs: ["--hide-scrollbars"] } })` has them, 15 px wide, for the whole file. A dialog's corners
 // are 16 px round, and a click 4 px inside the corner of its box is one beside it, which closes it.
+// `window.cardwaveDesktop`, which specs set as the desktop app does, is typed by the app's own declaration:
+/// <reference path="../web/src/desktop.ts" />
 import { expect, test as base, type Locator, type Page, type WebSocketRoute } from "@playwright/test";
 import { serve } from "./server.mjs";
 
@@ -105,8 +107,16 @@ export async function viewLine(page: Page, name: string): Promise<Locator> {
 /** Chooses `name` in the view menu: a view of the page, a theme, or Compact. */
 export const chooseView = async (page: Page, name: string) => (await viewLine(page, name)).click();
 
-/** The address of the page's event socket, which carries the page's mark (`/ws?page=…`, which a string does not match), for `routeWebSocket`. Its first `hello` has the screen read and draw itself anew, closing a menu opened before it (`open` in spec 31); that the page is heard is asked in spec 01 (`page.on("websocket")`). */
+/** The address of the page's event socket, which carries the page's mark (`/ws?page=…`, which a string does not match), for `routeWebSocket`. The app makes its first screen once its first `hello` came (main.ts `start`, at most `START_WAIT`); a `hello` after a drop has the screen read and draw itself anew; that the page is heard is asked in spec 01 (`page.on("websocket")`). */
 export const SOCKET = /\/ws\?page=/;
+
+/** Opens `address` and waits for the server's first `hello`, then for the page to read all it asks: a `hello` later than `START_WAIT` still has the screen read and drawn anew (spec 31 saw one late in a whole run). */
+export async function goHeard(page: Page, address: string): Promise<void> {
+  const heard = page.waitForEvent("websocket").then((socket) => socket.waitForEvent("framereceived", (frame) => String(frame.payload).includes('"hello"')));
+  await page.goto(address);
+  await heard;
+  await page.waitForLoadState("networkidle");
+}
 
 /**
  * Has `page` hear nothing the server tells it after its first word, until what this answers is called: that
@@ -140,7 +150,8 @@ export const test = base.extend<{ restartServer: () => Promise<void> }, { server
   // when its first test, or what it does before all of them, asks for the address.
   servers: [
     async ({}, use, worker) => {
-      let running: { url: string; stop(): Promise<void>; restart(): Promise<void> } | null = null;
+      // Cast, not annotated: else tsc narrows it to null for good, blind to the closures that set it.
+      let running = null as { url: string; stop(): Promise<void>; restart(): Promise<void> } | null;
       let of = "";
       await use({
         at: async (file) => {

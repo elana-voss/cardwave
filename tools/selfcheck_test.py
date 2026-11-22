@@ -51,10 +51,21 @@ def test_the_last_closed_milestone_is_reported_from_its_agents():
     assert closed_report(table(old, last), rows) == "8 2026-11-16-8-last: 2 agents, 1 handed over, 2.5 million tokens against 3 estimated"
 
 
+def test_a_review_an_agent_started_counts_in_its_tokens_alone():
+    last = ticket("2026-11-16-8-last", status="Done", number="8", actual="2", estimate="3", updated="2026-11-16")
+    row = lambda id, time, minutes, tokens, kind: {"id": id, "time": f"2026-11-16T10:{time}:00.000Z", "minutes": minutes,
+                                                   "name": f"8 Last: {kind}", "kind": kind, "tokens": tokens, "end": "reported"}
+    rows = [row("a", "10", "10", "1000000", "build"), row("r", "15", "2", "500000", "code review"),
+            row("a", "20", "20", "2000000", "build"), row("m", "25", "2", "300000", "code review")]
+    assert closed_report(table(last), rows).startswith("8 2026-11-16-8-last: 3 agents, 0 handed over, 2.3 million"), \
+        "the review inside the build agent's time is in its row; the one after it counts itself"
+
+
 if __name__ == "__main__":
     test_trials_want_the_actual_of_a_done_milestone_since_2026_11_15()
     test_a_trial_open_past_five_closed_milestones_fails()
     test_more_than_ten_open_trials_fail()
     test_a_trial_never_closes_unmeasured()
     test_the_last_closed_milestone_is_reported_from_its_agents()
-    print("selfcheck: 5 tests passed")
+    test_a_review_an_agent_started_counts_in_its_tokens_alone()
+    print("selfcheck: 6 tests passed")

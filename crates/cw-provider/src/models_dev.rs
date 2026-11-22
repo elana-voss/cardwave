@@ -15,7 +15,6 @@
 //! reads, and a kind or thinking at least half of them say.
 
 use std::collections::HashMap;
-use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
@@ -142,10 +141,8 @@ impl ModelsDev {
 
 /// The list shipped with this version.
 pub fn shipped() -> Index {
-    let mut bytes = Vec::new();
-    flate2::read::GzDecoder::new(SHIPPED)
-        .read_to_end(&mut bytes)
-        .and_then(|_| Index::read(&bytes).map_err(std::io::Error::other))
+    cw_platform::packed::unpacked(SHIPPED)
+        .and_then(|bytes| Index::read(&bytes).map_err(std::io::Error::other))
         // Built into the server and read by the tests, so it reads.
         .expect("the shipped models.dev list reads")
 }

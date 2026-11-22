@@ -1,37 +1,68 @@
-// The side panel's number fields take digits alone (`wholeNumber`); Reply length's step (`replyStep`); whether Reply length is used, and why not (`replyLengthNote`). What the side panel's "Used in this reply" says of a reply besides its lorebook entries: the pages read, by
-// title and site, the files read and what was saved to memory; how it looks is the browser tests'.
+// The side panel's number fields take digits alone (`wholeNumber`); Reply length's step (`replyStep`); whether Reply length is used, and why not (`replyLengthNote`). What the side panel's "Used in this reply" says of a reply besides its lorebook entries: its tool calls
+// and what was saved to memory; how it looks is the browser tests'.
 import { expect, onTestFinished, test } from "vitest";
 import type { MessageView } from "../api/generated/MessageView";
 import type { ChatLorebook } from "../api/generated/ChatLorebook";
 import type { ChatView } from "../api/generated/ChatView";
-import { bookSays, chatPanel, type PanelActions, replySteps, replyLengthNote, replyStep, usedFacts, wholeNumber } from "./panel";
+import { bookSays, chatPanel, type PanelActions, replySteps, replyLengthNote, replyStep, usedFacts, usedReply, wholeNumber } from "./panel";
 import { useLanguage } from "../language/language";
 
 const reply = (more: Partial<MessageView>): MessageView => ({
   id: 1, parent_id: null, role: "assistant", speaker_id: null, content: "", complete: true, token_count: null, created_at: 0,
-  swipes: [1], lore: [], memories: [], picture: false, tokens: 0, task_id: null, context: null, model: null, provider: null, times: null, sent: null, reads: [], attachments: [], broke_off: false,
+  swipes: [1], lore: [], memories: [], picture: false, tokens: 0, task_id: null, context: null, model: null, provider: null, times: null, sent: null, calls: [], attachments: [], broke_off: false,
   ...more,
 });
 
-test("a reply's pages, files and memories, each part there only where it has something, and no tokens", () => {
+test("a reply's tool calls and memories, each part there only where it has something, and no tokens", () => {
   const sent = { card: 300, persona: 20, memory: 0, lorebook: 40, history: 900 };
   const facts = usedFacts(
     reply({
-      reads: [
-        { kind: "web", title: "Lamp oil", address: "https://www.example.com/oil" },
-        { kind: "file", path: "notes/a.md" },
-        { kind: "web", title: "", address: "https://example.org/x" },
+      calls: [
+        { tool: "dice", what: "2d6: 3 + 4 = 7", end: "done" },
+        { tool: "read_web_page", what: "Lamp oil · example.com", end: "done" },
+        { tool: "read_file", what: "notes/a.md", end: "failed" },
+        { tool: "write_file", what: "plan.txt", end: "not_allowed" },
+        { tool: "run_command", what: "ls", end: "stopped" },
+        { tool: "lamp_tool", what: "", end: "done" },
       ],
       memories: ["The hearing moved to noon."],
       sent,
     }),
   );
   expect(facts).toEqual([
-    { about: "Read on the web", lines: ["Lamp oil · example.com", "https://example.org/x"] },
-    { about: "Read from your files", lines: ["notes/a.md"] },
-    { about: "Saved to memory", lines: ["The hearing moved to noon."] },
+    {
+      about: "Tools used",
+      lines: [
+        { text: "Dice · 2d6: 3 + 4 = 7" },
+        { text: "Web page · Lamp oil · example.com" },
+        { text: "Read file · notes/a.md", note: "failed" },
+        { text: "Write file · plan.txt", note: "not allowed" },
+        { text: "Run command · ls", note: "stopped" },
+        { text: "lamp_tool" },
+      ],
+    },
+    { about: "Saved to memory", lines: [{ text: "The hearing moved to noon." }] },
   ]);
   expect(usedFacts(reply({}))).toEqual([]);
+});
+
+test("the last reply is the one before the pictures it made, not a picture of its own", () => {
+  const words = reply({ id: 1 });
+  const pictures = [reply({ id: 2, picture: true }), reply({ id: 3, picture: true })];
+  expect(usedReply({ messages: [words, ...pictures] } as ChatView)).toBe(words);
+  const alone = reply({ id: 4, picture: true });
+  expect(usedReply({ messages: [reply({ id: 5, role: "user" }), alone] } as ChatView)).toBe(alone);
+});
+
+test("with pictures after the last reply, the panel still tells the tools that reply called", () => {
+  const panel = chatPanel({} as PanelActions);
+  const chat = { reply_length: 350, code_mode: false, talk_pause: 4, talk_replies: 10, trashed: false, prompt_preset: "card" };
+  const messages = [reply({ id: 1, calls: [{ tool: "make_picture", what: "a boat", end: "done" }] }), reply({ id: 2, picture: true })];
+  const view = { chat, characters: [], messages, lorebooks: [], persona: null, asking: null, modes: [], model: null, thinks: false, tools: false } as unknown as ChatView;
+  panel.show({ view, personas: [], library: [], prompts: [], personality: null, locked: false, talking: false, chosen: null });
+  const line = [...panel.node.querySelectorAll<HTMLElement>(".item.entry")].find((item) => item.textContent?.includes("Tools used"));
+  expect(line?.textContent).toContain("Make picture · a boat");
+  expect(line?.closest<HTMLElement>(".panel-part")?.hidden).toBe(false);
 });
 
 test("a number field takes a whole number in digits, at least its least, and nothing else", () => {

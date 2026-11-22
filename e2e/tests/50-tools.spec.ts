@@ -4,6 +4,7 @@ import { join } from "node:path";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
+import { setSettings } from "../stored";
 
 // Tools: Settings › Advanced's group "Tools for the AI", whose Files waits for a folder chosen in its dialog, and a file the character
 // writes in a chat, which waits over the message field until the user allows it, as a card Cardwave's own
@@ -57,8 +58,7 @@ test("files are switched on once a folder is chosen, and then ask before writing
 
 test("a file the character writes waits until the user allows it", async ({ page, request }) => {
   await request.put("/api/provider", { data: { base_url: api.url, model: "tide-1" } });
-  const set = await request.patch("/api/settings", { data: { tools: { files: true, ask_writes: true, folder } } });
-  expect(set.status(), await set.text()).toBe(200);
+  await setSettings(request, { tools: { files: true, ask_writes: true, folder } });
   await page.goto(`/#/chats/${await chat(request)}`);
 
   api.calls("write_file", { path: "plan.txt", content: "Sail at dawn." });
@@ -78,8 +78,7 @@ test("a file the character writes waits until the user allows it", async ({ page
 
 test("Cardwave's own tools make a card in a chat without a character once the user allows it", async ({ page, request }) => {
   await request.put("/api/provider", { data: { base_url: api.url, model: "tide-1" } });
-  const set = await request.patch("/api/settings", { data: { tools: { app: true } } });
-  expect(set.status(), await set.text()).toBe(200);
+  await setSettings(request, { tools: { app: true } });
   const started = await request.post("/api/chats", { data: { characters: [] } });
   await page.goto(`/#/chats/${(await started.json()).chat.id}`);
 

@@ -126,6 +126,7 @@ search-keys = Cardwaveを検索（Ctrl+K）
 
 label-settings-theme = テーマ
 label-settings-chat-layout = チャットのレイアウト
+label-settings-msg-pictures = 名前の横の画像
 label-settings-web-pictures = 他のウェブサイトの画像を表示
 label-settings-tabs = タブ
 label-settings-app-language = アプリの言語
@@ -142,6 +143,7 @@ label-settings-commands = コマンド
 label-settings-image-generation = 画像生成
 label-settings-app = Cardwave
 label-settings-dice = サイコロ
+label-settings-names = 新しい登場人物の名前
 label-settings-folder = フォルダー
 label-settings-written = AIが書いたツール
 label-settings-coding = コーディングチーム
@@ -181,6 +183,7 @@ layout-plain = プレーン
 settings-appearance = 外観
 settings-theme-about = 選ばない場合はシステムに合わせます
 settings-layout-about = メッセージを吹き出しで、またはプレーンテキストで表示
+settings-msg-pictures-about = チャットの各名前の横に、キャラクターとあなたの画像を表示します
 settings-web-pictures-about = チャットを開いたことが、それらのウェブサイトに知られます。
 settings-tabs-about = タイトルバーで複数のページを開いたままにします
 settings-language = 言語
@@ -398,6 +401,7 @@ tools-pictures = 画像モデルを使います
 tools-pictures-first = 先に画像モデルを設定してください
 tools-app = キャラクター、チャット、設定を使い、変更します。変更はそれぞれ先に確認します
 tools-dice = AI がサイコロを振れるようにします。振るのは Cardwave なので結果は公平です。
+tools-names = 新しい登場人物ごとに、大きな名簿からふさわしい名前を AI に渡します。名前が繰り返されません。
 tools-folder-example =
     { $system ->
         [linux] /home/you/Documents/Shared

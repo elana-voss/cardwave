@@ -122,6 +122,7 @@ search-keys = Поиск в Cardwave (Ctrl+K)
 
 label-settings-theme = Тема
 label-settings-chat-layout = Вид чата
+label-settings-msg-pictures = Картинки рядом с именами
 label-settings-web-pictures = Показывать картинки с других сайтов
 label-settings-tabs = Вкладки
 label-settings-app-language = Язык приложения
@@ -138,6 +139,7 @@ label-settings-commands = Команды
 label-settings-image-generation = Создание изображений
 label-settings-app = Cardwave
 label-settings-dice = Кости
+label-settings-names = Имена для новых персонажей
 label-settings-folder = Папка
 label-settings-written = Инструменты, написанные ИИ
 label-settings-coding = Команда программистов
@@ -177,6 +179,7 @@ layout-plain = Простой текст
 settings-appearance = Оформление
 settings-theme-about = Как в системе, если не выбрать другую
 settings-layout-about = Сообщения в облачках или простым текстом
+settings-msg-pictures-about = Картинка персонажа и ваша рядом с каждым именем в чате
 settings-web-pictures-about = Эти сайты видят, когда вы открываете чат.
 settings-tabs-about = Держать несколько страниц открытыми в строке заголовка
 settings-language = Язык
@@ -409,6 +412,7 @@ tools-pictures = Использует модель изображений
 tools-pictures-first = Сначала настройте модель изображений
 tools-app = Пользоваться вашими персонажами, чатами и настройками и менять их; о каждом изменении сначала спрашивается
 tools-dice = Позволяет ИИ бросать кости; бросает их Cardwave, поэтому результат честный.
+tools-names = Даёт ИИ подходящее имя для каждого нового персонажа из большого списка, чтобы имена не повторялись.
 tools-folder-example =
     { $system ->
         [linux] /home/вы/Documents/Общая

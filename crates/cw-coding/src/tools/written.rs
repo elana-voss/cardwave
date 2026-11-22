@@ -26,6 +26,9 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use ts_rs::TS;
 
+use crate::mcp;
+use crate::tools::builtin;
+
 /// The tool by which the model writes a tool.
 pub(crate) const MAKE: &str = "make_tool";
 
@@ -51,36 +54,36 @@ const MOST_DESCRIPTION: usize = 300;
 const MOST_SCHEMA: usize = 4_000;
 
 /// Names a written tool cannot have: the app's own tools, a reply's and the
-/// MCP server's; nor those of Cardwave's routes (`app`).
+/// MCP server's; nor a chat tool's (`chat::named`) or one of Cardwave's routes (`app`).
 const TAKEN: [&str; 16] = [
     crate::tools::app::CALL,
-    crate::tools::dice::NAME,
     crate::tools::app::HELP,
-    "send_message",
-    "web_search",
-    "read_web_page",
-    "list_files",
-    "read_file",
-    "write_file",
-    "run_command",
-    "make_picture",
+    mcp::SEND_MESSAGE,
+    builtin::WEB_SEARCH,
+    builtin::READ_WEB_PAGE,
+    builtin::LIST_FILES,
+    builtin::READ_FILE,
+    builtin::WRITE_FILE,
+    builtin::RUN_COMMAND,
+    builtin::MAKE_PICTURE,
     MAKE,
-    "list_cards",
-    "read_card",
-    "list_chats",
-    "read_chat",
+    builtin::START_CODING,
+    mcp::LIST_CARDS,
+    mcp::READ_CARD,
+    mcp::LIST_CHATS,
+    mcp::READ_CHAT,
 ];
 
 /// The host's functions a written tool may call: its name in JavaScript, the
 /// tool it is, and that tool's arguments in the order the function takes them.
 pub const HOST: [(&str, &str, &[&str]); 7] = [
-    ("listFiles", "list_files", &["path"]),
-    ("readFile", "read_file", &["path"]),
-    ("writeFile", "write_file", &["path", "content"]),
-    ("runCommand", "run_command", &["command"]),
-    ("searchWeb", "web_search", &["query"]),
-    ("readWebPage", "read_web_page", &["url"]),
-    ("makePicture", "make_picture", &["description"]),
+    ("listFiles", builtin::LIST_FILES, &["path"]),
+    ("readFile", builtin::READ_FILE, &["path"]),
+    ("writeFile", builtin::WRITE_FILE, &["path", "content"]),
+    ("runCommand", builtin::RUN_COMMAND, &["command"]),
+    ("searchWeb", builtin::WEB_SEARCH, &["query"]),
+    ("readWebPage", builtin::READ_WEB_PAGE, &["url"]),
+    ("makePicture", builtin::MAKE_PICTURE, &["description"]),
 ];
 
 /// Runs a host's tool by its name with its arguments: what it gave, or why
@@ -177,7 +180,9 @@ pub fn check(arguments: &str, taken: impl Fn(&str) -> bool) -> anyhow::Result<Ne
         "\"name\" is to be a lowercase letter, then 2 to 31 lowercase letters, digits or underscores, such as word_count"
     );
     ensure!(
-        !TAKEN.contains(&name.as_str()) && !taken(&name),
+        !TAKEN.contains(&name.as_str())
+            && crate::tools::chat::named(&name).is_none()
+            && !taken(&name),
         "a tool named {name} exists already; choose another name"
     );
     let description = text("description")

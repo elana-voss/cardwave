@@ -126,6 +126,7 @@ search-keys = Cardwave में खोजें (Ctrl+K)
 
 label-settings-theme = थीम
 label-settings-chat-layout = चैट लेआउट
+label-settings-msg-pictures = नामों के पास तस्वीरें
 label-settings-web-pictures = दूसरी वेबसाइटों की तस्वीरें दिखाएँ
 label-settings-tabs = टैब
 label-settings-app-language = ऐप की भाषा
@@ -142,6 +143,7 @@ label-settings-commands = कमांड
 label-settings-image-generation = इमेज बनाना
 label-settings-app = Cardwave
 label-settings-dice = पासे
+label-settings-names = नए किरदारों के नाम
 label-settings-folder = फ़ोल्डर
 label-settings-written = AI के लिखे टूल
 label-settings-coding = कोडिंग टीम
@@ -181,6 +183,7 @@ layout-plain = सादा
 settings-appearance = दिखावट
 settings-theme-about = सिस्टम के अनुसार, जब तक आप कोई और न चुनें
 settings-layout-about = मैसेज बबल में, या सादे टेक्स्ट में
+settings-msg-pictures-about = चैट में हर नाम के पास किरदार की और आपकी तस्वीर
 settings-web-pictures-about = चैट खोलने पर वे वेबसाइटें यह देख सकती हैं।
 settings-tabs-about = शीर्षक पट्टी में कई पेज खुले रखें
 settings-language = भाषा
@@ -403,6 +406,7 @@ tools-pictures = इमेज मॉडल इस्तेमाल करता
 tools-pictures-first = पहले इमेज मॉडल सेट करें
 tools-app = आपके किरदार, चैट और सेटिंग्स इस्तेमाल करना और बदलना; हर बदलाव पहले पूछा जाता है
 tools-dice = AI को पासे फेंकने देता है; पासे Cardwave फेंकता है, ताकि नतीजा निष्पक्ष रहे।
+tools-names = हर नए किरदार के लिए AI को एक बड़ी सूची से उपयुक्त नाम देता है, ताकि नाम दोहराए न जाएँ।
 tools-folder-example =
     { $system ->
         [linux] /home/aap/Documents/Shared

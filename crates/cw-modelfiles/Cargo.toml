@@ -10,8 +10,6 @@ doctest = false
 
 [dependencies]
 zip.workspace = true
-# Not named in the code: zip's deflate needs flate2's backend, which a build of this crate alone lacks.
-flate2.workspace = true
 sha2.workspace = true
 tracing.workspace = true
 anyhow.workspace = true

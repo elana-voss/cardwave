@@ -2,6 +2,7 @@ import type { APIRequestContext } from "@playwright/test";
 import { expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { NOW, picture, stopClock } from "../pictures";
+import { setSettings } from "../stored";
 
 // Code mode: the model writes a tool in a chat, which waits over the message field with its code until the user
 // allows it, and calls it; Settings › Advanced › "Tools the AI wrote" lists it, its panel shows its code and how
@@ -19,7 +20,7 @@ test.afterAll(() => api.close());
 /** A chat with Mira, with the web on and the chat's Code mode, and its number. */
 async function chat(request: APIRequestContext): Promise<number> {
   await request.put("/api/provider", { data: { base_url: api.url, model: "tide-1" } });
-  expect((await request.patch("/api/settings", { data: { tools: { web: true } } })).status()).toBe(200);
+  await setSettings(request, { tools: { web: true } });
   const data = { title: "North Light", tags: [], creator: "", name: "Mira", greetings: ["You came in the storm."], description: "A lighthouse keeper.", personality: "", scenario: "", example_dialogue: "", creator_notes: "" };
   const made = await request.post("/api/cards/new", { data });
   expect(made.status(), await made.text()).toBe(201);

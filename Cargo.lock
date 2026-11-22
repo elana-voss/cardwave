@@ -650,7 +650,7 @@ dependencies = [
 
 [[package]]
 name = "cardwave-desktop"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cardwave-server",
@@ -669,7 +669,7 @@ dependencies = [
 
 [[package]]
 name = "cardwave-server"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -690,6 +690,7 @@ dependencies = [
  "cw-platform",
  "cw-prompt",
  "cw-provider",
+ "cw-sandbox",
  "cw-search",
  "cw-store",
  "cw-voice",
@@ -1129,7 +1130,7 @@ checksum = "914a755b7c2d4af2bdcff7ce1739e2db9a1b81a9b07123d8015786ae03c0980d"
 
 [[package]]
 name = "cw-accounts"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "argon2",
@@ -1145,7 +1146,7 @@ dependencies = [
 
 [[package]]
 name = "cw-ccv4"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1164,7 +1165,7 @@ dependencies = [
 
 [[package]]
 name = "cw-chat"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1176,9 +1177,9 @@ dependencies = [
  "cw-platform",
  "cw-prompt",
  "cw-provider",
+ "cw-sandbox",
  "cw-search",
  "fancy-regex",
- "flate2",
  "futures-util",
  "image",
  "lopdf",
@@ -1196,33 +1197,31 @@ dependencies = [
 
 [[package]]
 name = "cw-coding"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",
  "cw-library",
  "cw-platform",
  "cw-provider",
+ "cw-sandbox",
  "futures-util",
- "libc",
  "percent-encoding",
  "rand 0.9.5",
  "regex",
  "rquickjs",
  "serde",
  "serde_json",
- "sha2 0.10.9",
  "similar",
  "tokio",
  "tokio-util",
  "tracing",
  "ts-rs",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
 name = "cw-core"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1236,7 +1235,7 @@ dependencies = [
 
 [[package]]
 name = "cw-dictation"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1246,7 +1245,7 @@ dependencies = [
 
 [[package]]
 name = "cw-faces"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "image",
@@ -1260,7 +1259,7 @@ dependencies = [
 
 [[package]]
 name = "cw-find"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-ccv4",
@@ -1280,7 +1279,7 @@ dependencies = [
 
 [[package]]
 name = "cw-key"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1292,7 +1291,7 @@ dependencies = [
 
 [[package]]
 name = "cw-library"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1321,12 +1320,11 @@ dependencies = [
 
 [[package]]
 name = "cw-modelfiles"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",
  "cw-platform",
- "flate2",
  "serde",
  "sha2 0.10.9",
  "tokio",
@@ -1337,11 +1335,12 @@ dependencies = [
 
 [[package]]
 name = "cw-platform"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "chrono",
  "cw-core",
+ "flate2",
  "http",
  "libc",
  "reqwest 0.12.28",
@@ -1353,7 +1352,7 @@ dependencies = [
 
 [[package]]
 name = "cw-prompt"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "chrono",
  "cw-core",
@@ -1367,7 +1366,7 @@ dependencies = [
 
 [[package]]
 name = "cw-provider"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1376,7 +1375,6 @@ dependencies = [
  "cw-modelfiles",
  "cw-platform",
  "cw-prompt",
- "flate2",
  "futures-util",
  "image",
  "percent-encoding",
@@ -1389,8 +1387,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-sandbox"
+version = "0.3.2"
+dependencies = [
+ "anyhow",
+ "cw-core",
+ "cw-library",
+ "cw-platform",
+ "libc",
+ "sha2 0.10.9",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "cw-search"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-ccv4",
@@ -1402,7 +1413,7 @@ dependencies = [
 
 [[package]]
 name = "cw-store"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-accounts",
@@ -1427,7 +1438,7 @@ dependencies = [
 
 [[package]]
 name = "cw-voice"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",
@@ -1444,7 +1455,7 @@ dependencies = [
 
 [[package]]
 name = "cw-whisper"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "cw-core",

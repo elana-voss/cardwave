@@ -1,12 +1,14 @@
 // The companion window's page (companion.html, board "Companion window"): the figure on the floor of the screen,
-// which the hand drags, shakes and throws (body.ts) and a click startles, steered by the worker model (`steer`)
-// after each reply in a chat with the companion's card, once it stands again after the hand handled it, and now
-// and then while idle (react.ts), else it walks of its own (plan.ts, `wander`); it sleeps after `SLEEP_MS` unused.
+// which the hand drags, shakes and throws (body.ts) and a click startles, asking the character's answer to where it
+// was touched (touch.ts, `Touches`: its bubble and its reaction), steered by the worker model (`steer`) after each
+// reply in a chat with the companion's card, once it stands again after the hand handled it, and now and then while
+// idle (react.ts), else it walks of its own (plan.ts, `wander`); it sleeps after `SLEEP_MS` unused.
 // A double-click opens the compact chat (chat.ts), a right-click its menu ("Sit still"), which the chat's More shows
 // too; its tooltip says both. The figure is the card's
 // and its chat's mode (`companionFigure`), else the base figure of Settings (`companion.figure`), as tall as its size
 // there says, a share of the window's height (`companion.size`, `sizeTo`), resized at once. All it is told
-// runs through `Companion` (live.ts), which tells the server what the figure does; a bubble shows what it says.
+// runs through `Companion` (live.ts), which tells the server what the figure does; a bubble shows what it says. What
+// it says, and a reply in the compact chat no voice reads, moves its lips (lips.ts); a voice, its loudness.
 //
 // The desktop app shows the page in a see-through, always-on-top window over the work area (desktop/src/main.rs)
 // that lets clicks through: the program tells the cursor (`companionCursor`), the page answers whether it is on
@@ -20,6 +22,7 @@ import { changeCompanion, companionFigure, companionSaid, connectEvents, figureF
 import type { CompanionFigure } from "../api/generated/CompanionFigure";
 import type { Companion as CompanionSettings } from "../api/generated/Companion";
 import type { Occasion } from "../api/generated/Occasion";
+import type { BodyPart } from "../api/generated/BodyPart";
 import type { Figure as CardFigure } from "../api/generated/Figure";
 import { contextMenu, type MenuItem } from "../dialogs";
 import { desktop, inDesktop, nameWindow } from "../desktop";
@@ -30,11 +33,12 @@ import { baseSource, Figure, type FigureSource } from "./figure";
 import type { BaseFigure } from "../api/generated/BaseFigure";
 import { wander } from "./plan";
 import { Companion, reporter } from "./live";
+import { Lips } from "./lips";
 import { readWebPictures, webPictures } from "../narration";
 import { loudness } from "../voice/voice";
 import { readOwnCss, showOwnCss } from "../settings/own-css";
 import { readAppLanguage } from "../settings/app-language";
-import { Clicks, Reactions } from "./react";
+import { Answers, Clicks, Reactions, Touches } from "./react";
 import { followComputer, wording } from "../language/language";
 import { el, reason } from "../dom";
 
@@ -75,12 +79,16 @@ interface Scene {
   chat: CompactChat | null;
   /** What it is told to do, and what it knows of itself. */
   live: Companion;
+  /** Its mouth while it speaks without a voice. */
+  lips: Lips;
   still: boolean;
   mood: Mood;
   /** When it was last used. */
   used: number;
   /** When the model is asked after a handling or alone. */
   reactions: Reactions;
+  /** Its answers to a touch, one at a time. */
+  touches: Touches;
   /** The hand while it presses on the figure: a press that moves is a drag. */
   hand: { dx: number; dy: number; x: number; y: number; samples: Sample[]; dragging: boolean } | null;
 }
@@ -137,8 +145,9 @@ async function start(): Promise<void> {
   const steer = steerer(body, () => scene, companion.card_id !== null);
   const ownWalk = () => void (!scene.still && live.act(wander(area())));
   const reactions = new Reactions((occasion) => steer(occasion), ownWalk, () => between(IDLE_MS));
+  const touches = new Touches((part) => steer("touched", null, part));
   const live = new Companion(body, figure);
-  const scene: Scene = { body, figure, chat: null, live, still: false, mood: null, used: Date.now(), reactions, hand: null };
+  const scene: Scene = { body, figure, chat: null, live, lips: new Lips(), still: false, mood: null, used: Date.now(), reactions, touches, hand: null };
   const use = () => {
     scene.used = Date.now();
     reactions.used();
@@ -148,7 +157,7 @@ async function start(): Promise<void> {
   const { chat, open: openChat } = chatOf(scene, companion.card_id, use, follow, () => lines().slice(1));
 
   const canvas = figure.canvas;
-  const clicks = handle(scene, use);
+  const clicks = handle(scene, use, (part) => touches.touched(part));
   canvas.addEventListener("dblclick", () => {
     clicks.down();
     openChat();
@@ -205,7 +214,7 @@ async function start(): Promise<void> {
   }
 
   answerCursor(scene);
-  animate(scene, area, () => report(() => known(scene)));
+  animate(scene, area, () => report(() => known(scene), false, body.motion.kind === "held"));
 }
 
 /** Whether the figure sleeps: unused for `SLEEP_MS`. */
@@ -237,6 +246,7 @@ function chatOf(
             use();
           },
           replied: () => follow(),
+          talks: (letters) => (letters === null ? scene.lips.rest() : scene.lips.hear(letters)),
           openFull: (chatId) => openApp(`#/chats/${chatId}`),
           closed: () => void (scene.mood = null),
           more,
@@ -259,15 +269,19 @@ function chatOf(
 
 /** Asks the worker model what the figure does now, and has it done; whether it gave any moves, or null without a
  * companion. */
-function steerer(body: Body, scene: () => Scene, any: boolean): (occasion: Occasion, chatId?: number | null) => Promise<boolean> | null {
-  return (occasion, chatId = null) => {
+function steerer(body: Body, scene: () => Scene, any: boolean): (occasion: Occasion, chatId?: number | null, touched?: BodyPart | null) => Promise<boolean> | null {
+  const answers = new Answers();
+  return (occasion, chatId = null, touched = null) => {
     if (!any) return null;
     const { mood, still, used } = scene();
     const handled = occasion === "handled" ? [...body.happened] : [];
     const alone_s = occasion === "alone" ? Math.round((Date.now() - used) / 1000) : 0;
-    const asked = { chat_id: chatId, occasion, handled, alone_s, width: innerWidth, height: innerHeight, x: Math.round(body.x), y: Math.round(body.y), state: stateOf(body, mood, false, still) };
+    const asked = { chat_id: chatId, occasion, handled, alone_s, width: innerWidth, height: innerHeight, x: Math.round(body.x), y: Math.round(body.y), state: stateOf(body, mood, false, still), ...(touched ? { touched } : {}) };
+    const current = answers.ask();
     return planMoves(asked).then(
       ({ steps }) => {
+        // Come too late: what a newer answer has it do stays (and it does not wander instead).
+        if (!current()) return true;
         if (body.motion.kind === "held" || steps.length === 0) return false;
         scene().live.act(steps);
         return true;
@@ -278,12 +292,16 @@ function steerer(body: Body, scene: () => Scene, any: boolean): (occasion: Occas
 }
 
 /** The hand on the figure: a press that moves is a drag, its release a throw; a click that no second click follows
- * startles it, which the double-click cancels (`cancel`). */
-function handle(scene: Scene, use: () => void): Clicks {
+ * startles it and asks its answer to being touched where the click landed (`touch`), which the double-click cancels
+ * (`cancel`). */
+function handle(scene: Scene, use: () => void, touch: (part: BodyPart | null) => void): Clicks {
   const { body, figure } = scene;
   const canvas = figure.canvas;
   let woken = false;
-  const clicks = new Clicks(() => body.startle(), DOUBLE_MS);
+  const clicks = new Clicks((part) => {
+    body.startle();
+    touch(part);
+  }, DOUBLE_MS);
   canvas.addEventListener("pointerdown", (event) => {
     if (event.button !== 0) return;
     clicks.down();
@@ -313,7 +331,7 @@ function handle(scene: Scene, use: () => void): Clicks {
       const { vx, vy } = throwOf(scene.hand.samples);
       body.release(vx, vy);
     }
-    if (scene.hand) clicks.up(scene.hand.dragging || event.type !== "pointerup");
+    if (scene.hand) clicks.up(scene.hand.dragging || event.type !== "pointerup", () => figure.partAt(event.offsetX, event.offsetY));
     scene.hand = null;
   };
   canvas.addEventListener("pointerup", letGo);
@@ -346,11 +364,15 @@ function answerCursor(scene: Scene): void {
 /** Each frame: what it was told, else the model asked once the figure stands after a handling or now and then while
  * it stands idle (`Reactions`); the body; the figure where its feet are, and its bubble over it; then `report`. */
 function animate(scene: Scene, area: () => { width: number; height: number }, report: () => void): void {
-  const { body, figure, chat, live } = scene;
+  const { body, figure, chat, live, lips } = scene;
   const canvas = figure.canvas;
   const bubble = el("div", { className: "bubble companion-say", hidden: true });
   document.body.append(bubble);
   let last = performance.now();
+  /** The bubble's own lips, apart from the reply's (`scene.lips`), so neither's end stills the other; the mouth takes the wider. */
+  const saying = new Lips();
+  /** The bubble the lips were last told. */
+  let told: object | null = null;
   const frame = (now: number) => {
     // At most 30 frames a second, as more costs the processor for nothing (the spike: 45% of a core at 165 Hz),
     // and two while it sleeps.
@@ -360,11 +382,18 @@ function animate(scene: Scene, area: () => { width: number; height: number }, re
     last = now;
     if (scene.hand?.dragging) body.shake(shaking(scene.hand.samples, now));
     const resting = !scene.hand && body.motion.kind === "rest" && !body.gettingUp;
-    if (resting) scene.reactions.standing(!live.busy && !sleeping && (chat?.node.hidden ?? true), Date.now());
+    if (resting) scene.reactions.standing(!live.busy && !scene.touches.answering && !sleeping && (chat?.node.hidden ?? true), Date.now());
     live.step(dt, scene.still);
     body.rising = figure.rising;
+    body.pace = figure.pace;
     body.step(dt);
     canvas.style.transform = `translate(${body.x - SIZE.width / 2}px, ${body.y - SIZE.height}px)`;
+    // What its bubble says is spoken by the lips, at their pace, until the bubble goes.
+    if (live.bubble !== told) {
+      told = live.bubble;
+      if (live.bubble === null) saying.rest();
+      else saying.say(live.bubble.text);
+    }
     bubble.hidden = live.said === null;
     if (live.said !== null) {
       bubble.textContent = live.said;
@@ -374,7 +403,7 @@ function animate(scene: Scene, area: () => { width: number; height: number }, re
     const state = stateOf(body, scene.mood, sleeping, scene.still);
     const box = chat && !chat.node.hidden ? chat.node.getBoundingClientRect() : null;
     figure.show(state, body.heading, box ? Math.sign(box.left + box.width / 2 - body.x) : 0);
-    figure.draw(dt, loudness());
+    figure.draw(dt, loudness(), Math.max(lips.step(dt), saying.step(dt)));
     report();
     requestAnimationFrame(frame);
   };

@@ -1,3 +1,15 @@
+# 0.3.2
+
+The companion's face comes alive, and it answers your touch.
+
+- A 3D figure with face shapes blinks, looks at you, and shows its feelings and its voice on its face, in VRM, GLB and FBX.
+- Without a voice, the companion's lips still move while a reply comes in.
+- Click the companion's head, a hand or another part of its body: it startles, and the character answers in its speech bubble. A double-click still opens the chat.
+- At every size the companion stands, lies and walks with its feet on the window's foot, and no longer slides as it walks.
+- A VRM figure you add names its maker.
+- The chat's side panel lists every tool a reply used, under "Used in this reply".
+- New in Settings › Advanced › Tools for the AI: "Names for new characters" lets the AI take each new character's name from a large list that fits the culture, era and genre.
+
 # 0.3.1
 
 A small fix for Linux.

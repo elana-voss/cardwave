@@ -35,6 +35,8 @@ pub struct Figure {
     pub name: String,
     /// `vrm`, `glb` or `fbx`.
     pub kind: String,
+    /// Who made it, as a VRM file's terms of use name them (`maker_of`); none for GLB and FBX.
+    pub maker: Option<String>,
     /// How many cards outside the Trash have it, as theirs or a mode's.
     pub cards: u32,
 }
@@ -83,10 +85,11 @@ pub struct NewFigure {
     pub mode: Option<String>,
 }
 
-/// A figure's file to keep: its name, kind, the SHA-256 and bytes of the file and of its still.
+/// A figure's file to keep: its name, kind, maker, the SHA-256 and bytes of the file and of its still.
 pub struct FigureFile<'a> {
     pub name: &'a str,
     pub kind: &'a str,
+    pub maker: Option<&'a str>,
     pub hash: &'a [u8],
     pub data: &'a [u8],
     pub still_hash: &'a [u8],
@@ -153,6 +156,45 @@ pub fn kind_of(file_name: &str, data: &[u8]) -> anyhow::Result<&'static str> {
         .with("kind", (kind.to_uppercase()).to_string())
     );
     Ok(kind)
+}
+
+/// Who made a VRM figure, as its terms of use name them: VRM 0's `meta.author`, VRM 1's `meta.authors` joined
+/// by commas, trimmed and cut; none where the file names none or is no VRM, or its JSON does not read.
+pub fn maker_of(kind: &str, data: &[u8]) -> Option<String> {
+    if kind != "vrm" {
+        return None;
+    }
+    // A GLB: a 12-byte header, then the JSON chunk's length and type, then the JSON.
+    let length = u32::from_le_bytes(data.get(12..16)?.try_into().ok()?) as usize;
+    if data.get(16..20)? != b"JSON" {
+        return None;
+    }
+    let json: serde_json::Value =
+        serde_json::from_slice(data.get(20..20usize.checked_add(length)?)?).ok()?;
+    let extensions = json.get("extensions")?;
+    let names: Vec<&str> = match extensions.pointer("/VRMC_vrm/meta/authors") {
+        Some(authors) => authors
+            .as_array()?
+            .iter()
+            .filter_map(|one| one.as_str())
+            .collect(),
+        None => vec![extensions.pointer("/VRM/meta/author")?.as_str()?],
+    };
+    let maker = names
+        .iter()
+        .map(|one| one.trim())
+        .filter(|one| !one.is_empty())
+        .collect::<Vec<_>>()
+        .join(", ");
+    (!maker.is_empty()).then(|| {
+        maker
+            .chars()
+            .take(MAX_NAME)
+            .collect::<String>()
+            // A cut right after a separator leaves no dangling ", ".
+            .trim_end_matches(|c: char| c == ',' || c.is_whitespace())
+            .to_string()
+    })
 }
 
 /// A figure's name as it is kept: the file's name without its kind, trimmed and cut, "Figure" where none is left.
@@ -237,9 +279,11 @@ pub fn import_for_card(
     // The card and mode are asked for first, so a figure for no card is not kept.
     let mode = card_mode(db, user, card_id, new.mode.as_deref())?;
     db.card_figures(user, card_id)?;
+    let maker = maker_of(kind, &data);
     let file = FigureFile {
         name: &name_of(&new.file_name),
         kind,
+        maker: maker.as_deref(),
         hash: &Sha256::digest(&data),
         data: &data,
         still_hash: &Sha256::digest(&still),
@@ -342,4 +386,29 @@ pub fn companion(db: &dyn crate::chats::Storage, user: i64) -> anyhow::Result<Op
         None => cards::document_of(db, card.version_id)?.mode_or_first(&[]),
     };
     Ok(shown(db.card_figures(user, card_id)?, mode.as_deref()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::maker_of;
+
+    /// A GLB holding only a JSON chunk with VRM 1's authors.
+    fn vrm1(authors: &[&str]) -> Vec<u8> {
+        let json = serde_json::json!({"extensions": {"VRMC_vrm": {"meta": {"authors": authors}}}});
+        let json = serde_json::to_vec(&json).unwrap();
+        let mut data = b"glTF".to_vec();
+        data.extend(2u32.to_le_bytes());
+        data.extend(((20 + json.len()) as u32).to_le_bytes());
+        data.extend((json.len() as u32).to_le_bytes());
+        data.extend(b"JSON");
+        data.extend(json);
+        data
+    }
+
+    #[test]
+    fn a_cut_maker_ends_in_no_separator() {
+        let long = "A".repeat(99);
+        let maker = maker_of("vrm", &vrm1(&[&long, "Ben"])).unwrap();
+        assert_eq!(maker, long);
+    }
 }

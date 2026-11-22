@@ -5,7 +5,8 @@
 //! their memory and files, scheduling) and leaving the command's process
 //! group, namespaces and kernel interfaces that bypass the filter
 //! (`io_uring`), and changing a file's owner or extended attributes; a
-//! file's mode, times and length go to the server (`metadata.rs`). Signals to another process than the caller's group are
+//! file's mode, times and length go to the server (`metadata.rs`). Signals
+//! to another process than the caller's group are
 //! sent to the server too, which checks the target is the command's.
 //! Trap: an argument is judged by its low 32 bits, as the kernel reads an
 //! `int`; `clone3` gets `ENOSYS`, so libc falls back to `clone`, whose flags
@@ -126,10 +127,11 @@ impl Filter {
     }
 }
 
+const REFUSED: u32 = error(libc::EPERM);
+const NO_NETWORK: u32 = error(libc::EACCES);
+
 /// The filter of a command; `internet` for a team's that may connect out.
 pub(super) fn filter(internet: bool) -> Vec<Instruction> {
-    let refused = error(libc::EPERM);
-    let no_network = error(libc::EACCES);
     let mut filter = Filter(vec![
         op(LOAD, ARCH, 0, 0),
         op(JUMP_EQUAL, AUDIT_ARCH, 1, 0),
@@ -141,6 +143,16 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
         op(JUMP_ANY_BIT, X32, 0, 1),
         op(RETURN, KILL, 0, 0),
     ]);
+    processes(&mut filter);
+    files(&mut filter);
+    network(&mut filter, internet);
+    filter.0.push(op(RETURN, ALLOW, 0, 0));
+    filter.0
+}
+
+/// Other processes, the command's group, namespaces and the kernel
+/// interfaces that bypass the filter.
+fn processes(filter: &mut Filter) {
     for call in [
         libc::SYS_setsid,
         libc::SYS_setpgid,
@@ -164,14 +176,14 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
         libc::SYS_listen,
     ] {
         let action = match call {
-            libc::SYS_bind | libc::SYS_listen => no_network,
-            _ => refused,
+            libc::SYS_bind | libc::SYS_listen => NO_NETWORK,
+            _ => REFUSED,
         };
         filter.always(call, action);
     }
     filter.always(libc::SYS_clone3, error(libc::ENOSYS));
     filter.always(libc::SYS_pidfd_open, error(libc::ENOSYS));
-    filter.when_bits(libc::SYS_clone, 0, CLONE_REFUSED, refused);
+    filter.when_bits(libc::SYS_clone, 0, CLONE_REFUSED, REFUSED);
     // Signals to the caller's own group are its; others the server judges.
     for call in [
         libc::SYS_kill,
@@ -191,12 +203,15 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
         libc::SYS_migrate_pages,
         libc::SYS_move_pages,
     ] {
-        filter.unless_zero(call, &[0], refused);
+        filter.unless_zero(call, &[0], REFUSED);
     }
-    filter.unless_zero(libc::SYS_setpriority, &[0, 1], refused);
-    // A file's details, which Landlock does not hold: its mode, times and
-    // length the server judges (`metadata.rs`); its owner and extended
-    // attributes are refused.
+    filter.unless_zero(libc::SYS_setpriority, &[0, 1], REFUSED);
+}
+
+/// A file's details, which Landlock does not hold: its mode, times and
+/// length the server judges (`metadata.rs`); its owner and extended
+/// attributes are refused.
+fn files(filter: &mut Filter) {
     for call in super::metadata::handled() {
         filter.always(call, NOTIFY);
     }
@@ -204,7 +219,7 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
     #[cfg(target_arch = "x86_64")]
     owners.extend([libc::SYS_chown, libc::SYS_lchown]);
     for call in owners {
-        filter.always(call, refused);
+        filter.always(call, REFUSED);
     }
     for call in [
         libc::SYS_setxattr,
@@ -218,14 +233,18 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
     ] {
         filter.always(call, error(libc::EOPNOTSUPP));
     }
-    // Signals by I/O to a process of the command's choosing.
+}
+
+/// Sockets: signals by I/O to a process of the command's choosing, and the
+/// network, all of it refused unless `internet`.
+fn network(filter: &mut Filter, internet: bool) {
     filter.when_equal(
         libc::SYS_fcntl,
         1,
         &[F_SETOWN, F_SETSIG, F_SETOWN_EX],
-        refused,
+        REFUSED,
     );
-    filter.when_equal(libc::SYS_ioctl, 1, &[FIOSETOWN, SIOCSPGRP], refused);
+    filter.when_equal(libc::SYS_ioctl, 1, &[FIOSETOWN, SIOCSPGRP], REFUSED);
     match internet {
         true => {
             // TCP over IPv4 or IPv6 alone: no UDP, no other family.
@@ -242,21 +261,19 @@ pub(super) fn filter(internet: bool) -> Vec<Instruction> {
                     op(JUMP_EQUAL, 0, 1, 0),
                     op(JUMP_EQUAL, IPPROTO_TCP, 0, 1),
                     op(RETURN, ALLOW, 0, 0),
-                    op(RETURN, no_network, 0, 0),
+                    op(RETURN, NO_NETWORK, 0, 0),
                 ],
             );
             filter.always(libc::SYS_connect, NOTIFY);
-            filter.when_bits(libc::SYS_sendto, 3, MSG_FASTOPEN, no_network);
-            filter.when_bits(libc::SYS_sendmsg, 2, MSG_FASTOPEN, no_network);
-            filter.when_bits(libc::SYS_sendmmsg, 3, MSG_FASTOPEN, no_network);
+            filter.when_bits(libc::SYS_sendto, 3, MSG_FASTOPEN, NO_NETWORK);
+            filter.when_bits(libc::SYS_sendmsg, 2, MSG_FASTOPEN, NO_NETWORK);
+            filter.when_bits(libc::SYS_sendmmsg, 3, MSG_FASTOPEN, NO_NETWORK);
         }
         false => {
-            filter.always(libc::SYS_socket, no_network);
-            filter.always(libc::SYS_connect, no_network);
+            filter.always(libc::SYS_socket, NO_NETWORK);
+            filter.always(libc::SYS_connect, NO_NETWORK);
         }
     }
-    filter.0.push(op(RETURN, ALLOW, 0, 0));
-    filter.0
 }
 
 /// Lays `program` on this process, returning the descriptor its notices

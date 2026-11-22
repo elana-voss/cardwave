@@ -89,6 +89,11 @@ export class Companion implements Actor {
     return this.saying?.text ?? null;
   }
 
+  /** Its bubble now, or null: a new one at each `say`, also of the same text. */
+  get bubble(): { readonly text: string } | null {
+    return this.saying;
+  }
+
   /** Runs on by `dt` seconds: the steps, and the look, feeling and message, each until its time ends. */
   step(dt: number, still: boolean): void {
     this.clock += dt * 1000;
@@ -149,20 +154,26 @@ export class Companion implements Actor {
   }
 }
 
-/** Tells the server what the figure does (`send`): at once when told `now`, else at most each half second while
- * it changes and every five seconds while it does not, which keeps it counted as shown. `known` makes what it does,
+/** Tells the server what the figure does (`send`): at once when told `now` or when the hand takes the figure or lets
+ * it go (`held`, which the server needs to keep no steps the figure dropped while held), else at most each half second while
+ * it changes and every five seconds while it does not, which keeps it counted as shown; a telling that failed is
+ * repeated at the next half second (the server keeps a bubble's line once told it shows). `known` makes what it does,
  * called only when it may be told. */
-export function reporter(send: (figure: CompanionFigure) => Promise<unknown>): (known: () => CompanionFigure, now?: boolean) => void {
+export function reporter(send: (figure: CompanionFigure) => Promise<unknown>): (known: () => CompanionFigure, now?: boolean, held?: boolean) => void {
   let last = "";
   let at = -Infinity;
-  return (known, now = false) => {
+  let wasHeld = false;
+  return (known, now = false, held = wasHeld) => {
     const since = Date.now() - at;
+    if (held !== wasHeld) now = true;
+    wasHeld = held;
     if (!now && since < 500) return;
     const figure = known();
     const said = JSON.stringify(figure);
     if (!now && said === last && since < 5000) return;
     last = said;
     at = Date.now();
-    void send(figure).catch(() => {});
+    // Not heard: told again at the next half second, as a bubble shows only briefly.
+    void send(figure).catch(() => (last = ""));
   };
 }

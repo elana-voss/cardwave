@@ -923,6 +923,20 @@ const MIGRATIONS: &[&str] = &[
         embedding blob not null,
         primary key (store_id, hash)
      ) strict, without rowid;",
+    // A reply's tool calls ("Used in this reply"), which take the place of the
+    // pages and files it read; those are not carried over.
+    "alter table messages drop column reads;
+     alter table messages add column calls text;",
+    // The names a chat's names tool used (`tools::names`), as "culture/name",
+    // `last` 1 for a surname.
+    "create table chat_used_names (
+        chat_id integer not null references chats (id) on delete cascade,
+        last integer not null,
+        name text not null,
+        primary key (chat_id, last, name)
+     ) strict, without rowid;",
+    // Who made a figure, as a VRM file's terms of use name them (see `figures::maker_of`); none before.
+    "alter table figures add column maker text;",
 ];
 
 /// The `what` of the refusal of a database a newer Cardwave wrote.

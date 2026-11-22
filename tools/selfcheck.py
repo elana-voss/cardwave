@@ -1,6 +1,7 @@
 """The self-check of the plan's trials section: python tools/selfcheck.py (check.sh's `tickets` runs it after `tickets.py check`).
 
-Prints the last closed milestone's agents, hand-overs and tokens against its estimate (from .checklists/agents.tsv), then each
+Prints the last closed milestone's agents, hand-overs and tokens against its estimate (from .checklists/agents.tsv, where an agent's row holds the tokens
+of the reviews it started), then each
 problem of `trials` (its docstring says what) or "trials: no problem"; exit 1 with problems. The plan's file and its trials heading
 are read from .claude/one_run.json. Standard library only; the tickets are read through tickets.py.
 """
@@ -54,43 +55,67 @@ def trials(tickets, plan):
 
 def closed_report(tickets, rows):
     """The last closed milestone (numbered, Done, latest updated) from its agents' rows of .checklists/agents.tsv (the
-    last row per id; a part's agents, `<n>a`, count): agents, hand-overs and tokens against its estimate."""
+    last row per id; a part's agents, `<n>a`, count): agents, hand-overs and tokens against its estimate. A review that
+    ran within another of its agents' time was started by that agent, whose row holds its tokens already."""
     done = [(t["fields"].get("updated", ""), id) for id, t in tickets.items() if t["fields"].get("kind") == "milestone"
             and t["fields"].get("status") == "Done" and t["fields"].get("number") and not t["fields"].get("parent")]
     if not done:
         return None
     id = max(done)[1]
     number = tickets[id]["fields"]["number"]
-    mine = {r["id"]: r for r in rows if re.match(rf"{re.escape(number)}[a-z]?[ :]", r.get("name", ""))}.values()
-    tokens = sum(int(r["tokens"]) for r in mine if str(r.get("tokens", "")).isdigit()) / 1e6
-    over = sum(r.get("end") == "handed over" for r in mine)
-    text = (f"{number} {id}: {len(mine)} agents, {over} handed over, {round(tokens, 1):g} million tokens against "
+    agents = {}
+    for r in rows:
+        if re.match(rf"{re.escape(number)}[a-z]?[ :]", r.get("name", "")):
+            agents.setdefault(r["id"], []).append(r)
+    last = {a: rs[-1] for a, rs in agents.items()}
+    spans = {a: s for a, rs in agents.items() if (s := span(rs))}
+    inside = {a for a, (start, end) in spans.items() if "review" in last[a].get("kind", "") and
+              any(b != a and s <= start and end <= e for b, (s, e) in spans.items())}
+    tokens = sum(int(r["tokens"]) for a, r in last.items() if a not in inside and str(r.get("tokens", "")).isdigit()) / 1e6
+    over = sum(r.get("end") == "handed over" for r in last.values())
+    text = (f"{number} {id}: {len(last)} agents, {over} handed over, {round(tokens, 1):g} million tokens against "
             f"{tickets[id]['fields'].get('estimate') or '?'} estimated")
-    return text + main_tokens(rows, [r for r in mine if r.get("time")])
+    if not spans:
+        return text
+    return text + main_tokens(rows, min(s for s, _ in spans.values()), max(e for _, e in spans.values()))
 
 
-def main_tokens(rows, mine):
-    """The main session's tokens over the milestone's time (its agents' first start to last stop), as the difference of its
-    `main-<session>` rows (kind main, one per agent stop): a "; main session X million (input, cache write, cache read, output)" tail."""
-    if not mine:
-        return ""
-    stops = [r["time"] for r in mine]
+def moment(text):
+    """A row's time as a datetime, or None where it has none that reads."""
     try:
-        start = min(datetime.datetime.fromisoformat(r["time"].replace("Z", "+00:00")) - datetime.timedelta(minutes=float(r.get("minutes") or 0))
-                    for r in mine).strftime("%Y-%m-%dT%H:%M:%S")
+        return datetime.datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except (AttributeError, ValueError):
+        return None
+
+
+def span(rows):
+    """An agent's time from its rows: its first start (a stop less its minutes) to its last stop; None without times."""
+    stops = [(at, r) for r in rows if (at := moment(r.get("time")))]
+    try:
+        return (min(at - datetime.timedelta(minutes=float(r.get("minutes") or 0)) for at, r in stops),
+                max(at for at, _ in stops)) if stops else None
     except ValueError:
-        return ""
-    end, cols, total = max(stops), ("input", "cache write", "cache read", "output"), [0, 0, 0, 0]
+        return None  # minutes that do not read
+
+
+def main_tokens(rows, start, end):
+    """The main session's tokens from `start` to `end`, as the difference of its `main-<session>` rows (kind main, one per
+    agent stop, each its session's total so far): a "; main session X million (input, cache write, cache read, output)" tail."""
+    cols = ("input", "cache write", "cache read", "output")
     sessions = {}
     for r in rows:
-        if r.get("kind") == "main" and r.get("input", "").isdigit():
-            sessions.setdefault(r["id"], []).append(r)
-    for rs in sessions.values():
-        at = lambda t, rs=rs: [int(r[c]) for c in cols] if (r := max((r for r in rs if r["time"] <= t), key=lambda r: r["time"], default=None)) else [0] * 4
-        total = [a + b - c for a, b, c in zip(total, at(end), at(start))]
-    if not any(total):
+        if r.get("kind") == "main" and r.get("input", "").isdigit() and (at := moment(r.get("time"))):
+            sessions.setdefault(r["id"], []).append((at, [int(r[c]) for c in cols]))
+
+    def total(stamps, t):
+        return max(((at, n) for at, n in stamps if at <= t), key=lambda s: s[0], default=(None, [0] * 4))[1]
+
+    sums = [0] * 4
+    for stamps in sessions.values():
+        sums = [s + b - a for s, a, b in zip(sums, total(stamps, start), total(stamps, end))]
+    if not any(sums):
         return ""
-    return f"; main session {sum(total) / 1e6:.1f} million (" + ", ".join(f"{c} {v / 1e6:.1f}" for c, v in zip(cols, total)) + ")"
+    return f"; main session {sum(sums) / 1e6:.1f} million (" + ", ".join(f"{c} {v / 1e6:.1f}" for c, v in zip(cols, sums)) + ")"
 
 
 def agent_rows(path=ROOT / ".checklists" / "agents.tsv"):
@@ -102,10 +127,11 @@ def agent_rows(path=ROOT / ".checklists" / "agents.tsv"):
 
 
 def main():
-    report = closed_report(load(), agent_rows())
+    tickets = load()
+    report = closed_report(tickets, agent_rows())
     if report:
         print(report)
-    found = trials(load(), PLAN.read_text(encoding="utf-8"))
+    found = trials(tickets, PLAN.read_text(encoding="utf-8"))
     print(chr(10).join(found) if found else "trials: no problem")
     return 1 if found else 0
 

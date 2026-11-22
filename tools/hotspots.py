@@ -28,7 +28,7 @@ def load(name, default):
     path = os.path.join(D, name)
     return (json.load(open(path, encoding="utf8")) if name.endswith(".json") else open(path, encoding="utf8").read()) if os.path.exists(path) else default
 files = {rel(f["Location"]): f for lang in load("scc.json", []) if lang["Name"] in ("Rust", "TypeScript") for f in lang["Files"]
-         if not f["Location"].endswith(".test.ts")}
+         if not f["Location"].endswith((".test.ts", ".test-support.ts"))}
 long_fns, copies, unused, cover = Counter(), Counter(), Counter(), {}
 for line in load("clippy.txt", "").splitlines():  # cargo's JSON lines, so not read as one JSON file
     msg = json.loads(line).get("message") if line.startswith("{") else None

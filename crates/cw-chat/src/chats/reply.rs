@@ -15,7 +15,7 @@ use anyhow::ensure;
 use chrono::{DateTime, FixedOffset, Local};
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
-use cw_prompt::builder::{self, LeftOut, PromptRequest};
+use cw_prompt::builder::{self, BuiltPrompt, LeftOut, PromptRequest};
 use cw_prompt::{ChatMessage, PromptMessage, Role, Variables};
 use cw_provider::{self as provider, Provider, Sampling};
 
@@ -69,13 +69,18 @@ Output ONLY the improved message. Nothing else.
 %CURRENT_USER_MESSAGE%]";
 
 /// What a reply's prompt is given beside the chat: what it is reminded of,
-/// the pieces of documents (as the builder's `data_context`), and the chat's
-/// reply length, which the context keeps room for.
+/// the pieces of documents (as the builder's `data_context`), what the chat's
+/// own tools offered tell of them (`tools_advertisement`), the chat's
+/// reply length, which the context keeps room for, and, for the companion's
+/// character, what its figure said in its bubble lately (`bubble`, told after
+/// the log beside `time_note`; a continued reply is not told it).
 #[derive(Clone, Copy)]
 pub struct Given<'a> {
     pub memory: Option<&'a str>,
     pub documents: Option<&'a str>,
+    pub tools: Option<&'a str>,
     pub length: u32,
+    pub bubble: Option<&'a str>,
 }
 
 /// Builds the prompt that has the newest reply continued: the chat down to
@@ -86,7 +91,7 @@ pub fn continue_prompt(
     sampling: &Sampling,
     given: Given,
     direction: Option<&str>,
-) -> anyhow::Result<Vec<PromptMessage>> {
+) -> anyhow::Result<BuiltPrompt> {
     let instruction = steered(CONTINUE, direction);
     // A reply being written stays out of a prompt; this one is what is continued.
     if let Some(last) = inputs.state.messages.last_mut() {
@@ -97,10 +102,11 @@ pub fn continue_prompt(
         injected_message: Some((Role::User, &instruction)),
         memory_context: given.memory,
         data_context: given.documents,
+        tools_advertisement: given.tools,
         ..PromptRequest::new(&inputs.character, sampling.context())
     };
     let built = builder::build(&request, &mut inputs.state, &mut Variables::new());
-    Ok(whole(built)?.messages)
+    whole(built)
 }
 
 /// Refuses a prompt that left out the character (the system message), the
@@ -185,17 +191,20 @@ pub fn prompt_for(
     reply: &Message,
     mut inputs: chats::PromptInputs,
     given: Given,
-) -> anyhow::Result<Vec<PromptMessage>> {
-    let note = time_note(
+) -> anyhow::Result<BuiltPrompt> {
+    let time = time_note(
         &inputs.state.messages,
         &inputs.times,
         Local::now().fixed_offset(),
     );
+    let notes: Vec<&str> = time.as_deref().into_iter().chain(given.bubble).collect();
+    let note = (!notes.is_empty()).then(|| notes.join("\n"));
     let request = PromptRequest {
         max_response_length: Some(given.length as usize),
         injected_message: note.as_deref().map(|note| (Role::System, note)),
         memory_context: given.memory,
         data_context: given.documents,
+        tools_advertisement: given.tools,
         ..PromptRequest::new(&inputs.character, sampling.context())
     };
     // Variables shared by all of a user's chats are not stored yet.
@@ -216,7 +225,7 @@ pub fn prompt_for(
     };
     let sent = sent(&built.breakdown.segments);
     chats::save_used(db, user, reply.id, &inputs, &built.lore, (context, sent))?;
-    Ok(built.messages)
+    Ok(built)
 }
 
 /// The tokens of a prompt's `segments`, part by part, as "Sent to the AI" names them.

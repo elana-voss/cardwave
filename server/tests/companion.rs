@@ -8,7 +8,9 @@
 //! (`/api/companion/act`), which a test's socket answers as its window would.
 //!
 //! `Model` stands in for a model's server: it answers the animator with
-//! `steps` and notes what it was asked; it answers no other question.
+//! `steps` and notes what it was asked; it answers no other question. A touch
+//! and the figure's bubble lines told to the chat model go through the reply
+//! tests' `streamed::Provider`, which holds each answer until the test writes it.
 
 mod common;
 
@@ -19,6 +21,7 @@ use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use common::server::{Server, event, start};
+use common::streamed::{DONE, Provider, follow, generate, has, says};
 use serde_json::{Value, json};
 use tokio::net::TcpListener;
 
@@ -368,6 +371,20 @@ async fn an_act_the_window_does_not_begin_is_refused() {
 }
 
 #[tokio::test]
+async fn what_an_act_the_window_does_not_begin_says_is_not_told_as_said() {
+    let model = Model::start(r#"{"steps": []}"#).await;
+    let server = start().await;
+    gwen(&server, &model, "").await;
+    assert_eq!(server.put("/api/companion/live", figure(0)).await.0, 204);
+    let never = json!({ "steps": [{ "do": "say", "text": "Never shown." }] });
+    assert_eq!(server.post("/api/companion/act", never).await.0, 400);
+    let asked = json!({ "chat_id": null, "width": 1600, "height": 900, "x": 300, "y": 900, "state": "idle", "occasion": "alone", "alone_s": 60 });
+    assert_eq!(server.post("/api/companion/plan", asked).await.0, 200);
+    let told = question(&model, 0);
+    assert!(!told.contains("Never shown."), "{told}");
+}
+
+#[tokio::test]
 async fn after_a_reply_the_animator_is_asked_of_the_chat_model_and_else_of_the_helper_model() {
     let model = Model::start(r#"{"steps": []}"#).await;
     let server = start().await;
@@ -403,4 +420,127 @@ async fn in_a_group_chat_begun_with_another_card_the_animator_is_told_the_compan
     server.post("/api/companion/plan", asked).await;
     let told = question(&model, 0);
     assert!(told.contains("<character>Gwen</character>"), "{told}");
+}
+
+/// Gives the card `card_id` the content level `rating`, as describing it would.
+fn rated(server: &Server, card_id: &Value, rating: &str) {
+    let options = server.options();
+    let db = cw_store::Db::open(
+        &options.data_dir.join(cw_key::FILE_NAME),
+        options.key.given().unwrap(),
+    )
+    .unwrap();
+    let facets = json!({ "rating": rating }).to_string();
+    db.with(|conn| {
+        conn.execute(
+            "insert into card_descriptions (card_id, state, facets, updated_at) values (?1, 'described', ?2, 0)",
+            (card_id.as_i64().unwrap(), &facets),
+        )
+    })
+    .unwrap();
+}
+
+/// A model's whole streamed answer of `steps`.
+fn answered(steps: Value) -> Vec<u8> {
+    [
+        says(&json!({ "steps": steps }).to_string()).as_slice(),
+        DONE,
+    ]
+    .concat()
+}
+
+#[tokio::test]
+async fn a_touch_is_told_with_the_cards_content_level_and_what_the_figure_said_in_its_bubble() {
+    let mut provider = Provider::start().await;
+    let server = start().await;
+    let stand_in = Model {
+        url: provider.url.clone(),
+        asked: Arc::default(),
+    };
+    let made = gwen(&server, &stand_in, "").await;
+    let id = chat_with(&server, &made).await;
+    rated(&server, &made["card_id"], "suggestive");
+    let touch = json!({ "chat_id": id, "width": 1600, "height": 900, "x": 300, "y": 900, "state": "startled", "occasion": "touched", "touched": "head" });
+    let answering = async {
+        let asked = provider.next().await;
+        let steps = json!([{ "do": "say", "text": "That tickles!" }, { "do": "react", "feeling": "playful" }]);
+        asked.answer.send(answered(steps)).unwrap();
+        asked
+    };
+    let ((status, first), asked) =
+        tokio::join!(server.post("/api/companion/plan", touch.clone()), answering);
+    assert_eq!(status, 200, "{first}");
+    assert_eq!(first["steps"][0]["text"], "That tickles!");
+    assert_eq!(asked.body["model"], "test-model");
+    let question = asked.body["messages"][1]["content"].as_str().unwrap();
+    for told in [
+        "The user has just touched the figure's head.",
+        "<content_level>suggestive: flirting and innuendo, nothing explicit</content_level>",
+    ] {
+        assert!(question.contains(told), "{told} is not in {question}");
+    }
+
+    // A touch after it is told what the figure said in its bubble, once the window showed it there.
+    let mut shown = figure(0);
+    shown["saying"] = json!("That tickles!");
+    assert_eq!(server.put("/api/companion/live", shown).await.0, 204);
+    let mut hand = touch.clone();
+    hand["touched"] = json!("hand");
+    let answering = async {
+        let asked = provider.next().await;
+        asked.answer.send(answered(json!([]))).unwrap();
+        asked
+    };
+    let ((status, _), asked) = tokio::join!(server.post("/api/companion/plan", hand), answering);
+    assert_eq!(status, 200);
+    let question = asked.body["messages"][1]["content"].as_str().unwrap();
+    assert!(question.contains("figure's hand."), "{question}");
+    assert!(
+        question.contains("<bubble_lately>\"That tickles!\"</bubble_lately>"),
+        "{question}"
+    );
+}
+
+#[tokio::test]
+async fn the_characters_chat_model_is_told_the_figures_bubble_lately_which_the_chat_does_not_keep()
+{
+    let mut provider = Provider::start().await;
+    let server = start().await;
+    let stand_in = Model {
+        url: provider.url.clone(),
+        asked: Arc::default(),
+    };
+    let made = gwen(&server, &stand_in, "").await;
+    let id = chat_with(&server, &made).await;
+    let alone = json!({ "chat_id": id, "width": 1600, "height": 900, "x": 300, "y": 900, "state": "idle", "occasion": "alone", "alone_s": 60 });
+    let answering = async {
+        let asked = provider.next().await;
+        let steps = json!([{ "do": "say", "text": "Quiet in here." }]);
+        asked.answer.send(answered(steps)).unwrap();
+    };
+    let ((status, _), _) = tokio::join!(server.post("/api/companion/plan", alone), answering);
+    assert_eq!(status, 200);
+    let mut shown = figure(0);
+    shown["saying"] = json!("Quiet in here.");
+    assert_eq!(server.put("/api/companion/live", shown).await.0, 204);
+
+    let chat = format!("/api/chats/{id}");
+    let said = json!({ "content": "Hi." });
+    assert_eq!(server.post(&format!("{chat}/messages"), said).await.0, 201);
+    let mut socket = server.listen().await;
+    let (status, message) = generate(&server, &chat, json!({})).await;
+    assert_eq!(status, 202, "{message}");
+    let asked = provider.next().await;
+    assert!(
+        has(&asked.body["messages"], "\"Quiet in here.\""),
+        "{}",
+        asked.body["messages"]
+    );
+    asked
+        .answer
+        .send([says("Hello again.").as_slice(), DONE].concat())
+        .unwrap();
+    follow(&mut socket, "").await;
+    let (_, view) = server.get(&chat).await;
+    assert!(!view.to_string().contains("Quiet in here."), "{view}");
 }

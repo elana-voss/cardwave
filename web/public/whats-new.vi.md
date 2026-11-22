@@ -1,3 +1,15 @@
+# 0.3.2
+
+Khuôn mặt của người bạn đồng hành trở nên sống động, và nó đáp lại khi bạn chạm vào.
+
+- Nhân vật 3D có hình dạng khuôn mặt sẽ chớp mắt, nhìn bạn, và thể hiện cảm xúc cùng giọng nói trên khuôn mặt, với VRM, GLB và FBX.
+- Dù không có giọng đọc, môi của người bạn đồng hành vẫn chuyển động khi câu trả lời đang đến.
+- Nhấp vào đầu, tay hoặc phần khác trên cơ thể người bạn đồng hành: nó giật mình, và nhân vật trả lời trong bong bóng lời thoại. Nhấp đúp vẫn mở cuộc trò chuyện.
+- Ở mọi kích thước, người bạn đồng hành đứng, nằm và đi với chân trên mép dưới cửa sổ, và không còn trượt khi đi.
+- Nhân vật VRM bạn thêm vào sẽ ghi tên người tạo ra nó.
+- Bảng bên của cuộc trò chuyện liệt kê mọi công cụ mà một câu trả lời đã dùng, trong "Đã dùng ở câu trả lời này".
+- Mới trong Cài đặt › Nâng cao › Công cụ cho AI: "Tên cho nhân vật mới" giúp AI lấy tên mỗi nhân vật mới từ một danh sách lớn phù hợp với văn hóa, thời đại và thể loại.
+
 # 0.3.1
 
 Một bản sửa nhỏ cho Linux.

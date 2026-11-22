@@ -33,13 +33,14 @@ import { appLanguageLine } from "../settings/app-language";
 import { toolsGroup } from "../settings/tools";
 import { updateLines } from "../settings/update";
 import { voiceLine } from "../voice/voice-setup";
-import { chatLayouts, chatLayout, LOOK, setChatLayout, setTheme, theme, themes, type Theme } from "../theme";
+import { chatLayouts, chatLayout, LOOK, messagePictures, setChatLayout, setMessagePictures, setTheme, theme, themes, type Theme } from "../theme";
 import { LABELS } from "../setting-labels";
 import { comma } from "../format";
 
 /**
  * The group "Appearance": the theme, which is the system's until light or dark is picked, and how a chat draws
- * its messages, as bubbles until plain is picked, both this browser's own; and "Show pictures from other websites", the
+ * its messages, as bubbles until plain is picked, and the pictures beside its names, on until switched off, all
+ * this browser's own; and "Show pictures from other websites", the
  * server's, off until switched on (the owner, 2026-10-21; narration.ts).
  */
 function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
@@ -70,6 +71,9 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
   // The tabs, this browser's own, on at first (the owner, 2026-11-15); the switch shows them at once.
   const tabs = switchBox({ checked: tabsOn(), ariaLabel: LABELS.settings.tabs });
   tabs.onchange = () => setTabsOn(tabs.checked);
+  // The pictures beside each message's name, this browser's own, on at first (the owner, 2026-11-17).
+  const pictures = switchBox({ checked: messagePictures(), ariaLabel: LABELS.settings.msgPictures });
+  pictures.onchange = () => setMessagePictures(pictures.checked);
   const node = group(
     wording("settings-appearance"),
     null,
@@ -80,6 +84,7 @@ function appearanceGroup(): { node: HTMLElement; read(): void; left(): void } {
       { className: "group" },
       item(LABELS.settings.theme, themeAbout, themeField.node),
       item(LABELS.settings.chatLayout, wording("settings-layout-about"), layoutNode),
+      item(LABELS.settings.msgPictures, wording("settings-msg-pictures-about"), pictures),
       item(LABELS.settings.webPictures, wording("settings-web-pictures-about"), web.toggle),
       item(LABELS.settings.tabs, wording("settings-tabs-about"), tabs),
       companion?.node ?? null,

@@ -15,11 +15,12 @@
 //! process orphaned out of its tree is refused.
 
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
-use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
+use std::os::fd::{AsRawFd, OwnedFd};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 use super::address::reachable;
+use super::caller::{descriptor, errno, pidfd_open, read_memory, status};
 use super::metadata;
 
 const RECEIVE: libc::c_ulong = 0xC050_2100;
@@ -169,27 +170,12 @@ fn valid(listener: libc::c_int, id: u64) -> bool {
     unsafe { libc::ioctl(listener, ID_VALID as _, &id) == 0 }
 }
 
-/// A process's field `field` (such as `Tgid:`) from `/proc/<pid>/status`.
-pub(super) fn status(pid: libc::pid_t, field: &str) -> Option<libc::pid_t> {
-    let text = std::fs::read_to_string(format!("/proc/{pid}/status")).ok()?;
-    text.lines()
-        .find_map(|line| line.strip_prefix(field))
-        .and_then(|value| value.trim().parse().ok())
-}
-
 /// A process's group, from `/proc/<pid>/stat` (its fifth field, after the
 /// name in parentheses, which may hold anything).
 fn group_of(pid: libc::pid_t) -> Option<libc::pid_t> {
     let text = std::fs::read_to_string(format!("/proc/{pid}/stat")).ok()?;
     let after = &text[text.rfind(')')? + 1..];
     after.split_whitespace().nth(2)?.parse().ok()
-}
-
-pub(super) fn pidfd_open(pid: libc::pid_t) -> Option<OwnedFd> {
-    // SAFETY: a plain system call; the descriptor it makes is ours.
-    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0u32) };
-    // SAFETY: as above.
-    (fd >= 0).then(|| unsafe { OwnedFd::from_raw_fd(fd as libc::c_int) })
 }
 
 fn send_signal(pidfd: &OwnedFd, signal: libc::c_int) -> Result<i64, i32> {
@@ -207,12 +193,6 @@ fn send_signal(pidfd: &OwnedFd, signal: libc::c_int) -> Result<i64, i32> {
         0 => Ok(0),
         _ => Err(errno()),
     }
-}
-
-fn errno() -> i32 {
-    std::io::Error::last_os_error()
-        .raw_os_error()
-        .unwrap_or(libc::EPERM)
 }
 
 /// A signal call: its result, and whether the kernel runs it itself.
@@ -277,7 +257,7 @@ fn connect(listener: libc::c_int, notice: &Notice, command: &Command) -> Result<
     }
     let mut address = [0u8; 128];
     let caller = notice.pid as libc::pid_t;
-    let read = metadata::read_memory(caller, args[1], &mut address[..length]);
+    let read = read_memory(caller, args[1], &mut address[..length]);
     if !read || !valid(listener, notice.id) {
         return Err(libc::EPERM);
     }
@@ -285,26 +265,7 @@ fn connect(listener: libc::c_int, notice: &Notice, command: &Command) -> Result<
     if !allowed(address, command)? {
         return Err(libc::ENETUNREACH);
     }
-    let process = status(caller, "Tgid:").ok_or(libc::EPERM)?;
-    let pidfd = pidfd_open(process).ok_or(libc::EPERM)?;
-    // SAFETY: a plain system call; the descriptor it makes is ours.
-    let copy = unsafe {
-        libc::syscall(
-            libc::SYS_pidfd_getfd,
-            pidfd.as_raw_fd(),
-            args[0] as i32,
-            0u32,
-        )
-    };
-    if copy < 0 {
-        return Err(libc::EBADF);
-    }
-    // SAFETY: as above.
-    let copy = unsafe { OwnedFd::from_raw_fd(copy as libc::c_int) };
-    // The caller still waits in this call: the process read is its.
-    if !valid(listener, notice.id) {
-        return Err(libc::EPERM);
-    }
+    let copy = descriptor(caller, args[0] as i32, &|| valid(listener, notice.id))?;
     // SAFETY: the address is the bytes judged, with their length.
     let done = unsafe {
         libc::connect(

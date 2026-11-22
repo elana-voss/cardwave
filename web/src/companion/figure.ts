@@ -3,45 +3,39 @@
 // web/src/figures/, tools/companion_assets.py), each given the carrier's clips (`CARRIED`), else, and where that
 // does not load, the robot robot.glb ("RobotExpressive" by Tomás Laulhé, modified by Don McCurdy, CC0 1.0, from
 // three.js's examples) with its own clips (`ROBOT`). What plays is clips.ts's `Clips`; the figure turns over a
-// moment to where it goes or looks (`turned`), shows a feeling on its face and opens a VRM's mouth as loud as the
-// voice is heard (`showFace`, `mouthOf`): a figure without mouth shapes moves no lips.
+// moment to where it goes or looks (`turned`), and its face lives by face.ts's `LiveFace`: feelings, blinks, the
+// eyes on the user and the mouth as loud as the voice is heard, else as lips.ts's letters have it (`mouthOf`). It is seen straight on, its
+// lowest point as its idle clip stands it on the canvas's foot (`framing`, `standing`), at every size; in every
+// other clip ground.ts's `Ground` rests it there, and its walk's `pace` is how fast main.ts has the body walk.
+// Where a click lands on its body is figures/touch.ts's (`bodyPartAt`; figures/ray.ts `prepare`s the figure for it
+// when placed), by its human bones (the robot's by `ROBOT_BONES`).
 //
 // Traps: drawn by figures/drawer.ts's renderer, WebGPU or WebGL 2, which keeps no frame after the task that drew it:
 // each frame is copied to a 2D canvas (`kept`), whose pixel `opaqueAt` reads to say whether the cursor is on the
 // figure, which is what lets a click through everywhere else (the desktop's cursor poll). Until the renderer has
 // started and the model has come, nothing is drawn and no pixel is the figure's. A figure replaced is let go of
 // (`letGo`), and one whose load a later change overtook is never shown (`newest`).
-import { AnimationMixer, Box3, type AnimationClip, type Bone, PerspectiveCamera, Scene, Vector3, type Mesh, type Object3D } from "three";
+import { AnimationMixer, Box3, type AnimationClip, type Bone, type Camera, type Object3D, OrthographicCamera, Scene } from "three";
 import type { WebGPURenderer } from "three/webgpu";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { type VRM, VRMUtils } from "@pixiv/three-vrm";
+import type { BodyPart } from "../api/generated/BodyPart";
 import type { Clip } from "../api/generated/Clip";
 import type { Feeling } from "../api/generated/Feeling";
 import { drawer, lit } from "../figures/drawer";
 import { clipsFor, type FigureKind, loadFigure } from "../figures/load";
+import { type HumanBone, humanBoneOf } from "../figures/skeleton";
 import { FILL, SIZE, type State } from "./body";
 import { CARRIED, type ClipTable, Clips, ROBOT } from "./clips";
+import { Ground } from "./ground";
+import { LiveFace } from "./face";
+import { prepare } from "../figures/ray";
+import { bodyPartAt } from "../figures/touch";
 import robot from "./robot.glb";
 import woman from "../figures/woman.glb";
 import man from "../figures/man.glb";
 import type { BaseFigure } from "../api/generated/BaseFigure";
 
-
-/** Each feeling on the face: a VRM's expression and the robot's shape key, and how strong. */
-const FACES: Record<Feeling, { vrm: string; robot: string | null; weight: number }> = {
-  happy: { vrm: "happy", robot: null, weight: 1 },
-  excited: { vrm: "happy", robot: "Surprised", weight: 1 },
-  surprised: { vrm: "surprised", robot: "Surprised", weight: 1 },
-  sad: { vrm: "sad", robot: "Sad", weight: 1 },
-  angry: { vrm: "angry", robot: "Angry", weight: 1 },
-  agree: { vrm: "happy", robot: null, weight: 0.5 },
-  disagree: { vrm: "angry", robot: "Angry", weight: 0.4 },
-  puzzled: { vrm: "surprised", robot: "Surprised", weight: 0.4 },
-  afraid: { vrm: "surprised", robot: "Surprised", weight: 1 },
-  playful: { vrm: "happy", robot: null, weight: 0.7 },
-  bashful: { vrm: "happy", robot: null, weight: 0.4 },
-  tired: { vrm: "sad", robot: "Sad", weight: 0.4 },
-};
 
 /** How far the head turns up or down to where it looks, at most (radians). */
 const PITCH = 0.45;
@@ -58,28 +52,13 @@ export function turned(now: number, want: number, dt: number): number {
   return now + way * (1 - Math.exp(-TURN * dt));
 }
 
-/** How open the mouth is after `dt` seconds of a voice heard as loud as `loudness`, from `now` (0 shut to 1). */
-export const mouthOf = (now: number, loudness: number, dt: number): number =>
-  now + (Math.min(1, loudness * OPENS) - now) * (1 - Math.exp(-LIPS * dt));
+/** Whether a figure turned by `y` (radians, wound past a turn or not) faces the user. */
+export const facing = (y: number): boolean => Math.abs(Math.atan2(Math.sin(y), Math.cos(y))) < 0.35;
 
-/** What of a VRM the face needs. */
-type Expressions = { expressionManager?: { setValue(name: string, weight: number): void } } | null;
-
-/** Shows `feeling` on the face, the robot's shape keys or a VRM's expressions, and opens a VRM's mouth by `open`
- * (its "aa"): a figure without mouth shapes moves no lips. */
-export function showFace(face: Mesh | null, vrm: Expressions, feeling: Feeling | null, open: number): void {
-  const look = feeling ? FACES[feeling] : null;
-  const shapes = face?.morphTargetDictionary;
-  const weights = face?.morphTargetInfluences;
-  if (shapes && weights) {
-    for (const name of ["Angry", "Sad", "Surprised"]) {
-      const at = shapes[name];
-      if (at !== undefined) weights[at] = look?.robot === name ? look.weight : 0;
-    }
-  }
-  for (const name of ["happy", "angry", "sad", "surprised"]) vrm?.expressionManager?.setValue(name, look?.vrm === name ? look.weight : 0);
-  vrm?.expressionManager?.setValue("aa", open);
-}
+/** How open the mouth is after `dt` seconds of a voice heard as loud as `loudness`, from `now` (0 shut to 1), or
+ * as open as the letters spoken without a voice have it (`letters`, lips.ts's), whichever is wider. */
+export const mouthOf = (now: number, loudness: number, dt: number, letters = 0): number =>
+  now + (Math.max(Math.min(1, loudness * OPENS), letters) - now) * (1 - Math.exp(-LIPS * dt));
 
 /** The base figure's file, or none for the robot. */
 export function baseSource(base: BaseFigure): FigureSource | null {
@@ -99,6 +78,21 @@ interface Placed {
   clips: AnimationClip[];
   table: ClipTable;
   vrm: VRM | null;
+  /** Its human bones, by which a click finds the part of the body (touch.ts). */
+  bones: ReadonlyMap<HumanBone, Object3D>;
+}
+
+/** The robot's bones that its names do not tell. */
+const ROBOT_BONES: Record<string, HumanBone> = { Abdomen: "spine", Torso: "chest", Palm2L: "leftHand", Palm2R: "rightHand" };
+
+/** The human bones of the robot, by their names. */
+function robotBones(model: Object3D): Map<HumanBone, Object3D> {
+  const bones = new Map<HumanBone, Object3D>();
+  model.traverse((node) => {
+    const bone = (node as Bone).isBone ? (ROBOT_BONES[node.name] ?? humanBoneOf(node.name)) : null;
+    if (bone && !bones.has(bone)) bones.set(bone, node);
+  });
+  return bones;
 }
 
 /** `load` whose answer is used only for the newest call: an earlier call answers undefined once a later began. */
@@ -109,6 +103,36 @@ export function newest<A, T>(load: (arg: A) => Promise<T>): (arg: A) => Promise<
     const answer = await load(arg);
     return mine === turn ? answer : undefined;
   };
+}
+
+/** The camera that frames a figure whose box standing is `stood`, on a canvas `aspect` wide to its height: the figure
+ * standing takes `FILL` of the canvas's height, its lowest point on the canvas's foot, which main.ts stands on the
+ * body's feet, with room above and at the sides for a jump and for raised arms. Seen straight on, without
+ * perspective, as a perspective would draw a foot nearer the camera lower than one further off, by a share of the
+ * canvas, so more pixels the larger the figure (milestone 160). */
+export function framing(stood: Box3, aspect: number): Camera {
+  const view = (stood.max.y - stood.min.y) / FILL;
+  const half = (view * aspect) / 2;
+  // Far enough off that a figure lying or reaching out stays between the near and far planes; a figure in
+  // centimetres (an FBX of Mixamo's) is as far off as one in metres is near.
+  const reach = view * 2;
+  const camera = new OrthographicCamera(-half, half, stood.min.y + view, stood.min.y, reach / 100, reach * 2);
+  camera.position.set(0, 0, reach);
+  camera.updateProjectionMatrix();
+  return camera;
+}
+
+/** The box of `model` standing: its skin as the first frame of its idle clip (of `clips`, by `table`) poses it, not
+ * as the file left it (arms out, or feet lower or higher than the clips stand them). */
+export function standing(model: Object3D, mixer: AnimationMixer, clips: AnimationClip[], table: ClipTable, vrm: VRM | null): Box3 {
+  const idle = clips.find((clip) => table.states.idle.clips.includes(clip.name));
+  const action = idle ? mixer.clipAction(idle).play() : null;
+  mixer.update(0);
+  vrm?.update(0);
+  model.updateMatrixWorld(true);
+  const box = new Box3().setFromObject(model, true);
+  action?.stop();
+  return box;
 }
 
 /** Lets go of a model no longer shown: its clips, and its shapes, looks and pictures on the graphics card. */
@@ -127,12 +151,17 @@ export class Figure {
   /** The last frame drawn, which `opaqueAt` reads. */
   private readonly kept: CanvasRenderingContext2D;
   private readonly scene = new Scene();
-  private readonly camera = new PerspectiveCamera(30, SIZE.width / SIZE.height, 0.1, 100);
+  private camera: Camera = new OrthographicCamera();
   private model: Object3D | null = null;
   private mixer: AnimationMixer | null = null;
   private clips: Clips | null = null;
-  private face: Mesh | null = null;
+  private ground: Ground | null = null;
+  /** The names of its walking and climbing clips, by its table (`place`). */
+  private steps: ReadonlySet<string> = new Set();
+  /** Its face alive, face.ts's. */
+  private live: LiveFace | null = null;
   private vrm: VRM | null = null;
+  private bones: ReadonlyMap<HumanBone, Object3D> = new Map();
   /** The head, which turns up or down to where the figure looks, and how far it is turned now. */
   private head: Object3D | null = null;
   private turned = 0;
@@ -173,45 +202,42 @@ export class Figure {
   private readonly load = newest(async (source: FigureSource | null): Promise<Placed> => {
     if (source) {
       try {
-        const model = await loadFigure(source.url, source.kind);
-        return { model: model.root, clips: await clipsFor(model), table: CARRIED, vrm: model.vrm };
+        // A KTX2 texture needs the renderer started (figures/decoders.ts).
+        await this.started;
+        const model = await loadFigure(source.url, source.kind, this.renderer);
+        return { model: model.root, clips: await clipsFor(model), table: CARRIED, vrm: model.vrm, bones: model.bones };
       } catch (error) {
         console.warn("The companion's figure did not load; the robot stands in.", error);
       }
     }
     const gltf = await new GLTFLoader().loadAsync(robot);
-    return { model: gltf.scene, clips: gltf.animations, table: ROBOT, vrm: null };
+    return { model: gltf.scene, clips: gltf.animations, table: ROBOT, vrm: null, bones: robotBones(gltf.scene) };
   });
 
-  private place({ model, clips, table, vrm }: Placed): void {
+  private place({ model, clips, table, vrm, bones }: Placed): void {
     if (this.model && this.mixer) {
       this.scene.remove(this.model);
       letGo(this.model, this.mixer);
     }
     this.model = model;
+    this.bones = bones;
     this.vrm = vrm;
-    this.face = null;
     this.head = vrm?.humanoid?.getNormalizedBoneNode("head") ?? null;
     this.turned = 0;
     model.traverse((part) => {
-      if ((part as Mesh).morphTargetDictionary?.Surprised !== undefined) this.face = part as Mesh;
       if (!this.head && (part as Bone).isBone && /head/i.test(part.name)) this.head = part;
     });
     this.scene.add(model);
     this.mixer = new AnimationMixer(model);
     this.clips = new Clips(this.mixer, clips, table);
-    // The figure standing takes the lower part of the canvas, its feet near the foot, with room above and at the
-    // sides for a jump and for raised arms.
-    const box = new Box3().setFromObject(model);
-    const view = (box.max.y - box.min.y) / FILL;
-    const middle = box.min.y - view * 0.04 + view / 2;
-    const distance = view / 2 / Math.tan((this.camera.fov * Math.PI) / 360);
-    this.camera.position.set(0, middle, distance);
-    this.camera.lookAt(new Vector3(0, middle, 0));
-    // A figure in centimetres (an FBX of Mixamo's) is as far away as one in metres is near.
-    this.camera.near = distance / 100;
-    this.camera.far = distance * 10;
-    this.camera.updateProjectionMatrix();
+    this.steps = new Set([...table.states.walking.clips, ...table.states.climbing.clips]);
+    const stood = standing(model, this.mixer, clips, table, vrm);
+    this.ground = new Ground(model, stood, vrm?.humanoid ?? null);
+    this.camera = framing(stood, SIZE.width / SIZE.height);
+    // Placed facing the user, as the face takes where its eyes look.
+    model.updateMatrixWorld(true);
+    this.live = new LiveFace(model, vrm, this.head);
+    prepare(model);
   }
 
   /** Plays the clip of `state`, turned to `heading` (-1 left, 1 right, 0 the user), or to the edge it climbs. */
@@ -239,6 +265,18 @@ export class Figure {
     return this.clips?.current?.replace(/_\d+$/, "") ?? null;
   }
 
+  /** How fast the feet of its walking or climbing clips go as they play now, at their weights and speeds, in heights
+   * standing a second: how fast the figure is to go along the floor or up an edge so that its feet do not slide. 0
+   * while no such clip plays; null before the model has come. */
+  get pace(): number | null {
+    if (!this.clips || !this.ground) return null;
+    let pace = 0;
+    for (const [action, weight] of this.clips.weighed) {
+      if (this.steps.has(action.getClip().name)) pace += weight * Math.abs(action.timeScale) * this.ground.paceOf(action.getClip());
+    }
+    return pace;
+  }
+
   /** Turns the figure by `yaw` and its head by `pitch` (radians; 0, 0: at the user), but while it walks or climbs. */
   look(yaw: number, pitch: number): void {
     this.yaw = yaw;
@@ -252,8 +290,8 @@ export class Figure {
   }
 
   /** Moves the clips on by `dt` seconds, turns the figure to where it is to face, opens its mouth as loud as the
-   * voice is heard (`loudness`, 0 to 1), and draws. */
-  draw(dt: number, loudness: number): void {
+   * voice is heard (`loudness`, 0 to 1) or as the letters spoken without one have it (`letters`), and draws. */
+  draw(dt: number, loudness: number, letters = 0): void {
     if (!this.clips || !this.model) return;
     this.model.rotation.y = turned(this.model.rotation.y, this.facing, dt);
     this.model.rotation.z = turned(this.model.rotation.z, this.lean, dt);
@@ -263,10 +301,13 @@ export class Figure {
     this.clips.update(dt);
     this.turned = turned(this.turned, this.pitch, dt);
     this.head?.rotateX(this.turned);
-    this.mouth = mouthOf(this.mouth, loudness, dt);
-    showFace(this.face, this.vrm, this.feeling, this.mouth);
+    this.mouth = mouthOf(this.mouth, loudness, dt, letters);
+    // It looks at the user while it faces the user and its head is not turned up or down.
+    const atUser = facing(this.model.rotation.y) && Math.abs(this.turned) < 0.1;
+    this.live?.show(dt, this.feeling, this.mouth, atUser);
     // A VRM's normalized bones, which the clips move, to the bones it draws.
     this.vrm?.update(dt);
+    this.ground?.settle(this.clips.weighed);
     this.renderer.render(this.scene, this.camera);
     this.keep();
   }
@@ -278,6 +319,12 @@ export class Figure {
     if (copy.width !== width || copy.height !== height) Object.assign(copy, { width, height });
     else this.kept.clearRect(0, 0, width, height);
     this.kept.drawImage(this.canvas, 0, 0);
+  }
+
+  /** The part of the body at `x`, `y` of the canvas (CSS pixels), as drawn now; null beside it (touch.ts). */
+  partAt(x: number, y: number): BodyPart | null {
+    if (!this.model) return null;
+    return bodyPartAt(this.model, this.bones, this.camera, (x / SIZE.width) * 2 - 1, 1 - (y / SIZE.height) * 2);
   }
 
   /** Whether the pixel at `x`, `y` of the canvas (CSS pixels) is the figure's and not see-through. */

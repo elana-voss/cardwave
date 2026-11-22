@@ -44,6 +44,11 @@ app: boolean,
  */
 dice: boolean, 
 /**
+ * Names for new characters (`tools::names`), off until switched on (Claude, 161:
+ * its note costs every request about 2,000 tokens, as Dice is off at first).
+ */
+names: boolean, 
+/**
  * The folder of files and commands, as the user gave it.
  */
 folder: string | null, };

@@ -599,6 +599,8 @@ card-figure-remove-from = { $mode } से { $name } हटाएँ
 card-figure-search-figures = फ़िगर खोजें
 card-figure-no-3d-figures-yet = अभी कोई 3D फ़िगर नहीं। फ़ाइल से जोड़ें: किसी इंसान का 3D मॉडल जो हिल-डुल सके (एक .vrm फ़ाइल, जैसी VRoid Studio बनाता है; .glb या .fbx भी)।
 card-figure-in = { " " }· { $mode } में
+card-figure-by = { " " }· { $maker } द्वारा
+card-figure-made-by = { $maker } द्वारा
 card-figure-the-card = किरदार
 card-figure-what = वह फ़िगर जिसके रूप में किरदार साथी की खिड़की में दिखता है।
 

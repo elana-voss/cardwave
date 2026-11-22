@@ -9,6 +9,8 @@ const saved: object[] = [];
 /** The card's chats, newest first, as the server lists them. */
 const chats: { id: number }[] = [];
 const failing = { chats: false };
+/** What the answer to `generate` waits for, where a test holds it back. */
+const held: { generate?: Promise<void> } = {};
 /** The chats shown. */
 const viewed: number[] = [];
 vi.mock("../api/client", () => ({
@@ -23,7 +25,10 @@ vi.mock("../api/client", () => ({
     return { chat: { id: started.length } };
   },
   getChat: async (id: number) => (viewed.push(id), { chat: { id }, characters: [{ id: 1, name: "Gwen" }, ...(id === 9 ? [{ id: 2, name: "Bram" }] : [])], messages: [] }),
-  generate: async () => ({}),
+  generate: async () => {
+    await held.generate;
+    return { id: 5, content: "" };
+  },
   sendMessage: async () => ({ id: 4 }),
   getVoice: async () => ({ state: voice.state, rate: 24_000, at_provider: false }),
   getSettings: async () => ({ companion: { ...companion } }),
@@ -53,10 +58,63 @@ beforeEach(() => {
   companion.muted = false;
   voice.state = "ready";
   failing.chats = false;
+  held.generate = undefined;
 });
 
 describe("the compact chat", () => {
-  const hooks = { mood: () => {}, replied: () => {}, openFull: () => {}, closed: () => {}, more: () => [] };
+  const hooks = { mood: () => {}, replied: () => {}, openFull: () => {}, talks: () => {}, closed: () => {}, more: () => [] };
+
+  /** The letters told to the figure's lips as a reply it asked for comes in and ends, in pieces "Hi" and "Hi there". */
+  async function lettersOf(): Promise<(string | null)[]> {
+    const { compactChat } = await import("./chat");
+    const talked: (string | null)[] = [];
+    const moods: (string | null)[] = [];
+    const chat = compactChat(3, { ...hooks, mood: (mood) => moods.push(mood), talks: (letters) => talked.push(letters) });
+    await chat.open();
+    const input = chat.node.querySelector("textarea")!;
+    input.value = "Hello";
+    input.form!.requestSubmit();
+    await vi.waitFor(() => expect(moods).toContain("thinking"));
+    await new Promise((done) => setTimeout(done, 0));
+    chat.onEvent({ type: "reply_text", chat_id: 1, message_id: 5, start: 0, text: "Hi" } as never);
+    chat.onEvent({ type: "reply_text", chat_id: 1, message_id: 5, start: 2, text: " there" } as never);
+    chat.onEvent({ type: "reply_ended", chat_id: 1, message: { id: 5, content: "Hi there" } } as never);
+    return talked;
+  }
+
+  it("tells the figure's lips a reply's letters as they come while no voice will read it, and its end", async () => {
+    voice.state = "absent";
+    expect(await lettersOf()).toEqual(["Hi", " there", null]);
+  });
+
+  it("tells the lips no letters of a reply its voice will read, as the voice moves them", async () => {
+    expect(await lettersOf()).toEqual([null]);
+  });
+
+  it("tells the lips the letters of a reply while its voice is muted", async () => {
+    companion.muted = true;
+    expect(await lettersOf()).toEqual(["Hi", " there", null]);
+  });
+
+  it("shows a reply's words that came before the answer that started it, and tells them to the lips", async () => {
+    voice.state = "absent";
+    let answer = () => {};
+    held.generate = new Promise((done) => (answer = done));
+    const { compactChat } = await import("./chat");
+    const talked: (string | null)[] = [];
+    const chat = compactChat(3, { ...hooks, talks: (letters) => talked.push(letters) });
+    await chat.open();
+    const input = chat.node.querySelector("textarea")!;
+    input.value = "Hello";
+    input.form!.requestSubmit();
+    await vi.waitFor(() => expect(chat.node.querySelectorAll(".bubble").length).toBe(1));
+    chat.onEvent({ type: "reply_text", chat_id: 1, message_id: 5, start: 0, text: "Hi" } as never);
+    answer();
+    await vi.waitFor(() => expect(chat.node.querySelectorAll(".bubble").length).toBe(2));
+    chat.onEvent({ type: "reply_text", chat_id: 1, message_id: 5, start: 2, text: " there" } as never);
+    expect(chat.node.querySelectorAll(".bubble")[1].textContent).toBe("Hi there");
+    expect(talked).toEqual(["Hi", " there"]);
+  });
 
   it("starts one chat with a card that has none, also when it is opened twice at once", async () => {
     const { compactChat } = await import("./chat");

@@ -15,6 +15,9 @@ export const LABELS = {
     get chatLayout() {
       return wording("label-settings-chat-layout");
     },
+    get msgPictures() {
+      return wording("label-settings-msg-pictures");
+    },
     get webPictures() {
       return wording("label-settings-web-pictures");
     },
@@ -113,6 +116,9 @@ export const LABELS = {
     },
     get dice() {
       return wording("label-settings-dice");
+    },
+    get names() {
+      return wording("label-settings-names");
     },
     get folder() {
       return wording("label-settings-folder");

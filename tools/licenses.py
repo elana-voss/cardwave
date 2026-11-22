@@ -31,7 +31,9 @@ SOURCES = {
     "llama.cpp.txt": "https://raw.githubusercontent.com/ggml-org/llama.cpp/b11528/LICENSE",
     "onnxruntime.txt": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.28.0/LICENSE",
     "onnxruntime-notices.txt": "onnxruntime/ThirdPartyNotices.txt of the wheel crates/cw-voice/src/lib.rs downloads (`RUNTIME`)",
+    "meshoptimizer.txt": "LICENSE.md of the npm package meshoptimizer 0.22.0 (the decoder three.js ships is of 0.22)",
     "yunet.txt": "https://raw.githubusercontent.com/opencv/opencv_zoo/main/models/face_detection_yunet/LICENSE",
+    "npc-names.txt": "LICENSE and THIRD_PARTY_LICENSES.md of SillyTavern-Extension-NPCNames 0.4.0 (2e4fd2f, its code as at 5ff9fb2), then spdx-LGPL-2.1-or-later",
     "spdx-*.txt": "https://raw.githubusercontent.com/spdx/license-list-data/main/text/<id>.txt",
 }
 
@@ -46,7 +48,12 @@ FIGURES = [
     ("RobotExpressive", "The companion's robot", "CC0", "Tomás Laulhé, changed by Don McCurdy", "cc0-1.0.txt"),
     ("Mixamo", "Animations of the companion's woman and man", "Adobe's terms", "Adobe", "mixamo.txt"),
 ]
-LISTS = [("models.dev", "The list of providers", "MIT")]
+# A list's notice: models.dev's is read from the file tools/providers.py writes (`main`), the others' from tools/licenses/.
+LISTS = [
+    ("models.dev", "The list of providers", "MIT", None),
+    ("NPC Names", "The names for new characters, from the SillyTavern extension NPC Names and the corpora it names",
+     "LGPL-2.1-or-later", "npc-names.txt"),
+]
 # Programs that are no package of Rust's or npm's: llama.cpp's llama-server comes with the app (tools/llama.py,
 # on Windows with LLVM's OpenMP library; Linux's uses the system's), ONNX Runtime is downloaded for the voice (crates/cw-voice/src/lib.rs), with the notices
 # of what it is built of. The Rust standard library, in every Rust program, is `rust`.
@@ -55,6 +62,14 @@ PROGRAMS = [
     *([("LLVM OpenMP", "", "Apache-2.0 WITH LLVM-exception", [ROOT / "desktop" / "llama" / "LICENSE-LLVM-OpenMP"])]
       if sys.platform == "win32" else []),
     ("ONNX Runtime", "1.28.0", "MIT", [TEXTS / "onnxruntime.txt", TEXTS / "onnxruntime-notices.txt"]),
+    # The decoders of compressed figures (web/src/figures/decoders.ts), which three.js ships in examples/jsm/libs.
+    ("meshoptimizer decoder", "0.22", "MIT", [TEXTS / "meshoptimizer.txt"]),
+    ("Basis Universal transcoder", "", "Apache-2.0", [TEXTS / "spdx-Apache-2.0.txt"]),
+    # KTX2Loader's own: KTX-Parse reads the container, zstddec (with Zstandard built to WebAssembly) unpacks it; both
+    # minified without their notices, so the standard texts of their licenses (their repos: MIT; Zstandard: BSD-3).
+    ("KTX-Parse", "", "MIT", [TEXTS / "spdx-MIT.txt"]),
+    ("zstddec", "", "MIT", [TEXTS / "spdx-MIT.txt"]),
+    ("Zstandard", "", "BSD-3-Clause", [TEXTS / "spdx-BSD-3-Clause.txt"]),
 ]
 NAMES = ("LICENSE", "LICENCE", "COPYING", "NOTICE", "UNLICENSE", "COPYRIGHT")
 
@@ -160,7 +175,8 @@ def main() -> None:
     toml = (ROOT / "crates" / "cw-provider" / "providers" / "models.dev.toml").read_text(encoding="utf-8").split("\n")
     head = [line[2:] if line.startswith("# ") else "" for line in toml[: toml.index("")] if line.startswith("#")]
     notice = "\n".join(head[head.index("models.dev is under the MIT License:") + 2:])
-    lists = [{"name": name, "what": what, "license": license, "by": "", "text": texts.add(notice)} for name, what, license in LISTS]
+    lists = [{"name": name, "what": what, "license": license, "by": "",
+              "text": texts.files([TEXTS / file])[0] if file else texts.add(notice)} for name, what, license, file in LISTS]
     libraries = crates(texts) + npm(texts)
     libraries += [{"name": name, "version": version, "license": license, "texts": texts.files(files)}
                   for name, version, license, files in [*PROGRAMS, rust()]]

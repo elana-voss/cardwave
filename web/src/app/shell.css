@@ -163,7 +163,7 @@ button.rail-ic {
     margin: var(--s8) 0;
   }
   body[data-rail="narrow"] .rail-foot {
-    flex-direction: column-reverse;
+    flex-direction: column;
     padding: 0;
     border: 0;
   }

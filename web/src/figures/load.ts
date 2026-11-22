@@ -1,4 +1,5 @@
-// A card's 3D figure read from its file (`loadFigure`): a VRM (three-vrm), a GLB or an FBX of a rigged human, its
+// A card's 3D figure read from its file (`loadFigure`): a VRM (three-vrm), a GLB (its geometry and textures may be
+// compressed, decoders.ts) or an FBX of a rigged human, its
 // skeleton matched by its bones' names (skeleton.ts; a VRM names its own), and the carrier (animations.glb,
 // tools/companion_assets.py), whose Mixamo clips every figure is given (`clipsFor`, retarget.ts). One that has no human
 // skeleton is refused with `Refused`, whose message the dialog shows.
@@ -12,7 +13,9 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MToonMaterialLoaderPlugin, type VRM, type VRMHumanBoneName, VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
 import { MToonNodeMaterial } from "@pixiv/three-vrm/nodes";
+import type { WebGPURenderer } from "three/webgpu";
 import carrierUrl from "./animations.glb";
+import { withDecoders } from "./decoders";
 import { retarget, type Rig } from "./retarget";
 import { type HumanBone, matchBones } from "./skeleton";
 import { wording } from "../language/language";
@@ -37,15 +40,16 @@ export function kindOf(name: string): FigureKind | null {
   return (ending as FigureKind | undefined) ?? null;
 }
 
-/** Reads the figure at `url`; `Refused` where its skeleton is not human. */
-export async function loadFigure(url: string, kind: FigureKind): Promise<Model> {
+/** Reads the figure at `url`, compressed or not (decoders.ts; KTX2 textures only with a started `renderer`);
+ * `Refused` where its skeleton is not human. */
+export async function loadFigure(url: string, kind: FigureKind, renderer?: WebGPURenderer): Promise<Model> {
   const root = new Group();
   if (kind === "fbx") {
     const object = await new FBXLoader().loadAsync(url);
     root.add(object);
     return { root, bones: named(object), vrm: null };
   }
-  const loader = new GLTFLoader();
+  const loader = withDecoders(new GLTFLoader(), renderer);
   loader.register((parser) => new VRMLoaderPlugin(parser, { mtoonMaterialPlugin: new MToonMaterialLoaderPlugin(parser, { materialType: MToonNodeMaterial }) }));
   const gltf = await loader.loadAsync(url);
   const vrm = (gltf.userData.vrm as VRM | undefined) ?? null;

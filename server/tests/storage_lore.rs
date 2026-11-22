@@ -7,7 +7,7 @@ use common::{Scratch, user, writing};
 use cw_accounts::users;
 use cw_ccv4::png;
 use cw_chat::chats::{self, ChatLorebook, Lore, LoreSource, NewChat};
-use cw_coding::tools::Read;
+use cw_coding::tools::used::{CallEnd, UsedCall};
 use cw_core::NotFound;
 use cw_prompt::Variables;
 use cw_prompt::builder::{PromptRequest, build};
@@ -310,21 +310,19 @@ fn a_reply_keeps_which_lorebook_entries_its_prompt_held() {
     .unwrap();
     let kept = chats::view(db, me, reply).unwrap().lore;
     assert_eq!(kept.len(), 64);
-    // The pages and files read: nobody else's, and those of a reply continued after the first, each once.
-    let page = |title: &str| Read::Web {
-        title: title.into(),
-        address: format!("https://example.com/{title}"),
+    // The tools called: nobody else's, and those of a reply continued after the first, equal ones too.
+    let call = |what: &str| UsedCall {
+        tool: "read_file".into(),
+        what: what.into(),
+        end: CallEnd::Done,
     };
-    let file = Read::File {
-        path: "notes/a.md".into(),
-    };
-    chats::save_reads(db, sam, reply, &[page("a")]).unwrap();
-    assert!(chats::view(db, me, reply).unwrap().reads.is_empty());
-    chats::save_reads(db, me, reply, &[page("a"), file.clone()]).unwrap();
-    chats::save_reads(db, me, reply, &[file.clone(), page("b")]).unwrap();
+    chats::save_calls(db, sam, reply, &[call("a")]).unwrap();
+    assert!(chats::view(db, me, reply).unwrap().calls.is_empty());
+    chats::save_calls(db, me, reply, &[call("a"), call("b")]).unwrap();
+    chats::save_calls(db, me, reply, &[call("b")]).unwrap();
     assert_eq!(
-        chats::view(db, me, reply).unwrap().reads,
-        [page("a"), file, page("b")]
+        chats::view(db, me, reply).unwrap().calls,
+        [call("a"), call("b"), call("b")]
     );
     let lore = |reference: &str, name: &str| Lore {
         source: LoreSource::CardId(card.card_id),

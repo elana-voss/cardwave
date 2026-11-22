@@ -3,8 +3,8 @@
 TS_RS_EXPORT_DIR = { value = "web/src/api/generated", relative = true }
 # IDs and timestamps are 64-bit in Rust and plain numbers in JSON.
 TS_RS_LARGE_INT = "number"
-# A test program runs at most 6 tests at a time, for the same reason as `jobs` below.
-RUST_TEST_THREADS = "6"
+# A test program runs at most 4 tests at a time, for the same reason as `jobs` below.
+RUST_TEST_THREADS = "4"
 # Shorter folders for its Vulkan shader generator, whose default paths are too long for MSBuild (that file's head).
 CMAKE_PROJECT_INCLUDE = { value = ".cargo/whisper-paths.cmake", relative = true }
 # The OpenSSL that SQLCipher links in comes without its debug file (ossl_static.pdb), which MSVC's linker warns
@@ -16,6 +16,6 @@ CMAKE_PROJECT_INCLUDE = { value = ".cargo/whisper-paths.cmake", relative = true 
 _LINK_ = "/ignore:4099 /ignore:4199 /DELAYLOAD:vulkan-1.dll delayimp.lib"
 
 [build]
-# At most 6 jobs at a time, so a build leaves room for other work on the computer (6 of the 8 cores: the owner's
-# trial, 2026-11-17; before it 4).
-jobs = 6
+# At most 4 jobs at a time, so a build leaves room for other work on the computer (4 of the 8 cores: the owner,
+# 2026-11-21, after a trial of 6 from 2026-11-17).
+jobs = 4

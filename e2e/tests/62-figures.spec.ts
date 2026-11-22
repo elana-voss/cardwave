@@ -3,9 +3,10 @@ import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
 import { pictureFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
+import { setSettings } from "../stored";
 
 // 3D figures (boards "Card page · expressions and 3D figure", "Add a 3D figure"): a VRM from a file put on a card,
-// drawn for its still, taken off with Undo and chosen for another card; a figure whose skeleton is not a human's
+// drawn for its still, named with its maker, taken off with Undo and chosen for another card; a figure whose skeleton is not a human's
 // refused; a mode's own figure, from an FBX; and the companion window showing the figure of its card's mode, asked
 // again after a reply. The figures are tools/test-figures.py's mannequins (e2e/figures/). That the carrier's clips
 // move them is web/src/figures/retarget.test.ts's; here the companion asks for the figure's file and draws it.
@@ -59,7 +60,7 @@ test("a figure from a file goes on a card, drawn for its still, comes off with U
   await page.goto(`/#/library/${mira}`);
   await fromFile(page, "mannequin.vrm");
   await expect(page.getByRole("dialog", { name: "Add a 3D figure" })).toBeHidden();
-  await expect(part(page).locator(".row")).toHaveText("mannequin");
+  await expect(part(page).locator(".row")).toHaveText("mannequin · by Cardwave's tests");
   // The still drawn of it.
   const still = part(page).locator("img.fig-small");
   await expect.poll(() => still.evaluate((image: HTMLImageElement) => (image.complete ? image.naturalWidth : 0))).toBe(192);
@@ -68,19 +69,37 @@ test("a figure from a file goes on a card, drawn for its still, comes off with U
   await expect(page.locator("#toast")).toContainText("3D figure removed from this character.");
   await expect(part(page)).toContainText("None yet · Cardwave’s own figure stands in for the character");
   await page.locator("#toast").getByRole("button", { name: "Undo" }).click();
-  await expect(part(page).locator(".row")).toHaveText("mannequin");
+  await expect(part(page).locator(".row")).toHaveText("mannequin · by Cardwave's tests");
 
   await page.goto(`/#/library/${tom}`);
   await byMenu(page);
   const adding = page.getByRole("dialog", { name: "Add a 3D figure" });
   const line = adding.getByRole("button", { name: /mannequin/ });
-  // A figure is told by its name and who uses it, not by its file's format.
-  await expect(line.locator(".meta")).toHaveText("used by 1 character");
+  // A figure is told by its name, its maker where its VRM names one, and who uses it, not by its file's format.
+  await expect(line.locator(".meta")).toHaveText("by Cardwave's tests · used by 1 character");
   await expect(adding.getByRole("button", { name: "Add", exact: true })).toBeDisabled();
   await line.click();
   await expect(line).toHaveAttribute("aria-pressed", "true");
   await adding.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(part(page).locator(".row")).toHaveText("mannequin");
+  await expect(part(page).locator(".row")).toHaveText("mannequin · by Cardwave's tests");
+});
+
+test("a figure with face shapes loads from a file, its geometry and texture compressed or as FBX, under the pages' content policy", async ({ page, request }) => {
+  const refusals: string[] = [];
+  page.on("pageerror", (error) => refusals.push(String(error)));
+  page.on("console", (message) => {
+    if (/Content.Security.Policy|WebAssembly|worker|compressed texture/i.test(message.text())) refusals.push(message.text());
+  });
+  for (const [file, name] of [["faces-packed.glb", "faces-packed"], ["faces.fbx", "faces"]]) {
+    const card = await newCard(request, name);
+    await page.goto(`/#/library/${card}`);
+    await fromFile(page, file);
+    await expect(part(page).locator(".row")).toHaveText(name);
+    // The still is drawn only of a figure that loaded: for the packed one, its decoders ran.
+    const still = part(page).locator("img.fig-small");
+    await expect.poll(() => still.evaluate((image: HTMLImageElement) => (image.complete ? image.naturalWidth : 0))).toBe(192);
+  }
+  expect(refusals).toEqual([]);
 });
 
 test("a figure without a human skeleton is refused, and nothing is kept", async ({ page, request }) => {
@@ -110,7 +129,7 @@ test("a mode has its own figure, and the companion shows the figure of its chat'
   const shown = await (await request.get(`/api/cards/${gwen}`)).json();
   const started = await request.post("/api/chats", { data: { characters: [{ version_id: shown.card.version_id, character: shown.characters[0].id }] } });
   const chat = (await started.json()).chat.id;
-  expect((await request.patch("/api/settings", { data: { companion: { card_id: gwen, starts: true, hidden_until: null } } })).status()).toBe(200);
+  await setSettings(request, { companion: { card_id: gwen, starts: true, hidden_until: null } });
   const warned: string[] = [];
   page.on("console", (message) => void (message.type() === "warning" && warned.push(message.text())));
   const file = (id: number) => page.waitForResponse((answer) => answer.url().endsWith(`/api/figures/${id}/file`) && answer.ok());

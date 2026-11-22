@@ -7,7 +7,8 @@
 # with the project's key (the repository secrets TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD;
 # tools/updater_sign.sh, which signs without them with a throwaway key). The app reads the feed from the latest
 # release (desktop/tauri.conf.json, plugins.updater), so a release is published as the latest, never as a
-# pre-release, and its version is the workspace's (`Cargo.toml`).
+# pre-release, and its version is the workspace's (`Cargo.toml`). The job `guard` refuses any other tag and a tag
+# whose release is published, whose files users have (tools/release_guard.py); the upload asks it again.
 #
 # First the checks that need no screen: the workspace's tests (the desktop crate's too, whose build needs llama-server
 # and the UI's build) and the UI's module tests. The browser tests (their pictures differ by machine) and the desktop
@@ -28,7 +29,18 @@ permissions:
   contents: write
 
 jobs:
+  # Nothing is built for a tag other than v<workspace version> or a release already published (tools/release_guard.py).
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/release_guard.py "${{ inputs.tag }}" "${{ github.repository }}"
+
   windows:
+    needs: guard
     runs-on: windows-latest
     timeout-minutes: 120
     env:
@@ -94,6 +106,7 @@ jobs:
   # GLIBCXX 3.4.30; the step "llama-server starts here" checks it by ldd): Ubuntu 22.04, so the AppImage and the
   # .deb run on Ubuntu 22.04 and later (and systems as new), as they link against this one's libraries.
   linux:
+    needs: guard
     runs-on: ubuntu-22.04
     timeout-minutes: 120
     env:
@@ -141,7 +154,7 @@ jobs:
           missing=$(for f in llama-server *.so*; do env -u LD_LIBRARY_PATH ldd "$f"; done | grep "not found" || true)
           [ -z "$missing" ] || { echo "llama-server lacks: $missing"; exit 1; }
           env -u LD_LIBRARY_PATH ./llama-server --version
-      # The coding tools' commands need Landlock (crates/cw-coding/src/tools/sandbox/linux.rs); their tests fail without it.
+      # The coding tools' commands need Landlock (crates/cw-sandbox/src/linux.rs); their tests fail without it.
       - name: The kernel's sandbox
         run: uname -r && cat /sys/kernel/security/lsm && echo
       # The key's tests need a Secret Service: an unlocked throwaway gnome-keyring on a D-Bus session of its own.
@@ -192,12 +205,14 @@ jobs:
           name: feed
           path: latest.json
           retention-days: 7
-      # A draft of the tag, made at this run's commit unless there is one; the files replace any it holds.
+      # A draft of the tag, made at this run's commit unless there is one; the files replace any it holds. The guard
+      # again, since the draft may have been published while the builds ran.
       - name: The draft release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
         run: |
+          python3 tools/release_guard.py "$TAG" "${{ github.repository }}"
           if ! gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
             awk '/^# /{n++; next} n==1' web/public/whats-new.md > notes.md
             gh release create "$TAG" --repo "${{ github.repository }}" --draft --target "$GITHUB_SHA" \
