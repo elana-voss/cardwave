@@ -56,9 +56,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: rustup update stable --no-self-update && rustup default stable
+      # A newer runner image moves the compiler; a build kept from an older one names the old path (0.3.2's first
+      # run: whisper.cpp's CMake failed on MSVC 14.51, gone in the image with 14.52). The runner's own variable is
+      # not in the env context, so it is copied there.
+      - run: echo "IMAGE_VERSION=$ImageVersion" >> "$GITHUB_ENV"
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
+          key: image-${{ env.IMAGE_VERSION }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -125,9 +130,14 @@ jobs:
       # The packages WSL's copy builds with too (tools/linux.sh): Tauri's, whisper.cpp's, the bundles', the Secret Service.
       - run: sudo bash tools/linux.sh packages
       - run: rustup update stable --no-self-update && rustup default stable
+      # A newer runner image moves the compiler; a build kept from an older one names the old path (0.3.2's first
+      # run: whisper.cpp's CMake failed on MSVC 14.51, gone in the image with 14.52). The runner's own variable is
+      # not in the env context, so it is copied there.
+      - run: echo "IMAGE_VERSION=$ImageVersion" >> "$GITHUB_ENV"
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
+          key: image-${{ env.IMAGE_VERSION }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24
