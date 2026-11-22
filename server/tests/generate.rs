@@ -644,19 +644,17 @@ async fn a_failed_reply_says_why() {
         (&json!("All at once."), &Value::Null)
     );
 
-    // Nobody answers at the address.
+    // Nobody answers at the address: asked for its window first, the request
+    // fails as the reply would, and no message is begun.
     use_provider(&server, "http://127.0.0.1:1/v1").await;
-    generate(&server, &chat, json!({})).await;
-    let (_, ended) = follow(&mut socket, "").await;
+    let (status, refused) = generate(&server, &chat, json!({})).await;
     assert!(
-        ended["error"]["error"]
-            .as_str()
-            .unwrap()
-            .contains("cannot be reached"),
-        "{}",
-        ended["error"]
+        status >= 400
+            && refused["error"]
+                .as_str()
+                .is_some_and(|said| said.contains("cannot be reached")),
+        "{status} {refused}"
     );
-    assert_eq!(ended["message"], Value::Null);
 }
 
 #[tokio::test]
@@ -791,4 +789,46 @@ async fn a_character_longer_than_the_model_reads_is_told_not_dropped() {
         (400, &json!("too_big"), &json!("card_for_chat")),
         "{refused}"
     );
+}
+
+#[tokio::test]
+async fn a_model_whose_window_nothing_tells_is_sent_nothing_until_its_size_is_set() {
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    // A provider at an address models.dev does not list, without /props.
+    let asked = Arc::new(AtomicUsize::new(0));
+    let count = asked.clone();
+    let app = axum::Router::new().route(
+        "/v1/chat/completions",
+        axum::routing::post(move || async move {
+            count.fetch_add(1, Ordering::SeqCst);
+            ""
+        }),
+    );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}/v1", listener.local_addr().unwrap());
+    tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+    let server = start().await;
+    let unknown = json!({ "base_url": url, "model": "unknown-model", "api_key": "sk-test" });
+    assert_eq!(server.put("/api/provider", unknown.clone()).await.0, 200);
+    let chat = chat(&server).await;
+
+    let (status, refused) = generate(&server, &chat, json!({})).await;
+    assert_eq!(
+        (status, &refused["code"], &refused["details"]),
+        (
+            400,
+            &json!("needed"),
+            &json!({ "what": "context_size", "model": "unknown-model" })
+        ),
+        "{refused}"
+    );
+    assert_eq!(asked.load(Ordering::SeqCst), 0);
+
+    // The user's size stands in for the window.
+    let mut sized = unknown;
+    sized["sampling"] = json!({ "context_size": 8192 });
+    assert_eq!(server.put("/api/provider", sized).await.0, 200);
+    let (status, message) = generate(&server, &chat, json!({})).await;
+    assert_eq!(status, 202, "{message}");
 }

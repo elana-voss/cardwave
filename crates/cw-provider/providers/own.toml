@@ -15,6 +15,8 @@
 #   own_api   its API where it is more than OpenAI's, by which the app asks it (crates/cw-provider/src/list.rs
 #             `OwnApi`): "openrouter" (pictures at /images), "nanogpt" (a list with details, picture models
 #             apart, a subscription); an address on the host of base_url or under it is the provider's
+#   models_dev  models.dev's key for the provider, where its entry there names no address (api), by which a
+#             model's context window is read (crates/cw-provider/src/models_dev.rs `Index::window`)
 #   key_check where a provider whose list of models comes to anyone tells whether it takes a key (url; post =
 #             true where it is asked by POST), else the key is asked at its list of models
 #
@@ -48,29 +50,34 @@ base_url = "http://127.0.0.1:11434/v1"
 
 [[provider]]
 name = "OpenAI"
+models_dev = "openai"
 website = "openai.com"
 keys = ["sk-proj-", "sk-svcacct-", "sk-"]
 base_url = "https://api.openai.com/v1"
 
 [[provider]]
 name = "Anthropic"
+models_dev = "anthropic"
 website = "anthropic.com"
 keys = ["sk-ant-"]
 base_url = "https://api.anthropic.com/v1"
 
 [[provider]]
 name = "Google Gemini"
+models_dev = "google"
 website = "ai.google.dev"
 keys = ["AIza"]
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
 
 [[provider]]
 name = "Mistral"
+models_dev = "mistral"
 website = "mistral.ai"
 base_url = "https://api.mistral.ai/v1"
 
 [[provider]]
 name = "Groq"
+models_dev = "groq"
 website = "groq.com"
 keys = ["gsk_"]
 base_url = "https://api.groq.com/openai/v1"
@@ -85,6 +92,7 @@ key_check = { url = "https://openrouter.ai/api/v1/key" }
 
 [[provider]]
 name = "Together AI"
+models_dev = "togetherai"
 website = "together.ai"
 base_url = "https://api.together.xyz/v1"
 
@@ -96,18 +104,21 @@ base_url = "https://api.deepseek.com/v1"
 
 [[provider]]
 name = "xAI"
+models_dev = "xai"
 website = "x.ai"
 keys = ["xai-"]
 base_url = "https://api.x.ai/v1"
 
 [[provider]]
 name = "Perplexity"
+models_dev = "perplexity"
 website = "perplexity.ai"
 keys = ["pplx-"]
 base_url = "https://api.perplexity.ai/v1"
 
 [[provider]]
 name = "Cohere"
+models_dev = "cohere"
 website = "cohere.com"
 base_url = "https://api.cohere.ai/compatibility/v1"
 
@@ -118,6 +129,7 @@ base_url = "https://api.fireworks.ai/inference/v1"
 
 [[provider]]
 name = "Cerebras"
+models_dev = "cerebras"
 website = "cerebras.ai"
 base_url = "https://api.cerebras.ai/v1"
 
@@ -128,6 +140,7 @@ base_url = "https://api.sambanova.ai/v1"
 
 [[provider]]
 name = "DeepInfra"
+models_dev = "deepinfra"
 website = "deepinfra.com"
 base_url = "https://api.deepinfra.com/v1/openai"
 
@@ -184,6 +197,7 @@ base_url = "https://neuro.mancer.tech/oai/v1"
 
 [[provider]]
 name = "Venice AI"
+models_dev = "venice"
 website = "venice.ai"
 base_url = "https://api.venice.ai/api/v1"
 key_check = { url = "https://api.venice.ai/api/v1/api_keys/rate_limits" }

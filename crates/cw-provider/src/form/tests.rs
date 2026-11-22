@@ -20,6 +20,7 @@ fn provider(base_url: &str, seen_thinking: bool) -> Provider {
         thinking_off: None,
         reply_limit: None,
         seen_thinking,
+        window: None,
     }
 }
 

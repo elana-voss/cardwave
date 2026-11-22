@@ -293,6 +293,7 @@ async fn ask(
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     };
     let prompt = prompt(candidates, index);
     let asked = crate::answer(http, &provider, &prompt);

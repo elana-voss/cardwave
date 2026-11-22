@@ -67,6 +67,7 @@ pub fn whom(db: &dyn Storage, user: i64, asked: TestModel) -> anyhow::Result<Pro
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     })
 }
 

@@ -1,3 +1,12 @@
+# 0.3.3
+
+Cardwave now knows how much each AI reads at once, and no longer guesses.
+
+- Each reply fits what its model can read. Cardwave takes the size from its built-in model list, or asks an AI on your computer or your local network itself. Before, every model was given 128,000 tokens.
+- A long chat with a model that reads more now keeps more of its history.
+- Where an AI's size is not known, the reply tells you, and you set it once as the context size in Settings › Advanced. Nothing is sent until then.
+- The context size in Settings › Advanced now caps what is sent to any model.
+
 # 0.3.2
 
 The companion's face comes alive, and it answers your touch.

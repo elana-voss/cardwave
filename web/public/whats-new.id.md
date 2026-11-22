@@ -1,3 +1,12 @@
+# 0.3.3
+
+Cardwave kini tahu berapa banyak yang dibaca setiap AI sekaligus, dan tidak lagi menebak.
+
+- Setiap balasan pas dengan yang bisa dibaca modelnya. Cardwave mengambil ukurannya dari daftar model bawaannya, atau menanyakannya langsung ke AI di komputermu atau jaringan lokalmu. Sebelumnya, setiap model diberi 128.000 token.
+- Obrolan panjang dengan model yang membaca lebih banyak kini menyimpan lebih banyak riwayatnya.
+- Jika ukuran sebuah AI tidak diketahui, balasannya memberitahumu, dan kamu mengaturnya sekali sebagai ukuran konteks di Pengaturan › Lanjutan. Sampai saat itu tidak ada yang dikirim.
+- Ukuran konteks di Pengaturan › Lanjutan kini membatasi apa yang dikirim ke model mana pun.
+
 # 0.3.2
 
 Wajah pendamping jadi hidup, dan ia menanggapi sentuhanmu.

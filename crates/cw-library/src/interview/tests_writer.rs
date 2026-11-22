@@ -473,6 +473,7 @@ fn pretend_provider() -> Provider {
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     }
 }
 

@@ -261,6 +261,7 @@ async fn provider_of(
                 model: other.model,
                 thinking_off: None,
                 seen_thinking: false,
+                window: None,
                 ..chat
             })
         })

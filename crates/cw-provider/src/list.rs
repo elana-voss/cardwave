@@ -44,6 +44,10 @@ pub struct KnownProvider {
     #[serde(skip)]
     #[ts(skip)]
     key_check: Option<KeyCheck>,
+    /// models.dev's key for it, where its entry there names no address.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub models_dev: Option<String>,
 }
 
 /// A provider's API where it is more than OpenAI's (`own.toml`'s `own_api`).
@@ -82,6 +86,7 @@ struct Entry {
     keys: Option<Vec<String>>,
     own_api: Option<OwnApi>,
     key_check: Option<KeyCheck>,
+    models_dev: Option<String>,
 }
 
 static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
@@ -110,6 +115,7 @@ static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
                 host,
                 own_api: entry.own_api,
                 key_check: entry.key_check,
+                models_dev: entry.models_dev,
             }
         })
         .collect();

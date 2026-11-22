@@ -26,6 +26,16 @@ pub mod model;
 pub mod server;
 pub mod streamed;
 
+/// The context window the stand-ins of a provider on this machine tell at
+/// `/props`, as llama.cpp's server does; a server that does not answer it
+/// leaves the window unknown.
+pub const WINDOW: usize = 128_000;
+
+/// A stand-in's answer at `/props`: its [`WINDOW`].
+pub async fn props() -> axum::Json<serde_json::Value> {
+    axum::Json(serde_json::json!({ "default_generation_settings": { "n_ctx": WINDOW } }))
+}
+
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 

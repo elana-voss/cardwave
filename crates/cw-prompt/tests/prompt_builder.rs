@@ -4,7 +4,7 @@
 use cw_prompt::builder::{BuiltPrompt, PromptRequest, SegmentKind, build};
 use cw_prompt::{
     Character, ChatMessage, ChatState, DepthPrompt, Lorebook, LorebookEntry, PromptMessage, Role,
-    Variables, tokens,
+    Variables,
 };
 
 /// One token per character, so budgets in the tests are easy to follow.
@@ -366,7 +366,7 @@ fn the_memory_note_is_nearer_the_newest_message_than_any_depth_insertion_and_hol
     ];
     let small = |memory| PromptRequest {
         memory_context: memory,
-        ..request(&card, 2_400)
+        ..request(&card, 2_700)
     };
     let has_first = |p: &BuiltPrompt| p.messages.iter().any(|m| m.content.starts_with("First"));
     assert!(has_first(&run(&small(None), &mut chat(&lines))));
@@ -536,8 +536,9 @@ fn oldest_history_is_dropped_when_the_context_is_full() {
     let line = |c: char| c.to_string().repeat(30);
     let (a, b, c, d) = (line('a'), line('b'), line('c'), line('d'));
     let mut chat = chat(&[&a, &b, &c, &d]);
-    // 100 tokens, 10 kept for the reply: three messages of 30 fit exactly.
-    let prompt = run(&request(&card, 100), &mut chat);
+    // 120 tokens, 12 kept for the reply and 10 for the estimate's error: three
+    // messages of 30 fit, the oldest goes with the first two blocks of 15.
+    let prompt = run(&request(&card, 120), &mut chat);
     assert_eq!(prompt.messages, [assistant(&b), user(&c), assistant(&d)]);
     let counts: Vec<_> = chat.messages.iter().map(|m| m.token_count).collect();
     assert_eq!(counts, [Some(30), Some(30), Some(30), Some(30)]);
@@ -555,14 +556,33 @@ fn history_is_dropped_in_blocks_so_the_prompt_begins_alike() {
     let lines: Vec<String> = (0..22).map(|n| format!("{n:02}").repeat(5)).collect();
     let first = |count: usize| {
         let lines: Vec<&str> = lines[..count].iter().map(String::as_str).collect();
-        // 160 tokens, 16 kept for the reply: 14 messages of 10 fit; blocks of 20, two messages each.
+        // 160 tokens, 16 kept for the reply and 14 for the estimate's error: 13 messages
+        // of 10 fit; blocks of 20, two messages each.
         let prompt = run(&request(&card, 160), &mut chat(&lines));
         prompt.messages[0].content.clone()
     };
-    assert_eq!(first(20), lines[6]);
-    // Message by message the 21st would begin at the 7th; in blocks both begin at the 8th.
+    // Message by message the 20th would begin at the 7th, the 21st at the 8th; in
+    // blocks both begin at the 8th.
+    assert_eq!(first(20), lines[8]);
     assert_eq!(first(21), lines[8]);
-    assert_eq!(first(22), lines[8]);
+    assert_eq!(first(22), lines[10]);
+}
+
+/// The prompt takes at most 90 % of what the reply leaves, so an estimate at 90 %
+/// of the real count still leaves the reply its room.
+#[test]
+fn the_prompt_leaves_the_reply_room_past_the_estimates_error() {
+    let card = Character::default();
+    let line = "x".repeat(30);
+    let lines: Vec<&str> = (0..200).map(|_| line.as_str()).collect();
+    let req = PromptRequest {
+        max_response_length: Some(500),
+        ..request(&card, 1_000)
+    };
+    let prompt = run(&req, &mut chat(&lines));
+    let used: usize = prompt.breakdown.segments.iter().map(|s| s.tokens).sum();
+    // 500 for the reply, 50 for the error; the history is cut in blocks of 125.
+    assert!((325..=450).contains(&used), "{used}");
 }
 
 #[test]
@@ -706,13 +726,13 @@ fn example_dialogue_is_cut_to_the_room_left() {
         mes_example: "é".repeat(300),
         ..Default::default()
     };
-    // 200 tokens: 20 for the reply, 39 for the wrapper, 141 for the content,
-    // of which, beside the 41 of the note that it is cut, whole blocks of 25:
-    // 100. 300 * (100 / 300) * 0.95 = 95 characters are kept.
+    // 200 tokens: 20 for the reply, 18 for the estimate's error, 39 for the
+    // wrapper, 123 for the content, of which, beside the 41 of the note that it
+    // is cut, whole blocks of 25: 75. 300 * (75 / 300) * 0.95 = 71 characters are kept.
     let prompt = run(&request(&card, 200), &mut chat(&[]));
     let expected = format!(
         "<example_dialogue>\n{}\n...[Example truncated for context limit]\n</example_dialogue>",
-        "é".repeat(95)
+        "é".repeat(71)
     );
     assert_eq!(prompt.messages, [system(&expected)]);
 }
@@ -761,18 +781,6 @@ fn macros_share_the_chat_and_global_variables() {
     );
 }
 
-#[test]
-fn token_estimate_weighs_writing_systems() {
-    assert_eq!(tokens::estimate(""), 0);
-    assert_eq!(tokens::estimate("abcd"), 1);
-    assert_eq!(tokens::estimate("abcde"), 2);
-    assert_eq!(tokens::estimate("привет"), 3);
-    assert_eq!(tokens::estimate("黒猫"), 2);
-    assert_eq!(tokens::estimate("한국어"), 3);
-    assert_eq!(tokens::estimate("😀"), 1);
-    assert_eq!(tokens::estimate("שלום"), 3);
-}
-
 /// A picture costs the context `PICTURE_TOKENS` besides its message's words, and a
 /// message of pictures alone is sent without a text part.
 #[test]
@@ -781,7 +789,7 @@ fn a_messages_pictures_count_against_the_context_and_go_without_an_empty_text() 
     let line = "b".repeat(30);
     let mut pictured = chat(&["a", &line]);
     pictured.messages[0].pictures = vec!["data:image/png;base64,AA==".into()];
-    let prompt = run(&request(&card, 1_200), &mut pictured);
+    let prompt = run(&request(&card, 1_350), &mut pictured);
     assert_eq!(prompt.messages.len(), 2);
     let prompt = run(&request(&card, 1_000), &mut pictured);
     assert_eq!(prompt.messages, [assistant(&line)]);
@@ -837,10 +845,11 @@ fn history_macros_run_once_in_order_and_draw_the_same_on_every_build() {
 fn a_newest_message_or_an_instruction_that_does_not_fit_is_told() {
     use cw_prompt::builder::LeftOut;
     let card = Character::default();
-    // 100 tokens, 10 kept for the reply: a newest message of 95 does not fit.
+    // 100 tokens, 10 kept for the reply and 9 for the estimate's error: a newest
+    // message of 95 does not fit (19 + 95).
     let long = "x".repeat(95);
     let prompt = run(&request(&card, 100), &mut chat(&["Hi", "Hello", &long]));
-    assert_eq!(prompt.left_out, Some(LeftOut::Newest(105)));
+    assert_eq!(prompt.left_out, Some(LeftOut::Newest(114)));
     let fits = run(&request(&card, 100), &mut chat(&["Hi", "Hello", "Go on"]));
     assert_eq!(fits.left_out, None);
 

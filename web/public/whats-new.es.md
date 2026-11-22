@@ -1,3 +1,12 @@
+# 0.3.3
+
+Cardwave ahora sabe cuánto lee cada IA de una vez, y ya no lo adivina.
+
+- Cada respuesta se ajusta a lo que su modelo puede leer. Cardwave toma el tamaño de su lista de modelos integrada, o se lo pregunta a la propia IA si está en tu ordenador o en tu red local. Antes, cada modelo recibía 128.000 tokens.
+- Un chat largo con un modelo que lee más conserva ahora más de su historial.
+- Si no se conoce el tamaño de una IA, la respuesta te lo dice, y lo indicas una vez como tamaño de contexto en Ajustes › Avanzado. Hasta entonces no se envía nada.
+- El tamaño de contexto en Ajustes › Avanzado limita ahora lo que se envía a cualquier modelo.
+
 # 0.3.2
 
 La cara del acompañante cobra vida, y responde cuando lo tocas.

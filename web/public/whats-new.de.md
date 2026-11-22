@@ -1,3 +1,12 @@
+# 0.3.3
+
+Cardwave weiß jetzt, wie viel jede KI auf einmal liest, und rät nicht mehr.
+
+- Jede Antwort passt zu dem, was ihr Modell lesen kann. Cardwave nimmt die Größe aus seiner eingebauten Modellliste oder fragt eine KI auf deinem Computer oder in deinem lokalen Netz selbst. Bisher bekam jedes Modell 128.000 Tokens.
+- Ein langer Chat mit einem Modell, das mehr liest, behält jetzt mehr von seinem Verlauf.
+- Wo die Größe einer KI nicht bekannt ist, sagt es dir die Antwort, und du legst sie einmal als Kontextgröße in Einstellungen › Erweitert fest. Bis dahin wird nichts gesendet.
+- Die Kontextgröße in Einstellungen › Erweitert begrenzt jetzt, was an jedes Modell gesendet wird.
+
 # 0.3.2
 
 Das Gesicht des Begleiters wird lebendig, und er antwortet auf deine Berührung.

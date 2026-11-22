@@ -520,7 +520,7 @@ voices-delete = Delete
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = Context size (tokens)
-advanced-context-hint = Leave empty for 128,000
+advanced-context-hint = At most this much is sent. Needed where Cardwave does not know the model's own size
 advanced-temperature = Temperature
 advanced-temperature-about = Higher: more surprising replies. From 0 to 2
 advanced-top-p = Top P

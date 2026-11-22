@@ -14,7 +14,8 @@
 //! of (`set_model`) and how long it took (`chats::Times`). `draft` (`POST
 //! /api/chats/{id}/draft`) is no message: the text alone for the message field.
 //! A draft written for the user and a continued reply take a `direction`, the
-//! field's words, which steer them and are sent as no message.
+//! field's words, which steer them and are sent as no message. The provider's
+//! window is settled first (`AppState::settled`): unknown, nothing is sent.
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -160,14 +161,20 @@ async fn generate(
     // must not leave behind a message that nobody writes.
     let started = tokio::spawn(async move {
         let writer = Writer::list(&state, user, chat_id, waiter)?;
+        // The model's window is known before anything is asked, claimed or sent.
+        let provider = state.run(move |db| provider::chat(db, user)).await?;
+        let provider = state.settled(provider).await?;
+        let context = provider.context()?;
         // Another version of a reply, or more of it, answers what the reply before answered: in its mode.
         if new.regenerate != Some(true) && new.go_on != Some(true) {
             pick_mode(&state, user, chat_id).await;
         }
-        let mut claimed = state.run(move |db| claim(db, user, chat_id, &new)).await?;
+        let mut claimed = state
+            .run(move |db| claim(db, user, chat_id, &new, provider))
+            .await?;
         let (speaker, last) = (claimed.reply.speaker_id, claimed.after);
         // The documents take a tenth of the chat model's context at most.
-        let budget = claimed.provider.sampling.context() / 10;
+        let budget = context / 10;
         let recalled = memory::recall(
             &state,
             user,
@@ -225,10 +232,9 @@ async fn pick_mode(state: &AppState, user: i64, chat_id: i64) {
             return;
         }
     };
-    let picked = tokio::time::timeout(
-        PICK_LIMIT,
-        assistant::pick(&state.http, &provider, &to_pick),
-    )
+    let picked = tokio::time::timeout(PICK_LIMIT, async {
+        assistant::pick(&state.http, &state.settled(provider).await?, &to_pick).await
+    })
     .await;
     let mode = match picked.unwrap_or_else(|late| Err(late.into())) {
         Ok(Some(mode)) => mode,
@@ -274,9 +280,14 @@ fn let_go(db: &Db, user: i64, reply: &Message, head_before: Option<i64>, text: &
 
 /// Adds the message the reply goes into, or claims the one continued, and
 /// reads what its prompt is built of.
-fn claim(db: &Db, user: i64, chat_id: i64, new: &Generate) -> anyhow::Result<Claimed> {
+fn claim(
+    db: &Db,
+    user: i64,
+    chat_id: i64,
+    new: &Generate,
+    provider: Provider,
+) -> anyhow::Result<Claimed> {
     let chat = chats::get(db, user, chat_id)?.ok_or(NotFound("chat"))?;
-    let provider = provider::chat(db, user)?;
     ensure!(
         new.direction.is_none() || new.go_on == Some(true),
         Fail::new(Code::DirectionWithoutGoOn)
@@ -412,9 +423,14 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
             bubble: bubble.as_deref(),
         };
         let prompt = if continuing {
-            reply::continue_prompt(&mut inputs, &provider.sampling, given, direction.as_deref())?
+            reply::continue_prompt(
+                &mut inputs,
+                provider.context()?,
+                given,
+                direction.as_deref(),
+            )?
         } else {
-            reply::prompt_for(db, user, &chat, &provider.sampling, &reply, inputs, given)?
+            reply::prompt_for(db, user, &chat, provider.context()?, &reply, inputs, given)?
         };
         let whose = kinds::whose(&provider.name, &provider.base_url);
         chats::set_model(db, user, reply.id, &provider.model, &whose)?;
@@ -602,12 +618,16 @@ async fn draft(
     Json(draft): Json<Draft>,
 ) -> ApiResult<Json<Drafted>> {
     let improve = draft.improve.clone();
-    let (provider, prompt, name) = state
+    let provider = state.run(move |db| provider::chat(db, user)).await?;
+    let provider = state.settled(provider).await?;
+    let context = provider.context()?;
+    let (prompt, name) = state
         .run(move |db| {
             reply::draft_prompt(
                 db,
                 user,
                 chat_id,
+                context,
                 draft.improve.as_deref(),
                 draft.direction.as_deref(),
             )

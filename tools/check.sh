@@ -90,7 +90,7 @@ stylesheet() {
 
 layers() {
   found=$( {
-    git ls-files --cached --others --exclude-standard docs | grep -vxE 'docs/(cardwave-rewrite|design|design-history|worklog)\.md|docs/screenshots/[a-z-]+\.png|docs/tickets/([0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+|TEMPLATE|INDEX)\.md'
+    git ls-files --cached --others --exclude-standard docs | grep -vxE 'docs/(cardwave-rewrite|design|design-history|worklog)\.md|docs/screenshots/[a-z-]+\.png|docs/similar-apps/.+|docs/tickets/([0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+|TEMPLATE|INDEX)\.md'
     grep -rnE '\bdb\.[a-z_]+\(|\.db\(\)\.[a-z_]+\(' server/src/api
     grep -rlPz '(anyhow!|bail!|\.context)\(\s*"|ensure!\([^;]*?,\s*"[^"]*"\s*,?\s*\);' server/src/api
     grep -rlPz '\bkeyed\([^;]*?\.send\(\)' crates --include=*.rs

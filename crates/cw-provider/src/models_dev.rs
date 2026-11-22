@@ -13,6 +13,11 @@
 //! no `:` tag, `.` and `_` as `-`, else without a date or `-latest`. An ID several
 //! providers list is one entry: the middle of their dates and prices, the most it
 //! reads, and a kind or thinking at least half of them say.
+//!
+//! A model's context window ([`Index::window`]) is never that most: it is its own
+//! provider's listing (by the host of the provider's `api`, or models.dev's key
+//! for a provider whose entry names none), else by name where every listing of
+//! it says the same, else unknown.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -59,11 +64,27 @@ pub struct Known {
     pub thinks: bool,
     /// The name people read: the one most of its listings give, the shortest on a tie.
     pub name: Option<String>,
+    /// The most tokens it reads where every listing that says so says the same.
+    pub(crate) agreed: Option<u64>,
 }
 
-/// models.dev's list, by name.
+/// models.dev's list, by name, and each provider's own listings.
 #[derive(Debug, Default)]
-pub struct Index(HashMap<String, Known>);
+pub struct Index {
+    known: HashMap<String, Known>,
+    /// Each provider's windows, by models.dev's key for it.
+    own: HashMap<String, Listings>,
+    /// The keys of the providers whose API is at a host.
+    hosts: HashMap<String, Vec<String>>,
+}
+
+/// One provider's context windows: by a model's ID (lower-case), and by its
+/// name, `None` where its listings of the name differ.
+#[derive(Debug, Default)]
+struct Listings {
+    exact: HashMap<String, u64>,
+    named: HashMap<String, Option<u64>>,
+}
 
 /// The list in the server's state: read once, fetched anew at most once a day.
 pub struct ModelsDev {
@@ -169,6 +190,9 @@ async fn fetch(http: &Client, source: &str) -> anyhow::Result<Vec<u8>> {
 
 #[derive(Deserialize)]
 struct ProviderJson {
+    /// Where its API is, for one that is not OpenAI's own.
+    #[serde(default)]
+    api: Option<String>,
     #[serde(default)]
     models: HashMap<String, ModelJson>,
 }
@@ -293,12 +317,34 @@ impl Index {
             Fail::said(Code::NotReadable, "models.dev's list").with("what", "models_dev_list"),
         )?;
         let mut all: HashMap<String, Vec<(bool, ModelJson)>> = HashMap::new();
-        for (key, model) in providers.into_values().flat_map(|provider| provider.models) {
-            let id = model.id.clone().unwrap_or(key);
-            let tagged = id.contains(':');
-            all.entry(name_of(&id)).or_default().push((tagged, model));
+        let mut own: HashMap<String, Listings> = HashMap::new();
+        let mut hosts: HashMap<String, Vec<String>> = HashMap::new();
+        for (provider_key, provider) in providers {
+            if let Some(host) = provider.api.as_deref().and_then(host_of) {
+                hosts.entry(host).or_default().push(provider_key.clone());
+            }
+            let listings = own.entry(provider_key).or_default();
+            for (key, model) in provider.models {
+                let id = model.id.clone().unwrap_or(key);
+                // A window of 0 is a listing that says none.
+                let context = model.limit.as_ref().and_then(|limit| limit.context);
+                if let Some(context) = context.filter(|window| *window > 0) {
+                    listings.exact.insert(id.trim().to_lowercase(), context);
+                    listings
+                        .named
+                        .entry(name_of(&id))
+                        .and_modify(|said| {
+                            if *said != Some(context) {
+                                *said = None;
+                            }
+                        })
+                        .or_insert(Some(context));
+                }
+                let tagged = id.contains(':');
+                all.entry(name_of(&id)).or_default().push((tagged, model));
+            }
         }
-        let index = all
+        let known = all
             .into_iter()
             .map(|(name, listed)| {
                 let voting = voters(&listed);
@@ -331,24 +377,84 @@ impl Index {
                     image: half(&voting, |m| m.outputs("image")),
                     thinks: half(&voting, |m| m.reasoning),
                     name: most_named(&voting),
+                    agreed: agreed(&models),
                 };
                 (name, known)
             })
             .collect();
-        Ok(Self(index))
+        Ok(Self { known, own, hosts })
     }
 
     /// What the list says of the model `id` of a provider's list, by its name.
     pub fn get(&self, id: &str) -> Option<&Known> {
         let name = name_of(id);
-        self.0.get(&name).or_else(|| self.0.get(undated(&name)))
+        self.known
+            .get(&name)
+            .or_else(|| self.known.get(undated(&name)))
+    }
+
+    /// The context window of `model` at the provider whose API is at
+    /// `base_url`, or of models.dev's provider `key` where its entry names no
+    /// address: that provider's own listing, else by name where every listing
+    /// says the same; none where they differ or none says. A dated id takes only
+    /// its own listing: a snapshot's window can differ from its alias's.
+    pub fn window(&self, base_url: &str, key: Option<&str>, model: &str) -> Option<u64> {
+        let keys: Vec<&String> = match key {
+            Some(key) => self
+                .own
+                .get_key_value(key)
+                .map(|(key, _)| key)
+                .into_iter()
+                .collect(),
+            None => host_of(base_url)
+                .and_then(|host| self.hosts.get(&host))
+                .map(|keys| keys.iter().collect())
+                .unwrap_or_default(),
+        };
+        let exact = model.trim().to_lowercase();
+        let name = name_of(model);
+        let named = |listings: &Listings, name: &str| listings.named.get(name).copied().flatten();
+        let said: Vec<u64> = keys
+            .iter()
+            .filter_map(|key| self.own.get(*key))
+            .filter_map(|listings| {
+                listings
+                    .exact
+                    .get(&exact)
+                    .copied()
+                    .or_else(|| named(listings, &name))
+            })
+            .collect();
+        match said.first() {
+            Some(first) => said.iter().all(|window| window == first).then_some(*first),
+            None => self.known.get(&name)?.agreed,
+        }
     }
 
     /// The readable name of the model `id`: only of the same name, as a dated
     /// model keeps its own.
     pub fn name(&self, id: &str) -> Option<&str> {
-        self.0.get(&name_of(id))?.name.as_deref()
+        self.known.get(&name_of(id))?.name.as_deref()
     }
+}
+
+/// The window all of `models` that name one say, where they agree.
+fn agreed(models: &[&ModelJson]) -> Option<u64> {
+    let mut said = models
+        .iter()
+        .filter_map(|m| m.limit.as_ref()?.context.filter(|window| *window > 0));
+    let first = said.next()?;
+    said.all(|window| window == first).then_some(first)
+}
+
+/// The host of an API's address, with its port where it has one.
+fn host_of(address: &str) -> Option<String> {
+    let url = cw_platform::http::Url::parse(address.trim()).ok()?;
+    let host = url.host_str()?.to_lowercase();
+    Some(match url.port() {
+        Some(port) => format!("{host}:{port}"),
+        None => host,
+    })
 }
 
 #[cfg(test)]
@@ -402,7 +508,71 @@ mod tests {
     }
 
     #[test]
+    fn a_window_is_its_own_providers_else_one_all_listings_agree_on() {
+        let list = r#"{
+            "openai": { "models": {
+                "gpt-5": { "id": "gpt-5", "limit": { "context": 400000 } },
+                "o9": { "id": "o9", "limit": { "context": 200000 } } } },
+            "router": { "api": "https://router.example/api/v1", "models": {
+                "openai/gpt-5": { "id": "openai/gpt-5", "limit": { "context": 272000 } },
+                "meta/llama-9": { "id": "meta/llama-9", "limit": { "context": 8192 } } } },
+            "other": { "models": {
+                "llama-9": { "id": "llama-9", "limit": { "context": 8192 } },
+                "zero-1": { "id": "zero-1", "limit": { "context": 0 } } } }
+        }"#;
+        let index = Index::read(list.as_bytes()).unwrap();
+        let router = "https://router.example/api/v1";
+        // The provider's own listing, by the host of its address or by models.dev's key.
+        assert_eq!(index.window(router, None, "openai/gpt-5"), Some(272000));
+        assert_eq!(
+            index.window("https://api.openai.com/v1", Some("openai"), "gpt-5"),
+            Some(400000)
+        );
+        // A dated id its provider does not list, and a window of 0, say none.
+        assert_eq!(
+            index.window(
+                "https://api.openai.com/v1",
+                Some("openai"),
+                "gpt-5-2025-08-07"
+            ),
+            None
+        );
+        assert_eq!(
+            index.window("https://elsewhere.example/v1", None, "zero-1"),
+            None
+        );
+        // Not listed by its provider: by name only where every listing agrees.
+        assert_eq!(
+            index.window("https://elsewhere.example/v1", None, "llama-9"),
+            Some(8192)
+        );
+        assert_eq!(
+            index.window("https://elsewhere.example/v1", None, "o9"),
+            Some(200000)
+        );
+        assert_eq!(
+            index.window("https://elsewhere.example/v1", None, "gpt-5"),
+            None
+        );
+        assert_eq!(index.window(router, None, "unheard-of"), None);
+        // The most any listing says stays for the picks.
+        assert_eq!(index.get("gpt-5").unwrap().context, Some(400000));
+    }
+
+    #[test]
     fn the_shipped_list_reads() {
         assert!(shipped().get("gpt-5").is_some());
+    }
+
+    /// Perplexity's host is models.dev's `perplexity-agent`, which lists only
+    /// `sonar` of its models: its key in `own.toml` names the entry that does.
+    #[test]
+    fn perplexity_reads_its_own_entry() {
+        let url = "https://api.perplexity.ai/v1";
+        let key = crate::list::at(url).and_then(|listed| listed.models_dev.as_deref());
+        assert_eq!(
+            shipped().window(url, key, "sonar-reasoning-pro"),
+            Some(128000)
+        );
     }
 }

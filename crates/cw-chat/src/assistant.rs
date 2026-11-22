@@ -203,8 +203,7 @@ pub async fn pick(
 ) -> anyhow::Result<Option<String>> {
     let (modes, newest) = (&asked.modes, &asked.newest[..]);
     let room = provider
-        .sampling
-        .context()
+        .context()?
         .saturating_sub(tokens::estimate(PICK) + 200);
     let mut shown = newest;
     let question = loop {

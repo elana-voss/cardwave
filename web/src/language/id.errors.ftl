@@ -139,6 +139,7 @@ error-needed = { $what ->
     [character_name] Karakter memerlukan nama.
     [chat_character] Chat memerlukan karakter.
     [chat_title] Judul chat memerlukan kata-kata.
+    [context_size] Cardwave tidak tahu berapa banyak yang dibaca { $model } sekaligus. Atur ukuran konteksnya di Pengaturan › Lanjutan.
     [entry_name] Entri memerlukan nama.
     [expression_files] Pilih berkas zip (folder yang dikemas) atau gambar-gambar sebuah set.
     [language] Bahasanya tidak ada.

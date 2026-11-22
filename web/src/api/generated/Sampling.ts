@@ -7,7 +7,8 @@
  */
 export type Sampling = { 
 /**
- * The model's context window in tokens, which the prompt is fitted into;
- * 128000 when unset.
+ * The most tokens sent to any model: the prompt is fitted into the
+ * smaller of it and the model's window, into it alone where the window is
+ * unknown (`Provider::context`).
  */
 context_size?: number | null, temperature?: number | null, top_p?: number | null, frequency_penalty?: number | null, presence_penalty?: number | null, seed?: number | null, };

@@ -533,7 +533,7 @@ voices-delete = Xóa
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = Kích thước ngữ cảnh (token)
-advanced-context-hint = Để trống cho 128.000
+advanced-context-hint = Gửi tối đa chừng này. Cần khi Cardwave không biết kích thước riêng của mô hình
 advanced-temperature = Nhiệt độ
 advanced-temperature-about = Cao hơn: câu trả lời bất ngờ hơn. Từ 0 đến 2
 advanced-top-p = Top P

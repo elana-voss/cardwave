@@ -282,7 +282,7 @@ async fn provider_and_card(
         })
         .await;
     match asked {
-        Ok((Some(provider), card)) => Ok((provider, card)),
+        Ok((Some(provider), card)) => Ok((state.settled(provider).await?, card)),
         Ok((None, _)) => {
             let failed = state
                 .work(move |db| {

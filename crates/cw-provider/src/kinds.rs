@@ -562,6 +562,7 @@ pub fn provider_of(db: &dyn Storage, user: i64, kind: Kind) -> anyhow::Result<Op
         thinking_off: picked.thinking.off(),
         reply_limit: None,
         seen_thinking: picked.seen_thinking,
+        window: None,
     }))
 }
 

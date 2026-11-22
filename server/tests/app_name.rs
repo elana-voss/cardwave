@@ -34,6 +34,7 @@ async fn every_way(api: &Api) {
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     };
     let whom = Whom {
         base_url: api.url.clone(),

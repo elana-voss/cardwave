@@ -139,6 +139,7 @@ error-needed = { $what ->
     [character_name] 角色需要一个名字。
     [chat_character] 聊天需要一个角色。
     [chat_title] 聊天标题不能为空。
+    [context_size] Cardwave 不知道 { $model } 一次能读多少。请在设置 › 高级中设置上下文大小。
     [entry_name] 条目需要一个名字。
     [expression_files] 请选择一个 zip 文件（打包的文件夹）或一组表情的图片。
     [language] 缺少语言。

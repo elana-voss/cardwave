@@ -45,6 +45,7 @@ fn pretend(model: &str) -> Provider {
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: Some(provider::pretend::WINDOW),
     }
 }
 

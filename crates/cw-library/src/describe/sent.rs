@@ -128,7 +128,7 @@ pub(crate) async fn asked_and_read<T>(
 /// Refuses a card that, told with `prompt`, is longer than the worker model reads.
 pub fn fits(provider: &Provider, prompt: &str, card: &str) -> anyhow::Result<()> {
     let needed = tokens::estimate(prompt) + tokens::estimate(card) + ANSWER_ROOM;
-    let context = provider.sampling.context();
+    let context = provider.context()?;
     ensure!(needed <= context, Fail::said(Code::TooBig, format!("the card is longer than the worker model reads (about {needed} tokens of {context})")).with("what", "card_for_worker").with("needed", needed.to_string()).with("context", context.to_string()));
     Ok(())
 }

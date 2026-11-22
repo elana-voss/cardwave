@@ -266,6 +266,7 @@ async fn a_model_has_a_while_for_its_first_word_and_no_longer() {
             thinking_off: None,
             reply_limit: None,
             seen_thinking: false,
+            window: None,
         };
         let started = Instant::now();
         let failed = check::model(&http, &provider, brief).await.unwrap_err();

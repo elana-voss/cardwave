@@ -538,7 +538,7 @@ voices-delete = 削除
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = コンテキストのサイズ（トークン）
-advanced-context-hint = 空欄なら 128,000
+advanced-context-hint = 送る量の上限です。Cardwave がモデル自体のサイズを知らない場合に必要です
 advanced-temperature = Temperature
 advanced-temperature-about = 高いほど意外な返事になります。0 から 2 まで
 advanced-top-p = Top P

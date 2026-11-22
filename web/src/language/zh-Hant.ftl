@@ -543,7 +543,7 @@ voices-delete = 刪除
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = 上下文大小（token）
-advanced-context-hint = 留空即為 128,000
+advanced-context-hint = 最多傳送這麼多。Cardwave 不知道模型本身大小時需要填寫
 advanced-temperature = 溫度
 advanced-temperature-about = 越高，回覆越出人意料。從 0 到 2
 advanced-top-p = Top P

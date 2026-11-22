@@ -121,7 +121,9 @@ impl Places {
         };
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let url = format!("http://{}", listener.local_addr().unwrap());
-        let app = Router::new().fallback(answer);
+        let app = Router::new()
+            .route("/props", axum::routing::get(common::props))
+            .fallback(answer);
         tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
         Self { url, asked }
     }

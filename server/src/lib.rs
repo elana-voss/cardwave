@@ -283,6 +283,16 @@ const EVENT_BACKLOG: usize = 1024;
 const PURGE_EVERY: Duration = Duration::from_secs(60 * 60);
 
 impl AppState {
+    /// `provider` with its model's context window, where something knows it
+    /// (`cw_provider::window`); asked before every prompt fitted into it.
+    pub(crate) async fn settled(
+        &self,
+        provider: cw_provider::Provider,
+    ) -> anyhow::Result<cw_provider::Provider> {
+        let index = self.models_dev.index(&self.http).await;
+        cw_provider::window::settled(&self.http, &index, provider).await
+    }
+
     /// The user requests act for; see [`api::User`].
     pub fn local_user(&self) -> i64 {
         self.local_user.load(Ordering::Relaxed)

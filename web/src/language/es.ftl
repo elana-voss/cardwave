@@ -539,7 +539,7 @@ voices-delete = Eliminar
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = Tamaño del contexto (tokens)
-advanced-context-hint = Déjalo vacío para 128.000
+advanced-context-hint = Como máximo se envía esto. Necesario cuando Cardwave no conoce el tamaño del modelo
 advanced-temperature = Temperatura
 advanced-temperature-about = Más alto: respuestas más sorprendentes. De 0 a 2
 advanced-top-p = Top P

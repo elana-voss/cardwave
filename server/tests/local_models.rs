@@ -54,6 +54,7 @@ async fn stand_in() -> String {
                 "ok"
             }),
         )
+        .route("/props", get(common::props))
         .route("/v1/chat/completions", post(chat));
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let url = format!("http://{}", listener.local_addr().unwrap());
@@ -97,6 +98,7 @@ fn at(folder: &Path, model: &str) -> Provider {
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     }
 }
 

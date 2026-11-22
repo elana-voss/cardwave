@@ -10,6 +10,7 @@
 // mode (`PICKER`) with the mode `picks` names, else none; the companion's animator (`ANIMATOR`) with the moves
 // `moves` names, else none, noted in `animated`. A picture asked for (`/images/generations`) is
 // answered with `PICTURE`, or the file `paints` gave, and noted in `pictured`.
+// `/props` is answered with a window of 128,000 tokens, not noted in `listed`: the server asks it of this machine's addresses.
 // `startFakePlaces` listens on the port 100 above its worker's server's (`CARDWAVE_PROVIDER_PLACES` in
 // server.mjs, read by a debug build only) and answers 404 as JSON but for the places a test names (`answer`);
 // the websites are made up and end in `.test`. models.dev's list is asked there too (`/models.dev/api.json`), so
@@ -116,6 +117,8 @@ export async function startFakePlaces(): Promise<FakePlaces> {
 }
 
 /** How the memory helper's prompt begins. */
+/** What the stand-in says it reads at once (`/props`), as server/tests/common/mod.rs. */
+const WINDOW = 128_000;
 const HELPER = "Read these new messages of a ";
 /** A helper's reply that finds nothing. */
 export const NOTHING = "PRESENT:\nFACTS:\nEVENTS:";
@@ -140,6 +143,12 @@ export async function startFakeProvider(): Promise<FakeProvider> {
   let steps: unknown[] = [];
 
   const server = createServer(async (req, res) => {
+    // llama.cpp's own answer to what a server reads at once, which the server asks of an address on this machine.
+    if (req.method === "GET" && req.url?.endsWith("/props")) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ default_generation_settings: { n_ctx: WINDOW } }));
+      return;
+    }
     if (req.method === "GET") {
       listed.push({ path: req.url ?? "", key: req.headers.authorization });
       res.writeHead(list.status, { "Content-Type": list.type ?? "application/json" });

@@ -1,3 +1,12 @@
+# 0.3.3
+
+Cardwave giờ biết mỗi AI đọc được bao nhiêu một lần, và không còn đoán nữa.
+
+- Mỗi câu trả lời vừa với lượng mà mô hình của nó đọc được. Cardwave lấy kích thước từ danh sách mô hình có sẵn, hoặc hỏi thẳng AI chạy trên máy tính hay mạng nội bộ của bạn. Trước đây, mô hình nào cũng được tính 128.000 token.
+- Một cuộc trò chuyện dài với mô hình đọc được nhiều hơn giờ giữ lại nhiều lịch sử hơn.
+- Khi chưa biết kích thước của một AI, câu trả lời sẽ báo cho bạn, và bạn đặt nó một lần làm kích thước ngữ cảnh trong Cài đặt › Nâng cao. Cho đến lúc đó, không có gì được gửi đi.
+- Kích thước ngữ cảnh trong Cài đặt › Nâng cao giờ giới hạn những gì được gửi tới bất kỳ mô hình nào.
+
 # 0.3.2
 
 Khuôn mặt của người bạn đồng hành trở nên sống động, và nó đáp lại khi bạn chạm vào.

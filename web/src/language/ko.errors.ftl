@@ -138,6 +138,7 @@ error-needed = { $what ->
     [character_name] 캐릭터에는 이름이 필요해요.
     [chat_character] 채팅에는 캐릭터가 필요해요.
     [chat_title] 채팅 제목이 비어 있어요.
+    [context_size] Cardwave는 { $model }이(가) 한 번에 읽는 양을 모릅니다. 설정 › 고급에서 컨텍스트 크기를 정하세요.
     [entry_name] 항목에는 이름이 필요해요.
     [expression_files] zip 파일(묶은 폴더)이나 세트의 이미지들을 고르세요.
     [language] 언어가 빠졌어요.

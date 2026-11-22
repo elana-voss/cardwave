@@ -50,7 +50,9 @@ impl Model {
         };
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new().route("/v1/chat/completions", post(complete));
+        let app = Router::new()
+            .route("/props", axum::routing::get(common::props))
+            .route("/v1/chat/completions", post(complete));
         tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
         Self { url, asked }
     }

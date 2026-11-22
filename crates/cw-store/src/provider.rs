@@ -33,6 +33,7 @@ fn read(row: &Row<'_>, at: usize) -> rusqlite::Result<Provider> {
         thinking_off: None,
         reply_limit: None,
         seen_thinking: false,
+        window: None,
     })
 }
 

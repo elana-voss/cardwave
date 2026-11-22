@@ -12,7 +12,8 @@
 //! history is dropped in blocks of an [`HISTORY_BLOCKS`]th of the context,
 //! counted from the chat's first message (the owner); the example dialogue in
 //! whole blocks, left out once the history no longer fits whole. The reply's
-//! room is kept first, then the newest message's, then `MEMORY_ROOM` for the
+//! room is kept first, and a tenth of the rest for the estimate's error
+//! (`ESTIMATE_MARGIN_RATIO`), then the newest message's, then `MEMORY_ROOM` for the
 //! memory note, so the history does not move as it grows.
 
 use crate::lorebook::{self, Activated};
@@ -21,6 +22,10 @@ use crate::{Character, ChatState, PromptMessage, Role, Variables, tokens};
 
 /// Share of the context kept free for the reply when no longer reply is asked for.
 const REPLY_RESERVE_RATIO: f64 = 0.1;
+/// Share of what the reply leaves kept free for the estimate's error: a prompt
+/// estimated at 90 % of it fits where the estimate counts 90 % of the real
+/// tokens or more (`tokens.rs`'s test).
+const ESTIMATE_MARGIN_RATIO: f64 = 0.1;
 const EXAMPLE_WRAPPER_SAFETY_MARGIN: usize = 10;
 const EXAMPLE_TRUNCATION_SAFETY_RATIO: f64 = 0.95;
 /// What follows example dialogue cut short.
@@ -158,7 +163,8 @@ pub fn build(
         req,
         chat,
         globals,
-        used: reserved_reply,
+        used: reserved_reply
+            + ((req.context_size - reserved_reply) as f64 * ESTIMATE_MARGIN_RATIO) as usize,
         segments: Vec::new(),
         messages: Vec::new(),
         depth_insertions: Vec::new(),

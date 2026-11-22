@@ -151,7 +151,8 @@ async fn words(
             Ok((worker, whom, describe::card_json(&document), character))
         })
         .await?;
-    // The card is read whole or not at all, as for its description.
+    // The card is read whole or not at all, as for its description, by the model's window.
+    let worker = state.settled(worker).await?;
     describe::fits(&worker, images::CARD, &card.to_string())?;
     let asked = images::asked_of_card(&card, &character, &whom.model);
     let words = images::words_of(&cw_provider::answer(&state.http, &worker, &asked).await?)?;

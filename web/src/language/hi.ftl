@@ -543,7 +543,7 @@ voices-delete = हटाएँ
 ## Advanced (views/advanced.ts)
 
 advanced-context-size = कॉन्टेक्स्ट साइज़ (टोकन)
-advanced-context-hint = 128,000 के लिए खाली छोड़ें
+advanced-context-hint = ज़्यादा से ज़्यादा इतना भेजा जाता है। तब ज़रूरी है जब Cardwave मॉडल का अपना आकार नहीं जानता
 advanced-temperature = टेम्परेचर
 advanced-temperature-about = ज़्यादा: और चौंकाने वाले जवाब। 0 से 2 तक
 advanced-top-p = Top P

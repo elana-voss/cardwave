@@ -309,6 +309,7 @@ impl Ctx {
             model: role.model.clone(),
             thinking_off: chat.thinking_off.filter(|_| role.model == chat.model),
             seen_thinking: chat.seen_thinking && role.model == chat.model,
+            window: chat.window.filter(|_| role.model == chat.model),
             ..chat.clone()
         };
         let http = self.app.http();

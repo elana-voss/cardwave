@@ -144,6 +144,7 @@ impl Embedder {
                     }
                     let body: Value = serde_json::from_str(&body).unwrap_or_default();
                     match uri.path() {
+                        "/props" => super::props().await.into_response(),
                         "/tokenize" => {
                             let words = body["content"].as_str().unwrap_or_default().split_whitespace().count();
                             Json(json!({ "tokens": vec![1; words] })).into_response()

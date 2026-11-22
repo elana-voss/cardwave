@@ -139,6 +139,7 @@ error-needed = { $what ->
     [character_name] Der Charakter braucht einen Namen.
     [chat_character] Ein Chat braucht einen Charakter.
     [chat_title] Der Titel eines Chats braucht Worte.
+    [context_size] Cardwave weiß nicht, wie viel { $model } auf einmal liest. Lege seine Kontextgröße in Einstellungen › Erweitert fest.
     [entry_name] Ein Eintrag braucht einen Namen.
     [expression_files] Wähle eine Zip-Datei (einen gepackten Ordner) oder die Bilder eines Satzes.
     [language] Die Sprache fehlt.

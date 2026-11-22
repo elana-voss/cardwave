@@ -6,7 +6,8 @@
 //! Its address ([`address_of`]) is the never-resolving host `HOST` with the
 //! folder as the path's first segment. `send` hands such a request to
 //! [`answer`]: `GET …/models` lists the folder ([`models`]), a chat goes to its
-//! model's `llama-server`, loaded first. A typed address may not be this one.
+//! model's `llama-server`, loaded first; its window is that server's `/props`
+//! ([`window`]). A typed address may not be this one.
 //!
 //! Traps: what runs the models is the process's ([`set_up`] by each app opened,
 //! the last kept), as `send` knows no app. A model is let go or another loaded
@@ -270,6 +271,21 @@ pub async fn answer(http: &Client, mut request: Request) -> cw_platform::http::R
     request.headers_mut().insert(name, authorization);
     let response = http.execute(request).await?;
     Ok(held(response, using))
+}
+
+/// The context window `llama-server` loaded the model `id` of This computer's
+/// `base_url` with (its `/props`), loading it first.
+pub(crate) async fn window(
+    http: &Client,
+    base_url: &str,
+    id: &str,
+) -> anyhow::Result<Option<usize>> {
+    let folder = folder_at(base_url).context(
+        Fail::said(Code::NotPossible, "not an address of This computer")
+            .with("what", "no_local_models"),
+    )?;
+    let (url, authorization, _using) = load(http, &model_file(&folder, id)?).await?;
+    crate::window::props(http, &url, Some(&authorization)).await
 }
 
 /// The file of the model `id` in `folder`, where it is one of its models.

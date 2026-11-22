@@ -139,6 +139,7 @@ error-needed = { $what ->
     [character_name] Nhân vật cần có tên.
     [chat_character] Cuộc trò chuyện cần có nhân vật.
     [chat_title] Tiêu đề cuộc trò chuyện không được để trống.
+    [context_size] Cardwave không biết { $model } đọc được bao nhiêu một lần. Hãy đặt kích thước ngữ cảnh trong Cài đặt › Nâng cao.
     [entry_name] Mục cần có tên.
     [expression_files] Hãy chọn một tệp zip (thư mục đã nén) hoặc các hình của một bộ.
     [language] Thiếu ngôn ngữ.

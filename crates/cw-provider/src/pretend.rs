@@ -57,6 +57,14 @@ const WHOLE_FROM: u64 = 16_000;
 /// The time between two words of a reply.
 const PACE: Duration = Duration::from_millis(30);
 
+/// Its models' context window, which it says itself.
+pub const WINDOW: usize = 128_000;
+
+/// Whether `base_url` is the pretend model's.
+pub fn at(base_url: &str) -> bool {
+    cw_platform::http::Url::parse(base_url).is_ok_and(|url| url.host_str() == Some(HOST))
+}
+
 /// Whether `request` is for the pretend model.
 pub fn asked(request: &Request) -> bool {
     request.url().host_str() == Some(HOST)

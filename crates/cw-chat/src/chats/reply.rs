@@ -9,7 +9,8 @@
 //! since the last message (`time_note`), after the log, where it leaves the
 //! cached beginning of the prompt as it was.
 //! A prompt with no room for the character (its system message) is refused
-//! (`whole`), never sent without it.
+//! (`whole`), never sent without it. Each is fitted into the model's window
+//! (`context`), which the caller settled; none is assumed.
 
 use anyhow::ensure;
 use chrono::{DateTime, FixedOffset, Local};
@@ -17,7 +18,6 @@ use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_prompt::builder::{self, BuiltPrompt, LeftOut, PromptRequest};
 use cw_prompt::{ChatMessage, PromptMessage, Role, Variables};
-use cw_provider::{self as provider, Provider, Sampling};
 
 use crate::chats::{self, Chat, Message};
 
@@ -88,7 +88,7 @@ pub struct Given<'a> {
 /// What the build changes is not kept, as the reply's own build kept it.
 pub fn continue_prompt(
     inputs: &mut chats::PromptInputs,
-    sampling: &Sampling,
+    context: usize,
     given: Given,
     direction: Option<&str>,
 ) -> anyhow::Result<BuiltPrompt> {
@@ -103,7 +103,7 @@ pub fn continue_prompt(
         memory_context: given.memory,
         data_context: given.documents,
         tools_advertisement: given.tools,
-        ..PromptRequest::new(&inputs.character, sampling.context())
+        ..PromptRequest::new(&inputs.character, context)
     };
     let built = builder::build(&request, &mut inputs.state, &mut Variables::new());
     whole(built)
@@ -187,7 +187,7 @@ pub fn prompt_for(
     db: &dyn crate::chats::Storage,
     user: i64,
     chat: &Chat,
-    sampling: &Sampling,
+    context: usize,
     reply: &Message,
     mut inputs: chats::PromptInputs,
     given: Given,
@@ -205,7 +205,7 @@ pub fn prompt_for(
         memory_context: given.memory,
         data_context: given.documents,
         tools_advertisement: given.tools,
-        ..PromptRequest::new(&inputs.character, sampling.context())
+        ..PromptRequest::new(&inputs.character, context)
     };
     // Variables shared by all of a user's chats are not stored yet.
     let built = whole(builder::build(
@@ -245,16 +245,17 @@ pub fn sent(segments: &[builder::Segment]) -> chats::Sent {
     sent
 }
 
-/// The provider and the prompt of a draft (`POST /api/chats/{id}/draft`), and
-/// the name the user goes by in the chat. Writing for the user may be
-/// `steered` by `direction`; an improvement takes none.
+/// The prompt of a draft (`POST /api/chats/{id}/draft`), fitted into
+/// `context` tokens, and the name the user goes by in the chat. Writing for
+/// the user may be `steered` by `direction`; an improvement takes none.
 pub fn draft_prompt(
     db: &dyn crate::chats::Storage,
     user: i64,
     chat_id: i64,
+    context: usize,
     improve: Option<&str>,
     direction: Option<&str>,
-) -> anyhow::Result<(Provider, Vec<PromptMessage>, String)> {
+) -> anyhow::Result<(Vec<PromptMessage>, String)> {
     ensure!(
         improve.is_none() || direction.is_none(),
         Fail::said(
@@ -264,7 +265,6 @@ pub fn draft_prompt(
         .with("what", "improve_direction")
     );
     let chat = chats::get(db, user, chat_id)?.ok_or(NotFound("chat"))?;
-    let provider = provider::chat(db, user)?;
     // The character picked to reply, else the one the chat began with.
     let mut inputs = chats::prompt_inputs_after(db, user, &chat, chat.replier_id, chat.head_id)?;
     let prompt = match improve {
@@ -286,7 +286,7 @@ pub fn draft_prompt(
                 max_response_length: Some(chat.reply_length as usize),
                 injected_message: Some((Role::User, &instruction)),
                 is_impersonating: true,
-                ..PromptRequest::new(&inputs.character, provider.sampling.context())
+                ..PromptRequest::new(&inputs.character, context)
             };
             whole(builder::build(
                 &request,
@@ -296,7 +296,7 @@ pub fn draft_prompt(
             .messages
         }
     };
-    Ok((provider, prompt, inputs.state.persona_name))
+    Ok((prompt, inputs.state.persona_name))
 }
 
 /// How long the user's message is to be, by the user's last five messages, as

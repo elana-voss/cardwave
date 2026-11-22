@@ -34,6 +34,7 @@ pub mod reply;
 pub(crate) mod subscription;
 pub(crate) mod suggested;
 pub mod thinking;
+pub mod window;
 
 use std::time::Duration;
 
@@ -52,9 +53,6 @@ pub use reply::{Call, Piece, Reply};
 
 /// How long one of the two answers may take, whole.
 const ANSWER_LIMIT: Duration = Duration::from_secs(300);
-
-/// Context window assumed when the user has set none, as in the Flutter app.
-const DEFAULT_CONTEXT_SIZE: usize = 128_000;
 
 /// A reply longer than this is cut off, and so is a single line of the stream:
 /// neither is a chat reply any more.
@@ -158,8 +156,9 @@ pub fn no_longer_offered(failure: &anyhow::Error) -> bool {
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export, optional_fields = nullable)]
 pub struct Sampling {
-    /// The model's context window in tokens, which the prompt is fitted into;
-    /// 128000 when unset.
+    /// The most tokens sent to any model: the prompt is fitted into the
+    /// smaller of it and the model's window, into it alone where the window is
+    /// unknown (`Provider::context`).
     pub context_size: Option<usize>,
     pub temperature: Option<f64>,
     pub top_p: Option<f64>,
@@ -169,11 +168,6 @@ pub struct Sampling {
 }
 
 impl Sampling {
-    /// The context window the prompt is fitted into.
-    pub fn context(&self) -> usize {
-        self.context_size.unwrap_or(DEFAULT_CONTEXT_SIZE)
-    }
-
     /// What is sent along with a prompt, under the names of OpenAI's API.
     fn sent(&self) -> impl Iterator<Item = (&'static str, Value)> {
         let chosen = [
@@ -208,7 +202,7 @@ impl Sampling {
         within("frequency_penalty", self.frequency_penalty, -2.0, 2.0)?;
         within("presence_penalty", self.presence_penalty, -2.0, 2.0)?;
         ensure!(
-            self.context() >= 512,
+            self.context_size.is_none_or(|size| size >= 512),
             Fail::said(
                 Code::OutOfRange,
                 "the context size must be at least 512 tokens"
@@ -238,9 +232,29 @@ pub struct Provider {
     pub reply_limit: Option<u32>,
     /// Whether an answer of its model carried thinking (`kinds::saw_thinking`).
     pub seen_thinking: bool,
+    /// Its model's context window, where known: none until [`window::settled`].
+    pub window: Option<usize>,
 }
 
 impl Provider {
+    /// The most tokens its prompt and reply may take: its model's window,
+    /// capped by the user's Context size, which stands in where the window is
+    /// unknown. Fails where neither is, naming the model.
+    pub fn context(&self) -> anyhow::Result<usize> {
+        match (self.window, self.sampling.context_size) {
+            (Some(window), Some(size)) => Ok(window.min(size)),
+            (Some(size), None) | (None, Some(size)) => Ok(size),
+            (None, None) => bail!(
+                Fail::said(
+                    Code::Needed,
+                    format!("the context window of “{}” is not known", self.model)
+                )
+                .with("what", "context_size")
+                .with("model", self.model.clone())
+            ),
+        }
+    }
+
     /// The provider with `length` (a chat's Reply length) as the most tokens
     /// of each of its answers, where its model does not think (`thinks`). A
     /// model that thinks is given none, as its thinking would count against it.
@@ -882,6 +896,7 @@ mod tests {
             thinking_off,
             reply_limit: None,
             seen_thinking: false,
+            window: None,
         }
     }
 

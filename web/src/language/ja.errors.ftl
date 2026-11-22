@@ -139,6 +139,7 @@ error-needed = { $what ->
     [character_name] キャラクターには名前が必要です。
     [chat_character] チャットにはキャラクターが必要です。
     [chat_title] チャットのタイトルを入力してください。
+    [context_size] Cardwave は { $model } が一度に読める量を知りません。設定 › 詳細設定 でコンテキストサイズを設定してください。
     [entry_name] エントリーには名前が必要です。
     [expression_files] zipファイル（まとめたフォルダー）か、セットの画像を選んでください。
     [language] 言語が指定されていません。

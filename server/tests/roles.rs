@@ -73,6 +73,7 @@ fn the_work_is_asked_of_the_worker_model_or_of_the_chat_model_where_none_is_set(
             thinking_off: None,
             reply_limit: None,
             seen_thinking: false,
+            window: None,
         }
     );
 
