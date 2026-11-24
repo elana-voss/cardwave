@@ -12,7 +12,7 @@ use cw_library::describe::{self, Outcome};
 use cw_prompt::{PromptMessage, Role};
 use cw_provider::images::Whom;
 use cw_provider::models::{self, Limits};
-use cw_provider::{self as provider, Provider, Sampling, facts, list, pretend};
+use cw_provider::{self as provider, Provider, facts, list, pretend};
 use futures_util::future::BoxFuture;
 use serde_json::json;
 
@@ -37,15 +37,8 @@ impl Helper for Asks<'_> {
 
 fn pretend(model: &str) -> Provider {
     Provider {
-        base_url: pretend::ADDRESS.into(),
-        api_key: KEY.into(),
-        model: model.into(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
         window: Some(provider::pretend::WINDOW),
+        ..Provider::new(pretend::ADDRESS, KEY, model)
     }
 }
 

@@ -17,6 +17,17 @@
 #             apart, a subscription); an address on the host of base_url or under it is the provider's
 #   models_dev  models.dev's key for the provider, where its entry there names no address (api), by which a
 #             model's context window is read (crates/cw-provider/src/models_dev.rs `Index::window`)
+#   steps     how much its models think, as its docs give it (crates/cw-provider/src/steps.rs `Table`): per step
+#             (off, light, normal, deep) the fields merged into a request's body; all three levels or none (one
+#             with only off keeps the switch); cannot_stop, parts of the IDs of models that cannot stop thinking;
+#             only, parts of the IDs of models that take only some levels (OpenAI's pro models, as OpenRouter's
+#             list of 2026-11-24 gives their supported_efforts: medium, high, xhigh, and no none).
+#             Read on 2026-11-24 in: OpenAI developers.openai.com/api/docs/guides/reasoning; Gemini
+#             ai.google.dev/gemini-api/docs/openai and docs/gemini-3 (2.5 Pro and every 3.x cannot stop);
+#             OpenRouter openrouter.ai/docs/guides/best-practices/reasoning-tokens (it maps a level a model lacks
+#             to the nearest); DeepSeek's levels as its docs name them; Qwen alibabacloud.com/help/en/model-studio/
+#             deep-thinking (budget 4096 the top of its low band, 16384 the start of its top band; deep sends
+#             none, so each model thinks up to its own cap, which differs per model); Anthropic platform.claude.com/docs/en/api/openai-sdk (its OpenAI form has no levels)
 #   key_check where a provider whose list of models comes to anyone tells whether it takes a key (url; post =
 #             true where it is asked by POST), else the key is asked at its list of models
 #
@@ -54,6 +65,13 @@ models_dev = "openai"
 website = "openai.com"
 keys = ["sk-proj-", "sk-svcacct-", "sk-"]
 base_url = "https://api.openai.com/v1"
+[provider.steps]
+off = { reasoning_effort = "none" }
+light = { reasoning_effort = "low" }
+normal = { reasoning_effort = "medium" }
+deep = { reasoning_effort = "high" }
+cannot_stop = ["gpt-5-pro", "gpt-5.2-pro", "gpt-5.4-pro", "gpt-5.5-pro"]
+only = { "gpt-5-pro" = ["medium", "high"], "gpt-5.2-pro" = ["medium", "high"], "gpt-5.4-pro" = ["medium", "high"], "gpt-5.5-pro" = ["medium", "high"] }
 
 [[provider]]
 name = "Anthropic"
@@ -61,6 +79,8 @@ models_dev = "anthropic"
 website = "anthropic.com"
 keys = ["sk-ant-"]
 base_url = "https://api.anthropic.com/v1"
+[provider.steps]
+off = { thinking = { type = "disabled" } }
 
 [[provider]]
 name = "Google Gemini"
@@ -68,6 +88,12 @@ models_dev = "google"
 website = "ai.google.dev"
 keys = ["AIza"]
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+[provider.steps]
+off = { reasoning_effort = "none" }
+light = { reasoning_effort = "low" }
+normal = { reasoning_effort = "medium" }
+deep = { reasoning_effort = "high" }
+cannot_stop = ["gemini-2.5-pro", "gemini-3"]
 
 [[provider]]
 name = "Mistral"
@@ -89,6 +115,11 @@ keys = ["sk-or-v1-"]
 base_url = "https://openrouter.ai/api/v1"
 own_api = "openrouter"
 key_check = { url = "https://openrouter.ai/api/v1/key" }
+[provider.steps]
+off = { reasoning = { effort = "none" } }
+light = { reasoning = { effort = "low" } }
+normal = { reasoning = { effort = "medium" } }
+deep = { reasoning = { effort = "high" } }
 
 [[provider]]
 name = "Together AI"
@@ -101,6 +132,11 @@ name = "DeepSeek"
 website = "deepseek.com"
 keys = ["sk-"]
 base_url = "https://api.deepseek.com/v1"
+[provider.steps]
+off = { thinking = { type = "disabled" } }
+light = { reasoning_effort = "low" }
+normal = { reasoning_effort = "high" }
+deep = { reasoning_effort = "max" }
 
 [[provider]]
 name = "xAI"
@@ -222,6 +258,20 @@ name = "Alibaba Cloud Model Studio"
 website = "alibabacloud.com"
 keys = ["sk-ws", "sk-"]
 base_url = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+[provider.steps]
+off = { enable_thinking = false }
+light = { enable_thinking = true, thinking_budget = 4096 }
+normal = { enable_thinking = true, thinking_budget = 16384 }
+deep = { enable_thinking = true }
+
+[[provider]]
+name = "Alibaba (China)"
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+[provider.steps]
+off = { enable_thinking = false }
+light = { enable_thinking = true, thinking_budget = 4096 }
+normal = { enable_thinking = true, thinking_budget = 16384 }
+deep = { enable_thinking = true }
 
 [[provider]]
 name = "Parasail"

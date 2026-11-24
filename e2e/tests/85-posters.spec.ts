@@ -70,7 +70,7 @@ const posterOf = (page: Page, title: string): Locator => page.locator(`.tile[ari
 
 async function open(page: Page): Promise<void> {
   await page.goto("/#/library");
-  await chooseView(page, "Posters (experimental)");
+  await chooseView(page, "Posters");
 }
 
 test("the fifth view, remembered; a card not described is Gallery's plain tile", async ({ page, request }) => {
@@ -84,7 +84,7 @@ test("the fifth view, remembered; a card not described is Gallery's plain tile",
   await page.goto("/#/library");
   await page.locator("button[aria-label=View]:visible").click();
   const fifth = page.locator("[role=menu][aria-label=View]:visible [role=menuitemradio]").nth(4);
-  await expect(fifth).toHaveText("Posters (experimental)");
+  await expect(fifth).toHaveText("Posters");
   await fifth.click();
   await page.reload();
   await expect(page.locator(".gallery .tile-title").first()).toBeVisible();

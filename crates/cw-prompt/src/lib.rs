@@ -69,6 +69,10 @@ pub struct PromptMessage {
     pub role: Role,
     pub content: String,
     pub pictures: Vec<String>,
+    /// Its macros read the clock or drew by chance (`macros::Rendered`), so the
+    /// next build may word it otherwise: the prompt's steady start ends before it.
+    /// Not sent.
+    pub drawn_anew: bool,
 }
 
 impl PromptMessage {
@@ -77,6 +81,7 @@ impl PromptMessage {
             role,
             content: content.into(),
             pictures: Vec::new(),
+            drawn_anew: false,
         }
     }
 }

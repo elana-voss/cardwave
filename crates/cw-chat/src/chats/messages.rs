@@ -7,6 +7,8 @@
 //! the context its prompt took and its parts' tokens (`save_used`), the tools
 //! it called (`save_calls`), its model and provider (`set_model`) and
 //! how long it took (`save_times`): its "Used in this reply" and "Reply statistics".
+//! How its writing ended (`Ending`, from the round's `ReplyEnd`) is set at its end; a continue that adds no
+//! word keeps it, one that ends whole clears it.
 //! What is stored is `Storage`'s, which `cw_store::chat_messages` gives.
 
 use cw_coding::tools::used::UsedCall;
@@ -14,6 +16,7 @@ use cw_core::NotFound;
 use cw_core::{Code, Fail};
 use cw_library::lorebooks;
 use cw_prompt::Role;
+use cw_provider::Finish;
 use serde::Serialize;
 use ts_rs::TS;
 
@@ -71,8 +74,85 @@ pub struct MessageView {
     pub calls: Vec<UsedCall>,
     /// What the user attached to it, the first first (`attachments`).
     pub attachments: Vec<crate::attachments::Attachment>,
-    /// Whether it was cut off by the app's close, which the chat says when it is opened.
-    pub broke_off: bool,
+    /// How its writing ended, which the chat says under it.
+    pub ending: Ending,
+}
+
+/// How a reply's writing ended, as its message keeps it (`ReplyEnd::ending`).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub enum Ending {
+    /// Whole: it ended on its own, at the chat's Reply length, or was stopped.
+    #[default]
+    Whole,
+    /// The app's close broke it off.
+    BrokeOff,
+    /// The model's own length limit cut it, in a round asked without the chat's Reply length.
+    CutOff,
+}
+
+impl Ending {
+    /// Every ending with its name as stored and sent, the one list of them
+    /// (serde's and the database's check are held to it by tests).
+    pub const NAMES: [(Ending, &'static str); 3] = [
+        (Ending::Whole, "whole"),
+        (Ending::BrokeOff, "broke_off"),
+        (Ending::CutOff, "cut_off"),
+    ];
+
+    /// Its name as stored.
+    pub fn name(self) -> &'static str {
+        Ending::NAMES
+            .iter()
+            .find(|(ending, _)| *ending == self)
+            .map_or("whole", |(_, name)| name)
+    }
+
+    /// The ending a stored name names; any other is whole.
+    pub fn named(name: &str) -> Ending {
+        Ending::NAMES
+            .iter()
+            .find(|(_, named)| *named == name)
+            .map_or(Ending::Whole, |(ending, _)| *ending)
+    }
+}
+
+/// How the writing of a reply came to an end, which tells how its message is
+/// kept: whether its end is trimmed (`trims`) and how it is ended (`ending`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ReplyEnd {
+    /// It came to its end, as its provider said ([`Finish`]) or did not; one
+    /// Cardwave cut where it drifts into another character's turn ended on its own.
+    Finished(Finish),
+    /// The user stopped it.
+    Stopped,
+    /// It failed or broke off midway.
+    Failed,
+    /// The model's or its provider's own limit cut it, in a round asked
+    /// without the chat's Reply length (a model that thinks, a round whose
+    /// tools are not to be cut short): kept as it came, to be continued.
+    AtModelLimit,
+}
+
+impl ReplyEnd {
+    /// Whether its unfinished end is trimmed (`trim::kept`): where its
+    /// provider said it was cut off or did not say; one that ended on its
+    /// own, was stopped, failed or reached the model's own limit stays as it came.
+    pub fn trims(self) -> bool {
+        matches!(self, ReplyEnd::Finished(Finish::CutOff | Finish::NotSaid))
+    }
+
+    /// How the reply's message is kept as ended: none where it keeps what it
+    /// had, as its writing added no words (`added`) or failed.
+    pub fn ending(self, added: bool) -> Option<Ending> {
+        match self {
+            _ if !added => None,
+            ReplyEnd::Failed => None,
+            ReplyEnd::AtModelLimit => Some(Ending::CutOff),
+            ReplyEnd::Finished(_) | ReplyEnd::Stopped => Some(Ending::Whole),
+        }
+    }
 }
 
 /// The tokens of a reply's prompt, part by part ("Sent to the AI"): the
@@ -170,6 +250,7 @@ pub trait Storage {
         user: i64,
         message_id: i64,
         content: &str,
+        ending: Option<Ending>,
         head_before: Option<i64>,
     ) -> anyhow::Result<Option<bool>>;
     fn path_to(&self, chat_id: i64, last: Option<i64>) -> anyhow::Result<Vec<Message>>;
@@ -314,17 +395,19 @@ pub fn write_reply(db: &dyn Storage, user: i64, message_id: i64, more: &str) -> 
     db.write_reply(user, message_id, more)
 }
 
-/// Ends a reply that was being generated. With text it is a complete message
-/// from here on. Without, it is removed and the chat's head goes back to
-/// `head_before`. Returns the message if it is still there.
+/// Ends a reply that was being generated. With text (`content`) it is a complete message
+/// from here on, ended as `ending` says, or as before where none (a continue
+/// that added no words keeps what it had). Without, it is removed and the
+/// chat's head goes back to `head_before`. Returns the message if it is still there.
 pub fn finish_reply(
     db: &dyn Storage,
     user: i64,
     message_id: i64,
     content: &str,
+    ending: Option<Ending>,
     head_before: Option<i64>,
 ) -> anyhow::Result<Option<MessageView>> {
-    match db.end_reply(user, message_id, content, head_before)? {
+    match db.end_reply(user, message_id, content, ending, head_before)? {
         None => Err(NotFound("message").into()),
         Some(true) => Ok(None),
         Some(false) => view(db, user, message_id).map(Some),
@@ -476,4 +559,21 @@ pub fn save_calls(
         return Ok(());
     }
     db.keep_calls(user, message_id, calls)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Ending;
+
+    /// An ending goes to the page and into the database by the name its one
+    /// list gives it.
+    #[test]
+    fn each_ending_is_sent_and_stored_by_its_name_in_the_list() {
+        for (ending, name) in Ending::NAMES {
+            assert_eq!(serde_json::to_value(ending).unwrap(), name);
+            assert_eq!(ending.name(), name);
+            assert_eq!(Ending::named(name), ending);
+        }
+        assert_eq!(Ending::named("other"), Ending::Whole);
+    }
 }

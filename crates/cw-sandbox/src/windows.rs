@@ -748,6 +748,7 @@ fn wait(
     Ran {
         output: text(&output.take()),
         code,
+        drive_refused: false,
     }
 }
 

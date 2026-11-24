@@ -119,6 +119,7 @@ error-again-not-reply = Заново можно написать только о
 error-no-reply-to-write-again = В чате нет ответа, который можно написать заново.
 error-no-text = ИИ не прислал текста. Попробуйте ещё раз.
 error-worker-no-answer = Вспомогательная модель не ответила.
+memory-not-kept = Вспомогательная модель не смогла сохранить память этого чата. { $failure }
 error-unknown-voice = Голоса «{ $voice }» нет.
 error-nothing-to-read = Читать нечего.
 error-voice-not-downloaded = Голос не загружен.
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] В воркфлоу нет узла, который этот ComfyUI может выполнить.
     [workflow_node] Узла «{ $class }» из воркфлоу нет в этом ComfyUI.
     [zip] { $name } не читается как zip.
+    [file] Файл не читается: { $reason }
+    [folder] Папка не читается: { $reason }
+    [folder_in_task] Папка задачи не читается: { $reason }
+    [tool_arguments] Вызов модели не удалось прочитать, поэтому инструмент не запустился: { $reason }
+    [web_address] Это не веб-адрес.
+    [page_kind] Страница не является текстом ({ $kind }).
    *[other] Это не удаётся прочитать.
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] Список моделей слишком длинный.
     [picture_pixels] Картинка слишком большая ({ $wide } на { $high } пикселей).
     [reply] Ответ оборван: он стал слишком длинным.
+    [file_written] Файл больше { $megabytes } МБ не записывается.
    *[other] Это слишком большое.
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] Воркфлоу «{ $name }» нельзя использовать.
     [written_tools_full] Можно хранить не больше { $most_tools } инструментов; сначала удалите один в разделе Настройки › Дополнительно › Инструменты, написанные ИИ.
     [delete_not_in_trash] Навсегда удалить можно только то, что в Корзине; сначала переместите это туда.
+    [path_outside] Можно использовать только пути внутри папки задачи.
+    [write_folder] Это папка, а не файл.
+    [page_refreshes] Страница снова и снова перенаправляет на другую.
+    [page_scheme] Читаются только адреса http и https.
+    [page_closed] Адреса на этом компьютере или в частной сети не читаются.
+    [tool_failed] { $reason }
    *[other] Это сделать нельзя.
 }
 -helper-unusable = Ответ вспомогательной модели не удалось использовать. Попробуйте ещё раз или выберите другую вспомогательную модель.
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] Вспомогательная модель не написала описания картинки.
     [rating] { -helper-unusable }
     [reply_broke_off] Ответ оборвался.
+    [reply_cut_off] Ответ достиг предела длины модели.
     [needs] { -helper-unusable }
     [rounds] Команда не закончила работу за отведённые раунды ({ $rounds }).
     [search_left_out] Модель поиска пропустила текст.
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] Модель поиска не отвечает.
     [provider_voice] Голос провайдера недоступен.
     [provider_search_model] Модель поиска провайдера недоступна.
+    [search] Веб-поиск недоступен: { $reason }
+    [page] Страница недоступна: { $reason }
    *[other] Это недоступно.
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] Сервер картинок ответил { $status }.
     [provider_voices] Голоса провайдера ответили { $status }.
     [search_model] Модель поиска ответила { $status }.
+    [search] Ответ веб-поиска: { $status }.
+    [page] Ответ страницы: { $status }.
    *[other] Ответ: { $status }.
 }
 error-answered-said = { $said ->

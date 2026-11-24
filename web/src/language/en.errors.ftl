@@ -119,6 +119,7 @@ error-again-not-reply = Only a character's reply can be written again.
 error-no-reply-to-write-again = The chat has no reply to write again.
 error-no-text = The AI sent no text. Try again.
 error-worker-no-answer = The helper model gave no answer.
+memory-not-kept = The helper model could not keep this chat's memory. { $failure }
 error-unknown-voice = There is no voice “{ $voice }”.
 error-nothing-to-read = There is nothing to read.
 error-voice-not-downloaded = The voice is not downloaded.
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] The workflow has no node this ComfyUI can run.
     [workflow_node] The workflow's node “{ $class }” is not one this ComfyUI has.
     [zip] { $name } cannot be read as a zip.
+    [file] The file cannot be read: { $reason }
+    [folder] The folder cannot be read: { $reason }
+    [folder_in_task] The task's folder cannot be read: { $reason }
+    [tool_arguments] The model's call could not be read, so the tool did not run: { $reason }
+    [web_address] That is no web address.
+    [page_kind] The page is not text ({ $kind }).
    *[other] That cannot be read.
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] The list of models is too long.
     [picture_pixels] The picture is too large ({ $wide } by { $high } pixels).
     [reply] The reply was cut off: it grew too long.
+    [file_written] A file of more than { $megabytes } MB is not written.
    *[other] That is too large.
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] The workflow “{ $name }” cannot be used.
     [written_tools_full] You can keep { $most_tools } tools at most; delete one in Settings › Advanced › Tools the AI wrote first.
     [delete_not_in_trash] Only what is in the Trash can be deleted for good; move it there first.
+    [path_outside] Only paths inside the task's folder can be used.
+    [write_folder] That is a folder, not a file.
+    [page_refreshes] The page refreshes to another page again and again.
+    [page_scheme] Only http and https addresses are read.
+    [page_closed] Addresses on this computer or in a private network are not read.
+    [tool_failed] { $reason }
    *[other] That cannot be done.
 }
 -helper-unusable = The helper model's answer could not be used. Try again, or pick another helper model.
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] The helper model wrote no words for the picture.
     [rating] { -helper-unusable }
     [reply_broke_off] The reply broke off.
+    [reply_cut_off] The reply reached the model's length limit.
     [needs] { -helper-unusable }
     [rounds] The team did not end its work in { $rounds } rounds.
     [search_left_out] The search model left out a text.
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] The search model does not answer.
     [provider_voice] The provider's voice cannot be reached.
     [provider_search_model] The provider's search model cannot be reached.
+    [search] The web search cannot be reached: { $reason }
+    [page] The page cannot be reached: { $reason }
    *[other] It cannot be reached.
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] The picture server answered { $status }.
     [provider_voices] The provider's voices answered { $status }.
     [search_model] The search model answered { $status }.
+    [search] The web search answered { $status }.
+    [page] The page answered { $status }.
    *[other] It answered { $status }.
 }
 error-answered-said = { $said ->

@@ -1,8 +1,14 @@
 # 0.3.3
 
-Cardwave ahora sabe cuánto lee cada IA de una vez, y ya no lo adivina.
+Cardwave ahora sabe cuánto lee cada IA de una vez, y puedes elegir cuánto piensa y dar color a tus chats.
 
-- Cada respuesta se ajusta a lo que su modelo puede leer. Cardwave toma el tamaño de su lista de modelos integrada, o se lo pregunta a la propia IA si está en tu ordenador o en tu red local. Antes, cada modelo recibía 128.000 tokens.
+- En Ajustes › Proveedores, un modelo que puede pensar más o menos ahora ofrece Desactivado, Ligero, Normal o Profundo, guardado para cada modelo. Donde un proveedor no puede desactivar el pensamiento de un modelo, Cardwave te lo dice.
+- Novedad en el menú Ver: «Colores de los mensajes» (Desactivados, Claros u Oscuros) muestra el diálogo entre comillas, la cursiva, la negrita, los enlaces y el código en sus propios colores, en el chat de un personaje y en el acompañante.
+- Una respuesta cortada en su límite de longitud ahora termina en su última frase completa. Una respuesta que se detiene en el propio límite de la IA se conserva tal como llegó, con una línea gris debajo que lo indica, y «Continuar esta respuesta» sigue desde su última palabra.
+- Cuando el modelo auxiliar no puede conservar la memoria de un chat, el chat te dice por qué.
+- Los chats largos con un modelo Claude a través de OpenRouter o NanoGPT cuestan menos y responden antes, gracias al almacenamiento en caché del prompt.
+- En una tarea de programación, las líneas de cada paso están en tu idioma, y las páginas web se leen con más precisión.
+- Cada respuesta se ajusta a lo que su modelo puede leer. Cardwave toma el tamaño de su lista de modelos integrada, o se lo pregunta a la propia IA si está en tu ordenador (LM Studio, Ollama o KoboldCpp) o en tu red local. Antes, cada modelo recibía 128.000 tokens.
 - Un chat largo con un modelo que lee más conserva ahora más de su historial.
 - Si no se conoce el tamaño de una IA, la respuesta te lo dice, y lo indicas una vez como tamaño de contexto en Ajustes › Avanzado. Hasta entonces no se envía nada.
 - El tamaño de contexto en Ajustes › Avanzado limita ahora lo que se envía a cualquier modelo.

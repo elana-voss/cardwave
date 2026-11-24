@@ -39,5 +39,8 @@ export function errorWords(status: number, body: Answered): string {
 /** What the user is told of a failure an event or a task tells (a reply's, a coding task's), which has no status. */
 export const failureWords = (body: ErrorBody) => errorWords(400, body);
 
+/** What the user is told of a chat's memory pass that failed by its helper model: that, then the failure's words. */
+export const memoryNotKept = (body: ErrorBody) => wording("memory-not-kept", { failure: failureWords(body) });
+
 /** The words of a status's failure (a download's, a list's), where it has one. */
 export const failedWords = (body: ErrorBody | null | undefined) => (body ? failureWords(body) : null);

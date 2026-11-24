@@ -119,6 +119,7 @@ error-again-not-reply = Chỉ câu trả lời của nhân vật mới có thể
 error-no-reply-to-write-again = Cuộc trò chuyện không có câu trả lời nào để viết lại.
 error-no-text = AI không gửi văn bản nào. Hãy thử lại.
 error-worker-no-answer = Mô hình phụ trợ không trả lời.
+memory-not-kept = Mô hình phụ trợ không thể lưu bộ nhớ của cuộc trò chuyện này. { $failure }
 error-unknown-voice = Không có giọng nói “{ $voice }”.
 error-nothing-to-read = Không có gì để đọc.
 error-voice-not-downloaded = Giọng nói chưa được tải xuống.
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] Quy trình không có nút nào mà ComfyUI này chạy được.
     [workflow_node] Nút “{ $class }” của quy trình không có trong ComfyUI này.
     [zip] Không đọc được { $name } dưới dạng tệp zip.
+    [file] Không đọc được tệp: { $reason }
+    [folder] Không đọc được thư mục: { $reason }
+    [folder_in_task] Không đọc được thư mục của tác vụ: { $reason }
+    [tool_arguments] Không đọc được lệnh gọi của mô hình nên công cụ không chạy: { $reason }
+    [web_address] Đó không phải là địa chỉ web.
+    [page_kind] Trang này không phải văn bản ({ $kind }).
    *[other] Không đọc được.
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] Danh sách mô hình quá dài.
     [picture_pixels] Ảnh quá lớn ({ $wide } x { $high } điểm ảnh).
     [reply] Câu trả lời bị cắt: nó đã quá dài.
+    [file_written] Không ghi tệp lớn hơn { $megabytes } MB.
    *[other] Quá lớn.
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] Không dùng được quy trình “{ $name }”.
     [written_tools_full] Bạn chỉ giữ được tối đa { $most_tools } công cụ; hãy xóa một cái trong Cài đặt › Nâng cao › Công cụ do AI viết trước.
     [delete_not_in_trash] Chỉ thứ trong Thùng rác mới xóa vĩnh viễn được; hãy chuyển nó vào đó trước.
+    [path_outside] Chỉ dùng được đường dẫn bên trong thư mục của tác vụ.
+    [write_folder] Đó là thư mục, không phải tệp.
+    [page_refreshes] Trang này cứ chuyển sang trang khác mãi.
+    [page_scheme] Chỉ đọc địa chỉ http và https.
+    [page_closed] Không đọc địa chỉ trên máy tính này hoặc trong mạng riêng.
+    [tool_failed] { $reason }
    *[other] Không làm được việc đó.
 }
 -helper-unusable = Không dùng được câu trả lời của mô hình phụ. Hãy thử lại, hoặc chọn mô hình phụ khác.
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] Mô hình phụ trợ không viết lời mô tả cho hình ảnh.
     [rating] { -helper-unusable }
     [reply_broke_off] Câu trả lời bị ngắt giữa chừng.
+    [reply_cut_off] Câu trả lời đã chạm giới hạn độ dài của mô hình.
     [needs] { -helper-unusable }
     [rounds] Nhóm không hoàn thành công việc trong { $rounds } vòng.
     [search_left_out] Mô hình tìm kiếm bỏ sót một văn bản.
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] Mô hình tìm kiếm không trả lời.
     [provider_voice] Không kết nối được giọng nói của nhà cung cấp.
     [provider_search_model] Không kết nối được mô hình tìm kiếm của nhà cung cấp.
+    [search] Không kết nối được với tìm kiếm web: { $reason }
+    [page] Không kết nối được với trang: { $reason }
    *[other] Không kết nối được.
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] Máy chủ hình ảnh trả lời { $status }.
     [provider_voices] Giọng nói của nhà cung cấp trả lời { $status }.
     [search_model] Mô hình tìm kiếm trả lời { $status }.
+    [search] Tìm kiếm web trả lời { $status }.
+    [page] Trang trả lời { $status }.
    *[other] Phía bên kia trả lời { $status }.
 }
 error-answered-said = { $said ->

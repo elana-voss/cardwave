@@ -128,7 +128,7 @@ test.describe("at 1440 px, light", () => {
   });
 
   test("A coding task's page: steps, the verdict, checkpoints and changed files", async ({ page }) => {
-    const step = (id: number, who: object, what: object, detail: object, state: string, checkpoint: object | null) => ({ id, who, what, detail, state, output: "", files: [], checkpoint, undone: false, started_at: at });
+    const step = (id: number, who: object, what: object, detail: object, state: string, checkpoint: object | null) => ({ id, who, what, detail, state, output: [], files: [], checkpoint, undone: false, started_at: at });
     const task = {
       id: 7,
       chat_id: 1,

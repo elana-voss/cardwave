@@ -119,6 +119,7 @@ error-again-not-reply = 只有角色的回覆才能重新撰寫。
 error-no-reply-to-write-again = 這個聊天沒有可以重新撰寫的回覆。
 error-no-text = AI 沒有傳回文字。請再試一次。
 error-worker-no-answer = 輔助模型沒有回應。
+memory-not-kept = 輔助模型未能保存此聊天的記憶。{ $failure }
 error-unknown-voice = 沒有語音「{ $voice }」。
 error-nothing-to-read = 沒有可朗讀的內容。
 error-voice-not-downloaded = 尚未下載這個語音。
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] 工作流程中沒有這個 ComfyUI 能執行的節點。
     [workflow_node] 工作流程的節點「{ $class }」不是這個 ComfyUI 擁有的節點。
     [zip] 無法把 { $name } 當作 zip 讀取。
+    [file] 無法讀取檔案：{ $reason }
+    [folder] 無法讀取資料夾：{ $reason }
+    [folder_in_task] 無法讀取任務的資料夾：{ $reason }
+    [tool_arguments] 無法讀取模型的呼叫，因此工具沒有執行：{ $reason }
+    [web_address] 這不是網址。
+    [page_kind] 該頁面不是文字（{ $kind }）。
    *[other] 無法讀取。
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] 模型清單太長。
     [picture_pixels] 圖片太大（{ $wide } × { $high } 像素）。
     [reply] 回覆被截斷了：內容太長。
+    [file_written] 超過 { $megabytes } MB 的檔案不會寫入。
    *[other] 這太大了。
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] 無法使用工作流程「{ $name }」。
     [written_tools_full] 最多只能保留 { $most_tools } 個工具；請先在「設定 › 進階 › AI 寫的工具」中刪除一個。
     [delete_not_in_trash] 只有垃圾桶中的項目才能永久刪除；請先移到垃圾桶。
+    [path_outside] 只能使用任務資料夾內的路徑。
+    [write_folder] 這是資料夾，不是檔案。
+    [page_refreshes] 該頁面一再跳轉到其他頁面。
+    [page_scheme] 只讀取 http 和 https 位址。
+    [page_closed] 不讀取這台電腦或私人網路中的位址。
+    [tool_failed] { $reason }
    *[other] 無法這麼做。
 }
 -helper-unusable = 無法使用輔助模型的回答。請再試一次，或換一個輔助模型。
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] 輔助模型沒有為圖片寫出文字。
     [rating] { -helper-unusable }
     [reply_broke_off] 回覆中斷了。
+    [reply_cut_off] 回覆達到了模型的長度上限。
     [needs] { -helper-unusable }
     [rounds] 團隊在 { $rounds } 輪內沒有完成工作。
     [search_left_out] 搜尋模型漏掉了一段文字。
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] 搜尋模型沒有回應。
     [provider_voice] 無法連線到供應商的語音。
     [provider_search_model] 無法連線到供應商的搜尋模型。
+    [search] 無法連線網頁搜尋：{ $reason }
+    [page] 無法連線該頁面：{ $reason }
    *[other] 無法連線。
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] 圖片伺服器回應 { $status }。
     [provider_voices] 供應商的語音服務回應 { $status }。
     [search_model] 搜尋模型回應 { $status }。
+    [search] 網頁搜尋回應 { $status }。
+    [page] 該頁面回應 { $status }。
    *[other] 回應 { $status }。
 }
 error-answered-said = { $said ->

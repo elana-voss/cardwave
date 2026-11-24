@@ -2,7 +2,8 @@
 //! thinking, the tools it calls and how it ended ([`Ending`]), whether streamed
 //! or sent as one document. A stream whose server hangs up without saying
 //! its end (`[DONE]` or a finish reason) broke off, which is an error after
-//! the words it brought.
+//! the words it brought. The tokens it used ([`Usage`]), where its server
+//! said, are logged once it is complete.
 
 use anyhow::{Context, bail, ensure};
 use cw_core::{Code, Fail};
@@ -41,10 +42,52 @@ pub struct Reply {
 /// How a reply ended, by what its provider said of it, as far as it has come.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Ending {
-    /// It stopped at the limit on its length.
-    pub cut_off: bool,
+    /// Whether it ended on its own or was cut off, where the provider said.
+    pub finish: Finish,
     /// The model declined to answer, in these words where it gave any.
     pub declined: Option<String>,
+    /// The tokens the request used, where the server said.
+    pub usage: Option<Usage>,
+}
+
+/// The tokens a request used, by its server's `usage`: the prompt's (those
+/// read from a cache and written to it among them) and the reply's.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Usage {
+    pub input: u64,
+    /// Read from the provider's cache of the prompt's start.
+    pub cached_read: u64,
+    /// Written to the provider's cache, billed once above the input's price.
+    pub cache_written: u64,
+    pub output: u64,
+}
+
+impl Usage {
+    /// Reads a `usage` in OpenAI's names, the cache's in OpenRouter's
+    /// (`prompt_tokens_details.cached_tokens`, `cache_write_tokens`) or
+    /// NanoGPT's (`cache_read_input_tokens`, `cache_creation_input_tokens`);
+    /// none where there is none.
+    fn of(usage: &Value) -> Option<Self> {
+        usage.as_object()?;
+        let details = &usage["prompt_tokens_details"];
+        // The larger of two names: a route may send OpenAI's at 0 beside its own.
+        let count = |names: [&Value; 2]| {
+            names
+                .iter()
+                .filter_map(|value| value.as_u64())
+                .max()
+                .unwrap_or(0)
+        };
+        Some(Self {
+            input: count([&usage["prompt_tokens"], &usage["input_tokens"]]),
+            cached_read: count([&details["cached_tokens"], &usage["cache_read_input_tokens"]]),
+            cache_written: count([
+                &details["cache_write_tokens"],
+                &usage["cache_creation_input_tokens"],
+            ]),
+            output: count([&usage["completion_tokens"], &usage["output_tokens"]]),
+        })
+    }
 }
 
 impl Ending {
@@ -60,7 +103,14 @@ impl Ending {
         for reason in [&choice["finish_reason"], &choice["native_finish_reason"]] {
             let reason = reason.as_str().unwrap_or_default().to_lowercase();
             match reason.as_str() {
-                "length" | "max_tokens" => self.cut_off = true,
+                "length" | "max_tokens" | "max_output_tokens" => self.finish = Finish::CutOff,
+                // Said of the route and of the model alike, a cut-off is what holds.
+                "stop" | "end_turn" | "stop_sequence" | "eos" | "end" | "tool_calls"
+                | "tool_use" | "function_call"
+                    if self.finish != Finish::CutOff =>
+                {
+                    self.finish = Finish::OnItsOwn
+                }
                 "content_filter" | "refusal" | "safety" | "prohibited_content" | "blocklist"
                 | "spii" => {
                     self.declined.get_or_insert_default();
@@ -69,6 +119,21 @@ impl Ending {
             }
         }
     }
+}
+
+/// Whether a reply ended on its own or was cut off, by its provider's finish
+/// reason: OpenAI's `stop` and `length`, through OpenRouter also the model's
+/// own (Anthropic's `end_turn` and `max_tokens`, Gemini's `STOP` and
+/// `MAX_TOKENS`). A reason not known, a refusal's included, says neither.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Finish {
+    /// The provider said nothing of it, or nothing known.
+    #[default]
+    NotSaid,
+    /// The model ended it: the provider's `stop`, `end_turn` and the like.
+    OnItsOwn,
+    /// It stopped at the limit on its length.
+    CutOff,
 }
 
 /// What has come of a reply: words of the reply, the model's thinking, or both.
@@ -163,6 +228,15 @@ impl Reply {
                     Fail::said(Code::ModelAnswer, "the reply broke off")
                         .with("what", "reply_broke_off")
                 );
+                if let Some(usage) = self.ending.usage {
+                    tracing::info!(
+                        input = usage.input,
+                        cached_read = usage.cached_read,
+                        cache_written = usage.cache_written,
+                        output = usage.output,
+                        "a reply's tokens"
+                    );
+                }
                 return Ok(None);
             }
             match self.response.chunk().await.context(
@@ -256,6 +330,9 @@ fn read_event(
             None => reported,
         });
     }
+    if let Some(usage) = Usage::of(&event["usage"]) {
+        ending.usage = Some(usage);
+    }
     let choice = &event["choices"][0];
     ending.read(choice);
     if let Some(piece) = choice["delta"]["content"]
@@ -331,5 +408,58 @@ impl Call {
     pub fn argument(&self, name: &str) -> String {
         let arguments: Value = serde_json::from_str(&self.arguments).unwrap_or_default();
         arguments[name].as_str().unwrap_or_default().to_string()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Ending, Finish, Usage};
+    use serde_json::json;
+
+    #[test]
+    fn the_cached_tokens_are_read_in_both_routes_names() {
+        let router = json!({
+            "prompt_tokens": 2000, "completion_tokens": 50,
+            "prompt_tokens_details": { "cached_tokens": 1800, "cache_write_tokens": 150 }
+        });
+        // OpenAI's name may stand beside, at 0, where the count is in NanoGPT's.
+        let nano = json!({
+            "prompt_tokens": 2000, "completion_tokens": 50,
+            "prompt_tokens_details": { "cached_tokens": 0 },
+            "cache_read_input_tokens": 1800, "cache_creation_input_tokens": 150
+        });
+        let read = Usage {
+            input: 2000,
+            cached_read: 1800,
+            cache_written: 150,
+            output: 50,
+        };
+        assert_eq!(Usage::of(&router), Some(read));
+        assert_eq!(Usage::of(&nano), Some(read));
+        let plain = json!({ "prompt_tokens": 10, "completion_tokens": 2 });
+        let uncached = Usage {
+            input: 10,
+            output: 2,
+            ..Usage::default()
+        };
+        assert_eq!(Usage::of(&plain), Some(uncached));
+        assert_eq!(Usage::of(&json!(null)), None);
+    }
+
+    #[test]
+    fn the_finish_is_what_the_route_or_the_model_said_and_a_cut_off_holds() {
+        let finish = |choice| {
+            let mut ending = Ending::default();
+            ending.read(&choice);
+            ending.finish
+        };
+        assert_eq!(finish(json!({ "finish_reason": "stop" })), Finish::OnItsOwn);
+        assert_eq!(finish(json!({ "finish_reason": "length" })), Finish::CutOff);
+        let model = json!({ "finish_reason": "stop", "native_finish_reason": "MAX_TOKENS" });
+        assert_eq!(finish(model), Finish::CutOff);
+        let model = json!({ "finish_reason": null, "native_finish_reason": "end_turn" });
+        assert_eq!(finish(model), Finish::OnItsOwn);
+        assert_eq!(finish(json!({ "finish_reason": "error" })), Finish::NotSaid);
+        assert_eq!(finish(json!({})), Finish::NotSaid);
     }
 }

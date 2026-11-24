@@ -24,7 +24,7 @@ describe("the kinds of model", () => {
   it("offers this computer's model first for Search, ticked until a provider's is taken, and taking it takes the kind back", async () => {
     const view: ProvidersView = {
       providers: [{ id: 4, name: "OpenAI", own_name: null, base_url: "https://api.openai.com/v1", has_key: true, key_end: "4f2a", workflow: null, folder: null }],
-      kinds: [{ kind: "search", provider_id: 4, model: "embed-1", thinking: "on", gone: false }],
+      kinds: [{ kind: "search", provider_id: 4, model: "embed-1", thinking: { control: "switch" as const, state: "on" }, gone: false }],
       own: [{ kind: "search", model: "bge-m3" }],
     };
     const lists: Catalogs = {
@@ -48,7 +48,7 @@ describe("the kinds of model", () => {
   it("says a kind's model with its provider, and nothing for a kind without one", () => {
     const view: ProvidersView = {
       providers: [{ id: 4, name: "OpenRouter", own_name: null, base_url: "https://openrouter.ai/api/v1", has_key: true, key_end: "4f2a", workflow: null, folder: null }],
-      kinds: [{ kind: "chat", provider_id: 4, model: "tide-1", thinking: "on", gone: false }],
+      kinds: [{ kind: "chat", provider_id: 4, model: "tide-1", thinking: { control: "switch" as const, state: "on" }, gone: false }],
       own: [],
     };
     expect(says(view, "chat")).toBe("tide-1 · OpenRouter");

@@ -9,7 +9,8 @@
 //! (network, other processes) in its own process group and a user systemd
 //! scope; without either no command runs and the tool is not offered
 //! (`available`). Trap: cmd's `dir` and `vol` read the drive's root and are
-//! refused; a refused one says `LISTING`.
+//! refused; a refused one is marked `Ran::drive_refused`, whose words for
+//! the model are `DRIVE_REFUSED`, naming `LISTING`.
 //!
 //! The team's commands reach more (`Reach`): the `PATH` folders holding
 //! programs (`grantable`), a folder of their own, for installs the internet.
@@ -85,7 +86,19 @@ pub struct Ran {
     /// Its exit code (on Linux 128 and the signal for one a signal ended);
     /// `None` when it ran out of time or was stopped and was ended.
     pub code: Option<u32>,
+    /// Whether it failed as `dir` or `vol`, which read the drive and are
+    /// refused: the model is then told [`DRIVE_REFUSED`].
+    pub drive_refused: bool,
 }
+
+/// What the model is told after a refused `dir` or `vol`'s output: how to
+/// list the folder instead.
+pub const DRIVE_REFUSED: &str = concat!(
+    "
+(The sandbox lets no command read the drive, so dir and vol are refused. List the folder with `",
+    listing!(),
+    "`, its folders with `for /d %f in (*) do @echo %f`, or a subfolder with `for /r sub %f in (*) do @echo %f`.)"
+);
 
 /// What a command reaches beside its folder.
 #[derive(Clone, Debug, Default)]
@@ -171,11 +184,7 @@ pub fn run_with(
     let reads_drive = command
         .split(|c: char| !c.is_ascii_alphanumeric())
         .any(|word| word.eq_ignore_ascii_case("dir") || word.eq_ignore_ascii_case("vol"));
-    if reads_drive && ran.code != Some(0) {
-        ran.output.push_str(&format!(
-            "\n(The sandbox lets no command read the drive, so dir and vol are refused. List the folder with `{LISTING}`, its folders with `for /d %f in (*) do @echo %f`, or a subfolder with `for /r sub %f in (*) do @echo %f`.)"
-        ));
-    }
+    ran.drive_refused = reads_drive && ran.code != Some(0);
     Ok(ran)
 }
 

@@ -7,7 +7,7 @@ code (a tests file, or from `#[cfg(test)] mod tests {` on). The page words what 
 prompt's or the log's words), noun (NotFound's code), name (a thing's own name); a tool's answer to the model (cw-coding
 tools.rs text) and the interview's private list for the writer (interview/private.rs); by let, arm or else, the prompts
 (interview, rewrite.rs, cw-prompt builder.rs, cw-chat's reply, inputs, companion and memory, cw-coding's brief), a
-tool's answer (app_tools.rs, cw-coding's by text) and MCP's (both mcp.rs). One word ("Untitled") it cannot tell from a code.
+tool's answer (app_tools.rs, cw-coding's by text, gave.rs's for_model) and MCP's (both mcp.rs). One word ("Untitled") it cannot tell from a code.
 
 Usage, from the repo's root: python tools/sentences.py
 """
@@ -30,6 +30,7 @@ PROMPTS = (
 ALLOWED = re.compile(
     r"^[^ ]+: (role|talks_low|talks_high|what|noun|name): "
     r"|^crates/cw-coding/src/tools\.rs: text: "
+    r"|^crates/cw-coding/src/tools/gave\.rs: =>: "
     r"|^crates/cw-library/src/interview/private\.rs: push: "
     rf"|^({PROMPTS})[./][^:]*: (let |=>|else)"
     r"|^crates/cw-coding/src/[^:]+: (let brief|let said|=>): (The goal|Made the tool|Exit code|Stopped after)[ :]"

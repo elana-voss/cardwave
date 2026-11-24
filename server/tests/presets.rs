@@ -9,6 +9,7 @@
 mod common;
 
 use common::Scratch;
+use common::api::openrouter_mandatory;
 use common::server::{event, start};
 use cw_accounts::users;
 use cw_core::NotFound;
@@ -246,7 +247,7 @@ fn a_preset_put_in_use_is_the_stored_provider_and_the_one_before_is_kept_once() 
         provider_id: at,
         model: "tide-5".into(),
     };
-    kinds::pick(db, user, Kind::Chat, picked).unwrap();
+    kinds::pick(db, user, Kind::Chat, picked, None).unwrap();
     assert_eq!(replaced(&scratch), 0);
 }
 
@@ -460,4 +461,47 @@ fn a_key_typed_in_first_run_at_the_same_address_goes_to_its_presets_too() {
 
     let used = presets::put_in_use(&scratch.db, scratch.user, kept.id).unwrap();
     assert_eq!(used.provider.api_key, "sk-rig-new-0123");
+}
+
+#[test]
+fn a_provider_stored_whole_at_openrouter_has_its_models_thinking_read_from_its_list() {
+    let scratch = Scratch::new();
+    let (db, user) = (&scratch.db, scratch.user);
+    let at_rig = preset(&scratch, "Rig", RIG, "tide-1", json!({}));
+    assert!(kinds::listing(db, user).unwrap().is_empty());
+    store(&scratch, user, OPENROUTER, "openai/gpt-5", json!({}));
+    let listing = kinds::listing(db, user).unwrap();
+    let read: Vec<(&str, &[String])> = listing
+        .iter()
+        .map(|(entry, models)| (entry.base_url.as_str(), models.as_slice()))
+        .collect();
+    assert_eq!(read, [(OPENROUTER, &["openai/gpt-5".to_string()][..])]);
+    presets::put_in_use(db, user, at_rig.id).unwrap();
+    assert!(kinds::listing(db, user).unwrap().is_empty());
+}
+
+#[tokio::test]
+async fn a_preset_put_in_use_at_openrouter_reads_its_list_anew() {
+    let api = openrouter_mandatory().await;
+    let server = start().await;
+    let stored =
+        json!({ "base_url": OPENROUTER, "model": "openai/o3-mini", "api_key": "sk-or-v1-0000" });
+    assert_eq!(server.set_provider(stored).await.0, 200);
+    let (status, made) = server
+        .post("/api/presets", json!({ "name": "Router" }))
+        .await;
+    assert_eq!(status, 201, "{made}");
+    let read = || {
+        api.asked()
+            .iter()
+            .filter(|asked| asked.path.ends_with("/api/v1/models"))
+            .count()
+    };
+    let before = read();
+
+    let (status, used) = server
+        .post(&format!("/api/presets/{}/use", made["id"]), json!({}))
+        .await;
+    assert_eq!(status, 200, "{used}");
+    assert_eq!(read(), before + 1);
 }

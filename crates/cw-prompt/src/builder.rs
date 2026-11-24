@@ -6,15 +6,16 @@
 //! of the prompt's start holds (the owner): the system message, the lorebook
 //! entries always given (`is_steady`), the example dialogue, the history; what
 //! changes (the tools' note, other entries triggered, documents' pieces, the
-//! memory note) stands
-//! just before the newest message (build spec A7). A history message's macros
+//! memory note) stands just before the newest message (build spec A7). A history message's macros
 //! draw the same every build and set variables once (`expand_message`). The
 //! history is dropped in blocks of an [`HISTORY_BLOCKS`]th of the context,
 //! counted from the chat's first message (the owner); the example dialogue in
 //! whole blocks, left out once the history no longer fits whole. The reply's
 //! room is kept first, and a tenth of the rest for the estimate's error
 //! (`ESTIMATE_MARGIN_RATIO`), then the newest message's, then `MEMORY_ROOM` for the
-//! memory note, so the history does not move as it grows.
+//! memory note, so the history does not move as it grows. `cache_at` hands out
+//! where that steady start ends, before what moves and what drew anew, for
+//! the providers that cache only where a request marks it.
 
 use crate::lorebook::{self, Activated};
 use crate::macros::{self, MacroContext};
@@ -131,6 +132,11 @@ pub struct BuiltPrompt {
     /// Where in `messages` the tools' note stands, to be taken out of a
     /// round that offers no tools.
     pub tools_at: Option<usize>,
+    /// The messages that end a part of the prompt's start that stays the same
+    /// from reply to reply, for a provider's cache mark: the last before the
+    /// chat log, and the last before the first part that moves or draws anew
+    /// (`assemble`); at most two, in order, none where the first message moves.
+    pub cache_at: Vec<usize>,
 }
 
 /// A part of the prompt it cannot go without that did not fit, with the
@@ -187,9 +193,10 @@ pub fn build(
     builder.used -= newest;
     let history = builder.build_history();
     builder.build_examples();
-    let tools_at = builder.assemble(history);
+    let (tools_at, cache_at) = builder.assemble(history);
     BuiltPrompt {
         tools_at,
+        cache_at,
         messages: builder.messages,
         breakdown: Breakdown {
             context_size: req.context_size,
@@ -256,6 +263,11 @@ impl Builder<'_, '_> {
     }
 
     fn expand(&mut self, text: &str, tracking_id: &str) -> String {
+        self.expand_noting(text, tracking_id).text
+    }
+
+    /// [`Self::expand`], telling whether the text drew anew.
+    fn expand_noting(&mut self, text: &str, tracking_id: &str) -> macros::Rendered {
         let mut ctx = MacroContext {
             char_name: self.req.character.display_name(),
             user_name: &self.chat.persona_name,
@@ -265,16 +277,20 @@ impl Builder<'_, '_> {
             language: None,
             seed: None,
         };
-        macros::render(text, &mut ctx)
+        macros::render_noting(text, &mut ctx)
     }
 
     /// The chat's `i`th message with its macros run, its draws seeded by its id
     /// so they are the same on every build; one of the messages whose effects
     /// the variables hold already (`ChatState::settled`) is read on copies of them.
-    fn expand_message(&mut self, i: usize) -> String {
+    /// Only the clock draws anew in it.
+    fn expand_message(&mut self, i: usize) -> macros::Rendered {
         let message = &self.chat.messages[i];
         if !message.content.contains("{{") {
-            return message.content.clone();
+            return macros::Rendered {
+                text: message.content.clone(),
+                drawn_anew: false,
+            };
         }
         let raw = message.content.clone();
         let tracking_id = format!("history_{}", message.id);
@@ -294,7 +310,7 @@ impl Builder<'_, '_> {
             language: None,
             seed: Some(seed),
         };
-        macros::render(&raw, &mut ctx)
+        macros::render_noting(&raw, &mut ctx)
     }
 
     /// Adds a section to the system message and records its cost.
@@ -337,12 +353,15 @@ impl Builder<'_, '_> {
         let recorded = self.segments.len();
         let system = self.character_text();
         if !system.is_empty() {
-            let content = self.expand(&system, "system").trim().to_string();
+            let rendered = self.expand_noting(&system, "system");
+            let content = rendered.text.trim().to_string();
             let tokens = self.count(&content);
             if self.fits(tokens) {
                 self.used += tokens;
-                self.messages
-                    .push(PromptMessage::new(Role::System, content));
+                self.messages.push(PromptMessage {
+                    drawn_anew: rendered.drawn_anew,
+                    ..PromptMessage::new(Role::System, content)
+                });
             } else {
                 self.segments.truncate(recorded);
                 self.left_out = Some(LeftOut::System(self.used + tokens));
@@ -518,14 +537,16 @@ impl Builder<'_, '_> {
         let candidates = lorebook::evaluate(card, self.chat);
         let budget = card.lorebook.as_ref().map_or(0, |book| book.token_budget);
         let mut budget_used = 0;
-        let mut accepted: Vec<(Activated<'_>, String)> = Vec::new();
+        let mut accepted: Vec<(Activated<'_>, String, bool)> = Vec::new();
         let mut world_info_tokens = 0;
         let mut world_info_text = Vec::new();
 
         // Candidates come in budget order; one that does not fit is skipped and
         // the smaller ones after it still get their chance.
         for candidate in candidates {
-            let content = self.expand(&candidate.content, &format!("lorebook_{}", candidate.uid));
+            let rendered =
+                self.expand_noting(&candidate.content, &format!("lorebook_{}", candidate.uid));
+            let content = rendered.text;
             let cost = self.count(&content);
             if !self.fits(cost) {
                 continue;
@@ -540,25 +561,27 @@ impl Builder<'_, '_> {
             if !ignore_budget {
                 budget_used += cost;
             }
-            accepted.push((candidate, content));
+            accepted.push((candidate, content, rendered.drawn_anew));
         }
 
-        lorebook::commit_timed_effects(self.chat, accepted.iter().map(|(candidate, _)| candidate));
-        accepted.sort_by_key(|(candidate, _)| candidate.entry.insertion_order);
+        lorebook::commit_timed_effects(self.chat, accepted.iter().map(|(candidate, ..)| candidate));
+        accepted.sort_by_key(|(candidate, ..)| candidate.entry.insertion_order);
         let lore = accepted
             .iter()
-            .map(|(candidate, _)| candidate.uid.clone())
+            .map(|(candidate, ..)| candidate.uid.clone())
             .collect();
 
         // Entries either join a world-info block, the steady ones' at the start
         // or the others' before the newest message, or go into the chat log at
         // a depth, where those sharing depth and role become one message.
         let (mut steady, mut triggered) = (Vec::new(), Vec::new());
+        let mut steady_drawn = false;
         let mut at_depth: Vec<(usize, Role, String)> = Vec::new();
-        for (candidate, content) in accepted {
+        for (candidate, content, drawn_anew) in accepted {
             let entry = candidate.entry;
             if !entry.at_depth && candidate.depth_override.is_none() {
                 if is_steady(entry) {
+                    steady_drawn |= drawn_anew;
                     steady.push(content);
                 } else {
                     triggered.push(content);
@@ -579,7 +602,11 @@ impl Builder<'_, '_> {
             }
         }
 
-        self.messages.extend(world_info(&steady));
+        self.messages
+            .extend(world_info(&steady).map(|block| PromptMessage {
+                drawn_anew: steady_drawn,
+                ..block
+            }));
         self.triggered = world_info(&triggered);
         for (depth, role, content) in at_depth {
             self.depth_insertions
@@ -663,7 +690,7 @@ impl Builder<'_, '_> {
         let mut full = None;
         // The messages not yet settled run their macros first, oldest first, so a newer one's variable wins.
         let settled = self.chat.settled.min(total);
-        let mut fresh: Vec<Option<String>> = (settled..total)
+        let mut fresh: Vec<Option<macros::Rendered>> = (settled..total)
             .map(|i| self.is_sent(i).then(|| self.expand_message(i)))
             .collect();
 
@@ -675,10 +702,12 @@ impl Builder<'_, '_> {
             let role = message.role;
             let cached = message.token_count.unwrap_or(0);
             let pictures = message.pictures.clone();
-            let content = match i.checked_sub(settled) {
-                Some(at) => fresh[at].take().unwrap_or_default(),
-                None => self.expand_message(i),
+            let rendered = match i.checked_sub(settled) {
+                Some(at) => fresh[at].take(),
+                None => Some(self.expand_message(i)),
             };
+            let (content, drawn_anew) =
+                rendered.map_or_else(Default::default, |it| (it.text, it.drawn_anew));
 
             let mut tokens = cached;
             if tokens == 0 && !content.is_empty() {
@@ -698,6 +727,7 @@ impl Builder<'_, '_> {
             self.used += tokens;
             history.push(PromptMessage {
                 pictures,
+                drawn_anew,
                 ..PromptMessage::new(role, content.clone())
             });
             taken.push((i, tokens, content));
@@ -753,7 +783,8 @@ impl Builder<'_, '_> {
         if card.mes_example.is_empty() || self.history_cut {
             return;
         }
-        let mut example = self.expand(&card.mes_example, "mesExample");
+        let rendered = self.expand_noting(&card.mes_example, "mesExample");
+        let mut example = rendered.text;
         let wrapper_cost = self.count("<example_dialogue>\n\n</example_dialogue>");
         let available = self.req.context_size.saturating_sub(self.used);
         if available <= wrapper_cost + EXAMPLE_WRAPPER_SAFETY_MARGIN {
@@ -782,13 +813,16 @@ impl Builder<'_, '_> {
         add_section(&mut buffer, "example_dialogue", &example);
         let content = buffer.trim().to_string();
         if self.record(SegmentKind::ExampleDialogue, &content) {
-            self.messages
-                .push(PromptMessage::new(Role::System, content));
+            self.messages.push(PromptMessage {
+                drawn_anew: rendered.drawn_anew,
+                ..PromptMessage::new(Role::System, content)
+            });
         }
     }
 
-    /// Puts the parts in their places and answers where the tools' note stands.
-    fn assemble(&mut self, history: Vec<PromptMessage>) -> Option<usize> {
+    /// Puts the parts in their places and answers where the tools' note stands
+    /// and where the steady parts end (`BuiltPrompt::cache_at`).
+    fn assemble(&mut self, history: Vec<PromptMessage>) -> (Option<usize>, Vec<usize>) {
         // Where the chat log starts and ends in the final list. Depth insertions
         // go inside that span and nowhere else, as in SillyTavern: the system
         // blocks above the log and the injected and post-history messages below
@@ -824,9 +858,12 @@ impl Builder<'_, '_> {
         // length before its oldest message. Deepest first, with the log's end
         // moving along, so several insertions stack as they do in SillyTavern.
         let mut tools_at = None;
+        // The first place a part that moves stands: an insertion's, else after the log.
+        let mut moving_from = log_end;
         for (added, (message, depth)) in insertions.into_iter().enumerate() {
             let end = log_end + added;
             let index = end.saturating_sub(depth).clamp(log_start, end);
+            moving_from = moving_from.min(index);
             self.messages.insert(index, message);
             match tools_at {
                 Some(ref mut note_at) if index <= *note_at => *note_at += 1,
@@ -834,7 +871,14 @@ impl Builder<'_, '_> {
                 _ => {}
             }
         }
-        tools_at
+        let drawn = self.messages.iter().position(|message| message.drawn_anew);
+        let steady_end = drawn.map_or(moving_from, |at| at.min(moving_from));
+        let mut cache_at: Vec<usize> = [log_start.min(steady_end), steady_end]
+            .into_iter()
+            .filter_map(|end| end.checked_sub(1))
+            .collect();
+        cache_at.dedup();
+        (tools_at, cache_at)
     }
 }
 

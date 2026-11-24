@@ -2,7 +2,7 @@
 
 use cw_ccv4::creation::{Private, PrivateRow};
 use cw_core::Code;
-use cw_provider::{Provider, Sampling, client, form, pretend};
+use cw_provider::{Provider, client, form, pretend};
 use serde_json::{Value, json};
 
 use super::gender::{self, Choices};
@@ -464,17 +464,7 @@ async fn a_refusal_on_the_plan_or_the_card_is_returned_and_an_unsignalled_one_is
 }
 
 fn pretend_provider() -> Provider {
-    Provider {
-        base_url: pretend::ADDRESS.to_string(),
-        api_key: String::new(),
-        model: "pretend-chat".to_string(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
-    }
+    Provider::new(pretend::ADDRESS, "", "pretend-chat")
 }
 
 #[tokio::test]

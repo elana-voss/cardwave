@@ -1,6 +1,6 @@
 //! A chat's memory: each block of 20 messages read by the Worker model, the
 //! memory note a later reply is given just before its newest message, a block
-//! read again once its messages change, a helper that fails, a reply whose
+//! read again once its messages change, a helper that fails (and is told), a reply whose
 //! documents do not read still given its note, and Knowledge ›
 //! Memories, which Search Cardwave finds; a lorebook's entry used by meaning, which the search model tells;
 //! and documents, added to a chat or a card, and the pieces of them a reply is
@@ -11,7 +11,8 @@ mod common;
 
 use common::embedder::Embedder;
 use common::memory::{
-    Fake, NOTHING, chat, fill, memories, memory_of, passes, remembered, reply, say, setup,
+    Fake, NOTHING, chat, fill, memories, memory_of, pass_failed, passes, remembered, reply, say,
+    setup,
 };
 use common::server::{Server, WAIT, start, start_searching};
 use cw_key::FILE_NAME;
@@ -233,6 +234,29 @@ async fn a_block_the_helper_fails_on_is_read_by_the_next_pass() {
     remembered(&mut socket).await;
     assert_eq!(memories(&server).await.len(), 2);
     assert!(fake.noted().passes[0].contains("[20] Mira: Hello."));
+}
+
+#[tokio::test]
+async fn a_pass_whose_helper_model_refuses_the_key_is_told_to_the_chat() {
+    let server = start().await;
+    let fake = Fake::start().await;
+    setup(&server, &fake).await;
+    let chat = chat(&server).await;
+    let mut socket = server.listen().await;
+    fill(&server, &chat, 19).await;
+    fake.noted().refusing = 1;
+    reply(&server, &fake, &mut socket, &chat, json!({})).await;
+    let told = pass_failed(&mut socket).await;
+    let id: i64 = chat.rsplit('/').next().unwrap().parse().unwrap();
+    assert_eq!(told["chat_id"], id);
+    assert_eq!(told["error"]["code"], "provider_refused");
+    assert_eq!(told["error"]["details"]["refusal"], "key");
+    assert!(
+        told["error"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("Invalid API key")
+    );
 }
 
 #[tokio::test]

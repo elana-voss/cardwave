@@ -1,5 +1,6 @@
 // Who a reply is by, by name (`replierName`): its character, else in a chat without one "AI"; what a reply shows
-// (`written`); a message's menu stays open as the list is drawn anew (`drawMessages`).
+// (`written`); a message's menu stays open as the list is drawn anew (`drawMessages`); a reply that did not end
+// whole says so under it (ending.ts).
 import { expect, test } from "vitest";
 import type { ChatView } from "../api/generated/ChatView";
 import type { MessageView } from "../api/generated/MessageView";
@@ -35,4 +36,14 @@ test("a message's menu stays open as the list is drawn anew, as an event of the 
   drawMessages(s);
   expect(options().map((button) => button.ariaExpanded)).toEqual(["true"]);
   s.list.remove();
+});
+
+test("a reply cut off at the model's limit says so under it, also with a picture after it", () => {
+  const s = newScreen(1);
+  const message = (id: number, ending: string, picture = false) =>
+    ({ id, parent_id: id - 1, role: "assistant", speaker_id: null, content: `Line ${id}`, complete: true, swipes: [], picture, tokens: null, task_id: null, attachments: [], ending }) as unknown as MessageView;
+  s.view = { chat: { id: 1, trashed: false }, model: null, characters: [], messages: [message(1, "whole"), message(2, "cut_off"), message(3, "whole", true)] } as unknown as ChatView;
+  drawMessages(s);
+  const lines = [...s.list.querySelectorAll(".msg")].map((shown) => shown.querySelector(".reply-ending")?.textContent ?? null);
+  expect(lines).toEqual([null, "The reply reached the model's length limit.", null]);
 });

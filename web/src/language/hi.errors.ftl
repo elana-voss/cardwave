@@ -119,6 +119,7 @@ error-again-not-reply = सिर्फ़ किसी किरदार क�
 error-no-reply-to-write-again = चैट में फिर से लिखने के लिए कोई जवाब नहीं है।
 error-no-text = AI ने कोई टेक्स्ट नहीं भेजा। फिर कोशिश करें।
 error-worker-no-answer = हेल्पर मॉडल ने कोई जवाब नहीं दिया।
+memory-not-kept = हेल्पर मॉडल इस चैट की मेमोरी नहीं रख सका। { $failure }
 error-unknown-voice = “{ $voice }” नाम की कोई आवाज़ नहीं है।
 error-nothing-to-read = पढ़ने के लिए कुछ नहीं है।
 error-voice-not-downloaded = आवाज़ डाउनलोड नहीं की गई है।
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] वर्कफ़्लो में ऐसा कोई नोड नहीं है जिसे यह ComfyUI चला सके।
     [workflow_node] वर्कफ़्लो का नोड “{ $class }” इस ComfyUI में नहीं है।
     [zip] { $name } zip के रूप में पढ़ा नहीं जा सकता।
+    [file] फ़ाइल पढ़ी नहीं जा सकती: { $reason }
+    [folder] फ़ोल्डर पढ़ा नहीं जा सकता: { $reason }
+    [folder_in_task] टास्क का फ़ोल्डर पढ़ा नहीं जा सकता: { $reason }
+    [tool_arguments] मॉडल की कॉल पढ़ी नहीं जा सकी, इसलिए टूल नहीं चला: { $reason }
+    [web_address] यह कोई वेब पता नहीं है।
+    [page_kind] यह पेज टेक्स्ट नहीं है ({ $kind })।
    *[other] यह पढ़ा नहीं जा सकता।
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] मॉडल की सूची बहुत लंबी है।
     [picture_pixels] तस्वीर बहुत बड़ी है ({ $wide } × { $high } पिक्सेल)।
     [reply] जवाब बीच में कट गया: वह बहुत लंबा हो गया।
+    [file_written] { $megabytes } MB से बड़ी फ़ाइल लिखी नहीं जाती।
    *[other] यह बहुत बड़ा है।
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] वर्कफ़्लो “{ $name }” इस्तेमाल नहीं हो सकता।
     [written_tools_full] आप ज़्यादा से ज़्यादा { $most_tools } टूल रख सकते हैं; पहले सेटिंग्स › एडवांस्ड › AI के लिखे टूल में एक मिटाएँ।
     [delete_not_in_trash] सिर्फ़ ट्रैश वाली चीज़ें हमेशा के लिए हटाई जा सकती हैं; पहले उसे वहाँ ले जाएँ।
+    [path_outside] सिर्फ़ टास्क के फ़ोल्डर के अंदर के पाथ इस्तेमाल हो सकते हैं।
+    [write_folder] यह फ़ोल्डर है, फ़ाइल नहीं।
+    [page_refreshes] यह पेज बार-बार किसी दूसरे पेज पर चला जाता है।
+    [page_scheme] सिर्फ़ http और https पते पढ़े जाते हैं।
+    [page_closed] इस कंप्यूटर या किसी निजी नेटवर्क के पते पढ़े नहीं जाते।
+    [tool_failed] { $reason }
    *[other] यह नहीं हो सकता।
 }
 -helper-unusable = हेल्पर मॉडल का जवाब इस्तेमाल नहीं हो सका। फिर कोशिश करें, या कोई दूसरा हेल्पर मॉडल चुनें।
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] हेल्पर मॉडल ने तस्वीर के लिए कोई शब्द नहीं लिखे।
     [rating] { -helper-unusable }
     [reply_broke_off] जवाब बीच में टूट गया।
+    [reply_cut_off] जवाब मॉडल की लंबाई की सीमा तक पहुँच गया।
     [needs] { -helper-unusable }
     [rounds] टीम ने { $rounds } राउंड में अपना काम पूरा नहीं किया।
     [search_left_out] सर्च मॉडल ने एक टेक्स्ट छोड़ दिया।
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] सर्च मॉडल जवाब नहीं देता।
     [provider_voice] प्रोवाइडर की आवाज़ तक नहीं पहुँचा जा सकता।
     [provider_search_model] प्रोवाइडर के सर्च मॉडल तक नहीं पहुँचा जा सकता।
+    [search] वेब सर्च तक नहीं पहुँचा जा सकता: { $reason }
+    [page] पेज तक नहीं पहुँचा जा सकता: { $reason }
    *[other] वहाँ तक नहीं पहुँचा जा सकता।
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] पिक्चर सर्वर का जवाब: { $status }।
     [provider_voices] प्रोवाइडर की आवाज़ों का जवाब: { $status }।
     [search_model] सर्च मॉडल का जवाब: { $status }।
+    [search] वेब सर्च का जवाब: { $status }।
+    [page] पेज का जवाब: { $status }।
    *[other] जवाब: { $status }।
 }
 error-answered-said = { $said ->

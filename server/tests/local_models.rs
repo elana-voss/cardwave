@@ -17,10 +17,9 @@ use common::server::{Server, device, event, start_searching};
 use cw_modelfiles::ModelFile;
 use cw_prompt::{PromptMessage, Role};
 use cw_provider::embedder::{Runner, Setup};
-use cw_provider::{self as provider, Provider, Sampling, local};
+use cw_provider::{self as provider, Provider, local};
 use reqwest::Method;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 
 static ONE: Mutex<()> = Mutex::const_new(());
@@ -54,12 +53,8 @@ async fn stand_in() -> String {
                 "ok"
             }),
         )
-        .route("/props", get(common::props))
         .route("/v1/chat/completions", post(chat));
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}", listener.local_addr().unwrap());
-    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
-    url
+    common::serve(app).await
 }
 
 /// A server whose models run at a stand-in, and a folder of model files.
@@ -89,17 +84,7 @@ async fn started() -> (Server, std::path::PathBuf) {
 }
 
 fn at(folder: &Path, model: &str) -> Provider {
-    Provider {
-        base_url: local::address_of(folder).unwrap(),
-        api_key: String::new(),
-        model: model.into(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
-    }
+    Provider::new(local::address_of(folder).unwrap(), "", model)
 }
 
 async fn reply(provider: &Provider) -> anyhow::Result<String> {

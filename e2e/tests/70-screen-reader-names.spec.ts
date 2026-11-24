@@ -189,7 +189,7 @@ test("Coding team", async ({ page }) => {
 
 test("A coding task", async ({ page }) => {
   const permissions = { read: "allow", write: "allow", commands: "ask", install: "ask", web: "never" };
-  const step = (id: number, who: object, what: object, checkpoint: object | null) => ({ id, who, what, detail: { code: "none" }, state: "done", output: "", files: [], checkpoint, undone: false, started_at: 0 });
+  const step = (id: number, who: object, what: object, checkpoint: object | null) => ({ id, who, what, detail: { code: "none" }, state: "done", output: [], files: [], checkpoint, undone: false, started_at: 0 });
   const task = {
     id: 7,
     chat_id: chat,

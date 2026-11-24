@@ -1,10 +1,11 @@
 //! A model's context window, the most tokens its prompt and reply may take, from
 //! what knows it, never a guess ([`settled`], which `Provider::context` reads):
 //! the pretend model's own; This computer's loaded `llama-server`, and any other
-//! server on this machine or its local network, by its `/props` (llama.cpp's `n_ctx`); else models.dev's
-//! listing of the provider (`models_dev::Index::window`). Such a server is
-//! never looked up in models.dev: what it loaded can differ from what
-//! is listed. Where none knows it, the user's "Context size" stands in, else a
+//! server on this machine or its local network, by its `/props` (llama.cpp's
+//! and KoboldCpp's `n_ctx`), else by its own API (Ollama's, LM Studio's:
+//! [`crate::served`]); else models.dev's listing of the provider
+//! (`models_dev::Index::window`). Such a server is never looked up in
+//! models.dev: what it loaded can differ from what is listed. Where none knows it, the user's "Context size" stands in, else a
 //! reply fails as needed (`context_size`, `Provider::context`). Such a server
 //! that does not answer fails as unreachable, as a reply would.
 
@@ -17,10 +18,10 @@ use cw_platform::http::{Client, Url};
 use serde_json::Value;
 
 use crate::models_dev::Index;
-use crate::{Provider, list, local, pretend};
+use crate::{Provider, list, local, pretend, served};
 
 /// How long a server on this machine may take to tell its window.
-const ASK_LIMIT: Duration = Duration::from_secs(10);
+pub(crate) const ASK_LIMIT: Duration = Duration::from_secs(10);
 
 /// `provider` with its model's window, where something knows it.
 pub async fn settled(http: &Client, index: &Index, provider: Provider) -> anyhow::Result<Provider> {
@@ -39,7 +40,10 @@ async fn of(http: &Client, index: &Index, provider: &Provider) -> anyhow::Result
     }
     if let Some(root) = on_this_machine(base_url) {
         let key = (!provider.api_key.is_empty()).then(|| format!("Bearer {}", provider.api_key));
-        return props(http, &root, key.as_deref()).await;
+        if let Some(window) = props(http, &root, key.as_deref()).await? {
+            return Ok(Some(window));
+        }
+        return Ok(served::window(http, &root, key.as_deref(), model).await);
     }
     let key = list::at(base_url).and_then(|listed| listed.models_dev.as_deref());
     Ok(index
@@ -53,7 +57,7 @@ async fn of(http: &Client, index: &Index, provider: &Provider) -> anyhow::Result
 /// differ from any list, so only it is asked.
 fn on_this_machine(base_url: &str) -> Option<String> {
     let url = Url::parse(base_url).ok()?;
-    let host = url.host_str()?.to_lowercase();
+    let (host, _) = crate::host(base_url)?;
     let nearby = if let Ok(ip) = host.parse::<Ipv4Addr>() {
         ip.is_loopback() || ip.is_private() || ip.is_link_local() || ip.is_unspecified()
     } else if let Ok(ip) = host.trim_matches(['[', ']']).parse::<Ipv6Addr>() {
@@ -137,17 +141,7 @@ mod tests {
     }
 
     fn at(base_url: &str, model: &str) -> Provider {
-        Provider {
-            base_url: base_url.into(),
-            api_key: String::new(),
-            model: model.into(),
-            sampling: Default::default(),
-            name: String::new(),
-            thinking_off: None,
-            reply_limit: None,
-            seen_thinking: false,
-            window: None,
-        }
+        Provider::new(base_url, "", model)
     }
 
     /// A server on this machine that answers `/props` with `answer`.

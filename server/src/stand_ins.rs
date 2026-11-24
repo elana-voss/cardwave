@@ -1,6 +1,6 @@
 //! What the tests name in place of the product's, read from the environment in a
 //! debug build only (a release build reads none): `CARDWAVE_PROVIDER_PLACES` (their
-//! server in place of providers' hosts and models.dev); `CARDWAVE_SEARCH_MODEL`,
+//! server in place of providers' hosts, every call's, and models.dev); `CARDWAVE_SEARCH_MODEL`,
 //! `_VOICE_MODEL`, `_DICTATION_MODEL` ("address size sha256" of a file taken as
 //! that model), `CARDWAVE_LOCAL_MODELS` (This computer's list in place of
 //! `fit::offered`), `CARDWAVE_EMBEDDER` (a stand-in `llama-server`),
@@ -32,6 +32,8 @@ pub fn stand_ins(options: &mut Options) -> anyhow::Result<()> {
     if let Some(places) = test_only("CARDWAVE_PROVIDER_PLACES") {
         // Their stand-in for the hosts has models.dev's too.
         options.models_dev = Some(format!("{places}/models.dev/api.json"));
+        // And every provider's public host: no browser test asks a live provider.
+        cw_provider::stand_in::every_host(&places);
         options.provider_places = Some(places);
     }
     if let Some(model) = test_only("CARDWAVE_SEARCH_MODEL") {

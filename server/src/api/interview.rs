@@ -254,16 +254,7 @@ async fn provider_of(
                 return Ok(chat);
             };
             let entry = provider::kinds::entry(db, user, other.provider_id)?;
-            Ok(Provider {
-                base_url: entry.base_url,
-                api_key: entry.api_key,
-                name: entry.name,
-                model: other.model,
-                thinking_off: None,
-                seen_thinking: false,
-                window: None,
-                ..chat
-            })
+            Ok(chat.other_model(entry.base_url, entry.api_key, entry.name, other.model))
         })
         .await?;
     Ok(provider)

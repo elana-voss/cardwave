@@ -1,9 +1,9 @@
 //! Coding tasks as SQLite keeps them (`coding::Storage`): `coding_tasks`, their
 //! steps in order (`coding_steps`) and what a step changed (`coding_changes`,
 //! each file before and after it). A step's who, what, grey line and checkpoint
-//! are JSON text (`json`).
+//! are JSON text (`json`), its output a JSON list each line is appended to.
 
-use cw_coding::coding::shown::{Checkpoint, StepDetail, StepWhat, Who};
+use cw_coding::coding::shown::{Checkpoint, StepDetail, StepLine, StepWhat, Who};
 use cw_coding::coding::snapshot::Change;
 use cw_coding::coding::{KeptTask, Progress, Step, Storage, TaskLine, TaskRow, verdict_of};
 use cw_core::now_ms;
@@ -33,7 +33,7 @@ fn step(row: &Row<'_>) -> rusqlite::Result<Step> {
         what: json::of(&row.get::<_, String>(2)?, 2)?,
         detail: json::of(&row.get::<_, String>(3)?, 3)?,
         state: Progress::of(&row.get::<_, String>(4)?),
-        output: row.get(5)?,
+        output: json::of(&row.get::<_, String>(5)?, 5)?,
         checkpoint: row
             .get::<_, Option<String>>(6)?
             .map(|kept| json::of(&kept, 6))
@@ -117,11 +117,12 @@ impl Storage for Db {
         Ok(())
     }
 
-    fn log_step(&self, step: i64, text: &str, most: usize) -> anyhow::Result<()> {
+    fn log_step(&self, step: i64, said: &StepLine, most: usize) -> anyhow::Result<()> {
         self.with(|conn| {
             conn.execute(
-                "update coding_steps set output = output || ?2 where id = ?1 and length(output) < ?3",
-                params![step, text, most as i64],
+                "update coding_steps set output = json_insert(output, '$[#]', json(?2))
+                 where id = ?1 and length(output) < ?3",
+                params![step, json::to(said)?, most as i64],
             )
         })?;
         Ok(())

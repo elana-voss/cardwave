@@ -1,7 +1,8 @@
-// What the chat screen does with the model's thinking, and with a change of the personas.
+// What the chat screen does with the model's thinking, a change of the personas and a memory pass that failed.
 import { expect, test } from "vitest";
 import { onEvent } from "./events";
-import { newScreen, sayBrokeOff } from "./screen";
+import { newScreen } from "./screen";
+import { failureWords } from "../language/errors";
 
 test("thinking told before the reply is known waits for it", () => {
   const s = newScreen(4);
@@ -16,9 +17,12 @@ test("a change of the personas has the chat read anew, as a persona's lorebooks 
   expect(s.held).toEqual([{ type: "personas" }]);
 });
 
-test("a reply the app's close broke off says so when its chat is opened, as it said so live", () => {
+test("a memory pass that failed is told over the message field of its own chat alone", () => {
+  const error = { code: "provider_refused", error: "401", details: { refusal: "key", whose: "model_server" } } as const;
+  const other = newScreen(5);
+  onEvent(other, { type: "memory_failed", chat_id: 4, error });
+  expect(other.notice).toBeFalsy();
   const s = newScreen(4);
-  s.view = { messages: [{ id: 9, content: "The tide", complete: true, broke_off: true }] } as never;
-  sayBrokeOff(s);
-  expect(s.notice).toBe("The reply broke off.");
+  onEvent(s, { type: "memory_failed", chat_id: 4, error });
+  expect(s.notice).toBe(`The helper model could not keep this chat's memory. ${failureWords(error)}`);
 });

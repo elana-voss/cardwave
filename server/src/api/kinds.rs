@@ -3,7 +3,8 @@
 //! removed, the models one offers with their kinds (`provider::catalog`), a
 //! kind's model picked (search and voice also taken back to this computer's
 //! download, `DELETE /api/kinds/{kind}`; the search's change has the cards
-//! read anew), its thinking turned on or off, a ComfyUI's saved
+//! read anew; OpenRouter's list read for its thinking), its thinking set
+//! (`provider::steps`: a step, or on or off, kept per model), a ComfyUI's saved
 //! workflow picked for its pictures (the background model finding where the
 //! words go, 424 without one), This computer's folder of models set (this
 //! computer's account's alone, 403 for another) with the models that fit
@@ -22,7 +23,10 @@ use cw_core::{Events, PageEvent};
 use cw_provider::catalog::{self, Catalog};
 use cw_provider::check;
 use cw_provider::fit::FitView;
-use cw_provider::kinds::{self, ChangeEntry, EntryView, Kind, NewEntry, PickModel, ProvidersView};
+use cw_provider::kinds::{
+    self, ChangeEntry, Entry, EntryView, Kind, NewEntry, PickModel, ProvidersView,
+};
+use cw_provider::steps::{Listed, SetThinking};
 use cw_provider::{self as provider, Sampling};
 use cw_store::Db;
 use serde::Deserialize;
@@ -53,13 +57,6 @@ pub fn routes() -> Router<AppState> {
         .route("/api/kinds/{kind}", put(pick).delete(unpick))
         .route("/api/kinds/{kind}/thinking", put(thinking))
         .route("/api/sampling", get(sampling).put(set_sampling))
-}
-
-/// Whether a kind's model is to think.
-#[derive(Deserialize, TS)]
-#[ts(export)]
-pub(crate) struct SetThinking {
-    pub on: bool,
 }
 
 /// The ComfyUI workflow a provider's pictures are made by.
@@ -194,8 +191,40 @@ async fn pick(
     Json(asked): Json<PickModel>,
 ) -> ApiResult<Json<ProvidersView>> {
     let kind = kind(&text)?;
-    let work = move |db: &Db| kinds::pick(db, user, kind, asked);
+    let id = asked.provider_id;
+    let entry = state.run(move |db| kinds::entry(db, user, id)).await?;
+    let listed = listed(&state, &entry, std::slice::from_ref(&asked.model))
+        .await
+        .into_iter()
+        .next()
+        .map(|(_, listed)| listed);
+    let work = move |db: &Db| kinds::pick(db, user, kind, asked, listed);
     kept(&state, user, &page, Some(kind), work).await
+}
+
+/// What the list of `entry` says of the thinking of `models` ([`kinds::listed_at`]).
+/// Unread, a model's thinking is told by its name, as at any other provider.
+async fn listed(state: &AppState, entry: &Entry, models: &[String]) -> Vec<(String, Listed)> {
+    kinds::listed_at(&state.http, entry, models)
+        .await
+        .unwrap_or_else(|failure| {
+            tracing::warn!("the list of models is not read for thinking: {failure:#}");
+            Vec::new()
+        })
+}
+
+/// Reads anew what the lists say of the thinking of the chat and background
+/// models ([`kinds::listing`]), where a provider was stored whole: first run,
+/// a preset put in use.
+pub(crate) async fn listed_anew(state: &AppState, user: i64) -> ApiResult<()> {
+    let listing = state.run(move |db| kinds::listing(db, user)).await?;
+    for (entry, models) in listing {
+        let listed = listed(state, &entry, &models).await;
+        state
+            .run(move |db| kinds::keep_listed(db, user, entry.id, listed))
+            .await?;
+    }
+    Ok(())
 }
 
 /// Takes search or voice back to this computer's download.
@@ -220,7 +249,7 @@ fn changed(state: &AppState, user: i64, page: &Page, kind: Kind) {
     }
 }
 
-/// Turns the kind's thinking on, or off where its provider takes a form of it.
+/// Sets how much the kind's model thinks (`kinds::thinking`), kept for that model at its provider.
 async fn thinking(
     State(state): State<AppState>,
     User(user): User,
@@ -229,11 +258,15 @@ async fn thinking(
     Json(asked): Json<SetThinking>,
 ) -> ApiResult<Json<ProvidersView>> {
     let kind = kind(&text)?;
-    let provider = state
-        .run(move |db| Ok(kinds::provider_of(db, user, kind)?.ok_or(NotFound("model"))?))
+    let (provider, entry) = state
+        .run(move |db| {
+            let picked = kinds::picked(db, user, kind)?.ok_or(NotFound("model"))?;
+            let provider = kinds::provider_of(db, user, kind)?.ok_or(NotFound("model"))?;
+            Ok((provider, picked.entry))
+        })
         .await?;
-    let thinking = kinds::thinking(&state.http, &provider, asked.on).await?;
-    let work = move |db: &Db| kinds::keep_thinking(db, user, kind, &provider.model, thinking);
+    let thinking = kinds::thinking(&state.http, &provider, asked).await?;
+    let work = move |db: &Db| kinds::keep_thinking(db, user, entry, &provider.model, thinking);
     kept(&state, user, &page, None, work).await
 }
 

@@ -5,6 +5,8 @@
 //! models are refused or paid apart, so first run's picks keep to the included
 //! models of a kind where it includes any ([`keep_included`]). Any other
 //! provider, a key without one, or a list that did not come: no preference.
+//! Whether it is active ([`active`]) tells whether a request may carry a cache
+//! mark (`caching`), which NanoGPT bills outside the subscription.
 
 use std::collections::HashSet;
 use std::time::Duration;
@@ -23,17 +25,8 @@ const LIMIT: Duration = Duration::from_secs(15);
 /// The models the key's NanoGPT subscription includes; none where `base_url`
 /// is not NanoGPT's, the key has no active subscription or a list did not come.
 pub(crate) async fn included(http: &Client, base_url: &str, key: &str) -> Option<HashSet<String>> {
-    if !is_nanogpt(base_url) {
-        return None;
-    }
-    let mut url = Url::parse(base_url).ok()?;
-    url.set_path("/api/subscription/v1");
-    let base = url.as_str().trim_end_matches('/').to_string();
-    let usage = match send(keyed(http.get(format!("{base}/usage")), key).timeout(LIMIT)).await {
-        Ok(answer) => answer.json::<Value>().await.ok(),
-        Err(_) => None,
-    };
-    if !may_be_subscribed(usage) {
+    let base = folder(base_url)?;
+    if !may_be_subscribed(usage(http, &base, key).await) {
         return None;
     }
     let images = format!("{base}/image-models");
@@ -44,6 +37,39 @@ pub(crate) async fn included(http: &Client, base_url: &str, key: &str) -> Option
     let mut ids: HashSet<String> = texts.ok()?.models.into_iter().collect();
     ids.extend(pictures.ok()?.models.into_iter().map(|(id, _)| id));
     Some(ids)
+}
+
+/// Whether the key's NanoGPT subscription is active, by its usage answer;
+/// none where `base_url` is not NanoGPT's or the answer did not come or did
+/// not say (a key not a UUID is refused).
+pub(crate) async fn active(http: &Client, base_url: &str, key: &str) -> Option<bool> {
+    let base = folder(base_url)?;
+    usage(http, &base, key).await?["active"].as_bool()
+}
+
+/// The subscription's folder at NanoGPT's origin; none for another provider.
+fn folder(base_url: &str) -> Option<String> {
+    if !is_nanogpt(base_url) {
+        return None;
+    }
+    let mut url = Url::parse(base_url).ok()?;
+    url.set_path("/api/subscription/v1");
+    Some(url.as_str().trim_end_matches('/').to_string())
+}
+
+/// The key's usage answer, where it came; a refusal is logged by its status.
+async fn usage(http: &Client, base: &str, key: &str) -> Option<Value> {
+    match send(keyed(http.get(format!("{base}/usage")), key).timeout(LIMIT)).await {
+        Ok(answer) if answer.status().is_success() => answer.json::<Value>().await.ok(),
+        Ok(answer) => {
+            tracing::info!("NanoGPT's subscription usage refused: {}", answer.status());
+            None
+        }
+        Err(failure) => {
+            tracing::info!("NanoGPT's subscription usage not read: {failure}");
+            None
+        }
+    }
 }
 
 /// Whether the lists are asked after the usage answer: only a usage saying

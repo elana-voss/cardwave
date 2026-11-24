@@ -2,8 +2,8 @@
 // provider (`.group.provider`) in the order added, and "Add provider" (first run's step 1, setup/key-step.ts,
 // in a dialog; with no chat model chosen yet it goes on to first run's step 2 for it, `chatUnchosen`). A box's head (`.provider-head`): the name, where it is (`whereOf`) and "…" with Edit (address
 // and key, "Remove key") and Remove (asks in the menu's place). Under it a line per kind at it, what model it
-// uses, chosen only in Settings › Models (proposal 18 of 88, the owner), under a model that thinks or whose thinking is off the line "Thinking" (`thinkingSays`),
-// whose switch has the server try the forms of turning it off; a provider no kind is at says "Not used · [n]
+// uses, chosen only in Settings › Models (proposal 18 of 88, the owner), under a model that thinks or whose thinking is off the line "Thinking" (`thinkingShown`):
+// the field of the steps the server offers for a model with levels, else the switch; Off has the server try its forms; a provider no kind is at says "Not used · [n]
 // models"; a ComfyUI has the line "Workflow" (`workflowChoices`), the background model finding
 // where the words go, which under a saved workflow says that it uses its own models and size (`workflowNote`). This computer's account has first the box "This computer" (`.group.this-computer`, no
 // `.provider`): what runs (`runsLine`), or "Not set up" with "Set up" (dialogs.ts's dialog "Folder"), no Edit or
@@ -21,6 +21,9 @@ import type { Kind } from "../api/generated/Kind";
 import type { PickedView } from "../api/generated/PickedView";
 import type { ProvidersView } from "../api/generated/ProvidersView";
 import type { ServerEvent } from "../api/generated/ServerEvent";
+import type { SetThinking } from "../api/generated/SetThinking";
+import type { ThinkingStep } from "../api/generated/ThinkingStep";
+import type { ThinkingView } from "../api/generated/ThinkingView";
 import { announce, crumbs, el, failure, item, latest, moreOpener, noticeBox, oneAtATime, reason, selectField, switchBox, type Choice, type View } from "../dom";
 import { dialog, folderDialog, formDialog, menuDeleting } from "../dialogs";
 import { fitLines, memoryLine, onlySteps, resize, runsLine, stepOn } from "../models/fit-models";
@@ -49,11 +52,31 @@ export function whereOf(provider: EntryView): string {
   return provider.has_key ? wording("providers-key-saved", { where }) : wording("providers-no-key", { where });
 }
 
-/** What the line "Thinking" says, or `null` where it has none: a model that does not think and whose thinking was never turned off. */
-export function thinkingSays(picked: PickedView, thinker: boolean, provider: string): string | null {
-  if (picked.thinking === "cannot") return wording("providers-thinking-cannot", { provider });
-  if (picked.thinking === "off") return wording("providers-thinking-off");
-  return thinker ? wording("providers-thinking-on") : null;
+/** What the line "Thinking" shows: its words, and the field of the steps the model offers, the switch, or nothing where its provider cannot turn thinking off. */
+export type ThinkingShown =
+  | { says: string; control: "steps"; choices: Choice[]; step: ThinkingStep }
+  | { says: string; control: "switch"; on: boolean }
+  | { says: string; control: "none" };
+
+/** The words of each step of thinking, in the language now shown. */
+const stepWords = (): Record<ThinkingStep, string> => ({
+  off: wording("providers-step-off"),
+  light: wording("providers-step-light"),
+  normal: wording("providers-step-normal"),
+  deep: wording("providers-step-deep"),
+});
+
+/** What the line "Thinking" shows, or `null` where it has none: a model without levels that does not think and whose thinking was never turned off. */
+export function thinkingShown(thinking: ThinkingView, thinker: boolean, provider: string): ThinkingShown | null {
+  const cannot = wording("providers-thinking-cannot", { provider });
+  if (thinking.control === "steps") {
+    const { steps, step, refused } = thinking;
+    const says = refused ? cannot : step === "off" ? wording("providers-thinking-off") : wording("providers-thinking-steps");
+    return { says, control: "steps", choices: steps.map((value) => ({ value, label: stepWords()[value] })), step };
+  }
+  if (thinking.state === "cannot") return { says: cannot, control: "none" };
+  if (thinking.state === "off") return { says: wording("providers-thinking-off"), control: "switch", on: false };
+  return thinker ? { says: wording("providers-thinking-on"), control: "switch", on: true } : null;
 }
 
 /** What the field "Workflow" offers: ComfyUI's default one, then the saved ones by name, and the one picked where ComfyUI no longer has it. */
@@ -73,7 +96,7 @@ interface Page {
   view: ProvidersView | null;
   /** Whether the account is this computer's, whose models it may run. */
   local: boolean;
-  /** The kind whose thinking is being turned on or off. */
+  /** The kind whose thinking is being set. */
   turning: Kind | null;
   /** The provider whose workflow is being picked. */
   finding: number | null;
@@ -96,23 +119,28 @@ interface Page {
 function kindLines(page: Page, provider: EntryView, picked: PickedView): HTMLElement[] {
   const { label } = modelKinds().find((each) => each.kind === picked.kind)!;
   const line = item(label, picked.model, el("span"));
-  const said = thinkingSays(picked, thinks(page.lists.of(provider.id), picked.model), providerName(provider.name));
-  if (!said) return [line];
-  const about = el("span", { className: "meta" }, page.turning === picked.kind ? wording("providers-testing-model") : said);
-  let control: HTMLElement = el("span");
-  if (picked.thinking !== "cannot") {
-    const on = switchBox({ checked: picked.thinking === "on", ariaLabel: wording("providers-thinking-of", { label }), disabled: page.turning !== null });
-    on.onchange = () =>
-      void page.attempt(async () => {
-        page.turning = picked.kind;
+  const shown = thinkingShown(picked.thinking, thinks(page.lists.of(provider.id), picked.model), providerName(provider.name));
+  if (!shown) return [line];
+  const about = el("span", { className: "meta" }, page.turning === picked.kind ? wording("providers-testing-model") : shown.says);
+  const set = (asked: SetThinking) =>
+    void page.attempt(async () => {
+      page.turning = picked.kind;
+      page.draw();
+      try {
+        page.took(await setThinking(picked.kind, asked));
+      } finally {
+        page.turning = null;
         page.draw();
-        try {
-          page.took(await setThinking(picked.kind, on.checked));
-        } finally {
-          page.turning = null;
-          page.draw();
-        }
-      });
+      }
+    });
+  const ariaLabel = wording("providers-thinking-of", { label });
+  const disabled = page.turning !== null;
+  let control: HTMLElement = el("span");
+  if (shown.control === "steps") {
+    control = selectField(shown.choices, shown.step, (step) => set({ step: step as ThinkingStep }), { ariaLabel, disabled }).node;
+  } else if (shown.control === "switch") {
+    const on = switchBox({ checked: shown.on, ariaLabel, disabled });
+    on.onchange = () => set({ on: on.checked });
     control = on;
   }
   const thinking = item(wording("providers-thinking"), about, control);

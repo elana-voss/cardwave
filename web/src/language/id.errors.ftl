@@ -119,6 +119,7 @@ error-again-not-reply = Hanya balasan karakter yang dapat ditulis ulang.
 error-no-reply-to-write-again = Chat ini tidak punya balasan untuk ditulis ulang.
 error-no-text = AI tidak mengirim teks. Coba lagi.
 error-worker-no-answer = Model pembantu tidak memberi jawaban.
+memory-not-kept = Model pembantu tidak dapat menyimpan memori chat ini. { $failure }
 error-unknown-voice = Tidak ada suara “{ $voice }”.
 error-nothing-to-read = Tidak ada yang bisa dibacakan.
 error-voice-not-downloaded = Suara itu belum diunduh.
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] Workflow tidak punya node yang dapat dijalankan ComfyUI ini.
     [workflow_node] Node workflow “{ $class }” tidak dimiliki ComfyUI ini.
     [zip] { $name } tidak dapat dibaca sebagai zip.
+    [file] File tidak dapat dibaca: { $reason }
+    [folder] Folder tidak dapat dibaca: { $reason }
+    [folder_in_task] Folder tugas tidak dapat dibaca: { $reason }
+    [tool_arguments] Panggilan model tidak dapat dibaca, jadi alatnya tidak berjalan: { $reason }
+    [web_address] Itu bukan alamat web.
+    [page_kind] Halaman itu bukan teks ({ $kind }).
    *[other] Itu tidak dapat dibaca.
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] Daftar model terlalu panjang.
     [picture_pixels] Gambar terlalu besar ({ $wide } kali { $high } piksel).
     [reply] Balasan terpotong: terlalu panjang.
+    [file_written] File lebih dari { $megabytes } MB tidak ditulis.
    *[other] Itu terlalu besar.
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] Workflow “{ $name }” tidak dapat dipakai.
     [written_tools_full] Kamu bisa menyimpan paling banyak { $most_tools } alat; hapus dulu satu di Pengaturan › Lanjutan › Alat buatan AI.
     [delete_not_in_trash] Hanya yang ada di Sampah dapat dihapus selamanya; pindahkan ke sana dulu.
+    [path_outside] Hanya jalur di dalam folder tugas yang dapat dipakai.
+    [write_folder] Itu folder, bukan file.
+    [page_refreshes] Halaman itu terus berpindah ke halaman lain.
+    [page_scheme] Hanya alamat http dan https yang dibaca.
+    [page_closed] Alamat di komputer ini atau di jaringan pribadi tidak dibaca.
+    [tool_failed] { $reason }
    *[other] Itu tidak dapat dilakukan.
 }
 -helper-unusable = Jawaban model pembantu tidak dapat dipakai. Coba lagi, atau pilih model pembantu lain.
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] Model pembantu tidak menulis kata-kata untuk gambar.
     [rating] { -helper-unusable }
     [reply_broke_off] Balasan terputus.
+    [reply_cut_off] Balasan mencapai batas panjang model.
     [needs] { -helper-unusable }
     [rounds] Tim tidak menyelesaikan pekerjaannya dalam { $rounds } putaran.
     [search_left_out] Model pencarian melewatkan sebuah teks.
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] Model pencarian tidak menjawab.
     [provider_voice] Suara penyedia tidak dapat dihubungi.
     [provider_search_model] Model pencarian penyedia tidak dapat dihubungi.
+    [search] Pencarian web tidak dapat dihubungi: { $reason }
+    [page] Halaman tidak dapat dihubungi: { $reason }
    *[other] Tidak dapat dihubungi.
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] Server gambar menjawab { $status }.
     [provider_voices] Suara-suara penyedia menjawab { $status }.
     [search_model] Model pencarian menjawab { $status }.
+    [search] Jawaban pencarian web { $status }.
+    [page] Jawaban halaman { $status }.
    *[other] Jawabannya { $status }.
 }
 error-answered-said = { $said ->

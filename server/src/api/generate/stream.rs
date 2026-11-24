@@ -146,30 +146,41 @@ impl Pushed {
     }
 }
 
+/// How a round's words came to their end.
+#[derive(Debug, PartialEq)]
+pub(super) enum Taken {
+    /// The model's reply is complete.
+    Ended,
+    /// The user stopped it first.
+    Stopped,
+    /// Its words drifted into another character's lines and were cut there.
+    Drifted,
+}
+
 /// Reads one round's words from `reply` into `content`, saving and pushing
-/// them and the model's thinking every [`PUSH_EVERY`], until the round ends:
-/// `false` when the reply is stopped first, or its words drift into another
-/// character's lines (`others`, `chats::drift`), where they are cut. The
-/// round's words begin at their first, joined to the text before by
+/// them and the model's thinking every [`PUSH_EVERY`], until the round ends
+/// ([`Taken`]): the reply complete, stopped first, or its words drifting into
+/// another character's lines (`others`, `chats::drift`), where they are cut.
+/// The round's words begin at their first, joined to the text before by
 /// [`joint`].
 pub(super) async fn take_words(
     writer: &Writer,
     (message_id, pushed, content): (i64, &mut Pushed, &mut String),
     (reply, others): (&mut provider::Reply, &[String]),
     mut stopped: Pin<&mut Notified<'_>>,
-) -> anyhow::Result<bool> {
+) -> anyhow::Result<Taken> {
     let begun = content.len();
     loop {
         tokio::select! {
             biased;
-            _ = &mut stopped => return Ok(false),
+            _ = &mut stopped => return Ok(Taken::Stopped),
             _ = sleep_until(pushed.due), if pushed.saved < content.len() || !pushed.told => {
                 pushed.flush(writer, message_id, content).await?;
                 pushed.due = Instant::now() + PUSH_EVERY;
             }
             piece = reply.next_piece() => {
                 let Some(piece) = piece? else {
-                    return Ok(true);
+                    return Ok(Taken::Ended);
                 };
                 pushed.think(&piece.thinking);
                 let words = match content.len() > begun {
@@ -187,7 +198,7 @@ pub(super) async fn take_words(
                     // What the pages were told past it goes with the reply's end, which tells them the whole.
                     let own = content[..begun + at].trim_end().len().max(begun);
                     content.truncate(own);
-                    return Ok(false);
+                    return Ok(Taken::Drifted);
                 }
             }
         }

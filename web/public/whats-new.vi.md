@@ -1,8 +1,14 @@
 # 0.3.3
 
-Cardwave giờ biết mỗi AI đọc được bao nhiêu một lần, và không còn đoán nữa.
+Cardwave giờ biết mỗi AI đọc được bao nhiêu một lần, và bạn chọn mức AI suy nghĩ cũng như tô màu cho các cuộc trò chuyện.
 
-- Mỗi câu trả lời vừa với lượng mà mô hình của nó đọc được. Cardwave lấy kích thước từ danh sách mô hình có sẵn, hoặc hỏi thẳng AI chạy trên máy tính hay mạng nội bộ của bạn. Trước đây, mô hình nào cũng được tính 128.000 token.
+- Trong Cài đặt › Nhà cung cấp, mô hình có thể suy nghĩ nhiều hơn hoặc ít hơn giờ có các lựa chọn Tắt, Nhẹ, Bình thường hoặc Sâu, được nhớ cho từng mô hình. Khi nhà cung cấp không thể tắt suy nghĩ cho một mô hình, Cardwave sẽ nói cho bạn biết.
+- Mới trong menu hiển thị: "Màu tin nhắn trò chuyện" (Tắt, Sáng hoặc Tối) hiện lời thoại trong dấu ngoặc kép, chữ nghiêng, chữ đậm, liên kết và mã bằng màu riêng, trong cuộc trò chuyện với nhân vật và trong bạn đồng hành.
+- Câu trả lời bị cắt ở giới hạn độ dài giờ kết thúc ở câu trọn vẹn cuối cùng. Câu trả lời dừng ở giới hạn riêng của AI được giữ nguyên như khi đến, kèm một dòng xám bên dưới nói rõ điều đó, và "Viết tiếp câu trả lời này" tiếp tục từ từ cuối cùng của nó.
+- Khi mô hình phụ không thể giữ bộ nhớ của cuộc trò chuyện, cuộc trò chuyện sẽ cho bạn biết lý do.
+- Các cuộc trò chuyện dài với mô hình Claude qua OpenRouter hoặc NanoGPT tốn ít hơn và trả lời sớm hơn nhờ lưu đệm lời nhắc.
+- Trong nhiệm vụ lập trình, các dòng của mỗi bước hiện bằng ngôn ngữ của bạn, và các trang web được đọc chính xác hơn.
+- Mỗi câu trả lời vừa với lượng mà mô hình của nó đọc được. Cardwave lấy kích thước từ danh sách mô hình có sẵn, hoặc hỏi thẳng AI chạy trên máy tính (LM Studio, Ollama hoặc KoboldCpp) hay mạng nội bộ của bạn. Trước đây, mô hình nào cũng được tính 128.000 token.
 - Một cuộc trò chuyện dài với mô hình đọc được nhiều hơn giờ giữ lại nhiều lịch sử hơn.
 - Khi chưa biết kích thước của một AI, câu trả lời sẽ báo cho bạn, và bạn đặt nó một lần làm kích thước ngữ cảnh trong Cài đặt › Nâng cao. Cho đến lúc đó, không có gì được gửi đi.
 - Kích thước ngữ cảnh trong Cài đặt › Nâng cao giờ giới hạn những gì được gửi tới bất kỳ mô hình nào.

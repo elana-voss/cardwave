@@ -14,7 +14,6 @@ use axum::Router;
 use axum::http::Uri;
 use common::server::start_asking;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 
 /// A server that notes what it is asked and answers each time with `body`.
 async fn listener(body: &'static str) -> (String, Arc<Mutex<Vec<String>>>) {
@@ -31,18 +30,7 @@ async fn listener(body: &'static str) -> (String, Arc<Mutex<Vec<String>>>) {
             body,
         )
     };
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}", listener.local_addr().unwrap());
-    tokio::spawn(async {
-        axum::serve(
-            listener,
-            Router::new()
-                .route("/props", axum::routing::get(common::props))
-                .fallback(answer),
-        )
-        .await
-        .unwrap()
-    });
+    let url = common::serve(Router::new().fallback(answer)).await;
     (url, asked)
 }
 

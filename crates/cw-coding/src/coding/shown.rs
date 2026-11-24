@@ -1,10 +1,13 @@
 //! What a task's step shows, as codes and fields the page words in its
-//! language: who works (`Who`), what the step does or did (`StepWhat`) and its
-//! grey line (`StepDetail`), and its checkpoint's name (`Checkpoint`). cw-store keeps each as its JSON in its text
-//! column of `coding_steps`.
+//! language: who works (`Who`), what the step does or did (`StepWhat`), its
+//! grey line (`StepDetail`), its checkpoint's name (`Checkpoint`) and its
+//! output's lines (`StepLine`). cw-store keeps each as its JSON in its text column
+//! of `coding_steps`, the output as a JSON list.
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+use crate::tools::gave::Gave;
 
 /// Who works a step.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, TS)]
@@ -89,4 +92,24 @@ pub enum Checkpoint {
     /// Before the fix of what the auditor found.
     #[default]
     BeforeFix,
+}
+
+/// A line of a step's output, kept as its values for the page to word: the
+/// model's own words, a tool's call with what it gave, or the plan.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, TS)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+#[ts(export)]
+pub enum StepLine {
+    /// The model's words; `cut` where its reply reached the model's length limit.
+    Words { text: String, cut: bool },
+    /// A tool called on `target`, and what it gave, shortened for the output;
+    /// `cut` where a command's output was cut.
+    Called {
+        tool: StepTool,
+        target: String,
+        gave: Gave,
+        cut: bool,
+    },
+    /// The planner's steps, and the command of the tests (empty where none).
+    Plan { steps: Vec<String>, tests: String },
 }

@@ -9,6 +9,7 @@
 //! looked up past a check (`Lookup`), which also keeps it from a proxy, as a
 //! proxy would look the names up itself. `public` is the one check of what
 //! is on the open internet, for a lookup and for an address that is a number.
+//! Every client drops an unused connection before its server would (`IDLE`).
 
 use std::net::{IpAddr, SocketAddr};
 use std::time::Duration;
@@ -111,9 +112,14 @@ pub fn public(ip: IpAddr) -> bool {
     }
 }
 
+/// The longest a client keeps an unused connection: under the 5 s after
+/// which llama.cpp's server and Node's close one, so a request never goes out
+/// on a connection its server is closing ("forcibly closed", os error 10054).
+const IDLE: Duration = Duration::from_secs(4);
+
 /// A client made as `make` says.
 pub fn client(make: Make) -> Result<Client> {
-    let mut builder = Client::builder();
+    let mut builder = Client::builder().pool_idle_timeout(IDLE);
     if let Some(connect) = make.connect {
         builder = builder.connect_timeout(connect);
     }
@@ -173,5 +179,46 @@ impl Resolve for Checked {
             }
             Ok(Box::new(found.into_iter()) as Addrs)
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::{Read, Write};
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    /// A server keeping each connection open, counting the connections it took.
+    fn counting() -> (String, Arc<AtomicUsize>) {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}/", listener.local_addr().unwrap());
+        let taken = Arc::new(AtomicUsize::new(0));
+        let count = taken.clone();
+        std::thread::spawn(move || {
+            for mut stream in listener.incoming().flatten() {
+                count.fetch_add(1, Ordering::SeqCst);
+                std::thread::spawn(move || {
+                    let mut buffer = [0u8; 4096];
+                    while matches!(stream.read(&mut buffer), Ok(read) if read > 0) {
+                        let answer = b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nok";
+                        if stream.write_all(answer).is_err() {
+                            break;
+                        }
+                    }
+                });
+            }
+        });
+        (url, taken)
+    }
+
+    #[tokio::test]
+    async fn a_connection_idle_as_long_as_a_server_keeps_one_is_not_used_again() {
+        let (url, taken) = counting();
+        let client = client(Make::default()).unwrap();
+        client.get(&url).send().await.unwrap().text().await.unwrap();
+        tokio::time::sleep(IDLE + Duration::from_millis(500)).await;
+        client.get(&url).send().await.unwrap().text().await.unwrap();
+        assert_eq!(taken.load(Ordering::SeqCst), 2);
     }
 }

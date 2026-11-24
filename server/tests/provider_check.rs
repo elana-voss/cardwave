@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 use axum::http::Method;
 use common::api::{Api, JSON, Says, says};
 use common::server::{Server, WAIT, start};
-use cw_provider::{self as provider, Provider, Sampling, check};
+use cw_provider::{self as provider, Provider, check};
 use serde_json::{Value, json};
 use tokio::time::timeout;
 
@@ -257,17 +257,7 @@ async fn a_model_has_a_while_for_its_first_word_and_no_longer() {
     };
     for late in [silent, wordless] {
         let api = Api::start(late).await;
-        let provider = Provider {
-            base_url: api.url.clone(),
-            api_key: String::new(),
-            model: "tide-1".into(),
-            sampling: Sampling::default(),
-            name: String::new(),
-            thinking_off: None,
-            reply_limit: None,
-            seen_thinking: false,
-            window: None,
-        };
+        let provider = Provider::new(api.url.clone(), "", "tide-1");
         let started = Instant::now();
         let failed = check::model(&http, &provider, brief).await.unwrap_err();
         assert_eq!(format!("{failed:#}"), "the model did not answer in time");

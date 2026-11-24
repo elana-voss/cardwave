@@ -656,3 +656,29 @@ fn variables_that_read_each_other_many_times_over_end_the_rendering() {
         &out[out.len().saturating_sub(40)..]
     );
 }
+
+// drawn anew (a prompt's steady start ends before it)
+
+/// A render that reads the clock at an offset or changes a variable may render
+/// differently next time; one that only reads or sets an unchanged one does not.
+#[test]
+fn the_clock_at_an_offset_and_a_changed_variable_are_drawn_anew() {
+    let drawn = |text: &str, local: &mut Variables| {
+        let mut ctx = MacroContext {
+            char_name: "Cass",
+            user_name: "User",
+            local: Some(local),
+            global: None,
+            tracking_id: None,
+            language: None,
+            seed: None,
+        };
+        cw_prompt::macros::render_noting(text, &mut ctx).drawn_anew
+    };
+    let mut local = vars(&[("mood", "calm"), ("n", "1")]);
+    assert!(drawn("It is {{time_UTC+8}}.", &mut local));
+    assert!(drawn("Turn {{.n++}}", &mut local));
+    assert!(drawn("{{setvar::mood::wild}}", &mut local));
+    assert!(!drawn("{{setvar::mood::wild}}{{.mood = wild}}", &mut local));
+    assert!(!drawn("Mood: {{getvar::mood}}, {{.n}}", &mut local));
+}

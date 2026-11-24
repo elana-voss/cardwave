@@ -56,9 +56,55 @@ body:is([data-bare], [data-rail="narrow"]) #titlebar > .name {
 .wtab.dragged {
   opacity: 0.5;
 }
-/* The view menu (view-menu.ts) opens under the eye, from its right edge. */
-.wtabs > .menu > .vmenu {
+/* The view menu (view-menu.ts; board view-menu.css) opens under the eye, from its right edge. A line opening a side
+   menu (.vm-more) holds its name, the one in use in grey and a chevron, or Compact spacing's switch, blue while on, on
+   no light blue ground. The side menu (.vm-side) stands to the menu's left, 4 px apart, its top set by view-menu.ts;
+   at 600 px it takes the menu's place (.vm-narrow) under its back line (.vm-back). */
+.wtabs > .menu > .vm > .vmenu {
   top: var(--s36);
+}
+.pop .vm-more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s12);
+}
+.vm-val {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s4);
+  color: var(--grey);
+}
+.pop .vm-more[aria-expanded="true"] {
+  background: var(--fill-hover);
+}
+.pop .vm-more[aria-checked="true"]:not(:hover, .is-hover) {
+  background: none;
+}
+/* The design system's switch is on at `:checked`, which the line's span never is: on at the line's aria-checked.
+   The knob, as tall as the switch less 2 px above and below, ends 2 px from its edge at each of the design
+   system's sizes (Regular, Compact, touch); `cqh` is the switch's height. */
+.vm-more > .switch {
+  container-type: size;
+}
+.vm-more[aria-checked="true"] > .switch {
+  background: var(--accent);
+}
+.vm-more[aria-checked="true"] > .switch::after {
+  left: calc(100% - 100cqh + 2px);
+}
+/* Beside the menu: its 232 px and its padding (`--s6`) on both sides, then the gap. */
+.vmenu.vm-side {
+  right: calc(232px + 2 * var(--s6) + var(--s4));
+  overflow: auto;
+}
+.pop .vm-back {
+  justify-content: flex-start;
+  gap: var(--s8);
+  font-weight: 600;
+}
+.vmenu.vm-narrow {
+  right: 0;
 }
 .wc .window_close:hover {
   background: var(--danger-fill);

@@ -30,6 +30,7 @@ import type { Kind } from "./generated/Kind";
 import type { NewEntry } from "./generated/NewEntry";
 import type { PickModel } from "./generated/PickModel";
 import type { ProvidersView } from "./generated/ProvidersView";
+import type { SetThinking } from "./generated/SetThinking";
 import type { FitView } from "./generated/FitView";
 import type { Sampling } from "./generated/Sampling";
 import type { ChatTitle } from "./generated/ChatTitle";
@@ -296,8 +297,8 @@ export const downloadFitModel = (file: string) => request<FitView>("POST", `/api
 export const cancelFitModel = (file: string) => request<FitView>("DELETE", `/api/this-computer/models/${encodeURIComponent(file)}/download`);
 /** Removes a model of Cardwave's list from This computer's folder. */
 export const removeFitModel = (file: string) => request<FitView>("DELETE", `/api/this-computer/models/${encodeURIComponent(file)}`);
-/** Turns a kind's model's thinking on, or off by the first form its provider takes (a small question each). */
-export const setThinking = (kind: Kind, on: boolean) => request<ProvidersView>("PUT", `/api/kinds/${kind}/thinking`, { on });
+/** Sets a kind's model's thinking: a step it offers, or the switch on or off; Off is the first form its provider takes (a small question each). */
+export const setThinking = (kind: Kind, set: SetThinking) => request<ProvidersView>("PUT", `/api/kinds/${kind}/thinking`, set);
 /** The account's values for a reply. */
 export const getSampling = () => request<Sampling>("GET", "/api/sampling");
 /** Keeps the account's values for a reply; refused where one is out of its range. */

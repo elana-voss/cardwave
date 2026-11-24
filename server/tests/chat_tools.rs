@@ -1,7 +1,7 @@
 //! The chat tools (`cw-coding`'s `tools/dice.rs` and `tools/names.rs`): the
 //! dice rolled on the server, names for new characters never given twice in
 //! a chat, each off until switched on in the settings; a round past the last
-//! offered no tools.
+//! offered no tools; a round after a call cut at the model's own limit.
 //!
 //! `Model` (`common::model`) is a stand-in for a model's server.
 
@@ -208,4 +208,29 @@ async fn a_round_offered_no_tools_is_not_told_of_them() {
         assert!(asked[at].get("tools").is_none(), "{}", asked[at]);
         assert!(!told(at), "{}", asked[at]["messages"]);
     }
+}
+
+#[tokio::test]
+async fn a_round_after_a_call_cut_at_the_model_s_own_limit_cuts_the_reply() {
+    // Words and a call, then a round that ends at the model's own limit with no word.
+    let mut said = vec![text_piece("She rolls.")];
+    said.extend(call_pieces("dice", &json!({ "count": 1, "sides": 6 })));
+    let cut = json!({ "choices": [{ "delta": {}, "finish_reason": "length" }] });
+    let server = start().await;
+    let model = Model::start(vec![(200, stream(&said)), (200, stream(&[cut]))]).await;
+    let chat = chat_at(&server, &model).await;
+    // models.dev says it thinks, so it is asked without the chat's Reply length.
+    let thinks = json!({ "base_url": model.url, "model": "deepseek-v3-1", "api_key": "sk-test" });
+    assert_eq!(server.set_provider(thinks).await.0, 200);
+    let on = server
+        .patch("/api/settings", json!({ "tools": { "dice": true } }))
+        .await;
+    assert_eq!(on.1["tools"]["dice"], true, "{on:?}");
+    let mut socket = server.listen().await;
+    assert_eq!(
+        server.post(&format!("{chat}/generate"), json!({})).await.0,
+        202
+    );
+    let ended = next_event(&mut socket).await;
+    assert_eq!(ended["message"]["ending"], "cut_off", "{ended}");
 }

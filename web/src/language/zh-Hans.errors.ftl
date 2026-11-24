@@ -119,6 +119,7 @@ error-again-not-reply = 只有角色的回复才能重新生成。
 error-no-reply-to-write-again = 这个聊天中没有可以重新生成的回复。
 error-no-text = AI 没有发来文字。请再试一次。
 error-worker-no-answer = 辅助模型没有回答。
+memory-not-kept = 辅助模型未能保存此聊天的记忆。{ $failure }
 error-unknown-voice = 没有语音“{ $voice }”。
 error-nothing-to-read = 没有可朗读的内容。
 error-voice-not-downloaded = 这个语音还没有下载。
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] 这个工作流中没有这个 ComfyUI 能运行的节点。
     [workflow_node] 工作流的节点“{ $class }”在这个 ComfyUI 中不存在。
     [zip] 无法把 { $name } 当作 zip 读取。
+    [file] 无法读取文件：{ $reason }
+    [folder] 无法读取文件夹：{ $reason }
+    [folder_in_task] 无法读取任务的文件夹：{ $reason }
+    [tool_arguments] 无法读取模型的调用，因此工具没有运行：{ $reason }
+    [web_address] 这不是网址。
+    [page_kind] 该页面不是文本（{ $kind }）。
    *[other] 无法读取。
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] 模型列表太长了。
     [picture_pixels] 这张图片太大了（{ $wide } × { $high } 像素）。
     [reply] 回复被截断了：它太长了。
+    [file_written] 超过 { $megabytes } MB 的文件不会写入。
    *[other] 太大了。
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] 无法使用工作流“{ $name }”。
     [written_tools_full] 最多只能保留 { $most_tools } 个工具；请先在“设置 › 高级 › AI 编写的工具”中删除一个。
     [delete_not_in_trash] 只有废纸篓中的内容才能永久删除；请先把它移到废纸篓。
+    [path_outside] 只能使用任务文件夹内的路径。
+    [write_folder] 这是文件夹，不是文件。
+    [page_refreshes] 该页面一再跳转到其他页面。
+    [page_scheme] 只读取 http 和 https 地址。
+    [page_closed] 不读取这台电脑或私有网络中的地址。
+    [tool_failed] { $reason }
    *[other] 无法这样做。
 }
 -helper-unusable = 无法使用辅助模型的回答。请再试一次，或换一个辅助模型。
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] 辅助模型没有为图片写描述。
     [rating] { -helper-unusable }
     [reply_broke_off] 回复中断了。
+    [reply_cut_off] 回复达到了模型的长度上限。
     [needs] { -helper-unusable }
     [rounds] 团队在 { $rounds } 轮内没有完成工作。
     [search_left_out] 搜索模型漏掉了一段文字。
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] 搜索模型没有响应。
     [provider_voice] 无法连接到服务商的语音。
     [provider_search_model] 无法连接到服务商的搜索模型。
+    [search] 无法连接网页搜索：{ $reason }
+    [page] 无法连接该页面：{ $reason }
    *[other] 无法连接。
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] 图片服务器返回了 { $status }。
     [provider_voices] 服务商的语音列表返回了 { $status }。
     [search_model] 搜索模型返回了 { $status }。
+    [search] 网页搜索返回了 { $status }。
+    [page] 该页面返回了 { $status }。
    *[other] 返回了 { $status }。
 }
 error-answered-said = { $said ->

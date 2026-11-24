@@ -1,8 +1,14 @@
 # 0.3.3
 
-Cardwave weiß jetzt, wie viel jede KI auf einmal liest, und rät nicht mehr.
+Cardwave weiß jetzt, wie viel jede KI auf einmal liest, und du wählst, wie viel sie nachdenkt, und färbst deine Chats.
 
-- Jede Antwort passt zu dem, was ihr Modell lesen kann. Cardwave nimmt die Größe aus seiner eingebauten Modellliste oder fragt eine KI auf deinem Computer oder in deinem lokalen Netz selbst. Bisher bekam jedes Modell 128.000 Tokens.
+- In Einstellungen › Anbieter bietet ein Modell, das mehr oder weniger nachdenken kann, jetzt Aus, Leicht, Normal oder Gründlich an, für jedes Modell gemerkt. Wo ein Anbieter das Nachdenken für ein Modell nicht ausschalten kann, sagt Cardwave es dir.
+- Neu im Ansichtsmenü: „Farben der Chatnachrichten“ (Aus, Hell oder Dunkel) zeigt Gesprochenes in Anführungszeichen, Kursives, Fettes, Links und Code in eigenen Farben, im Chat einer Figur und im Begleiter.
+- Eine Antwort, die an ihrer Längengrenze abbricht, endet jetzt beim letzten ganzen Satz. Eine Antwort, die an der eigenen Grenze der KI stoppt, bleibt so, wie sie kam, mit einer grauen Zeile darunter, die es sagt, und „Diese Antwort fortsetzen“ macht beim letzten Wort weiter.
+- Wenn das Hilfsmodell das Gedächtnis eines Chats nicht behalten kann, sagt dir der Chat, warum.
+- Lange Chats mit einem Claude-Modell über OpenRouter oder NanoGPT kosten weniger und antworten schneller, durch Prompt-Caching.
+- In einer Programmieraufgabe stehen die Zeilen jedes Schritts in deiner Sprache, und Webseiten werden genauer gelesen.
+- Jede Antwort passt zu dem, was ihr Modell lesen kann. Cardwave nimmt die Größe aus seiner eingebauten Modellliste oder fragt eine KI auf deinem Computer (LM Studio, Ollama oder KoboldCpp) oder in deinem lokalen Netz selbst. Bisher bekam jedes Modell 128.000 Tokens.
 - Ein langer Chat mit einem Modell, das mehr liest, behält jetzt mehr von seinem Verlauf.
 - Wo die Größe einer KI nicht bekannt ist, sagt es dir die Antwort, und du legst sie einmal als Kontextgröße in Einstellungen › Erweitert fest. Bis dahin wird nichts gesendet.
 - Die Kontextgröße in Einstellungen › Erweitert begrenzt jetzt, was an jedes Modell gesendet wird.

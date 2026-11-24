@@ -213,12 +213,12 @@ export async function seed(page: Page, request: APIRequestContext, api: FakeProv
   await composer.press("Enter");
   await page.locator(".tool-ask").getByRole("button", { name: "Allow" }).click();
   await expect(page.locator("article.message").last()).toContainText("It has four words.");
+  await expect.poll(async () => JSON.stringify(await (await request.get("/api/memories")).json())).toContain("Ana");
   api.remembers(NOTHING);
   const chooser = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Attach, or let the AI write" }).click();
   await page.getByRole("menuitem", { name: "Attach picture or document", exact: true }).click();
   await (await chooser).setFiles({ name: "Coast notes.txt", mimeType: "text/plain", buffer: Buffer.from("The tide turns at nine.") });
-  await expect.poll(async () => JSON.stringify(await (await request.get("/api/memories")).json())).toContain("Ana");
   await expect.poll(async () => JSON.stringify(await (await request.get("/api/documents")).json())).toContain("Coast notes");
   return { card: mira.card_id, chat, plain, lorebook, entry };
 }
@@ -267,7 +267,7 @@ export const addresses = (ids: Seeded): Record<string, string> => ({
  */
 export async function taskRoute(page: Page, chat: number): Promise<void> {
   const at = "2026-11-16T10:00:00Z";
-  const step = (id: number, who: object, what: object, detail: object) => ({ id, who, what, detail, state: "done", output: "", files: [], checkpoint: null, undone: false, started_at: at, ended_at: at });
+  const step = (id: number, who: object, what: object, detail: object) => ({ id, who, what, detail, state: "done", output: [], files: [], checkpoint: null, undone: false, started_at: at, ended_at: at });
   const task = {
     id: 7, chat_id: chat, chat_title: "Mira", message_id: 3, goal: "Add an export of chats as Markdown", folder: "C:\Projects\harbour",
     crew: { team: "balanced", workers: 1, audit: "end", planner_model: "tide-1", worker_model: "tide-1", auditor_model: "tide-1", permissions: { read: "allow", write: "allow", commands: "ask", install: "ask", web: "never" } },

@@ -1,7 +1,7 @@
 //! A reply written by the provider: how the provider is kept, a reply streamed,
 //! stopped, swiped, failed or cut off by a restart, and what is not deleted
-//! while one is written. The rest of a reply's prompt is `generate_lore.rs`;
-//! the stand-in model server is `common::streamed`.
+//! while one is written. How a reply ends is `generate_ending.rs`, the rest of
+//! a reply's prompt `generate_lore.rs`; the stand-in model server is `common::streamed`.
 
 mod common;
 
@@ -805,9 +805,7 @@ async fn a_model_whose_window_nothing_tells_is_sent_nothing_until_its_size_is_se
             ""
         }),
     );
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}/v1", listener.local_addr().unwrap());
-    tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+    let url = format!("{}/v1", common::serve_bare(app).await);
     let server = start().await;
     let unknown = json!({ "base_url": url, "model": "unknown-model", "api_key": "sk-test" });
     assert_eq!(server.put("/api/provider", unknown.clone()).await.0, 200);

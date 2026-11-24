@@ -180,6 +180,7 @@ async fn set(
     Json(new): Json<SetProvider>,
 ) -> ApiResult<Json<ProviderView>> {
     let (provider, worker) = state.run(move |db| provider::set(db, user, new)).await?;
+    super::kinds::listed_anew(&state, user).await?;
     state.tell(user, &page, &PageEvent::Provider);
     Ok(Json(ProviderView::of(provider, worker)))
 }

@@ -1,7 +1,7 @@
 import { expect, pickFrom, test } from "../test";
 
 // Account › Server's group "Other programs": the MCP server switched on through its dialog, its address copied,
-// the account it serves, and a program that connected (a `request` that says `initialize` as one) removed.
+// the account it serves, and a program that connected (a `request` that lists the tools as one) removed.
 
 test("other programs are served once switched on, as the account chosen, and a program is removed", async ({ page, context, request, baseURL }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -23,13 +23,23 @@ test("other programs are served once switched on, as the account chosen, and a p
   await pickFrom(group.getByLabel("As account"), "Ada");
   await expect.poll(async () => (await (await request.get("/api/mcp/settings")).json()).account).toBe((await added.json()).id);
 
-  const hello = { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "Claude Desktop", version: "1" } };
-  const connected = await request.post("/api/mcp", { data: { jsonrpc: "2.0", id: 0, method: "initialize", params: hello } });
-  expect(connected.status()).toBe(200);
+  // A program's request as MCP 2026-07-28 has it: its name in the request's `_meta`, mirrored by headers.
+  const _meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": {},
+    "io.modelcontextprotocol/clientInfo": { name: "Claude Desktop", version: "1" },
+  };
+  const list = () =>
+    request.post("/api/mcp", {
+      headers: { accept: "application/json, text/event-stream", "mcp-protocol-version": "2026-07-28", "mcp-method": "tools/list" },
+      data: { jsonrpc: "2.0", id: 0, method: "tools/list", params: { _meta } },
+    });
+  const connected = await (await list()).json();
+  expect(connected.result, JSON.stringify(connected)).toBeDefined();
   await page.reload();
   await group.getByRole("button", { name: "Remove Claude Desktop" }).click();
   await expect(page.locator("#toast span")).toHaveText("“Claude Desktop” removed.");
   await expect(group.getByText("Claude Desktop", { exact: true })).toHaveCount(0);
-  const refused = await request.post("/api/mcp", { data: { jsonrpc: "2.0", id: 0, method: "initialize", params: hello } });
-  expect(refused.status()).toBe(403);
+  const refused = await (await list()).json();
+  expect(refused.error?.message).toContain("was removed");
 });

@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { button, expect, goHeard, test } from "../test";
+import { button, expect, goHeard, test, viewLine } from "../test";
 import { ccv4File, pictureFile } from "../card";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { picture, railChats, SIZES, stopClock, THEMES } from "../pictures";
@@ -11,7 +11,8 @@ import { setProvider, setImages } from "../stored";
 // several characters with the menu of who replies open, the window "Add a character", and the list of chats
 // with a row pointed at. The database is this spec's own: five cards, a persona, a lorebook and four chats.
 //
-// The pictures are `chat`, `tools`, `plain` (the same chat in Plain), `painted`, `group`, `adding` and `chats`; one
+// The pictures are `chat`, `tools`, `plain` (the same chat in Plain), `colours` (with the light set of message
+// colours), `view-colours` (the view menu's side menu Chat message colours), `painted`, `group`, `adding` and `chats`; one
 // test without pictures switches "Pictures beside names" off and measures both layouts. `painted` is a chat with Guinivere whose
 // second message is a picture the image model made, a portrait of 832 by 1216 pixels, as SDXL makes one. `solo` is the chat with Guinivere: her greeting, a
 // message of the user's and a reply in three versions, the second in view, with a lorebook of the library
@@ -181,12 +182,18 @@ for (const [width, height] of SIZES) {
         await picture(page, named("chat"), railChats(page, "Guinivere"));
       });
 
-      test("the menu of the message field's \"+\" open, with words in the field", async ({ page }) => {
+      // The words typed are kept on the server as the field's unsaved text (web/src/unsaved.ts), which brings them
+      // back in the next test of the same chat by timing alone: so the field is emptied and its forgetting awaited.
+      test("the menu of the message field's \"+\" open, with words in the field", async ({ page, request }) => {
         await open(page, solo, 3);
-        await page.getByLabel("Message", { exact: true }).fill("i want see lamp");
+        const field = page.getByLabel("Message", { exact: true });
+        await field.fill("i want see lamp");
         await button(page, "Attach, or let the AI write").click();
         await page.getByRole("menuitem", { name: "Write for me" }).hover();
         await picture(page, named("tools"), railChats(page, "Guinivere"));
+        await page.keyboard.press("Escape");
+        await field.fill("");
+        await expect.poll(async () => (await (await request.get(`/api/unsaved/chat.${solo}`)).json())?.text ?? "").toBe("");
       });
 
       test("a picture the image model made, a portrait, in its message's bubble", async ({ page }) => {
@@ -209,6 +216,20 @@ for (const [width, height] of SIZES) {
         await open(page, solo, 3);
         await away(page);
         await picture(page, named("plain"), railChats(page, "Guinivere"));
+      });
+
+      test("the chat with the light set of message colours: speech and narration in the set's colours", async ({ page }) => {
+        await page.addInitScript(() => localStorage.setItem("text-set", "light"));
+        await open(page, solo, 3);
+        await expect(page.locator("section.chat")).toHaveAttribute("data-text-set", "light");
+        await away(page);
+        await picture(page, named("colours"), railChats(page, "Guinivere"));
+      });
+
+      test("the view menu with its side menu Chat message colours open, Off picked", async ({ page }) => {
+        await open(page, solo, 3);
+        await (await viewLine(page, "Light", "Chat message colours")).hover();
+        await picture(page, named("view-colours"), railChats(page, "Guinivere"));
       });
 
       test("Add a character: the library's cards, one in the chat already", async ({ page }) => {

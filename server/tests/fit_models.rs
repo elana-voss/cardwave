@@ -18,7 +18,6 @@ use futures_util::stream;
 use reqwest::Method;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use tokio::net::TcpListener;
 
 /// What the file server sends as a model.
 const MODEL: &[u8] = b"GGUF a model that fits";
@@ -35,10 +34,7 @@ async fn files() -> String {
     let app = Router::new()
         .route("/model.gguf", get(|| async { MODEL }))
         .route("/slow.gguf", get(slow));
-    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}", listener.local_addr().unwrap());
-    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
-    url
+    common::serve_bare(app).await
 }
 
 fn sum(bytes: &[u8]) -> String {

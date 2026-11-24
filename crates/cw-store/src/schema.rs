@@ -937,6 +937,27 @@ const MIGRATIONS: &[&str] = &[
      ) strict, without rowid;",
     // Who made a figure, as a VRM file's terms of use name them (see `figures::maker_of`); none before.
     "alter table figures add column maker text;",
+    // How a reply's writing ended (`chats::Ending`), in `broke_off`'s place, which is not carried over.
+    "alter table messages drop column broke_off;
+     alter table messages add column ending text not null default 'whole'
+        check (ending in ('whole', 'broke_off', 'cut_off'));",
+    // A coding step's output as a JSON list of its lines (`coding::shown::StepLine`), which the page words; the
+    // English text kept before is dropped.
+    "alter table coding_steps drop column output;
+     alter table coding_steps add column output text not null default '[]';",
+    // How much a model of an entry thinks (`provider::steps::Thinking` as `kept`) and what the entry's list says
+    // of its thinking (`thinks` and `efforts`, a JSON list of its levels, null where it does not say), kept per model so a model taken again finds its
+    // step; the on or off per kind kept before is dropped.
+    "create table model_thinking (
+        entry_id integer not null references provider_entries (id) on delete cascade,
+        model text not null,
+        thinking text not null default '',
+        thinks integer check (thinks in (0, 1)),
+        mandatory integer not null default 0 check (mandatory in (0, 1)),
+        efforts text,
+        primary key (entry_id, model)
+     ) strict, without rowid;
+     alter table model_kinds drop column thinking;",
 ];
 
 /// The `what` of the refusal of a database a newer Cardwave wrote.

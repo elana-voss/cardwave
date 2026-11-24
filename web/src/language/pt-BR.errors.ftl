@@ -119,6 +119,7 @@ error-again-not-reply = Só a resposta de um personagem pode ser escrita de novo
 error-no-reply-to-write-again = O chat não tem resposta para escrever de novo.
 error-no-text = A IA não enviou texto. Tente de novo.
 error-worker-no-answer = O modelo auxiliar não deu resposta.
+memory-not-kept = O modelo auxiliar não conseguiu guardar a memória deste chat. { $failure }
 error-unknown-voice = Não existe a voz “{ $voice }”.
 error-nothing-to-read = Não há nada para ler.
 error-voice-not-downloaded = A voz não foi baixada.
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] O workflow não tem nenhum nó que este ComfyUI consiga executar.
     [workflow_node] O nó “{ $class }” do workflow não existe neste ComfyUI.
     [zip] Não é possível ler { $name } como zip.
+    [file] Não é possível ler o arquivo: { $reason }
+    [folder] Não é possível ler a pasta: { $reason }
+    [folder_in_task] Não é possível ler a pasta da tarefa: { $reason }
+    [tool_arguments] Não foi possível ler a chamada do modelo, então a ferramenta não foi executada: { $reason }
+    [web_address] Isso não é um endereço da web.
+    [page_kind] A página não é texto ({ $kind }).
    *[other] Não é possível ler isso.
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] A lista de modelos é longa demais.
     [picture_pixels] A imagem é grande demais ({ $wide } por { $high } pixels).
     [reply] A resposta foi cortada: ficou longa demais.
+    [file_written] Um arquivo de mais de { $megabytes } MB não é gravado.
    *[other] Isso é grande demais.
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] O workflow “{ $name }” não pode ser usado.
     [written_tools_full] Você pode manter no máximo { $most_tools } ferramentas; exclua uma antes em Configurações › Avançado › Ferramentas que a IA escreveu.
     [delete_not_in_trash] Só o que está na Lixeira pode ser excluído para sempre; mova para lá primeiro.
+    [path_outside] Só podem ser usados caminhos dentro da pasta da tarefa.
+    [write_folder] Isso é uma pasta, não um arquivo.
+    [page_refreshes] A página redireciona para outra sem parar.
+    [page_scheme] Só endereços http e https são lidos.
+    [page_closed] Endereços neste computador ou em uma rede privada não são lidos.
+    [tool_failed] { $reason }
    *[other] Isso não pode ser feito.
 }
 -helper-unusable = Não foi possível usar a resposta do modelo auxiliar. Tente de novo ou escolha outro modelo auxiliar.
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] O modelo auxiliar não escreveu palavras para a imagem.
     [rating] { -helper-unusable }
     [reply_broke_off] A resposta foi interrompida.
+    [reply_cut_off] A resposta atingiu o limite de tamanho do modelo.
     [needs] { -helper-unusable }
     [rounds] A equipe não terminou o trabalho em { $rounds } rodadas.
     [search_left_out] O modelo de pesquisa deixou de fora um texto.
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] O modelo de pesquisa não responde.
     [provider_voice] Não é possível acessar a voz do provedor.
     [provider_search_model] Não é possível acessar o modelo de pesquisa do provedor.
+    [search] Não é possível acessar a pesquisa na web: { $reason }
+    [page] Não é possível acessar a página: { $reason }
    *[other] Não é possível acessar.
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] O servidor de imagens respondeu { $status }.
     [provider_voices] As vozes do provedor responderam { $status }.
     [search_model] O modelo de pesquisa respondeu { $status }.
+    [search] A pesquisa na web respondeu { $status }.
+    [page] A página respondeu { $status }.
    *[other] A resposta foi { $status }.
 }
 error-answered-said = { $said ->

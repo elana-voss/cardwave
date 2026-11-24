@@ -91,6 +91,11 @@ sync_copy() {
   { wingit diff --no-renames --name-only --diff-filter=d -z HEAD; wingit ls-files -o --exclude-standard -z; } \
     | rsync -a --ignore-missing-args --exclude=node_modules --exclude=/desktop/llama --from0 --files-from=- "$WIN/" "$COPY/"
   wingit diff --no-renames --name-only --diff-filter=D -z HEAD | xargs -0 -r rm -f
+  # Old native builds pile up in the debug build (339 GB by 0.3.3, the owner's yes to a limit): past 80 GB it goes,
+  # and the next build makes it anew; Ubuntu's disk file then grows no further.
+  if [ -d target/debug ] && [ "$(du -sx --block-size=1G target/debug | cut -f1)" -gt 80 ]; then
+    echo "the debug build is over 80 GB: removed"; rm -rf target/debug
+  fi
 }
 
 # Whether web/dist is missing or older than a file it is built from.

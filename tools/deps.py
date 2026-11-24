@@ -46,6 +46,11 @@ WRAPS = {
     "getrandom": ["cw-key"],
     "libc": ["cw-platform", "cw-sandbox"],  # cw-sandbox: the tools' sandbox on Linux
     "trash": ["cw-platform"],
+    "landlock": ["cw-sandbox"],
+    "scraper": ["cw-coding"],
+    "ego-tree": ["cw-coding"],
+    "html5ever": ["cw-coding"],
+    "rmcp": ["cardwave-server"],
     "keyring": ["cw-key"],
     "flate2": ["cw-platform"],  # zip's deflate backend reaches cw-modelfiles through it
 }

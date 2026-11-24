@@ -73,6 +73,7 @@ function cardPage(given: number | null): View {
   return {
     node: node,
     views: {
+      heading: () => wording("view-page-card"),
       list: views(),
       now: () => (c.details ? "details" : "showcase"),
       choose: (chosen) => {

@@ -1,5 +1,5 @@
 import type { APIRequestContext, Page } from "@playwright/test";
-import { expect, test } from "../test";
+import { chooseView, expect, test } from "../test";
 import { startFakeProvider, type FakeProvider } from "../fake-provider";
 import { picture, stopClock } from "../pictures";
 import { setSettings } from "../stored";
@@ -9,7 +9,8 @@ import { headAndHand, watchFigure } from "../figure";
 // double-click on the figure opens the compact chat with the companion's card, whose reply has the animator (the
 // stand-in `api`, `moves`) asked what the figure does, as is a throw once the figure stands again (told what the hand did), its standing idle (the page's clock run on) and a reply in its chat sent from elsewhere;
 // a click on its head and one on a hand, each answered in its bubble with a feeling and not kept with its chat (the page's clock faked, its chance fixed, the hand found by its bones through three.js's devtools hook, e2e/figure.ts); the
-// companion's interface (`/api/companion/act` and `/state`), each step's state read back; its right-click menu, "Hide until tomorrow" kept in the
+// companion's interface (`/api/companion/act` and `/state`), each step's state read back (the page's clock run on across its walk), its bubble's marks drawn;
+// the message colours picked in the app's window, which the companion's follows at once; its right-click menu, "Hide until tomorrow" kept in the
 // settings; the figure's size set in Settings, which the figure takes at once; that only the app's window, not a browser's page, tells it the screen in view; and that the app's window in a browser has neither "Make companion" nor the settings' line, which
 // the desktop app's own test (e2e/desktop/companion.test.ts) drives in the real window. The picture (1440 px, light) is of the compact chat with the menu open; the figure is drawn by WebGPU or WebGL 2, which no
 // picture holds still, so it is hidden for it.
@@ -62,6 +63,7 @@ test("a double-click opens the compact chat with the companion, and its reply ha
 
 test("the companion does what it is told through its interface, and its state says so after each step", async ({ page, request, context }) => {
   await companion(request);
+  await page.clock.install();
   await open(page);
   const state = async () => (await (await request.get("/api/companion/state")).json()).figure;
   await expect.poll(async () => (await state())?.clip ?? null).not.toBeNull();
@@ -72,10 +74,17 @@ test("the companion does what it is told through its interface, and its state sa
   };
 
   const x = (await state()).x - 100;
-  expect((await act([{ do: "walk", x }, { do: "say", text: "Over here!" }])).steps[0]).toEqual({ do: "walk", x });
-  await expect(page.locator(".companion-say")).toHaveText("Over here!");
+  expect((await act([{ do: "walk", x }, { do: "say", text: "*waves* Over here!" }])).steps[0]).toEqual({ do: "walk", x });
+  // The walk lasts frames of the figure's time, which a busy machine draws slower than the wall's (1.4 s alone, 5.6
+  // s at an eighth of the processor): the page's clock is run on in steps until it is there and says it.
+  await expect(async () => {
+    await page.clock.runFor(200);
+    await expect(page.locator(".companion-say")).toHaveText("waves Over here!", { timeout: 100 });
+  }).toPass({ timeout: 20_000 });
   // The window says what its figure does at most each half second.
-  await expect.poll(state).toMatchObject({ x, saying: "Over here!" });
+  // Its bubble draws the marks as the compact chat does.
+  await expect(page.locator(".companion-say em")).toHaveText("waves");
+  await expect.poll(state).toMatchObject({ x, saying: "*waves* Over here!" });
   expect((await act([{ do: "react", feeling: "happy" }])).feeling).toBe("happy");
   expect((await act([{ do: "look", x: 10, y: 20 }])).looking).toEqual({ x: 10, y: 20 });
   await act([{ do: "play", clip: "dancing", ms: 3000 }]);
@@ -92,6 +101,16 @@ test("the companion does what it is told through its interface, and its state sa
   await expect(browser.getByRole("heading", { name: "Chats", exact: true }).first()).toBeVisible();
   await browser.waitForLoadState("networkidle");
   expect(await route()).toBe("#/library");
+});
+
+test("the message colours picked in Cardwave's window reach the companion's window at once", async ({ page, request, context }) => {
+  await companion(request);
+  await open(page);
+  await expect(page.locator("html")).not.toHaveAttribute("data-text-set");
+  const app = await context.newPage();
+  await app.goto("/#/library");
+  await chooseView(app, "Light", "Chat message colours");
+  await expect(page.locator("html")).toHaveAttribute("data-text-set", "light");
 });
 
 test("the AI steers the figure while it stands idle, and after a reply in the companion's chat in Cardwave's window", async ({ page, request }) => {

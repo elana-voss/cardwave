@@ -62,7 +62,7 @@ pub const WINDOW: usize = 128_000;
 
 /// Whether `base_url` is the pretend model's.
 pub fn at(base_url: &str) -> bool {
-    cw_platform::http::Url::parse(base_url).is_ok_and(|url| url.host_str() == Some(HOST))
+    crate::host(base_url).is_some_and(|(host, _)| host == HOST)
 }
 
 /// Whether `request` is for the pretend model.

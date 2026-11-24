@@ -170,7 +170,7 @@ pub(crate) fn folder_at(base_url: &str) -> Option<PathBuf> {
 
 /// Whether `base_url` is This computer's.
 pub fn at(base_url: &str) -> bool {
-    Url::parse(base_url).is_ok_and(|url| url.host_str() == Some(HOST))
+    crate::host(base_url).is_some_and(|(host, _)| host == HOST)
 }
 
 /// Whether `request` is for This computer.
@@ -180,7 +180,7 @@ pub fn asked(request: &Request) -> bool {
 
 /// How long a chat model's file may take to load: far more than the search model's, which is small, since
 /// a file of many GB comes from the disk for the first time.
-const LOAD_LIMIT: Duration = Duration::from_secs(900);
+pub(crate) const LOAD_LIMIT: Duration = Duration::from_secs(900);
 
 /// The models of `folder`, by their files' names, in order: every GGUF file
 /// but a vision model's projector and the later parts of a split model.

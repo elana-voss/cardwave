@@ -149,7 +149,7 @@ test("the view menu lays the cards out as a list, a grid or large entries, and s
 test("a theme chosen in the view menu shows in Settings at once, and one picked there keeps the field's focus", async ({ page }) => {
   await page.goto("/#/settings");
   const field = page.getByRole("button", { name: "Theme" });
-  await chooseView(page, "Dark");
+  await chooseView(page, "Dark", "App theme");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(field).toHaveText("Dark");
   await field.click();
@@ -157,28 +157,45 @@ test("a theme chosen in the view menu shows in Settings at once, and one picked 
   await expect(field).toHaveText("Neon Wave light");
   await expect(field).toBeFocused();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "neonwave-light");
-  await expect(await viewLine(page, "Neon Wave light")).toHaveAttribute("aria-checked", "true");
+  await expect(await viewLine(page, "Neon Wave light", "App theme")).toHaveAttribute("aria-checked", "true");
 });
 
-test("a look chosen dresses the whole app at once, stays at the next start, and Compact still shrinks it", async ({ page }) => {
+test("a look chosen dresses the whole app at once, stays at the next start, and Compact spacing still shrinks it", async ({ page }) => {
   await page.goto("/#/library");
   const html = page.locator("html");
   const token = (name: string) => html.evaluate((root, name) => getComputedStyle(root).getPropertyValue(name).trim(), name);
-  await chooseView(page, "Outrun");
+  await chooseView(page, "Outrun", "App theme");
   await expect(html).toHaveAttribute("data-theme", "outrun");
   expect(await token("--page")).toBe("#140832");
   await expect(page.locator("body")).toHaveCSS("font-family", /^"Exo 2"/);
   expect(await html.evaluate(async () => (await document.fonts.load('16px "Michroma"')).length)).toBe(1);
   await page.reload();
   await expect(html).toHaveAttribute("data-theme", "outrun");
-  await chooseView(page, "Compact");
+  await chooseView(page, "Compact spacing");
   await expect(html).toHaveAttribute("data-density", "compact");
   expect(await token("--s16")).toBe("12px");
   expect(await token("--page")).toBe("#140832");
-  await page.keyboard.press("Escape"); // Compact leaves the menu open
-  await chooseView(page, "Retrowave");
+  await page.keyboard.press("Escape"); // Compact spacing leaves the menu open
+  await chooseView(page, "Retrowave", "App theme");
   expect(await token("--page")).toBe("#ffe6c4");
   await expect(html).toHaveCSS("color-scheme", "light");
+});
+
+test("Compact spacing's switch in the view menu has its knob at the far edge, in Compact spacing and on a phone", async ({ page }) => {
+  await page.goto("/#/library");
+  await chooseView(page, "Compact spacing");
+  await page.keyboard.press("Escape"); // Compact spacing leaves the menu open
+  const knob = async () => {
+    const line = await viewLine(page, "Compact spacing");
+    await expect(line).toHaveAttribute("aria-checked", "true");
+    const left = await line.locator(".switch").evaluate((node) => getComputedStyle(node, "::after").left);
+    await page.keyboard.press("Escape");
+    return left;
+  };
+  expect(await knob()).toBe("16px"); // the design system's Compact switch: 30 px, its knob 12 px
+  await page.setViewportSize({ width: 600, height: 800 });
+  expect(await knob()).toBe("20px"); // at 600 px: 44 px, its knob 22 px
+  await chooseView(page, "Compact spacing");
 });
 
 // Export.
@@ -218,6 +235,20 @@ test("the switch \"Include earlier versions of each text\" puts each text's earl
   expect(await files()).toContain("user/0001_revision.toml");
 
   await setSettings(request, { export_format: "sillytavern_v3", export_history: false });
+});
+
+test("Chat message colours picked in the view menu mark a character's chat at once and stay at the next start", async ({ page, request }) => {
+  const chat = await chatWith(request, ids.vera);
+  await page.goto(`/#/chats/${chat}`);
+  const root = page.locator("section.chat");
+  await expect(root).toBeVisible();
+  await expect(root).not.toHaveAttribute("data-text-set");
+  await chooseView(page, "Dark", "Chat message colours");
+  await expect(root).toHaveAttribute("data-text-set", "dark");
+  await page.reload();
+  await expect(page.locator("section.chat")).toHaveAttribute("data-text-set", "dark");
+  await chooseView(page, "Off", "Chat message colours");
+  await expect(page.locator("section.chat")).not.toHaveAttribute("data-text-set");
 });
 
 // The Gallery.

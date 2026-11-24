@@ -6,21 +6,20 @@
 //! voice not at a provider are this computer's downloads ([`unpick`]).
 //!
 //! [`provider_of`] makes a kind a `Provider` to ask; a removed provider takes its
-//! kinds along (the table's cascade). Thinking ([`Thinking`]) is on until turned
-//! off; then the known forms are tried (`check::thinking_off`) and the first the
-//! provider takes is sent with that model's requests, else it is marked as one
-//! that cannot; another model begins with it on. A ComfyUI's entry keeps its
+//! kinds along (the table's cascade). A model's thinking (`steps`) is kept per
+//! model at its provider, so a model taken again finds its step; set by
+//! [`thinking`], an Off once its provider took it. A ComfyUI's entry keeps its
 //! workflow ([`Workflow`], [`keep_workflow`]). This computer's entry is made or
 //! moved by its models' folder ([`keep_folder`], `local`), told by [`folder`].
 
 use anyhow::{Context, ensure};
 use cw_core::NotFound;
 use cw_core::{Code, Fail};
-use cw_platform::http::Url;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::Http;
+use crate::steps::{self, Listed, Offer, SetThinking, Step, Thinking, ThinkingView};
 use crate::{Provider, Sampling, address, check, key, list as known, local, model, name_of, whom};
 
 /// A kind of model, each at one provider.
@@ -62,77 +61,6 @@ impl Kind {
     }
 }
 
-/// A form by which a provider is told not to think, as sent with a request.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum NoThinking {
-    /// OpenAI's `"reasoning_effort": "none"`.
-    ReasoningEffort,
-    /// OpenRouter's `"reasoning": {"enabled": false}`.
-    Reasoning,
-    /// Qwen's `"enable_thinking": false`.
-    EnableThinking,
-}
-
-impl NoThinking {
-    /// Every form, in the order they are tried.
-    pub const ALL: [NoThinking; 3] = [
-        NoThinking::ReasoningEffort,
-        NoThinking::Reasoning,
-        NoThinking::EnableThinking,
-    ];
-
-    /// The field of the request's body and its value.
-    pub fn sent(self) -> (&'static str, serde_json::Value) {
-        match self {
-            NoThinking::ReasoningEffort => ("reasoning_effort", "none".into()),
-            NoThinking::Reasoning => ("reasoning", serde_json::json!({ "enabled": false })),
-            NoThinking::EnableThinking => ("enable_thinking", false.into()),
-        }
-    }
-}
-
-/// How a picked model's thinking stands.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Thinking {
-    On,
-    Off(NoThinking),
-    /// The user turned it off and the provider took none of the forms.
-    Cannot,
-}
-
-impl Thinking {
-    /// As the table keeps it.
-    pub fn kept(self) -> &'static str {
-        match self {
-            Thinking::On => "",
-            Thinking::Off(NoThinking::ReasoningEffort) => "reasoning_effort",
-            Thinking::Off(NoThinking::Reasoning) => "reasoning",
-            Thinking::Off(NoThinking::EnableThinking) => "enable_thinking",
-            Thinking::Cannot => "cannot",
-        }
-    }
-
-    /// Read back from the table; what is not known is on.
-    pub fn read(text: &str) -> Thinking {
-        [
-            Thinking::Off(NoThinking::ReasoningEffort),
-            Thinking::Off(NoThinking::Reasoning),
-            Thinking::Off(NoThinking::EnableThinking),
-            Thinking::Cannot,
-        ]
-        .into_iter()
-        .find(|thinking| thinking.kept() == text)
-        .unwrap_or(Thinking::On)
-    }
-
-    fn off(self) -> Option<NoThinking> {
-        match self {
-            Thinking::Off(form) => Some(form),
-            _ => None,
-        }
-    }
-}
-
 /// A provider of the account's list, as kept.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Entry {
@@ -164,6 +92,8 @@ pub struct Picked {
     pub entry: i64,
     pub model: String,
     pub thinking: Thinking,
+    /// What its provider's list says of its thinking, read when it was picked ([`listed_at`]).
+    pub listed: Listed,
     /// Whether an answer of the model carried thinking ([`saw_thinking`]).
     pub seen_thinking: bool,
     /// Whether the provider said it no longer offers the model ([`set_gone`]).
@@ -197,8 +127,7 @@ pub struct PickedView {
     pub kind: Kind,
     pub provider_id: i64,
     pub model: String,
-    /// "on", "off", or "cannot" where the provider took no form of turning it off.
-    pub thinking: String,
+    pub thinking: ThinkingView,
     /// Whether the provider said it no longer offers the model, since it was picked.
     pub gone: bool,
 }
@@ -269,20 +198,30 @@ pub trait Storage {
     /// default one. False where the entry is not the user's.
     fn set_workflow(&self, user: i64, id: i64, workflow: Option<&Workflow>)
     -> anyhow::Result<bool>;
-    /// Puts the kind at the entry with the model, its thinking on; the
-    /// background kind at the chat model's is none. False where the entry is
-    /// not the user's.
+    /// Puts the kind at the entry with the model, which keeps its thinking;
+    /// the background kind at the chat model's is none. False where the entry
+    /// is not the user's.
     fn pick(&self, user: i64, kind: Kind, entry: i64, model: &str) -> anyhow::Result<bool>;
     /// Takes the kind from its provider; false where it was at none.
     fn unpick(&self, user: i64, kind: Kind) -> anyhow::Result<bool>;
-    /// Keeps how the kind's thinking stands, while its model is still `model`.
+    /// Keeps how the thinking of the entry's model stands. False where the entry is not the user's.
     fn set_thinking(
         &self,
         user: i64,
-        kind: Kind,
+        entry: i64,
         model: &str,
         thinking: Thinking,
     ) -> anyhow::Result<bool>;
+    /// Keeps what the entry's list says of its model's thinking. False where the entry is not the user's.
+    fn set_listed(
+        &self,
+        user: i64,
+        entry: i64,
+        model: &str,
+        listed: Listed,
+    ) -> anyhow::Result<bool>;
+    /// The chat kind's provider with `model` in its place, that model's thinking with it.
+    fn chat_model(&self, user: i64, model: &str) -> anyhow::Result<Option<Provider>>;
     /// Marks the kind's model as one that thinks, while it is still `model`.
     fn saw_thinking(&self, user: i64, kind: Kind, model: &str) -> anyhow::Result<()>;
     /// Marks whether the provider no longer offers the kind's model, while it is still `model`.
@@ -301,17 +240,12 @@ pub fn whose(name: &str, base_url: &str) -> String {
     if let Some(listed) = known::at(base_url) {
         return listed.name.clone();
     }
-    let host = Url::parse(base_url).ok().and_then(|url| {
-        let host = url.host_str()?;
-        if matches!(host, "127.0.0.1" | "localhost" | "[::1]") {
-            return Some(String::new());
+    match crate::host(base_url) {
+        Some((host, _)) if matches!(host.as_str(), "127.0.0.1" | "localhost" | "[::1]") => {
+            String::new()
         }
-        Some(match url.port() {
-            Some(port) => format!("{host}:{port}"),
-            None => host.to_string(),
-        })
-    });
-    host.unwrap_or_else(|| base_url.to_string())
+        _ => crate::host_and_port(base_url).unwrap_or_else(|| base_url.to_string()),
+    }
 }
 
 fn view(entry: Entry) -> EntryView {
@@ -327,26 +261,41 @@ fn view(entry: Entry) -> EntryView {
     }
 }
 
-fn shown(picked: Picked) -> PickedView {
+/// The kind's model at its entry, as far as its thinking needs: the values for a reply are left out.
+fn asked(picked: &Picked, entry: &Entry) -> Provider {
+    Provider {
+        thinking: picked.thinking,
+        listed: picked.listed.clone(),
+        seen_thinking: picked.seen_thinking,
+        ..Provider::new(&entry.base_url, &entry.api_key, &picked.model)
+    }
+}
+
+fn shown(picked: Picked, entries: &[Entry]) -> PickedView {
+    let thinking = match entries.iter().find(|entry| entry.id == picked.entry) {
+        Some(entry) => steps::view(&asked(&picked, entry)),
+        // The table's cascade takes a kind with its entry.
+        None => ThinkingView::Switch { state: "on".into() },
+    };
     PickedView {
         kind: picked.kind,
         provider_id: picked.entry,
         model: picked.model,
-        thinking: match picked.thinking {
-            Thinking::On => "on",
-            Thinking::Off(_) => "off",
-            Thinking::Cannot => "cannot",
-        }
-        .to_string(),
+        thinking,
         gone: picked.gone,
     }
 }
 
 /// The account's providers and its kinds' models.
 pub fn all(db: &dyn Storage, user: i64) -> anyhow::Result<ProvidersView> {
+    let entries = db.entries(user)?;
+    let kinds = db.picked(user)?;
     Ok(ProvidersView {
-        providers: db.entries(user)?.into_iter().map(view).collect(),
-        kinds: db.picked(user)?.into_iter().map(shown).collect(),
+        kinds: kinds
+            .into_iter()
+            .map(|picked| shown(picked, &entries))
+            .collect(),
+        providers: entries.into_iter().map(view).collect(),
         own: [
             (Kind::Search, crate::embedder::MODEL),
             (Kind::Voice, VOICE_MODEL),
@@ -511,12 +460,22 @@ pub fn keep_workflow(
 }
 
 /// Puts `kind` at the provider with the model, its thinking on.
-pub fn pick(db: &dyn Storage, user: i64, kind: Kind, asked: PickModel) -> anyhow::Result<()> {
+/// With it is kept what its provider's list says of its thinking, where that was read ([`listed_at`]).
+pub fn pick(
+    db: &dyn Storage,
+    user: i64,
+    kind: Kind,
+    asked: PickModel,
+    listed: Option<Listed>,
+) -> anyhow::Result<()> {
     let model = model(&asked.model)?;
     ensure!(
         db.pick(user, kind, asked.provider_id, &model)?,
         NotFound("provider")
     );
+    if let Some(listed) = listed {
+        db.set_listed(user, asked.provider_id, &model, listed)?;
+    }
     Ok(())
 }
 
@@ -554,46 +513,161 @@ pub fn provider_of(db: &dyn Storage, user: i64, kind: Kind) -> anyhow::Result<Op
     };
     let entry = entry(db, user, picked.entry)?;
     Ok(Some(Provider {
-        base_url: entry.base_url,
-        api_key: entry.api_key,
-        model: picked.model,
         sampling: db.sampling(user)?,
-        name: entry.name,
-        thinking_off: picked.thinking.off(),
-        reply_limit: None,
-        seen_thinking: picked.seen_thinking,
-        window: None,
+        name: entry.name.clone(),
+        ..asked(&picked, &entry)
     }))
 }
 
-/// How the thinking of `provider`'s model stands once the user turned it on,
-/// or off: by the first form its provider takes, else it cannot be.
-pub async fn thinking(http: &Http, provider: &Provider, on: bool) -> anyhow::Result<Thinking> {
-    if on {
-        return Ok(Thinking::On);
+/// How the thinking of `provider`'s model stands once the user set it: a
+/// step it offers (a refused Off still known); on; or off by the first way its provider takes
+/// (`steps::offs`), else it cannot be. A step or a switch the model does not
+/// offer, and Off for a model that cannot stop thinking, are refused.
+pub async fn thinking(
+    http: &Http,
+    provider: &Provider,
+    asked: SetThinking,
+) -> anyhow::Result<Thinking> {
+    let not_offered = || {
+        Fail::said(
+            Code::NotPossible,
+            format!("“{}” does not offer that thinking", provider.model),
+        )
+        .with("what", "thinking")
+    };
+    match (asked, steps::offer(provider)) {
+        (SetThinking::Step { step }, Offer::Steps(steps)) if steps.contains(&step) => {
+            if step != Step::Off {
+                return Ok(provider.thinking.level(step));
+            }
+        }
+        (SetThinking::Switch { on: false }, Offer::Switch) => {}
+        (SetThinking::Switch { on: true }, Offer::Switch) => return Ok(Thinking::On),
+        _ => anyhow::bail!(not_offered()),
     }
-    Ok(match check::thinking_off(http, provider).await? {
-        Some(form) => Thinking::Off(form),
-        None => Thinking::Cannot,
-    })
+    Ok(check::thinking_off(http, provider, &steps::offs(provider))
+        .await?
+        .unwrap_or(Thinking::Cannot(None)))
 }
 
-/// Keeps how the kind's thinking stands, while its model is still `model`: a
-/// model picked meanwhile begins with its thinking on, and keeps it so.
+/// Keeps how the thinking of the entry's model stands, for every kind at it.
 pub fn keep_thinking(
     db: &dyn Storage,
     user: i64,
-    kind: Kind,
+    entry: i64,
     model: &str,
     thinking: Thinking,
 ) -> anyhow::Result<()> {
-    db.set_thinking(user, kind, model, thinking)?;
+    ensure!(
+        db.set_thinking(user, entry, model, thinking)?,
+        NotFound("provider")
+    );
+    Ok(())
+}
+
+/// What the list of `entry` says of the thinking of each of `models`, read
+/// once where its own API lists it (OpenRouter's, its `reasoning`); none
+/// where there is nothing to read, and none of a model the list does not tell.
+pub async fn listed_at(
+    http: &Http,
+    entry: &Entry,
+    models: &[String],
+) -> anyhow::Result<Vec<(String, Listed)>> {
+    if known::own_api(&entry.base_url) != Some(known::OwnApi::OpenRouter) || models.is_empty() {
+        return Ok(Vec::new());
+    }
+    let url = format!("{}/models", entry.base_url);
+    let described =
+        crate::models::described(http, &url, &entry.api_key, Default::default()).await?;
+    let mut found = Vec::new();
+    for model in models {
+        let model = crate::model(model)?;
+        if let Some(listed) = listed_in(&described, &model) {
+            found.push((model, listed));
+        }
+    }
+    Ok(found)
+}
+
+/// What `described` says of `model`'s thinking: its entry's, else that of the
+/// model it is a variant of (OpenRouter's `:nitro`, `:online`); the list's
+/// silence where it came whole, nothing where it broke off before the model.
+fn listed_in(described: &crate::models::Described, model: &str) -> Option<Listed> {
+    let find = |id: &str| described.models.iter().find(|(listed, _)| listed == id);
+    let found = find(model).or_else(|| find(model.split_once(':')?.0));
+    match found {
+        Some((_, said)) => Some(Listed {
+            thinks: said.thinks,
+            mandatory: said.mandatory,
+            efforts: said.efforts.clone(),
+        }),
+        None if described.more => None,
+        None => Some(Listed::default()),
+    }
+}
+
+/// The chat and background kinds' models at a provider whose list tells their
+/// thinking, by provider: read anew ([`listed_at`]) where a provider is stored
+/// whole (first run, a preset put in use), as a pick reads its model's.
+pub fn listing(db: &dyn Storage, user: i64) -> anyhow::Result<Vec<(Entry, Vec<String>)>> {
+    let mut listing: Vec<(Entry, Vec<String>)> = Vec::new();
+    let entries = db.entries(user)?;
+    for picked in db.picked(user)? {
+        if !matches!(picked.kind, Kind::Chat | Kind::Background) {
+            continue;
+        }
+        let Some(entry) = entries.iter().find(|entry| entry.id == picked.entry) else {
+            continue;
+        };
+        if known::own_api(&entry.base_url) != Some(known::OwnApi::OpenRouter) {
+            continue;
+        }
+        match listing.iter_mut().find(|(at, _)| at.id == entry.id) {
+            Some((_, models)) => models.push(picked.model),
+            None => listing.push((entry.clone(), vec![picked.model])),
+        }
+    }
+    Ok(listing)
+}
+
+/// Keeps what the list of the entry `entry` says of its models' thinking ([`listed_at`]).
+pub fn keep_listed(
+    db: &dyn Storage,
+    user: i64,
+    entry: i64,
+    listed: Vec<(String, Listed)>,
+) -> anyhow::Result<()> {
+    for (model, listed) in listed {
+        ensure!(
+            db.set_listed(user, entry, &model, listed)?,
+            NotFound("provider")
+        );
+    }
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::models::{Described, Said};
+
+    #[test]
+    fn a_model_is_found_in_its_list_by_its_id_or_as_a_variant_and_not_where_the_list_broke_off() {
+        let must = Said {
+            mandatory: true,
+            ..Default::default()
+        };
+        let mut described = Described {
+            models: vec![("x/must".into(), must)],
+            more: false,
+        };
+        let mandatory = |listed: Option<Listed>| listed.map(|listed| listed.mandatory);
+        assert_eq!(mandatory(listed_in(&described, "x/must")), Some(true));
+        assert_eq!(mandatory(listed_in(&described, "x/must:nitro")), Some(true));
+        assert_eq!(listed_in(&described, "x/other"), Some(Listed::default()));
+        described.more = true;
+        assert_eq!(listed_in(&described, "x/other"), None);
+    }
 
     #[test]
     fn a_server_on_this_computer_has_no_name() {

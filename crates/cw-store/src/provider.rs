@@ -1,15 +1,18 @@
 //! The providers, the kinds of model and the model presets as SQLite keeps
 //! them (`provider::Storage`, `provider::kinds::Storage`,
 //! `provider::presets::Storage`): `provider_entries`, a row per provider of an
-//! account, with a ComfyUI's workflow picked (`workflow*`, empty for none); `model_kinds`, a row per kind with its provider, model, how its
-//! thinking stands and whether it was seen thinking; the account's values for a reply as JSON in
+//! account, with a ComfyUI's workflow picked (`workflow*`, empty for none); `model_kinds`, a row per kind with its
+//! provider, model and whether it was seen thinking; `model_thinking`, a row per model of an entry whose thinking
+//! was set or listed (`steps::Thinking` as `kept`, `steps::Listed`), which outlives a kind's change of model; the
+//! account's values for a reply as JSON in
 //! `users.sampling`; and `presets`, a row per preset or, with `replaced`, per
 //! chat model a preset took the place of. `chat` reads the chat kind as the
 //! provider the chats ask.
 
 use cw_core::now_ms;
-use cw_provider::kinds::{self, Entry, Kind, Picked, Thinking, Workflow};
+use cw_provider::kinds::{self, Entry, Kind, Picked, Workflow};
 use cw_provider::presets::{self, Named, Used};
+use cw_provider::steps::{Listed, Thinking};
 use cw_provider::{Provider, Sampling, Storage, Stored};
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
@@ -24,16 +27,12 @@ fn sampling_at(row: &Row<'_>, at: usize) -> rusqlite::Result<Sampling> {
 /// Reads one from five columns of `row`, the first of them `at`: the
 /// address, the key, the model, the values for a reply and the name.
 fn read(row: &Row<'_>, at: usize) -> rusqlite::Result<Provider> {
+    let (base_url, api_key, model): (String, String, String) =
+        (row.get(at)?, row.get(at + 1)?, row.get(at + 2)?);
     Ok(Provider {
-        base_url: row.get(at)?,
-        api_key: row.get(at + 1)?,
-        model: row.get(at + 2)?,
         sampling: sampling_at(row, at + 3)?,
         name: row.get(at + 4)?,
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
+        ..Provider::new(base_url, api_key, model)
     })
 }
 
@@ -43,21 +42,51 @@ fn values(sampling: &Sampling) -> rusqlite::Result<String> {
         .map_err(|error| rusqlite::Error::ToSqlConversionFailure(Box::new(error)))
 }
 
+/// What the list says of a model's thinking, from `model_thinking`'s `thinks`, `mandatory` and `efforts`
+/// at `first` and after.
+fn listed(row: &Row, first: usize) -> rusqlite::Result<Listed> {
+    let efforts: Option<String> = row.get(first + 2)?;
+    Ok(Listed {
+        thinks: row.get(first)?,
+        mandatory: row.get(first + 1)?,
+        efforts: efforts
+            .map(|efforts| serde_json::from_str(&efforts))
+            .transpose()
+            .map_err(|error| {
+                rusqlite::Error::FromSqlConversionFailure(
+                    first + 2,
+                    rusqlite::types::Type::Text,
+                    error.into(),
+                )
+            })?,
+    })
+}
+
 /// The chat kind of `user` as the provider the chats ask, with its entry.
 fn chat(conn: &Connection, user: i64) -> rusqlite::Result<Option<(Provider, i64)>> {
+    chat_with(conn, user, None)
+}
+
+/// The chat kind of `user` with `model` in its model's place (none: its own),
+/// that model's thinking with it, as the provider asked; with its entry.
+fn chat_with(
+    conn: &Connection,
+    user: i64,
+    model: Option<&str>,
+) -> rusqlite::Result<Option<(Provider, i64)>> {
     conn.query_row(
-        "select e.base_url, e.api_key, k.model, u.sampling, e.name, k.thinking, e.id, k.seen_thinking
+        "select e.base_url, e.api_key, coalesce(?2, k.model), u.sampling, e.name, coalesce(t.thinking, ''), e.id,
+            k.seen_thinking and k.model = coalesce(?2, k.model), t.thinks, coalesce(t.mandatory, 0), t.efforts
          from model_kinds k join provider_entries e on e.id = k.entry_id join users u on u.id = k.user_id
+         left join model_thinking t on t.entry_id = k.entry_id and t.model = coalesce(?2, k.model)
          where k.user_id = ?1 and k.kind = 'chat'",
-        [user],
+        params![user, model],
         |row| {
             let thinking: String = row.get(5)?;
             let provider = Provider {
-                thinking_off: match Thinking::read(&thinking) {
-                    Thinking::Off(form) => Some(form),
-                    _ => None,
-                },
+                thinking: Thinking::read(&thinking),
                 seen_thinking: row.get(7)?,
+                listed: listed(row, 8)?,
                 ..read(row, 0)?
             };
             Ok((provider, row.get(6)?))
@@ -107,7 +136,7 @@ fn corrected_entry(
     )
 }
 
-/// Puts `kind` at the entry with the model, its thinking on; the background
+/// Puts `kind` at the entry with the model, which keeps its thinking; the background
 /// kind at the chat model's is none. Whether the entry is the user's.
 fn pick(
     conn: &Connection,
@@ -134,10 +163,8 @@ fn pick(
         return Ok(true);
     }
     conn.execute(
-        "insert into model_kinds (user_id, kind, entry_id, model, thinking) values (?1, ?2, ?3, ?4, '')
+        "insert into model_kinds (user_id, kind, entry_id, model) values (?1, ?2, ?3, ?4)
          on conflict (user_id, kind) do update set entry_id = excluded.entry_id, model = excluded.model,
-            thinking = case when model_kinds.entry_id = excluded.entry_id and model_kinds.model = excluded.model
-                then model_kinds.thinking else '' end,
             seen_thinking = model_kinds.seen_thinking and model_kinds.entry_id = excluded.entry_id
                 and model_kinds.model = excluded.model,
             gone = 0",
@@ -212,6 +239,10 @@ fn move_entry(
          where user_id = ?1 and base_url = ?2 and api_key = ?3",
         params![user, old_url, old_key, base_url, api_key, name],
     )?;
+    if old_url != base_url {
+        // Another address is another provider: how its models think is found there anew.
+        conn.execute("delete from model_thinking where entry_id = ?1", [id])?;
+    }
     Ok(true)
 }
 
@@ -375,8 +406,11 @@ impl kinds::Storage for Db {
     fn picked(&self, user: i64) -> anyhow::Result<Vec<Picked>> {
         Ok(self.with(|conn| {
             conn.prepare(
-                "select kind, entry_id, model, thinking, seen_thinking, gone from model_kinds where user_id = ?1
-                 order by case kind when 'chat' then 0 when 'background' then 1 when 'images' then 2
+                "select k.kind, k.entry_id, k.model, coalesce(t.thinking, ''), k.seen_thinking, k.gone, t.thinks,
+                    coalesce(t.mandatory, 0), t.efforts
+                 from model_kinds k left join model_thinking t on t.entry_id = k.entry_id and t.model = k.model
+                 where k.user_id = ?1
+                 order by case k.kind when 'chat' then 0 when 'background' then 1 when 'images' then 2
                     when 'search' then 3 else 4 end",
             )?
             .query_map([user], |r| {
@@ -388,6 +422,7 @@ impl kinds::Storage for Db {
                     entry: r.get(1)?,
                     model: r.get(2)?,
                     thinking: Thinking::read(&thinking),
+                    listed: listed(r, 6)?,
                     seen_thinking: r.get(4)?,
                     gone: r.get(5)?,
                 })
@@ -465,17 +500,49 @@ impl kinds::Storage for Db {
     fn set_thinking(
         &self,
         user: i64,
-        kind: Kind,
+        entry: i64,
         model: &str,
         thinking: Thinking,
     ) -> anyhow::Result<bool> {
         let changed = self.with(|conn| {
             conn.execute(
-                "update model_kinds set thinking = ?4 where user_id = ?1 and kind = ?2 and model = ?3",
-                params![user, kind.as_str(), model, thinking.kept()],
+                "insert into model_thinking (entry_id, model, thinking)
+                 select ?2, ?3, ?4 where exists (select 1 from provider_entries where id = ?2 and user_id = ?1)
+                 on conflict (entry_id, model) do update set thinking = excluded.thinking",
+                params![user, entry, model, thinking.kept()],
             )
         })?;
         Ok(changed == 1)
+    }
+
+    fn set_listed(
+        &self,
+        user: i64,
+        entry: i64,
+        model: &str,
+        listed: Listed,
+    ) -> anyhow::Result<bool> {
+        let efforts = listed
+            .efforts
+            .as_ref()
+            .map(serde_json::to_string)
+            .transpose()?;
+        let changed = self.with(|conn| {
+            conn.execute(
+                "insert into model_thinking (entry_id, model, thinks, mandatory, efforts)
+                 select ?2, ?3, ?4, ?5, ?6 where exists (select 1 from provider_entries where id = ?2 and user_id = ?1)
+                 on conflict (entry_id, model) do update set thinks = excluded.thinks, mandatory = excluded.mandatory,
+                    efforts = excluded.efforts",
+                params![user, entry, model, listed.thinks, listed.mandatory, efforts],
+            )
+        })?;
+        Ok(changed == 1)
+    }
+
+    fn chat_model(&self, user: i64, model: &str) -> anyhow::Result<Option<Provider>> {
+        Ok(self
+            .with(|conn| chat_with(conn, user, Some(model)))?
+            .map(|(chat, _)| chat))
     }
 
     fn saw_thinking(&self, user: i64, kind: Kind, model: &str) -> anyhow::Result<()> {

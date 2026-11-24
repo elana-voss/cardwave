@@ -16,6 +16,7 @@ import { chatTitle } from "../chat-title";
 import { askFirst } from "../dialogs";
 import { icon, type IconName } from "../icons";
 import { askNode } from "../chat/tool-ask";
+import { stepOutput } from "../chat/step-output";
 import { failureWords } from "../language/errors";
 import { clock, dateTime } from "../format";
 import { midSentence, wording } from "../language/language";
@@ -107,7 +108,7 @@ export function codingTaskView(chatId: number, taskId: number): View {
       el("span", { className: "item-text" }, el("span", null, el("b", { className: "semi" }, whoName(step.who)), wording("coding-task-text", { stepSays: stepSays(step) })), detail ? el("span", { className: "meta" }, detail) : ""),
     );
     if (!open) return line;
-    return el("div", { className: "task-step-open flex f-col g-8" }, line, step.output ? el("pre", { className: "code" }, step.output) : "", ...step.files.map(diffOf));
+    return el("div", { className: "task-step-open flex f-col g-8" }, line, step.output.length ? el("pre", { className: "code" }, stepOutput(step.output)) : "", ...step.files.map(diffOf));
   }
 
   function draw(): void {

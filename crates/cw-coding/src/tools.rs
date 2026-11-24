@@ -16,12 +16,14 @@
 //! a reply's own calls are noted by its loop for "Used in this reply"
 //! (`keep_call`, `used`). What a tool asks of the app and the chats is
 //! `ports::AppActions`. The app's tools' names are `names`, the MCP server's
-//! `crate::mcp`.
+//! `crate::mcp`. What a call gives, its failure too, is a `gave::Gave`, whose
+//! `for_model` is the text the model reads.
 
 pub mod app;
 pub mod chat;
 pub mod dice;
 pub mod files;
+pub mod gave;
 pub mod names;
 pub mod used;
 pub mod web;
@@ -32,7 +34,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use crate::tools::gave::Gave;
 use crate::tools::web::Web;
+use cw_core::{Code, Fail};
 use cw_library::settings::Tools;
 use cw_provider::Call;
 use cw_provider::images::{Picture, Whom};
@@ -419,7 +423,7 @@ impl Toolbox {
     pub async fn run(&self, app: &Arc<dyn AppActions>, call: &Call) -> Done {
         let web = app.web();
         if let Some(why) = unreadable(call) {
-            return told(Err(anyhow::anyhow!(why)));
+            return gave(Err(why.into()));
         }
         if let Some(tool) =
             crate::tools::chat::named(&call.name).filter(|tool| (tool.on)(&self.tools))
@@ -429,23 +433,23 @@ impl Toolbox {
         let folder = self.folder.clone().unwrap_or_default();
         match call.name.as_str() {
             builtin::WEB_SEARCH if self.tools.web => {
-                told(web.search(&call.argument("query")).await)
+                gave(web.search(&call.argument("query")).await)
             }
             builtin::READ_WEB_PAGE if self.tools.web => read_page(web, call).await,
             builtin::LIST_FILES if self.files() => {
-                told(crate::tools::files::list(&folder, &call.argument("path")))
+                gave(crate::tools::files::list(&folder, &call.argument("path")))
             }
-            builtin::READ_FILE if self.files() => told(crate::tools::files::read(
+            builtin::READ_FILE if self.files() => gave(crate::tools::files::read(
                 &folder,
                 call.argument("path").trim(),
             )),
-            builtin::WRITE_FILE if self.files() => told(crate::tools::files::write(
+            builtin::WRITE_FILE if self.files() => gave(crate::tools::files::write(
                 &folder,
                 &call.argument("path"),
                 &call.argument("content"),
             )),
             builtin::RUN_COMMAND if self.commands() => {
-                told(run_command(folder, call.argument("command")).await)
+                gave(run_command(folder, call.argument("command")).await)
             }
             builtin::MAKE_PICTURE => self.make_picture(app, call).await,
             crate::tools::written::MAKE if self.code => told(self.make(app, call).await),
@@ -467,7 +471,7 @@ impl Toolbox {
             }
             _ => match self.start_written(app, call) {
                 Some(running) => told(self.unasked(app, running).await),
-                None => told(Err(anyhow::anyhow!("there is no such tool"))),
+                None => gave(Err(no_such_tool().into())),
             },
         }
     }
@@ -475,7 +479,7 @@ impl Toolbox {
     /// Makes the picture `call` describes, where pictures are offered.
     async fn make_picture(&self, app: &Arc<dyn AppActions>, call: &Call) -> Done {
         let Some(whom) = &self.pictures else {
-            return told(Err(anyhow::anyhow!("there is no such tool")));
+            return gave(Err(no_such_tool().into()));
         };
         let words = call.argument("description");
         let chat = app.chat();
@@ -552,15 +556,24 @@ impl Toolbox {
 /// Why `call`'s arguments cannot be read, where they are not a JSON object (cut
 /// short by the provider, a stray quote): the model is told so and may call
 /// again. None at all ("") is no fault: a tool without arguments.
-pub(crate) fn unreadable(call: &Call) -> Option<String> {
+pub(crate) fn unreadable(call: &Call) -> Option<Fail> {
     let arguments = call.arguments.trim();
     let read = serde_json::from_str::<serde_json::Map<String, Value>>(arguments);
     match read {
-        Err(failure) if !arguments.is_empty() => Some(format!(
-            "the arguments were not valid JSON ({failure}), so the tool did not run; call it again with its arguments as one JSON object"
-        )),
+        Err(failure) if !arguments.is_empty() => Some(
+            Fail::said(Code::NotReadable, format!(
+                "the arguments were not valid JSON ({failure}), so the tool did not run; call it again with its arguments as one JSON object"
+            ))
+            .with("what", "tool_arguments")
+            .with("reason", failure.to_string()),
+        ),
         _ => None,
     }
+}
+
+/// A call of a tool that is not offered.
+pub(crate) fn no_such_tool() -> Fail {
+    Fail::said(Code::NotFound, "there is no such tool").with("what", "tool")
 }
 
 impl Done {
@@ -638,14 +651,20 @@ impl Drop for Stop {
     }
 }
 
-/// A tool's `result` as the model is told it: a failure as "Failed: …".
+/// A tool's text `result` as the model is told it.
 fn told(result: anyhow::Result<String>) -> Done {
+    gave(result.map(|text| Gave::Text { text, whole: None }))
+}
+
+/// What a tool gave as the model is told it ([`Gave::for_model`]).
+fn gave(result: anyhow::Result<Gave>) -> Done {
+    let gave = Gave::of(result);
     Done {
-        end: match result {
-            Ok(_) => CallEnd::Done,
-            Err(_) => CallEnd::Failed,
+        end: match gave.failed() {
+            true => CallEnd::Failed,
+            false => CallEnd::Done,
         },
-        text: result.unwrap_or_else(|failure| format!("Failed: {failure:#}")),
+        text: gave.for_model(),
         picture: None,
         shown: None,
     }
@@ -658,14 +677,14 @@ async fn read_page(web: &Web, call: &Call) -> Done {
     match web.page(address.trim()).await {
         Ok(page) => Done {
             shown: Some(used::page_line(&page.title, &address)),
-            ..told(Ok(page.text))
+            ..gave(Ok(page.gave()))
         },
-        Err(failure) => told(Err(failure)),
+        Err(failure) => gave(Err(failure)),
     }
 }
 
 /// Runs `command` in `folder`'s sandbox, at most [`COMMAND_TIME`].
-async fn run_command(folder: PathBuf, command: String) -> anyhow::Result<String> {
+async fn run_command(folder: PathBuf, command: String) -> anyhow::Result<Gave> {
     // A reply stopped lets this go, and so ends the command.
     let stop = Stop::default();
     let stopped = stop.0.clone();
@@ -675,14 +694,7 @@ async fn run_command(folder: PathBuf, command: String) -> anyhow::Result<String>
     .await;
     drop(stop);
     match ran {
-        Ok(Ok(ran)) => Ok(match ran.code {
-            Some(code) => format!("Exit code {code}.\n{}", ran.output),
-            None => format!(
-                "Stopped after {} s.\n{}",
-                COMMAND_TIME.as_secs(),
-                ran.output
-            ),
-        }),
+        Ok(Ok(ran)) => Ok(Gave::ran(ran, COMMAND_TIME)),
         Ok(Err(failure)) => Err(failure),
         Err(_) => Err(anyhow::anyhow!("the command failed")),
     }

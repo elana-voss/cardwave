@@ -65,15 +65,8 @@ fn the_work_is_asked_of_the_worker_model_or_of_the_chat_model_where_none_is_set(
     assert_eq!(
         work(&scratch),
         Provider {
-            base_url: RIG.into(),
-            api_key: "sk-rig".into(),
-            model: "big-1".into(),
             sampling: only_context.clone(),
-            name: String::new(),
-            thinking_off: None,
-            reply_limit: None,
-            seen_thinking: false,
-            window: None,
+            ..Provider::new(RIG, "sk-rig", "big-1")
         }
     );
 

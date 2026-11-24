@@ -36,6 +36,23 @@ fn length_hint_follows_the_users_own_messages() {
     );
 }
 
+/// Sentences are counted as the trimmer reads them, in every app language:
+/// Chinese ends them with its own marks, an abbreviation's or a decimal's dot
+/// ends none.
+#[test]
+fn length_hint_counts_sentences_in_every_language() {
+    let chinese = [said(Role::User, "你好。你今天怎么样？我很好！")];
+    assert_eq!(
+        length_hint(&chinese),
+        " Limit your response to approximately 3 sentences."
+    );
+    let english = [said(Role::User, "Mr. Smith paid 3.50 for it. He left!?")];
+    assert_eq!(
+        length_hint(&english),
+        " Limit your response to approximately 2 sentences."
+    );
+}
+
 /// A character writing first is told the date, the time and how long since the
 /// newest message; a reply to the user is told so only after a pause of an hour
 /// or more, of the message before the user's.

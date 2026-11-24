@@ -98,14 +98,31 @@ export async function noneAdded(page: Page): Promise<void> {
 /** A model's line in a model picker `scope`, by its ID: the line's title (its name is the readable one, the ID shows on hover). */
 export const modelLine = (scope: Locator, id: string) => scope.locator(`[role="option"][title="${id}"]`);
 
-/** The line `name` of the view menu (the eye) of the bar shown, the title bar's or at 600 px the narrow bar's; opens the menu. */
-export async function viewLine(page: Page, name: string): Promise<Locator> {
+/**
+ * The line `name` of the view menu (the eye) of the bar shown, the title bar's or at 600 px the narrow bar's; opens
+ * the menu, and with `side` ("App theme", "Chat message colours") that side menu too, `name` being its choice.
+ */
+export async function viewLine(page: Page, name: string, side?: string): Promise<Locator> {
   await page.locator("button[aria-label=View]:visible").click();
-  return page.locator("[role=menu][aria-label=View]:visible").getByRole(name === "Compact" ? "menuitemcheckbox" : "menuitemradio", { name, exact: true });
+  const menu = page.locator("[role=menu][aria-label=View]:visible");
+  if (name === "Compact spacing") return menu.getByRole("menuitemcheckbox", { name, exact: true });
+  if (!side) return menu.getByRole("menuitemradio", { name, exact: true });
+  await menu.getByRole("menuitem", { name: side }).click();
+  return page.locator(`[role=menu][aria-label="${side}"]:visible`).getByRole("menuitemradio", { name, exact: side === "App theme" });
 }
 
-/** Chooses `name` in the view menu: a view of the page, a theme, or Compact. */
-export const chooseView = async (page: Page, name: string) => (await viewLine(page, name)).click();
+/**
+ * Chooses `name` in the view menu: a view of the page, with `side` a choice of that side menu (a theme), or
+ * Compact spacing. A side menu's pick leaves the menus open; they are closed after it, as a view's pick closes them.
+ */
+export async function chooseView(page: Page, name: string, side?: string): Promise<void> {
+  const line = await viewLine(page, name, side);
+  await line.click();
+  if (side) {
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+  }
+}
 
 /** The address of the page's event socket, which carries the page's mark (`/ws?page=…`, which a string does not match), for `routeWebSocket`. The app makes its first screen once its first `hello` came (main.ts `start`, at most `START_WAIT`); a `hello` after a drop has the screen read and draw itself anew; that the page is heard is asked in spec 01 (`page.on("websocket")`). */
 export const SOCKET = /\/ws\?page=/;

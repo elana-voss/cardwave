@@ -28,7 +28,6 @@ use cw_provider::embedder::{Runner, Setup};
 use futures_util::stream;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use tokio::net::TcpListener;
 
 const TOPICS: [&[&str]; 3] = [
     &[
@@ -178,9 +177,8 @@ impl Embedder {
                     }
                 }
             });
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}", listener.local_addr().unwrap());
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        // It answers `/props` itself, counted and down like the rest.
+        let url = super::serve_bare(app).await;
         Self {
             url,
             read,

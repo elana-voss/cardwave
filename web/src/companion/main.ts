@@ -7,14 +7,15 @@
 // too; its tooltip says both. The figure is the card's
 // and its chat's mode (`companionFigure`), else the base figure of Settings (`companion.figure`), as tall as its size
 // there says, a share of the window's height (`companion.size`, `sizeTo`), resized at once. All it is told
-// runs through `Companion` (live.ts), which tells the server what the figure does; a bubble shows what it says. What
+// runs through `Companion` (live.ts), which tells the server what the figure does; a bubble shows what it says, drawn and coloured as the compact chat's. What
 // it says, and a reply in the compact chat no voice reads, moves its lips (lips.ts); a voice, its loudness.
 //
 // The desktop app shows the page in a see-through, always-on-top window over the work area (desktop/src/main.rs)
 // that lets clicks through: the program tells the cursor (`companionCursor`), the page answers whether it is on
 // the figure, chat or menu, or the hand holds it (`companion_over`). "Hide until tomorrow" keeps the day in the
 // settings and starts the page anew, showing nothing until midnight. The user's own CSS restyles it (own-css.ts);
-// its words are in the app's language, read again when the settings change (app-language.ts).
+// its words are in the app's language, read again when the settings change (app-language.ts); the root's
+// `data-text-set` the message colours chosen in the main window (theme.ts).
 //
 // Traps: a click outside the menu goes to another window, so the menu closes on `blur`. The page asks the server
 // as the window's account.
@@ -34,10 +35,11 @@ import type { BaseFigure } from "../api/generated/BaseFigure";
 import { wander } from "./plan";
 import { Companion, reporter } from "./live";
 import { Lips } from "./lips";
-import { readWebPictures, webPictures } from "../narration";
+import { narrated, readWebPictures, webPictures } from "../narration";
 import { loudness } from "../voice/voice";
 import { readOwnCss, showOwnCss } from "../settings/own-css";
 import { readAppLanguage } from "../settings/app-language";
+import { showTextSet } from "../theme";
 import { Answers, Clicks, Reactions, Touches } from "./react";
 import { followComputer, wording } from "../language/language";
 import { el, reason } from "../dom";
@@ -105,6 +107,9 @@ async function start(): Promise<void> {
   // Whether a picture from another website shows in the compact chat.
   webPictures(settings.web_pictures);
   showOwnCss(settings.own_css);
+  // The compact chat's bubbles show the message colours chosen in the main window's view menu, followed as they change.
+  // Never stopped: it lasts as long as the page.
+  showTextSet(document.documentElement);
   if (companion.hidden_until !== null && dayOf() < companion.hidden_until) return untilTomorrow();
 
   const area = () => ({ width: innerWidth, height: innerHeight });
@@ -388,15 +393,16 @@ function animate(scene: Scene, area: () => { width: number; height: number }, re
     body.pace = figure.pace;
     body.step(dt);
     canvas.style.transform = `translate(${body.x - SIZE.width / 2}px, ${body.y - SIZE.height}px)`;
-    // What its bubble says is spoken by the lips, at their pace, until the bubble goes.
+    // What its bubble says is spoken by the lips, at their pace, until the bubble goes; it is drawn as the compact
+    // chat's messages are, once for each bubble.
     if (live.bubble !== told) {
       told = live.bubble;
       if (live.bubble === null) saying.rest();
       else saying.say(live.bubble.text);
+      bubble.replaceChildren(...(live.bubble ? narrated(live.bubble.text) : []));
     }
     bubble.hidden = live.said === null;
     if (live.said !== null) {
-      bubble.textContent = live.said;
       bubble.style.left = `${body.x}px`;
       bubble.style.top = `${body.y - SIZE.height}px`;
     }

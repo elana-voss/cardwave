@@ -10,6 +10,7 @@
 //! answers a picture (`images.rs`). `held` answers wait until the test calls
 //! `Api::release`, so it acts while a piece of work is under way without a
 //! clock; `until_asked` waits for the `n`th asking, `stays_asked` asserts no more follow.
+//! `openrouter_mandatory` stands in for openrouter.ai, for its test binary alone.
 //! A held answer never released within `HELD` is answered 504 and fails the
 //! test when its `Api` is dropped, naming the path: no test waits unbounded.
 
@@ -22,7 +23,6 @@ use axum::body::Body;
 use axum::http::{HeaderMap, Method, StatusCode, Uri, header};
 use axum::response::IntoResponse;
 use futures_util::{StreamExt, stream};
-use tokio::net::TcpListener;
 use tokio::sync::watch;
 use tokio::time::{sleep, timeout};
 
@@ -186,12 +186,8 @@ impl Api {
                 (StatusCode::from_u16(says.status).unwrap(), head, body).into_response()
             }
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(super::props))
-            .fallback(answer);
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().fallback(answer);
+        let url = format!("{}/v1", super::serve(app).await);
         Self {
             url,
             asked,
@@ -248,4 +244,18 @@ impl Drop for Api {
             panic!("the held answer to {path} was not released within {HELD:?}");
         }
     }
+}
+
+/// OpenRouter's list, saying `openai/o3-mini` cannot stop thinking, answered in place of openrouter.ai (`cw_provider::stand_in`): the
+/// process's, so one test binary has one.
+pub async fn openrouter_mandatory() -> Api {
+    let listed = serde_json::json!({ "data": [{ "id": "openai/o3-mini", "supported_parameters": ["reasoning"],
+        "reasoning": { "mandatory": true, "supported_efforts": ["low", "medium", "high"] } }] });
+    let api = Api::start_routed(vec![(
+        "/api/v1/models",
+        says(200, JSON, &listed.to_string()),
+    )])
+    .await;
+    cw_provider::stand_in::host("openrouter.ai", &api.url);
+    api
 }

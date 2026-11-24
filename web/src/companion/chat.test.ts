@@ -247,4 +247,17 @@ describe("the compact chat", () => {
     input.form!.requestSubmit();
     await vi.waitFor(() => expect(moods).toContain("thinking"));
   });
+
+  it("tells a memory pass that failed for its own chat alone in the status line", async () => {
+    const { compactChat } = await import("./chat");
+    const { failureWords } = await import("../language/errors");
+    const chat = compactChat(3, hooks);
+    await chat.open();
+    const status = chat.node.querySelector(".compact-status")!;
+    const error = { code: "provider_refused", error: "401", details: { refusal: "key", whose: "model_server" } } as const;
+    chat.onEvent({ type: "memory_failed", chat_id: 2, error });
+    expect(status.textContent).toBe("");
+    chat.onEvent({ type: "memory_failed", chat_id: 1, error });
+    expect(status.textContent).toBe(`The helper model could not keep this chat's memory. ${failureWords(error)}`);
+  });
 });

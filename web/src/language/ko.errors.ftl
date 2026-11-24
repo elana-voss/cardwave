@@ -118,6 +118,7 @@ error-again-not-reply = 캐릭터의 답장만 다시 쓸 수 있어요.
 error-no-reply-to-write-again = 이 채팅에는 다시 쓸 답장이 없어요.
 error-no-text = AI가 글을 보내지 않았어요. 다시 시도하세요.
 error-worker-no-answer = 보조 모델이 답하지 않았어요.
+memory-not-kept = 보조 모델이 이 채팅의 기억을 저장하지 못했어요. { $failure }
 error-unknown-voice = “{ $voice }” 음성이 없어요.
 error-nothing-to-read = 읽을 것이 없어요.
 error-voice-not-downloaded = 음성을 다운로드하지 않았어요.
@@ -284,6 +285,12 @@ error-not-readable = { $what ->
     [workflow_no_node] 워크플로에 이 ComfyUI가 실행할 수 있는 노드가 없어요.
     [workflow_node] 워크플로의 “{ $class }” 노드는 이 ComfyUI에 없어요.
     [zip] { $name } 파일을 zip으로 읽을 수 없어요.
+    [file] 파일을 읽을 수 없어요: { $reason }
+    [folder] 폴더를 읽을 수 없어요: { $reason }
+    [folder_in_task] 작업 폴더를 읽을 수 없어요: { $reason }
+    [tool_arguments] 모델의 호출을 읽을 수 없어서 도구가 실행되지 않았어요: { $reason }
+    [web_address] 웹 주소가 아니에요.
+    [page_kind] 이 페이지는 텍스트가 아니에요({ $kind }).
    *[other] 읽을 수 없어요.
 }
 error-too-big = { $what ->
@@ -299,6 +306,7 @@ error-too-big = { $what ->
     [models_dev_list] 모델 목록이 너무 길어요.
     [picture_pixels] 이미지가 너무 커요({ $wide }×{ $high }픽셀).
     [reply] 답장이 너무 길어져서 잘렸어요.
+    [file_written] { $megabytes }MB보다 큰 파일은 쓰지 않아요.
    *[other] 너무 커요.
 }
 error-not-now = { $what ->
@@ -396,6 +404,12 @@ error-not-possible = { $what ->
     [workflow_use] “{ $name }” 워크플로를 사용할 수 없어요.
     [written_tools_full] 도구는 최대 { $most_tools }개까지 둘 수 있어요. 먼저 설정 › 고급 › AI가 만든 도구에서 하나를 삭제하세요.
     [delete_not_in_trash] 휴지통에 있는 것만 영구 삭제할 수 있어요. 먼저 휴지통으로 옮기세요.
+    [path_outside] 작업 폴더 안의 경로만 쓸 수 있어요.
+    [write_folder] 파일이 아니라 폴더예요.
+    [page_refreshes] 이 페이지는 계속 다른 페이지로 넘어가요.
+    [page_scheme] http와 https 주소만 읽어요.
+    [page_closed] 이 컴퓨터나 사설 네트워크의 주소는 읽지 않아요.
+    [tool_failed] { $reason }
    *[other] 그 작업은 할 수 없어요.
 }
 -helper-unusable = 보조 모델의 답을 쓸 수 없었어요. 다시 시도하거나 다른 보조 모델을 고르세요.
@@ -422,6 +436,7 @@ error-model-answer = { $what ->
     [picture_words] 보조 모델이 이미지 설명을 쓰지 않았어요.
     [rating] { -helper-unusable }
     [reply_broke_off] 답장이 중간에 끊겼어요.
+    [reply_cut_off] 답장이 모델의 길이 한도에 닿았어요.
     [needs] { -helper-unusable }
     [rounds] 팀이 { $rounds }라운드 안에 작업을 끝내지 못했어요.
     [search_left_out] 검색 모델이 텍스트 하나를 빠뜨렸어요.
@@ -453,6 +468,8 @@ error-unreachable = { $whose ->
     [search_model] 검색 모델이 응답하지 않아요.
     [provider_voice] 제공자의 음성에 연결할 수 없어요.
     [provider_search_model] 제공자의 검색 모델에 연결할 수 없어요.
+    [search] 웹 검색에 연결할 수 없어요: { $reason }
+    [page] 페이지에 연결할 수 없어요: { $reason }
    *[other] 연결할 수 없어요.
 }
 error-answered = { $whose ->
@@ -462,6 +479,8 @@ error-answered = { $whose ->
     [picture_server] 이미지 서버의 응답: { $status }.
     [provider_voices] 제공자 음성의 응답: { $status }.
     [search_model] 검색 모델의 응답: { $status }.
+    [search] 웹 검색 응답: { $status }.
+    [page] 페이지 응답: { $status }.
    *[other] 응답: { $status }.
 }
 error-answered-said = { $said ->

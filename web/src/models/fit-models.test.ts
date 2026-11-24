@@ -26,8 +26,8 @@ describe("the models that fit this computer", () => {
 
   it("tell the kinds at a model of This computer, and the memory beside the folder", () => {
     const kinds = [
-      { kind: "chat" as const, provider_id: 7, model: "q.gguf", thinking: "on", gone: false },
-      { kind: "background" as const, provider_id: 8, model: "q.gguf", thinking: "on", gone: false },
+      { kind: "chat" as const, provider_id: 7, model: "q.gguf", thinking: { control: "switch" as const, state: "on" }, gone: false },
+      { kind: "background" as const, provider_id: 8, model: "q.gguf", thinking: { control: "switch" as const, state: "on" }, gone: false },
     ];
     expect(usedFor(kinds, own, "q.gguf")).toEqual(["Chat"]);
     expect(memoryLine(31.6 * GB, "C:\\Models")).toBe("32 GB of RAM · C:\\Models");

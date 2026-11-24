@@ -36,6 +36,21 @@ pub async fn props() -> axum::Json<serde_json::Value> {
     axum::Json(serde_json::json!({ "default_generation_settings": { "n_ctx": WINDOW } }))
 }
 
+/// Serves a stand-in model server's `router` with `/props` added ([`props`]),
+/// at a free port of this machine; its address, `http://127.0.0.1:<port>`.
+pub async fn serve(router: axum::Router) -> String {
+    serve_bare(router.route("/props", axum::routing::get(props))).await
+}
+
+/// Serves `router` as it is (a file server, or a model server without
+/// `/props`) at a free port of this machine; its address.
+pub async fn serve_bare(router: axum::Router) -> String {
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let url = format!("http://{}", listener.local_addr().unwrap());
+    tokio::spawn(async { axum::serve(listener, router).await.unwrap() });
+    url
+}
+
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicUsize, Ordering};
 

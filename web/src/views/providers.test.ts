@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ProvidersView } from "../api/generated/ProvidersView";
-import { chatUnchosen, keyHint, thinkingSays, whereOf, workflowChoices, workflowNote } from "./providers";
+import type { ThinkingStep } from "../api/generated/ThinkingStep";
+import { chatUnchosen, keyHint, thinkingShown, whereOf, workflowChoices, workflowNote } from "./providers";
 
 const entry = (base_url: string, key_end: string | null, has_key: boolean) => ({ id: 1, name: "x", own_name: null, base_url, has_key, key_end, workflow: null, folder: null });
 
@@ -18,12 +19,27 @@ describe("the page Providers", () => {
     expect(keyHint(entry("https://a.example/v1", null, false), "https://b.example/v1")).toBe("Leave empty to keep the saved key.");
   });
 
-  it("has a line Thinking under a model that thinks, or whose thinking was turned off", () => {
-    const picked = (thinking: string) => ({ kind: "chat" as const, provider_id: 1, model: "m", thinking, gone: false });
-    expect(thinkingSays(picked("on"), true, "OpenRouter")).toBe("The model thinks before it replies");
-    expect(thinkingSays(picked("on"), false, "OpenRouter")).toBeNull();
-    expect(thinkingSays(picked("off"), false, "OpenRouter")).toBe("The model replies without thinking first");
-    expect(thinkingSays(picked("cannot"), true, "OpenRouter")).toBe("OpenRouter can't turn thinking off for this model");
+  it("has a line Thinking with the switch under a model without levels that thinks, or whose thinking was turned off", () => {
+    const shown = (state: string, thinker: boolean) => thinkingShown({ control: "switch", state }, thinker, "OpenRouter");
+    expect(shown("on", true)).toEqual({ says: "The model thinks before it replies", control: "switch", on: true });
+    expect(shown("on", false)).toBeNull();
+    expect(shown("off", false)).toEqual({ says: "The model replies without thinking first", control: "switch", on: false });
+    expect(shown("cannot", true)).toEqual({ says: "OpenRouter can't turn thinking off for this model", control: "none" });
+  });
+
+  it("has the field of the steps a model offers in the line Thinking, without Off where it cannot stop thinking", () => {
+    const all: ThinkingStep[] = ["off", "light", "normal", "deep"];
+    const shown = (steps: ThinkingStep[], step: ThinkingStep, refused = false) => thinkingShown({ control: "steps", steps, step, refused }, false, "OpenAI");
+    const labels = (steps: ThinkingStep[]) => {
+      const now = shown(steps, steps[0]);
+      return now?.control === "steps" ? now.choices.map(({ value, label }) => `${value}:${label}`) : now;
+    };
+    expect(labels(all)).toEqual(["off:Off", "light:Light", "normal:Normal", "deep:Deep"]);
+    expect(labels(["light", "normal", "deep"])).toEqual(["light:Light", "normal:Normal", "deep:Deep"]);
+    expect(shown(all, "deep")).toMatchObject({ says: "How much the model thinks before it replies", control: "steps", step: "deep" });
+    expect(shown(all, "off")).toMatchObject({ says: "The model replies without thinking first", step: "off" });
+    // Off refused by the provider: Off is no longer offered, the model is at the step it falls back to, and the line says why.
+    expect(shown(["light", "normal", "deep"], "normal", true)).toMatchObject({ says: "OpenAI can't turn thinking off for this model", step: "normal" });
   });
 
   it("offers a ComfyUI's default workflow and its saved ones, and keeps the one picked that ComfyUI no longer holds", () => {
@@ -38,7 +54,7 @@ describe("the page Providers", () => {
   });
 
   it("sends on to first run's models after a provider is added while no chat model is chosen", () => {
-    const view = (kinds: string[]) => ({ providers: [], kinds: kinds.map((kind) => ({ kind, provider_id: 1, model: "m", thinking: "on", gone: false })), own: [] }) as unknown as ProvidersView;
+    const view = (kinds: string[]) => ({ providers: [], kinds: kinds.map((kind) => ({ kind, provider_id: 1, model: "m", thinking: { control: "switch" as const, state: "on" }, gone: false })), own: [] }) as unknown as ProvidersView;
     expect(chatUnchosen(view(["images"]))).toBe(true);
     expect(chatUnchosen(view(["chat", "images"]))).toBe(false);
   });

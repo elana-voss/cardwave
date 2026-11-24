@@ -1,12 +1,12 @@
-//! The MCP server (`api/mcp.rs`): an older client's `initialize`, a newer
-//! one's `server/discover` and its headers, the cards and chats read as the API
-//! gives them, a long chat in pages, a message sent and its reply, the tools
-//! the settings switch on with Cardwave's own one per route, who
-//! reaches it, and Account › Server's switch, account and programs.
+//! The MCP server (`api/mcp.rs`) on rmcp: a client of 2026-07-28 discovers
+//! it, the cards and chats read as the API gives them, a long chat in pages, a
+//! message sent and its reply, the tools the settings switch on with
+//! Cardwave's own one per route, who reaches it, and Account › Server's
+//! switch, account and programs. The protocol itself is rmcp's, not tested here.
 //!
-//! `serving` is a server whose MCP server is switched on. `older` sends as a
-//! client of 2025-11-25 does, `newer` as one of 2026-07-28, with the request's
-//! `_meta` and the headers that mirror it.
+//! `serving` is a server whose MCP server is switched on. `from` sends a
+//! request as the program it names does, with the request's `_meta` and the
+//! headers that mirror it; `newer` as the program "test".
 
 mod common;
 
@@ -29,13 +29,6 @@ async fn serving() -> Server {
     server
 }
 
-/// `initialize` as the program `name` sends it: the status and the answer.
-async fn hello(server: &Server, name: &str) -> (u16, Value) {
-    let hello = json!({ "protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": { "name": name, "version": "1" } });
-    let body = json!({ "jsonrpc": "2.0", "id": 0, "method": "initialize", "params": hello });
-    post(server, &[], &body).await
-}
-
 /// Posts `body` to the MCP server with `headers`; the status and the JSON body (`Null` when it has none).
 async fn post(server: &Server, headers: &[(&str, &str)], body: &Value) -> (u16, Value) {
     let mut request = common::server::client()
@@ -50,18 +43,17 @@ async fn post(server: &Server, headers: &[(&str, &str)], body: &Value) -> (u16, 
     (status, response.json().await.unwrap_or(Value::Null))
 }
 
-/// A request as a client of 2025-11-25 sends it, after `initialize`.
-async fn older(server: &Server, method: &str, params: Value) -> (u16, Value) {
-    let body = json!({ "jsonrpc": "2.0", "id": 1, "method": method, "params": params });
-    post(server, &[("mcp-protocol-version", "2025-11-25")], &body).await
+/// A request as a client of 2026-07-28 sends it.
+async fn newer(server: &Server, method: &str, params: Value) -> (u16, Value) {
+    from(server, "test", method, params).await
 }
 
-/// A request as a client of 2026-07-28 sends it.
-async fn newer(server: &Server, method: &str, mut params: Value) -> (u16, Value) {
+/// A request as the program `program`, a client of 2026-07-28, sends it.
+async fn from(server: &Server, program: &str, method: &str, mut params: Value) -> (u16, Value) {
     params["_meta"] = json!({
         "io.modelcontextprotocol/protocolVersion": "2026-07-28",
         "io.modelcontextprotocol/clientCapabilities": {},
-        "io.modelcontextprotocol/clientInfo": { "name": "test", "version": "1" },
+        "io.modelcontextprotocol/clientInfo": { "name": program, "version": "1" },
     });
     let name = params["name"].as_str().unwrap_or_default().to_string();
     let mut headers = vec![
@@ -75,6 +67,14 @@ async fn newer(server: &Server, method: &str, mut params: Value) -> (u16, Value)
     post(server, &headers, &body).await
 }
 
+/// Why the program `program` was refused the tools, where it was.
+async fn refused(server: &Server, program: &str) -> Option<String> {
+    let (status, answer) = from(server, program, "tools/list", json!({})).await;
+    assert_eq!(status, 200, "{answer}");
+    let message = answer["error"]["message"].as_str();
+    message.map(str::to_string)
+}
+
 /// What a call of the tool `name` gave: its result.
 async fn call(server: &Server, name: &str, arguments: Value) -> Value {
     let (status, answer) = newer(
@@ -84,6 +84,7 @@ async fn call(server: &Server, name: &str, arguments: Value) -> Value {
     )
     .await;
     assert_eq!(status, 200, "{answer}");
+    assert_eq!(answer["result"]["resultType"], "complete", "{answer}");
     answer["result"].clone()
 }
 
@@ -103,60 +104,16 @@ fn names(listed: &Value) -> Vec<&str> {
 }
 
 #[tokio::test]
-async fn an_older_client_begins_with_initialize_and_lists_the_tools() {
+async fn an_older_client_is_refused() {
     let server = serving().await;
     let hello = json!({
-        "protocolVersion": "2025-06-18",
+        "protocolVersion": "2025-11-25",
         "capabilities": {},
         "clientInfo": { "name": "test", "version": "1" },
     });
     let body = json!({ "jsonrpc": "2.0", "id": 0, "method": "initialize", "params": hello });
-    let (status, answer) = post(&server, &[], &body).await;
-    assert_eq!(status, 200, "{answer}");
-    let result = &answer["result"];
-    assert_eq!(answer["id"], 0);
-    assert_eq!(result["protocolVersion"], "2025-06-18");
-    assert_eq!(result["serverInfo"]["name"], "cardwave");
-    assert!(result["capabilities"]["tools"].is_object(), "{answer}");
-    // A version it does not know is answered with the newest of the older ones.
-    let mut later = body.clone();
-    later["params"]["protocolVersion"] = json!("2099-01-01");
-    let (_, answer) = post(&server, &[], &later).await;
-    assert_eq!(answer["result"]["protocolVersion"], "2025-11-25");
-
-    let told = json!({ "jsonrpc": "2.0", "method": "notifications/initialized" });
-    assert_eq!(post(&server, &[], &told).await, (202, Value::Null));
-    assert_eq!(
-        older(&server, "ping", json!({})).await.1["result"],
-        json!({})
-    );
-    let nameless = json!({ "jsonrpc": "2.0", "id": 6 });
-    let (status, refused) = post(&server, &[], &nameless).await;
-    assert_eq!((status, &refused["error"]["code"]), (400, &json!(-32600)));
-    let answered = json!({ "jsonrpc": "2.0", "id": 6, "result": {} });
-    assert_eq!(post(&server, &[], &answered).await.0, 202);
-    let batch = json!([{ "jsonrpc": "2.0", "id": 5, "method": "ping" }]);
-    let (status, refused) = post(&server, &[], &batch).await;
-    assert_eq!((status, &refused["error"]["code"]), (400, &json!(-32600)));
-    // JSON-RPC: an error whose request's id is not known has a null id.
-    assert_eq!(refused.get("id"), Some(&Value::Null), "{refused}");
-    let (status, listed) = older(&server, "tools/list", json!({})).await;
-    assert_eq!(status, 200, "{listed}");
-    // What the newer revision adds to a result an older client is not given.
-    assert_eq!(listed["result"].get("resultType"), None, "{listed}");
-    // Without a tool switched on in the settings, the cards and the chats alone.
-    assert_eq!(
-        names(&listed),
-        [
-            "list_cards",
-            "read_card",
-            "list_chats",
-            "read_chat",
-            "send_message"
-        ]
-    );
-    let schema = &listed["result"]["tools"][1]["inputSchema"];
-    assert_eq!(schema["required"], json!(["card_id"]), "{listed}");
+    let (_, answer) = post(&server, &[], &body).await;
+    assert!(answer["error"].is_object(), "{answer}");
 }
 
 #[tokio::test]
@@ -194,82 +151,39 @@ async fn cards_and_chats_are_read_as_the_api_gives_them() {
 }
 
 #[tokio::test]
-async fn a_newer_client_is_answered_by_its_revision() {
+async fn a_newer_client_discovers_it_and_lists_the_tools() {
     let server = serving().await;
     let (status, found) = newer(&server, "server/discover", json!({})).await;
     assert_eq!(status, 200, "{found}");
     let result = &found["result"];
-    assert_eq!(result["resultType"], "complete");
-    assert_eq!(result["supportedVersions"][0], "2026-07-28");
+    assert_eq!(
+        result["supportedVersions"],
+        json!(["2026-07-28"]),
+        "{found}"
+    );
     assert!(result["capabilities"]["tools"].is_object(), "{found}");
     assert_eq!(
-        result["_meta"]["io.modelcontextprotocol/serverInfo"]["name"],
-        "cardwave"
+        result["_meta"]["io.modelcontextprotocol/serverInfo"]["name"], "cardwave",
+        "{found}"
     );
-    let (_, listed) = newer(&server, "tools/list", json!({})).await;
+    assert!(result["instructions"].is_string(), "{found}");
+    let (status, listed) = newer(&server, "tools/list", json!({})).await;
+    assert_eq!(status, 200, "{listed}");
     assert_eq!(listed["result"]["cacheScope"], "private", "{listed}");
     assert_eq!(listed["result"]["resultType"], "complete", "{listed}");
-
-    let meta = json!({ "io.modelcontextprotocol/protocolVersion": "2026-07-28" });
-    let list =
-        json!({ "jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": { "_meta": meta } });
-    let version = ("mcp-protocol-version", "2026-07-28");
-    // The headers mirror the body, or the request is refused.
-    let (status, wrong) = post(&server, &[version, ("mcp-method", "tools/call")], &list).await;
+    // Without a tool switched on in the settings, the cards and the chats alone.
     assert_eq!(
-        (status, &wrong["error"]["code"]),
-        (400, &json!(-32020)),
-        "{wrong}"
+        names(&listed),
+        [
+            "list_cards",
+            "read_card",
+            "list_chats",
+            "read_chat",
+            "send_message"
+        ]
     );
-    let (status, wrong) = post(&server, &[("mcp-method", "tools/list")], &list).await;
-    assert_eq!(
-        (status, &wrong["error"]["code"]),
-        (400, &json!(-32020)),
-        "{wrong}"
-    );
-    // A name may come in Base64.
-    let read = json!({ "jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {
-        "_meta": meta, "name": "list_chats", "arguments": {} } });
-    let named = [
-        version,
-        ("mcp-method", "tools/call"),
-        ("mcp-name", "=?base64?bGlzdF9jaGF0cw==?="),
-    ];
-    let (status, answer) = post(&server, &named, &read).await;
-    assert_eq!(status, 200, "{answer}");
-    let named = [
-        version,
-        ("mcp-method", "tools/call"),
-        ("mcp-name", "list_cards"),
-    ];
-    assert_eq!(post(&server, &named, &read).await.0, 400);
-
-    let later = json!({ "io.modelcontextprotocol/protocolVersion": "2099-01-01" });
-    let list =
-        json!({ "jsonrpc": "2.0", "id": 4, "method": "tools/list", "params": { "_meta": later } });
-    let headers = [
-        ("mcp-protocol-version", "2099-01-01"),
-        ("mcp-method", "tools/list"),
-    ];
-    let (status, refused) = post(&server, &headers, &list).await;
-    assert_eq!(status, 400, "{refused}");
-    assert_eq!(refused["error"]["code"], -32022);
-    assert_eq!(refused["error"]["data"]["requested"], "2099-01-01");
-    assert!(
-        refused["error"]["data"]["supported"]
-            .as_array()
-            .unwrap()
-            .contains(&json!("2025-11-25"))
-    );
-
-    let (status, unknown) = newer(&server, "prompts/list", json!({})).await;
-    assert_eq!((status, &unknown["error"]["code"]), (404, &json!(-32601)));
-    let got = common::server::client()
-        .get(format!("http://{}{PATH}", server.addr))
-        .send()
-        .await
-        .unwrap();
-    assert_eq!(got.status(), 405);
+    let schema = &listed["result"]["tools"][1]["inputSchema"];
+    assert_eq!(schema["required"], json!(["card_id"]), "{listed}");
 }
 
 #[tokio::test]
@@ -412,10 +326,8 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
         json!({ "on": false, "account": local, "programs": [] })
     );
     // Off at first: nothing is served.
-    let (status, refused) = hello(&server, "Claude").await;
-    assert_eq!(status, 403, "{refused}");
+    let told = refused(&server, "Claude").await.expect("refused");
     // It names the switch and its page as the app shows them.
-    let told = refused["error"]["message"].as_str().unwrap();
     assert!(
         told.contains("\"Let AI apps on this computer use Cardwave\"")
             && told.contains("Account › Sharing"),
@@ -429,8 +341,8 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
             .0,
         200
     );
-    assert_eq!(hello(&server, "Claude").await.0, 200);
-    assert_eq!(hello(&server, "Inspector").await.0, 200);
+    assert_eq!(refused(&server, "Claude").await, None);
+    assert_eq!(refused(&server, "Inspector").await, None);
     let (_, settings) = server.get("/api/mcp/settings").await;
     assert_eq!(settings["programs"], json!(["Claude", "Inspector"]));
 
@@ -458,37 +370,17 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
         404
     );
 
-    // An older client is given its name as its session id, which it sends back.
-    let body = json!({ "jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {
-        "protocolVersion": "2025-11-25", "clientInfo": { "name": "Claude", "version": "1" } } });
-    let given = common::server::client()
-        .post(format!("http://{}{PATH}", server.addr))
-        .json(&body)
-        .send()
-        .await
-        .unwrap();
-    let session = given.headers()["mcp-session-id"]
-        .to_str()
-        .unwrap()
-        .to_string();
-    let list = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
-    let named = [("mcp-session-id", session.as_str())];
-    assert_eq!(post(&server, &named, &list).await.0, 200);
-
     // A program removed is refused until the switch is switched on anew.
     let (_, set) = server
         .put("/api/mcp/settings", json!({ "remove": "Claude" }))
         .await;
     assert_eq!(set["programs"], json!(["Inspector", "test"]));
-    let (status, refused) = hello(&server, "Claude").await;
-    assert_eq!(status, 403, "{refused}");
-    let told = refused["error"]["message"].as_str().unwrap();
+    let told = refused(&server, "Claude").await.expect("refused");
     assert!(
         told.contains("\"Let AI apps on this computer use Cardwave\"")
             && told.contains("Account › Sharing"),
         "{told}"
     );
-    assert_eq!(post(&server, &named, &list).await.0, 403);
     assert_eq!(
         server
             .put("/api/mcp/settings", json!({ "on": false }))
@@ -498,7 +390,7 @@ async fn the_owner_switches_it_on_picks_the_account_and_removes_a_program() {
     );
     let (_, set) = server.put("/api/mcp/settings", json!({ "on": true })).await;
     assert_eq!(set["programs"], json!([]));
-    assert_eq!(hello(&server, "Claude").await.0, 200);
+    assert_eq!(refused(&server, "Claude").await, None);
 }
 
 #[tokio::test]

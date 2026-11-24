@@ -119,6 +119,7 @@ error-again-not-reply = 書き直せるのはキャラクターの返信だけ�
 error-no-reply-to-write-again = このチャットには書き直す返信がありません。
 error-no-text = AIがテキストを送りませんでした。もう一度お試しください。
 error-worker-no-answer = ヘルパーモデルが応答しませんでした。
+memory-not-kept = ヘルパーモデルがこのチャットの記憶を保存できませんでした。{ $failure }
 error-unknown-voice = 音声「{ $voice }」はありません。
 error-nothing-to-read = 読み上げるものがありません。
 error-voice-not-downloaded = 音声がダウンロードされていません。
@@ -285,6 +286,12 @@ error-not-readable = { $what ->
     [workflow_no_node] ワークフローに、このComfyUIで実行できるノードがありません。
     [workflow_node] ワークフローのノード「{ $class }」は、このComfyUIにありません。
     [zip] { $name }をzipとして読み取れません。
+    [file] ファイルを読み込めません：{ $reason }
+    [folder] フォルダーを読み込めません：{ $reason }
+    [folder_in_task] タスクのフォルダーを読み込めません：{ $reason }
+    [tool_arguments] モデルの呼び出しを読み取れなかったため、ツールは実行されませんでした：{ $reason }
+    [web_address] それはウェブアドレスではありません。
+    [page_kind] このページはテキストではありません（{ $kind }）。
    *[other] それを読み取れません。
 }
 error-too-big = { $what ->
@@ -300,6 +307,7 @@ error-too-big = { $what ->
     [models_dev_list] モデルの一覧が長すぎます。
     [picture_pixels] 画像が大きすぎます（{ $wide }×{ $high }ピクセル）。
     [reply] 返信が長くなりすぎたため、途中で切れました。
+    [file_written] { $megabytes } MBを超えるファイルは書き込みません。
    *[other] 大きすぎます。
 }
 error-not-now = { $what ->
@@ -397,6 +405,12 @@ error-not-possible = { $what ->
     [workflow_use] ワークフロー「{ $name }」は使えません。
     [written_tools_full] ツールは最大 { $most_tools } 個までです。先に 設定 › 詳細設定 › AIが書いたツール で一つ削除してください。
     [delete_not_in_trash] 完全に削除できるのはゴミ箱にあるものだけです。先にゴミ箱に移してください。
+    [path_outside] 使えるのはタスクのフォルダー内のパスだけです。
+    [write_folder] それはファイルではなくフォルダーです。
+    [page_refreshes] このページは別のページへの移動を繰り返しています。
+    [page_scheme] 読み込めるのはhttpとhttpsのアドレスだけです。
+    [page_closed] このコンピューターやプライベートネットワーク内のアドレスは読み込みません。
+    [tool_failed] { $reason }
    *[other] それはできません。
 }
 -helper-unusable = 補助モデルの答えを使えませんでした。もう一度試すか、別の補助モデルを選んでください。
@@ -423,6 +437,7 @@ error-model-answer = { $what ->
     [picture_words] ヘルパーモデルは画像の言葉を書きませんでした。
     [rating] { -helper-unusable }
     [reply_broke_off] 返信が途中で切れました。
+    [reply_cut_off] 返信がモデルの長さの上限に達しました。
     [needs] { -helper-unusable }
     [rounds] チームは{ $rounds }ラウンドで作業を終えませんでした。
     [search_left_out] 検索モデルがテキストをひとつ抜かしました。
@@ -454,6 +469,8 @@ error-unreachable = { $whose ->
     [search_model] 検索モデルが応答しません。
     [provider_voice] プロバイダーの音声に接続できません。
     [provider_search_model] プロバイダーの検索モデルに接続できません。
+    [search] ウェブ検索に接続できません：{ $reason }
+    [page] ページに接続できません：{ $reason }
    *[other] 接続できません。
 }
 error-answered = { $whose ->
@@ -463,6 +480,8 @@ error-answered = { $whose ->
     [picture_server] 画像サーバーの応答：{ $status }。
     [provider_voices] プロバイダーの音声の応答：{ $status }。
     [search_model] 検索モデルの応答：{ $status }。
+    [search] ウェブ検索の応答：{ $status }。
+    [page] ページの応答：{ $status }。
    *[other] 応答：{ $status }。
 }
 error-answered-said = { $said ->

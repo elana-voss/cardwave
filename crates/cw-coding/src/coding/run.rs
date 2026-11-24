@@ -5,12 +5,16 @@
 //! pass to fix it and one check more (Foreman's auditor). With a check after
 //! each step, the task keeps the first verdict that failed.
 //!
-//! Each role asks the stored provider with its model (`Crew`). A tool whose
-//! permission is Ask waits for `answer`; Never is not offered. What a worker's
-//! step changed is its checkpoint, however it ends (`snapshot`). Commands run
-//! in the sandbox with the server's programs, installing packages with the
-//! internet too. Each change is told to the pages as `coding_task`. What it
-//! asks of the app (storage, clients, the running tasks) is `ports::AppActions`.
+//! Each role asks the chat model's provider with its own model and that model's
+//! thinking (`Roles`, from `Crew`), each round
+//! with cache marks where the provider takes them. A tool whose permission is
+//! Ask waits for `answer`; Never is not offered. A worker's step's changes are
+//! its checkpoint (`snapshot`). Commands run in the sandbox, installing
+//! packages with the internet too. Each change is told as `coding_task`; what
+//! it asks of the app is `ports::AppActions`. A step's output is lines of
+//! values (`shown::StepLine`): the model's words (marked where cut at its own
+//! limit), each call with what its tool gave (`tools::gave::Gave`), shortened
+//! to `LOGGED`, and the plan.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -22,17 +26,18 @@ use anyhow::{anyhow, bail};
 use cw_core::PageEvent;
 use cw_core::{Code, Fail};
 use cw_library::settings::{Audit, Permit};
-use cw_provider::Call;
 use cw_provider::{self as provider, Provider};
+use cw_provider::{Call, Finish};
 use serde_json::{Value, json};
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
-use crate::coding::shown::{Checkpoint, StepDetail, StepTool, StepWhat, Who};
+use crate::coding::shown::{Checkpoint, StepDetail, StepLine, StepTool, StepWhat, Who};
 use crate::coding::snapshot::Snapshot;
 use crate::coding::{Crew, Progress, Verdict};
 use crate::ports::{AppActions, Storage};
-use crate::tools::{AskKind, REFUSED, ToolAsk, builtin, files, tool, unreadable};
+use crate::tools::gave::Gave;
+use crate::tools::{AskKind, ToolAsk, builtin, files, no_such_tool, tool, unreadable};
 use cw_sandbox::Reach;
 
 /// The most rounds of a role's questions to its model.
@@ -138,8 +143,15 @@ pub struct Started {
     pub goal: String,
     pub folder: PathBuf,
     pub crew: Crew,
-    /// The stored provider, whose model each role replaces with its own.
-    pub provider: Provider,
+    /// Each role's model at the chat model's provider, that model's thinking with it.
+    pub roles: Roles,
+}
+
+/// The provider each role asks.
+pub struct Roles {
+    pub planner: Provider,
+    pub worker: Provider,
+    pub auditor: Provider,
 }
 
 struct Ctx {
@@ -187,7 +199,7 @@ pub fn spawn(app: Arc<dyn AppActions>, started: Started) {
 struct Role {
     who: String,
     step: i64,
-    model: String,
+    provider: Provider,
     tools: Vec<Value>,
     /// The tool that ends its work.
     finish: &'static str,
@@ -302,25 +314,28 @@ impl Ctx {
     /// arguments are the answer; words alone end the work of a role that
     /// takes them, as its answer's `summary`.
     async fn work(&self, role: &Role, system: &str, task: String) -> anyhow::Result<Value> {
-        // The chat model's thinking turned off holds for it alone: another
-        // model may not take the same form.
-        let chat = &self.started.provider;
-        let provider = Provider {
-            model: role.model.clone(),
-            thinking_off: chat.thinking_off.filter(|_| role.model == chat.model),
-            seen_thinking: chat.seen_thinking && role.model == chat.model,
-            window: chat.window.filter(|_| role.model == chat.model),
-            ..chat.clone()
-        };
+        let provider = &role.provider;
         let http = self.app.http();
         let mut prompt = vec![
             json!({ "role": "system", "content": system }),
             json!({ "role": "user", "content": task }),
         ];
+        let marked = provider::caching::marks(http, provider).await;
         for _ in 0..ROUNDS {
+            // Each round sends the last one's whole prompt again: the system
+            // part and all so far are its steady start (`provider::caching`).
+            let marks = match marked {
+                true => vec![0, prompt.len() - 1],
+                false => Vec::new(),
+            };
+            let request = provider::Request {
+                tools: &role.tools,
+                marks: &marks,
+                ..provider::Request::default()
+            };
             let asked = tokio::select! {
                 _ = self.stop.cancelled() => bail!(Stopped),
-                asked = provider::ask_with(http, &provider, &prompt, &role.tools) => asked,
+                asked = provider::ask_request(http, provider, &prompt, request) => asked,
             };
             let mut reply = asked.map_err(|failure| failure.context(role.who.clone()))?;
             let mut words = String::new();
@@ -335,8 +350,15 @@ impl Ctx {
                 }
             }
             let calls = reply.calls();
-            if !words.trim().is_empty() {
-                let (step, said) = (role.step, format!("{}\n\n", words.trim()));
+            // Asked without a limit of its length, a cut is the model's own limit, which the step's output tells.
+            let cut = reply.ending().finish == Finish::CutOff;
+            // A cut with no words (the limit spent thinking or inside a call) is told all the same.
+            if !words.trim().is_empty() || cut {
+                let said = StepLine::Words {
+                    text: words.trim().to_string(),
+                    cut,
+                };
+                let step = role.step;
                 self.keep(move |db| crate::coding::log(db, step, &said))
                     .await?;
             }
@@ -373,51 +395,43 @@ impl Ctx {
     /// What went wrong is the model's to read, as the call's result.
     async fn call(&self, role: &Role, call: &Call) -> anyhow::Result<String> {
         if let Some(why) = unreadable(call) {
-            return Ok(format!("Failed: {why}"));
+            return Ok(Gave::of(Err(why.into())).for_model());
         }
         // Read above: what fails here is "", a call without arguments.
         let arguments: Value = serde_json::from_str(&call.arguments).unwrap_or_default();
         let permit = self.permit(&call.name);
-        let Some((kind, what, detail, doing)) = asked(&call.name, &arguments) else {
-            return Ok("Failed: there is no such tool".into());
+        let offered = asked(&call.name, &arguments).filter(|_| permit != Permit::Never);
+        let Some((kind, what, detail, doing)) = offered else {
+            return Ok(Gave::of(Err(no_such_tool().into())).for_model());
         };
-        if permit == Permit::Never {
-            return Ok("Failed: there is no such tool".into());
-        }
         let step = role.step;
         let (tool, target) = doing;
-        // The log tells each call as the team made it: the tool and what it is called on.
-        let doing = format!("{} {target}", call.name).trim_end().to_string();
-        let shown = StepDetail::Tool { tool, target };
+        let shown = StepDetail::Tool {
+            tool,
+            target: target.clone(),
+        };
         self.keep(move |db| crate::coding::set_detail(db, step, &shown))
             .await?;
-        if permit == Permit::Ask {
-            let ask = ToolAsk { kind, what, detail };
-            if !self.ask(ask).await? {
-                let logged = format!("> {doing}\n{REFUSED}\n\n");
-                self.keep(move |db| crate::coding::log(db, step, &logged))
-                    .await?;
-                return Ok(REFUSED.into());
-            }
-        }
-        let result = self
-            .run(call, &arguments)
-            .await?
-            .unwrap_or_else(|failure| format!("Failed: {failure:#}"));
-        let cut: String = result.chars().take(LOGGED).collect();
-        let more = if cut.len() < result.len() {
-            "\n…"
-        } else {
-            ""
+        let refused = permit == Permit::Ask && !self.ask(ToolAsk { kind, what, detail }).await?;
+        let gave = match refused {
+            true => Gave::Refused,
+            false => Gave::of(self.run(call, &arguments).await?),
         };
-        let logged = format!("> {doing}\n{cut}{more}\n\n");
-        self.keep(move |db| crate::coding::log(db, step, &logged))
+        let result = gave.for_model();
+        let (gave, cut) = gave.shortened(LOGGED);
+        let said = StepLine::Called {
+            tool,
+            target,
+            gave,
+            cut,
+        };
+        self.keep(move |db| crate::coding::log(db, step, &said))
             .await?;
         Ok(result)
     }
 
     /// Runs a call; the outer error is a stop.
-    async fn run(&self, call: &Call, arguments: &Value) -> anyhow::Result<anyhow::Result<String>> {
+    async fn run(&self, call: &Call, arguments: &Value) -> anyhow::Result<anyhow::Result<Gave>> {
         let argument = |name: &str| arguments[name].as_str().unwrap_or_default().to_string();
         let folder = self.started.folder.clone();
         let web = self.app.web();
@@ -452,14 +466,7 @@ impl Ctx {
                     bail!(Stopped)
                 };
                 let ran = ran?;
-                ran.map(|ran| match ran.code {
-                    Some(code) => format!("Exit code {code}.\n{}", ran.output),
-                    None => format!(
-                        "Stopped after {} s.\n{}",
-                        COMMAND_TIME.as_secs(),
-                        ran.output
-                    ),
-                })
+                ran.map(|ran| Gave::ran(ran, COMMAND_TIME))
             }
         };
         Ok(done)
@@ -607,7 +614,7 @@ async fn plan(ctx: &Ctx) -> anyhow::Result<Plan> {
     let role = Role {
         who: "Planner".into(),
         step,
-        model: ctx.started.crew.planner_model.clone(),
+        provider: ctx.started.roles.planner.clone(),
         tools: ctx.tools(&[builtin::LIST_FILES, builtin::READ_FILE], finish),
         finish: "plan",
         words_end: false,
@@ -640,13 +647,17 @@ async fn plan(ctx: &Ctx) -> anyhow::Result<Plan> {
             .trim()
             .to_string(),
     };
-    let (task, count, text) = (ctx.started.id, plan.steps.len(), plan.text());
+    let (task, count) = (ctx.started.id, plan.steps.len());
     let what = StepWhat::Planned { steps: count };
+    let said = StepLine::Plan {
+        steps: plan.steps.clone(),
+        tests: plan.tests.clone(),
+    };
     ctx.keep(move |db| {
         crate::coding::set_planned(db, task, count)?;
         crate::coding::set_what(db, step, &what)?;
         crate::coding::set_detail(db, step, &StepDetail::ShowPlan)?;
-        crate::coding::log(db, step, &format!("The plan:\n{text}"))?;
+        crate::coding::log(db, step, &said)?;
         crate::coding::end_step(db, step, Progress::Done)
     })
     .await?;
@@ -699,7 +710,7 @@ async fn build(
     let role = Role {
         who: who.clone(),
         step,
-        model: ctx.started.crew.worker_model.clone(),
+        provider: ctx.started.roles.worker.clone(),
         tools: ctx.tools(&names, finish),
         finish: "report",
         words_end: true,
@@ -817,7 +828,7 @@ async fn check(
     let role = Role {
         who: "Auditor".into(),
         step,
-        model: ctx.started.crew.auditor_model.clone(),
+        provider: ctx.started.roles.auditor.clone(),
         tools: ctx.tools(
             &[
                 builtin::LIST_FILES,
@@ -865,12 +876,15 @@ async fn check(
         tests_passed: verdict.tests_passed,
         tests_total: verdict.tests_total,
     };
-    let notes = verdict.notes.clone();
+    let notes = (!verdict.notes.is_empty()).then(|| StepLine::Words {
+        text: verdict.notes.clone(),
+        cut: false,
+    });
     ctx.keep(move |db| {
         crate::coding::set_what(db, step, &said)?;
         crate::coding::set_detail(db, step, &StepDetail::None)?;
-        if !notes.is_empty() {
-            crate::coding::log(db, step, &format!("{notes}\n"))?;
+        if let Some(notes) = &notes {
+            crate::coding::log(db, step, notes)?;
         }
         crate::coding::end_step(db, step, Progress::Done)
     })

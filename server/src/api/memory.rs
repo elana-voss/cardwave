@@ -7,7 +7,8 @@
 //!
 //! `remember` runs a pass after a reply ended with words, one per chat at a time
 //! (`AppState::remembering`): each whole unread block (`memory::next_block`) is
-//! read by the Worker model, a failed one stays for the next pass; then the
+//! read by the Worker model, a failed one stays for the next pass (the model's
+//! failure told to the chat's pages as `memory_failed`, Cardwave's own logged); then the
 //! missing vectors are made, without the reply's time limit, and other chats of
 //! a shared memory whose blocks were let go are read again. `recall`, before a
 //! reply, asks the chat's one memory, which its pass writes, whoever speaks
@@ -17,6 +18,7 @@
 //! (those attached to the message answered whole, the rest by meaning).
 
 use std::collections::HashSet;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -37,7 +39,7 @@ use cw_provider::Http;
 use cw_provider::{self as provider, Provider};
 use futures_util::future::BoxFuture;
 
-use super::{ApiResult, User};
+use super::{ApiError, ApiResult, User};
 use crate::AppState;
 use cw_search as search;
 
@@ -101,10 +103,12 @@ fn told(state: &AppState, user: i64, chat_id: i64) {
 
 /// The Worker model as the memory's helper: one user message, at the build
 /// spec's temperature (a thinking model's thinking is left out by
-/// `provider`); an empty answer asked once more.
+/// `provider`); an empty answer asked once more. `failed` tells the pass
+/// that the model failed, not Cardwave reading or writing the memory.
 struct Worker<'a> {
     http: &'a Http,
     provider: Provider,
+    failed: AtomicBool,
 }
 
 impl Helper for Worker<'_> {
@@ -112,11 +116,14 @@ impl Helper for Worker<'_> {
         Box::pin(async move {
             let asked = [PromptMessage::new(Role::User, prompt)];
             for _ in 0..2 {
-                let answer = cw_provider::answer(self.http, &self.provider, &asked).await?;
+                let answer = cw_provider::answer(self.http, &self.provider, &asked)
+                    .await
+                    .inspect_err(|_| self.failed.store(true, Ordering::Relaxed))?;
                 if !answer.trim().is_empty() {
                     return Ok(answer.trim().to_string());
                 }
             }
+            self.failed.store(true, Ordering::Relaxed);
             anyhow::bail!(Fail::new(Code::WorkerNoAnswer))
         })
     }
@@ -217,6 +224,7 @@ async fn pass(state: AppState, user: i64, chat_id: i64, place: Place) {
         let helper = Worker {
             http: &state.http,
             provider,
+            failed: AtomicBool::new(false),
         };
         let added = match memory::system()
             .add(&next.state, &next.block, &helper)
@@ -224,7 +232,7 @@ async fn pass(state: AppState, user: i64, chat_id: i64, place: Place) {
         {
             Ok(added) => added,
             Err(failure) => {
-                tracing::warn!("chat {chat_id}'s memory pass failed: {failure:#}");
+                failed(&state, user, chat_id, failure, helper.failed.into_inner());
                 state.remembering().remove(&chat_id);
                 break;
             }
@@ -251,6 +259,21 @@ async fn pass(state: AppState, user: i64, chat_id: i64, place: Place) {
     again.dedup();
     for other in again {
         remember(&state, user, other);
+    }
+}
+
+/// A pass that failed: the helper model's failure is logged and told to the
+/// chat's pages (`memory_failed`), as a reply's is; Cardwave's own (a broken
+/// stored state) is only logged, as the user can do nothing about it.
+fn failed(state: &AppState, user: i64, chat_id: i64, failure: anyhow::Error, by_model: bool) {
+    if !by_model {
+        tracing::error!("chat {chat_id}'s memory pass failed: {failure:#}");
+        return;
+    }
+    tracing::warn!("chat {chat_id}'s memory pass failed: {failure:#}");
+    let error = ApiError::from(failure).body();
+    if error.code != Code::Internal {
+        state.push(user, &PageEvent::MemoryFailed { chat_id, error });
     }
 }
 

@@ -6,7 +6,7 @@ import { startFakeSearch, type FakeSearch } from "../fake-search";
 
 // Run-through "getting started": a new user's first steps through the whole app, by clicks and typing alone,
 // each story going on from the one before (`serial`). First run with the pretend model's key, its downloads
-// from fake-search.ts; another provider (the stand-in `api`) added in Settings and its model made the chat
+// from fake-search.ts, awaited to their end (each story's page has a browser of its own); another provider (the stand-in `api`) added in Settings and its model made the chat
 // model; a card this file builds (`CARD`) imported from the fresh start and opened;
 // a chat started from its page and answered by the chat model now in use, the stand-in (`REPLY`).
 // They are run-throughs of built behaviour: each holds the others' details to their own specs (20, 57, 03, 28).
@@ -40,7 +40,7 @@ const heading = (page: Page) => page.locator(".setup h1");
 /** What a line of Settings or of first run says under its name. */
 const says = (page: Page, name: string) => page.locator(".item:visible", { has: page.locator(".item-label", { hasText: new RegExp(`^${name}$`) }) }).locator(".item-text > .meta");
 
-test("first run: the pretend key, its models, no folder of cards, the downloads, and into the app", async ({ page }) => {
+test("first run: the pretend key, its models, no folder of cards, the downloads, and into the app", async ({ page, request }) => {
   await page.goto("/");
   await expect(heading(page)).toHaveText("Provider");
   await page.getByLabel("API key", { exact: true }).fill(PRETEND);
@@ -58,6 +58,10 @@ test("first run: the pretend key, its models, no folder of cards, the downloads,
   await button(page, "Open Cardwave").click();
   await expect(page).toHaveURL(/#\/chats$/);
   await expect(page.locator("#rail [aria-current]")).toHaveText(["Chats"]);
+  // The download goes on in the app; until its end empties the list, a browser that did not click "Open Cardwave"
+  // (the next story's page, a context of its own) is shown first run again. Its time is the download's, as long as
+  // the next story's wait for the rail.
+  await expect.poll(async () => (await (await request.get("/api/settings")).json()).setup_downloads, { timeout: 30_000 }).toEqual([]);
 });
 
 test("a provider is added in Settings and its model made the chat model", async ({ page }) => {

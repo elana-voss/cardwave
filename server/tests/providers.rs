@@ -25,7 +25,6 @@ use cw_provider::{self as provider, SetProvider, list};
 use futures_util::{StreamExt, stream};
 use reqwest::Url;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 use tokio::time::{sleep, timeout};
 
 const JSON: &str = "application/json";
@@ -119,12 +118,8 @@ impl Places {
             };
             (StatusCode::from_u16(rule.status).unwrap(), head, body).into_response()
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(common::props))
-            .fallback(answer);
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().fallback(answer);
+        let url = common::serve(app).await;
         Self { url, asked }
     }
 

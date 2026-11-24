@@ -39,7 +39,9 @@ pub mod export;
 pub mod inputs;
 pub mod messages;
 pub mod reply;
+pub mod sentences;
 pub mod title;
+pub mod trim;
 pub mod turn;
 
 pub use characters::*;

@@ -1,7 +1,8 @@
 // How the app looks by the user's choice, which is kept in the browser for the
 // next start: the theme (the system's, light, dark, or one of the five looks of app/looks.css, each its own colour
-// scheme; Cyberpunk is left out, the owner, 2026-11-06), the chat's layout (bubbles or plain), the message pictures (on or off; Settings alone sets them, so no `LOOK`) and Compact (every size about a fifth smaller).
-// The title bar's view menu (view-menu.ts) and Settings › Appearance set the same choices; each choice tells the
+// scheme; Cyberpunk is left out, the owner, 2026-11-06), the chat's layout (bubbles or plain), the message pictures (on or off; Settings alone sets them, so no `LOOK`), Compact (every size about a fifth smaller)
+// and the chat's message colours (`textSet`, set only in the view menu; a character's chat and the companion's page
+// show it as `data-text-set`, `showTextSet`). The title bar's view menu (view-menu.ts) and Settings › Appearance set the same choices; each choice tells the
 // page by the event `LOOK` on the document, so what shows a choice is drawn anew.
 //
 // `theme`, `setTheme` and `themes` (their words in the language in use) are the theme; index.html sets it and Compact before the page is drawn, under
@@ -90,7 +91,7 @@ export function setMessagePictures(on: boolean): void {
 }
 
 /** A chat's views in the view menu: its layouts, the same choice as Settings' Chat layout. */
-export const CHAT_VIEWS: PageViews = { get list() {
+export const CHAT_VIEWS: PageViews = { heading: () => wording("view-page-chat"), get list() {
     return chatLayouts();
   }, now: () => chatLayout(), choose: (to) => setChatLayout(to as ChatLayout) };
 
@@ -106,4 +107,45 @@ export function setCompact(on: boolean): void {
   if (on) document.documentElement.dataset.density = "compact";
   else delete document.documentElement.dataset.density;
   told();
+}
+
+/** The chat's message colours: none of their own (the theme's), or the set for light or for dark themes (174b draws them). */
+const TEXT_SETS = ["off", "light", "dark"] as const;
+export type TextSet = (typeof TEXT_SETS)[number];
+
+/** The sets to choose from, each with its words and its grey line under them in the language in use. */
+export const textSets = (): [TextSet, string, string][] => [
+  ["off", wording("text-set-off"), wording("text-set-off-note")],
+  ["light", wording("text-set-light"), wording("text-set-light-note")],
+  ["dark", wording("text-set-dark"), wording("text-set-dark-note")],
+];
+
+/** The set is kept under this name, which another window of the app hears of by the `storage` event. */
+const TEXT_SET = "text-set";
+
+/** The set chosen; Off while none was. */
+export const textSet = (): TextSet => TEXT_SETS.find((name) => name === remembered(TEXT_SET)) ?? "off";
+
+/** Sets the chat's message colours at once and keeps the choice. */
+export function setTextSet(to: TextSet): void {
+  remember(TEXT_SET, to);
+  told();
+}
+
+/**
+ * Has `root` (a character's chat, the companion's page) draw its messages in the set chosen, while `applies()`:
+ * `data-text-set` names it, absent for Off. Followed as it is chosen anew in this window or another; `show` draws it
+ * again where `applies` may answer otherwise now (a character added to the chat), `stop` ends following.
+ */
+export function showTextSet(root: HTMLElement, applies: () => boolean = () => true): { show(): void; stop(): void } {
+  const show = () => {
+    const now = textSet();
+    if (applies() && now !== "off") root.dataset.textSet = now;
+    else delete root.dataset.textSet;
+  };
+  show();
+  const stop = new AbortController();
+  document.addEventListener(LOOK, show, { signal: stop.signal });
+  window.addEventListener("storage", (event) => event.key === TEXT_SET && show(), { signal: stop.signal });
+  return { show, stop: () => stop.abort() };
 }

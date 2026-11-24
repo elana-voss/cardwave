@@ -17,8 +17,8 @@ use anyhow::bail;
 use cw_core::{Code, Detail, Fail};
 use serde_json::{Map, Value, json};
 
-use crate::reply::Ending;
-use crate::{Http, Provider, ask_shaped, refusal_of};
+use crate::reply::{Ending, Finish};
+use crate::{Http, Provider, Request, ask_request, refusal_of};
 
 /// The limit of a call that names no other.
 pub const LIMIT: u32 = 4_000;
@@ -132,7 +132,7 @@ pub async fn ask(
             return Ok(answer);
         }
         tries += 1;
-        match (ending.cut_off, asked.reply_limit) {
+        match (ending.finish == Finish::CutOff, asked.reply_limit) {
             (true, Some(limit)) => {
                 asked.reply_limit = Some(limit.saturating_mul(4).min(MOST).max(limit));
             }
@@ -172,7 +172,11 @@ async fn read(
     prompt: &Value,
     shape: Option<&Value>,
 ) -> anyhow::Result<(String, Ending)> {
-    let mut reply = ask_shaped(http, provider, prompt, &[], shape).await?;
+    let request = Request {
+        shape,
+        ..Request::default()
+    };
+    let mut reply = ask_request(http, provider, prompt, request).await?;
     let mut words = String::new();
     while let Some(piece) = reply.next().await? {
         words.push_str(&piece);

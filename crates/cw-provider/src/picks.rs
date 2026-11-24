@@ -30,7 +30,7 @@ use crate::Http;
 use crate::catalog::{self, OfferedModel};
 use crate::facts::{self, has_word};
 use crate::models_dev::{Index, Known};
-use crate::{Provider, Sampling, subscription, suggested};
+use crate::{Provider, subscription, suggested};
 
 /// The most candidates of a kind.
 pub(crate) const CANDIDATES: usize = 15;
@@ -284,17 +284,7 @@ async fn ask(
     candidates: &Candidates,
     index: &Index,
 ) -> anyhow::Result<[Option<String>; 3]> {
-    let provider = Provider {
-        base_url: base_url.to_string(),
-        api_key: key.to_string(),
-        model: model.to_string(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
-    };
+    let provider = Provider::new(base_url, key, model);
     let prompt = prompt(candidates, index);
     let asked = crate::answer(http, &provider, &prompt);
     let answer = match timeout(ASK_LIMIT, asked).await {

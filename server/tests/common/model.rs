@@ -13,7 +13,6 @@ use axum::routing::post;
 use axum::{Json, Router};
 use futures_util::StreamExt;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 
 use super::server::{Server, Socket, event};
 
@@ -78,12 +77,8 @@ impl Model {
             )
                 .into_response()
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(super::props))
-            .route("/v1/chat/completions", post(complete));
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().route("/v1/chat/completions", post(complete));
+        let url = format!("{}/v1", super::serve(app).await);
         Self { url, asked }
     }
 

@@ -11,7 +11,6 @@ use axum::routing::post;
 use axum::{Json, Router};
 use cw_chat::memory::hybrid::OPENING;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 use tokio::time::{Instant, sleep};
 
 use super::server::{Server, Socket, WAIT, event};
@@ -28,6 +27,8 @@ pub struct Noted {
     /// What the helper answers, and how many of its askings fail first.
     pub pass_says: String,
     pub failing: usize,
+    /// How many of its askings refuse the key first (401).
+    pub refusing: usize,
 }
 
 pub struct Fake {
@@ -55,6 +56,9 @@ impl Fake {
                     if !first.starts_with(OPENING) {
                         noted.replies.push(messages);
                         "Hello.".to_string()
+                    } else if noted.refusing > 0 {
+                        noted.refusing -= 1;
+                        return (StatusCode::UNAUTHORIZED, "Invalid API key").into_response();
                     } else if noted.failing > 0 {
                         noted.failing -= 1;
                         return (StatusCode::INTERNAL_SERVER_ERROR, "down").into_response();
@@ -71,12 +75,8 @@ impl Fake {
                     .into_response()
             }
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(super::props))
-            .route("/v1/chat/completions", post(answer));
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().route("/v1/chat/completions", post(answer));
+        let url = format!("{}/v1", super::serve(app).await);
         Self { url, noted }
     }
 
@@ -152,6 +152,16 @@ pub async fn remembered(socket: &mut Socket) {
     loop {
         if event(socket).await["type"] == "memories" {
             return;
+        }
+    }
+}
+
+/// Waits for the event that says the chat's memory pass failed by its helper model.
+pub async fn pass_failed(socket: &mut Socket) -> Value {
+    loop {
+        let event = event(socket).await;
+        if event["type"] == "memory_failed" {
+            return event;
         }
     }
 }

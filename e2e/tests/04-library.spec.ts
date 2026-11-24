@@ -201,7 +201,7 @@ test("a card's title in the list opens its page, with its tags, facts and texts"
   await expect(part(page, "First message").locator(".md")).toHaveText("Hello Guest, I am Nell Quay.");
   await expect(part(page, "Description")).toContainText("Line 1 of what Nell Quay is like.");
   await expect(part(page, "Personality").locator(".md")).toHaveText("Dry, patient.");
-  await expect(part(page, "Example dialogue")).toContainText("Guest: Tea?Nell Quay: Black.");
+  await expect(part(page, "Example dialogue")).toContainText("Guest: Tea?\nNell Quay: Black.");
   // An empty line starts a new paragraph.
   await expect(part(page, "Creator notes").locator(".md p")).toHaveText(["Best with short replies.", "Keep the lamp in the story."]);
   // A text the card lacks asks for its words.

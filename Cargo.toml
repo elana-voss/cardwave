@@ -118,6 +118,16 @@ chacha20poly1305 = "0.10"
 tower = { version = "0.5", features = ["util"] }
 # A backup is sent as it is read from its file.
 tokio-util = { version = "0.7", features = ["io"] }
+# Landlock for the tools' sandbox on Linux, by the kernel feature's own project.
+landlock = "0.4.8"
+# HTML read by a browser's parser (the web tools' pages).
+scraper = { version = "0.29", default-features = false }
+# scraper's tree, walked without recursion.
+ego-tree = "0.11"
+# scraper's parser, to read a page with scripting off (the version scraper uses).
+html5ever = "0.40"
+# The MCP server: its protocol by the official SDK, mounted on the axum router.
+rmcp = { version = "3.11", default-features = false, features = ["server", "transport-streamable-http-server"] }
 # The voice model's runtime, ONNX Runtime, loaded from the library the voice downloads (`server/src/voice.rs`).
 ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "load-dynamic"] }
 

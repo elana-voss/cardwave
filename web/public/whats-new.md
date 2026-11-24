@@ -1,8 +1,14 @@
 # 0.3.3
 
-Cardwave now knows how much each AI reads at once, and no longer guesses.
+Cardwave now knows how much each AI reads at once, and you can choose how much it thinks and colour your chats.
 
-- Each reply fits what its model can read. Cardwave takes the size from its built-in model list, or asks an AI on your computer or your local network itself. Before, every model was given 128,000 tokens.
+- In Settings › Providers, a model that can think more or less now offers Off, Light, Normal or Deep, kept for each model. Where a provider can't turn thinking off for a model, Cardwave says so.
+- New in the view menu: "Chat message colours" (Off, Light or Dark) shows speech in quotation marks, italics, bold, links and code in their own colours, in a character's chat and the companion.
+- A reply cut off at its length limit now ends at its last whole sentence. A reply that stops at the AI's own limit is kept as it came, with a grey line under it saying so, and "Continue this reply" goes on from its last word.
+- When the helper model can't keep a chat's memory, the chat tells you why.
+- Long chats with a Claude model through OpenRouter or NanoGPT cost less and answer sooner, through prompt caching.
+- In a Coding task, each step's lines are in your language, and web pages are read more accurately.
+- Each reply fits what its model can read. Cardwave takes the size from its built-in model list, or asks an AI on your computer (LM Studio, Ollama or KoboldCpp) or your local network itself. Before, every model was given 128,000 tokens.
 - A long chat with a model that reads more now keeps more of its history.
 - Where an AI's size is not known, the reply tells you, and you set it once as the context size in Settings › Advanced. Nothing is sent until then.
 - The context size in Settings › Advanced now caps what is sent to any model.

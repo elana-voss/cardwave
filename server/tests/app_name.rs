@@ -9,7 +9,7 @@ use common::api::{Api, Asked, JSON, says};
 use cw_chat::images::make_with;
 use cw_provider::images::{ImageApi, Whom, listed};
 use cw_provider::models::{Limits, described};
-use cw_provider::{Provider, Sampling, ask, client};
+use cw_provider::{Provider, ask, client};
 use cw_voice::at::{read, voices};
 
 /// What a call sends whoever it asks.
@@ -25,17 +25,7 @@ const PLAIN: [&str; 5] = [
 /// so what it answers (404 for most) is not looked at.
 async fn every_way(api: &Api) {
     let http = client().unwrap();
-    let provider = Provider {
-        base_url: api.url.clone(),
-        api_key: "a-key".to_string(),
-        model: "a-model".to_string(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
-    };
+    let provider = Provider::new(api.url.clone(), "a-key", "a-model");
     let whom = Whom {
         base_url: api.url.clone(),
         api_key: "a-key".to_string(),

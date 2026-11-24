@@ -111,7 +111,7 @@ test("the app closed mid-reply keeps the words come so far and says the reply br
   held.release();
   await openChat(page);
   await expect(texts(page).last()).toHaveText("Half a");
-  await expect(alert(page)).toHaveText("The reply broke off.");
+  await expect(page.locator(".msg").last().locator(".reply-ending")).toHaveText("The reply broke off.");
 });
 
 test("a reply that fails by 404, the model gone, tells the user so", async ({ page }) => {

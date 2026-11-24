@@ -135,6 +135,7 @@ async fn put_in_use(
             Ok((used, worker))
         })
         .await?;
+    super::kinds::listed_anew(&state, user).await?;
     state.tell(user, &page, &PageEvent::Provider);
     Ok(Json(UsedPreset {
         provider: ProviderView::of(used.provider, worker),

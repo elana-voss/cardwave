@@ -7,7 +7,9 @@
 // told as the figure's mood: listening while the user types, thinking until the reply's first words, talking while
 // they come and while the reply it asked for is read aloud in the card's voice, where the voice is set up and not muted (the
 // lips move with it, figure.ts; a reply no voice will read has its letters told as they come, `talks`, for lips.ts);
-// a reply that ended is told too (`replied`), for the animator.
+// a reply that ended is told too (`replied`), for the animator. A reply cut off or broken off says so under its bubble
+// (ending.ts), with no "Continue this reply", which the box has for no reply. A memory pass that failed is told in
+// the status line, as a reply's failure is.
 //
 // Traps: the box is made before its chat is known (`open` finds it, once, also when opened twice at once); an event of another chat, or one that
 // comes while the chat is read, is let go, as the reply's end brings the whole message; a message sent or deleted in
@@ -22,7 +24,8 @@ import { el, failure, reason } from "../dom";
 import { icon } from "../icons";
 import { narrated } from "../narration";
 import type { Mood } from "./body";
-import { failureWords } from "../language/errors";
+import { failureWords, memoryNotKept } from "../language/errors";
+import { endingLine } from "../ending";
 import { wording } from "../language/language";
 import { readAloud, spoken, stopReading } from "../voice/voice";
 
@@ -104,9 +107,10 @@ function wireField(input: HTMLTextAreaElement, form: HTMLFormElement, mood: () =
 /** The newest `SHOWN` messages as bubbles, the list scrolled to its end. */
 function drawBubbles(list: HTMLElement, messages: MessageView[]): void {
   list.replaceChildren(
-    ...messages.slice(-SHOWN).map((message) =>
-      el("div", { className: message.role === "user" ? "bubble me" : "bubble" }, ...narrated(message.content, !message.complete)),
-    ),
+    ...messages
+      .slice(-SHOWN)
+      .flatMap((message) => [el("div", { className: message.role === "user" ? "bubble me" : "bubble" }, ...narrated(message.content, !message.complete)), endingLine(message)])
+      .filter((node) => node !== null),
   );
   list.scrollTop = list.scrollHeight;
 }
@@ -280,6 +284,8 @@ function onEvent(box: Box, event: ServerEvent): void {
   if (event.type === "messages" && event.chat_id === chat.id && !busy) return quietly(box);
   if (event.type === "reply_text" && event.chat_id === chat.id) return replyText(box, event);
   if (event.type === "reply_ended" && event.chat_id === chat.id) replyEnded(box, event);
+  // Its chat's memory pass failed by the helper model: told in the status line, as a reply's failure is.
+  if (event.type === "memory_failed" && event.chat_id === chat.id) box.status.replaceChildren(failure(memoryNotKept(event.error)));
 }
 
 /** A reply's words so far: they replace the message's text from `start`. */

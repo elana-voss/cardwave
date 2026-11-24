@@ -37,8 +37,8 @@ use std::time::{Duration, Instant};
 use anyhow::{Context, bail};
 use sha2::{Digest, Sha256};
 
+use self::landlock::{DEVICE, READ_EXEC, READ_FILE, Ruleset};
 use super::{Output, Ran, Reach, allowed, grantable};
-use landlock::{DEVICE, READ_EXEC, READ_FILE, Ruleset};
 
 /// How often the command is looked at while it runs.
 const LOOK: Duration = Duration::from_millis(100);
@@ -61,7 +61,7 @@ const DEFAULT_PATH: [&str; 3] = ["/usr/local/bin", "/usr/bin", "/bin"];
 /// Whether this computer has Landlock and a scope for a command
 /// (`scope::available`), without which no command runs.
 pub(super) fn available() -> bool {
-    landlock::version() > 0 && scope::available()
+    landlock::available() && scope::available()
 }
 
 pub(super) fn run(
@@ -72,9 +72,9 @@ pub(super) fn run(
     reach: Reach,
 ) -> anyhow::Result<Ran> {
     let own = own_folder(folder)?;
-    let rules = Ruleset::new()?;
-    rules.allow(folder, u64::MAX)?;
-    rules.allow(&own, u64::MAX)?;
+    let mut rules = Ruleset::new()?;
+    rules.allow(folder, landlock::every_right())?;
+    rules.allow(&own, landlock::every_right())?;
     for system in SYSTEM_FOLDERS {
         rules.allow(Path::new(system), READ_EXEC)?;
     }
@@ -121,7 +121,7 @@ pub(super) fn run(
         false => (Vec::new(), Vec::new()),
     };
     let filter = seccomp::filter(reach.network);
-    let (child, listener) = spawn(folder, command, &environment, &rules, &filter)?;
+    let (child, listener) = spawn(folder, command, &environment, rules, &filter)?;
     let output = Output::read(child.reader);
     let done = Arc::new(AtomicBool::new(false));
     supervisor::supervise(
@@ -139,6 +139,7 @@ pub(super) fn run(
     Ok(Ran {
         output: String::from_utf8_lossy(&output.take()).into_owned(),
         code,
+        drive_refused: false,
     })
 }
 
@@ -223,7 +224,7 @@ fn spawn(
     folder: &Path,
     command: &str,
     environment: &[(OsString, OsString)],
-    rules: &Ruleset,
+    rules: Ruleset,
     filter: &[seccomp::Instruction],
 ) -> anyhow::Result<(Child, OwnedFd)> {
     let (reader, writer) = std::io::pipe().context("no pipe for the command's output")?;
@@ -234,7 +235,8 @@ fn spawn(
     let length = u16::try_from(filter.len()).context("the seccomp filter is too long")?;
     // As a number, so the closure below may be sent; it lives until spawn returns.
     let instructions = filter.as_ptr() as usize;
-    let ruleset = rules.fd();
+    // Taken once, in the command's process.
+    let mut ruleset = Some(rules);
     let their_end = theirs.as_raw_fd();
     // SAFETY: a plain system call.
     let parent = unsafe { libc::getpid() };
@@ -256,6 +258,7 @@ fn spawn(
                 len: length,
                 filter: instructions as *const seccomp::Instruction,
             };
+            let ruleset = ruleset.take().ok_or(std::io::ErrorKind::InvalidInput)?;
             confine(parent, ruleset, &program, their_end)
         });
     }
@@ -310,7 +313,7 @@ fn kill_and_reap(mut process: std::process::Child) {
 /// its scope.
 fn confine(
     parent: libc::pid_t,
-    ruleset: RawFd,
+    ruleset: Ruleset,
     program: &seccomp::Program,
     socket: RawFd,
 ) -> std::io::Result<()> {
@@ -331,7 +334,7 @@ fn confine(
             return Err(failed());
         }
     }
-    landlock::restrict(ruleset)?;
+    ruleset.restrict()?;
     let listener = seccomp::install(program)?;
     let sent = send_fd(socket, listener);
     // SAFETY: the descriptor is the filter's, ours to close.

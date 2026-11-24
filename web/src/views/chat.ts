@@ -42,7 +42,7 @@ import { daysLeft } from "../format";
 import { remember, remembered } from "../storage";
 import { modeInUse } from "../card/modes";
 import { foldFor } from "../shell/rail";
-import { CHAT_VIEWS } from "../theme";
+import { CHAT_VIEWS, showTextSet } from "../theme";
 import { stopReading } from "../voice/voice";
 import { askNode } from "../chat/tool-ask";
 import { wording } from "../language/language";
@@ -83,7 +83,12 @@ export const opensWriting = (view: ChatView | null | undefined, active: Element 
 export function chatView(chatId: number): View {
   const s = newScreen(chatId);
   const p = makeParts(s);
-  s.render = () => render(s, p);
+  // A character's chat shows the message colours chosen in the view menu; a chat without one (the AI itself) does not.
+  const colours = showTextSet(s.node, () => !!s.view?.characters.length);
+  s.render = () => {
+    render(s, p);
+    colours.show();
+  };
   s.onEvent = (event) => {
     // Dictation's model downloaded or removed: the microphone shows while it is there.
     if (event.type === "dictation") p.composer.dictate.read();
@@ -118,6 +123,7 @@ export function chatView(chatId: number): View {
     left();
     WIDE.removeEventListener("change", sides);
     unkeep();
+    colours.stop();
     if (p.splitShown) foldFor(false);
   };
   // What is being read may be from before the socket opened, so it is read again after.

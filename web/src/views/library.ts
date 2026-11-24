@@ -188,6 +188,7 @@ export function libraryView(): View {
     node: node,
     create: () => file.click(),
     views: {
+      heading: () => wording("view-page-library"),
       list: layouts(),
       now: () => layout,
       choose: (chosen) => {

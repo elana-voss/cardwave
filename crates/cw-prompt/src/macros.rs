@@ -1,7 +1,8 @@
 //! SillyTavern-compatible `{{...}}` macros: `{{char}}`, `{{user}}`, `{{getvar::x}}`,
 //! the `{{.x}}` / `{{$x}}` variable shorthand, `{{if}}` blocks and so on. One
 //! left-to-right pass, so a variable written on the left is visible to a read on the
-//! right and the dropped branch of an `{{if}}` never runs.
+//! right and the dropped branch of an `{{if}}` never runs. `render_noting` also
+//! tells whether the text read the clock or drew by chance without a seed.
 
 use std::borrow::Cow;
 use std::cmp::Ordering;
@@ -77,17 +78,38 @@ pub struct MacroContext<'a> {
 /// Replaces every macro in `text`. Unknown macros and unbalanced braces are left
 /// as they are.
 pub fn render(text: &str, ctx: &mut MacroContext<'_>) -> String {
+    render_noting(text, ctx).text
+}
+
+/// A text with its macros replaced, and whether a render of it drew anew: read
+/// the clock (`{{time}}`, `{{date}}`) or drew by chance without a seed
+/// (`{{random}}`, `{{roll}}`, a `{{pick}}` not kept), so the next render may differ.
+pub struct Rendered {
+    pub text: String,
+    pub drawn_anew: bool,
+}
+
+/// [`render`], telling whether the text drew anew ([`Rendered`]).
+pub fn render_noting(text: &str, ctx: &mut MacroContext<'_>) -> Rendered {
     if !text.contains("{{") {
-        return text.to_string();
+        return Rendered {
+            text: text.to_string(),
+            drawn_anew: false,
+        };
     }
     let rng = ctx.seed.map(StdRng::seed_from_u64);
-    Engine {
+    let mut engine = Engine {
         ctx,
         picks: 0,
         rng,
         evaluated: 0,
+        drawn_anew: false,
+    };
+    let text = engine.render(text, 0, 0);
+    Rendered {
+        text,
+        drawn_anew: engine.drawn_anew,
     }
-    .render(text, 0, 0)
 }
 
 struct Engine<'e, 'a> {
@@ -98,6 +120,8 @@ struct Engine<'e, 'a> {
     rng: Option<StdRng>,
     /// Macros met so far in this render (`MAX_EVALUATIONS`).
     evaluated: usize,
+    /// Whether this render read the clock or drew without a seed ([`Rendered`]).
+    drawn_anew: bool,
 }
 
 impl Engine<'_, '_> {
@@ -105,7 +129,10 @@ impl Engine<'_, '_> {
     fn draw(&mut self, low: i64, high: i64) -> i64 {
         match &mut self.rng {
             Some(rng) => rng.random_range(low..=high),
-            None => rand::random_range(low..=high),
+            None => {
+                self.drawn_anew = true;
+                rand::random_range(low..=high)
+            }
         }
     }
 
@@ -275,6 +302,7 @@ impl Engine<'_, '_> {
             return self.shorthand(&caps);
         }
         if let Some(time) = utc_time(trimmed) {
+            self.drawn_anew = true;
             return time;
         }
 
@@ -292,8 +320,14 @@ impl Engine<'_, '_> {
         match command.to_lowercase().as_str() {
             "char" | "bot" => self.ctx.char_name.trim().to_string(),
             "user" => self.ctx.user_name.trim().to_string(),
-            "time" => dates::time_in(self.ctx.language, Local::now().time()),
-            "date" => dates::date_in(self.ctx.language, Local::now().date_naive()),
+            "time" => {
+                self.drawn_anew = true;
+                dates::time_in(self.ctx.language, Local::now().time())
+            }
+            "date" => {
+                self.drawn_anew = true;
+                dates::date_in(self.ctx.language, Local::now().date_naive())
+            }
             "random" => options(arg, double_colon)
                 .map(|o| self.random_of(o))
                 .unwrap_or_default(),
@@ -302,9 +336,15 @@ impl Engine<'_, '_> {
                 .unwrap_or_default(),
             "roll" => self.roll(arg),
             "getvar" => get_var(self.ctx.local.as_deref(), arg, double_colon),
-            "setvar" => set_var(self.ctx.local.as_deref_mut(), arg, double_colon),
+            "setvar" => {
+                self.drawn_anew |= set_var(self.ctx.local.as_deref_mut(), arg, double_colon);
+                String::new()
+            }
             "getglobalvar" => get_var(self.ctx.global.as_deref(), arg, double_colon),
-            "setglobalvar" => set_var(self.ctx.global.as_deref_mut(), arg, double_colon),
+            "setglobalvar" => {
+                self.drawn_anew |= set_var(self.ctx.global.as_deref_mut(), arg, double_colon);
+                String::new()
+            }
             "newline" => "\n".repeat(repeat_count(arg)),
             "space" => " ".repeat(repeat_count(arg)),
             "noop" | "hidden_key" | "comment" => String::new(),
@@ -330,7 +370,8 @@ impl Engine<'_, '_> {
         }
         let picked = self.random_of(options);
         if let Some(local) = self.ctx.local.as_deref_mut() {
-            store(local, &key, picked.clone());
+            // Not drawn anew: the pick kept renders the same next time.
+            let _changed = store(local, &key, picked.clone());
         }
         picked
     }
@@ -354,10 +395,12 @@ impl Engine<'_, '_> {
         let current = vars.get(name).cloned();
         let current = current.as_deref();
         let current_num = current.and_then(Num::parse);
-        let mut set = |v: String| store(vars, name, v);
+        // A value changed may render differently next time: drawn anew.
+        let mut changed = false;
+        let mut set = |v: String| changed |= store(vars, name, v);
         let truth = |b: bool| if b { "true" } else { "false" }.to_string();
 
-        match operator {
+        let rendered = match operator {
             "" => current.unwrap_or("").to_string(),
             "=" => {
                 set(value.to_string());
@@ -419,7 +462,9 @@ impl Engine<'_, '_> {
                     _ => false,
                 })
             }
-        }
+        };
+        self.drawn_anew |= changed;
+        rendered
     }
 }
 
@@ -560,30 +605,27 @@ fn get_var(vars: Option<&Variables>, arg: &str, double_colon: bool) -> String {
     vars.get(name).cloned().unwrap_or_default()
 }
 
-/// `{{setvar::name::value}}`, `{{setvar:name:value}}` or `{{setvar name value}}`.
-fn set_var(vars: Option<&mut Variables>, arg: &str, double_colon: bool) -> String {
+/// `{{setvar::name::value}}`, `{{setvar:name:value}}` or `{{setvar name value}}`;
+/// whether it changed the variable.
+fn set_var(vars: Option<&mut Variables>, arg: &str, double_colon: bool) -> bool {
     let Some(vars) = vars else {
-        return String::new();
+        return false;
     };
     if arg.is_empty() {
-        return String::new();
+        return false;
     }
     let split = if double_colon {
         Some(arg.split_once("::").unwrap_or((arg, "")))
     } else {
         arg.split_once(' ').or_else(|| arg.split_once(':'))
     };
-    if let Some((name, value)) = split {
-        store(vars, name.trim(), value.trim().to_string());
-    }
-    String::new()
+    split.is_some_and(|(name, value)| store(vars, name.trim(), value.trim().to_string()))
 }
 
-/// Sets a variable, within the size limits.
-fn store(vars: &mut Variables, name: &str, value: String) {
-    if value.len() <= MAX_VALUE && (vars.len() < MAX_VARIABLES || vars.contains_key(name)) {
-        vars.insert(name.to_string(), value);
-    }
+/// Sets a variable, within the size limits; whether its value changed.
+fn store(vars: &mut Variables, name: &str, value: String) -> bool {
+    let fits = value.len() <= MAX_VALUE && (vars.len() < MAX_VARIABLES || vars.contains_key(name));
+    fits && vars.insert(name.to_string(), value.clone()).as_ref() != Some(&value)
 }
 
 /// A variable's value read as a number: whole numbers stay exact.

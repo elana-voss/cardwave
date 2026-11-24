@@ -165,7 +165,7 @@ impl Finder {
 
     async fn ask(&self, address: &str) -> Answer {
         let address = match &self.stand_in {
-            Some(at) => format!("{at}/{}", address.trim_start_matches("https://")),
+            Some(at) => crate::stand_in::address(at, address),
             None => address.to_string(),
         };
         let asked = self.http.get(address).header(ACCEPT, "application/json");

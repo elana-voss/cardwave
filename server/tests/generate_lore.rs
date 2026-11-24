@@ -591,3 +591,24 @@ async fn the_words_in_the_field_steer_write_for_me_and_a_continued_reply() {
     let (_, view) = server.get(&chat).await;
     assert_eq!(view["messages"].as_array().unwrap().len(), 3);
 }
+
+#[tokio::test]
+async fn a_draft_cut_off_mid_sentence_ends_with_its_last_whole_sentence() {
+    let server = start().await;
+    let mut provider = Provider::start().await;
+    use_provider(&server, &provider.url).await;
+    let chat = chat(&server).await;
+    let whole = "I came all this way for the tide tonight. Tell me what it brings.";
+    let draft = format!("{chat}/draft");
+    let (answer, ()) = tokio::join!(server.post(&draft, json!({})), async {
+        let cut = json!({ "choices": [{ "delta": {}, "finish_reason": "length" }] });
+        let cut = format!("data: {cut}\n\n");
+        let words = says(&format!("{whole} And then I"));
+        let asked = provider.next().await;
+        asked
+            .answer
+            .send([&words[..], cut.as_bytes(), DONE].concat())
+            .unwrap();
+    });
+    assert_eq!(answer, (200, json!({ "content": whole })));
+}

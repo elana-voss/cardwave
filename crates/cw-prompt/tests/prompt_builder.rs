@@ -296,6 +296,42 @@ fn what_changes_from_reply_to_reply_stands_after_what_stays_the_same() {
     assert_eq!(first[..5], second[..5]);
 }
 
+/// The cache marks go at the end of the part before the chat log and at the
+/// last message before what moves; a part that draws anew at each build ends
+/// the steady start before it.
+#[test]
+fn the_steady_start_ends_before_what_moves_or_draws_anew() {
+    let card = |system: &str| Character {
+        name: "Cass".into(),
+        system_prompt: system.into(),
+        ..with_lorebook(vec![constant("Always.")])
+    };
+    let marks = |system: &str, lines: &[&str], memory| {
+        let card = card(system);
+        let req = PromptRequest {
+            memory_context: memory,
+            ..request(&card, 10_000)
+        };
+        run(&req, &mut chat(lines)).cache_at
+    };
+    // System, world info; "Hi", "Hello", the memory note, "Bye".
+    assert_eq!(
+        marks("Be kind.", &["Hi", "Hello", "Bye"], Some("Known.")),
+        [1, 3]
+    );
+    // Nothing moves: the newest message ends the steady start.
+    assert_eq!(marks("Be kind.", &["Hi", "Hello", "Bye"], None), [1, 4]);
+    // A history message reading the clock ends it before that message.
+    let clock = ["Hi", "It is {{time}}.", "Bye"];
+    assert_eq!(marks("Be kind.", &clock, Some("Known.")), [1, 2]);
+    // A seeded draw in history stays the same, and holds.
+    let roll = ["Hi", "I roll {{roll::6}}.", "Bye"];
+    assert_eq!(marks("Be kind.", &roll, Some("Known.")), [1, 3]);
+    // The system message drawing anew leaves no steady start at all.
+    let drawn = marks("Mood: {{random::calm,wild}}.", &["Hi"], None);
+    assert!(drawn.is_empty(), "{drawn:?}");
+}
+
 /// The reply keeps its room: a part that would leave none is left out, and
 /// the newest message keeps its room before the memory and the documents.
 #[test]

@@ -1,53 +1,11 @@
-// What narration.ts decides: which stretches of a text are narration, and what a message shows of a text.
+// What narration.ts draws of a text's marks (marks.ts reads them, marks.test.ts): a message's paragraphs and
+// quotation blocks, links and pictures, and the switch for pictures from the web.
 import { expect, test, vi } from "vitest";
 import { changeSettings } from "./api/client";
 import type { Settings } from "./api/generated/Settings";
-import { narrated, pieces, webPictures } from "./narration";
+import { narrated, webPictures } from "./narration";
 
 vi.mock("./api/client", () => ({ changeSettings: vi.fn() }));
-
-const said = (text: string) => ({ text, told: false });
-const told = (text: string) => ({ text, told: true });
-
-test("what stands between two asterisks is narration, without them, and the rest is speech", () => {
-  expect(pieces('*She looks up.* "You are late," *she says.*')).toEqual([told("She looks up."), said(' "You are late," '), told("she says.")]);
-  expect(pieces("No narration here.")).toEqual([said("No narration here.")]);
-  expect(pieces("*All of it*")).toEqual([told("All of it")]);
-  expect(pieces("")).toEqual([]);
-});
-
-test("an asterisk that stands alone, or beside a space, begins no narration", () => {
-  expect(pieces("2 * 3 * 4")).toEqual([said("2 * 3 * 4")]);
-  expect(pieces("a * b* c")).toEqual([said("a * b* c")]);
-  expect(pieces("*not closed")).toEqual([said("*not closed")]);
-  expect(pieces("* a list line *")).toEqual([said("* a list line *")]);
-});
-
-test("an asterisk inside a word or a number begins and ends no narration, so none is lost there", () => {
-  expect(pieces("2*3*4")).toEqual([said("2*3*4")]);
-  expect(pieces("a*b*c and x*y")).toEqual([said("a*b*c and x*y")]);
-  expect(pieces("é*t*é")).toEqual([said("é*t*é")]);
-  expect(pieces("2*3 *told* 4*5")).toEqual([said("2*3 "), told("told"), said(" 4*5")]);
-  // A sign beside it is no letter: narration stands right against speech's quotes.
-  expect(pieces('"Fine."*She nods.*"Go."')).toEqual([said('"Fine."'), told("She nods."), said('"Go."')]);
-  // Being written, too.
-  expect(pieces("2*3", true)).toEqual([said("2*3")]);
-});
-
-test("two asterisks side by side are not narration's and stay as they are", () => {
-  expect(pieces("**bold** and *told*")).toEqual([said("**bold** and "), told("told")]);
-  expect(pieces("***both***")).toEqual([said("***both***")]);
-});
-
-test("in a text still being written, the narration begun last runs to its end, and its asterisk does not show", () => {
-  expect(pieces("*She looks", true)).toEqual([told("She looks")]);
-  expect(pieces('"Wait." *She', true)).toEqual([said('"Wait." '), told("She")]);
-  expect(pieces("*one* two *", true)).toEqual([told("one"), said(" two ")]);
-  // An asterisk with a space behind it begins nothing, written or being written.
-  expect(pieces("2 * 3", true)).toEqual([said("2 * 3")]);
-  // Once it is ended it is narration as any.
-  expect(pieces("*She looks up.*", true)).toEqual([told("She looks up.")]);
-});
 
 test("a text is shown as its paragraphs, narration in italics, and reads back as written less the asterisks", () => {
   const shown = narrated('*She turns.* "Well?"\n\nSecond paragraph,\nsecond line.');
@@ -57,6 +15,12 @@ test("a text is shown as its paragraphs, narration in italics, and reads back as
   expect(holder.querySelector("em")!.textContent).toBe("She turns.");
   expect(holder.querySelectorAll("em")).toHaveLength(1);
   expect(holder.textContent).toBe('She turns. "Well?"\n\nSecond paragraph,\nsecond line.');
+});
+
+test("each mark as its element, speech in a span with its quotation marks, quotation blocks in a blockquote", () => {
+  const holder = document.createElement("div");
+  holder.append(...narrated('*a* **b** "c" <u>d</u> `e`\n> *f*\ng'));
+  expect(holder.innerHTML).toBe('<p><em>a</em> <strong>b</strong> <span class="speech">"c"</span> <u>d</u> <code>e</code></p>\n<blockquote><p><em>f</em></p></blockquote>\n<p>g</p>');
 });
 
 test("narration does not reach from one paragraph into the next", () => {
@@ -145,4 +109,12 @@ test("while pictures from the web are off, one from another address is held back
   await vi.waitFor(() => expect(p.querySelectorAll(".web-picture")).toHaveLength(0));
   expect([...p.querySelectorAll("img")].map((img) => img.alt)).toEqual(["A lamp", "Mine", "Dot", "Bad"]);
   expect((narrated("![Later](https://example.com/b.png)")[0] as HTMLElement).querySelector("img")?.alt).toBe("Later");
+});
+
+test("a quotation block without words is left out, and the block before it is the one being written", () => {
+  const holder = document.createElement("div");
+  holder.append(...narrated("one\n\n>"));
+  expect(holder.innerHTML).toBe("<p>one</p>");
+  holder.replaceChildren(...narrated("*one\n>", true));
+  expect(holder.innerHTML).toBe("<p><em>one</em></p>");
 });

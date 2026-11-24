@@ -3,6 +3,7 @@ import type { Checkpoint } from "./Checkpoint";
 import type { FileChange } from "./FileChange";
 import type { Progress } from "./Progress";
 import type { StepDetail } from "./StepDetail";
+import type { StepLine } from "./StepLine";
 import type { StepWhat } from "./StepWhat";
 import type { Who } from "./Who";
 
@@ -13,7 +14,11 @@ export type Step = { id: number, who: Who, what: StepWhat,
 /**
  * The grey line: what runs now, or what it changed.
  */
-detail: StepDetail, state: Progress, output: string, files: Array<FileChange>, 
+detail: StepDetail, state: Progress, 
+/**
+ * Its output's lines, in order.
+ */
+output: Array<StepLine>, files: Array<FileChange>, 
 /**
  * Its checkpoint, for a worker's step.
  */

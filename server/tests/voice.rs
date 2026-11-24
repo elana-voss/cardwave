@@ -181,10 +181,8 @@ async fn a_file_that_comes_in_a_zip_is_taken_out_of_it() {
         .map(|b| format!("{b:02x}"))
         .collect();
     let size = zip.len() as u64;
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
-    let url = format!("http://{}/package.whl", listener.local_addr().unwrap());
     let app = Router::new().route("/package.whl", get(move || async move { zip.clone() }));
-    tokio::spawn(async move { axum::serve(listener, app).await });
+    let url = format!("{}/package.whl", common::serve_bare(app).await);
 
     let server = start_voicing(Setup {
         parts: vec![Part {

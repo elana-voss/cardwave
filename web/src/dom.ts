@@ -40,8 +40,10 @@ export interface View {
   views?: PageViews;
 }
 
-/** A screen's views: each one's name and words, the one in use, and what shows another at once. */
+/** A screen's views: the screen's name over them, each one's name and words, the one in use, and what shows another at once. */
 export interface PageViews {
+  /** The screen's name as the view menu's heading names it ("Characters page"), in the language in use. */
+  heading(): string;
   list: [name: string, words: string][];
   now(): string;
   choose(name: string): void;

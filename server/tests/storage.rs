@@ -688,8 +688,8 @@ fn a_reply_that_ends_without_text_is_removed() {
     // With text it is a complete message; nobody else can end it.
     let half = chats::append(db, me, chat_id, &writing("")).unwrap();
     let sam = users::create(db, "sam").unwrap();
-    assert!(chats::finish_reply(db, sam, half, "The causeway", Some(asked)).is_err());
-    let done = chats::finish_reply(db, me, half, "The causeway", Some(asked))
+    assert!(chats::finish_reply(db, sam, half, "The causeway", None, Some(asked)).is_err());
+    let done = chats::finish_reply(db, me, half, "The causeway", None, Some(asked))
         .unwrap()
         .unwrap();
     assert_eq!(
@@ -701,7 +701,7 @@ fn a_reply_that_ends_without_text_is_removed() {
     chats::set_head(db, me, chat_id, asked).unwrap();
     let empty = chats::append(db, me, chat_id, &writing("")).unwrap();
     assert!(
-        chats::finish_reply(db, me, empty, " \n", Some(asked))
+        chats::finish_reply(db, me, empty, " \n", None, Some(asked))
             .unwrap()
             .is_none()
     );
@@ -711,7 +711,7 @@ fn a_reply_that_ends_without_text_is_removed() {
     );
 
     // Ended once, it cannot be ended again.
-    assert!(chats::finish_reply(db, me, half, "", Some(asked)).is_err());
+    assert!(chats::finish_reply(db, me, half, "", None, Some(asked)).is_err());
     assert_eq!(chats::swipes(db, me, half).unwrap().len(), 1);
 }
 
@@ -746,7 +746,7 @@ fn a_chat_takes_nothing_else_while_a_reply_is_generated() {
             .content,
         "The ti"
     );
-    chats::finish_reply(db, me, half, "The tide.", Some(first))
+    chats::finish_reply(db, me, half, "The tide.", None, Some(first))
         .unwrap()
         .unwrap();
     assert!(chats::write_reply(db, me, half, "The tide. And").is_err());
@@ -762,7 +762,7 @@ fn a_chat_takes_nothing_else_while_a_reply_is_generated() {
     assert!(chats::finish_abandoned(db, sam, chat_id).is_err());
     let ended = chats::finish_abandoned(db, me, chat_id).unwrap();
     assert!(
-        matches!(&ended[..], [(id, Some(kept))] if *id == lost && kept.message.complete && !kept.broke_off)
+        matches!(&ended[..], [(id, Some(kept))] if *id == lost && kept.message.complete && kept.ending == chats::Ending::Whole)
     );
     assert!(chats::finish_abandoned(db, me, chat_id).unwrap().is_empty());
     chats::append(db, me, chat_id, &user("Hello again?")).unwrap();
@@ -793,7 +793,16 @@ fn replies_cut_off_by_a_restart_are_ended() {
     );
     assert_eq!(texts(&cut)[1..], ["Why tonight?", "The cause"]);
     // It says it broke off, as a reply whose connection broke says so as it ends.
-    assert!(chats::view(db, me, half).unwrap().broke_off);
+    assert_eq!(
+        chats::view(db, me, half).unwrap().ending,
+        chats::Ending::BrokeOff
+    );
+    // Edited, the text is the user's own: it no longer says how the model's reply ended.
+    chats::set_content(db, me, half, "The cause was the storm.").unwrap();
+    assert_eq!(
+        chats::view(db, me, half).unwrap().ending,
+        chats::Ending::Whole
+    );
     let emptied = chats::path(db, me, other).unwrap();
     assert_eq!((emptied.len(), emptied.last().unwrap().id), (2, asked));
     assert_eq!(

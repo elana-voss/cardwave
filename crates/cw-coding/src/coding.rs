@@ -28,7 +28,7 @@ use ts_rs::TS;
 
 use crate::ports::ChatSide;
 use crate::tools::ToolAsk;
-use shown::{Checkpoint, StepDetail, StepWhat, Who};
+use shown::{Checkpoint, StepDetail, StepLine, StepWhat, Who};
 use snapshot::Change;
 
 /// How far a task or a step is.
@@ -118,7 +118,8 @@ pub struct Step {
     /// The grey line: what runs now, or what it changed.
     pub detail: StepDetail,
     pub state: Progress,
-    pub output: String,
+    /// Its output's lines, in order.
+    pub output: Vec<StepLine>,
     pub files: Vec<FileChange>,
     /// Its checkpoint, for a worker's step.
     pub checkpoint: Option<Checkpoint>,
@@ -214,8 +215,8 @@ pub trait Storage {
     ) -> anyhow::Result<i64>;
     fn set_step_what(&self, step: i64, what: &StepWhat) -> anyhow::Result<()>;
     fn set_step_detail(&self, step: i64, detail: &StepDetail) -> anyhow::Result<()>;
-    /// Adds `text` to the step's output while that is shorter than `most`.
-    fn log_step(&self, step: i64, text: &str, most: usize) -> anyhow::Result<()>;
+    /// Adds `said` to the step's output while that, as kept, is shorter than `most`.
+    fn log_step(&self, step: i64, said: &StepLine, most: usize) -> anyhow::Result<()>;
     fn end_coding_step(&self, step: i64, state: Progress) -> anyhow::Result<()>;
     /// As [`keep_changes`] says, at once.
     fn keep_step_changes(&self, step: i64, changes: &[Change]) -> anyhow::Result<()>;
@@ -310,12 +311,12 @@ pub(crate) fn set_detail(db: &dyn Storage, step: i64, detail: &StepDetail) -> an
     db.set_step_detail(step, detail)
 }
 
-/// The most of a step's output that is kept.
+/// The most of a step's output that is kept, in bytes of its JSON.
 const OUTPUT_LIMIT: usize = 200_000;
 
-/// Adds `text` to a step's output, while it has room.
-pub fn log(db: &dyn Storage, step: i64, text: &str) -> anyhow::Result<()> {
-    db.log_step(step, text, OUTPUT_LIMIT)
+/// Adds `said` to a step's output, while it has room.
+pub fn log(db: &dyn Storage, step: i64, said: &StepLine) -> anyhow::Result<()> {
+    db.log_step(step, said, OUTPUT_LIMIT)
 }
 
 /// Ends a step.

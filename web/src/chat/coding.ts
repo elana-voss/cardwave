@@ -4,7 +4,8 @@
 // that waits, "Open task" and Stop, and when it has ended the verdict and "Undo all"); and the dialog "Start a
 // coding task" (`startDialog`), whose folder and team begin as the settings have them; in the desktop app its
 // "Change" opens the system's folder picker, in a browser the folder is typed. A step's who, what and grey line come
-// as codes and fields (cw-coding shown.rs) and are worded here (`whoName`, `stepSays`, `stepDetail`).
+// as codes and fields (cw-coding shown.rs) and are worded here (`whoName`, `stepSays`, `stepDetail`, a call's `toolWords`,
+// which a step's output, step-output.ts, shares).
 //
 // A card reads its task when it is made and, `SETTLE_MS` after the first of a burst, when `refresh` is called on
 // the event `coding_task`; a reading answered late is not taken (`newest`).
@@ -121,7 +122,7 @@ export function stepSays(step: Pick<Step, "who" | "what" | "state">): string {
 }
 
 /** The grey line a call of `tool` on `target` shows while it runs. */
-function toolWords(tool: StepTool, target: string): string {
+export function toolWords(tool: StepTool, target: string): string {
   if (tool === "list_files") return target ? wording("coding-looking-at", { target }) : wording("coding-looking-at-folder");
   if (tool === "write_file") return wording("coding-writing", { target });
   if (tool === "run_command") return wording("coding-running-command", { target });

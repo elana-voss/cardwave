@@ -90,6 +90,13 @@ pub enum PageEvent {
     Memories {
         chat_id: i64,
     },
+    /// A chat's memory pass failed by its helper model (a key refused, a
+    /// model gone, the provider's fault): told live, as a reply's failure is;
+    /// the next pass tries the same block again.
+    MemoryFailed {
+        chat_id: i64,
+        error: crate::ErrorBody,
+    },
     /// The user's documents were changed: one was added, deleted or put back,
     /// or the search model read one. A page that shows them reads them anew.
     Documents,

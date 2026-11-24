@@ -1,21 +1,18 @@
 //! Replies from the model, streamed into a new message and pushed over the
-//! event socket; one at a time per chat, and it can be stopped. A reply begins
-//! with `pick_mode`, `claim` (its message, or the one continued), then
-//! `memory::recall` and `build` (the tools, then the prompt of `chats::reply`
-//! with their notes, none where the model's server refused tools: `toolless`;
-//! the companion's character is told its figure's bubble lately, `Building::bubble`);
-//! `turn::next` picks the speaker where none is named. The rounds, the tools
-//! run between them, are in `rounds`, each round's words saved and pushed in
-//! `stream`; a round is limited to the Reply length where the model does not
-//! think (`Provider::limited`) and no tool but a chat tool is offered. A call to
-//! allow first waits in `AppState::asks`, answered by `answer`. Its end is kept
-//! in `writer::finish`: ended with words, memory reads the turn and a chat
-//! without a character names itself. The reply keeps whom it was asked
-//! of (`set_model`) and how long it took (`chats::Times`). `draft` (`POST
-//! /api/chats/{id}/draft`) is no message: the text alone for the message field.
-//! A draft written for the user and a continued reply take a `direction`, the
-//! field's words, which steer them and are sent as no message. The provider's
-//! window is settled first (`AppState::settled`): unknown, nothing is sent.
+//! event socket; one at a time per chat, stoppable. A reply: `pick_mode`,
+//! `claim`, `memory::recall`, `build` (tools, then `chats::reply`'s prompt;
+//! none where the server refused tools: `toolless`; the companion's bubble:
+//! `Building::bubble`); `turn::next` picks the speaker where none is named.
+//! Its rounds, with cache marks where the prompt's steady start ends
+//! (`BuiltPrompt::cache_at`), are in `rounds`, saved and pushed in `stream`;
+//! a round is held to the Reply length unless the model thinks
+//! (`Provider::limited`) or a tool not of the chat is offered. A call to allow
+//! waits in `AppState::asks` for `answer`. `writer::finish` keeps the end: a
+//! reply cut off or not ended is trimmed (`trim::kept`, `ReplyEnd::trims`).
+//! The reply keeps its model (`set_model`) and times (`chats::Times`).
+//! `draft` (`POST /api/chats/{id}/draft`) is the message field's text alone,
+//! asked once, unmarked; a draft and a continued reply take a `direction`.
+//! Trap: the provider's window is settled first (`AppState::settled`).
 
 use std::collections::HashMap;
 use std::time::Duration;
@@ -28,6 +25,7 @@ use axum::{Extension, Json, Router};
 use cw_chat::assistant;
 use cw_chat::chats::reply;
 use cw_chat::chats::{self, Chat, Message, MessageView, NewMessage, turn};
+use cw_chat::chats::{ReplyEnd, trim};
 use cw_chat::images;
 use cw_coding::tools::{ToolAsk, Toolbox};
 use cw_core::NotFound;
@@ -130,6 +128,8 @@ struct Job {
     messages: Vec<PromptMessage>,
     /// Where in `messages` the tools' note stands (`assemble`).
     tools_at: Option<usize>,
+    /// Where `messages`' steady start ends, for cache marks (`BuiltPrompt::cache_at`).
+    cache_at: Vec<usize>,
     /// The model's server refused tools before: none is offered.
     toolless: bool,
     /// The text the message holds before the reply: a continued reply's, else none.
@@ -275,7 +275,7 @@ struct Claimed {
 /// Ends a claimed message that gets no reply. Should this fail too, a stop ends it.
 fn let_go(db: &Db, user: i64, reply: &Message, head_before: Option<i64>, text: &str) {
     // Should this fail too, a stop ends it.
-    let _ = chats::finish_reply(db, user, reply.id, text, head_before);
+    let _ = chats::finish_reply(db, user, reply.id, text, None, head_before);
 }
 
 /// Adds the message the reply goes into, or claims the one continued, and
@@ -448,6 +448,7 @@ fn build(db: &Db, claimed: Claimed, building: Building) -> anyhow::Result<(Job, 
             provider,
             messages: prompt.messages,
             tools_at: prompt.tools_at,
+            cache_at: prompt.cache_at,
             toolless,
             before,
             speaker_id: reply.speaker_id,
@@ -537,15 +538,19 @@ fn tools_of(
 async fn write_reply(writer: Writer, mut job: Job) {
     let messages = std::mem::take(&mut job.messages);
     let mut content = std::mem::take(&mut job.before);
+    // A continued reply's own words are trimmed alone.
+    let from = content.len();
     let mut made = Vec::new();
     let mut pushed = Pushed::new(&content);
     let reply = (&mut pushed, &mut content, &mut made);
     let began = Instant::now();
-    let failure = rounds::read_reply(&writer, &job, messages, reply)
-        .await
-        .err();
+    let (end, failure) = match rounds::read_reply(&writer, &job, messages, reply).await {
+        Ok(end) => (end, None),
+        Err(failure) => (ReplyEnd::Failed, Some(failure)),
+    };
     let read = Read {
-        content,
+        content: trim::kept(&content, from, end.trims()).into_owned(),
+        ending: end.ending(content.len() > from),
         made,
         pushed,
         began,
@@ -639,7 +644,9 @@ async fn draft(
     while let Some(piece) = reply.next().await? {
         text.push_str(&piece);
     }
-    let content = reply::cleaned(&text, &name, improve.as_deref());
+    let cleaned = reply::cleaned(&text, &name, improve.as_deref());
+    let ended = ReplyEnd::Finished(reply.ending().finish);
+    let content = trim::kept(&cleaned, 0, ended.trims()).into_owned();
     if content.is_empty() {
         return Err(Fail::new(Code::NoText).into());
     }

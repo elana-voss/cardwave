@@ -248,6 +248,8 @@ mod tests {
             input: None,
             thinks,
             tags: None,
+            mandatory: false,
+            efforts: None,
         }
     }
 

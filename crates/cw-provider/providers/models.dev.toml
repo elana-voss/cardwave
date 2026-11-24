@@ -65,10 +65,6 @@ name = "AKI.IO"
 base_url = "https://aki.io/v1"
 
 [[provider]]
-name = "Alibaba (China)"
-base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-
-[[provider]]
 name = "Ambient"
 base_url = "https://api.ambient.xyz/v1"
 

@@ -151,7 +151,7 @@ test("a text, the title, the tags and the lines under About are written where th
   await personality.fill("**Dry.**\nWatchful.");
   await leave(personality);
   await expect(shows(page, "Personality").locator("strong")).toHaveText("Dry.");
-  await expect(shows(page, "Personality")).toHaveText("Dry.Watchful.");
+  await expect(shows(page, "Personality")).toHaveText("Dry.\nWatchful.");
   await saved(request, card, (edit) => edit.characters[0].personality[0].text, "**Dry.**\nWatchful.");
   expect(saves).toBe(1);
 

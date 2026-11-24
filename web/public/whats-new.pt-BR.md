@@ -1,8 +1,14 @@
 # 0.3.3
 
-O Cardwave agora sabe quanto cada IA lê de uma vez, e não chuta mais.
+O Cardwave agora sabe quanto cada IA lê de uma vez, e você escolhe quanto ela pensa e dá cor aos seus chats.
 
-- Cada resposta cabe no que o modelo dela consegue ler. O Cardwave pega o tamanho da sua lista de modelos embutida, ou pergunta à própria IA quando ela está no seu computador ou na sua rede local. Antes, todo modelo recebia 128.000 tokens.
+- Em Configurações › Provedores, um modelo que pode pensar mais ou menos agora oferece Desligado, Leve, Normal ou Profundo, guardado para cada modelo. Onde um provedor não consegue desligar o pensamento de um modelo, o Cardwave avisa.
+- Novidade no menu de exibição: "Cores das mensagens" (Desativadas, Claras ou Escuras) mostra a fala entre aspas, itálico, negrito, links e código em cores próprias, no chat de um personagem e no companheiro.
+- Uma resposta cortada no limite de tamanho agora termina na sua última frase inteira. Uma resposta que para no limite da própria IA é mantida como chegou, com uma linha cinza embaixo avisando, e "Continuar esta resposta" segue a partir da última palavra.
+- Quando o modelo auxiliar não consegue manter a memória de um chat, o chat diz por quê.
+- Chats longos com um modelo Claude pelo OpenRouter ou NanoGPT custam menos e respondem mais rápido, com cache de prompt.
+- Em uma tarefa de programação, as linhas de cada passo ficam no seu idioma, e as páginas da web são lidas com mais precisão.
+- Cada resposta cabe no que o modelo dela consegue ler. O Cardwave pega o tamanho da sua lista de modelos embutida, ou pergunta à própria IA quando ela está no seu computador (LM Studio, Ollama ou KoboldCpp) ou na sua rede local. Antes, todo modelo recebia 128.000 tokens.
 - Um chat longo com um modelo que lê mais agora guarda mais do seu histórico.
 - Quando o tamanho de uma IA não é conhecido, a resposta avisa, e você o define uma vez como tamanho do contexto em Configurações › Avançado. Até lá, nada é enviado.
 - O tamanho do contexto em Configurações › Avançado agora limita o que é enviado a qualquer modelo.

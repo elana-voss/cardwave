@@ -1,5 +1,5 @@
 //! The coding team (`coding`): a task planned, built and audited in a chat,
-//! its checkpoints undone, a failed verdict fixed once, a call that asks, a
+//! its checkpoints undone, a round cut with no words, a failed verdict fixed once, a call that asks, a
 //! stop, the ready-made teams, who may start one, the folder's snapshot, and
 //! the sandbox's reach for the team's commands (on Linux in `sandbox_linux.rs`).
 //!
@@ -25,7 +25,6 @@ use common::server::{Server, WAIT, device, start};
 use cw_coding::coding::snapshot::{FILE_LIMIT, Snapshot};
 use cw_coding::tools::REFUSED;
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 
 /// How long a team command may take to start: on GitHub's runner its large `PATH` (the programs' grant or copy)
 /// makes the start take tens of seconds where here it takes one.
@@ -64,12 +63,8 @@ impl Team {
             }
             ([(header::CONTENT_TYPE, "text/event-stream")], text).into_response()
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(common::props))
-            .route("/v1/chat/completions", post(complete));
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().route("/v1/chat/completions", post(complete));
+        let url = format!("{}/v1", common::serve(app).await);
         Self { url, asked }
     }
 
@@ -329,6 +324,31 @@ async fn a_call_cut_short_is_not_run_and_the_worker_is_told_why() {
     let told = team.asked("worker")[1]["messages"].to_string();
     assert!(told.contains("not valid JSON"), "{told}");
     assert_eq!(read(&folder, "b.txt"), None);
+}
+
+#[tokio::test]
+async fn a_round_cut_at_the_model_s_limit_with_no_words_is_told_in_the_step() {
+    let server = start().await;
+    let folder = Folder::new("thought");
+    // The worker's limit spent before its first word: a round that ends "length" with none.
+    let cut = json!({ "choices": [{ "delta": {}, "finish_reason": "length" }] });
+    let team = Team::start(vec![
+        ("planner", vec![calls("plan", json!({ "steps": ["Think"], "test_command": "" }))]),
+        ("worker", vec![format!("data: {cut}\n\ndata: [DONE]\n\n"), report("Thought.")]),
+        ("auditor", vec![calls("verdict", json!({ "passed": true, "tests_passed": 0, "tests_total": 0, "failures": [], "notes": "" }))]),
+    ])
+    .await;
+    tools_on(&server, &folder, false).await;
+    let chat = chat_at(&server, &team).await;
+    let task = start_task(&server, &chat, &folder, None).await;
+    let done = ended(&server, &task).await;
+    let output = done["steps"][1]["output"].as_array().unwrap();
+    assert!(
+        output
+            .iter()
+            .any(|said| said["kind"] == "words" && said["cut"] == true),
+        "{done:#}"
+    );
 }
 
 #[tokio::test]

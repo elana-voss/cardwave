@@ -10,13 +10,15 @@
 //! address, by which a preset says whose it is. `app_name.toml`, apart from the
 //! list as the script would lose it, is `app_name`'s. What the app knows of a
 //! provider by its host (its own API, where it tells whether it takes a key) is
-//! a field of its `own.toml` entry, read by `own_api` and `key_check`.
+//! a field of its `own.toml` entry, read by `own_api`, `key_check` and `steps`.
 
 use std::sync::LazyLock;
 
 use cw_platform::http::Url;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+use crate::steps::Table;
 
 /// A provider of the list.
 #[derive(Clone, Debug, Serialize, TS)]
@@ -44,6 +46,9 @@ pub struct KnownProvider {
     #[serde(skip)]
     #[ts(skip)]
     key_check: Option<KeyCheck>,
+    #[serde(skip)]
+    #[ts(skip)]
+    steps: Option<Table>,
     /// models.dev's key for it, where its entry there names no address.
     #[serde(skip)]
     #[ts(skip)]
@@ -87,6 +92,7 @@ struct Entry {
     own_api: Option<OwnApi>,
     key_check: Option<KeyCheck>,
     models_dev: Option<String>,
+    steps: Option<Table>,
 }
 
 static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
@@ -115,6 +121,7 @@ static LIST: LazyLock<Vec<KnownProvider>> = LazyLock::new(|| {
                 host,
                 own_api: entry.own_api,
                 key_check: entry.key_check,
+                steps: entry.steps,
                 models_dev: entry.models_dev,
             }
         })
@@ -165,9 +172,7 @@ pub(crate) fn of_website(host: &str) -> Option<&'static KnownProvider> {
 /// The providers of the list whose API's host is that of `base_url`, or a host above it (the three servers on
 /// this machine share theirs).
 fn of_host(base_url: &str) -> impl Iterator<Item = &'static KnownProvider> {
-    let host = Url::parse(base_url)
-        .ok()
-        .and_then(|url| url.host_str().map(str::to_string));
+    let host = crate::host(base_url).map(|(host, _)| host);
     all().iter().filter(move |provider| {
         host.as_deref()
             .is_some_and(|host| under(host, &provider.host))
@@ -182,4 +187,24 @@ pub fn own_api(base_url: &str) -> Option<OwnApi> {
 /// Where the provider at `base_url` tells whether it takes a key, where its list of models comes to anyone.
 pub(crate) fn key_check(base_url: &str) -> Option<&'static KeyCheck> {
     of_host(base_url).find_map(|provider| provider.key_check.as_ref())
+}
+
+/// The values per step of thinking the provider at `base_url` documents (`steps`).
+pub(crate) fn steps(base_url: &str) -> Option<&'static Table> {
+    of_host(base_url).find_map(|provider| provider.steps.as_ref())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_table_of_steps_has_every_level_or_none() {
+        let partial: Vec<&str> = all()
+            .iter()
+            .filter(|provider| provider.steps.as_ref().is_some_and(Table::partial))
+            .map(|provider| provider.name.as_str())
+            .collect();
+        assert!(partial.is_empty(), "{partial:?}");
+    }
 }

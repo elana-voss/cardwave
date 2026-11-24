@@ -10,7 +10,7 @@
 mod common;
 
 use axum::http::Method;
-use common::api::{Api, JSON, says};
+use common::api::{Api, JSON, openrouter_mandatory, says};
 use common::server::{Server, event, start};
 use serde_json::{Value, json};
 
@@ -35,10 +35,18 @@ async fn kinds(server: &Server) -> Vec<(String, i64, String, String)> {
                 kind["kind"].as_str().unwrap().to_string(),
                 kind["provider_id"].as_i64().unwrap(),
                 kind["model"].as_str().unwrap().to_string(),
-                kind["thinking"].as_str().unwrap().to_string(),
+                shown(&kind["thinking"]),
             )
         })
         .collect()
+}
+
+/// A model's thinking as the list shows it: the switch's state, or the step it is at.
+fn shown(thinking: &Value) -> String {
+    match thinking["control"].as_str() {
+        Some("switch") => thinking["state"].as_str().unwrap().to_string(),
+        _ => format!("step {}", thinking["step"].as_str().unwrap()),
+    }
 }
 
 fn kind(kind: &str, provider: i64, model: &str, thinking: &str) -> (String, i64, String, String) {
@@ -245,7 +253,7 @@ async fn thinking_is_turned_off_by_the_first_form_the_provider_takes() {
         server.put("/api/kinds/background/thinking", off).await.0,
         200
     );
-    assert_eq!(none.asked().len(), 3);
+    assert_eq!(none.asked().len(), 4);
     assert_eq!(
         kinds(&server).await[1],
         kind("background", other, "tide-2", "cannot")
@@ -253,6 +261,57 @@ async fn thinking_is_turned_off_by_the_first_form_the_provider_takes() {
     // A kind with no model has nothing to turn off.
     let off = json!({ "on": false });
     assert_eq!(server.put("/api/kinds/images/thinking", off).await.0, 404);
+    // A model at a provider without steps is set by the switch alone.
+    let deep = json!({ "step": "deep" });
+    assert_eq!(server.put("/api/kinds/chat/thinking", deep).await.0, 400);
+}
+
+#[tokio::test]
+async fn a_models_thinking_stays_with_it_when_another_is_taken() {
+    let piece = format!(
+        "data: {}
+
+data: [DONE]
+
+",
+        json!({ "choices": [{ "delta": { "content": "OK" } }] })
+    );
+    let api = Api::start(says(200, STREAM, &piece)).await;
+    let server = start().await;
+    let id = add(&server, json!({ "base_url": api.url })).await;
+    let pick = |model: &str| json!({ "provider_id": id, "model": model });
+    assert_eq!(server.put("/api/kinds/chat", pick("tide-1")).await.0, 200);
+    let off = json!({ "on": false });
+    assert_eq!(server.put("/api/kinds/chat/thinking", off).await.0, 200);
+
+    assert_eq!(server.put("/api/kinds/chat", pick("tide-2")).await.0, 200);
+    assert_eq!(kinds(&server).await, [kind("chat", id, "tide-2", "on")]);
+    assert_eq!(server.put("/api/kinds/chat", pick("tide-1")).await.0, 200);
+    assert_eq!(kinds(&server).await, [kind("chat", id, "tide-1", "off")]);
+    // Turned off by the first form, once.
+    assert_eq!(api.asked().len(), 1);
+}
+
+#[tokio::test]
+async fn a_provider_at_a_new_address_forgets_how_its_models_think() {
+    let piece = format!(
+        "data: {}\n\ndata: [DONE]\n\n",
+        json!({ "choices": [{ "delta": { "content": "OK" } }] })
+    );
+    let api = Api::start(says(200, STREAM, &piece)).await;
+    let server = start().await;
+    let id = add(&server, json!({ "base_url": api.url })).await;
+    let chat = json!({ "provider_id": id, "model": "tide-1" });
+    assert_eq!(server.put("/api/kinds/chat", chat).await.0, 200);
+    let off = json!({ "on": false });
+    assert_eq!(server.put("/api/kinds/chat/thinking", off).await.0, 200);
+    assert_eq!(kinds(&server).await, [kind("chat", id, "tide-1", "off")]);
+
+    let moved = Api::start(says(200, STREAM, &piece)).await;
+    let path = format!("/api/provider-list/{id}");
+    let address = json!({ "base_url": moved.url });
+    assert_eq!(server.patch(&path, address).await.0, 200);
+    assert_eq!(kinds(&server).await, [kind("chat", id, "tide-1", "on")]);
 }
 
 #[tokio::test]
@@ -501,5 +560,35 @@ async fn a_provider_added_with_no_chat_model_picked_says_none_is_chosen() {
         (status, &refused["details"]),
         (424, &json!({ "what": "chat_model" })),
         "{refused}"
+    );
+}
+
+/// The steps a kind's thinking offers.
+async fn steps(server: &Server, kind: &str) -> Value {
+    let listed = server.get("/api/provider-list").await.1;
+    let found = listed["kinds"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|each| each["kind"] == kind);
+    found.unwrap()["thinking"]["steps"].clone()
+}
+
+#[tokio::test]
+async fn first_run_at_openrouter_reads_its_list_for_the_models_thinking() {
+    let api = openrouter_mandatory().await;
+    let server = start().await;
+    let stored = json!({ "base_url": "https://openrouter.ai/api/v1", "model": "openai/o3-mini", "api_key": "sk-or-v1-0000" });
+    let (status, set) = server.set_provider(stored).await;
+    assert_eq!(status, 200, "{set}");
+    assert!(
+        api.asked()
+            .iter()
+            .any(|asked| asked.path.ends_with("/api/v1/models"))
+    );
+    // By its name alone it would offer Off; the list says it cannot stop.
+    assert_eq!(
+        steps(&server, "chat").await,
+        json!(["light", "normal", "deep"])
     );
 }

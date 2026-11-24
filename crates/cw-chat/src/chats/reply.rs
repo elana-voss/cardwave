@@ -301,7 +301,8 @@ pub fn draft_prompt(
 
 /// How long the user's message is to be, by the user's last five messages, as
 /// Cardwave says it: in paragraphs where one of them has several, else in
-/// sentences, on average; one paragraph where there are none.
+/// sentences (as the trimmer reads them, `sentences::count`), on average;
+/// one paragraph where there are none.
 pub fn length_hint(messages: &[ChatMessage]) -> String {
     let mut own: Vec<&str> = messages
         .iter()
@@ -318,15 +319,7 @@ pub fn length_hint(messages: &[ChatMessage]) -> String {
         .iter()
         .map(|text| text.lines().filter(|line| !line.trim().is_empty()).count())
         .collect();
-    let sentences: usize = own
-        .iter()
-        .map(|text| {
-            text.split(['.', '!', '?'])
-                .filter(|part| !part.trim().is_empty())
-                .count()
-                .max(1)
-        })
-        .sum();
+    let sentences: usize = own.iter().map(|text| chats::sentences::count(text)).sum();
     let (total, one, many) = if paragraphs.iter().any(|&n| n > 1) {
         (paragraphs.iter().sum(), "paragraph", "paragraphs")
     } else {

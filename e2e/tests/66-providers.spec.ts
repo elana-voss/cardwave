@@ -3,14 +3,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { APIRequestContext, Page } from "@playwright/test";
 import { expect, test } from "../test";
-import { startFakeProvider, type FakeProvider } from "../fake-provider";
+import { startFakePlaces, startFakeProvider, type FakePlaces, type FakeProvider } from "../fake-provider";
 import { startFakeSearch } from "../fake-search";
 import { picture, SIZES, stopClock, THEMES } from "../pictures";
 
 // Settings › Providers (board "Providers"): a box per provider with Edit (the address and the key, "Remove
 // key") and Remove, which asks first; a provider no kind is at says how many models it has; and the line
-// "Thinking" under a model that thinks, whose switch tries the forms of turning thinking off, one small question
-// each, and keeps the first the provider takes. "Add provider" is spec 03's, the picker of a
+// "Thinking" under a model that thinks: at a provider without levels its switch tries the forms of turning
+// thinking off, one small question each, and keeps the first the provider takes; at one Cardwave knows by its
+// address (DeepSeek, added without a key and its list answered by the spec) the field of its steps. "Add provider" is spec 03's, the picker of a
 // kind spec 21's. The box "This computer" (`.group.this-computer`, not counted among `.group.provider`) is
 // first: a folder of GGUF files chosen, made by the test in the system's temporary folder, with the models that
 // fit (server.mjs's "Test model" and one too large), one downloaded, put at Chat (by the API) and removed.
@@ -18,17 +19,21 @@ import { picture, SIZES, stopClock, THEMES } from "../pictures";
 // The stand-ins `api` and `other` are on this computer, so a box shows their whole address. `o3-mini` thinks,
 // as models.dev says. The picture (`providers`) is of providers whose lists the page is answered by the spec
 // itself (`page.route`), as a stand-in's port is another in every run: OpenRouter with Chat and Background, and
-// a program on this computer that no kind is at; nothing is asked of them.
+// a program on this computer that no kind is at. The server asks OpenRouter's list at the stand-in
+// for its host (`places`, which the server asks in place of every provider's host), so no call leaves this computer.
 
 let api: FakeProvider;
 let other: FakeProvider;
+let places: FakePlaces;
 
 test.beforeAll(async () => {
-  [api, other] = await Promise.all([startFakeProvider(), startFakeProvider()]);
+  [api, other, places] = await Promise.all([startFakeProvider(), startFakeProvider(), startFakePlaces()]);
+  const listed = (id: string, efforts?: string[]) => ({ id, ...(efforts && { supported_parameters: ["reasoning"], reasoning: { mandatory: false, supported_efforts: efforts } }) });
+  places.answer("openrouter.ai/api/v1/models", 200, { data: [listed("openai/gpt-4o-mini"), listed("openai/o3-mini", ["low", "medium", "high"])] });
   api.models(["o3-mini", "tide-1"]);
   other.models(["duo", "solo"]);
 });
-test.afterAll(() => Promise.all([api.close(), other.close()]));
+test.afterAll(() => Promise.all([api.close(), other.close(), places.close()]));
 
 /** A key long enough for its end to be told. */
 const KEY = "sk-providers-0123456789-9b3e";
@@ -123,6 +128,29 @@ test("the switch “Thinking” tries the forms of turning thinking off and keep
   await on.check();
   await expect(thinking(page).locator(".meta")).toHaveText("The model thinks before it replies");
   expect(api.asked.length).toBe(asked + 2);
+});
+
+test("the field “Thinking” of a model with levels offers its steps, and the step chosen stays after the page is opened anew", async ({ page, request }) => {
+  // DeepSeek is known by its address, so its models have steps; it is added without a key and its list answered
+  // here, and setting a step other than Off asks nothing, so no call leaves this computer.
+  for (const { id } of await entries(request)) await request.delete(`/api/provider-list/${id}`);
+  expect((await request.post("/api/provider-list", { data: { base_url: "https://api.deepseek.com/v1" } })).status()).toBe(201);
+  const [deepseek] = await entries(request);
+  const picked = await request.put("/api/kinds/chat", { data: { provider_id: deepseek.id, model: "deepseek-reasoner" } });
+  expect(picked.status(), await picked.text()).toBe(200);
+  await page.route("**/api/provider-list/*/models", (route) => route.fulfill({ json: { models: [{ id: "deepseek-reasoner", text: true, image: false, thinks: true }], said: true, more: false, failed: null } }));
+
+  await open(page, 1);
+  const field = thinking(page).getByRole("button", { name: "Chat: thinking" });
+  await expect(field).toHaveText("Normal");
+  await expect(thinking(page).locator(".meta")).toHaveText("How much the model thinks before it replies");
+  await field.click();
+  await expect(page.getByRole("menuitemradio")).toHaveText(["Off", "Light", "Normal", "Deep"]);
+  await page.getByRole("menuitemradio", { name: "Deep" }).click();
+  await expect(field).toHaveText("Deep");
+
+  await open(page, 1);
+  await expect(field).toHaveText("Deep");
 });
 
 test("“This computer” runs the GGUF files of a folder chosen in the dialog “Folder”", async ({ page, request }) => {

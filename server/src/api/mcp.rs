@@ -3,30 +3,41 @@
 //! chat in pages (`paged`), writes into a chat and waits for the reply at
 //! most `REPLY_WAIT` (`send`), and calls the tools Settings switches on
 //! (`tools::Toolbox`), with "Cardwave" one per route (`tools::app`), which the
-//! program asks its user about (`readOnlyHint`, `destructiveHint`). Streamable HTTP, stateless;
-//! a request whose `_meta` names its version is of 2026-07-28 (`checked`), one
-//! without an older client's, which begins with `initialize`. Only this
-//! computer reaches it (`this_computer`). Account › Server's "Other programs"
-//! (`/api/mcp/settings`, `cw_coding::mcp`): the switch, the account served, the
-//! programs by the name each gives itself (`program`). Traps: an older client
-//! names itself in `initialize` alone, so its session id is its name; a call
-//! the settings ask about first is refused, as MCP cannot ask the user, and so
-//! are the routes that answer such an ask or switch it off, or decide who is
-//! served and signs in (`the_users_alone`).
+//! program asks its user about (`readOnlyHint`, `destructiveHint`). The
+//! protocol is rmcp's (`StreamableHttpService`, stateless, JSON answers), of
+//! revision 2026-07-28 alone, whose every request names its program in
+//! `_meta`; rmcp refuses a host other than this computer, `mcp` another device.
+//! Account › Server's "Other programs" (`/api/mcp/settings`, `cw_coding::mcp`):
+//! the switch, the account served, the programs by their names (`admitted`).
+//! Traps: rmcp hands the HTTP request's parts to the handler, from which
+//! `admitted` takes the state and the API; a call the settings ask about first
+//! is refused, as MCP cannot ask the user, and so are the routes that answer
+//! such an ask or switch it off, or decide who is served (`the_users_alone`).
 
+use std::borrow::Cow;
+use std::sync::Arc;
+
+use axum::Json;
 use axum::Router;
-use axum::body::Bytes;
-use axum::extract::State;
-use axum::http::{HeaderMap, HeaderValue, Method, StatusCode, header};
-use axum::response::{IntoResponse, Response};
+use axum::extract::{Request, State};
+use axum::http::{Method, StatusCode, request::Parts};
+use axum::response::IntoResponse;
 use axum::routing::{get, post};
-use axum::{Extension, Json};
 use base64::Engine;
-use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
+use base64::engine::general_purpose::STANDARD;
 use cw_coding::mcp::{self, ChangeMcp, McpSettings};
 use cw_coding::tools::{Toolbox, app, chat};
 use cw_provider::Call;
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
+use rmcp::model::{
+    CallToolRequestParams, CallToolResponse, CallToolResult, DiscoverResult, Implementation,
+    ListToolsResult, PaginatedRequestParams, ProtocolVersion, ResultType, ServerCapabilities,
+    ServerConfig,
+};
+use rmcp::service::RequestContext;
+use rmcp::transport::streamable_http_server::session::never::NeverSessionManager;
+use rmcp::transport::streamable_http_server::{StreamableHttpServerConfig, StreamableHttpService};
+use rmcp::{ErrorData as McpError, RoleServer, ServerHandler};
 use serde_json::{Value, json};
 
 use super::app_tools::{self, tool_routes};
@@ -34,6 +45,27 @@ use super::{Api, ApiResult, Caller, Owner, events};
 use crate::AppState;
 
 pub fn routes() -> Router<AppState> {
+    // Stateless, so each request is served as it comes; plain JSON answers.
+    let config = StreamableHttpServerConfig::default()
+        .with_legacy_session_mode(false)
+        .with_json_response(true)
+        .with_stateless_protocol_metadata_required(true);
+    let service = StreamableHttpService::new(
+        || Ok(Server),
+        Arc::new(NeverSessionManager::default()),
+        config,
+    );
+    let mcp = move |State(state): State<AppState>, caller: Caller, mut request: Request| {
+        let service = service.clone();
+        async move {
+            if caller.remote {
+                let text = "Only apps on this computer reach Cardwave's MCP server.";
+                return (StatusCode::FORBIDDEN, text).into_response();
+            }
+            request.extensions_mut().insert(state);
+            service.handle(request).await.into_response()
+        }
+    };
     Router::new()
         .route("/api/mcp", post(mcp))
         .route("/api/mcp/settings", get(settings).put(change))
@@ -59,41 +91,12 @@ async fn change(
     Ok(Json(changed.await?))
 }
 
-/// The name a program gives itself in a request, cut to [`NAME`] characters:
-/// in `initialize`, the newer `_meta`, or the session id an older one was given.
-fn program(headers: &HeaderMap, params: &Value) -> Option<String> {
-    let info = match &params["clientInfo"] {
-        Value::Null => &params["_meta"]["io.modelcontextprotocol/clientInfo"],
-        info => info,
-    };
-    let session = || {
-        let id = headers.get(SESSION)?.to_str().ok()?;
-        String::from_utf8(URL_SAFE_NO_PAD.decode(id).ok()?).ok()
-    };
-    let name = match info["name"].as_str() {
-        Some(name) => name.to_string(),
-        None => session()?,
-    };
+/// The name a program gives itself in a request's `_meta`, cut to [`NAME`] characters.
+fn program(info: Option<Implementation>) -> Option<String> {
+    let name = info?.name;
     let name = name.trim();
     (!name.is_empty()).then(|| name.chars().take(NAME).collect())
 }
-
-/// The revision a request says it is of in its `_meta`.
-const NEWER: &str = "2026-07-28";
-
-/// The revisions it speaks, the newest first: [`NEWER`], then those that begin with `initialize`.
-const SUPPORTED: [&str; 5] = [
-    NEWER,
-    "2025-11-25",
-    "2025-06-18",
-    "2025-03-26",
-    "2024-11-05",
-];
-
-/// The revisions that begin with `initialize`, the newest first.
-const OLDER: &[&str] = SUPPORTED.split_at(1).1;
-
-const VERSION_KEY: &str = "io.modelcontextprotocol/protocolVersion";
 
 const INSTRUCTIONS: &str = "Cardwave holds the user's character cards and their chats with the characters. list_cards and list_chats find them, read_card and read_chat read one by its id, send_message writes into a chat and gives the reply; the other tools are those the user switched on in Cardwave's settings, with Cardwave's own one per request of its API.";
 
@@ -137,106 +140,79 @@ async fn waited(limit: std::time::Duration, now: impl Fn() -> Option<Waited>) ->
 /// The most messages of a chat that read_chat gives at once.
 const PAGE: usize = 50;
 
-/// A JSON-RPC error: its HTTP status, code and message, and what it adds.
-struct Failed(StatusCode, i64, String, Option<Value>);
+/// The MCP server's handler: rmcp answers the protocol, this the tools.
+struct Server;
 
-impl Failed {
-    fn new(status: StatusCode, code: i64, message: impl Into<String>) -> Self {
-        Self(status, code, message.into(), None)
+impl ServerHandler for Server {
+    fn get_info(&self) -> ServerConfig {
+        let info = Implementation::new("cardwave", super::version()).with_title("Cardwave");
+        ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
+            .with_server_info(info)
+            .with_instructions(INSTRUCTIONS)
+    }
+
+    fn supported_protocol_versions(&self) -> Cow<'static, [ProtocolVersion]> {
+        Cow::Borrowed(&[ProtocolVersion::V_2026_07_28])
+    }
+
+    async fn discover(
+        &self,
+        context: RequestContext<RoleServer>,
+    ) -> Result<DiscoverResult, McpError> {
+        admitted(&context).await?;
+        let versions = self.supported_protocol_versions().into_owned();
+        Ok(DiscoverResult::from_server_info(versions, self.get_info()))
+    }
+
+    async fn list_tools(
+        &self,
+        _request: Option<PaginatedRequestParams>,
+        context: RequestContext<RoleServer>,
+    ) -> Result<ListToolsResult, McpError> {
+        let (state, app, caller) = admitted(&context).await?;
+        let tools = listed(&state, &app, &caller).await?;
+        let listed = json!({ "tools": tools, "ttlMs": 0, "cacheScope": "private", "resultType": "complete" });
+        serde_json::from_value(listed).map_err(|e| McpError::internal_error(e.to_string(), None))
+    }
+
+    async fn call_tool(
+        &self,
+        request: CallToolRequestParams,
+        context: RequestContext<RoleServer>,
+    ) -> Result<CallToolResponse, McpError> {
+        let (state, app, caller) = admitted(&context).await?;
+        let params = json!({ "name": request.name, "arguments": request.arguments });
+        let result = call(&state, &app, &caller, &params).await?;
+        let mut result: CallToolResult = serde_json::from_value(result)
+            .map_err(|e| McpError::internal_error(e.to_string(), None))?;
+        result.result_type = Some(ResultType::COMPLETE);
+        Ok(result.into())
     }
 }
 
-/// The headers do not mirror the body.
-fn mismatch(what: &str) -> Failed {
-    Failed::new(
-        StatusCode::BAD_REQUEST,
-        -32020,
-        format!("Header mismatch: {what}"),
-    )
-}
-
-fn unsupported(requested: &str) -> Failed {
-    let data = json!({ "supported": SUPPORTED, "requested": requested });
-    Failed(
-        StatusCode::BAD_REQUEST,
-        -32022,
-        "Unsupported protocol version".into(),
-        Some(data),
-    )
-}
-
-fn invalid(message: impl Into<String>) -> Failed {
-    Failed::new(StatusCode::OK, -32602, message)
-}
-
-fn answer(status: StatusCode, body: Value) -> Response {
-    (status, axum::Json(body)).into_response()
-}
-
-async fn mcp(
-    State(state): State<AppState>,
-    Extension(app): Extension<Api>,
-    caller: Caller,
-    headers: HeaderMap,
-    body: Bytes,
-) -> Response {
-    if caller.remote || !this_computer(&headers) {
-        let text = "Only apps on this computer reach Cardwave's MCP server.";
-        return failure(
-            Value::Null,
-            Failed::new(StatusCode::FORBIDDEN, -32600, text),
-        );
-    }
-    let Ok(message) = serde_json::from_slice::<Value>(&body) else {
-        return failure(
-            Value::Null,
-            Failed::new(StatusCode::BAD_REQUEST, -32700, "Parse error"),
-        );
+/// Admits the program a request comes from, as the settings say: the state,
+/// the API and the account it is served as, on this computer; why not, where not.
+async fn admitted(
+    context: &RequestContext<RoleServer>,
+) -> Result<(AppState, Api, Caller), McpError> {
+    let parts = context.extensions.get::<Parts>();
+    let state = parts.and_then(|parts| parts.extensions.get::<AppState>().cloned());
+    let app = parts.and_then(|parts| parts.extensions.get::<Api>().cloned());
+    let (Some(state), Some(app)) = (state, app) else {
+        return Err(McpError::internal_error(
+            "the request's state is missing",
+            None,
+        ));
     };
-    // A batch, which 2025-03-26 allowed and later revisions do not.
-    if !message.is_object() {
-        let text = "Send one message at a time";
-        return failure(
-            Value::Null,
-            Failed::new(StatusCode::BAD_REQUEST, -32600, text),
-        );
-    }
-    // A notification, or an answer, wants none.
-    let id = message.get("id").cloned();
-    let answers = message.get("result").is_some() || message.get("error").is_some();
-    let (Some(id), Some(method)) = (id.clone(), message["method"].as_str()) else {
-        if id.is_none() || answers {
-            return StatusCode::ACCEPTED.into_response();
-        }
-        let text = "Invalid Request: no method";
-        return failure(
-            id.unwrap_or_default(),
-            Failed::new(StatusCode::BAD_REQUEST, -32600, text),
-        );
-    };
-    let params = &message["params"];
-    let newer = match checked(&headers, method, params) {
-        Ok(newer) => newer,
-        Err(failed) => return failure(id, failed),
-    };
-    let name = program(&headers, params);
-    let session = (method == "initialize").then(|| name.clone()).flatten();
+    let name = program(context.client_info());
     let local = state.local_user();
     let admitted = state
         .work(move |db| mcp::admit(db, local, name.as_deref()))
         .await;
     let account = match admitted {
         Ok(Ok(account)) => account,
-        Ok(Err(refused)) => {
-            return failure(id, Failed::new(StatusCode::FORBIDDEN, -32600, refused));
-        }
-        Err(failed) => {
-            let text = format!("{failed:#}");
-            return failure(
-                id,
-                Failed::new(StatusCode::INTERNAL_SERVER_ERROR, -32603, text),
-            );
-        }
+        Ok(Err(refused)) => return Err(McpError::invalid_request(refused, None)),
+        Err(failed) => return Err(McpError::internal_error(format!("{failed:#}"), None)),
     };
     // As the account it serves, on this computer.
     let caller = Caller {
@@ -244,166 +220,40 @@ async fn mcp(
         session: None,
         remote: false,
     };
-    match respond(&state, &app, &caller, method, params, newer).await {
-        Ok(mut result) => {
-            // Of the newer revision alone.
-            if newer {
-                result["resultType"] = json!("complete");
-            }
-            let body = json!({ "jsonrpc": "2.0", "id": id, "result": result });
-            let mut answered = answer(StatusCode::OK, body);
-            // An older client sends it back with every request, and so names itself.
-            let session = session.map(|name| URL_SAFE_NO_PAD.encode(name));
-            if let Some(value) = session.and_then(|id| HeaderValue::from_str(&id).ok()) {
-                answered.headers_mut().insert(SESSION, value);
-            }
-            answered
-        }
-        Err(failed) => failure(id, failed),
-    }
+    Ok((state, app, caller))
 }
 
-/// The header in which an older client sends back its session id.
-const SESSION: &str = "mcp-session-id";
-
-fn failure(id: Value, Failed(status, code, text, data): Failed) -> Response {
-    let mut error = json!({ "code": code, "message": text });
-    if let Some(data) = data {
-        error["data"] = data;
+/// The tools a program is offered: the cards' and chats', those the settings
+/// switch on, and Cardwave's own one per route in place of the chat model's two.
+async fn listed(state: &AppState, app: &Api, caller: &Caller) -> Result<Vec<Value>, McpError> {
+    let toolbox = toolbox(state, app, caller).await?;
+    let mut tools = own_tools();
+    let app = toolbox.as_ref().is_some_and(Toolbox::offers_app);
+    let theirs = toolbox
+        .map(|toolbox| toolbox.definitions())
+        .unwrap_or_default();
+    // Cardwave's own come one per route, not as the chat model's two,
+    // and in place of a written tool of a route's name; a chat tool is a chat's.
+    let theirs = theirs.iter().filter(|tool| {
+        let name = tool["function"]["name"].as_str().unwrap_or_default();
+        chat::named(name).is_none()
+            && !(app
+                && (name == app::CALL
+                    || name == app::HELP
+                    || app::named(tool_routes(), name).is_some()))
+    });
+    tools.extend(theirs.map(|tool| {
+        let function = &tool["function"];
+        json!({
+            "name": function["name"],
+            "description": function["description"],
+            "inputSchema": function["parameters"],
+        })
+    }));
+    if app {
+        tools.extend(app::mcp_definitions(tool_routes()));
     }
-    answer(
-        status,
-        json!({ "jsonrpc": "2.0", "id": id, "error": error }),
-    )
-}
-
-/// Whether the request was sent to this computer by its name or address.
-fn this_computer(headers: &HeaderMap) -> bool {
-    let host = headers
-        .get(header::HOST)
-        .and_then(|host| host.to_str().ok())
-        .unwrap_or("");
-    matches!(crate::host_name(host), "127.0.0.1" | "localhost" | "::1")
-}
-
-async fn respond(
-    state: &AppState,
-    app: &Api,
-    caller: &Caller,
-    method: &str,
-    params: &Value,
-    newer: bool,
-) -> Result<Value, Failed> {
-    match method {
-        "initialize" if !newer => {
-            let asked = params["protocolVersion"].as_str().unwrap_or_default();
-            let version = OLDER.iter().find(|one| **one == asked).unwrap_or(&OLDER[0]);
-            Ok(json!({
-                "protocolVersion": version,
-                "capabilities": { "tools": {} },
-                "serverInfo": server_info(),
-                "instructions": INSTRUCTIONS,
-            }))
-        }
-        "ping" if !newer => Ok(json!({})),
-        "server/discover" => Ok(json!({
-                "supportedVersions": SUPPORTED,
-                "capabilities": { "tools": {} },
-                "_meta": { "io.modelcontextprotocol/serverInfo": server_info() },
-                "instructions": INSTRUCTIONS,
-                "ttlMs": 0,
-                "cacheScope": "private",
-        })),
-        "tools/list" => {
-            let toolbox = toolbox(state, app, caller).await?;
-            let mut tools = own_tools();
-            let app = toolbox.as_ref().is_some_and(Toolbox::offers_app);
-            let theirs = toolbox
-                .map(|toolbox| toolbox.definitions())
-                .unwrap_or_default();
-            // Cardwave's own come one per route, not as the chat model's two,
-            // and in place of a written tool of a route's name; a chat tool is a chat's.
-            let theirs = theirs.iter().filter(|tool| {
-                let name = tool["function"]["name"].as_str().unwrap_or_default();
-                chat::named(name).is_none()
-                    && !(app
-                        && (name == app::CALL
-                            || name == app::HELP
-                            || app::named(tool_routes(), name).is_some()))
-            });
-            tools.extend(theirs.map(|tool| {
-                let function = &tool["function"];
-                json!({
-                    "name": function["name"],
-                    "description": function["description"],
-                    "inputSchema": function["parameters"],
-                })
-            }));
-            if app {
-                tools.extend(app::mcp_definitions(tool_routes()));
-            }
-            let mut listed = json!({ "tools": tools });
-            if newer {
-                listed["ttlMs"] = json!(0);
-                listed["cacheScope"] = json!("private");
-            }
-            Ok(listed)
-        }
-        "tools/call" => call(state, app, caller, params).await,
-        _ => Err(Failed::new(
-            // An older client reads the error of an answer that is not 404.
-            match newer {
-                true => StatusCode::NOT_FOUND,
-                false => StatusCode::OK,
-            },
-            -32601,
-            format!("Method not found: {method}"),
-        )),
-    }
-}
-
-/// Checks a request's headers against its body; whether it is of the newer revision.
-fn checked(headers: &HeaderMap, method: &str, params: &Value) -> Result<bool, Failed> {
-    let header = |name: &str| headers.get(name).and_then(|value| value.to_str().ok());
-    let said = header("mcp-protocol-version");
-    let Some(version) = params["_meta"][VERSION_KEY].as_str() else {
-        return match said {
-            Some(NEWER) => Err(mismatch("the body's _meta names no protocol version")),
-            Some(said) if !OLDER.contains(&said) => Err(unsupported(said)),
-            _ => Ok(false),
-        };
-    };
-    if said != Some(version) {
-        return Err(mismatch("MCP-Protocol-Version differs from the body's"));
-    }
-    if version != NEWER {
-        return Err(unsupported(version));
-    }
-    if header("mcp-method") != Some(method) {
-        return Err(mismatch("Mcp-Method differs from the body's method"));
-    }
-    if method == "tools/call" {
-        let name = header("mcp-name").and_then(decoded);
-        if name.as_deref() != params["name"].as_str() {
-            return Err(mismatch("Mcp-Name differs from the body's name"));
-        }
-    }
-    Ok(true)
-}
-
-/// A header's value, which may come in Base64 as `=?base64?…?=`.
-fn decoded(value: &str) -> Option<String> {
-    match value
-        .strip_prefix("=?base64?")
-        .and_then(|rest| rest.strip_suffix("?="))
-    {
-        Some(coded) => String::from_utf8(STANDARD.decode(coded).ok()?).ok(),
-        None => Some(value.to_string()),
-    }
-}
-
-fn server_info() -> Value {
-    json!({ "name": "cardwave", "title": "Cardwave", "version": super::version() })
+    Ok(tools)
 }
 
 /// The tools of the cards and the chats, which every account has.
@@ -453,14 +303,18 @@ fn own_tools() -> Vec<Value> {
 }
 
 /// The tools the user's settings switch on, as a reply has them.
-async fn toolbox(state: &AppState, app: &Api, caller: &Caller) -> Result<Option<Toolbox>, Failed> {
+async fn toolbox(
+    state: &AppState,
+    app: &Api,
+    caller: &Caller,
+) -> Result<Option<Toolbox>, McpError> {
     let user = caller.user;
     let owner = user == state.local_user();
     let api = Some((app.clone(), caller.clone()));
     state
         .work(move |db| super::generate::toolbox(db, user, (owner, false), None, api))
         .await
-        .map_err(|failure| Failed::new(StatusCode::OK, -32603, format!("{failure:#}")))
+        .map_err(|failure| McpError::internal_error(format!("{failure:#}"), None))
 }
 
 async fn call(
@@ -468,7 +322,7 @@ async fn call(
     app: &Api,
     caller: &Caller,
     params: &Value,
-) -> Result<Value, Failed> {
+) -> Result<Value, McpError> {
     let name = params["name"].as_str().unwrap_or_default();
     let arguments = &params["arguments"];
     let words = |name: &str| {
@@ -478,7 +332,7 @@ async fn call(
     let id = |name: &str| {
         arguments[name]
             .as_i64()
-            .ok_or_else(|| invalid(format!("{name} is to be a number")))
+            .ok_or_else(|| McpError::invalid_params(format!("{name} is to be a number"), None))
     };
     let asked = match name {
         mcp::LIST_CARDS => format!("/api/cards?q={}", words("query")),
@@ -626,7 +480,7 @@ async fn their_tool(
     caller: &Caller,
     name: &str,
     arguments: &Value,
-) -> Result<Value, Failed> {
+) -> Result<Value, McpError> {
     let toolbox = toolbox(state, app, caller).await?;
     // A chat tool is a chat's, not listed here.
     let offered = |toolbox: &Toolbox| {
@@ -648,7 +502,10 @@ async fn their_tool(
         });
     }
     let Some(toolbox) = toolbox.filter(offered) else {
-        return Err(invalid(format!("Unknown tool: {name}")));
+        return Err(McpError::invalid_params(
+            format!("Unknown tool: {name}"),
+            None,
+        ));
     };
     let call = Call {
         id: String::new(),

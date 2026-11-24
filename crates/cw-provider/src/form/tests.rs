@@ -8,19 +8,12 @@ use std::sync::{Arc, Mutex};
 use serde_json::{Value, json};
 
 use super::*;
-use crate::{Sampling, client, pretend};
+use crate::{client, pretend};
 
 fn provider(base_url: &str, seen_thinking: bool) -> Provider {
     Provider {
-        base_url: base_url.to_string(),
-        api_key: String::new(),
-        model: "plain-7b".to_string(),
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
         seen_thinking,
-        window: None,
+        ..Provider::new(base_url, "", "plain-7b")
     }
 }
 

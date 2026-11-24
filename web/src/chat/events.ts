@@ -1,6 +1,6 @@
 // What the chat screen does with the server's events: a reply streaming in, the model's thinking before it (one
 // grey line, `showThinking`, gone with the first word), its end, a tool's call that waits,
-// a coding task, what was saved to memory, the chat's mode and its title, lorebooks, personas or the voice changed, a
+// drawn as it will show at its end (`written`), a coding task, what was saved to memory or a memory pass that failed, the chat's mode and its title, lorebooks, personas or the voice changed, a
 // message sent, deleted or put back, the chat changed or a written tool switched in another window, and "Pictures
 // from the web" switched in Settings.
 //
@@ -8,11 +8,11 @@
 // known has the chat read anew (`streamed`), which also finds a reply's end missed while the socket was down.
 import type { ServerEvent } from "../api/generated/ServerEvent";
 import { getVoice } from "../api/client";
-import { failureWords } from "../language/errors";
+import { failureWords, memoryNotKept } from "../language/errors";
 import { startDialog } from "./coding";
-import { narrated, readWebPictures } from "../narration";
+import { readWebPictures } from "../narration";
 import { atBottom, failed, filesNow, find, load, personalityNow, show, tell, toBottom, toolsNow, type Screen } from "./screen";
-import { showThinking } from "./messages";
+import { showThinking, written } from "./messages";
 import { end } from "./talk";
 
 /** Events that say nothing to a chat. */
@@ -83,6 +83,11 @@ export function onEvent(s: Screen, event: ServerEvent): void {
   }
   // What was saved to memory shows in the side panel's "Used in this reply" of the message it is from.
   if (event.type === "memories") return again(s, event);
+  // The chat's memory pass failed by its helper model: told as a reply's failure is, over the message field.
+  if (event.type === "memory_failed") {
+    failed(s, memoryNotKept(event.error));
+    return s.render();
+  }
   if (event.type === "reply_ended") {
     s.ended.add(event.message_id);
     if (s.thinking?.id === event.message_id) s.thinking = null;
@@ -126,8 +131,9 @@ function streamed(s: Screen, event: Extract<ServerEvent, { type: "reply_text" }>
     showThinking(s, message.id);
   }
   const text = s.list.querySelector(`[data-id="${message.id}"] .text`);
-  if (!text) return;
+  if (!text || !s.view) return;
   const stick = atBottom(s);
-  text.replaceChildren(...narrated(message.content, true));
+  // Drawn as the whole reply will be: a chat without a character's as Markdown.
+  text.replaceChildren(...written(s.view, message));
   if (stick) toBottom(s);
 }

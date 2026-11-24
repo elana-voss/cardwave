@@ -46,9 +46,10 @@ fn a_command_reaches_its_folder_and_no_other() {
             .trim(),
         "made"
     );
-    // `dir` reads the drive, which the sandbox refuses: the output says how to list the folder.
+    // `dir` reads the drive, which the sandbox refuses: the model is told how to list the folder.
     let ran = run(&inside, "dir /b");
-    assert!(ran.output.contains(cw_sandbox::LISTING), "{}", ran.output);
+    assert!(ran.drive_refused, "{}", ran.output);
+    assert!(cw_sandbox::DRIVE_REFUSED.contains(cw_sandbox::LISTING));
     let ran = run(&inside, cw_sandbox::LISTING);
     assert_eq!(
         (ran.code, ran.output.trim()),
@@ -111,13 +112,20 @@ fn the_file_tools_reach_their_folder_and_no_other() {
     std::fs::write(outside.0.join("secret.txt"), "the secret").unwrap();
 
     assert_eq!(
-        files::write(&inside.0, "notes/today.txt", "hello").unwrap(),
+        files::write(&inside.0, "notes/today.txt", "hello")
+            .unwrap()
+            .for_model(),
         "Wrote 5 bytes to notes/today.txt."
     );
-    assert_eq!(files::read(&inside.0, "notes/today.txt").unwrap(), "hello");
-    assert_eq!(files::list(&inside.0, "").unwrap(), "notes/");
     assert_eq!(
-        files::list(&inside.0, "notes").unwrap(),
+        files::read(&inside.0, "notes/today.txt")
+            .unwrap()
+            .for_model(),
+        "hello"
+    );
+    assert_eq!(files::list(&inside.0, "").unwrap().for_model(), "notes/");
+    assert_eq!(
+        files::list(&inside.0, "notes").unwrap().for_model(),
         "today.txt (5 bytes)"
     );
 
@@ -198,14 +206,18 @@ async fn the_web_is_searched_and_read() {
     .await;
     let tool = Web::new(Some(web.url.clone())).unwrap();
 
-    let found = tool.search("rust tokio").await.unwrap();
+    let found = tool.search("rust tokio").await.unwrap().for_model();
     assert_eq!(
         found,
         "Tokio - An asynchronous Rust runtime\nhttps://tokio.rs/\nTokio is a runtime for writing reliable asynchronous applications with Rust.\n\n\
          tokio - Rust & Docs.rs\nhttps://docs.rs/tokio/latest/tokio/\nAn event-driven, non-blocking I/O platform.\n\n\
          Example\nhttps://example.com/a?b=1\n"
     );
-    let text = tool.read("https://example.com/lamps?part=2").await.unwrap();
+    let text = tool
+        .read("https://example.com/lamps?part=2")
+        .await
+        .unwrap()
+        .for_model();
     assert_eq!(text, "Lamps\nKeep the light's wick trimmed.");
 
     let asked = web.asked();
@@ -290,6 +302,29 @@ async fn a_reply_calls_a_tool_and_answers_with_what_it_gave() {
         listed,
         &json!({ "role": "tool", "tool_call_id": "call_2", "content": "note.txt (13 bytes)" })
     );
+}
+
+#[tokio::test]
+async fn a_last_round_cut_off_before_its_first_word_leaves_the_words_before_whole() {
+    let server = start().await;
+    let folder = Folder::new("cut-after-call");
+    std::fs::write(folder.0.join("note.txt"), "Buy lamp oil.").unwrap();
+    // The words of the first round ended with its call; the round after is cut off before any.
+    let words = "Here it is, the note you asked me to read. I will read the rest of it to you now";
+    let mut first = vec![text_piece(words)];
+    first.extend(call_pieces("read_file", &json!({ "path": "note.txt" })));
+    let cut = json!({ "choices": [{ "delta": {}, "finish_reason": "length" }] });
+    let model = Model::start(vec![(200, stream(&first)), (200, stream(&[cut]))]).await;
+    let chat = chat_at(&server, &model).await;
+    let tools = json!({ "tools": { "files": true, "folder": folder.path() } });
+    assert_eq!(server.patch("/api/settings", tools).await.0, 200);
+    let mut socket = server.listen().await;
+
+    let (status, reply) = server.post(&format!("{chat}/generate"), json!({})).await;
+    assert_eq!(status, 202, "{reply}");
+    let ended = next_event(&mut socket).await;
+    assert_eq!(ended["type"], "reply_ended", "{ended}");
+    assert_eq!(ended["message"]["content"], words);
 }
 
 #[tokio::test]

@@ -2,39 +2,16 @@
 // is (`compare`, word by word; `marked` as shown), the AI tools (`textTools()`) and what a draft is called by what made it (`madeBy`).
 //
 // The Markdown is the little a card's texts use: paragraphs parted by an empty line, a line break kept, headings
-// (#, ##, ###), lists (-, * or 1.), quotes (>), **bold**, `code`, and narration in italics as a chat shows it
-// (narration.ts); with `links` (a chat's assistant) also links and addresses. It is made of elements, never of
-// HTML read, so a card's words cannot put markup on the page.
+// (#, ##, ###), lists (-, * or 1.), quotation blocks and the marks, read as a chat reads them (marks.ts); with
+// `links` (a chat without a character) also links and addresses. It is made of elements, never of HTML read, so a
+// card's words cannot put markup on the page.
 import type { AiTool } from "../api/generated/AiTool";
 import { el } from "../dom";
 import type { IconName } from "../icons";
-import { linked, paragraphs, pieces } from "../narration";
+import { units } from "../marks";
+import { block, inline } from "../narration";
 import { wording } from "../language/language";
 
-/** Bold and code within a line; what is between them is read for narration. */
-const MARKED = /\*\*(.+?)\*\*|`([^`]+)`/g;
-
-/** A line as it shows: bold, code and narration; with `links`, links and addresses as a message draws them. */
-function inline(line: string, links: boolean): (HTMLElement | string)[] {
-  const shown: (HTMLElement | string)[] = [];
-  const words = (text: string) => (links ? linked(text) : [text]);
-  const plain = (text: string) => shown.push(...pieces(text).flatMap(({ text, told }) => (told ? [el("em", null, ...words(text))] : words(text))));
-  let at = 0;
-  for (const match of line.matchAll(MARKED)) {
-    plain(line.slice(at, match.index));
-    shown.push(match[1] !== undefined ? el("strong", null, match[1]) : el("code", null, match[2]));
-    at = match.index + match[0].length;
-  }
-  plain(line.slice(at));
-  return shown;
-}
-
-const inlineOf = inline;
-
-/** Lines as one paragraph's content, a `br` between two. */
-const lines = (parts: string[], links: boolean) => parts.flatMap((line, at) => (at ? [el("br"), ...inline(line, links)] : inline(line, links)));
-
-/** A text as the elements its Markdown makes; a text of blank lines alone is nothing. */
 /** The names a card's texts read with in place of `{{char}}` and `{{user}}`. */
 export interface Names {
   char: string;
@@ -44,19 +21,24 @@ export interface Names {
 /** `text` with `{{char}}` and `{{user}}` (in any case) as `names`, for reading; the text itself keeps them. */
 export const named = (text: string, names: Names): string => text.replace(/\{\{(char|user)\}\}/gi, (_, which: string) => (which.toLowerCase() === "char" ? names.char : names.user));
 
-export function markdown(text: string, links = false): HTMLElement[] {
-  const inline = (line: string) => inlineOf(line, links);
-  return paragraphs(text.replace(/\r\n?/g, "\n")).flatMap((block): HTMLElement[] => {
-    const rows = block.split("\n").filter((row) => row.trim());
-    if (!rows.length) return [];
-    const every = (pattern: RegExp) => rows.every((row) => pattern.test(row));
+/**
+ * A text as the elements its Markdown makes, read in the units a chat's message is (marks.ts `units`): a heading or
+ * list where every line of a block is one, else the block as a chat draws it (narration.ts `block`), its lines'
+ * ends kept as written (the stylesheet breaks them). With `open` the text is still being written; a text of blank
+ * lines alone is nothing.
+ */
+export function markdown(text: string, links = false, open = false): HTMLElement[] {
+  return units(text).flatMap((unit): HTMLElement[] => {
+    const rows = unit.text.split("\n").filter((row) => row.trim());
+    // Only the text's last row is still being written.
+    const line = (words: string, at: number) => inline(words, links, open && unit.last && at === rows.length - 1);
+    const every = (pattern: RegExp) => !unit.quote && rows.every((row) => pattern.test(row));
     const heading = /^(#{1,3})\s+(.*)$/;
-    if (every(heading)) return rows.map((row) => heading.exec(row)!).map(([, marks, words]) => el(`h${marks.length + 2}` as "h3", null, ...inline(words)));
-    const items = (pattern: RegExp) => rows.map((row) => el("li", null, ...inline(row.replace(pattern, ""))));
+    if (every(heading)) return rows.map((row) => heading.exec(row)!).map(([, marks, words], at) => el(`h${marks.length + 2}` as "h3", null, ...line(words, at)));
+    const items = (pattern: RegExp) => rows.map((row, at) => el("li", null, ...line(row.replace(pattern, ""), at)));
     if (every(/^\s*[-*]\s+/)) return [el("ul", null, ...items(/^\s*[-*]\s+/))];
     if (every(/^\s*\d+\.\s+/)) return [el("ol", null, ...items(/^\s*\d+\.\s+/))];
-    if (every(/^\s*>/)) return [el("blockquote", null, el("p", null, ...lines(rows.map((row) => row.replace(/^\s*>\s?/, "")), links)))];
-    return [el("p", null, ...lines(rows, links))];
+    return [block(unit, { links, open: open && unit.last })];
   });
 }
 

@@ -2,7 +2,7 @@
 // (`sentences`), each answer, 16-bit samples as they are made, played as it comes, each piece after the one
 // before (Web Audio), so the first words are heard a fraction of a second after the asking and the next sentence
 // is made while the one before plays. `spoken` is what of a message is read: its text without the asterisks of
-// its narration (narration.ts). The server makes it faster or slower (Settings › Voices, "Speed").
+// its narration and the ">" of its quotation blocks (marks.ts). The server makes it faster or slower (Settings › Voices, "Speed").
 //
 // A stalled voice recovers by itself: a sentence whose sound stops coming for `STALL_MS` (or does not begin
 // within `FIRST_MS`, as the server answers only once the model is loaded and the reading before is done) is
@@ -12,7 +12,7 @@
 // cannot play sound at all ends the reading at once, saying so.
 import { speak } from "../api/client";
 import { reason } from "../dom";
-import { paragraphs, pieces } from "../narration";
+import { joined, plain, read } from "../marks";
 import { wording } from "../language/language";
 
 /** How long a sentence's sound may stop coming before it is asked for again. */
@@ -20,11 +20,11 @@ export const STALL_MS = 8000;
 /** How long a sentence's sound may take to begin. */
 export const FIRST_MS = 60_000;
 
-/** A message's text as it is read aloud: without the asterisks of its narration. */
-export const spoken = (text: string) =>
-  paragraphs(text)
-    .map((paragraph) => pieces(paragraph).map((piece) => piece.text).join(""))
-    .join("\n\n");
+/**
+ * A message's text as it is read aloud, read as it is drawn (narration.ts): without the signs of its marks
+ * (asterisks, underline) and of its quotation blocks, a link by its words, a picture by none.
+ */
+export const spoken = (text: string) => joined(text, (unit) => plain(read(unit.text, { links: true }))).join("");
 
 /** A text cut into its sentences: after a full stop, a question or an exclamation mark (and the quote that closes it), and at each line's end. */
 export const sentences = (text: string): string[] =>

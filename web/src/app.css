@@ -546,6 +546,10 @@ button.task-file,
 .side.long {
   position: static;
 }
+/* A card's text keeps its lines' ends (card-text.ts), its spaces as the page's; an earlier draft told against it keeps both. */
+.md p {
+  white-space: pre-line;
+}
 .md.changes p {
   white-space: pre-wrap;
 }

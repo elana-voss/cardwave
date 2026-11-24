@@ -49,6 +49,8 @@ afterEach(() => {
 describe("reading aloud", () => {
   test("a message is read without the asterisks of its narration", () => {
     expect(spoken("*She smiles.* Come in.\n\n*The door shuts.*")).toBe("She smiles. Come in.\n\nThe door shuts.");
+    expect(spoken("He wrote:\n> *Come* home.\nShe reads.")).toBe("He wrote:\nCome home.\nShe reads.");
+    expect(spoken("See [the map](https://example.com/map) ![a lamp](https://example.com/l.png).")).toBe("See the map .");
   });
 
   test("a text is read a sentence at a time, a quote that closes one kept with it", () => {

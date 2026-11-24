@@ -23,7 +23,6 @@ use axum::{Json, Router};
 use common::server::{Server, event, start};
 use common::streamed::{DONE, Provider, follow, generate, has, says};
 use serde_json::{Value, json};
-use tokio::net::TcpListener;
 
 /// How the animator's question is told apart, by its system prompt's start.
 const ANIMATOR: &str = "You move a character's figure";
@@ -48,12 +47,8 @@ impl Model {
             let stream = format!("data: {piece}\n\ndata: [DONE]\n\n");
             ([(header::CONTENT_TYPE, "text/event-stream")], stream).into_response()
         };
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let url = format!("http://{}/v1", listener.local_addr().unwrap());
-        let app = Router::new()
-            .route("/props", axum::routing::get(common::props))
-            .route("/v1/chat/completions", post(complete));
-        tokio::spawn(async { axum::serve(listener, app).await.unwrap() });
+        let app = Router::new().route("/v1/chat/completions", post(complete));
+        let url = format!("{}/v1", common::serve(app).await);
         Self { url, asked }
     }
 }

@@ -5,7 +5,8 @@
 //!
 //! A task's roles take the models of the settings' team where it names them;
 //! else the planner and the auditor the chat model, and the workers the
-//! background model, or the chat model where there is none.
+//! background model, or the chat model where there is none; each role asks
+//! the chat model's provider with that model's own thinking (`provider::at_chat`).
 
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -113,7 +114,18 @@ async fn start(
                 context_size: chat.sampling.context_size,
                 ..Sampling::default()
             };
-            let provider = provider::Provider { sampling, ..chat };
+            let role = |model: &str| -> anyhow::Result<provider::Provider> {
+                let sampling = sampling.clone();
+                Ok(provider::Provider {
+                    sampling,
+                    ..provider::at_chat(db, user, model)?
+                })
+            };
+            let roles = run::Roles {
+                planner: role(&crew.planner_model)?,
+                worker: role(&crew.worker_model)?,
+                auditor: role(&crew.auditor_model)?,
+            };
             let started = run::Started {
                 user,
                 id,
@@ -121,7 +133,7 @@ async fn start(
                 goal,
                 folder: folder.into(),
                 crew,
-                provider,
+                roles,
             };
             Ok((coding::get(db, user, id, None)?, started))
         })

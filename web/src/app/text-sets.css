@@ -1,0 +1,108 @@
+/* The marks of a message's text in a character's chat and the companion (narration.ts draws them): code and quotation
+   blocks as every look shows them, and the two sets of colours the view menu picks, which apply only where the
+   chat's root carries data-text-set="light" or "dark" (Off: none, the look's own colours). The tokens are the boards'
+   "Chat · text colours · light set" and "… dark set" (their text-colours-*-set.css). The rank (link over code over
+   speech over bold and italics, docs/design.md) is drawn by the variables: a mark sets for what it holds the
+   colours of what it outranks, so any nesting takes the colour of its highest mark. A variable set to "inherit"
+   on the root is none, and its colour stays the one around it (the light set's text, bold and quotation block). */
+
+:is(.msg .text, .compact-list .bubble, .companion-say) blockquote {
+  margin: var(--s10) 0;
+  padding-left: var(--s14);
+  /* Of the text's own colour, as a bubble's ground is the page's --fill and --rule. */
+  border-left: 3px solid color-mix(in srgb, currentcolor 20%, transparent);
+}
+:is(.msg .text, .compact-list .bubble, .companion-say) code {
+  padding: 1px var(--s4);
+  border-radius: var(--r-xs);
+  background: color-mix(in srgb, currentcolor 8%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+[data-text-set="light"] {
+  --tc-text: inherit;
+  --tc-speech: #00639a;
+  --tc-italics: #566377;
+  --tc-bold: inherit;
+  --tc-speech-bold: #00639a;
+  --tc-link: #00639a;
+  --tc-line: #7a8798;
+  --tc-code: #1d3557;
+  --tc-code-bg: rgb(29 53 87 / 10%);
+  --tc-code-edge: transparent;
+  --tc-quote: inherit;
+  --tc-quote-bg: rgb(0 119 182 / 7%);
+  --tc-quote-bar: #0096c7;
+}
+/* Dark: bold a step brighter than the text, as light text glows on a dark ground (the owner, 2026-11-23). */
+[data-text-set="dark"] {
+  --tc-text: #e2e6ec;
+  --tc-speech: #7cc4fa;
+  --tc-italics: #949fa8;
+  --tc-bold: #f8fafc;
+  --tc-speech-bold: #bae0ff;
+  --tc-link: #7cc4fa;
+  --tc-line: #5c6773;
+  --tc-code: #d0e2ff;
+  --tc-code-bg: #1b222c;
+  --tc-code-edge: #2e3a48;
+  --tc-quote: #a3d5ff;
+  --tc-quote-bg: #1e252d;
+  --tc-quote-bar: #4da3e8;
+}
+
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) {
+  color: var(--tc-text);
+}
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) em {
+  color: var(--tc-italics);
+}
+/* Speech within bold is bold speech. */
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) strong {
+  --tc-speech: var(--tc-speech-bold);
+
+  color: var(--tc-bold);
+}
+/* Italics and bold within speech take its colour. */
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) .speech {
+  --tc-italics: var(--tc-speech);
+  --tc-bold: var(--tc-speech-bold);
+
+  color: var(--tc-speech);
+}
+/* Bold within speech: its own step, also where italics hold it. */
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) .speech strong {
+  --tc-italics: var(--tc-speech-bold);
+}
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) code {
+  padding: var(--s2) var(--s6);
+  border: 1px solid var(--tc-code-edge);
+  border-radius: 5px;
+  background: var(--tc-code-bg);
+  font: inherit;
+  color: var(--tc-code);
+}
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) blockquote {
+  padding: var(--s6) var(--s14);
+  border-left-color: var(--tc-quote-bar);
+  border-radius: 0 6px 6px 0;
+  background: var(--tc-quote-bg);
+  color: var(--tc-quote);
+}
+/* Underlined text looks as a link; whatever either holds takes the link's colour, code without its ground. */
+[data-text-set] :is(.msg .text, .compact-list .bubble, .companion-say) :is(a, u) {
+  --tc-speech: var(--tc-link);
+  --tc-speech-bold: var(--tc-link);
+  --tc-italics: var(--tc-link);
+  --tc-bold: var(--tc-link);
+  --tc-code: var(--tc-link);
+  --tc-code-bg: transparent;
+  --tc-code-edge: transparent;
+
+  color: var(--tc-link);
+  text-decoration: underline;
+  text-decoration-color: var(--tc-line);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}

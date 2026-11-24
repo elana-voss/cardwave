@@ -40,7 +40,7 @@ test("a verdict says its tests where they ran", () => {
 });
 
 test("a running task says its step of the plan, and its bar the share done", () => {
-  const step = (who: Who, what: StepWhat, state: Step["state"], checkpoint: Step["checkpoint"] = null): Step => ({ id: 0, who, what, detail: { code: "none" }, state, output: "", files: [], checkpoint, undone: false, started_at: 0 });
+  const step = (who: Who, what: StepWhat, state: Step["state"], checkpoint: Step["checkpoint"] = null): Step => ({ id: 0, who, what, detail: { code: "none" }, state, output: [], files: [], checkpoint, undone: false, started_at: 0 });
   const task = {
     state: "running",
     planned: 3,
@@ -60,7 +60,7 @@ test("a checkpoint is named by the page", () => {
 });
 
 test("a step that changed no file and a fix still count where the plan is", () => {
-  const step = (who: Who, what: StepWhat, state: Step["state"]): Step => ({ id: 0, who, what, detail: { code: "none" }, state, output: "", files: [], checkpoint: null, undone: false, started_at: 0 });
+  const step = (who: Who, what: StepWhat, state: Step["state"]): Step => ({ id: 0, who, what, detail: { code: "none" }, state, output: [], files: [], checkpoint: null, undone: false, started_at: 0 });
   const task = {
     state: "running",
     planned: 3,

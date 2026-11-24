@@ -17,7 +17,7 @@ import { sheet } from "../dialogs";
 import { clause, day } from "../format";
 import { desktop } from "../desktop";
 import logo from "../logo.png";
-import { linked } from "../narration";
+import { inline } from "../narration";
 
 /** A license's SPDX expression as the page says it: "MIT or Apache-2.0". */
 export function spoken(license: string): string {
@@ -40,7 +40,7 @@ export type Version = { version: string; notes: HTMLElement[] };
 /**
  * The file `web/public/whats-new.md`, a version under each "# " heading (its number), in the file's order, which
  * is the newest first: "## " a heading within it, "- " a list's points, every other line a paragraph's, an empty
- * line between two parts; a link in it opens in the browser (`linked`). Words before the first version are left out.
+ * line between two parts; a link in it opens in the browser (`inline`, with its marks). Words before the first version are left out.
  */
 export function versions(text: string): Version[] {
   const all: Version[] = [];
@@ -57,13 +57,13 @@ export function versions(text: string): Version[] {
     const point = /^[-*] (.*)$/.exec(line);
     if (point) {
       if (!list) now.notes.push((list = el("ul")));
-      list.append(el("li", null, ...linked(point[1]!)));
+      list.append(el("li", null, ...inline(point[1]!, true)));
       continue;
     }
     list = null;
     const part = /^## (.*)$/.exec(line);
     if (part) now.notes.push(el("h4", null, part[1]!));
-    else if (line) now.notes.push(el("p", null, ...linked(line)));
+    else if (line) now.notes.push(el("p", null, ...inline(line, true)));
   }
   return all;
 }

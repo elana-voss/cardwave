@@ -73,10 +73,12 @@ impl Drop for Writer {
     }
 }
 
-/// What reading a reply left: its text, the pictures its tools made, what
-/// was pushed of it, when it began and the error it ended with.
+/// What reading a reply left: its text and how it ended (none: as before),
+/// the pictures its tools made, what was pushed of it, when it began and the
+/// error it ended with.
 pub(super) struct Read {
     pub(super) content: String,
+    pub(super) ending: Option<chats::Ending>,
     pub(super) made: Vec<(String, Picture)>,
     pub(super) pushed: Pushed,
     pub(super) began: Instant,
@@ -90,6 +92,7 @@ pub(super) async fn finish(writer: Writer, job: Job, read: Read) {
     let (message_id, head_before, speaker_id) = (job.message_id, job.head_before, job.speaker_id);
     let Read {
         content,
+        ending,
         made,
         pushed,
         began,
@@ -131,7 +134,7 @@ pub(super) async fn finish(writer: Writer, job: Job, read: Read) {
             if let Err(failure) = chats::save_times(db, user, message_id, times) {
                 tracing::error!("how long a reply took could not be kept: {failure:#}");
             }
-            chats::finish_reply(db, user, message_id, &content, head_before)
+            chats::finish_reply(db, user, message_id, &content, ending, head_before)
         })
         .await;
     // The pictures come after the reply, while the chat is still its own.

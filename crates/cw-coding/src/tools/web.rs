@@ -1,5 +1,6 @@
 //! The web tool: a search (DuckDuckGo's page without scripts, asked as a form
-//! is sent, which needs no key) and a page read as text.
+//! is sent, which needs no key) and a page read as text; the HTML of both
+//! is read by `html.rs`.
 //!
 //! Only the open internet is reached: an address of this computer or of a
 //! private network is refused, by name (`GUARD`, which every connection's
@@ -8,15 +9,19 @@
 //! device at home. A result of the search that leads through DuckDuckGo's
 //! own address is given as the address it leads to (`decoded_link`). A test
 //! has `Web::stand_in`, its own server, asked in place of every host,
-//! `https://host/path` as `/host/path`, without the guard.
+//! `https://host/path` as `/host/path`, without the guard. Each gives a
+//! `Gave`; each failure of its own is a `Fail` with its code and `what` or
+//! `whose`, whose sentence is what the model reads.
 
-use std::sync::LazyLock;
 use std::time::Duration;
 
-use anyhow::{Context, bail, ensure};
+use crate::tools::gave::{Gave, kept};
+use anyhow::{Context, bail};
+use cw_core::{Code, Fail};
 use cw_platform::http::header::CONTENT_TYPE;
-use cw_platform::http::{Client, Lookup, Make, Redirects, Refusal, Url, public};
-use regex::Regex;
+use cw_platform::http::{Client, Lookup, Make, Redirects, Refusal, StatusCode, Url, public};
+
+mod html;
 
 /// Where a search is sent.
 const SEARCH: &str = "https://lite.duckduckgo.com/lite/";
@@ -64,21 +69,14 @@ impl Web {
     /// Where `url` is asked: itself, or the test's stand-in.
     fn at(&self, url: &Url) -> String {
         match &self.stand_in {
-            Some(at) => format!(
-                "{at}/{}{}{}",
-                url.host_str().unwrap_or_default(),
-                url.path(),
-                url.query()
-                    .map(|query| format!("?{query}"))
-                    .unwrap_or_default()
-            ),
+            Some(at) => cw_provider::stand_in::address(at, url.as_str()),
             None => url.to_string(),
         }
     }
 
     /// The first results for `query`: each its title, address and what the
     /// search says of it.
-    pub async fn search(&self, query: &str) -> anyhow::Result<String> {
+    pub async fn search(&self, query: &str) -> anyhow::Result<Gave> {
         let url = Url::parse(SEARCH)?;
         let response = self
             .client
@@ -86,51 +84,54 @@ impl Web {
             .form(&[("q", query)])
             .send()
             .await
-            .context("the search cannot be reached")?;
-        ensure!(
-            response.status().is_success(),
-            "the search answered {}",
-            response.status()
-        );
+            .context(unreachable("search"))?;
+        answered("search", response.status())?;
         let page = read(response).await?;
-        let found = results(&String::from_utf8_lossy(&page));
+        let found = html::results(&String::from_utf8_lossy(&page));
         if found.is_empty() {
-            return Ok(format!("No results for {query:?}."));
+            return Ok(Gave::NoResults {
+                query: query.to_string(),
+            });
         }
-        Ok(found
+        let text = found
             .iter()
-            .map(|(title, address, about)| format!("{title}\n{address}\n{about}"))
+            .take(RESULTS)
+            .map(|one| format!("{}\n{}\n{}", one.title, decoded_link(&one.link), one.about))
             .collect::<Vec<_>>()
-            .join("\n\n"))
+            .join("\n\n");
+        Ok(Gave::Text { text, whole: None })
     }
 
     /// The text of the page at `address`.
-    pub async fn read(&self, address: &str) -> anyhow::Result<String> {
-        Ok(self.page(address).await?.text)
+    pub async fn read(&self, address: &str) -> anyhow::Result<Gave> {
+        Ok(self.page(address).await?.gave())
     }
 
     /// The page at `address`: its title, where it is HTML that has one, and
     /// its text. A page that refreshes to another at once (`<meta
     /// http-equiv="refresh">`) is read there, as a browser goes on.
     pub async fn page(&self, address: &str) -> anyhow::Result<Page> {
-        let mut url = Url::parse(address.trim()).context("that is no web address")?;
+        let mut url = Url::parse(address.trim()).context(
+            Fail::said(Code::NotReadable, "that is no web address").with("what", "web_address"),
+        )?;
         for _ in 0..REFRESHES {
             match self.one_page(&url).await? {
                 Read::Moved(next) => url = next,
                 Read::Page(page) => return Ok(page),
             }
         }
-        bail!("the page refreshes to another again and again")
+        let said = "the page refreshes to another again and again";
+        bail!(Fail::said(Code::NotPossible, said).with("what", "page_refreshes"))
     }
 
     /// The page at `url`, or where it refreshes to.
     async fn one_page(&self, url: &Url) -> anyhow::Result<Read> {
-        ensure!(
-            matches!(url.scheme(), "http" | "https"),
-            "only http and https addresses are read"
-        );
+        if !matches!(url.scheme(), "http" | "https") {
+            let said = "only http and https addresses are read";
+            bail!(Fail::said(Code::NotPossible, said).with("what", "page_scheme"));
+        }
         if self.stand_in.is_none() && !numbered_open(url) {
-            bail!(Closed);
+            bail!(Closed::fail());
         }
         let response = self
             .client
@@ -138,14 +139,10 @@ impl Web {
             .send()
             .await
             .map_err(|error| match closed(&error) {
-                true => anyhow::anyhow!(Closed),
-                false => anyhow::Error::new(error).context("the page cannot be reached"),
+                true => anyhow::anyhow!(Closed::fail()),
+                false => anyhow::Error::new(error).context(unreachable("page")),
             })?;
-        ensure!(
-            response.status().is_success(),
-            "the page answered {}",
-            response.status()
-        );
+        answered("page", response.status())?;
         let kind = response
             .headers()
             .get(CONTENT_TYPE)
@@ -154,22 +151,22 @@ impl Web {
             .to_ascii_lowercase();
         let page = read(response).await?;
         let page = String::from_utf8_lossy(&page);
-        let html = kind.contains("html");
-        if let Some(next) = html.then(|| refreshed_to(&page, url)).flatten() {
-            return Ok(Read::Moved(next));
-        }
-        let title = if html { title_of(&page) } else { String::new() };
-        let text = if html {
-            text_of(&page)
+        let (title, text) = if kind.contains("html") {
+            let read = html::read(&page);
+            let refresh = read.refresh.as_deref();
+            if let Some(next) = refresh.and_then(|content| refreshed_to(content, url)) {
+                return Ok(Read::Moved(next));
+            }
+            (read.title, read.text)
         } else if kind.starts_with("text/") || kind.contains("json") || kind.contains("xml") {
-            page.trim().to_string()
+            (String::new(), page.trim().to_string())
         } else {
-            bail!("the page is no text ({kind})")
+            let said = format!("the page is no text ({kind})");
+            let fail = Fail::said(Code::NotReadable, said).with("what", "page_kind");
+            bail!(fail.with("kind", kind))
         };
-        Ok(Read::Page(Page {
-            title,
-            text: cut(&text, TEXT_LIMIT),
-        }))
+        let (text, whole) = kept(&text, TEXT_LIMIT);
+        Ok(Read::Page(Page { title, text, whole }))
     }
 }
 
@@ -182,20 +179,11 @@ enum Read {
     Moved(Url),
 }
 
-/// Where the page `html` at `url` refreshes to at once, by a `<meta
-/// http-equiv="refresh" content="0; url=…">`; none where it does not, waits
-/// first, or names its own address.
-fn refreshed_to(html: &str, url: &Url) -> Option<Url> {
-    // Fixed patterns, run by this file's tests: they compile.
-    static META: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(r#"(?is)<meta\b[^>]*http-equiv\s*=\s*["']?refresh["']?[^>]*>"#).unwrap()
-    });
-    static CONTENT: LazyLock<Regex> =
-        LazyLock::new(|| Regex::new(r#"(?is)content\s*=\s*(?:"([^"]*)"|'([^']*)')"#).unwrap());
-    let meta = META.find(html)?.as_str();
-    let found = CONTENT.captures(meta)?;
-    let content = decoded(found.get(1).or(found.get(2))?.as_str());
-    let (wait, rest) = content.split_once(';').unwrap_or((&content, ""));
+/// Where the page at `url` refreshes to at once, by the `content` of its
+/// `<meta http-equiv="refresh">` (`0; url=…`); none where it waits first or
+/// names its own address.
+fn refreshed_to(content: &str, url: &Url) -> Option<Url> {
+    let (wait, rest) = content.split_once(';').unwrap_or((content, ""));
     (wait.trim().parse::<f64>().ok()? <= 1.0).then_some(())?;
     let rest = rest.trim();
     let target = rest
@@ -208,21 +196,39 @@ fn refreshed_to(html: &str, url: &Url) -> Option<Url> {
     (!target.is_empty() && next != *url).then_some(next)
 }
 
-/// A page read: its title, empty where it has none, and its text.
+/// A page read: its title, empty where it has none, and its text, cut at
+/// [`TEXT_LIMIT`] characters of `whole` where it was longer.
 pub struct Page {
     pub title: String,
     pub text: String,
+    pub whole: Option<usize>,
 }
 
-/// The title of the page `html`, as one line; empty where it has none.
-fn title_of(html: &str) -> String {
-    // A fixed pattern, run by this file's tests: it compiles.
-    static TITLE: LazyLock<Regex> =
-        LazyLock::new(|| Regex::new(r"(?is)<title\b[^>]*>(.*?)</title\s*>").unwrap());
-    let title = TITLE
-        .captures(html)
-        .map_or(String::new(), |found| decoded(&found[1]));
-    title.split_whitespace().collect::<Vec<_>>().join(" ")
+impl Page {
+    /// Its text as the tool gives it.
+    pub fn gave(self) -> Gave {
+        Gave::Text {
+            text: self.text,
+            whole: self.whole,
+        }
+    }
+}
+
+/// `whose` (the search, the page) cannot be reached.
+fn unreachable(whose: &str) -> Fail {
+    Fail::said(Code::Unreachable, format!("the {whose} cannot be reached")).with("whose", whose)
+}
+
+/// `whose` (the search, the page) answered `status`, where it is a failure.
+fn answered(whose: &str, status: StatusCode) -> Result<(), Fail> {
+    match status.is_success() {
+        true => Ok(()),
+        false => Err(
+            Fail::said(Code::Answered, format!("the {whose} answered {status}"))
+                .with("whose", whose)
+                .with("status", status.as_u16()),
+        ),
+    }
 }
 
 /// The address is on this computer or in a private network.
@@ -236,6 +242,13 @@ impl std::fmt::Display for Closed {
 }
 
 impl std::error::Error for Closed {}
+
+impl Closed {
+    /// The refusal as the tool fails with it.
+    fn fail() -> Fail {
+        Fail::said(Code::NotPossible, Closed.to_string()).with("what", "page_closed")
+    }
+}
 
 /// `Closed`, as a client's check refuses.
 fn refused() -> Refusal {
@@ -284,39 +297,6 @@ async fn read(mut response: cw_platform::http::Response) -> anyhow::Result<Vec<u
     Ok(page)
 }
 
-/// The results on a page of DuckDuckGo's search without scripts: a link of
-/// the class `result-link` each, and the snippet after it.
-fn results(page: &str) -> Vec<(String, String, String)> {
-    static LINK: LazyLock<Regex> = LazyLock::new(|| {
-        Regex::new(r#"(?s)<a[^>]*href="([^"]+)"[^>]*class=['"]result-link['"][^>]*>(.*?)</a>"#)
-            // A fixed pattern, run by this file's tests: it compiles.
-            .unwrap()
-    });
-    static SNIPPET: LazyLock<Regex> = LazyLock::new(|| {
-        // A fixed pattern, run by this file's tests: it compiles.
-        Regex::new(r#"(?s)class=['"]result-snippet['"][^>]*>(.*?)</td>"#).unwrap()
-    });
-    let links: Vec<_> = LINK.captures_iter(page).collect();
-    links
-        .iter()
-        .enumerate()
-        .take(RESULTS)
-        .map(|(at, link)| {
-            // Group 0, the whole match, is always there.
-            let whole = link.get(0).unwrap();
-            let end = links
-                .get(at + 1)
-                // Group 0, the whole match, is always there.
-                .map_or(page.len(), |next| next.get(0).unwrap().start());
-            let about = SNIPPET
-                .captures(&page[whole.end()..end])
-                .map(|snippet| text_of(&snippet[1]))
-                .unwrap_or_default();
-            (text_of(&link[2]), decoded_link(&decoded(&link[1])), about)
-        })
-        .collect()
-}
-
 /// Where a result's link leads: through DuckDuckGo's own address
 /// (`//duckduckgo.com/l/?uddg=…`), the address in its `uddg`.
 fn decoded_link(link: &str) -> String {
@@ -332,70 +312,10 @@ fn decoded_link(link: &str) -> String {
     }
 }
 
-/// The text of HTML: what scripts, styles and the head hold left out, a line
-/// after each block, and the characters its entities stand for.
-pub fn text_of(html: &str) -> String {
-    static HIDDEN: LazyLock<Regex> = LazyLock::new(|| {
-        // A fixed pattern, run by this file's tests: it compiles.
-        Regex::new(r"(?is)<!--.*?-->|<(script|style|head|noscript|svg|template)\b.*?</(script|style|head|noscript|svg|template)\s*>").unwrap()
-    });
-    static BLOCK: LazyLock<Regex> = LazyLock::new(|| {
-        // A fixed pattern, run by this file's tests: it compiles.
-        Regex::new(r"(?i)</?(p|div|br|li|tr|h[1-6]|section|article|header|footer|ul|ol|table|pre|blockquote)\b[^>]*>").unwrap()
-    });
-    // A fixed pattern, run by this file's tests: it compiles.
-    static TAG: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?s)<[^>]*>").unwrap());
-    // A fixed pattern, run by this file's tests: it compiles.
-    static SPACES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[ \t\r\f\v]+").unwrap());
-    // A fixed pattern, run by this file's tests: it compiles.
-    static LINES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\s*\n\s*").unwrap());
-    let text = HIDDEN.replace_all(html, " ");
-    let text = BLOCK.replace_all(&text, "\n");
-    let text = TAG.replace_all(&text, "");
-    let text = decoded(&text);
-    let text = SPACES.replace_all(&text, " ");
-    LINES.replace_all(text.trim(), "\n").into_owned()
-}
-
-/// `text` with its HTML entities as the characters they stand for.
-fn decoded(text: &str) -> String {
-    static ENTITY: LazyLock<Regex> =
-        // A fixed pattern, run by this file's tests: it compiles.
-        LazyLock::new(|| Regex::new(r"&(#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z]+);").unwrap());
-    ENTITY
-        .replace_all(text, |found: &regex::Captures| {
-            let name = &found[1];
-            let sign = if let Some(hex) = name.strip_prefix("#x").or(name.strip_prefix("#X")) {
-                u32::from_str_radix(hex, 16).ok().and_then(char::from_u32)
-            } else if let Some(number) = name.strip_prefix('#') {
-                number.parse().ok().and_then(char::from_u32)
-            } else {
-                match name {
-                    "amp" => Some('&'),
-                    "lt" => Some('<'),
-                    "gt" => Some('>'),
-                    "quot" => Some('"'),
-                    "apos" => Some('\''),
-                    "nbsp" => Some(' '),
-                    _ => None,
-                }
-            };
-            sign.map_or_else(|| found[0].to_string(), String::from)
-        })
-        .into_owned()
-}
-
 /// `text` to at most `limit` characters, which it then says with how many it
 /// had: every tool's answer that is cut (pages, files, Cardwave's own).
 pub fn cut(text: &str, limit: usize) -> String {
-    match text.char_indices().nth(limit) {
-        Some((at, _)) => format!(
-            "{}\n… (cut at {limit} characters of {})",
-            &text[..at],
-            text.chars().count()
-        ),
-        None => text.to_string(),
-    }
+    Gave::text(text, limit).for_model()
 }
 
 #[cfg(test)]

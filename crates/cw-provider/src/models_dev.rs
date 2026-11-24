@@ -320,7 +320,7 @@ impl Index {
         let mut own: HashMap<String, Listings> = HashMap::new();
         let mut hosts: HashMap<String, Vec<String>> = HashMap::new();
         for (provider_key, provider) in providers {
-            if let Some(host) = provider.api.as_deref().and_then(host_of) {
+            if let Some(host) = provider.api.as_deref().and_then(crate::host_and_port) {
                 hosts.entry(host).or_default().push(provider_key.clone());
             }
             let listings = own.entry(provider_key).or_default();
@@ -406,7 +406,7 @@ impl Index {
                 .map(|(key, _)| key)
                 .into_iter()
                 .collect(),
-            None => host_of(base_url)
+            None => crate::host_and_port(base_url)
                 .and_then(|host| self.hosts.get(&host))
                 .map(|keys| keys.iter().collect())
                 .unwrap_or_default(),
@@ -448,15 +448,6 @@ fn agreed(models: &[&ModelJson]) -> Option<u64> {
 }
 
 /// The host of an API's address, with its port where it has one.
-fn host_of(address: &str) -> Option<String> {
-    let url = cw_platform::http::Url::parse(address.trim()).ok()?;
-    let host = url.host_str()?.to_lowercase();
-    Some(match url.port() {
-        Some(port) => format!("{host}:{port}"),
-        None => host,
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -26,7 +26,6 @@ import type { taskCard } from "./coding";
 import { el, reason } from "../dom";
 import { isPersonal, modeInUse } from "../card/modes";
 import { readWebPictures } from "../narration";
-import { failureWords } from "../language/errors";
 
 /** The model writes the message field's text, or betters it, or makes a picture (`again`: anew, of that message); `stop` hangs up. */
 export type Drafting = { stop: AbortController; improve: boolean; picture?: boolean; again?: number };
@@ -173,7 +172,6 @@ export function keepEnd(s: Screen): () => void {
 /** Reads the chat from the server. */
 export function load(s: Screen): Promise<void> {
   s.loading ??= (async () => {
-    const first = !s.view;
     try {
       // The chat shows without the lists of personas and of lorebooks too; why one did not come is said over it.
       const or = <T>(list: Promise<T>, known: T) =>
@@ -194,7 +192,6 @@ export function load(s: Screen): Promise<void> {
         filesNow(s),
       ]);
       s.asking = s.view.asking;
-      if (first) sayBrokeOff(s);
       await personalityNow(s).catch((error: unknown) => failed(s, error));
     } catch (error) {
       failed(s, error);
@@ -204,11 +201,6 @@ export function load(s: Screen): Promise<void> {
     for (const event of s.held.splice(0)) s.onEvent(event);
   })();
   return s.loading;
-}
-
-/** A reply the app's close broke off says so when its chat is opened, as it said so live (`events`). */
-export function sayBrokeOff(s: Screen): void {
-  if (newest(s)?.broke_off) failed(s, failureWords({ code: "model_answer", error: "", details: { what: "reply_broke_off" } }));
 }
 
 /** Reads whether the tool Files is on; where the settings do not say, it is held off. */

@@ -11,13 +11,15 @@
 // stands in its message's place (`cards`). While something is written a message is only read (`idle`). While the
 // model thinks before a reply's first word, one grey line under its head says the newest sentence of its thinking in
 // the bubble's place (`showThinking`, `.thinking`). A reply without words yet has the typing sign in its bubble
-// (`typingSign`), and so has the bubble that stands in its place from Send until its message comes (`asked`).
+// (`typingSign`), and so has the bubble that stands in its place from Send until its message comes (`asked`). A reply
+// cut off or broken off says so in a line under its bubble, from what the message keeps (ending.ts).
 import { showRound } from "../account";
 import type { ChatCharacter } from "../api/generated/ChatCharacter";
 import type { ChatView } from "../api/generated/ChatView";
 import type { MessageView } from "../api/generated/MessageView";
 import { avatarUrl, deleteMessage, deleteVersion, editMessage, moveHead, restoreMessages } from "../api/client";
 import { taskCard } from "./coding";
+import { endingLine } from "../ending";
 import { announce, el, iconButton, typingDots } from "../dom";
 import { isArt } from "../art";
 import { menuOn, type MenuItem } from "../dialogs";
@@ -151,6 +153,8 @@ function messageNode(s: Screen, message: MessageView, isNewest: boolean): HTMLEl
   const tools = done && !message.picture ? el("div", { className: "tools flex reveal" }, statsButton(s.node, message), more(s, message, isNewest)) : null;
   shown.append(el("div", { className: mine ? "bubble-row jc-e" : "bubble-row" }, ...(mine ? [tools, body] : [body, tools])));
   if (s.thinking?.id === message.id) thinkingLine(shown, s.thinking.line);
+  const ending = endingLine(message, "msg-indent");
+  if (ending) shown.append(ending);
   const under = done && actions(s, message, isNewest);
   if (under) shown.append(under);
   return shown;
@@ -164,7 +168,7 @@ const typingSign = () => typingDots(wording("messages-writing"));
  * blocks an empty line, as `narrated` puts it, which a copied selection keeps.
  */
 export const written = (view: ChatView, message: MessageView): (HTMLElement | string)[] =>
-  view.characters.length ? narrated(message.content, !message.complete) : markdown(message.content, true).flatMap((block, at) => (at ? ["\n\n", block] : [block]));
+  view.characters.length ? narrated(message.content, !message.complete) : markdown(message.content, true, !message.complete).flatMap((block, at) => (at ? ["\n\n", block] : [block]));
 
 /**
  * The reply asked for, until its message comes: the bubble with the typing sign under who replies, where that is

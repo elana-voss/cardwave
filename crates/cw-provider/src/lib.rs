@@ -1,20 +1,22 @@
 //! cw-provider: asking a model at a server that speaks OpenAI's chat-completions
-//! API. [`ask`]/[`ask_with`] stream a reply, thinking told apart ([`thinking`]);
-//! [`answer`] waits for a whole one, [`object`] reads its JSON, [`Call`] is a
-//! tool call, [`form`] asks for an answer of fixed fields, [`reply`] reads a
-//! reply. Every request goes through [`send`], with the client [`Http`],
-//! which carries the server's pretend answers (`pretend`) and hands This
-//! computer's address to [`local`]; [`answered`] sends with the key ([`keyed`]).
-//! Modules: [`app_name`] Cardwave's name on a call, set in [`send`], [`list`] known providers, [`places`] an unknown one's API, [`models`]
-//! a provider's list, [`check`] a small question, [`presets`], [`kinds`] the
-//! account's providers, [`facts`]/[`catalog`] what kind a model is, [`images`]
-//! what an image service offers, [`embedder`] the search model.
-//! Storage: the crate's [`Storage`] (kinds' and presets'), taken as `&dyn`.
-//! Traps: a stored key goes only to the address it was stored with (`whom`);
-//! "the stored provider" is the chat kind's with the account's reply values
-//! (`get`); a reply's length caps an answer only where the model does not think.
+//! API. [`ask`]/[`ask_with`]/[`ask_request`] stream a reply ([`reply`] reads
+//! it, [`thinking`] apart); [`answer`] waits for a whole one, [`object`] reads
+//! its JSON, [`Call`] is a tool call, [`form`] asks for fixed fields. Each
+//! request goes through [`send`] with the client [`Http`] (the server's
+//! pretend answers; This computer's address to [`local`]; a test's host to
+//! [`stand_in`]); [`answered`] sends
+//! with the key ([`keyed`]). [`Provider`] is what is asked, with [`Sampling`];
+//! [`Request`] what else, its body built in `request` with [`caching`]'s marks.
+//! Modules: [`app_name`], [`list`] known providers, [`places`] an unknown one's
+//! API, [`models`], [`check`], [`presets`], [`kinds`], [`facts`]/[`catalog`]
+//! what kind a model is, [`steps`] how much a model thinks, [`images`], [`embedder`] the search model; storage:
+//! [`Storage`], taken as `&dyn`. Traps: a stored key goes only to the address
+//! it was stored with (`whom`); "the stored provider" is the chat kind's with
+//! the account's reply values (`get`); a reply's length caps an answer only
+//! where the model does not think; a host is read only by `host`/`host_and_port`.
 
 pub mod app_name;
+pub mod caching;
 pub mod catalog;
 pub mod check;
 pub mod facts;
@@ -30,7 +32,12 @@ pub mod picks;
 pub mod places;
 pub mod presets;
 pub mod pretend;
+mod provider;
 pub mod reply;
+mod request;
+mod served;
+pub mod stand_in;
+pub mod steps;
 pub(crate) mod subscription;
 pub(crate) mod suggested;
 pub mod thinking;
@@ -44,12 +51,14 @@ use cw_platform::http::header::CONTENT_TYPE;
 use cw_platform::http::{Client, RequestBuilder, Response, Url};
 use cw_prompt::PromptMessage;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::Value;
 use tokio::time::timeout;
 use ts_rs::TS;
 
-use kinds::{Kind, NoThinking};
-pub use reply::{Call, Piece, Reply};
+use kinds::Kind;
+pub use provider::{Provider, Sampling, key_end};
+pub use reply::{Call, Finish, Piece, Reply, Usage};
+pub use request::Request;
 
 /// How long one of the two answers may take, whole.
 const ANSWER_LIMIT: Duration = Duration::from_secs(300);
@@ -63,13 +72,6 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 /// How long the server may stay silent. A local model can take minutes to read
 /// a long prompt before its first word.
 pub const SILENCE_LIMIT: Duration = Duration::from_secs(300);
-
-/// How much of a stored key is told, for the user to know the key by: its
-/// last characters, and only of a key so long that they give little of it away.
-/// First run shows as much of a key that is typed and not stored yet, by the
-/// same two numbers in `web/src/views/setup.ts`.
-const KEY_END: usize = 4;
-const KEY_END_FROM: usize = 16;
 
 /// The most characters a name the user gives may have: a provider's, and a
 /// preset's.
@@ -150,140 +152,6 @@ pub fn no_longer_offered(failure: &anyhow::Error) -> bool {
     refusal_of(failure).is_some_and(|(_, fail)| fail.has("refusal", "no_model"))
 }
 
-/// What goes along with a prompt. A value left unset is not sent, so the
-/// provider's own default applies. These are the parameters the Flutter app
-/// sends to an OpenAI-compatible server, with its ranges.
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, TS)]
-#[ts(export, optional_fields = nullable)]
-pub struct Sampling {
-    /// The most tokens sent to any model: the prompt is fitted into the
-    /// smaller of it and the model's window, into it alone where the window is
-    /// unknown (`Provider::context`).
-    pub context_size: Option<usize>,
-    pub temperature: Option<f64>,
-    pub top_p: Option<f64>,
-    pub frequency_penalty: Option<f64>,
-    pub presence_penalty: Option<f64>,
-    pub seed: Option<i64>,
-}
-
-impl Sampling {
-    /// What is sent along with a prompt, under the names of OpenAI's API.
-    fn sent(&self) -> impl Iterator<Item = (&'static str, Value)> {
-        let chosen = [
-            ("temperature", self.temperature.map(Value::from)),
-            ("top_p", self.top_p.map(Value::from)),
-            ("frequency_penalty", self.frequency_penalty.map(Value::from)),
-            ("presence_penalty", self.presence_penalty.map(Value::from)),
-            ("seed", self.seed.map(Value::from)),
-        ];
-        chosen
-            .into_iter()
-            .filter_map(|(name, value)| Some((name, value?)))
-    }
-
-    pub(crate) fn check(&self) -> anyhow::Result<()> {
-        let within = |name: &str, value: Option<f64>, min: f64, max: f64| {
-            ensure!(
-                value.is_none_or(|value| (min..=max).contains(&value)),
-                Fail::said(
-                    Code::OutOfRange,
-                    format!("{name} must be from {min} to {max}")
-                )
-                .with("what", "provider_setting")
-                .with("name", name.to_string())
-                .with("min", min.to_string())
-                .with("max", max.to_string())
-            );
-            Ok(())
-        };
-        within("temperature", self.temperature, 0.0, 2.0)?;
-        within("top_p", self.top_p, 0.0, 1.0)?;
-        within("frequency_penalty", self.frequency_penalty, -2.0, 2.0)?;
-        within("presence_penalty", self.presence_penalty, -2.0, 2.0)?;
-        ensure!(
-            self.context_size.is_none_or(|size| size >= 512),
-            Fail::said(
-                Code::OutOfRange,
-                "the context size must be at least 512 tokens"
-            )
-            .with("what", "context_size")
-        );
-        Ok(())
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct Provider {
-    /// Address of the API up to its version part, without a slash at the end:
-    /// `https://api.openai.com/v1`.
-    pub base_url: String,
-    /// Empty for a server that asks for none.
-    pub api_key: String,
-    pub model: String,
-    pub sampling: Sampling,
-    /// What the user calls it, for one whose address is not on the list;
-    /// empty for none.
-    pub name: String,
-    /// How its thinking is turned off, where the user did.
-    pub thinking_off: Option<NoThinking>,
-    /// The most tokens of each answer (`limited`); none leaves it to the
-    /// provider.
-    pub reply_limit: Option<u32>,
-    /// Whether an answer of its model carried thinking (`kinds::saw_thinking`).
-    pub seen_thinking: bool,
-    /// Its model's context window, where known: none until [`window::settled`].
-    pub window: Option<usize>,
-}
-
-impl Provider {
-    /// The most tokens its prompt and reply may take: its model's window,
-    /// capped by the user's Context size, which stands in where the window is
-    /// unknown. Fails where neither is, naming the model.
-    pub fn context(&self) -> anyhow::Result<usize> {
-        match (self.window, self.sampling.context_size) {
-            (Some(window), Some(size)) => Ok(window.min(size)),
-            (Some(size), None) | (None, Some(size)) => Ok(size),
-            (None, None) => bail!(
-                Fail::said(
-                    Code::Needed,
-                    format!("the context window of “{}” is not known", self.model)
-                )
-                .with("what", "context_size")
-                .with("model", self.model.clone())
-            ),
-        }
-    }
-
-    /// The provider with `length` (a chat's Reply length) as the most tokens
-    /// of each of its answers, where its model does not think (`thinks`). A
-    /// model that thinks is given none, as its thinking would count against it.
-    pub fn limited(self, length: u32) -> Provider {
-        Provider {
-            reply_limit: (!self.thinks()).then_some(length),
-            ..self
-        }
-    }
-
-    /// Whether its model thinks: its thinking not turned off, and known to
-    /// think (`facts::guessed`) or seen thinking. The chat's side panel tells it too.
-    pub fn thinks(&self) -> bool {
-        self.thinking_off.is_none() && (self.seen_thinking || facts::guessed(&self.model).thinks)
-    }
-
-    /// The end of the key, by which the user knows which key it is. A short
-    /// key has none to tell, and neither has a provider without a key.
-    pub fn key_end(&self) -> Option<String> {
-        key_end(&self.api_key)
-    }
-}
-
-/// The end of `key` that is told, for the image model's key too.
-pub fn key_end(key: &str) -> Option<String> {
-    let length = key.chars().count();
-    (length >= KEY_END_FROM).then(|| key.chars().skip(length - KEY_END).collect())
-}
-
 /// What the provider needs of the database, which `cw_store::provider` gives:
 /// also what the kinds and the presets need.
 pub trait Storage: kinds::Storage + presets::Storage {
@@ -318,6 +186,16 @@ pub fn not_set_up(db: &dyn kinds::Storage, user: i64) -> anyhow::Result<Fail> {
 pub fn chat(db: &dyn kinds::Storage, user: i64) -> anyhow::Result<Provider> {
     match get(db, user)? {
         Some(chat) => Ok(chat),
+        None => Err(not_set_up(db, user)?.into()),
+    }
+}
+
+/// `model` at the chat model's provider, with the chat's values and that
+/// model's own thinking (as the Code chat's roles ask), else the failure
+/// telling why there is no chat model.
+pub fn at_chat(db: &dyn kinds::Storage, user: i64, model: &str) -> anyhow::Result<Provider> {
+    match db.chat_model(user, model)? {
+        Some(provider) => Ok(provider),
         None => Err(not_set_up(db, user)?.into()),
     }
 }
@@ -500,6 +378,22 @@ pub fn address(typed: &str) -> anyhow::Result<String> {
     Ok(base_url)
 }
 
+/// The host of the address `base_url` in lower case, with its port where it
+/// names one; none where it is no address. Every reading of an address's host
+/// in this crate goes through it.
+pub(crate) fn host(base_url: &str) -> Option<(String, Option<u16>)> {
+    let url = Url::parse(base_url.trim()).ok()?;
+    Some((url.host_str()?.to_lowercase(), url.port()))
+}
+
+/// [`host`] in words: `host:port` where it names a port.
+pub(crate) fn host_and_port(base_url: &str) -> Option<String> {
+    host(base_url).map(|(host, port)| match port {
+        Some(port) => format!("{host}:{port}"),
+        None => host,
+    })
+}
+
 /// [`address`], or This computer's where the account has it, its folder set
 /// (Settings › Providers, first run's "Use a server on this computer"): first
 /// run lists, tests, picks and stores its models as any provider's.
@@ -581,6 +475,8 @@ pub(crate) type Fixed = &'static [(&'static str, &'static str)];
 pub struct Http {
     client: Client,
     fixed: Fixed,
+    /// The NanoGPT subscriptions read for cache marks, shared by its clones.
+    subscriptions: caching::Subscriptions,
 }
 
 impl Http {
@@ -594,8 +490,10 @@ impl Http {
     /// silence per request. Answers as this one does.
     pub fn with_silence(&self, silence: Duration) -> cw_platform::http::Result<Self> {
         let client = silent_for(silence)?;
-        let fixed = self.fixed;
-        Ok(Self { client, fixed })
+        Ok(Self {
+            client,
+            ..self.clone()
+        })
     }
 }
 
@@ -611,7 +509,11 @@ impl std::ops::Deref for Http {
 /// worker model's questions only as [`Http::answering`] says.
 pub fn client() -> cw_platform::http::Result<Http> {
     let client = silent_for(SILENCE_LIMIT)?;
-    Ok(Http { client, fixed: &[] })
+    Ok(Http {
+        client,
+        fixed: &[],
+        subscriptions: caching::Subscriptions::default(),
+    })
 }
 
 fn silent_for(silence: Duration) -> cw_platform::http::Result<Client> {
@@ -702,6 +604,7 @@ async fn send_with(request: RequestBuilder, fixed: Fixed) -> cw_platform::http::
     if local::asked(&request) {
         return local::answer(&http, request).await;
     }
+    stand_in::moved(&mut request);
     http.execute(request).await
 }
 
@@ -724,33 +627,22 @@ pub async fn ask_with(
     prompt: &(impl Serialize + ?Sized),
     tools: &[Value],
 ) -> anyhow::Result<Reply> {
-    ask_shaped(http, provider, prompt, tools, None).await
+    let request = Request {
+        tools,
+        ..Request::default()
+    };
+    ask_request(http, provider, prompt, request).await
 }
 
-/// [`ask_with`], with the `response_format` to answer in, where there is one.
-pub(crate) async fn ask_shaped(
+/// [`ask_with`], with all a [`Request`] holds, its cache marks among them.
+pub async fn ask_request(
     http: &Http,
     provider: &Provider,
     prompt: &(impl Serialize + ?Sized),
-    tools: &[Value],
-    shape: Option<&Value>,
+    request: Request<'_>,
 ) -> anyhow::Result<Reply> {
-    let mut body = json!({ "model": provider.model, "messages": prompt, "stream": true });
-    if !tools.is_empty() {
-        body["tools"] = json!(tools);
-    }
-    if let Some(shape) = shape {
-        body["response_format"] = shape.clone();
-    }
-    for (name, value) in provider.sampling.sent() {
-        body[name] = value;
-    }
-    if let Some((name, value)) = provider.thinking_off.map(NoThinking::sent) {
-        body[name] = value;
-    }
-    if let Some(limit) = provider.reply_limit {
-        body[limit_field(&provider.base_url)] = limit.into();
-    }
+    let prompt = serde_json::to_value(prompt).context("the prompt is no JSON")?;
+    let body = request::body(provider, prompt, &request);
     let request = http
         .post(format!("{}/chat/completions", provider.base_url))
         .json(&body);
@@ -762,18 +654,6 @@ pub(crate) async fn ask_shaped(
         .get(CONTENT_TYPE)
         .is_none_or(|kind| !kind.as_bytes().starts_with(b"application/json"));
     Ok(Reply::of(response, streamed))
-}
-
-/// The field a reply's limit is sent in: OpenAI's own API and Azure's take
-/// only `max_completion_tokens` for their newer models, every other `max_tokens`.
-fn limit_field(base_url: &str) -> &'static str {
-    let url = Url::parse(base_url);
-    match url.as_ref().ok().and_then(Url::host_str) {
-        Some(host) if host == "api.openai.com" || host.ends_with(".openai.azure.com") => {
-            "max_completion_tokens"
-        }
-        _ => "max_tokens",
-    }
 }
 
 /// What the answer to a request that failed says went wrong, as far as it is
@@ -871,7 +751,20 @@ pub fn object(text: &str) -> anyhow::Result<Value> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{NoThinking, Provider, Sampling, limit_field};
+    use crate::{host, host_and_port};
+
+    /// An address's host is read one way: lower case, its port kept apart.
+    #[test]
+    fn an_address_is_read_as_its_host_and_port() {
+        let typed = " HTTP://LocalHost:11434/v1 ";
+        assert_eq!(host(typed), Some(("localhost".into(), Some(11434))));
+        assert_eq!(host_and_port(typed).as_deref(), Some("localhost:11434"));
+        assert_eq!(
+            host_and_port("https://api.openai.com/v1").as_deref(),
+            Some("api.openai.com")
+        );
+        assert_eq!(host("not an address"), None);
+    }
 
     #[tokio::test]
     async fn a_client_with_its_own_silence_gives_up_after_it() {
@@ -884,35 +777,6 @@ mod tests {
 
         assert!(got.unwrap_err().is_timeout());
         drop(listener);
-    }
-
-    fn of(model: &str, thinking_off: Option<NoThinking>) -> Provider {
-        Provider {
-            base_url: "http://localhost:8080/v1".into(),
-            api_key: String::new(),
-            model: model.into(),
-            sampling: Sampling::default(),
-            name: String::new(),
-            thinking_off,
-            reply_limit: None,
-            seen_thinking: false,
-            window: None,
-        }
-    }
-
-    #[test]
-    fn a_reply_is_limited_where_the_model_does_not_think() {
-        assert_eq!(of("my-rig-7b", None).limited(350).reply_limit, Some(350));
-        // Its name says nothing, but an answer of it carried thinking.
-        let seen = Provider {
-            seen_thinking: true,
-            ..of("my-rig-7b", None)
-        };
-        assert_eq!(seen.limited(350).reply_limit, None);
-        // models.dev says gpt-5 thinks, unless its thinking was turned off.
-        assert_eq!(of("gpt-5", None).limited(350).reply_limit, None);
-        let off = Some(NoThinking::ReasoningEffort);
-        assert_eq!(of("gpt-5", off).limited(350).reply_limit, Some(350));
     }
 
     #[test]
@@ -958,17 +822,6 @@ mod tests {
             voice.to_string(),
             "the provider's voice answered 401 Unauthorized: no"
         );
-    }
-
-    #[test]
-    fn openai_is_sent_its_own_field_for_the_limit() {
-        assert_eq!(
-            limit_field("https://api.openai.com/v1"),
-            "max_completion_tokens"
-        );
-        let azure = "https://mine.openai.azure.com/openai/v1";
-        assert_eq!(limit_field(azure), "max_completion_tokens");
-        assert_eq!(limit_field("https://openrouter.ai/api/v1"), "max_tokens");
     }
 }
 pub mod embedder;

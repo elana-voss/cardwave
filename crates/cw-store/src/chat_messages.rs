@@ -6,7 +6,7 @@ use anyhow::{anyhow, ensure};
 use cw_chat::chats::export::WrittenOut;
 use cw_chat::chats::messages::Storage;
 use cw_chat::chats::{
-    BUSY, Chat, ContextUse, IN_TRASH, Message, MessageView, NOT_IN_CHAT, NewMessage,
+    BUSY, Chat, ContextUse, Ending, IN_TRASH, Message, MessageView, NOT_IN_CHAT, NewMessage,
 };
 use cw_coding::tools::used::UsedCall;
 use cw_core::{Code, Fail};
@@ -74,7 +74,7 @@ fn message_view(row: &Row<'_>) -> rusqlite::Result<MessageView> {
         attachments: json::column(row, 18, "a reply's attachments")?.unwrap_or_default(),
         provider: row.get(19)?,
         times: json::column(row, 20, "a reply's times")?,
-        broke_off: row.get(21)?,
+        ending: Ending::named(&row.get::<_, String>(21)?),
     })
 }
 
@@ -129,7 +129,8 @@ fn remove_empty(tx: &Connection, message_id: i64, head: Option<i64>) -> rusqlite
 }
 
 /// Ends the incomplete messages of one chat or of all. Returns their ids,
-/// each with whether the message is still there. Those of all say they broke off.
+/// each with whether the message is still there. Those of all say they broke
+/// off; one chat's are the user's Stop and keep how they ended before.
 fn end_unwritten(
     conn: &mut Connection,
     chat_id: Option<i64>,
@@ -152,8 +153,11 @@ fn end_unwritten(
         if kept {
             // Only a start's end of every chat is a cut-off; one chat's is the user's Stop.
             tx.execute(
-                "update messages set complete = 1, broke_off = ?2 where id = ?1",
-                params![message_id, chat_id.is_none()],
+                "update messages set complete = 1, ending = coalesce(?2, ending) where id = ?1",
+                params![
+                    message_id,
+                    chat_id.is_none().then_some(Ending::BrokeOff.name())
+                ],
             )?;
         } else {
             remove_empty(&tx, message_id, head)?;
@@ -173,7 +177,7 @@ pub(super) const MESSAGE_COLUMNS: &str =
 /// picture (`images`), the context its prompt took, the coding task whose
 /// card it is (`coding`), the model it was asked of, its prompt's parts'
 /// tokens, the pages and files it read, its attachments (JSON), whom its
-/// model was asked of, how long it took and whether the app's close broke it off.
+/// model was asked of, how long it took and how its writing ended (`Ending`).
 const VIEW_COLUMNS: &str = "(select group_concat(s.id order by s.id) from messages s
      where s.chat_id = m.chat_id and s.parent_id is m.parent_id and s.deleted_from is null), m.lore,
      (select json_group_array(x.value) from (select j.value from memory_blocks b, json_each(b.saved) j
@@ -182,7 +186,7 @@ const VIEW_COLUMNS: &str = "(select group_concat(s.id order by s.id) from messag
      (select t.id from coding_tasks t where t.message_id = m.id), m.model, m.sent, m.calls,
      (select json_group_array(json_object('id', a.id, 'name', a.name, 'picture', json(a.picture)))
       from (select id, name, case when picture is null then 'false' else 'true' end picture
-            from attachments where message_id = m.id order by id) a), m.provider, m.times, m.broke_off";
+            from attachments where message_id = m.id order by id) a), m.provider, m.times, m.ending";
 
 /// The messages from `?1` up to the first one of its chat, with their distance.
 pub(super) const ANCESTORS: &str = "with recursive path (id, distance) as (
@@ -532,7 +536,7 @@ impl Storage for Db {
                 return Ok(Err(anyhow!(Fail::said(Code::NotPossible, "the reply has no text to continue").with("what", "continue_no_text"))));
             }
             tx.execute(
-                "update messages set complete = 0, broke_off = 0 where id = ?1",
+                "update messages set complete = 0 where id = ?1",
                 [newest.id],
             )?;
             tx.commit()?;
@@ -543,7 +547,7 @@ impl Storage for Db {
     fn rewrite_message(&self, user: i64, message_id: i64, content: &str) -> anyhow::Result<bool> {
         let changed = self.with(|conn| {
             conn.execute(
-                "update messages set content = ?2, token_count = null
+                "update messages set content = ?2, token_count = null, ending = 'whole'
                  where id = ?1 and complete = 1 and deleted_from is null
                    and chat_id in (select id from chats where user_id = ?3 and trashed_at is null)",
                 params![message_id, content, user],
@@ -579,14 +583,15 @@ impl Storage for Db {
         user: i64,
         message_id: i64,
         content: &str,
+        ending: Option<Ending>,
         head_before: Option<i64>,
     ) -> anyhow::Result<Option<bool>> {
         let ended = self.with(|conn| {
             let tx = conn.transaction()?;
             let changed = tx.execute(
-                "update messages set content = ?2, complete = 1, token_count = null
+                "update messages set content = ?2, complete = 1, token_count = null, ending = coalesce(?4, ending)
                  where id = ?1 and complete = 0 and chat_id in (select id from chats where user_id = ?3)",
-                params![message_id, content, user],
+                params![message_id, content, user, ending.map(Ending::name)],
             )?;
             let removed = changed == 1 && content.trim().is_empty();
             if removed {

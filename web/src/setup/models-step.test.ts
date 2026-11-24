@@ -40,7 +40,7 @@ test("first run begins with the provider added last when no chat model is chosen
 });
 
 test("a provider that only makes the pictures is not the one first run begins with", () => {
-  const added = { ...list([entry(1, "https://one.test/v1"), entry(2, "http://127.0.0.1:8188")]), kinds: [{ kind: "images" as const, provider_id: 2, model: "m", thinking: "", gone: false }] };
+  const added = { ...list([entry(1, "https://one.test/v1"), entry(2, "http://127.0.0.1:8188")]), kinds: [{ kind: "images" as const, provider_id: 2, model: "m", thinking: { control: "switch" as const, state: "off" }, gone: false }] };
   expect(storedFor(null, added)?.base_url).toBe("https://one.test/v1");
   expect(storedFor(null, { ...added, providers: [entry(2, "http://127.0.0.1:8188")] })).toBeNull();
 });

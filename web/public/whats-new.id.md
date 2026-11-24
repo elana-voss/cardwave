@@ -1,8 +1,14 @@
 # 0.3.3
 
-Cardwave kini tahu berapa banyak yang dibaca setiap AI sekaligus, dan tidak lagi menebak.
+Cardwave kini tahu berapa banyak yang dibaca setiap AI sekaligus, dan kamu bisa memilih seberapa banyak AI berpikir serta mewarnai chatmu.
 
-- Setiap balasan pas dengan yang bisa dibaca modelnya. Cardwave mengambil ukurannya dari daftar model bawaannya, atau menanyakannya langsung ke AI di komputermu atau jaringan lokalmu. Sebelumnya, setiap model diberi 128.000 token.
+- Di Pengaturan › Penyedia, model yang bisa berpikir lebih banyak atau lebih sedikit kini menawarkan Mati, Ringan, Normal, atau Mendalam, diingat untuk setiap model. Jika penyedia tidak bisa mematikan pemikiran untuk sebuah model, Cardwave memberitahumu.
+- Baru di menu tampilan: "Warna pesan chat" (Mati, Terang, atau Gelap) menampilkan ucapan dalam tanda kutip, huruf miring, huruf tebal, tautan, dan kode dengan warnanya sendiri, di chat karakter dan di pendamping.
+- Balasan yang terpotong di batas panjangnya kini berakhir di kalimat utuh terakhirnya. Balasan yang berhenti di batas AI sendiri disimpan apa adanya, dengan garis abu-abu di bawahnya yang menyatakannya, dan "Lanjutkan balasan ini" melanjutkan dari kata terakhirnya.
+- Saat model pembantu tidak bisa menjaga memori chat, chat memberitahumu alasannya.
+- Chat panjang dengan model Claude lewat OpenRouter atau NanoGPT lebih murah dan menjawab lebih cepat, berkat prompt caching.
+- Di tugas pemrograman, baris setiap langkah memakai bahasamu, dan halaman web dibaca dengan lebih akurat.
+- Setiap balasan pas dengan yang bisa dibaca modelnya. Cardwave mengambil ukurannya dari daftar model bawaannya, atau menanyakannya langsung ke AI di komputermu (LM Studio, Ollama, atau KoboldCpp) atau jaringan lokalmu. Sebelumnya, setiap model diberi 128.000 token.
 - Obrolan panjang dengan model yang membaca lebih banyak kini menyimpan lebih banyak riwayatnya.
 - Jika ukuran sebuah AI tidak diketahui, balasannya memberitahumu, dan kamu mengaturnya sekali sebagai ukuran konteks di Pengaturan › Lanjutan. Sampai saat itu tidak ada yang dikirim.
 - Ukuran konteks di Pengaturan › Lanjutan kini membatasi apa yang dikirim ke model mana pun.

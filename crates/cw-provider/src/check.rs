@@ -11,8 +11,8 @@
 //! `QUESTION` through `provider::ask` and waits for the first words, at most
 //! `WAIT`. Over HTTP it is `POST /api/provider/test`, which stores nothing and
 //! answers 204 or why not. `sees` asks it with a picture, when one is attached
-//! in a chat (`attachments`), and `thinking_off` with each form of turning its
-//! thinking off, when the user switches it off (`kinds`). `key` asks, at no
+//! in a chat (`attachments`), and `thinking_off` with each way of turning its
+//! thinking off it may take (`steps::offs`), when the user turns it off (`kinds`). `key` asks, at no
 //! cost, whether the provider takes a key it is added or changed with.
 
 use std::time::Duration;
@@ -27,9 +27,9 @@ use tokio::time::timeout;
 use ts_rs::TS;
 
 use crate::Http;
+use crate::Provider;
 use crate::Storage;
-use crate::kinds::NoThinking;
-use crate::{Provider, Sampling};
+use crate::steps::Thinking;
 
 /// What the model is asked. The answer is a word, so the test is small without
 /// a limit on the reply's tokens, which not every model takes under the same
@@ -58,17 +58,11 @@ pub struct TestModel {
 /// with the question, so that a value the user set does not decide the test.
 pub fn whom(db: &dyn Storage, user: i64, asked: TestModel) -> anyhow::Result<Provider> {
     let (base_url, api_key) = crate::whom(db, user, &asked.base_url, asked.api_key)?;
-    Ok(Provider {
+    Ok(Provider::new(
         base_url,
         api_key,
-        model: crate::model(&asked.model)?,
-        sampling: Sampling::default(),
-        name: String::new(),
-        thinking_off: None,
-        reply_limit: None,
-        seen_thinking: false,
-        window: None,
-    })
+        crate::model(&asked.model)?,
+    ))
 }
 
 /// Asks the provider's model the question and waits for the first of its
@@ -124,15 +118,19 @@ pub async fn sees(http: &Http, provider: &Provider) -> anyhow::Result<bool> {
     }
 }
 
-/// The first form of turning thinking off that the provider takes for its
-/// model: the question asked with each in turn, a refusal (400, 404, 415 or
-/// 422) leading to the next; none where it takes none. As with `sees`, the
-/// reply is not read. Another failure is the error.
-pub async fn thinking_off(http: &Http, provider: &Provider) -> anyhow::Result<Option<NoThinking>> {
+/// The first of `offs`, ways of turning thinking off, that the provider
+/// takes for its model: the question asked with each in turn, a refusal (400,
+/// 404, 415 or 422) leading to the next; none where it takes none. As with
+/// `sees`, the reply is not read. Another failure is the error.
+pub async fn thinking_off(
+    http: &Http,
+    provider: &Provider,
+    offs: &[Thinking],
+) -> anyhow::Result<Option<Thinking>> {
     let prompt = [PromptMessage::new(Role::User, QUESTION)];
-    for form in NoThinking::ALL {
+    for &form in offs {
         let asked = Provider {
-            thinking_off: Some(form),
+            thinking: form,
             ..provider.clone()
         };
         let answer = match timeout(WAIT, crate::ask(http, &asked, &prompt)).await {

@@ -482,3 +482,18 @@ fn the_unsaved_texts_of_a_row_deleted_go_with_it() {
     ];
     assert_eq!(left, kept);
 }
+
+/// The database's check on a message's ending allows the names of
+/// `Ending::NAMES`, no other.
+#[test]
+fn the_endings_a_message_may_keep_are_those_of_the_one_list() {
+    let names: Vec<String> = cw_chat::chats::Ending::NAMES
+        .iter()
+        .map(|(_, name)| format!("'{name}'"))
+        .collect();
+    let check = format!("check (ending in ({}))", names.join(", "));
+    assert!(
+        MIGRATIONS.iter().any(|step| step.contains(&check)),
+        "{check}"
+    );
+}

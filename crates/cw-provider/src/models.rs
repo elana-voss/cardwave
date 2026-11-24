@@ -8,7 +8,7 @@
 //! megabytes and slow, so it is read for a while and up to a size (`Limits`).
 //!
 //! `of` asks within `Limits`; `described` asks any address and keeps what it says
-//! of each model (`Said`: OpenRouter's output kinds and parameters, NanoGPT's
+//! of each model (`Said`: OpenRouter's output kinds, parameters and reasoning, NanoGPT's
 //! capabilities), which `catalog` reads; `read` reads a list that may break off
 //! anywhere, for `places` too. Over HTTP it is `POST /api/provider/models`.
 
@@ -77,6 +77,10 @@ pub struct Said {
     /// Whether it thinks first: OpenRouter's `supported_parameters` holding
     /// "reasoning", NanoGPT's `capabilities.reasoning`.
     pub thinks: Option<bool>,
+    /// Whether it cannot stop thinking: OpenRouter's `reasoning.mandatory`.
+    pub mandatory: bool,
+    /// The levels of effort it takes (OpenRouter's `reasoning.supported_efforts`); none where the list does not say.
+    pub efforts: Option<Vec<String>>,
     /// What it is tagged with (NanoGPT's `tags`: "text-to-image", "image-edit").
     pub tags: Option<Vec<String>>,
 }
@@ -233,6 +237,7 @@ impl Said {
         parameters: Option<Value>,
         capabilities: Option<Value>,
         tags: Option<Value>,
+        reasoning: Option<Value>,
     ) -> Self {
         let kinds = |name: &str, side: usize| {
             let architecture = architecture.as_ref()?;
@@ -266,6 +271,19 @@ impl Said {
             output,
             input,
             thinks: capable.or(listed),
+            mandatory: reasoning
+                .as_ref()
+                .and_then(|reasoning| reasoning.get("mandatory")?.as_bool())
+                .unwrap_or(false),
+            efforts: reasoning.as_ref().and_then(|reasoning| {
+                let efforts = reasoning.get("supported_efforts")?.as_array()?;
+                Some(
+                    efforts
+                        .iter()
+                        .filter_map(|effort| Some(effort.as_str()?.to_string()))
+                        .collect(),
+                )
+            }),
             tags: tags.and_then(|tags| {
                 let tags = tags.as_array()?;
                 Some(
@@ -304,6 +322,7 @@ pub(super) fn read(said: &[u8]) -> Read {
             supported_parameters: Option<Value>,
             capabilities: Option<Value>,
             tags: Option<Value>,
+            reasoning: Option<Value>,
         },
         Other(IgnoredAny),
     }
@@ -338,9 +357,16 @@ pub(super) fn read(said: &[u8]) -> Read {
                     supported_parameters,
                     capabilities,
                     tags,
+                    reasoning,
                 } = entry
                 {
-                    let said = Said::of(architecture, supported_parameters, capabilities, tags);
+                    let said = Said::of(
+                        architecture,
+                        supported_parameters,
+                        capabilities,
+                        tags,
+                        reasoning,
+                    );
                     self.read.ids.push((id, said));
                 }
             }
@@ -416,5 +442,23 @@ mod tests {
             ]
         );
         assert_eq!(listed.ids[0].1.output, Some(vec!["image".to_string()]));
+    }
+
+    #[test]
+    fn a_model_that_cannot_stop_thinking_is_read_from_the_list() {
+        let listed = read(
+            br#"{"data":[{"id":"must","supported_parameters":["reasoning"],"reasoning":{"mandatory":true}},
+            {"id":"may","supported_parameters":["reasoning"],"reasoning":{"mandatory":false,"supported_efforts":["high","low"]}},
+            {"id":"plain"}]}"#,
+        );
+        let mandatory: Vec<bool> = listed.ids.iter().map(|(_, said)| said.mandatory).collect();
+        assert_eq!(mandatory, [true, false, false]);
+        let efforts: Vec<_> = listed
+            .ids
+            .iter()
+            .map(|(_, said)| said.efforts.clone())
+            .collect();
+        let listed = Some(vec!["high".to_string(), "low".to_string()]);
+        assert_eq!(efforts, [None, listed, None]);
     }
 }

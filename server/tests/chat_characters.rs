@@ -462,7 +462,7 @@ fn a_character_that_has_written_stays_and_a_chat_keeps_one_character() {
     assert!(wrote(joined));
     assert_eq!(refused(chats::remove_character(db, me, joined)), stays);
     assert!(
-        chats::finish_reply(db, me, half, "", Some(greeting))
+        chats::finish_reply(db, me, half, "", None, Some(greeting))
             .unwrap()
             .is_none()
     );
